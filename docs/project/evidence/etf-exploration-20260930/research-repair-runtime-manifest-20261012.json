@@ -1,0 +1,154 @@
+{
+  "activation_precondition": "V3 exited and its partial stop was reconciled; all current research services run original images/sources and owned pause is clear. Revalidate every actual container identity after native drain before service stop. Preserve concurrent deployments during failure recovery.",
+  "baseline": {
+    "observed_at": "2026-10-11T23:42:15.555633+00:00",
+    "services": [
+      {
+        "compose_files": [
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/research.compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/autonomous-research.compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/model-accounts.compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/data-watch.compose.yaml",
+          "/var/lib/quant-company/releases/analyst-autopublish-20261007-exact-env/publication.compose.yaml",
+          "/var/lib/quant-company/config/revision-loop-cf497665ee478e75d306519cf772318094f868cb-rollback-api.compose.json",
+          "/var/lib/quant-company/config/revision-loop-3c7cc9130fe5196027b2314aeb788a81a2d66179-api.compose.json",
+          "/var/lib/quant-company/config/trend-window-20261008-api.compose.json"
+        ],
+        "compose_working_dir": "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy",
+        "container_id": "5fc30c8a5cd10409a797ae169ca7da8720ee3807dd04a37298305a88b273ba82",
+        "image": "quant-company:trend-window-20261008-2",
+        "image_id": "sha256:9445114a6e094bca9df2cd7e6bfe1475f8dc8103fb081b32511257d10586bc08",
+        "memory_limit": 134217728,
+        "name": "quant-company-api-1",
+        "runtime": {
+          "other_sources_digest": "dec550c0c9e90f8760f5f7cbd7492f432d1a65a174e8f0cdb452b462f388c2aa",
+          "patch_files": {
+            "quant_company/research/builds.py": "0d5af8333e2fd1753784b73665a101d4b62175e6afdadf09fef6610b23399110",
+            "quant_company/research/controller.py": "1df09f9f3566de2efee62e3c9f23ad4474f310b116138962fbefcbd4db6ef11f",
+            "quant_company/research/mission_backend.py": "1c1668d36f10539976a0c2e813dfd6a1f5ea71b479fbf258e2884d302a166e67"
+          },
+          "root": "/app/.venv/lib/python3.12/site-packages",
+          "source_count": 184
+        },
+        "source": {
+          "other_sources_digest": "f9805dddd15f606c2840ba1eecd181e082314809481bb032ff4cb750e389732e",
+          "patch_files": {
+            "quant_company/research/builds.py": "0d5af8333e2fd1753784b73665a101d4b62175e6afdadf09fef6610b23399110",
+            "quant_company/research/controller.py": "c44df0e6f748aa9ce437bbca31d982eace55bb3bd46bf0fb4e6954997eaa9bad",
+            "quant_company/research/mission_backend.py": "1c1668d36f10539976a0c2e813dfd6a1f5ea71b479fbf258e2884d302a166e67"
+          },
+          "root": "/app/src",
+          "source_count": 168
+        },
+        "state": "running"
+      },
+      {
+        "compose_files": [
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/research.compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/autonomous-research.compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/model-accounts.compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/data-watch.compose.yaml",
+          "/var/lib/quant-company/releases/analyst-autopublish-20261007-exact-env/publication.compose.yaml",
+          "/var/lib/quant-company/config/revision-loop-cf497665ee478e75d306519cf772318094f868cb-rollback-worker.compose.json",
+          "/var/lib/quant-company/config/revision-loop-3c7cc9130fe5196027b2314aeb788a81a2d66179-worker.compose.json",
+          "/var/lib/quant-company/config/maintainer-repair-68ffc8d1c16aaace04b98c259e49055beeb857b9-worker.compose.json"
+        ],
+        "compose_working_dir": "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy",
+        "container_id": "08cdfbd7a8f716cc86bdc0a2a3bac387057f4663f6fc505bb083e92c61a72834",
+        "image": "quant-company-repair-worker:68ffc8d1",
+        "image_id": "sha256:9f03342cdaf2b4b536e43d29a807c6522b03878f58dc4707231b3a1b107472a2",
+        "memory_limit": 402653184,
+        "name": "quant-company-worker-1",
+        "runtime": {
+          "other_sources_digest": "ee046e04fd5bdb11492e9ce98c75c49fd62840aa48c4f96e50d716618d5e71a9",
+          "patch_files": {
+            "quant_company/research/builds.py": "0d5af8333e2fd1753784b73665a101d4b62175e6afdadf09fef6610b23399110",
+            "quant_company/research/controller.py": "1df09f9f3566de2efee62e3c9f23ad4474f310b116138962fbefcbd4db6ef11f",
+            "quant_company/research/mission_backend.py": "1c1668d36f10539976a0c2e813dfd6a1f5ea71b479fbf258e2884d302a166e67"
+          },
+          "root": "/app/.venv/lib/python3.12/site-packages",
+          "source_count": 171
+        },
+        "source": {
+          "other_sources_digest": "f9805dddd15f606c2840ba1eecd181e082314809481bb032ff4cb750e389732e",
+          "patch_files": {
+            "quant_company/research/builds.py": "0d5af8333e2fd1753784b73665a101d4b62175e6afdadf09fef6610b23399110",
+            "quant_company/research/controller.py": "c44df0e6f748aa9ce437bbca31d982eace55bb3bd46bf0fb4e6954997eaa9bad",
+            "quant_company/research/mission_backend.py": "1c1668d36f10539976a0c2e813dfd6a1f5ea71b479fbf258e2884d302a166e67"
+          },
+          "root": "/app/src",
+          "source_count": 168
+        },
+        "state": "running"
+      }
+    ]
+  },
+  "commit": "3171e59a5c7f6a2332c33b3bc1249abddccba6ef",
+  "environment_guard": "Pin and verify every actual environment value on current parents and rollback.",
+  "inventory_file": "read-research-repair-runtime-20261012.py",
+  "mission_digest": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "native_drain": "Under owned45-minute pause wait at most1800s for existing native calls; actual video runtime has2700s timeout and the already-running call began before preparation. Verify DB inactivity and renew only unexpired owned pause to15minutes for backup/cutover. Never cancel another call.",
+  "operation": "second_trial_technical_repair_contract",
+  "operator_sha256": "8878608c79ed506fbc7707809207100868aec111d18c6a72ef24926211134307",
+  "payload_files": {
+    "apply-research-repair-20261012.py": "8878608c79ed506fbc7707809207100868aec111d18c6a72ef24926211134307",
+    "builds.py": "4567ce6bc355dca57b8e4ccf200058b158109b7b88f08dd6235c2531979e1d5e",
+    "controller.py": "96a1b9a9f8e740738bed034575b1f7ffdc7320595d5b726eba83db6baa477360",
+    "failure-evidence.json": "4d017e2171c420435111392bbb66a9f828252a5ea8422348d96a31f14f9e3201",
+    "mission_backend.py": "c7233bf57dd2e0a90f090c07e76e91f66bab8b984ea7361883f2768f8cab6938",
+    "monitor-research-repair-20261012.py": "a1fe7ec6e2f4b7de56ed4f31cf88411d22a061da22dd3c53fc47316b397b4613",
+    "provision-research-repair-20261012.py": "bd6470df11ac69c7e6cccacdef97aed109a2854e950ad04fa3ccaa88394c3bc3",
+    "read-research-repair-lanes-20261012.py": "d29f05e7e74c55e04d0771afbe6dde9e182cd0e79d6f4386d5f46ab3b42db2c4",
+    "read-research-repair-progress-20261012.py": "2453cf8742ea91506e5c3b58e99dfa47b33daae153afbd16fb5ad2d750ce7a9d",
+    "read-research-repair-runtime-20261012.py": "00202e0cffa52af08addf280b6be5310fdc75f7fbccf1522ad53289538050d38",
+    "runtime_builds.py": "4567ce6bc355dca57b8e4ccf200058b158109b7b88f08dd6235c2531979e1d5e",
+    "runtime_controller.py": "ef6a01b739785973e0123de06f5054617ffd9b52da2600422389eeb4de809309",
+    "runtime_mission_backend.py": "c7233bf57dd2e0a90f090c07e76e91f66bab8b984ea7361883f2768f8cab6938"
+  },
+  "previous_activation": "No services stopped or recreated; native lane lock busy; owned pause restored; receipt preserved.",
+  "previous_inactive_commit": "fd6446f89de0245117a3c4f952c88bf82068864e",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+  "regression": {
+    "employee_slack_and_market_fixtures": "synthetic",
+    "full_suite_passed": true,
+    "implementation_commit": "d0386ef",
+    "initial_full_run": "Interrupted due to sandbox TCP denial; identical command rerun with approved network access.",
+    "junit_sha256": "4f32396e6e2780432de9f6d217f435a0084c36404f8ddfefc39d72055a5c60f2",
+    "lint_passed": true,
+    "package_commit": "3171e59a5c7f6a2332c33b3bc1249abddccba6ef",
+    "passed": 1838,
+    "real_pinned_qlab": true,
+    "real_postgresql": true,
+    "schema_version": 1,
+    "scientific_performance_claimed": false,
+    "seconds": 661.207,
+    "skipped": 14,
+    "targeted_passed": 17
+  },
+  "review": "Exact prepared images and apply review required before activation; existing owner authorization persists.",
+  "runtime_probe_owner": "Git-enabled actual research worker; source registration uses API; secrets stay in host-only env file",
+  "schema_version": 1,
+  "scientific_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "scope": {
+    "completed_responses_unchanged": true,
+    "existing_model_policy_preserved": true,
+    "failed_code_read_only": true,
+    "modules": [
+      "quant_company/research/controller.py",
+      "quant_company/research/builds.py",
+      "quant_company/research/mission_backend.py"
+    ],
+    "scientific_decision_supplied": false,
+    "selected_services": [
+      "api",
+      "worker"
+    ],
+    "signed_scope_and_scientific_worker_unchanged": true
+  },
+  "stage_id": "2d0ec857-8601-5cca-927d-f7f51877696d"
+}

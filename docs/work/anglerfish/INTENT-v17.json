@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 17,
+  "previousIntent": "INTENT-v16.json",
+  "sourceRequest": "잘 모니터링해라",
+  "outcome": "Monitor actual execution, response admission, independent reviews and publication for the already-approved first scientific trial; repair observed technical stops and report verified progress.",
+  "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "deliverables": [
+    {"id": "AUDIT_NOTE_BOUND", "description": "Resolve the actual6171-character cached packet rejection under a bounded prompt policy, retaining its original bytes and provider session"},
+    {"id": "CONTINUOUS_PROGRESS", "description": "Observe every subsequent review/response transition and reconcile concrete operational failures"},
+    {"id": "VERIFIED_REPORT", "description": "Verify the company's independent decision and actual report/publication receipts without inventing a scientific verdict"}
+  ],
+  "constraints": [
+    "Preserve signed scope, lineage, scientific budgets, data, outcomes, accounts and worker execution pins",
+    "Do not edit or replay a completed provider response or uncertain external effect",
+    "Preserve complete-byte delivery, session binding, independent qlab and publication gates",
+    "Retain concurrent production source changes when preparing a surgical runtime patch",
+    "Prepare and review concrete code/images/rollback receipts before an operational rollout",
+    "No operator scientific verdict, live order, paid API fallback or 5090 fallback",
+    "No strategy performance reporting before independent audits"
+  ]
+}

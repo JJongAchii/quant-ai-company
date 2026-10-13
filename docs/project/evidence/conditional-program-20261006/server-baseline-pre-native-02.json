@@ -1,0 +1,378 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06T00:41:44.327443+00:00",
+  "app_release": "/opt/quant-company/releases/231d6ba0755f658f167636a8ea2c3ef65b6af562",
+  "containers": {
+    "quant-company-quant-feed-worker-1": {
+      "id": "eeb6a2568820a5c4c10abc8ed668d7e4a14532fa141536f5b686de0c34a6ac6c",
+      "image": "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79",
+      "image_id": "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/research.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/quant-parity-20261006.compose.json",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "ea092f419b4b679df4c25e479a8cb361b4d046ff",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-worker-1": {
+      "id": "74196593a74154e2a3d1b90da13fecfb6496f05698fba0f5664f8d5beb2be342",
+      "image": "quant-company-autonomous:231d6ba0755f658f167636a8ea2c3ef65b6af562-conditional",
+      "image_id": "sha256:c55cde4b44b83df0b0e9c2b59682404fbb2544bea87dcd211f478296c44eb7d0",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/compose.yaml,/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/research.compose.yaml,/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/73fcfc34a6876e0a80c14fa72edae2cdb8413b0c/deploy/model-accounts.compose.yaml,/var/lib/quant-company/config/private-output-0286ba3e7426ff6546b90e6926124ae65e71ba79.compose.json,/var/lib/quant-company/config/exploration-3c848af95dc33b7da444a55018fd41d374c10025.compose.json,/var/lib/quant-company/config/exploration-3c848af95dc33b7da444a55018fd41d374c10025-attempt2.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-slack-socket-1": {
+      "id": "e8aeb5e3cdac27000ca3dfcccfd7fb8663a9b6d27e1f0e0c426536448aa4be06",
+      "image": "quant-company:231d6ba0755f658f167636a8ea2c3ef65b6af562-conditional",
+      "image_id": "sha256:7f305b5f8b235d065aa2b4d45106436f31355ec4b66fd78445453148472767ff",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/compose.yaml,/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/research.compose.yaml,/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/eec5e2326dc5ecfcfe8bc7a98840afec0820242a/deploy/model-accounts.compose.yaml,/var/lib/quant-company/config/exploration-3c848af95dc33b7da444a55018fd41d374c10025.compose.json,/var/lib/quant-company/config/exploration-3c848af95dc33b7da444a55018fd41d374c10025-attempt2.compose.json,/var/lib/quant-company/config/exploration-79586479aeef07554be311951e40bbe00c33cafe-cancel.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-dispatch-1": {
+      "id": "e9e1395b4194a4383699f5e5f1f0c11fbb9df169497c88e7e17ea727a8e720a8",
+      "image": "quant-company:231d6ba0755f658f167636a8ea2c3ef65b6af562-conditional",
+      "image_id": "sha256:7f305b5f8b235d065aa2b4d45106436f31355ec4b66fd78445453148472767ff",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-api-1": {
+      "id": "29f630ba7faa0a6c1cbc96676407ffce2688a0e4d583c658a665e21fbdc5ccda",
+      "image": "quant-company:231d6ba0755f658f167636a8ea2c3ef65b6af562-conditional",
+      "image_id": "sha256:7f305b5f8b235d065aa2b4d45106436f31355ec4b66fd78445453148472767ff",
+      "state": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json,/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-news-worker-1": {
+      "id": "b6c2cd6c24747d4b86127fb6c8cbfa5dcdca21e71fb89b07cac4c87b225115bc",
+      "image": "quant-company:289dc70c6858ea229476216d7ea4c1c10ece68ff",
+      "image_id": "sha256:5d0d7c42de26e9b89e8909001a4376577b91acb4d996342018486713cc837e53",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "289dc70c6858ea229476216d7ea4c1c10ece68ff",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-codex-runtime-1": {
+      "id": "b21bd3d172db586c9b3666f920622c27a99ce439dc3d531bfec84176f89a9797",
+      "image": "quant-company-codex:289dc70c6858ea229476216d7ea4c1c10ece68ff",
+      "image_id": "sha256:c1d123ee1c525a7d02375fb1172e1d955fec8c555e0285255c5da4b80b834ea4",
+      "state": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "289dc70c6858ea229476216d7ea4c1c10ece68ff",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-briefing-data-worker-1": {
+      "id": "786a9542133e480cf4b30e4939c3ad7310bab014c4ad6794f098ef45c968d529",
+      "image": "quant-company:289dc70c6858ea229476216d7ea4c1c10ece68ff",
+      "image_id": "sha256:5d0d7c42de26e9b89e8909001a4376577b91acb4d996342018486713cc837e53",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "289dc70c6858ea229476216d7ea4c1c10ece68ff",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-quant-codex-runtime-1": {
+      "id": "ce8b1dfdab1bd595aeb7e7446e0d1e1a38f5f8457b14969620d93edb11841190",
+      "image": "quant-company-codex:ea092f419b4b679df4c25e479a8cb361b4d046ff",
+      "image_id": "sha256:c983c63235365a43ae1afa8eaba37bd7708e49b43afc2089aa824bad242f02e7",
+      "state": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/research.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff/deploy/data-watch.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "ea092f419b4b679df4c25e479a8cb361b4d046ff",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-data-watch-worker-1": {
+      "id": "b900ca1d55f31c7c29f5eef62e5f5587ccb6c137019104e362cd14da92af274b",
+      "image": "quant-company:0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+      "image_id": "sha256:7c834100fdefc0ecd09c2c8810c2b9630c93976ffa3fa739c78a87e71d752309",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/model-accounts.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-housing-feed-worker-1": {
+      "id": "7df307ee748d54371c6c9bb2fee6a5ac17e7f5b341d1f137db7af89eb69e74ab",
+      "image": "quant-company:c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+      "image_id": "sha256:db3c79878edf68a0115c8f0b893d41a92fa78e91f1a59bf76f92b60c8a69a589",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/c54667e2827506d50b4cbfaa63d924f2b69f21ab/deploy/model-accounts.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-maintenance-1": {
+      "id": "7266163c1e8120facda28c18764423801d68c11e60d43eb388356a700ea25f5d",
+      "image": "quant-company-maintenance:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "image_id": "sha256:50124cabdc3db809bfc799e14aa9af1c155d86b6a577f910d18b49d6e5f226f5",
+      "state": "running",
+      "health": null,
+      "config_files": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-account-gateway-1": {
+      "id": "54b595660ad3366baf3bec5133bd6383c9fa757c20bd77ec9eda93c133fb9e4b",
+      "image": "quant-company:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "image_id": "sha256:942a896a92f6a2c6e3d5b4743ad670808da62be448136d77f2e75455f7668b24",
+      "state": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-claude-runtime-1": {
+      "id": "02252b5adc5fd98c07c28267b02e67b32211d7009ec570b1fd79fbdacb6c111a",
+      "image": "quant-company-claude:fde7681e0286501d8713e08e30a96991a88b9151",
+      "image_id": "sha256:45940026acb7da9ce471fcda23287f3f6d69c6ac790609e6f81f0b9ae28017ea",
+      "state": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/research.compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/fde7681e0286501d8713e08e30a96991a88b9151/deploy/model-accounts.compose.yaml",
+      "pins": {
+        "COMPANY_CODE_COMMIT": "fde7681e0286501d8713e08e30a96991a88b9151",
+        "QDATA_CODE_COMMIT": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    "quant-company-postgres-1": {
+      "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+      "image": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "image_id": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "state": "running",
+      "health": "healthy",
+      "config_files": "/opt/quant-company/releases/8883e32812c027a6da6eaf31a6b31fa8ce5ecdc4/deploy/compose.yaml,/opt/quant-company/releases/8883e32812c027a6da6eaf31a6b31fa8ce5ecdc4/deploy/research.compose.yaml",
+      "pins": {}
+    }
+  },
+  "config_hashes": {
+    "runtime.env": "40fc9520c032da740c587057e43e3fb5d5995dcfff7d55502ba63e3c95f81033",
+    "roles.json": "5774cb63232a47c40645f1985561fe7be93d59bfff115103efb4cb3bda033670",
+    "research-profiles.json": "22fc61df00eafc9e0cb6885b86814821b26aa0e296e5c166fbdc6b34c974c78c",
+    "research-qlab.json": "9281ff53d7e13ff594c9ed26228d6597baad972aade814dbf807fdf9d2e3cedd"
+  },
+  "registry_sha256": "fbcab0710784cc4ddc5ae21501a160ae522ab660ed8044e00f60c45d7661045f",
+  "managed_file_hashes": {
+    "data-policy-draft-66a888ac98ba.json": "66a888ac98ba420685b41b7bc45d011b59eef857c1f057e2239d34cef86c463f",
+    "raw-body-manifest-d1d0b0f87230.json": "d1d0b0f87230f075582324ac3882fe5ee041bb3d0d978fda4707f58aa634ff31",
+    "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882",
+    "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b",
+    "official-source-review-c14d6e0eb60a.json": "c14d6e0eb60aa39de78ac7921c172e6a5809abc1e6c780afb10ada3fe33cab36",
+    "receipt-99404f6ce4f7.json": "99404f6ce4f715308cb88317eac5aed38e89d0ddf623dc1606c0d6b922f8e808",
+    "engine.py": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+    "prepared.bundle": "44fb48c8d4b299e66009a01e5b026a0d0b886cfa92bee25db9304607a1f09b49",
+    "availability-survey-a10ed59d63a9.json": "a10ed59d63a934ef1bec39dc17042a891936b3ca9c6eab72230af42c3adbc924",
+    "raw-lineage-receipt-f8a0595989be.json": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a"
+  },
+  "database": {
+    "running_turns": 0,
+    "active_jobs": 0,
+    "sending_outbox": 0,
+    "model_calls": [
+      {
+        "request_id": "news-screen-183fb269-2703-4707-a5f3-1e201f5ed5bd",
+        "input_digest": "9d8ee86aaba1d22765d8134ae5ed37133f784382a7e6f8ef8ccf9f7d99ba2760",
+        "profile": "primary",
+        "revision": 2,
+        "state": "uncertain",
+        "updated_at": "2026-10-06T00:02:57.043976+00:00"
+      }
+    ],
+    "program": {
+      "id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+      "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+      "revision": 5,
+      "state": "active",
+      "manifest_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+      "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1791242030.830452:director:action:dd69d4b8-78c0-4c78-b7ee-41c7cf7d5972:approve",
+      "approved_at": "2026-10-05T23:13:50.984607+00:00"
+    },
+    "data_stage": {
+      "id": "ce867fc3-a194-5327-b312-864b93538d34",
+      "state": "waiting",
+      "attempt": 4,
+      "task_id": "4ee762fd-6a92-5a08-b6bc-ecb882a8dfd0",
+      "error": "invalid_output",
+      "retry_at": null,
+      "hold": {
+        "reason": "repeated_data_output_contract_failure",
+        "receipts": [
+          {
+            "request_id": "dff80fd7-40c6-5ee2-96a8-1ac8e3913c38",
+            "receipt_sha256": "eae84f781128dd1b9651a30c3c99885dd80b48a7375b4fbde8c171f5602e463e"
+          },
+          {
+            "request_id": "da444092-a806-5047-bc21-65411f92fe1c",
+            "receipt_sha256": "b817af88111ab0d980690c75db7e75835fcadb4e12db1a687cacec408d8b2010"
+          },
+          {
+            "request_id": "40ba5eb0-f9aa-5b0d-9c21-6de04989d4b1",
+            "receipt_sha256": "2f32ce11288eb8820aa9c66725f692e26aed1931d01807385272843a903a4df4"
+          },
+          {
+            "request_id": "578a8874-b2f8-5762-b872-37aec557dc76",
+            "receipt_sha256": "9dd3b5ee0161c45993891a52fa79d5775c13382277825c59029881e664841e61"
+          }
+        ],
+        "failure_count": 4,
+        "operator_scope": "Technical output repair; no data admission, selection or scientific judgment."
+      },
+      "format_failures": null
+    },
+    "scientific_origins": [
+      {
+        "task_id": "1a9683ac-5e26-57ad-acba-6d9dc05da416",
+        "lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+        "task_digest": "f087051936d6f6e43bf0a72e137b5a31ba3452e8ce75ee149038da5e6b363e76"
+      },
+      {
+        "task_id": "2733156b-0a7e-50dc-995c-93cf58bf114b",
+        "lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+        "task_digest": "2578d2b90a11b52ea5853628c5121785a5a5f2a7fa2364997799d2016ce9159c"
+      },
+      {
+        "task_id": "3487f863-0d39-50a0-8fd5-15b67332a7a9",
+        "lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+        "task_digest": "cadda7b237424d43b85ada213eb24ac46c95fad9944571af3ac81d2eacf87896"
+      },
+      {
+        "task_id": "3bf21cca-034b-5927-992a-6a62c7d72972",
+        "lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+        "task_digest": "2899505bb0a801dbadcccb1a1191bb6aecbad55d8b86b9fb46e225b701c96e21"
+      },
+      {
+        "task_id": "3d965de7-3651-596b-8785-8811cc993466",
+        "lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+        "task_digest": "4c9cc36f77974222a3df32b7aa7611d5a7ddf7b426de92e89449bd96c3caa601"
+      },
+      {
+        "task_id": "875a7d41-e6e5-5a67-94cf-8b7d9d8c2d00",
+        "lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+        "task_digest": "d410c8987e3c31879850a8cd746bb31ddf24634ec534a9de825d70eb28a3168b"
+      },
+      {
+        "task_id": "8de706c6-b28b-5e26-a83a-3d1de8ffbf93",
+        "lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+        "task_digest": "ffe4d2f45bb4f14fd3dce3be076a1a865751ec35092d57f5f778052b91526621"
+      },
+      {
+        "task_id": "a226d13d-cd5e-5324-a202-71791215d3bd",
+        "lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+        "task_digest": "c22f3950d00e397f8c0aa79b1accd590d9a21d6fe1b1cc6cf9f48cc3ecd64369"
+      },
+      {
+        "task_id": "b5ce3cb7-d71b-5720-9f2d-72c9b1df7d18",
+        "lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+        "task_digest": "63f7c4a377d08dad692566b285d993c04c20f8925ef0b0cf1e015e2f49754418"
+      },
+      {
+        "task_id": "dae4bd01-7477-55c7-810e-9e4fbec59dfb",
+        "lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+        "task_digest": "bfb21536d7efc746123951d3413fd7993fd3b1499f463769620b1e77aa4d0542"
+      },
+      {
+        "task_id": "dc0e9eac-040d-5eac-9a6d-69fd2c32a0f6",
+        "lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+        "task_digest": "762e00528f391a5288e364f430ea496a091be1108ac30501a27b2d2e9054ad4c"
+      },
+      {
+        "task_id": "fc6f31a6-b04e-5878-ada1-a113ccb5bd8d",
+        "lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+        "task_digest": "a4c59ff5e91a5718e4e7234becab12b091dcf6bc14844519c6588ab71ad60c26"
+      }
+    ],
+    "scientific_trial_count": 0,
+    "lineage_trial_limit": 4,
+    "account_policy": {
+      "profile": "primary",
+      "revision": 2
+    },
+    "runtime_pause": {
+      "paused_until": null,
+      "reason": null
+    },
+    "task_sha256": "7e79b2f4994ba90e0c1398822776a280d14a6a5594ddf4737048b753778a4233"
+  },
+  "runtime_jobs": {
+    "codex/jobs": {
+      "active": [
+        {
+          "request_id": "news-brief-eval-ce9c6064e7609b7b643c6cfe8ec2f4a7",
+          "sha256": "1aea307a2edb2664002b2d0aa32cd746354d30ed558f0249c11151552aab6cf6"
+        },
+        {
+          "request_id": "news-brief-eval-1f0c48f09fb528b207037c819a916032",
+          "sha256": "5da6d597444fb14d91b736aa0ebc3fd999e5583c7b1b8d5469bf24a3b9acb313"
+        },
+        {
+          "request_id": "news-brief-eval-04f3f5f8dac4a4ac1885ce90534794d3",
+          "sha256": "ba5245837823afd4efdcd6e9301528efa7c0d30ae247173e65771b8f0fafc0ac"
+        }
+      ],
+      "counts": {
+        "complete": 9092,
+        "failed": 181,
+        "running": 3
+      }
+    },
+    "claude/jobs": {
+      "active": [],
+      "counts": {
+        "complete": 27,
+        "failed": 13
+      }
+    }
+  },
+  "ambiguous_receipts": [
+    {
+      "request_id": "news-screen-183fb269-2703-4707-a5f3-1e201f5ed5bd",
+      "receipt_sha256": "d9de2f6ade6c5cd12f159d4955dbc4f4b6f21685bae3f5468131509b6797ed85",
+      "state": "failed",
+      "fault_code": "uncertain",
+      "input_digest": "9d8ee86aaba1d22765d8134ae5ed37133f784382a7e6f8ef8ccf9f7d99ba2760",
+      "account": {
+        "profile": "primary",
+        "revision": 2
+      }
+    }
+  ],
+  "production_mutated": false,
+  "model_calls_replayed": 0,
+  "performance_computed": false
+}

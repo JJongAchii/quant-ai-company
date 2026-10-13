@@ -1,0 +1,120 @@
+{
+  "workflow_id": "company-turn-bab246b2-f7aa-51b1-95ce-13b4f73bc333",
+  "workflow_state": "RUNNING",
+  "task_queue": "quant-company",
+  "pollers": {
+    "workflow": [
+      {
+        "identity": "7@8e027b5fe7ae",
+        "last_access": "2026-10-13T02:19:39.384504679Z"
+      }
+    ],
+    "activity": [
+      {
+        "identity": "7@8e027b5fe7ae",
+        "last_access": "2026-10-13T02:17:50.010039956Z"
+      }
+    ]
+  },
+  "activity_events": [
+    {
+      "event_id": 5,
+      "type": "scheduled",
+      "activity_id": "1",
+      "activity_type": "company_execute_turn",
+      "task_queue": "quant-company",
+      "start_to_close_seconds": 1200,
+      "schedule_to_close_seconds": 0
+    }
+  ],
+  "recent_turns": [
+    {
+      "id": "bab246b2-f7aa-51b1-95ce-13b4f73bc333",
+      "status": "running",
+      "sequence": 4,
+      "attempts": 1,
+      "error": null,
+      "created_at": "2026-10-13 02:17:49.138619+00:00",
+      "updated_at": "2026-10-13 02:17:50.043542+00:00",
+      "due_at": "2026-10-13 02:17:49.170430+00:00",
+      "request_frozen": true,
+      "response_received": false
+    },
+    {
+      "id": "12edefbf-e7dd-56fc-9dd5-4f0b8826e56b",
+      "status": "completed",
+      "sequence": 3,
+      "attempts": 1,
+      "error": null,
+      "created_at": "2026-10-13 02:08:46.781939+00:00",
+      "updated_at": "2026-10-13 02:17:49.138619+00:00",
+      "due_at": "2026-10-13 02:08:46.804645+00:00",
+      "request_frozen": true,
+      "response_received": true
+    },
+    {
+      "id": "14e94710-2713-5ee1-a8da-87bc766cb783",
+      "status": "completed",
+      "sequence": 2,
+      "attempts": 1,
+      "error": null,
+      "created_at": "2026-10-13 02:06:05.181381+00:00",
+      "updated_at": "2026-10-13 02:08:46.781939+00:00",
+      "due_at": "2026-10-13 02:06:05.209034+00:00",
+      "request_frozen": true,
+      "response_received": true
+    },
+    {
+      "id": "c2b46126-7d96-5d50-8be5-cec498e5045e",
+      "status": "completed",
+      "sequence": 1,
+      "attempts": 1,
+      "error": null,
+      "created_at": "2026-10-13 01:55:34.724255+00:00",
+      "updated_at": "2026-10-13 02:06:05.181381+00:00",
+      "due_at": "2026-10-13 01:55:35.041362+00:00",
+      "request_frozen": true,
+      "response_received": true
+    }
+  ],
+  "database_waits": [],
+  "last_events": [
+    {
+      "id": 1,
+      "type": "EVENT_TYPE_WORKFLOW_EXECUTION_STARTED",
+      "at": "2026-10-13T02:17:49.944870687Z"
+    },
+    {
+      "id": 2,
+      "type": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "at": "2026-10-13T02:17:49.944987520Z"
+    },
+    {
+      "id": 3,
+      "type": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "at": "2026-10-13T02:17:49.963434771Z"
+    },
+    {
+      "id": 4,
+      "type": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "at": "2026-10-13T02:17:49.995350743Z"
+    },
+    {
+      "id": 5,
+      "type": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "at": "2026-10-13T02:17:49.995448605Z"
+    }
+  ],
+  "turn_id": "bab246b2-f7aa-51b1-95ce-13b4f73bc333",
+  "turn_state": "running",
+  "turn_sequence": 4,
+  "request_frozen": true,
+  "selected_profile": "primary",
+  "selected_account_revision": 2,
+  "received_account_signal_revisions": [],
+  "pending_timers": [],
+  "recent_activity_results": [],
+  "database_mutated": false,
+  "temporal_mutated": false,
+  "observed_at": "2026-10-13T02:20:14.810750+00:00"
+}

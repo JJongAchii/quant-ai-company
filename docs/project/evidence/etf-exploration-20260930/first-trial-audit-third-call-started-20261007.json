@@ -1,0 +1,155 @@
+{
+  "meaning_recorded": false,
+  "mission": {
+    "cumulative_trials": 1,
+    "id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+    "revision": 5,
+    "state": "active"
+  },
+  "observed_at": "2026-10-07T05:24:35.029121+00:00",
+  "publication": null,
+  "stages": [
+    {
+      "actor": "researcher_kr",
+      "attempt": 1,
+      "audit_hold": null,
+      "delivered_text_characters": null,
+      "error": null,
+      "id": "a92587ac-50d3-5786-9211-28fa84bf32e5",
+      "recent_turns": [
+        {
+          "error": null,
+          "id": "40c33309-9d17-56c0-aa37-b481da625c66",
+          "runtime": {
+            "completed_at": 1791283401.7269046,
+            "fault_code": null,
+            "started_at": 1791283225.5664413,
+            "state": "complete",
+            "thread_id": "01a110cc-e48f-7630-8d7a-8eff6a9fcb5d"
+          },
+          "runtime_receipt_sha256": "b86c10521a4b0d7cd0baec783f7914f1898bc840949a92a533170e26ca5be6ba",
+          "sequence": 19,
+          "status": "completed",
+          "updated_at": "2026-10-06T10:43:21.801348+00:00"
+        },
+        {
+          "error": null,
+          "id": "3ede856e-d294-57af-80ba-1bb78a80b313",
+          "runtime": {
+            "completed_at": 1791283223.7177727,
+            "fault_code": null,
+            "started_at": 1791283196.2925289,
+            "state": "complete",
+            "thread_id": "01a110cc-7241-7ba1-8bea-641e538a7471"
+          },
+          "runtime_receipt_sha256": "19b5e5429a3b66fd360916f0d59c49b2af45ff843a080d0ee66231be91704e56",
+          "sequence": 18,
+          "status": "completed",
+          "updated_at": "2026-10-06T10:40:23.790862+00:00"
+        },
+        {
+          "error": null,
+          "id": "d7dc08be-ad18-5b61-a1ab-f99db638c872",
+          "runtime": {
+            "completed_at": 1791283194.6753426,
+            "fault_code": null,
+            "started_at": 1791283175.482957,
+            "state": "complete",
+            "thread_id": "01a110cc-20f1-7f82-b334-34963845b6a9"
+          },
+          "runtime_receipt_sha256": "4f274397049b52b4ee4c3533f84f654d0808d4016af4f34471ef4d6b529708e6",
+          "sequence": 17,
+          "status": "completed",
+          "updated_at": "2026-10-06T10:39:54.750458+00:00"
+        }
+      ],
+      "required_text_characters": null,
+      "retry_at": null,
+      "reviewed_packets": 0,
+      "stage": "interpretation",
+      "state": "completed",
+      "task": {
+        "error": null,
+        "priority": 100,
+        "status": "completed",
+        "turn_count": 19
+      },
+      "task_id": "b7bf9464-b82d-5335-ad20-347926c0e1be",
+      "updated_at": "2026-10-06T10:43:38.71163+00:00"
+    },
+    {
+      "actor": "validator",
+      "attempt": 1,
+      "audit_hold": null,
+      "delivered_text_characters": 73633,
+      "error": null,
+      "id": "5e5e2013-373c-5868-9fc9-242985e085b3",
+      "recent_turns": [
+        {
+          "error": null,
+          "id": "c7155b5d-161b-5aa2-a4ef-9e000bb27c15",
+          "runtime": {
+            "completed_at": null,
+            "fault_code": null,
+            "started_at": 1791350648.228213,
+            "state": "running",
+            "thread_id": null
+          },
+          "runtime_receipt_sha256": "f67ba0824be275a187d435f9cfcf690a384382054f309d1ce74fb2c1e381a961",
+          "sequence": 3,
+          "status": "running",
+          "updated_at": "2026-10-07T05:24:07.703021+00:00"
+        },
+        {
+          "error": null,
+          "id": "8520ba60-39ff-52e3-8af4-bb3a02ffcad0",
+          "runtime": {
+            "completed_at": 1791341102.6137557,
+            "fault_code": null,
+            "started_at": 1791340891.9623451,
+            "state": "complete",
+            "thread_id": "01a110cf-ed29-7e13-a3e6-08156edc29df"
+          },
+          "runtime_receipt_sha256": "fac5a0b9fd97acfac637054202a9290e22934b776b74c7681b8f6a2fefcc16b7",
+          "sequence": 2,
+          "status": "completed",
+          "updated_at": "2026-10-07T05:24:07.350983+00:00"
+        },
+        {
+          "error": null,
+          "id": "f405eb0f-5168-5309-b875-8e15eed1bb53",
+          "runtime": {
+            "completed_at": 1791283735.1509714,
+            "fault_code": null,
+            "started_at": 1791283424.369897,
+            "state": "complete",
+            "thread_id": "01a110cf-ed29-7e13-a3e6-08156edc29df"
+          },
+          "runtime_receipt_sha256": "aa622ed49c89c2ce7cfadf3d8a94343e44f24fc1c6aac076329d0a60eff95bc6",
+          "sequence": 1,
+          "status": "completed",
+          "updated_at": "2026-10-07T02:34:53.118822+00:00"
+        }
+      ],
+      "required_text_characters": 250658,
+      "retry_at": null,
+      "reviewed_packets": 2,
+      "stage": "audit",
+      "state": "running",
+      "task": {
+        "error": null,
+        "priority": 0,
+        "status": "running",
+        "turn_count": 3
+      },
+      "task_id": "a88948c2-58fc-5aa6-897a-76a691dd51dc",
+      "updated_at": "2026-10-07T05:24:07.350983+00:00"
+    }
+  ],
+  "trial": {
+    "id": "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+    "job_id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
+    "state": "interpreted",
+    "updated_at": "2026-10-06T10:43:38.71163+00:00"
+  }
+}

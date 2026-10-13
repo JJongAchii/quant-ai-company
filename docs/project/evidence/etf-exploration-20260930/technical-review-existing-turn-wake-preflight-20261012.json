@@ -1,0 +1,19 @@
+{
+  "commit": "68a53f1c699837256db5e8a4a6479bbd0fc82876",
+  "operator_sha256": "90c215f68c882e0166d90ad7027fc9640ac51a6e9b91b9fff916074aeb33e524",
+  "recorded_at": "2026-10-12T02:38:31.707652+00:00",
+  "database_mutated": false,
+  "scientific_decision_or_execution_supplied": false,
+  "turn_id": "49414e58-a095-599c-a20b-07ba90573cc0",
+  "selected_profile": "primary",
+  "selected_account_revision": 2,
+  "account_selection_changed": false,
+  "request_changed": false,
+  "new_turn_created": false,
+  "scientific_execution_supplied": false,
+  "temporal_signal_sent": false,
+  "state": "existing_turn_wake_verified",
+  "workflow_id": "company-turn-49414e58-a095-599c-a20b-07ba90573cc0",
+  "prior_signal_revisions": [],
+  "pending_timer_count": 1
+}

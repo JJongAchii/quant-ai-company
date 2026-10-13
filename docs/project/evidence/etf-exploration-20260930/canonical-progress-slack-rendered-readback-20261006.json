@@ -1,0 +1,51 @@
+{
+  "observed_at": "2026-10-06T01:55:48.343121+00:00",
+  "messages": [
+    {
+      "id": "ce7709c9-1a2a-47f4-b28a-3765e84f7454",
+      "revision": 5,
+      "agent": "director",
+      "channel": "C0C2B9EUEGM",
+      "thread_ts": "1789633942.673909",
+      "text": "데이터 검토와 원문 근거에 따른 과제 선정 결과를 기록했습니다.",
+      "status": "delivered",
+      "sent_ts": "1791251143.784819",
+      "attempts": 1,
+      "error": null,
+      "created_at": "2026-10-06T01:45:42.428342+00:00",
+      "slack_readback": {
+        "ok": true,
+        "error": null,
+        "match_count": 1,
+        "text": "[지시 v5] 데이터 검토와 원문 근거에 따른 과제 선정 결과를 기록했습니다.",
+        "thread_matches": true,
+        "author_matches": true,
+        "raw_text_matches": false,
+        "rendered_text_matches": true
+      }
+    },
+    {
+      "id": "003e50e2-fb02-4d27-a7a1-72c4d0c35a07",
+      "revision": 5,
+      "agent": "data",
+      "channel": "C0C2B9EUEGM",
+      "thread_ts": "1789633942.673909",
+      "text": "연구 과제의 데이터 적합성 검토를 기록했습니다.",
+      "status": "delivered",
+      "sent_ts": "1791250711.902999",
+      "attempts": 1,
+      "error": null,
+      "created_at": "2026-10-06T01:38:31.047177+00:00",
+      "slack_readback": {
+        "ok": true,
+        "error": null,
+        "match_count": 1,
+        "text": "[지시 v5] 연구 과제의 데이터 적합성 검토를 기록했습니다.",
+        "thread_matches": true,
+        "author_matches": true,
+        "raw_text_matches": false,
+        "rendered_text_matches": true
+      }
+    }
+  ]
+}

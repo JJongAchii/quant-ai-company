@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "operation_id": "first-scientific-audit-priority:5e5e2013:20261007",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "stage_id": "5e5e2013-373c-5868-9fc9-242985e085b3",
+  "task_id": "a88948c2-58fc-5aa6-897a-76a691dd51dc",
+  "turn_id": "8520ba60-39ff-52e3-8af4-bb3a02ffcad0",
+  "previous_priority": 100,
+  "priority": 0,
+  "reason": "Normal Temporal execution repeatedly defers for an unrelated higher_priority_request",
+  "signed_resources_priority_changed": false,
+  "provider_request_changed": false,
+  "context_or_audit_verdict_changed": false,
+  "other_tasks_changed": false,
+  "provider_calls_by_operator": 0,
+  "scientific_jobs_by_operator": 0,
+  "authority": "Existing owner request to get actual approved research through execution and reporting; root-reviewed in PR105",
+  "state": "current_audit_task_prioritized_for_normal_execution",
+  "event_id": 760,
+  "already_committed": false
+}

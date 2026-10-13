@@ -1,0 +1,15 @@
+{
+  "authority": "Existing owner deploy/continue/monitoring approvals; concrete PR105 root review",
+  "decision": "root_reviewed_exact_cached_second_response_admission",
+  "following_turn_id": "c7155b5d-161b-5aa2-a4ef-9e000bb27c15",
+  "input_digest": "41424821353ce42a4cfe53aa543776c306ea97e0835b8f8c477b4e89b75533d6",
+  "new_provider_call_replayed": false,
+  "new_scientific_job": false,
+  "operator_scientific_verdict": false,
+  "operator_sha256": "52e19c484fbff79f8b9b37539f02d3581e7e852cddf6f2331836eb94bc064255",
+  "packet_digest": "15c62df6ed11ae8e159cb943dd9130423dd996cc5c95e1631ebf28fd1c632441",
+  "preserved": "Original request/response bytes, all packet/scope/lineage files, original trial, budgets, reservations and final audit/meaning/publication gates",
+  "probe_sha256": "8eaa60af8297ca0bb4121e47ee47b6243b87799b66696d211f07afba567e85b2",
+  "provider_thread_id": "01a110cf-ed29-7e13-a3e6-08156edc29df",
+  "runtime_receipt_sha256": "fac5a0b9fd97acfac637054202a9290e22934b776b74c7681b8f6a2fefcc16b7"
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_existing_technical_review_turn_wake",
+  "operation_commit": "68a53f1c699837256db5e8a4a6479bbd0fc82876",
+  "operator_sha256": "90c215f68c882e0166d90ad7027fc9640ac51a6e9b91b9fff916074aeb33e524",
+  "authority": "Existing owner deployment/continuation approvals and current explicit continuation request",
+  "turn_id": "49414e58-a095-599c-a20b-07ba90573cc0",
+  "stage_id": "a711339e-12ab-5aab-b91a-41cba6575beb",
+  "precondition": "Actual reviewed images applied and protected configuration preserved; owned pause cleared; current director review bound to exact new evidence, current signed scope and project revision5; existing due queued unfrozen turn has actual pending pause timer and no received selected account revision",
+  "signal": "model_account_changed",
+  "selected_account_profile": "primary",
+  "selected_account_revision": 2,
+  "database_mutated": false,
+  "new_turn_or_request_supplied": false,
+  "account_selection_changed": false,
+  "scientific_decision_or_execution_supplied": false,
+  "uncertain_signal_handling": "Persist intent before the signal; inspect receipt/history before any retry",
+  "actual_signal_sent": false
+}

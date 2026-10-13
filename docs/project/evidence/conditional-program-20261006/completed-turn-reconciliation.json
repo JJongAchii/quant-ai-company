@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-05T23:08:25.846871+00:00",
+  "request_id": "3e6de9bd-5c18-5003-8f5f-047ff949a58f",
+  "actual_official_codex_receipt": true,
+  "receipt_sha256": "45c37e4307802b69b9161721cee9810aefdac28a7876e536c6ea2ef42ea0e212",
+  "request_and_response_binding_verified": true,
+  "account_call_state": "completed",
+  "previous_account_call_state": "completed",
+  "turn_state_and_request_preserved": true,
+  "model_requests_replayed": 0,
+  "agent_decision_applied": false,
+  "scientific_trials_started": 0
+}

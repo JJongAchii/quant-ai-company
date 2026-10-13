@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "scope": "Engineering restoration and private data response regression; no strategy performance verdict",
+  "code": {
+    "tested_code_commit": "c2a5fe1385d634db95207e230d2f0090f4386d74",
+    "junit": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "14",
+      "tests": "1789",
+      "time": "549.695",
+      "timestamp": "2026-10-06T10:41:41.461030+09:00",
+      "hostname": "MacBook-Pro.local"
+    },
+    "sha256": {
+      "tests/test_codex_runtime.py": "d90af2daab06cde52b937653d126973c06463d11ca7eb66a3ef63fa4d161df79",
+      "tests/test_research_data_response.py": "eea6284bc58e22b334b0a38f60825c0b5cb7bebedab9235ccc4602ee121740b6",
+      "tests/test_research_data_scope.py": "615ab92c1ec2feacf6a8408da565ba5fde37b4b957ce7b70536579e0b55a26ac",
+      "docs/project/evidence/etf-exploration-20260930/data-response-scoped-integrated-full-tests-20261006.xml": "f46df26fa34893d1cedb58dfa7c1aad0afe89cc26c4e9d11a03665c452c5060f"
+    }
+  },
+  "full_tests": {
+    "passed": 1775,
+    "skipped": 14,
+    "failures": 0,
+    "errors": 0,
+    "warnings": 12,
+    "wall_seconds": 549.78,
+    "real_postgresql": true,
+    "real_temporal": true,
+    "pinned_qlab_root": ".local/qlab-audit-37abfceb",
+    "pinned_qlab_commit": "37abfceb07f5b684d7c3210548fecef156e3f9fc",
+    "codex_cli_and_slack_in_regression": "simulated",
+    "live_model_in_full_suite": "opt-in skipped",
+    "linux_worker_in_full_suite": "opt-in skipped"
+  },
+  "lint": "passed",
+  "upstream_ci": [
+    {
+      "conclusion": "success",
+      "createdAt": "2026-10-06T01:35:31Z",
+      "databaseId": 37399944764,
+      "headSha": "86aea8cdf03b5543666813c97689acb1e8158a6d",
+      "status": "completed",
+      "updatedAt": "2026-10-06T01:43:05Z",
+      "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37399944764",
+      "workflowName": "Quant Company CI"
+    }
+  ],
+  "actual_worker_qualification": {
+    "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+    "receipt": "canonical-worker-qualified-20261006.json",
+    "linux_sandbox_mocked": false,
+    "fixture_only": true,
+    "real_snapshot_reads": 0,
+    "scientific_trials_added": 0
+  },
+  "actual_subscription_qualification": {
+    "receipt": "canonical-native-qualification-20261006.json",
+    "cases": 2,
+    "successful": 1,
+    "failed": 1,
+    "effects_applied": 0,
+    "failed_parse_phase": "events:invalid_shape",
+    "failure_preserved_and_not_replayed": true
+  },
+  "actual_programme": {
+    "data_stage_attempt": 6,
+    "data_stage_state": "completed",
+    "employee_data_decision": "conditional_ready",
+    "director_selection_decision": "revise",
+    "next_stage": "program_proposal",
+    "receipt": "canonical-program-revision-requested-20261006.json",
+    "scientific_trials": 0
+  },
+  "verification_limit": "Engineering gates and employee conditional_ready are separate. No historical PIT, real fills, confirmation, live eligibility or scientific performance is established."
+}

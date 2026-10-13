@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 13,
+  "sourceRequest": "응 진행해; complete current canonical cutover and preserve the actual signed programme",
+  "outcome": "Finish restoration and evidence integration against already-active source5c44ad0; align the3070 company pin with that source before its approved programme can submit a new job.",
+  "previousIntent": "INTENT-v12.json",
+  "activeSource": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "deliverables": [
+    {
+      "id": "ACTIVE_RECONCILIATION",
+      "description": "Record the actual six-service cutover, preserved authority and successful native data-stage progress"
+    },
+    {
+      "id": "WORKER_ALIGNMENT",
+      "description": "Select the qualified source5c3070 release and matching unit path, preserving prior registry, transports, inputs and detached job receipts"
+    },
+    {
+      "id": "FINAL_INTEGRATION",
+      "description": "Publish one company PR for additional safety regressions and actual operational evidence"
+    }
+  ],
+  "constraints": [
+    "Use only the already-active canonical5c code; prototype5f/bb is not deployed by this root",
+    "Keep signed c3ba5268 scope/budget/profile and all scientific inputs unchanged",
+    "No scientific proposal, data readiness verdict or research-repository writes by this operator",
+    "Preserve all uncertain model/delivery/launch receipts; no automatic replay",
+    "Stop only the research poller under KillMode=process; never terminate a detached executor",
+    "Do not claim dataset validation, scientific execution or complete research from engineering tests"
+  ],
+  "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "programDigest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db"
+}

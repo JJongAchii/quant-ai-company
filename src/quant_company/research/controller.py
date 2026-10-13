@@ -22,6 +22,7 @@ ACTORS = {
     "implementation": "engineer", "repair": "engineer", "interpretation": "researcher_kr",
     "audit": "validator", "cycle_review": "director",
     "meaning": "financial_strategist",
+    "technical_review": "director",
 }
 STAGE_TEXT = {
     "proposal": "연구 담당자가 근거와 반증 조건을 갖춘 다음 가설을 준비합니다.",
@@ -33,6 +34,7 @@ STAGE_TEXT = {
     "audit": "독립 검증 담당자가 코드·입력·결과의 고정된 감사 묶음을 검토합니다.",
     "cycle_review": "총괄이 이번 연구 주기의 증거와 남은 가설을 검토합니다.",
     "meaning": "유효성 검증 후 과적합·비용·대안 설명과 미해결 반론을 검토합니다.",
+    "technical_review": "총괄이 검증된 기술 실패와 수정 보류 근거를 검토해 이 후보의 종료 또는 대기를 결정합니다.",
 }
 
 AUDIT_RECONCILED_ERROR = "audit_runtime_failure_reconciled"
@@ -281,8 +283,25 @@ def stage_prompt(company, conn, task, turn=None):
         "implementation": 'Return {"patches":[{"path":str,"expected_text":str|null,"replacement_text":str}],'
                           '"rationale":str}. expected_text is the exact ENTIRE file. Only approved paths. '
                           "Do not change evaluator, data, criteria, costs, risk or sealed scope.",
-        "repair": 'Return the same patch schema plus "repair_source_ids":[str]. Fix the recorded technical '
-                  "failure using new evidence or changed code. An unchanged failing plan will not rerun.",
+        "repair": 'Return exactly {"patches":[{"path":str,"expected_text":str|null,"replacement_text":str}],'
+                  '"rationale":str,"repair_source_ids":[str]}. expected_text is the ENTIRE immutable base '
+                  "file at code/<path>; failed-code files show the failed implementation, not patch preimages. "
+                  "Inspect failed_build and its registered failure sources. repair_source_ids are actual "
+                  "evidence_sources.source_id values, never evidence file paths. Fix the recorded technical "
+                  "failure using new evidence or changed code. An unchanged failing plan will not rerun. "
+                  'If a justified repair cannot be supplied, return exactly {"blocked":true,"rationale":str,'
+                  '"required_evidence":[str],"repair_source_ids":[str]}. This holds the stage without '
+                  "another automatic attempt; do not invent a patch, certify readiness or waive scientific gates.",
+        "technical_review": 'Return exactly {"trial_id":uuid,"failed_job_id":uuid,'
+                            '"decision":"retire_candidate"|"wait","rationale":str,"source_ids":[str]}. '
+                            "Independently review the engineer hold and new operator evidence. Retire only a "
+                            "verified pre-evaluation technical failure that cannot be justified within the current "
+                            "approved callback, write paths and test obligations. This closes an unmeasured candidate; "
+                            "it does not count as an economic failure, waive tests, certify predecessor equivalence "
+                            "or approve a changed evaluator. Wait when evidence is insufficient. Cite both the "
+                            "original failure source and review_evidence.source_ids. Any next hypothesis must be "
+                            "distinct, address this failure history, fit the frozen interface and remaining signed "
+                            "budget, and pass the existing independent challenge and selection stages.",
         "interpretation": "Return Interpretation with the exact outcome_digest and current trial_id. "
                           "Explain what changed, what the measured outcome falsifies, and the next hypothesis. "
                           "These development metrics are internal and have not passed independent audit.",
@@ -372,6 +391,38 @@ def stage_prompt(company, conn, task, turn=None):
         conn, project["owner_user"], role.id, role.model, role.reasoning_effort))
     output_type = {"proposal": HypothesisProposal, "challenge": Challenge,
                    "interpretation": Interpretation}.get(row["stage"])
+    if row["stage"] == "proposal":
+        # Project the same identities accepted by MissionStore.add_proposal.
+        # Technical closures remain evidence, but have no interpreted result and
+        # do not turn a selected proposal into a director-rejected proposal.
+        predecessors = conn.execute("""SELECT t.id FROM research_mission_trials t
+            JOIN research_mission_interpretations i ON i.trial_id=t.id
+            WHERE t.mission_id=%s AND t.result_id IS NOT NULL ORDER BY t.ordinal DESC,t.id""",
+                                    (row["mission_id"],)).fetchall()
+        latest = conn.execute("""SELECT id FROM research_mission_trials WHERE mission_id=%s
+            AND result_id IS NOT NULL ORDER BY ordinal DESC LIMIT 1""", (row["mission_id"],)).fetchone()
+        rejected = conn.execute("""SELECT p.id FROM research_mission_proposals p
+            JOIN research_mission_rejections r ON r.proposal_id=p.id
+            JOIN research_missions m ON m.id=p.mission_id
+            WHERE p.mission_id=%s AND p.cycle=m.cycle ORDER BY p.created_at,p.id""",
+                               (row["mission_id"],)).fetchall()
+        context["proposal_contract"] = {
+            "allowed_predecessor_trial_ids": [str(item["id"]) for item in predecessors],
+            "required_latest_predecessor_trial_id": str(latest["id"]) if latest else None,
+            "allowed_supersedes_proposal_ids": [str(item["id"]) for item in rejected],
+            "identity_rule": (
+                "predecessor_trial_ids contains only interpreted measured trials from the allowed list, "
+                "including the required latest ID when present. supersedes_proposal_id is null unless "
+                "revising a director-rejected proposal from the current-cycle allowed list. Technical "
+                "retirement alone is neither a measured predecessor nor a proposal rejection. Address "
+                "technical failures and their dispositions in hypothesis, falsification and source_ids "
+                "without inserting their IDs into either relationship field."),
+        }
+        instructions["proposal"] += " Follow proposal_contract for relationship IDs and preserve its technical failure evidence."
+    if row["stage"] == "technical_review":
+        from .technical_review import TechnicalDisposition
+
+        output_type = TechnicalDisposition
     if row["stage"] in PROGRAM_STAGES:
         output_type = PROGRAM_STAGES[row["stage"]][1]
     if row["stage"] == "meaning":
@@ -379,6 +430,30 @@ def stage_prompt(company, conn, task, turn=None):
 
         output_type = MeaningReview
     if row["context"].get("mission", {}).get("program_id"):
+        if row["stage"] in {"proposal", "challenge", "selection"}:
+            context["stage_capabilities"] = {
+                "current_stage": row["stage"],
+                "available_actions": ["read_stage_file", "complete_stage_artifact"],
+                "frozen_code_role": (
+                    "frozen_experiment_code contains the approved immutable base, not an implementation "
+                    "of an unselected proposal. No candidate build is created before selection."),
+                "execution_sequence": (
+                    "An execute selection schedules engineer implementation inside approved write paths. "
+                    "The service validates the patch and build before enqueueing a worker. The worker runs "
+                    "the frozen profile qualification before development evaluation. Execution is followed "
+                    "by interpretation, independent causal audit and independent meaning review."),
+                "test_disposition": (
+                    "A test disposition registers a prospective test_plan obligation for implementation "
+                    "and independent meaning review; it does not certify a passed test or execute the plan "
+                    "as a command. Only actual artifact evidence can address the obligation later."),
+                "revise_disposition": (
+                    "A required revise disposition blocks selection and engineer implementation. "
+                    "Choose dispositions independently; these capabilities supply no execute/revise decision."),
+                "preserved_scope": (
+                    "The signed data, evaluator, costs, risk criteria, budget and prior negative evidence "
+                    "remain binding. Missing scientific premises still require revision; future build or "
+                    "test receipts cannot be claimed as already available."),
+            }
         if row["stage"] in {"proposal", "challenge"}:
             instructions[row["stage"]] = instructions[row["stage"]].replace(
                 "only a registered change", "a new testable change").replace(
@@ -387,13 +462,62 @@ def stage_prompt(company, conn, task, turn=None):
             from .program_contracts import ReviewDecision
 
             output_type = ReviewDecision
-            instructions["selection"] = ("Return ReviewDecision. Resolve EVERY challenge as revise, test, or reject. "
-                "Provide evidence and a concrete test plan where needed. Required revisions prevent execution. "
-                "New feature/model/portfolio code is allowed only inside approved paths. Evaluator and data stay frozen.")
+            proposal_id = context["mission"]["stage"]["proposal_id"]
+            challenges = conn.execute("""SELECT id FROM research_mission_challenges
+                WHERE mission_id=%s AND proposal_id=%s ORDER BY created_at,id""",
+                                      (row["mission_id"], proposal_id)).fetchall()
+            current_ids = [str(challenge["id"]) for challenge in challenges]
+            if not current_ids:
+                raise PolicyError("Selection requires a current independent challenge")
+            context["selection_contract"] = {
+                "proposal_id": proposal_id,
+                "current_challenge_ids": current_ids,
+                "response_rule": (
+                    "Return exactly one response for each current_challenge_ids UUID, with no duplicates "
+                    "or historical challenge IDs. Earlier objections and dispositions remain immutable "
+                    "evidence; discuss inherited obligations in rationale/test_plan without resubmitting "
+                    "their historical IDs as current responses."),
+            }
+            instructions["selection"] = (
+                "Return ReviewDecision. Resolve each selection_contract.current_challenge_ids UUID exactly "
+                "once as revise, test, or reject. Historical challenges are evidence, not additional response "
+                "targets. Provide evidence and a concrete test plan where needed. Required revisions prevent "
+                "execution and implementation. Read stage_capabilities for the existing service sequence. "
+                "New feature/model/portfolio code is allowed only inside approved paths. Evaluator and data stay frozen."
+                + scope_instruction)
     if output_type:
         context["output_schema"] = output_type.model_json_schema()
+        if row["stage"] == "proposal":
+            contract = context["proposal_contract"]
+            schema = context["output_schema"]["properties"]
+            allowed = contract["allowed_predecessor_trial_ids"]
+            schema["predecessor_trial_ids"]["uniqueItems"] = True
+            if allowed:
+                schema["predecessor_trial_ids"]["items"]["enum"] = allowed
+            else:
+                schema["predecessor_trial_ids"]["maxItems"] = 0
+            required = contract["required_latest_predecessor_trial_id"]
+            if required:
+                schema["predecessor_trial_ids"]["contains"] = {"const": required}
+            supersedes = contract["allowed_supersedes_proposal_ids"]
+            if supersedes:
+                schema["supersedes_proposal_id"]["anyOf"][0]["enum"] = supersedes
+            else:
+                schema["supersedes_proposal_id"] = {"type": "null", "default": None}
+        if row["stage"] == "selection" and context.get("selection_contract"):
+            current_ids = context["selection_contract"]["current_challenge_ids"]
+            schema = context["output_schema"]
+            schema["properties"]["responses"].update(minItems=len(current_ids), maxItems=len(current_ids))
+            schema["$defs"]["ChallengeResponse"]["properties"]["challenge_id"]["enum"] = current_ids
         if row["stage"] == "program_data":
             context["output_schema"] = data_assessment_output_schema(context)
+    if row["stage"] in {"implementation", "repair"}:
+        from pydantic import TypeAdapter
+
+        from .builds import ImplementationArtifact, RepairArtifact, RepairHold
+
+        context["output_schema"] = (ImplementationArtifact.model_json_schema()
+            if row["stage"] == "implementation" else TypeAdapter(RepairArtifact | RepairHold).json_schema())
     # A new attempt owns a new provider thread. Prior read receipts remain useful
     # operator evidence, but their bytes are not present in that new thread and
     # therefore cannot be advertised as inspected or completed model evidence.
@@ -429,6 +553,8 @@ def stage_prompt(company, conn, task, turn=None):
         important_paths.update(paths)
     audit = context.get("audit", {})
     resident_paths = set()
+    if row["stage"] == "repair":
+        resident_paths.update(context.get("failed_build", {}).get("resident_evidence_paths", []))
     if row["stage"] == "program_data":
         for packet in context.get("data_evidence_packets", []):
             resident_paths.update((packet["engine_file"], packet["identity_file"]))
@@ -610,10 +736,16 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         if not conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
             AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():
             raise PolicyError("Independent meaning review requires the actual validated artifacts")
+    for path in row["context"].get("required_technical_reads", []):
+        if not conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
+            AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():
+            raise PolicyError("Independent technical review requires the actual bound artifacts")
     if row.get("program_id") or row["context"].get("mission", {}).get("program_id"):
         # Each cited original must actually have reached this provider attempt. An index,
         # previous employee's summary or old attempt's receipt is not a read receipt.
         cited = value.get("source_ids", [])
+        if row["stage"] == "repair":
+            cited = value.get("repair_source_ids", [])
         if row["stage"] == "selection":
             cited = sorted({source for response in value.get("responses", []) for source in response.get("source_ids", [])})
         if row["stage"] == "program_selection":
@@ -718,7 +850,8 @@ class MissionController:
         key = self._key(snapshot)
         identity = stable(f"mission-stage:{snapshot['id']}:{key}")
         row = conn.execute("SELECT * FROM research_mission_stages WHERE id=%s FOR UPDATE", (identity,)).fetchone()
-        if row and (row["state"] in {"running", "received", "completed"} or row["context"].get("_audit_hold")):
+        if row and (row["state"] in {"running", "received", "completed"}
+                    or row["context"].get("_audit_hold") or row["context"].get("_repair_hold")):
             return row
         if row and row["retry_at"] and row["retry_at"] > now():
             return row
@@ -726,6 +859,8 @@ class MissionController:
         stage_role(self.company, actor)
         # One isolated context per role/stage; ordinary thread history cannot carry raw performance.
         context = {"mission": snapshot, **extra}
+        if row and stage == "proposal" and row["error"]:
+            context["previous_contract_error"] = row["error"]
         if not row:
             row = conn.execute("""INSERT INTO research_mission_stages(id,mission_id,stage_key,stage,actor,context)
                 VALUES (%s,%s,%s,%s,%s,%s) RETURNING *""",
@@ -810,6 +945,25 @@ class MissionController:
                 raise PolicyError("Invalid selection decision")
         elif stage == "interpretation":
             self.store.interpret(conn, mission_id, current["trial_id"], Interpretation.model_validate(data), actor=actor)
+        elif stage == "technical_review":
+            from .technical_review import TechnicalDisposition, retire_candidate
+
+            value = TechnicalDisposition.model_validate(data)
+            if (str(value.trial_id) != current["trial_id"]
+                    or str(value.failed_job_id) != current["failed_job_id"] or not value.rationale.strip()):
+                raise PolicyError("technical_review_requires_current_trial_and_failure")
+            self.store._sources(conn, snapshot["project_id"], value.source_ids)
+            required = set(current["review_evidence"]["source_ids"])
+            required.add("research-failure:" + current["failed_job_id"])
+            if not required <= set(value.source_ids):
+                raise PolicyError("technical_review_must_address_failure_and_new_evidence")
+            if value.decision == "retire_candidate":
+                retire_candidate(self.store, conn, mission_id, value.model_dump(mode="json"), actor=actor)
+            project = self.company._project(conn, snapshot["project_id"])
+            text = ("[기술 실패 후보 종료 · 성과 미측정]" if value.decision == "retire_candidate"
+                    else "[기술 실패 검토 · 근거 대기]")
+            self.company._message(conn, project, row["task_id"], actor, "status",
+                                  text + "\n" + value.rationale)
         elif stage == "cycle_review":
             if set(data) != {"decision", "rationale", "source_ids", "predecessor_trial_ids"}:
                 raise PolicyError("Invalid cycle decision fields")
@@ -879,6 +1033,7 @@ class MissionController:
             conn.execute("UPDATE research_missions SET updated_at=now() WHERE id=%s", (candidate["id"],))
         stage = snapshot["stage"]["stage"]
         if row and (row["state"] == "completed" or row["state"] == "running" or row["context"].get("_audit_hold")
+                    or row["context"].get("_repair_hold")
                     or (row["state"] == "waiting" and row["retry_at"] and row["retry_at"] > now())):
             return {"state": "waiting", "stage": stage}
         if row and row["state"] == "received":

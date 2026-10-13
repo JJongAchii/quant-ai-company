@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-10-13T00:10:49.590989+00:00",
+  "source_commit": "be0ae263e1d2b9a2e3f5e0ae0325341ec7a627cb",
+  "targeted_passed": 18,
+  "full_passed": 1856,
+  "full_skipped": 14,
+  "full_seconds": 699.548,
+  "full_junit_sha256": "874c190cf55458009cd218f0b10f1bef49821b7cd0cbfe5c4c908afa588babaf",
+  "targeted_junit_sha256": "8ce87eb165af3f8366fc7b407c0bd4de553348ffde7ab0820ef0ea83dec72920",
+  "real_postgresql": true,
+  "real_git_and_pinned_qlab": true,
+  "model_slack_and_market_fixtures": "synthetic",
+  "lint_passed": true,
+  "full_suite_passed": true
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "state": "read_only_bounded_observer_running",
+  "unit": "quant-company-research-repair-monitor-20261012.service",
+  "invocation_id": "677f68031dc6458eb35fa6da47956c19",
+  "active_enter_timestamp": "2026-10-12T00:45:26+00:00",
+  "operation_commit": "3171e59a5c7f6a2332c33b3bc1249abddccba6ef",
+  "interval_seconds": 45,
+  "maximum_hours": 24,
+  "automatic_alerts": false,
+  "automatic_repairs": false,
+  "credentials_prompts_or_performance_exported": false,
+  "stop_conditions": [
+    "independent_engineer_evidence_hold",
+    "uncertain_scientific_job",
+    "second_trial_reported",
+    "24_hour_runtime_limit"
+  ],
+  "first_snapshot_observed_at": "2026-10-12T00:46:16.332337+00:00",
+  "host_output_directory": "/var/lib/quant-company/releases/research-repair-monitor-20261012",
+  "unbounded_monitoring_claimed": false
+}

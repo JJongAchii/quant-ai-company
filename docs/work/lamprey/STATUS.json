@@ -8,21 +8,41 @@
     "PROGRAM_REVIEW": {
       "evidence": [
         {
-          "path": "docs/project/evidence/conditional-runtime-20261002/runtime-intake-acceptance.json",
-          "sha256": "cb3460e9b96a"
+          "path": "docs/project/evidence/conditional-program-20261006/program-intake-acceptance.json",
+          "sha256": "733d8c4309d4"
         },
         {
-          "path": "docs/project/evidence/conditional-runtime-20261002/owner-review-state.json",
-          "sha256": "50cf200a3077"
+          "path": "docs/project/evidence/conditional-program-20261006/owner-approval-state.json",
+          "sha256": "3f50726c264e"
         },
         {
-          "path": "docs/project/evidence/conditional-runtime-20261002/server-activation.json",
-          "sha256": "b638c563c5ae"
+          "path": "docs/project/evidence/conditional-program-20261006/owner-ui-review.json",
+          "sha256": "a1c4ebdd77c1"
+        },
+        {
+          "path": "docs/project/evidence/conditional-program-20261006/native-data-resume.json",
+          "sha256": "56a4ead2a2fc"
+        },
+        {
+          "path": "docs/project/evidence/conditional-program-20261006/staff-review-state.json",
+          "sha256": "75dda5e52914"
+        },
+        {
+          "path": "docs/project/evidence/conditional-program-20261006/artifact-schema-guidance.json",
+          "sha256": "1bbb3593329d"
+        },
+        {
+          "path": "docs/project/evidence/conditional-program-20261006/native-data-continuation.json",
+          "sha256": "a24b3c3d6fea"
+        },
+        {
+          "path": "docs/project/evidence/conditional-program-20261006/schema-followup-ci.json",
+          "sha256": "3bb3d29955ee"
         }
       ],
-      "note": "Actual deployed history50fc1f64 matches all ten prior origins and zero trials. Signed prior-program cancellation notice is delivered in the authorized Slack thread. New canonical programbe0d940 is prepared; fresh draft/approval and actual independent staff review await that cancellation. Old signature is not reused.",
-      "status": "in_progress",
-      "updatedAt": "2026-10-02T06:37:00.789187+00:00"
+      "note": "Actual delegated native Slack cancellation and canonical c3ba5268 approval verified with signed inbound. Twelve inherited origins and four cumulative scientific trials remain bound. The researcher proposed a variance-calibration hypothesis. Independent official Codex data review committed conditional_ready; the director independently committed revise for predecessor distinctness and the frozen execution contract. A normal followup research task received immutable feedback navigation and is preparing a revised proposal. All failed requests and two native failure counts remain preserved. Initial actual staff review and owner gate are complete; no research mission or scientific trial has been admitted in this snapshot.",
+      "status": "verified",
+      "updatedAt": "2026-10-06T01:50:13.485868+00:00"
     },
     "REAL_DATA_PACKET": {
       "evidence": [
@@ -46,30 +66,38 @@
     "RELEASE_INTAKE": {
       "evidence": [
         {
-          "path": "docs/project/evidence/conditional-runtime-20261002/runtime-intake-acceptance.json",
-          "sha256": "cb3460e9b96a"
+          "path": "docs/project/evidence/conditional-program-20261006/program-intake-acceptance.json",
+          "sha256": "733d8c4309d4"
         },
         {
-          "path": "docs/project/evidence/conditional-runtime-20261002/server-activation.json",
-          "sha256": "b638c563c5ae"
+          "path": "docs/project/evidence/conditional-program-20261006/server-native-activation.json",
+          "sha256": "dd4b6305dc17"
         },
         {
-          "path": "docs/project/evidence/conditional-runtime-20261002/worker-qualification-receipt.json",
-          "sha256": "10b264474e6e"
+          "path": "docs/project/evidence/conditional-program-20261006/native-installed-verification.json",
+          "sha256": "433d813361ae"
         },
         {
-          "path": "docs/project/evidence/conditional-runtime-20261002/source-ci.json",
-          "sha256": "d28a667b8da3"
+          "path": "docs/project/evidence/conditional-program-20261006/native-worker-qualification.json",
+          "sha256": "f330be5dbc2c"
+        },
+        {
+          "path": "docs/project/evidence/conditional-program-20261006/worker-registration.json",
+          "sha256": "69e556f5b716"
+        },
+        {
+          "path": "docs/project/evidence/conditional-program-20261006/source-ci.json",
+          "sha256": "6607566e6309"
         }
       ],
-      "note": "Source231d6ba is active and actually imported by all four selected services and the real3070 worker. Immutable warmup transport, actual PG lineage history, Temporal RPC, authenticated polling, consistent backup and unaffected service identities verified. Runtime pause released.",
+      "note": "Qualified source5c44ad0 is active in six exact compatible service images. Live source origins and 205-file trees, genuine PG approval/history/input bindings, Temporal RPC, fresh authenticated3070 polling, two consistent S3 backups, retained worker exact-release resolution and unchanged unrelated container IDs/images verified. Our maintenance pause was released. Actual native data read responses completed; no uncertain request was replayed. Current authenticated worker polling and both worker/tunnel active states were also verified at final intake.",
       "status": "verified",
-      "updatedAt": "2026-10-02T06:37:00.789187+00:00"
+      "updatedAt": "2026-10-06T01:50:13.485868+00:00"
     }
   },
   "intentDigest": "7bcf0b05d97b",
   "schemaVersion": 1,
   "slug": "lamprey",
   "state": "approved",
-  "updatedAt": "2026-10-02T06:37:00.789187+00:00"
+  "updatedAt": "2026-10-06T01:50:41.028807+00:00"
 }

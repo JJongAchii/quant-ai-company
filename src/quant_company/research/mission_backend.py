@@ -21,7 +21,7 @@ from psycopg.types.json import Jsonb
 from ..company import PolicyError, as_json, fingerprint, now, stable
 from ..task_control import waiting_router
 from .adaptive_contracts import AdaptiveAssignment, AdaptiveManifest, digest_model
-from .builds import base_workspace, build_trial, profile_for
+from .builds import RepairHold, base_workspace, build_trial, profile_for
 from .mission_contracts import MissionSpec, TrialOutcome
 from .missions import MissionStore
 from .policy_contracts import require_scope, scoped_kwargs
@@ -85,11 +85,19 @@ class MissionBackend:
 
     def _sources(self, snapshot):
         identities = set(snapshot["spec"]["baseline_source_ids"])
-        for group in ("proposals", "challenges", "challenge_responses", "interpretations"):
+        for group in ("proposals", "challenges", "challenge_responses", "interpretations", "technical_dispositions"):
             for row in snapshot.get(group, []):
                 identities.update(row["payload"].get("source_ids", ()))
         identities.update(row["payload"]["source_id"] for row in snapshot["publications"])
         with self.company.db.transaction() as conn:
+            if snapshot["stage"]["stage"] in {"repair", "technical_review"}:
+                failure_id = "research-failure:" + str(_trial(snapshot)["job_id"])
+                source = conn.execute("""SELECT id FROM sources WHERE id=%s AND approved AND available_at<=now()
+                    AND project_id=%s""", (failure_id, snapshot["project_id"])).fetchone()
+                if source:
+                    identities.add(source["id"])
+            if snapshot["stage"]["stage"] == "technical_review":
+                identities.update(snapshot["stage"]["review_evidence"]["source_ids"])
             self.company._check_sources(conn, snapshot["project_id"], sorted(identities))
             return conn.execute("""SELECT id,title,uri,content,available_at,synthetic FROM sources
                 WHERE id=ANY(%s) ORDER BY id""", (sorted(identities),)).fetchall()
@@ -164,6 +172,7 @@ class MissionBackend:
 
     def context(self, snapshot, row):
         if row and (row["state"] in {"running", "received", "completed"}
+                    or row["context"].get("_repair_hold")
                     or (row["state"] == "waiting" and row["retry_at"] and row["retry_at"] > now())):
             return row["context"]
         spec = MissionSpec.model_validate(snapshot["spec"])
@@ -192,7 +201,8 @@ class MissionBackend:
         # the entire append-only history. Full history remains available for older evidence.
         relevant = {}
         proposal_id = snapshot["stage"].get("proposal_id")
-        for group in ("proposals", "challenges", "challenge_responses", "rejections", "interpretations", "outcomes"):
+        for group in ("proposals", "challenges", "challenge_responses", "rejections", "interpretations", "outcomes",
+                      "technical_dispositions"):
             rows = snapshot.get(group, [])
             if proposal_id and group in {"proposals", "challenges"}:
                 rows = [item for item in rows if str(item.get("proposal_id", item.get("id"))) == proposal_id]
@@ -202,7 +212,7 @@ class MissionBackend:
                 mappings[name] = self._entry(self._blob(directory, group, item))
                 relevant.setdefault(group, []).append(name)
         extra["relevant_evidence"] = relevant
-        if stage in {"proposal", "challenge", "selection", "cycle_review", "implementation", "repair"}:
+        if stage in {"proposal", "challenge", "selection", "cycle_review", "implementation", "repair", "technical_review"}:
             prepared = base_workspace(self.company, profile)
             for name in profile.public_profile.code_paths:
                 mappings["code/" + name] = self._entry(prepared.worktree / name)
@@ -221,6 +231,17 @@ class MissionBackend:
         if stage in {"implementation", "repair"}:
             extra["patch_base_commit"] = prepared.commit
             extra["patch_rule"] = "Patch paths omit the code/ prefix; expected_text is the entire base file."
+            if stage == "repair":
+                extra["failed_build"] = self._repair_context(snapshot, profile, directory, mappings, sources)
+        elif stage == "technical_review":
+            extra["failed_build"] = self._repair_context(snapshot, profile, directory, mappings, sources)
+            extra["review_evidence"] = snapshot["stage"]["review_evidence"]
+            with self.company.db.transaction() as conn:
+                held = conn.execute("SELECT context,result FROM research_mission_stages WHERE id=%s",
+                                    (snapshot["stage"]["held_stage_id"],)).fetchone()
+            mappings["repair/independent-hold.json"] = self._entry(self._blob(directory, "independent-hold", held["result"]))
+            extra["independent_hold_file"] = "repair/independent-hold.json"
+            extra["required_technical_reads"] = [extra["independent_hold_file"], extra["failed_build"]["manifest_file"]]
         elif stage == "audit":
             extra.update(self._audit_context(snapshot, row, profile, mappings))
         extra["_private_files"] = mappings
@@ -229,6 +250,60 @@ class MissionBackend:
         if len(_json({key: value for key, value in extra.items() if not key.startswith("_")})) > 35000:
             raise PolicyError("mission_file_index_exceeds_context_budget")
         return extra
+
+    def _repair_context(self, snapshot, profile, directory, mappings, sources):
+        trial = _trial(snapshot)
+        with self.company.db.transaction() as conn:
+            job = conn.execute("""SELECT * FROM research_jobs WHERE id=%s AND mission_id=%s
+                AND trial_id=%s AND state='failed'""", (trial["job_id"], snapshot["id"], trial["id"])).fetchone()
+            records = self._build_records(conn, snapshot["id"])
+        if not job:
+            raise PolicyError("mission_repair_failed_job_missing")
+        manifest = AdaptiveManifest.model_validate(job["manifest"])
+        records = [record for record in records if record["result"].get("build_receipt", {}).get("manifest")
+                   == manifest.model_dump(mode="json")]
+        if len(records) != 1 or digest_model(manifest) != job["manifest_digest"]:
+            raise PolicyError("mission_repair_failed_build_missing")
+        receipt = records[0]["result"]["build_receipt"]
+        bundle = self._path(receipt["bundle_path"])
+        if (sha_file(bundle) != manifest.bundle_sha256 or job["bundle_sha256"] != manifest.bundle_sha256
+                or set(manifest.code_files) != set(profile.public_profile.code_paths)):
+            raise PolicyError("mission_repair_failed_bundle_changed")
+        paths = []
+        resident = []
+        for name, digest in manifest.code_files.items():
+            data = self._path(bundle.parent / "code" / name).read_bytes()
+            if hashlib.sha256(data).hexdigest() != digest:
+                raise PolicyError("mission_repair_failed_code_changed")
+            target = "failed-code/" + name
+            mappings[target] = self._entry(self._file(directory / (digest + ".txt"), data))
+            paths.append(target)
+            if name in profile.allowed_write_paths:
+                resident.append(target)
+        build_file = "repair/failed-build.json"
+        mappings[build_file] = self._entry(self._blob(directory, "failed-build", {
+            "job_id": job["id"], "trial_id": trial["id"], "manifest": manifest.model_dump(mode="json"),
+            "build_manifest_sha256": receipt["build_manifest_sha256"],
+            "failure_code": job["error"], "claimed_at": job["claimed_at"], "finished_at": job["heartbeat_at"],
+        }))
+        failures = []
+        for source in sources:
+            if source["id"] != "research-failure:" + str(job["id"]):
+                continue
+            diagnostic = json.loads(source["content"])
+            if (diagnostic.get("job_id") != str(job["id"])
+                    or diagnostic.get("trial_id") != str(trial["id"])
+                    or diagnostic.get("mission_id") != str(snapshot["id"])
+                    or diagnostic.get("code_commit") != manifest.plan.code_commit
+                    or diagnostic.get("code_files") != manifest.code_files):
+                raise PolicyError("mission_repair_failure_evidence_identity_mismatch")
+            failures.append(source["id"])
+            resident.append("sources/" + fingerprint(source["id"]) + ".json")
+        return {"job_id": str(job["id"]), "code_commit": manifest.plan.code_commit,
+                "code_paths": sorted(paths), "manifest_file": build_file,
+                "failure_source_ids": failures, "resident_evidence_paths": sorted(resident),
+                "rule": "Failed code is evidence only. Produce patches against code/ immutable base files. "
+                        "The diagnostic does not certify a valid strategy or authorize changing frozen scope."}
 
     def _current_stage(self, conn, row, snapshot):
         project = self.company._project(conn, snapshot["project_id"])
@@ -305,6 +380,25 @@ class MissionBackend:
             return self._publish_audit(row, snapshot)
         if row["stage"] not in {"implementation", "repair"}:
             raise PolicyError("mission_backend_stage_unsupported")
+        if row["stage"] == "repair" and row["result"].get("blocked") is True:
+            hold = RepairHold.model_validate(row["result"])
+            if not hold.rationale.strip() or any(not text.strip() for text in hold.required_evidence):
+                raise PolicyError("mission_repair_hold_requires_evidence_reason")
+            with self.company.db.transaction() as conn:
+                _, current, saved = self._current_stage(conn, row, snapshot)
+                self.company._check_sources(conn, current["project_id"], hold.repair_source_ids)
+                context = {**saved["context"], "_repair_hold": hold.model_dump(mode="json")}
+                conn.execute("""UPDATE research_mission_stages SET state='waiting',context=%s,
+                    error='repair_requires_evidence',retry_at=NULL,updated_at=now() WHERE id=%s""",
+                             (Jsonb(context), row["id"]))
+                conn.execute("""UPDATE research_stage_attempts SET error='repair_requires_evidence'
+                    WHERE stage_id=%s AND attempt=%s""", (row["id"], row["attempt"]))
+                self.company._event(conn, "research_repair_held", {
+                    "stage_id": str(row["id"]), "task_id": str(row["task_id"]),
+                    "trial_id": current["stage"]["trial_id"], "attempt": row["attempt"],
+                    "reason": "repair_requires_evidence", "artifact_digest": fingerprint(row["result"]),
+                }, current["project_id"])
+            return {"state": "waiting", "requires_evidence": True}
         receipt = build_trial(self.company, row, snapshot)
         manifest = AdaptiveManifest.model_validate(receipt["manifest"])
         with self.company.db.transaction() as conn:
@@ -570,6 +664,8 @@ class MissionBackend:
         mappings["audit/package.json"] = metadata
         issued = now().astimezone(UTC).date().isoformat()
         return {
+            # Canonical lineage is fully delivered in the frozen history packet.
+            "required_lineage_reads": [],
             "audit": {"judge": "leak-auditor", "target": ".", "issued": issued,
                       "objective_digest": package.objective_digest, "scope_digest": package.scope_digest,
                       "scope": sorted(package.scope_files), "validator_request_id": request_id,

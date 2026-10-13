@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06 01:35:09.610007+00:00",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "stage_id": "ce867fc3-a194-5327-b312-864b93538d34",
+  "attempt": 6,
+  "fresh_turn_id": "e5e19130-c047-5aef-ac08-c0328edc37c5",
+  "fresh_sequence": 45,
+  "failed_request_id": "86e01053-793c-5784-b944-dea0ba1d5349",
+  "receipt_sha256": "bb3a25b02aa50fb897d43f5e49491638c05e969136bdb85c39ed7720c422c40f",
+  "failed_phase": "events",
+  "prior_turns_digest": "91b447cc13593cf6719737851ae3f6d2ea4ebccf3922dcb943616669179f58df",
+  "failure_count_preserved": 2,
+  "same_attempt_read_count": 43,
+  "scope": "One fresh technical continuation; no artifact is applied.",
+  "genuine_read_history_preserved": true,
+  "original_frozen_turns_preserved": true,
+  "employee_decision_applied": false,
+  "scientific_budget_reset": false,
+  "model_requests_replayed": 0
+}

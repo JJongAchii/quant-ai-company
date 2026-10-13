@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06T06:22:14.351135+00:00",
+  "event_id": 686,
+  "detail": {
+    "state": "current_preparation_priority_reconciled",
+    "task_id": "d7df0261-af8f-5c89-b8ef-a59e3bb9b6f1",
+    "priority": 0,
+    "stage_id": "c3050fd0-0139-53ec-8669-56dff53ab630",
+    "authority": "Existing owner continuation requests and urgent first-experiment instruction; root-reviewed PR105 operation",
+    "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+    "operation_id": "research-current-mission-preparation-urgency:c3050fd0:20261006",
+    "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "schema_version": 1,
+    "previous_priority": 100,
+    "scientific_authority_changed": false,
+    "source_completion_or_selection_bypassed": false,
+    "new_model_call_or_scientific_job_enqueued": false,
+    "signed_programme_resource_priority_changed": false
+  },
+  "already_committed": true,
+  "observation": "Read from committed event; no operator mutation on this observation."
+}

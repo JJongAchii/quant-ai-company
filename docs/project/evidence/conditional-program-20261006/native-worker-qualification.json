@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "source_commit": "5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "host": "DESKTOP-5T00NAF",
+  "gpu": "NVIDIA GeForce RTX 3070",
+  "warmup_rows": 1040,
+  "warmup_sessions": 104,
+  "profile_digest": "71ee4ce63770fb20205675d42cae4db2719394c0d4e31218484a5d4348f06dd1",
+  "research_scope": {
+    "data_policy_digest": "3b06de9e70370266bfd800c675dc0beb5bee3a3519889a9ac1b19824370768a0",
+    "data_mode": "frozen_vintage_retrospective",
+    "result_scope": "conditional_retrospective_development",
+    "scientific_lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+    "acknowledged_gap_codes": [
+      "historical_publication_unverified",
+      "historical_revision_vintage_unverified",
+      "original_preparation_bytes_unavailable"
+    ]
+  },
+  "producer_sha256": "4f9e286d351228a99953a38a17fd952e48e10b8933099a7743eb5f899d2bffcc",
+  "consumer_sha256": "a1e5f38c6b3deaee625ee0bfe245355cec2d0e4f905656a55c905a76d6cb01e7",
+  "sandbox_receipt_sha256": "7804c66be35ea07166f5419ff8166001f4a88c9ea0fa36a159a7ecb3089371b8",
+  "actual_bubblewrap": true,
+  "mounted_market_inputs": [
+    "warmup.json"
+  ],
+  "development_price_rows_mounted": false,
+  "sealed_price_rows_read": false,
+  "baseline_called_twice_for_determinism": true,
+  "model_training": false,
+  "performance_computed": false,
+  "scientific_trials_added": 0,
+  "qualified_for_frozen_input_transport": true,
+  "staff_data_admission_granted": false,
+  "owner_program_approval_granted_by_qualification": false,
+  "observed_at": "2026-10-06T00:20:18.523957+00:00",
+  "prepared_release": "/home/achii/quant-company-qualification/conditional-program-20261006/native-output-5c44ad0-02/qualification-01/release-candidates/5c44ad07273adc780a56a47d7d35114fd0dc32c8",
+  "prepared_config_sha256": "3b7b27cd7715826a5cfeada8ff95594e8db9b55da3b1ed24c0a38914dedaa344",
+  "prepared_release_receipt_sha256": "ceb19f9023171d518ee8fdaa4adccf7992c56c8d7fe4144d978671610278cfca",
+  "active_config_unchanged": true,
+  "poller_activated": false,
+  "active_company_commit": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+  "worker_profile_sha256": "e17bd51ef171b82d520cd27bdb14fe4033f99cdc6771c37d82b6b509da235110"
+}

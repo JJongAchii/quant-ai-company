@@ -42,8 +42,22 @@ CREATE TABLE IF NOT EXISTS research_mission_trials (
  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(),
  UNIQUE(mission_id,ordinal)
 );
-CREATE UNIQUE INDEX IF NOT EXISTS research_mission_one_pending_trial ON research_mission_trials(mission_id)
- WHERE state <> 'reported';
+-- Keep the physical failure state for old readers. A separate disposition closes
+-- an unmeasured candidate without manufacturing a reported scientific result.
+ALTER TABLE research_mission_trials ADD COLUMN IF NOT EXISTS technical_closed_at timestamptz;
+DO $$ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE schemaname='public'
+   AND indexname='research_mission_one_pending_trial' AND indexdef LIKE '%technical_closed_at%') THEN
+  DROP INDEX IF EXISTS research_mission_one_pending_trial;
+  CREATE UNIQUE INDEX research_mission_one_pending_trial ON research_mission_trials(mission_id)
+   WHERE state <> 'reported' AND technical_closed_at IS NULL;
+ END IF;
+END $$;
+CREATE TABLE IF NOT EXISTS research_technical_dispositions (
+ trial_id uuid PRIMARY KEY REFERENCES research_mission_trials(id),
+ mission_id uuid NOT NULL REFERENCES research_missions(id), job_id uuid NOT NULL REFERENCES research_jobs(id),
+ payload jsonb NOT NULL, digest text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
 CREATE TABLE IF NOT EXISTS research_mission_attempts (
  job_id uuid PRIMARY KEY REFERENCES research_jobs(id), trial_id uuid NOT NULL REFERENCES research_mission_trials(id),
  plan jsonb NOT NULL, plan_digest text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()

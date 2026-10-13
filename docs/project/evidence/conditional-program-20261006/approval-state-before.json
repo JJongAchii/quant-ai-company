@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-05 23:07:51.629741+00:00",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "programs": [
+    {
+      "id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+      "state": "cancelled",
+      "manifest_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+      "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1790641272.310813:director:action:21f480c4-d59f-45e7-ac2e-2cf91aa109e8:approve",
+      "approved_at": "2026-09-29 00:21:12.470514+00:00",
+      "updated_at": "2026-10-05 22:55:03.911230+00:00"
+    },
+    {
+      "id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+      "state": "draft",
+      "manifest_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+      "approval_event_id": null,
+      "approved_at": null,
+      "updated_at": "2026-10-05 23:04:59.797396+00:00"
+    },
+    {
+      "id": "a9854436-e65c-5b5d-a811-4bbccd74f542",
+      "state": "draft",
+      "manifest_digest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162",
+      "approval_event_id": null,
+      "approved_at": null,
+      "updated_at": "2026-10-05 23:05:39.906692+00:00"
+    }
+  ],
+  "approval_bindings": [
+    {
+      "id": "dd69d4b8-78c0-4c78-b7ee-41c7cf7d5972",
+      "message_id": "38da0257-84e3-4fc2-9c05-63b56424ee75",
+      "revision": 5,
+      "manifest_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+      "status": "delivered",
+      "sent_ts": "1791241501.260409",
+      "attempts": 1
+    }
+  ],
+  "actual_owner_events": [
+    {
+      "kind": "research_program_approve",
+      "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+      "manifest_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+      "owner_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1790641272.310813:director:action:21f480c4-d59f-45e7-ac2e-2cf91aa109e8:approve",
+      "created_at": "2026-09-29 00:21:12.470514+00:00",
+      "actual_inbound_exists": true
+    },
+    {
+      "kind": "research_program_cancel",
+      "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+      "manifest_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+      "owner_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1791240902.789269:director",
+      "created_at": "2026-10-05 22:55:03.911230+00:00",
+      "actual_inbound_exists": true
+    }
+  ],
+  "actual_tasks": [],
+  "actual_stages": [],
+  "pending_turns": [
+    {
+      "id": "47259b75-385d-5f08-bfab-bfdc16c5b5ab",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-05 22:55:39.583818+00:00",
+      "task_id": "0f31c8d7-6b56-5da3-9c6b-989d0e0d4cff",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "26e9ba2c-b1ff-5a56-b2d3-2c2a0cee1b57",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 18:06:20.234628+00:00",
+      "task_id": "f4e83504-ba3d-5fbe-9cd6-163019b770c7",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "1295c9eb-7547-55f3-8ed5-e36b9301eff6",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 17:59:50.356141+00:00",
+      "task_id": "deda3c34-5559-5f70-aef8-2cf3b043213f",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "7c966fc1-8f96-5e61-b415-f38891cb911a",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 17:53:52.714906+00:00",
+      "task_id": "2b3b51ee-6739-537d-905a-7e5f7ab0d200",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "cbf0ba6c-b82c-5182-9395-db39d97b444b",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 17:38:26.064791+00:00",
+      "task_id": "75189369-5f69-516b-9870-bc67aaf49c5d",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "037dc342-233e-55cf-ae67-c19c5f5ea689",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 17:16:47.509851+00:00",
+      "task_id": "72cd6117-1ef0-540e-aa50-6e4f45a0355d",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "7e74b8a3-34c1-5a4d-870b-39b88e997c7a",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 17:10:48.103376+00:00",
+      "task_id": "5195c2a1-20db-567b-93a9-25b2a0b24229",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "031897e5-a34b-5d6b-9c9c-7cf3a5c54578",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 17:04:31.492140+00:00",
+      "task_id": "51126bd3-b8bc-576a-9ea7-479ec0c8f49b",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "357ba518-b823-5ecf-8a53-195e0ed911df",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 16:58:14.424088+00:00",
+      "task_id": "1fd9fece-fba0-5031-b43c-c4a55e9dcd42",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "66fb4388-c8e0-53aa-820b-0d8dd563d327",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 16:51:39.509180+00:00",
+      "task_id": "5838f8b3-703e-5087-9116-1e83024f5f5c",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "094fa76c-626a-5f18-8663-2765b01b34c6",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 16:45:52.689980+00:00",
+      "task_id": "b87a0bc9-a184-598c-9b42-934104129bc4",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "287de354-7f11-55b2-91df-32f7f83f7a3f",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 16:24:00.719712+00:00",
+      "task_id": "dced93d4-ef26-5d26-a153-8d8937891fb7",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "f47d03f7-8dce-50c3-87b0-a0586e0da8cc",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 16:16:48.201277+00:00",
+      "task_id": "3f09b14e-06b2-547a-9e94-8bdfb17be226",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "a2f7e465-a7b4-5e94-ad9f-6257daa87698",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 16:10:32.132153+00:00",
+      "task_id": "cab3880e-bd3b-5b82-87b5-6a28a72a6c35",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "6c8597e8-6642-5037-8ae2-d4bbd32feeb2",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 16:02:00.429025+00:00",
+      "task_id": "1c8a19e5-2278-510c-8632-d125744228dd",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "7d8dbe7e-83b1-5902-9935-8bc0c87e4f08",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 15:55:35.092586+00:00",
+      "task_id": "dca34067-27ed-568b-8eb0-7ac27964e6f7",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "752f9d33-60b8-5a65-929b-e11b966239f1",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 15:48:55.056585+00:00",
+      "task_id": "2a32c306-cae6-5597-ac91-96778bc33be5",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "5c790cf4-a16c-5d44-95ff-1fb004a4f43c",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 15:35:28.655032+00:00",
+      "task_id": "7fb5ec25-adfd-5812-86de-903a2b11debb",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "7d4ccbf1-33be-56f2-b847-c6a76e6f6ef0",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 15:21:48.654037+00:00",
+      "task_id": "1771b6f6-130d-576a-b7ff-cd4e90f515ea",
+      "agent": "data",
+      "kind": "research_stage"
+    },
+    {
+      "id": "604cfcd4-f7eb-5ee2-87ad-0cfbe1a88a98",
+      "status": "blocked",
+      "error": "stage_response_rejected",
+      "attempts": 1,
+      "updated_at": "2026-10-03 15:14:05.297958+00:00",
+      "task_id": "612f4ac5-2036-508d-accf-53e6eca29166",
+      "agent": "data",
+      "kind": "research_stage"
+    }
+  ],
+  "actual_trials": [],
+  "scientific_lineages": [],
+  "scientific_origins": [],
+  "activity": {
+    "active_jobs": 0,
+    "scientific_trials": 0,
+    "unresolved_model_calls": 1,
+    "sending_outbox": 0
+  },
+  "runtime_pause": {
+    "paused_until": null,
+    "reason": null
+  },
+  "owner_approval_fabricated": false,
+  "staff_decisions_fabricated": false
+}

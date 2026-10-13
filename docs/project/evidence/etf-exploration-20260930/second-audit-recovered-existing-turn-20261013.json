@@ -1,0 +1,295 @@
+{
+  "workflow_id": "company-turn-12edefbf-e7dd-56fc-9dd5-4f0b8826e56b",
+  "workflow_state": "COMPLETED",
+  "task_queue": "quant-company",
+  "pollers": {
+    "workflow": [
+      {
+        "identity": "7@8e027b5fe7ae",
+        "last_access": "2026-10-13T02:26:44.987604183Z"
+      }
+    ],
+    "activity": [
+      {
+        "identity": "7@8e027b5fe7ae",
+        "last_access": "2026-10-13T02:26:34.096096526Z"
+      }
+    ]
+  },
+  "activity_events": [
+    {
+      "event_id": 5,
+      "type": "scheduled",
+      "activity_id": "1",
+      "activity_type": "company_execute_turn",
+      "task_queue": "quant-company",
+      "start_to_close_seconds": 1200,
+      "schedule_to_close_seconds": 0
+    },
+    {
+      "event_id": 7,
+      "type": "timed_out",
+      "scheduled_event_id": 5,
+      "started_event_id": 6,
+      "timeout_type": 4
+    },
+    {
+      "event_id": 16,
+      "type": "scheduled",
+      "activity_id": "2",
+      "activity_type": "company_execute_turn",
+      "task_queue": "quant-company",
+      "start_to_close_seconds": 1200,
+      "schedule_to_close_seconds": 0
+    },
+    {
+      "event_id": 18,
+      "type": "timed_out",
+      "scheduled_event_id": 16,
+      "started_event_id": 17,
+      "timeout_type": 4
+    },
+    {
+      "event_id": 27,
+      "type": "scheduled",
+      "activity_id": "3",
+      "activity_type": "company_execute_turn",
+      "task_queue": "quant-company",
+      "start_to_close_seconds": 1200,
+      "schedule_to_close_seconds": 0
+    }
+  ],
+  "recent_turns": [
+    {
+      "id": "53937d8b-aba9-5c9a-8858-47945b66b24e",
+      "status": "queued",
+      "sequence": 5,
+      "attempts": 0,
+      "error": null,
+      "created_at": "2026-10-13 02:20:32.485999+00:00",
+      "updated_at": "2026-10-13 02:20:32.485999+00:00",
+      "due_at": "2026-10-13 02:20:32.508850+00:00",
+      "request_frozen": false,
+      "response_received": false
+    },
+    {
+      "id": "bab246b2-f7aa-51b1-95ce-13b4f73bc333",
+      "status": "completed",
+      "sequence": 4,
+      "attempts": 1,
+      "error": null,
+      "created_at": "2026-10-13 02:17:49.138619+00:00",
+      "updated_at": "2026-10-13 02:20:32.485999+00:00",
+      "due_at": "2026-10-13 02:17:49.170430+00:00",
+      "request_frozen": true,
+      "response_received": true
+    },
+    {
+      "id": "12edefbf-e7dd-56fc-9dd5-4f0b8826e56b",
+      "status": "completed",
+      "sequence": 3,
+      "attempts": 1,
+      "error": null,
+      "created_at": "2026-10-13 02:08:46.781939+00:00",
+      "updated_at": "2026-10-13 02:17:49.138619+00:00",
+      "due_at": "2026-10-13 02:08:46.804645+00:00",
+      "request_frozen": true,
+      "response_received": true
+    },
+    {
+      "id": "14e94710-2713-5ee1-a8da-87bc766cb783",
+      "status": "completed",
+      "sequence": 2,
+      "attempts": 1,
+      "error": null,
+      "created_at": "2026-10-13 02:06:05.181381+00:00",
+      "updated_at": "2026-10-13 02:08:46.781939+00:00",
+      "due_at": "2026-10-13 02:06:05.209034+00:00",
+      "request_frozen": true,
+      "response_received": true
+    }
+  ],
+  "database_waits": [
+    {
+      "pid": 235630,
+      "state": "active",
+      "wait_event_type": "Lock",
+      "wait_event": "advisory",
+      "query_age_seconds": 87,
+      "query_kind": "SELECT pg_ad",
+      "blocking_pids": [
+        235303
+      ]
+    },
+    {
+      "pid": 235975,
+      "state": "active",
+      "wait_event_type": "Lock",
+      "wait_event": "advisory",
+      "query_age_seconds": 52,
+      "query_kind": "SELECT pg_ad",
+      "blocking_pids": [
+        235303,
+        235630
+      ]
+    },
+    {
+      "pid": 236308,
+      "state": "active",
+      "wait_event_type": null,
+      "wait_event": null,
+      "query_age_seconds": 17,
+      "query_kind": "\n        SEL",
+      "blocking_pids": []
+    },
+    {
+      "pid": 236323,
+      "state": "active",
+      "wait_event_type": "Lock",
+      "wait_event": "transactionid",
+      "query_age_seconds": 15,
+      "query_kind": "SELECT * FRO",
+      "blocking_pids": [
+        236308
+      ]
+    },
+    {
+      "pid": 236462,
+      "state": "active",
+      "wait_event_type": "Lock",
+      "wait_event": "tuple",
+      "query_age_seconds": 2,
+      "query_kind": "SELECT * FRO",
+      "blocking_pids": [
+        236323
+      ]
+    },
+    {
+      "pid": 236491,
+      "state": "idle in transaction",
+      "wait_event_type": "Client",
+      "wait_event": "ClientRead",
+      "query_age_seconds": 0,
+      "query_kind": "SELECT * FRO",
+      "blocking_pids": []
+    }
+  ],
+  "last_events": [
+    {
+      "id": 14,
+      "type": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "at": "2026-10-13T02:11:28.062550800Z"
+    },
+    {
+      "id": 15,
+      "type": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "at": "2026-10-13T02:11:28.092957233Z"
+    },
+    {
+      "id": 16,
+      "type": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "at": "2026-10-13T02:11:28.093062017Z"
+    },
+    {
+      "id": 17,
+      "type": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "at": "2026-10-13T02:12:38.162917717Z"
+    },
+    {
+      "id": 18,
+      "type": "EVENT_TYPE_ACTIVITY_TASK_TIMED_OUT",
+      "at": "2026-10-13T02:13:08.165655171Z"
+    },
+    {
+      "id": 19,
+      "type": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "at": "2026-10-13T02:13:08.165669292Z"
+    },
+    {
+      "id": 20,
+      "type": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "at": "2026-10-13T02:13:08.178442554Z"
+    },
+    {
+      "id": 21,
+      "type": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "at": "2026-10-13T02:13:08.206488108Z"
+    },
+    {
+      "id": 22,
+      "type": "EVENT_TYPE_TIMER_STARTED",
+      "at": "2026-10-13T02:13:08.206555035Z"
+    },
+    {
+      "id": 23,
+      "type": "EVENT_TYPE_TIMER_FIRED",
+      "at": "2026-10-13T02:14:08.210680578Z"
+    },
+    {
+      "id": 24,
+      "type": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "at": "2026-10-13T02:14:08.210690769Z"
+    },
+    {
+      "id": 25,
+      "type": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "at": "2026-10-13T02:14:08.224065086Z"
+    },
+    {
+      "id": 26,
+      "type": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "at": "2026-10-13T02:14:08.251680183Z"
+    },
+    {
+      "id": 27,
+      "type": "EVENT_TYPE_ACTIVITY_TASK_SCHEDULED",
+      "at": "2026-10-13T02:14:08.251782522Z"
+    },
+    {
+      "id": 28,
+      "type": "EVENT_TYPE_ACTIVITY_TASK_STARTED",
+      "at": "2026-10-13T02:14:58.411063351Z"
+    },
+    {
+      "id": 29,
+      "type": "EVENT_TYPE_ACTIVITY_TASK_COMPLETED",
+      "at": "2026-10-13T02:17:49.184304999Z"
+    },
+    {
+      "id": 30,
+      "type": "EVENT_TYPE_WORKFLOW_TASK_SCHEDULED",
+      "at": "2026-10-13T02:17:49.184323542Z"
+    },
+    {
+      "id": 31,
+      "type": "EVENT_TYPE_WORKFLOW_TASK_STARTED",
+      "at": "2026-10-13T02:17:49.194899306Z"
+    },
+    {
+      "id": 32,
+      "type": "EVENT_TYPE_WORKFLOW_TASK_COMPLETED",
+      "at": "2026-10-13T02:17:49.223310080Z"
+    },
+    {
+      "id": 33,
+      "type": "EVENT_TYPE_WORKFLOW_EXECUTION_COMPLETED",
+      "at": "2026-10-13T02:17:49.223375653Z"
+    }
+  ],
+  "turn_id": "12edefbf-e7dd-56fc-9dd5-4f0b8826e56b",
+  "turn_state": "completed",
+  "turn_sequence": 3,
+  "request_frozen": true,
+  "selected_profile": "primary",
+  "selected_account_revision": 2,
+  "received_account_signal_revisions": [],
+  "pending_timers": [],
+  "recent_activity_results": [
+    {
+      "state": "completed"
+    }
+  ],
+  "database_mutated": false,
+  "temporal_mutated": false,
+  "observed_at": "2026-10-13T02:26:51.611153+00:00"
+}

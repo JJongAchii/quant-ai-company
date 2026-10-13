@@ -1,0 +1,73 @@
+{
+  "observed_at": "2026-10-08T01:40:04.245951+00:00",
+  "services": [
+    {
+      "name": "quant-company-api-1",
+      "container_id": "bf0823234da445d0a6cc28501840df1add7f3897c93a60f420490281230ae825",
+      "image": "sha256:84527ad82f04910d1e4cb018792ba8bb76f049385def73f961ba096a4566c93e",
+      "image_id": "sha256:84527ad82f04910d1e4cb018792ba8bb76f049385def73f961ba096a4566c93e",
+      "state": "running",
+      "memory_limit": 134217728,
+      "compose_files": [
+        "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/compose.yaml",
+        "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/research.compose.yaml",
+        "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/autonomous-research.compose.yaml",
+        "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/model-accounts.compose.yaml",
+        "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/data-watch.compose.yaml",
+        "/var/lib/quant-company/releases/analyst-autopublish-20261007-exact-env/publication.compose.yaml",
+        "/var/lib/quant-company/config/revision-loop-cf497665ee478e75d306519cf772318094f868cb-rollback-api.compose.json"
+      ],
+      "compose_working_dir": "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy",
+      "source": {
+        "root": "/app/src",
+        "source_count": 168,
+        "patch_files": {
+          "quant_company/research/controller.py": "a4bcb7eabce8c97eef47d043c041140e9ead9283d433c8367d9018a926155e33"
+        },
+        "other_sources_digest": "95627f735b5a3d203f4fcd40dd61210b0d6a80bb418b9f6b10138227d8840b64"
+      },
+      "runtime": {
+        "root": "/app/.venv/lib/python3.12/site-packages",
+        "source_count": 183,
+        "patch_files": {
+          "quant_company/research/controller.py": "6f7aa8ea82168147e26495a68d3f4ed691ce8841519df5092e8816fb22f0c0cc"
+        },
+        "other_sources_digest": "7798b59793803726e2ef8643b0fe8cfe0d69e4820f36d2fb398c2240af17f78e"
+      }
+    },
+    {
+      "name": "quant-company-worker-1",
+      "container_id": "c608eab5903418168e84fbb386fa3bfa86244700e1057bf838d765dac6b285af",
+      "image": "sha256:f864046f43d41a5ced5303f50823c3ae0833192e49be4cff10d685c32f7a1bba",
+      "image_id": "sha256:f864046f43d41a5ced5303f50823c3ae0833192e49be4cff10d685c32f7a1bba",
+      "state": "running",
+      "memory_limit": 402653184,
+      "compose_files": [
+        "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/compose.yaml",
+        "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/research.compose.yaml",
+        "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/autonomous-research.compose.yaml",
+        "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/model-accounts.compose.yaml",
+        "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/data-watch.compose.yaml",
+        "/var/lib/quant-company/releases/analyst-autopublish-20261007-exact-env/publication.compose.yaml",
+        "/var/lib/quant-company/config/revision-loop-cf497665ee478e75d306519cf772318094f868cb-rollback-worker.compose.json"
+      ],
+      "compose_working_dir": "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy",
+      "source": {
+        "root": "/app/src",
+        "source_count": 168,
+        "patch_files": {
+          "quant_company/research/controller.py": "a4bcb7eabce8c97eef47d043c041140e9ead9283d433c8367d9018a926155e33"
+        },
+        "other_sources_digest": "95627f735b5a3d203f4fcd40dd61210b0d6a80bb418b9f6b10138227d8840b64"
+      },
+      "runtime": {
+        "root": "/app/.venv/lib/python3.12/site-packages",
+        "source_count": 171,
+        "patch_files": {
+          "quant_company/research/controller.py": "6f7aa8ea82168147e26495a68d3f4ed691ce8841519df5092e8816fb22f0c0cc"
+        },
+        "other_sources_digest": "b963c0c7d7e4b6853d03bb56dbdcd3f5eee384027933bc63540b14e39a30a424"
+      }
+    }
+  ]
+}

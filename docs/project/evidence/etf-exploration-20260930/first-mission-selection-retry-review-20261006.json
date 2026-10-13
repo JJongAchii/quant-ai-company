@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "state": "root_reviewed_observed_selection_contract_retry",
+  "reviewed_at": "2026-10-06T08:06:53.150346+00:00",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "before": {
+    "observed_at": "2026-10-06T08:06:53.150346+00:00",
+    "stage": {
+      "id": "6e125dec-1624-5602-a3e1-28f47366d3d6",
+      "stage": "selection",
+      "actor": "director",
+      "state": "running",
+      "attempt": 2,
+      "error": null,
+      "retry_at": null,
+      "task_id": "07d30ebc-b00f-5aaf-8c20-cff002fd72d3"
+    },
+    "attempts": [
+      {
+        "attempt": 2,
+        "task_id": "07d30ebc-b00f-5aaf-8c20-cff002fd72d3",
+        "error": null,
+        "completed_at": null,
+        "task_status": "pending",
+        "priority": 100
+      },
+      {
+        "attempt": 1,
+        "task_id": "e2b0cf7f-9ae9-5756-84ba-5ee3b22dce11",
+        "error": "stage_contract_rejected: Every independent challenge needs exactly one disposition",
+        "completed_at": "2026-10-06T08:01:21.473438+00:00",
+        "task_status": "completed",
+        "priority": 0
+      }
+    ],
+    "context_navigation_present": false,
+    "source_contract_hint": null,
+    "challenges": [
+      {
+        "id": "581631b4-9d2d-4fe9-864a-75a9a27eec10",
+        "proposal_id": "a3e207ea-d615-4b40-96c0-1b92d1ae5124",
+        "reviewer": "financial_strategist",
+        "created_at": "2026-10-06T07:50:51.281021+00:00"
+      },
+      {
+        "id": "a6184d23-7f6e-4b59-8ad2-530c984bf127",
+        "proposal_id": "6d9a3c7b-52e4-4f81-b267-85d094eb6a30",
+        "reviewer": "financial_strategist",
+        "created_at": "2026-10-06T07:05:14.907769+00:00"
+      }
+    ],
+    "decision_shapes": [
+      {
+        "attempt": 2,
+        "decision": null,
+        "response_challenge_ids": []
+      },
+      {
+        "attempt": 1,
+        "decision": null,
+        "response_challenge_ids": []
+      }
+    ]
+  },
+  "operator": "repair-current-selection-retry.py",
+  "planned_change": "Only attempt2 current task priority and factual current challenge UUID/source completion navigation. Preserve independent director disposition and previous rejected attempt.",
+  "authority": "Existing owner urgent first experiment and continued work; root review of concrete bounded repair in PR105",
+  "scientific_judgment_or_budget_or_approval_changed": false,
+  "new_call_or_job_enqueued_by_operator": false,
+  "exact_sha_human_approval_claimed": false
+}

@@ -1,0 +1,14 @@
+{
+  "already_held": false,
+  "stage_id": "ce867fc3-a194-5327-b312-864b93538d34",
+  "hold": {
+    "reason": "data_response_contract_requires_remediation",
+    "observed_attempt": 4,
+    "observed_state": "waiting",
+    "failed_turn_id": "578a8874-b2f8-5762-b872-37aec557dc76",
+    "operator_authorization": "Owner requested continued normalization and research preparation",
+    "scientific_authority_changed": false,
+    "existing_attempt_not_cancelled": true
+  },
+  "status_message_id": "c7cd0631-141e-54ec-8408-fbf1ddf34686"
+}

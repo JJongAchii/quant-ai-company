@@ -1,0 +1,9 @@
+{
+  "state": "inactive_api_probe_failed",
+  "production_applied": false,
+  "error_code": "git-command-unavailable",
+  "cause": "Actual API image lacks Git; failed-build materialization must use the existing Git-enabled research worker image",
+  "source_evidence_registered": true,
+  "raw_private_error_logs_exported": false
+}
+

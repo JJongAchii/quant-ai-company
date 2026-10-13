@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "state": "independent_engineer_evidence_hold_observed",
+  "completed_at": "2026-10-12T00:54:47.940104+00:00",
+  "observations": 13,
+  "read_errors": 0,
+  "read_only": true,
+  "maximum_hours": 24,
+  "automatic_alerts": false,
+  "automatic_repairs": false,
+  "unbounded_monitoring_claimed": false,
+  "unit": "quant-company-research-repair-monitor-20261012.service"
+}

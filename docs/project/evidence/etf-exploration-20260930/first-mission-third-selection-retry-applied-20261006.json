@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "operation_id": "first-mission-selection-contract-navigation:268a529c:attempt4:20261006",
+  "state": "selection_retry_navigation_reconciled",
+  "observed_at": "2026-10-06T10:04:38.587037+00:00",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+  "stage_id": "268a529c-2a94-56ca-ad48-cee385471829",
+  "task_id": "8ef7a7e7-7bc2-5817-a3c7-5958d1a878e2",
+  "attempt": 4,
+  "previous_priority": 100,
+  "priority": 0,
+  "navigation": {
+    "operation_id": "first-mission-selection-contract-navigation:268a529c:attempt4:20261006",
+    "current_proposal_id": "bed77124-564d-4ba9-a625-777308b11cdb",
+    "current_challenge_ids": [
+      "a9d38fd5-6c52-4e1d-a326-b78dd4b4c903"
+    ],
+    "prior_operational_failure": "stage_contract_rejected: Every independent challenge needs exactly one disposition",
+    "existing_service_sequence": "Current selection has only immutable read tools. An execute selection enables engineer implementation and profile qualification before development evaluation. A test disposition stores prospective test_plan obligations; it is not a completed check or an automatic pass. Required revise prevents implementation. Choose every disposition independently; this is capability navigation, not a decision.",
+    "selection_contract": "Return the supplied ReviewDecision schema. Its responses list must contain exactly one entry for each current_challenge_ids UUID above, with no duplicate or historical challenge IDs. Read the actual current challenge evidence file. Determine disposition, rationale, sources and test plan independently. This is identification and existing format guidance; it supplies no execute/revise decision.",
+    "existing_service_requirement": "Completely read every cited original evidence_sources file and every required_lineage_reads file in this attempt before the final artifact. Absent file_progress means unread; non-null next_offset means incomplete; null means complete. Follow exact next_offset without drafting an artifact between chunks. Earlier attempt read receipts do not count in this provider thread. Choose needed sources independently."
+  },
+  "source_bytes_or_read_receipts_changed": false,
+  "frozen_model_requests_changed": false,
+  "scientific_judgment_or_authority_or_budget_changed": false,
+  "signed_resource_priority_changed": false,
+  "new_call_or_scientific_job_enqueued": false,
+  "exact_sha_human_approval_claimed": false,
+  "event_id": 729,
+  "already_committed": false
+}

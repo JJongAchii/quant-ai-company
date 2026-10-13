@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "scope": "Engineering regression; synthetic models and Slack; no scientific performance",
+  "source_at_start": "05c8030f05d95696a0e30a49767e5ecaf849db11",
+  "state": "qualification_failed_not_activated",
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "5",
+    "skipped": "14",
+    "tests": "1839",
+    "time": "572.448",
+    "timestamp": "2026-10-06T14:11:47.505854+09:00",
+    "hostname": "MacBook-Pro.local"
+  },
+  "junit_sha256": "f0fb48f62f258931924810b88aebb6a611cc5e244ee4d1d67c9b53d910cd790d",
+  "failures": [
+    {
+      "class": "tests.test_research_audit_delivery",
+      "test": "test_audit_budget_holds_without_another_provider_request[turns]",
+      "cause": "held-only mission tick changed waiting to idle"
+    },
+    {
+      "class": "tests.test_research_audit_delivery",
+      "test": "test_audit_budget_holds_without_another_provider_request[uncached_tokens]",
+      "cause": "held-only mission tick changed waiting to idle"
+    },
+    {
+      "class": "tests.test_research_audit_delivery",
+      "test": "test_audit_budget_holds_without_another_provider_request[output_tokens]",
+      "cause": "held-only mission tick changed waiting to idle"
+    },
+    {
+      "class": "tests.test_research_mission_backend",
+      "test": "test_missing_read_evidence_and_nonpass_audit_cannot_publish[unverified]",
+      "cause": "held-only mission tick changed waiting to idle"
+    },
+    {
+      "class": "tests.test_research_mission_backend",
+      "test": "test_missing_read_evidence_and_nonpass_audit_cannot_publish[fail]",
+      "cause": "held-only mission tick changed waiting to idle"
+    }
+  ],
+  "source_correction": "defd4833adea6a0191412121a5a5c6e8265c58ba",
+  "qualified_source_full_regression": "running_separately",
+  "failed_candidate_server_or_worker_activated": false,
+  "scientific_trials_added": 0,
+  "late_worktree_edit": "Waiting compatibility repair edited while the failed process finished; not claimed as exact final qualification"
+}

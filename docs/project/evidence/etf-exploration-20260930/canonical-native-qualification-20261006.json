@@ -1,0 +1,95 @@
+[
+  {
+    "account": {
+      "profile": "primary",
+      "revision": 2
+    },
+    "archive_sha256": "8ba01ef9ddb2f29683d92f03fa0cd50f56c8bc17411c7cc924ebde6d3fdab2cf",
+    "case": "initial",
+    "cli_version": "0.154.0",
+    "completed_at": null,
+    "effects_applied": 0,
+    "execution_lane": "company",
+    "fault_code": "invalid_output",
+    "input_digest": "a9c5b80d016465f3ae26129ce6922d54af63eb6af08705902d1dfa5e10a98147",
+    "kind": "real-subscription-inactive-data-contract-qualification",
+    "model": "gpt-5.6-terra",
+    "original_failed_request_id": "da444092-a806-5047-bc21-65411f92fe1c",
+    "output_contract": "research_stage_v1",
+    "output_fields": [
+      "action",
+      "artifact_json",
+      "read_offset",
+      "read_path"
+    ],
+    "parse_phase": [
+      [
+        "events",
+        "invalid_shape"
+      ]
+    ],
+    "production_source_changed": false,
+    "prompt_characters": 42738,
+    "reasoning_effort": "high",
+    "request_id": "5a76df1c-e758-51c0-a006-8904d90131e3",
+    "scientific_trials_added": 0,
+    "source_commit": "bb1e42e8a33899f7a290e96bd71d3540a23eeb37",
+    "source_files_verified": 205,
+    "started_at": 1791248591.0020099,
+    "state": "failed"
+  },
+  {
+    "account": {
+      "profile": "primary",
+      "revision": 2
+    },
+    "archive_sha256": "8ba01ef9ddb2f29683d92f03fa0cd50f56c8bc17411c7cc924ebde6d3fdab2cf",
+    "case": "expanded",
+    "cli_version": "0.154.0",
+    "completed_at": 1791248728.1852672,
+    "decision_status": "continue",
+    "effects_applied": 0,
+    "execution_lane": "company",
+    "input_digest": "bbb12ec527cb0007a3e3e2afbc64dbd70b37297ea9bc41f66715fafa8f72bed2",
+    "kind": "real-subscription-inactive-data-contract-qualification",
+    "model": "gpt-5.6-terra",
+    "original_failed_request_id": "578a8874-b2f8-5762-b872-37aec557dc76",
+    "output_contract": "research_stage_v1",
+    "output_fields": [
+      "action",
+      "artifact_json",
+      "read_offset",
+      "read_path"
+    ],
+    "production_source_changed": false,
+    "prompt_characters": 80069,
+    "proposed_read": {
+      "action": "read_stage_file",
+      "offset": 168000,
+      "path": "data/etf_strategy/reports/raw-body-manifest-d1d0b0f87230.json"
+    },
+    "reasoning_effort": "high",
+    "request_id": "f1ba3dc0-933a-5161-a43f-afaa2efe8053",
+    "scientific_trials_added": 0,
+    "source_commit": "bb1e42e8a33899f7a290e96bd71d3540a23eeb37",
+    "source_files_verified": 205,
+    "started_at": 1791248722.4234347,
+    "state": "complete",
+    "transport_validation": {
+      "completed_count": 1,
+      "event_types": [
+        "thread.started",
+        "item.completed",
+        "item.completed",
+        "turn.started",
+        "item.completed",
+        "turn.completed"
+      ],
+      "failure_tags": [],
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stdout_bytes": 1035,
+      "top_error_count": 0
+    }
+  }
+]

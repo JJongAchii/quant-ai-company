@@ -1,0 +1,28 @@
+{
+  "workflow_id": "company-turn-49414e58-a095-599c-a20b-07ba90573cc0",
+  "workflow_state": "RUNNING",
+  "turn_id": "49414e58-a095-599c-a20b-07ba90573cc0",
+  "turn_state": "queued",
+  "turn_sequence": 1,
+  "request_frozen": false,
+  "selected_profile": "primary",
+  "selected_account_revision": 2,
+  "received_account_signal_revisions": [],
+  "pending_timers": [
+    {
+      "timer_id": "1",
+      "started_at": "2026-10-12T02:34:30.828837794Z",
+      "seconds": 465,
+      "nanos": 344000000
+    }
+  ],
+  "recent_activity_results": [
+    {
+      "state": "defer",
+      "seconds": 465.343885
+    }
+  ],
+  "database_mutated": false,
+  "temporal_mutated": false,
+  "observed_at": "2026-10-12T02:37:48.783160+00:00"
+}

@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "state": "failed_cutover_reconciled_original_research_services_active",
+  "observed_at": "2026-10-12T00:27:34.111886+00:00",
+  "commit": "939a71d4cf2bfd1891d250a9fa991aff6829266a",
+  "original_receipt_state": "draining",
+  "failure_type": "CalledProcessError",
+  "cause": "Unrelated video-worker container was replaced during the native-drain wait. Docker stop/start addressed its old removed ID.",
+  "cutover_backed_up": false,
+  "api_or_worker_patch_applied": false,
+  "original_api_worker_id_images_sources_and_environment_preserved": true,
+  "pause_restored": true,
+  "service_health": {
+    "observed_at": "2026-10-12T00:26:27.211702+00:00",
+    "services": [
+      {
+        "name": "quant-company-api-1",
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restart_count": 0
+      },
+      {
+        "name": "quant-company-worker-1",
+        "running": true,
+        "health": null,
+        "oom_killed": false,
+        "restart_count": 0
+      },
+      {
+        "name": "quant-company-slack-socket-1",
+        "running": true,
+        "health": null,
+        "oom_killed": false,
+        "restart_count": 0
+      },
+      {
+        "name": "quant-company-postgres-1",
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restart_count": 0
+      },
+      {
+        "name": "quant-company-codex-runtime-1",
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restart_count": 0
+      },
+      {
+        "name": "quant-company-quant-codex-runtime-1",
+        "running": true,
+        "health": "healthy",
+        "oom_killed": false,
+        "restart_count": 0
+      }
+    ],
+    "socket_namespace_established_tcp443_connections": 8,
+    "native_astra_exec_process_count": 0,
+    "native_company_lane_flock_held": false,
+    "signed_slack_round_trip_claimed": false,
+    "database_mutated": false,
+    "credentials_or_logs_exported": false
+  },
+  "actual_api_worker_inventory": {
+    "observed_at": "2026-10-12T00:27:34.111886+00:00",
+    "services": [
+      {
+        "name": "quant-company-api-1",
+        "container_id": "5fc30c8a5cd10409a797ae169ca7da8720ee3807dd04a37298305a88b273ba82",
+        "image": "quant-company:trend-window-20261008-2",
+        "image_id": "sha256:9445114a6e094bca9df2cd7e6bfe1475f8dc8103fb081b32511257d10586bc08",
+        "state": "running",
+        "memory_limit": 134217728,
+        "compose_files": [
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/research.compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/autonomous-research.compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/model-accounts.compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/data-watch.compose.yaml",
+          "/var/lib/quant-company/releases/analyst-autopublish-20261007-exact-env/publication.compose.yaml",
+          "/var/lib/quant-company/config/revision-loop-cf497665ee478e75d306519cf772318094f868cb-rollback-api.compose.json",
+          "/var/lib/quant-company/config/revision-loop-3c7cc9130fe5196027b2314aeb788a81a2d66179-api.compose.json",
+          "/var/lib/quant-company/config/trend-window-20261008-api.compose.json"
+        ],
+        "compose_working_dir": "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy",
+        "source": {
+          "root": "/app/src",
+          "source_count": 168,
+          "patch_files": {
+            "quant_company/research/controller.py": "c44df0e6f748aa9ce437bbca31d982eace55bb3bd46bf0fb4e6954997eaa9bad",
+            "quant_company/research/builds.py": "0d5af8333e2fd1753784b73665a101d4b62175e6afdadf09fef6610b23399110",
+            "quant_company/research/mission_backend.py": "1c1668d36f10539976a0c2e813dfd6a1f5ea71b479fbf258e2884d302a166e67"
+          },
+          "other_sources_digest": "f9805dddd15f606c2840ba1eecd181e082314809481bb032ff4cb750e389732e"
+        },
+        "runtime": {
+          "root": "/app/.venv/lib/python3.12/site-packages",
+          "source_count": 184,
+          "patch_files": {
+            "quant_company/research/controller.py": "1df09f9f3566de2efee62e3c9f23ad4474f310b116138962fbefcbd4db6ef11f",
+            "quant_company/research/builds.py": "0d5af8333e2fd1753784b73665a101d4b62175e6afdadf09fef6610b23399110",
+            "quant_company/research/mission_backend.py": "1c1668d36f10539976a0c2e813dfd6a1f5ea71b479fbf258e2884d302a166e67"
+          },
+          "other_sources_digest": "dec550c0c9e90f8760f5f7cbd7492f432d1a65a174e8f0cdb452b462f388c2aa"
+        }
+      },
+      {
+        "name": "quant-company-worker-1",
+        "container_id": "08cdfbd7a8f716cc86bdc0a2a3bac387057f4663f6fc505bb083e92c61a72834",
+        "image": "quant-company-repair-worker:68ffc8d1",
+        "image_id": "sha256:9f03342cdaf2b4b536e43d29a807c6522b03878f58dc4707231b3a1b107472a2",
+        "state": "running",
+        "memory_limit": 402653184,
+        "compose_files": [
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/research.compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/autonomous-research.compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/model-accounts.compose.yaml",
+          "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/data-watch.compose.yaml",
+          "/var/lib/quant-company/releases/analyst-autopublish-20261007-exact-env/publication.compose.yaml",
+          "/var/lib/quant-company/config/revision-loop-cf497665ee478e75d306519cf772318094f868cb-rollback-worker.compose.json",
+          "/var/lib/quant-company/config/revision-loop-3c7cc9130fe5196027b2314aeb788a81a2d66179-worker.compose.json",
+          "/var/lib/quant-company/config/maintainer-repair-68ffc8d1c16aaace04b98c259e49055beeb857b9-worker.compose.json"
+        ],
+        "compose_working_dir": "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy",
+        "source": {
+          "root": "/app/src",
+          "source_count": 168,
+          "patch_files": {
+            "quant_company/research/controller.py": "c44df0e6f748aa9ce437bbca31d982eace55bb3bd46bf0fb4e6954997eaa9bad",
+            "quant_company/research/builds.py": "0d5af8333e2fd1753784b73665a101d4b62175e6afdadf09fef6610b23399110",
+            "quant_company/research/mission_backend.py": "1c1668d36f10539976a0c2e813dfd6a1f5ea71b479fbf258e2884d302a166e67"
+          },
+          "other_sources_digest": "f9805dddd15f606c2840ba1eecd181e082314809481bb032ff4cb750e389732e"
+        },
+        "runtime": {
+          "root": "/app/.venv/lib/python3.12/site-packages",
+          "source_count": 171,
+          "patch_files": {
+            "quant_company/research/controller.py": "1df09f9f3566de2efee62e3c9f23ad4474f310b116138962fbefcbd4db6ef11f",
+            "quant_company/research/builds.py": "0d5af8333e2fd1753784b73665a101d4b62175e6afdadf09fef6610b23399110",
+            "quant_company/research/mission_backend.py": "1c1668d36f10539976a0c2e813dfd6a1f5ea71b479fbf258e2884d302a166e67"
+          },
+          "other_sources_digest": "ee046e04fd5bdb11492e9ce98c75c49fd62840aa48c4f96e50d716618d5e71a9"
+        }
+      }
+    ]
+  },
+  "actual_mission_activity": {
+    "authority": {
+      "program_state": "active",
+      "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+      "mission_state": "active",
+      "mission_digest": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737",
+      "cycle": 1,
+      "cycle_trials": 1,
+      "cumulative_trials": 1
+    },
+    "activity": {
+      "running_turns": 0,
+      "sending_outbox": 0,
+      "active_jobs": 0
+    },
+    "paused": false
+  },
+  "concurrent_video_deployment_preserved": true,
+  "automatic_uncertain_charge_or_write_replayed": false,
+  "new_scientific_execution_started": false
+}

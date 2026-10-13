@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "state": "readonly_probe_rejected_completed_stage",
+  "prepared_service_commit": "4a2f509ccd936c926c81bf6ab32388a401890c0f",
+  "observed_at": "2026-10-08T01:12:55.892253+00:00",
+  "error_type": "quant_company.company.PolicyError",
+  "error": "Research stage attempt was superseded",
+  "cause": "The probe selected the latest selection row after its completion; the actual active stage was already proposal.",
+  "correction": "Select an actually running proposal/challenge/selection stage and compare that same bound task across the parent and prepared images. Verify selection schema when that actual stage is selection; targeted real PostgreSQL tests cover it separately.",
+  "production_changed": false,
+  "database_mutated": false,
+  "model_call_created": false,
+  "completed_model_response_changed": false,
+  "private_host_failure_log_preserved": "/tmp/revision-loop-runtime-patch-20261008/parent-probe.private-error.log"
+}

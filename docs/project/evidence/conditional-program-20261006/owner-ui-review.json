@@ -1,0 +1,13 @@
+{
+  "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+  "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+  "message_ts": "1791241501.260409",
+  "exact_canonical_server_notice_verified": true,
+  "ui_spec_verified_after_known_section_separator_normalization": true,
+  "normalizations": [
+    "section_2900_separator_inside_mode",
+    "section_5800_separator_inside_origin_program_id"
+  ],
+  "user_authorization": "너가 보내고 진행해줘",
+  "manual_human_click_claimed": false
+}
