@@ -155,6 +155,20 @@
       },
       "reason": "video9 EpisodePlan had no 'illustrations', so the episode JSON schema given to Claude could not define story pictures",
       "checked": "schema has illustrations in a throwaway container and in the live runtime"
+    },
+    "video-worker-fargate11": {
+      "image": "quant-company-video:7b37ac4-fargate11",
+      "at_kst": "11:00:04",
+      "files": {
+        "photos.py": "bdc9069d02dc53bbeba9e1d36100c0b04d0bc5103e2ec7cfa5df9d7ebac13205"
+      }
+    },
+    "video-worker-fargate12": {
+      "image": "quant-company-video:7b37ac4-fargate12",
+      "at_kst": "11:55:34",
+      "files": {
+        "runner.py": "65dad598dbcc8e0017d3edd3970cbf4d0cc55265be7d4170eb3cdee00e387f44"
+      }
     }
   },
   "tests": {
@@ -177,6 +191,23 @@
         "note": "Story photo missing"
       }
     ],
-    "plan_3_started_kst": "09:44:03 (runtime video10)"
+    "plan_3_started_kst": "09:44:03 (runtime video10)",
+    "plan_passed": "plan-4 (10:0x), review rounds 2",
+    "story_photo_requests": [
+      "Samsung Electronics Seocho building Seoul",
+      "crude oil tanker Strait of Hormuz",
+      "Microsoft datacenter server racks"
+    ],
+    "first_lookup": "0 results for all three (Commons ANDs words) -> generated pictures; fixed in fargate11",
+    "photo_rerun_kst": "11:00 (state back to synthesizing, photo keys cleared, backup v2-before-photo-rerun.json)",
+    "chosen": {
+      "gen-1": "File:Samsung Electronics 2023-08 1693138160.jpg (Artyom Svetlov, CC BY 4.0)",
+      "gen-2": "generated (both Bosphorus tanker photos rejected: wrong place, ship name visible)",
+      "gen-3": "generated (candidate was a Windows RAM chart)"
+    },
+    "photo_checks": 3,
+    "inspections": 3,
+    "delivered_kst": "11:54:51",
+    "delivery_message_id": "a6c59474-98e6-5d5c-8fc3-34dd25a06b55"
   }
 }
