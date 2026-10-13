@@ -221,7 +221,18 @@ def proposal_material(payload, schema):
         # Catalogs repeat on every diagnostic round; exact inspection remains available.
         while compact_path_catalog(material):
             pass
-    header = INSTRUCTIONS + "SCHEMA:\n" + json.dumps(schema.model_json_schema(), separators=(",", ":")) + "\nEVIDENCE JSON:\n"
+    model_schema = schema.model_json_schema()
+    if schema is Triage:
+        def omit_display_titles(value):
+            if isinstance(value, dict):
+                return {key: omit_display_titles(item) for key, item in value.items()
+                        if not (key == "title" and isinstance(item, str))}
+            if isinstance(value, list):
+                return [omit_display_titles(item) for item in value]
+            return value
+        # JSON Schema display titles duplicate property names; constraints and title fields remain.
+        model_schema = omit_display_titles(model_schema)
+    header = INSTRUCTIONS + "SCHEMA:\n" + json.dumps(model_schema, separators=(",", ":")) + "\nEVIDENCE JSON:\n"
     # Stable evidence precedes per-round query results; avoid order drift after JSONB round-trips.
     material = json.loads(json.dumps(material, ensure_ascii=False, sort_keys=True))
     order = ("requested_diagnosis", "instructions", "observations", "history", "current_implementation")
@@ -299,6 +310,10 @@ def proposal_material(payload, schema):
             for row in diagnostic.get("source_files", []):
                 row["content"] = ""
                 row["excerpted"] = True
+            for row in material.get("investigated_code", []):
+                # Lookup/cache signatures are enforced from stored receipts, not interpreted by the model.
+                for field in ("inspection_query", "readable_paths_digest", "inspection_complete", "cache_hit"):
+                    row.pop(field, None)
             configuration = diagnostic.get("system", {}).get("runtime", {}).get("configuration", {})
             if isinstance(configuration.get("capabilities"), dict):
                 configuration["capabilities"] = compact_prompt_value(
