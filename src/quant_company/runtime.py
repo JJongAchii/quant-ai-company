@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import logging
 from datetime import timedelta
 
@@ -161,6 +162,18 @@ async def dispatch_once(client, company):
         except Exception as exc:
             # Retried next loop; the brief below must still be flushed and sent.
             logging.getLogger(__name__).error("Video workflow start failed: %s", type(exc).__name__)
+    if getattr(company.settings, 'video_analytics_enabled', False) and not getattr(company, "_video_analytics_started", False):
+        from .video.analytics_workflow import VideoAnalyticsWorkflow
+
+        try:
+            await client.start_workflow(VideoAnalyticsWorkflow.run, id="company-video-analytics-v1",
+                task_queue=company.settings.temporal_task_queue+"-video-analytics",
+                id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+            company._video_analytics_started = True
+        except WorkflowAlreadyStartedError:
+            company._video_analytics_started = True
+        except Exception as exc:
+            logging.getLogger(__name__).error("Video analytics workflow start failed: %s", type(exc).__name__)
     if getattr(company.settings, "briefing_enabled", False):
         from .briefing.store import BriefStore
 
@@ -383,9 +396,24 @@ def make_video_worker(client, company, runner=None):
                   graceful_shutdown_timeout=timedelta(seconds=30))
 
 
+def make_video_analytics_worker(client, company, runner=None):
+    from .video.analytics import AnalyticsRunner
+    from .video.analytics_workflow import VideoAnalyticsWorkflow
+
+    runner = runner or AnalyticsRunner(company)
+    return Worker(client, task_queue=company.settings.temporal_task_queue+"-video-analytics",
+                  workflows=[VideoAnalyticsWorkflow], activities=[runner.activity_tick],
+                  max_concurrent_activities=1, max_cached_workflows=2,
+                  graceful_shutdown_timeout=timedelta(seconds=30))
+
+
 async def video_worker_main(settings=None):
     settings = settings or Settings()
     company = Company(settings)
     client = await connect(settings)
-    async with make_video_worker(client, company):
+    # The analytics reads use the same media-auth mount (YouTube token) as the video worker, on their own queue.
+    async with contextlib.AsyncExitStack() as stack:
+        await stack.enter_async_context(make_video_worker(client, company))
+        if settings.video_analytics_enabled:
+            await stack.enter_async_context(make_video_analytics_worker(client, company))
         await asyncio.Event().wait()

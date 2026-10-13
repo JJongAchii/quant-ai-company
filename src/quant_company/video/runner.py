@@ -340,7 +340,8 @@ class VideoRunner:
                 qa['illustrations_offered'] = bool(self.settings.video_image_runtime_url)
                 await asyncio.to_thread(self.store.update_qa, job, qa)
             prompt, contract = episode_prompt(job['source'], feedback, library,
-                                              illustrations=qa.get('illustrations_offered', False)), 'video_episode_v1'
+                                              illustrations=qa.get('illustrations_offered', False),
+                                              lessons=job['policy'].get('lessons', ())), 'video_episode_v1'
         else:
             prompt, contract = production_prompt(job['source'], feedback), None
         try:

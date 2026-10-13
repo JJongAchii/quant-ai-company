@@ -30,7 +30,8 @@ def manifests(company, base_url, output, transport="socket", include_reporter=Fa
                          "interactivity": {"is_enabled": False}, "org_deploy_enabled": False,
                          "socket_mode_enabled": transport == "socket", "token_rotation_enabled": False},
         }
-        if role.id == "director" or (role.id == "market_brief" and company.settings.video_enabled):
+        if role.id == "director" or (role.id == "market_brief" and (company.settings.video_enabled
+                                                                    or company.settings.video_analytics_enabled)):
             value["settings"]["interactivity"] = {"is_enabled": True}
             if transport == "http":
                 value["settings"]["interactivity"]["request_url"] = base_url.rstrip("/") + "/slack/events/" + role.id
@@ -106,6 +107,12 @@ def main():
     video.add_argument('--effect-key')
     video.add_argument('--receipt-file', type=Path)
     video.add_argument('--note')
+    video_analytics = sub.add_parser("video-analytics")
+    video_analytics.add_argument("action", choices=["status", "sync", "link"])
+    video_analytics.add_argument("--dry-run", action="store_true",
+                                 help="sync: read YouTube only; nothing is stored, posted or analysed")
+    video_analytics.add_argument("--youtube-id", help="link: the public upload")
+    video_analytics.add_argument("--job-id", help="link: the produced video job")
     video_auth = sub.add_parser("video-auth")
     video_auth.add_argument("service", choices=["runway", "youtube"])
     video_auth.add_argument('--listen-host', choices=['127.0.0.1', '0.0.0.0'], default='127.0.0.1')
@@ -187,6 +194,20 @@ def main():
             asyncio.run(login_runway(settings.video_credentials_dir, args.listen_host))
         else:
             login_youtube(settings.video_credentials_dir, args.listen_host)
+    elif args.command == "video-analytics":
+        from .video.analytics import AnalyticsRunner
+
+        runner = AnalyticsRunner(Company(settings))
+        if args.action == "link":
+            if not args.youtube_id or not args.job_id:
+                parser.error("link requires --youtube-id and --job-id")
+            runner.store.link(args.youtube_id, args.job_id)
+            result = {"linked": args.youtube_id, "job_id": args.job_id}
+        elif args.action == "sync":
+            result = asyncio.run(runner.preview() if args.dry_run else runner.tick())
+        else:
+            result = runner.store.status()
+        print(json.dumps(result, ensure_ascii=False, indent=2, default=str))
     elif args.command == "video":
         from .video.runner import VideoRunner
         from .video.store import VideoStore

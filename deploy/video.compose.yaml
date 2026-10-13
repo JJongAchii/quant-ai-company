@@ -26,6 +26,11 @@ x-video-env: &video-env
   VIDEO_PUBLISH_LEAD_MINUTES: ${VIDEO_PUBLISH_LEAD_MINUTES:-10}
   VIDEO_RETENTION_DAYS: ${VIDEO_RETENTION_DAYS:-14}
   VIDEO_MIN_FREE_GB: ${VIDEO_MIN_FREE_GB:-10}
+  # Performance analytics (docs/daily-video.md "성과 분석"): the dispatcher gates the posts, api/slack-socket accept the
+  # lesson buttons, the video worker reads YouTube with the media-auth token.
+  VIDEO_ANALYTICS_ENABLED: ${VIDEO_ANALYTICS_ENABLED:-false}
+  VIDEO_ANALYTICS_CHANNEL_ID: ${VIDEO_ANALYTICS_CHANNEL_ID:-}
+  VIDEO_ANALYTICS_MAX_LESSONS: ${VIDEO_ANALYTICS_MAX_LESSONS:-8}
 
 services:
   api:

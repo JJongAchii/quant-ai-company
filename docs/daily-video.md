@@ -214,6 +214,9 @@ docker compose -f deploy/compose.yaml -f deploy/video.compose.yaml exec video-wo
 | `VIDEO_PLAYLIST_URL` | 증시story 재생목록 | 설명란 "증시story 모아보기" 주소 |
 | `VIDEO_RETENTION_DAYS` | 14 | 작업 종료 뒤 최종 파일 보관 일수 |
 | `VIDEO_MIN_FREE_GB` | 10 | 이보다 여유가 적으면 새 회차를 시작하지 않음 |
+| `VIDEO_ANALYTICS_ENABLED` | false | 공개 업로드의 성과 분석([성과 분석](#성과-분석)). YouTube 채널 ID·브리핑 소유자·전용 성과 채널이 필요 |
+| `VIDEO_ANALYTICS_CHANNEL_ID` | 빈 값 | 성과 카드·주간 리뷰를 받을 전용 Slack 채널(`SLACK_ALLOWED_CHANNELS`에 포함, 브리핑 채널과 다름) |
+| `VIDEO_ANALYTICS_MAX_LESSONS` | 8 | 동시에 제작에 반영되는 채택 교훈 수 상한 |
 
 활성화 순서는 upstream full brief 품질 통과 → 계정/잔액/채널과 서버 자원 확인 →
 첫 비공개 샘플 전체 시청 → 비공개 자동 제작 → 공개 승인 허용이다. 기존 Analyst Slack 앱의
@@ -354,6 +357,71 @@ Claude 세션에서 편집자가 하듯 서버도 쓰고 → 검사하고 → �
 `superseded`로 만든다. 이전 버전의 버튼은 새 버전을 승인하지 못한다. 09:00 이후에는
 최신성 재검토를 거친 별도 발간으로 다뤄야 하며 일반 승인 버튼으로 연장하지 않는다.
 자동 기술 QA는 수치 의미와 전체 청취를 보증하지 않는다. 소유자의 전체 시청이 최종 조건이다.
+
+## 성과 분석
+
+소유자가 올린 공개 영상의 성과를 읽어 진단하고, 소유자가 채택한 교훈만 다음 회차 대본 작성에 반영한다
+([ADR 0043](adr/0043-video-performance-analytics.md)). 기본값은 꺼짐이며, 운영 서버에 켠 증거는 아직 없다.
+
+```mermaid
+flowchart LR
+    U[채널 공개 업로드] -->|제목 끝 회차·같은 제목·수동 link| P[video_publications]
+    R[Reporting API 노출·CTR 일보고서] --> D[video_reach_daily]
+    A[Analytics API 조회·이탈 곡선·유입·검색어] --> S[D+3·D+7·D+28 스냅샷]
+    D --> S
+    S -->|제작 중인 회차 없을 때| C[Claude 진단 → 성과 채널 카드]
+    S --> W[월요일 09:00 주간 리뷰 · 교훈 제안 버튼]
+    W -->|소유자 채택| L[활성 교훈] -->|새 작업 policy에 고정| V[다음 회차 대본 지시]
+```
+
+- 수집: video worker 프로세스 안의 별도 Temporal 큐 `${TEMPORAL_TASK_QUEUE}-video-analytics`가 30분마다 돈다.
+  YouTube 토큰은 이 컨테이너(media-auth)에만 있다. 외부 쓰기는 Reporting API 작업 생성뿐이며, 보고서 종류마다
+  한 번 만들고 영수증(`video_report_jobs`)을 남긴다. 나머지는 모두 읽기다.
+- 노출수·CTR은 Reporting API에만 있다. 작업을 만든 뒤 약 이틀 안에 과거 30일 보고서가 채워지고, 매일 약 2일
+  늦게 새 보고서가 나온다. 같은 날짜의 더 새 보고서는 그날 값을 교체한다. CTR 단위는 공식 문서에 나오지 않아
+  1보다 큰 값이 있는 보고서를 백분율로 읽는다. **첫 실연결에서 Studio 값과 대조해야 한다.**
+- 스냅샷: 업로드의 태평양 시간 날짜부터 3·7·28일 고정 구간을 측정한다. 구간 마지막 날의 노출 보고서가 오면
+  측정하고, 4일 지나도 오지 않으면 노출 없이 측정한다. 구간이 끝나고 6일이 지나서 측정한 업로드(처음 켤 때의
+  과거 영상)는 카드 없이 기준선과 주간 리뷰에만 쓴다.
+- 3일 카드(성과 채널 새 글): 노출, CTR, 조회, 평균 시청, 30초 유지, 구독, 유입 상위, 검색어 상위, 이탈이 가장
+  가파른 장면을 담는다. 수치는 같은 회차 종류의 최근 28일 중앙값과 비교하고, 5편 미만이면 "기준 부족"이라고 쓴다.
+  여기에 Claude 진단(`video_performance_v1`, 실제 썸네일 첨부, `VIDEO_REASONING_EFFORT`)을 붙인다. 진단이 실패해도
+  수치만으로 올린다. 7일 갱신은 카드의 Slack 수신이 확인된 뒤 그 스레드에 수치로 단다.
+- 주간 리뷰(월요일 09:00 KST, worker가 멈췄으면 48시간 안에 보충): 최근 28일 회차, 영상별 진단, 활성 교훈의
+  적용 전후 중앙값으로 `video_weekly_v1`(`VIDEO_REVIEW_EFFORT`, 썸네일 최대 12장)을 요청한다. 리뷰는 반복 패턴과
+  교훈 제안 최대 3개(제목·썸네일·오프닝·구성·길이·키워드), 활성 교훈마다 유지·은퇴·판단 이르음을 낸다. 채널에
+  없는 영상을 근거로 든 제안과 이미 활성인 교훈은 버린다.
+- 교훈: 리뷰 메시지의 버튼(`채택`·`거절`, 활성 교훈은 `은퇴`)은 브리핑 소유자만 누를 수 있다. 버튼은 그 리뷰
+  메시지(Slack 수신 확인된 ts·채널)에 묶여 있고, 같은 클릭이 재전달되면 처음 결과를 돌려준다. 활성 교훈이 상한이면
+  채택하지 않는다. 채택한 교훈은 그 뒤 새로 만드는 작업의 `policy.lessons`에 고정되어 `video_episode_v1` 대본 작성
+  프롬프트에 데이터로 들어간다. 원문 줄·숫자·표기·제목 규칙이 우선한다고 명시하며, 검토 프롬프트에는 넣지 않는다.
+  이미 만든 작업의 요청은 바뀌지 않는다.
+- 실행 lane: 분석은 영상 대본·검토와 같은 Claude 구독 실행기를 쓰므로 queued~delivering 상태의 영상 작업이 있으면
+  요청하지 않는다. 요청 ID는 고정(`video-analytics-<영상>-d3`, `video-analytics-weekly-<월요일>`)이고 회사 일일 호출
+  한도에 들어간다. busy·quota는 환불 후 다음 tick에 같은 ID로 다시 요청한다.
+- 렌더 manifest에 장면 시각(`scenes`)이 추가됐다. 이전 회차와, 이 버전 이전 이미지로 렌더한 Fargate 작업은
+  챕터 시각으로 대신한다.
+
+**켜는 순서(소유자 작업 포함)**
+
+1. Google Cloud 프로젝트에서 YouTube Analytics API와 YouTube Reporting API를 사용 설정한다.
+2. OAuth 동의 화면을 프로덕션으로 게시한다. Testing 상태에서는 refresh token이 7일마다 만료돼 수집이 끊긴다.
+3. 서버에서 `quant-company video-auth youtube --listen-host 0.0.0.0`으로 다시 로그인한다(포트 8767 터널, 해당 채널의
+   브랜드 계정 선택). 이제 scope는 upload, force-ssl, yt-analytics.readonly다.
+4. Slack에 성과 채널을 만들고 Analyst 봇을 초대한다. runtime.env의 `SLACK_ALLOWED_CHANNELS`에 넣고
+   `VIDEO_ANALYTICS_CHANNEL_ID`를 설정한다. Analyst 앱의 interactivity가 꺼져 있으면 켠다. Socket Mode는 그대로 쓰고,
+   HTTP 방식이면 `/slack/events/market_brief`로 설정한다. 파일 전달만 쓰는 현재 운영에서는 꺼져 있을 수 있다.
+5. claude-runtime을 이 버전으로 갱신한다. 새 출력 계약 두 개는 실행기가 알아야 한다.
+6. `docker compose ... exec video-worker quant-company video-analytics sync --dry-run`을 실행한다. 저장, 게시, 모델 호출
+   없이 업로드 목록과 회차 해석, Reporting 작업, 최근 3일 구간 수치를 출력하므로 Studio와 대조한다.
+7. `VIDEO_ANALYTICS_ENABLED=true`로 api, worker, dispatch, slack-socket, video-worker를 같은 설정으로 다시 띄운다.
+   서버 overlay가 `VIDEO_*` 값을 직접 나열한다면(예: `deploy/combined73/*`), 세 값(`VIDEO_ANALYTICS_ENABLED`,
+   `VIDEO_ANALYTICS_CHANNEL_ID`, `VIDEO_ANALYTICS_MAX_LESSONS`)을 같은 서비스들에 넣는다.
+   상태는 `quant-company video-analytics status`로 보고, 연결 안 된 업로드는
+   `quant-company video-analytics link --youtube-id … --job-id …`로 연결한다.
+
+끄기는 `VIDEO_ANALYTICS_ENABLED=false`다. 대기 중인 성과 채널 글은 `stale`이 되고, 활성 교훈은 새 작업에 고정되지
+않는다. 테이블(`video_publications` … `video_lesson_actions`)은 이전 코드가 무시한다.
 
 ## 로컬 데모와 검증
 
