@@ -1,0 +1,49 @@
+{
+  "scope": "Real PostgreSQL with fixture model/GitHub/Slack; server admission regression, no production model quality claim",
+  "base": {
+    "failed": 2,
+    "passed": 6,
+    "defects": [
+      "Owner maintenance cannot reserve behind a running background task.",
+      "Reserved owner maintenance does not stop a new background reservation."
+    ]
+  },
+  "candidate": {
+    "admission_and_company_related": 50,
+    "seconds": 13.13,
+    "maintenance_related": ".................                                                       [100%]\n18 passed, 1 deselected in 2.03s\n",
+    "ruff": "All checks passed"
+  },
+  "local_temporal_attempt": {
+    "state": "environment_startup_failed",
+    "reason": "dev server at ephemeral local port did not start within 5s",
+    "not_a_regression_verdict": true
+  },
+  "production_failure": {
+    "at": "2026-10-13T01:12:58.741808+00:00",
+    "job": {
+      "id": "c7d07401-ef8a-5d16-96f5-b6048b16dd1b",
+      "kind": "review",
+      "error": "company_work_has_priority",
+      "state": "triage",
+      "receipt": {},
+      "updated_at": "2026-10-13T01:10:19.13469+00:00",
+      "request_task_id": "d3258258-bc9f-533f-bd6f-e99134853512",
+      "snapshot_commit": "8497a4eb76cded5dac80cd76176856acb08893e2",
+      "request_revision": 1,
+      "has_frozen_review": true,
+      "request_project_id": "7eab5880-7d93-508f-b088-50997f06b7e8",
+      "diagnostic_revision": 0,
+      "investigation_round": null
+    },
+    "calls": null,
+    "due_company": [
+      {
+        "kind": "research_stage",
+        "count": 1,
+        "status": "running",
+        "priority": 100
+      }
+    ]
+  }
+}

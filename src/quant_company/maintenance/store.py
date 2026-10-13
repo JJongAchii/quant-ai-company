@@ -376,10 +376,14 @@ class Store:
             if call:
                 if call["due_at"] > datetime.now(UTC):
                     raise Deferred("model_retry_due")
+            from .admission import lock
+
+            lock(conn)
+            automatic = not job["payload"].get("request_project_id")
             if conn.execute("""SELECT 1 FROM turns t JOIN tasks k ON k.id=t.task_id
                 JOIN projects p ON p.id=k.project_id
                 WHERE t.status IN ('queued','waiting','running') AND t.due_at<=now()
-                  AND k.revision=p.revision LIMIT 1""").fetchone():
+                  AND k.revision=p.revision AND (%s OR k.priority=0) LIMIT 1""", (automatic,)).fetchone():
                 raise Deferred("company_work_has_priority")
             pause = conn.execute("SELECT paused_until FROM runtime_control WHERE id=1").fetchone()
             if pause["paused_until"] and pause["paused_until"] > datetime.now(UTC):
