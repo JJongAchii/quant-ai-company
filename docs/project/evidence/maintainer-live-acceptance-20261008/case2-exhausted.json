@@ -1,0 +1,88 @@
+{
+  "captured_at": "2026-10-13T03:39:08.230371+00:00",
+  "job_id": "c7d07401-ef8a-5d16-96f5-b6048b16dd1b",
+  "state": "blocked",
+  "reason": "investigation_budget_exhausted",
+  "real_subscription_responses": 5,
+  "snapshot_commit": "8497a4eb76cded5dac80cd76176856acb08893e2",
+  "candidate_code_created": false,
+  "real_candidate_ci": false,
+  "candidate_pr": null,
+  "preserved_original_request": true,
+  "evidence": {
+    "responses": [
+      {
+        "id": "maint-c7d07401-ef8a-5d16-96f5-b6048b16dd1b-triage-i3",
+        "usage": {
+          "input_tokens": 34714,
+          "output_tokens": 3314,
+          "cached_input_tokens": 0,
+          "reasoning_output_tokens": 2588
+        },
+        "artifacts": [
+          {
+            "title": "상태별 담당자·다음 행동 구현을 위한 누락 근거 조회",
+            "content": "{\"finding\":null,\"reason\":\"현재 기준 커밋은 8497a4eb76cded5dac80cd76176856acb08893e2다. company.py의 maintenance_status 소비 경로와 cases.py의 current/card는 제공된 코드로 확인했지만, requests.py의 report/status/progress_text와 관련 기존 시험은 누락되어 구현 결함을 확정하지 않는다. system:e7be69233870a1cc0ff6ec625a288570ae20909a60e0f63ff72228f7e6517ed3의 현재 DB 기록에서 새 요청 c7d07401-ef8a-5d16-96f5-b6048b16dd1b는 triage다. 이전 요청의 investigation_budget_exhausted는 message:5ebb2a68-2561-40bc-9939-fc7fbbf8ccca에 담긴 소유자 보고로 한정한다. 수정 전 성공 기준은 후보 없는 진단 종료와 수리·PR·반영 완료 구분, 조사·수정·CI의 개선봇 담당 표시, PR 준비의 소유자 검토·승인 안내, blocked·불확실 검토의 운영자 확인·필요 근거·원 요청 재호출 금지 안내, 실제 반영 완료 표시다. 기존 정상 상태와 reason/outcome/required_evidence·PR 주소를 보존하며 기존 시험은 수정하지 않는다. 새 기능 회귀시험의 기준 코드 assertion 실패와 후보 통과를 실제 CI에서 확인해야 한다. tests/test_maintenance_repair_path.py는 두 조회에서 not_in_readable_snapshot이므로 같은 조회를 반복하지 않고 관련 시험 위치를 검색한다.\",\"inspect\":[{\"path\":\"src/quant_company/maintenance/requests.py\",\"query\":null,\"start_line\":40,\"line_count\":213},{\"path\":null,\"query\":\"progress_text\",\"start_line\":1,\"line_count\":120},{\"path\":null,\"query\":\"maintenance_status\",\"start_line\":1,\"line_count\":120},{\"path\":null,\"query\":\"required_evidence\",\"start_line\":1,\"line_count\":120}]}",
+            "source_ids": [
+              "system:e7be69233870a1cc0ff6ec625a288570ae20909a60e0f63ff72228f7e6517ed3",
+              "code:8497a4eb76cded5dac80cd76176856acb08893e2:src/quant_company/maintenance/requests.py",
+              "message:5ebb2a68-2561-40bc-9939-fc7fbbf8ccca"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "maint-c7d07401-ef8a-5d16-96f5-b6048b16dd1b-triage-i4",
+        "usage": {
+          "input_tokens": 34498,
+          "output_tokens": 3658,
+          "cached_input_tokens": 5888,
+          "reasoning_output_tokens": 2937
+        },
+        "artifacts": [
+          {
+            "title": "상태별 담당자·다음 행동 구현을 위한 누락 근거 조회",
+            "content": "{\"finding\":null,\"reason\":\"system:e7be69233870a1cc0ff6ec625a288570ae20909a60e0f63ff72228f7e6517ed3에서 현재 기준 커밋은 8497a4eb76cded5dac80cd76176856acb08893e2이고 새 요청은 triage, case_id는 null입니다. code:8497a4eb76cded5dac80cd76176856acb08893e2:src/quant_company/maintenance/requests.py의 표시된 report/status에는 케이스 추적과 reason/outcome/required_evidence·PR 보존이 이미 구현돼 있습니다. message:5ebb2a68-2561-40bc-9939-fc7fbbf8ccca가 보고한 이전 요청의 investigation_budget_exhausted는 역사적 실패 근거이며 현재 기능 부재를 증명하지 않습니다. progress_text, cases.current/card, 소비자와 관련 시험 본문이 생략됐으므로 finding을 확정하지 않습니다. 저장된 정확 범위 재제시와 관련 시험 위치 검색을 요청합니다. 읽기 불가로 기록된 tests/test_maintenance_repair_path.py 조회는 반복하지 않습니다. 원래 5개 기능 기준과 기존 필드·PR 주소 보존을 유지하며, 기존 시험을 수정하지 않는 새 회귀시험의 기준 실패·후보 통과를 실제 CI에서 확인해야 합니다. 수정·검증·PR 결과는 아직 없습니다. 운영 커밋은 기준과 다르므로 배포·활성화·기능 검증 완료도 추정하지 않습니다.\",\"inspect\":[{\"path\":\"src/quant_company/maintenance/requests.py\",\"start_line\":200,\"line_count\":53},{\"path\":\"src/quant_company/maintenance/cases.py\",\"start_line\":1,\"line_count\":211},{\"path\":\"src/quant_company/company.py\",\"start_line\":870,\"line_count\":90},{\"query\":\"test_maintenance_status\",\"start_line\":1,\"line_count\":160}]}",
+            "source_ids": [
+              "system:e7be69233870a1cc0ff6ec625a288570ae20909a60e0f63ff72228f7e6517ed3",
+              "code:8497a4eb76cded5dac80cd76176856acb08893e2:src/quant_company/maintenance/requests.py",
+              "message:5ebb2a68-2561-40bc-9939-fc7fbbf8ccca"
+            ]
+          }
+        ]
+      }
+    ],
+    "history_shape": {
+      "as_of": {
+        "type": "string",
+        "chars": 34,
+        "items": null
+      },
+      "roster": {
+        "type": "array",
+        "chars": 4275,
+        "items": 16
+      },
+      "periods": {
+        "type": "array",
+        "chars": 1677,
+        "items": 2
+      },
+      "evidence": {
+        "type": "array",
+        "chars": 20759,
+        "items": 30
+      },
+      "sampling": {
+        "type": "object",
+        "chars": 138,
+        "items": null
+      },
+      "interpretation": {
+        "type": "string",
+        "chars": 178,
+        "items": null
+      }
+    }
+  }
+}

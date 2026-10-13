@@ -69,7 +69,7 @@ def test_reserved_owner_call_yields_new_background_but_not_new_human_work(compan
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize("guard", ["retry_due", "stale_heartbeat", "disabled", "owner_revoked", "revision_changed"])
+@pytest.mark.parametrize("guard", ["retry_due", "stale_heartbeat", "disabled", "owner_revoked", "revision_changed", "diagnostic_revision_changed"])
 def test_ineligible_owner_reservation_does_not_hold_background(company, guard):
     maintenance, job = requested(company)
     call = maintenance.store.prepare_call(job, "triage", "Fixture maintenance admission")
@@ -85,6 +85,9 @@ def test_ineligible_owner_reservation_does_not_hold_background(company, guard):
             else:
                 runtime["allowed_owners"] = []
             conn.execute("UPDATE maintenance_control SET runtime=%s WHERE id=1", (Jsonb(runtime),))
+    elif guard == "diagnostic_revision_changed":
+        with company.db.transaction() as conn:
+            conn.execute("UPDATE maintenance_jobs SET payload=jsonb_set(payload, '{diagnostic_revision}', '1'::jsonb) WHERE id=%s", (job["id"],))
     else:
         with company.db.transaction() as conn:
             conn.execute("UPDATE projects SET revision=revision+1 WHERE id=%s",

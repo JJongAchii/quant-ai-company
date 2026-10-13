@@ -126,8 +126,9 @@ def diagnostic_history(payload):
 
 
 def prioritize_inspections(material):
-    """Split joined bodies so recent exact ranges survive before older surrounding code."""
-    requested = [row for row in material.get("recent_inspection", {}).get("requests", [])
+    """Keep all explicit ranges across stateless rounds before incidental search context."""
+    requested = [row for row in material.get("saved_inspection_requests", []) +
+                 material.get("recent_inspection", {}).get("requests", [])
                  if row.get("path") and not row.get("query")]
     if not requested:
         return False
@@ -156,6 +157,27 @@ def prioritize_inspections(material):
         return False
     material["investigated_code"] = prioritized + surrounding
     return True
+
+
+def summarize_unrelated_history(material, original):
+    """Keep identities and related records; index other history before discarding exact code."""
+    keys = {row.get("key") for row in material.get("observations", [])}
+    projects = {row.get("project_id") for row in material.get("observations", []) if row.get("project_id")}
+    tasks = {row.get("task_id") for row in material.get("observations", []) if row.get("task_id")}
+    originals = {row.get("key"): row for row in original.get("evidence", [])}
+    fields = ("key", "id", "kind", "created_at", "author", "agent", "project_id", "task_id", "turn_id")
+    evidence = material.get("history", {}).get("evidence", [])
+    for index, row in enumerate(evidence):
+        if row.get("key") in keys or row.get("project_id") in projects or row.get("task_id") in tasks:
+            continue
+        evidence[index] = {
+            **{field: row[field] for field in fields if field in row},
+            **({"text": row["text"][:160]} if isinstance(row.get("text"), str) else {}),
+            "original_digest": digest(originals.get(row.get("key"), row)),
+            "omitted_fields": sorted(set(row) - set(fields) - {"text"}),
+            "prompt_excerpted": True,
+            "lookup": "Unrelated historical detail is omitted; the complete original remains in PostgreSQL.",
+        }
 
 
 def proposal_material(payload, schema):
@@ -216,6 +238,21 @@ def proposal_material(payload, schema):
                 for key, value in history.items()
             }
             material["prompt_history_compaction"] = stage + 1
+            material["prompt_excerpted"] = True
+            continue
+        if schema is Triage and not material.get("prompt_history_indexed"):
+            summarize_unrelated_history(material, payload.get("history", {}))
+            material["prompt_history_indexed"] = True
+            material["prompt_excerpted"] = True
+            continue
+        if schema is Triage and material.get("prompt_source_compaction", 0) < 2:
+            stage = material.get("prompt_source_compaction", 0)
+            limit = (400, 160)[stage]
+            for row in material.get("current_implementation", {}).get("source_files", []):
+                if len(row.get("content", "")) > limit:
+                    row["content"] = row["content"][:limit]
+                    row["excerpted"] = True
+            material["prompt_source_compaction"] = stage + 1
             material["prompt_excerpted"] = True
             continue
         if schema is Triage and not material.get("prompt_inspection_priority"):
@@ -438,6 +475,7 @@ class Maintainer:
                     raise ValueError("investigation_budget_exhausted")
                 from .investigation import append_inspections, external_research, inspect_code
 
+                await asyncio.to_thread(self.prefetch_inspections, payload["snapshot"], result.inspect)
                 with self.company.db.transaction() as conn:
                     evidence = inspect_code(conn, payload["snapshot"], result.inspect,
                                             previous=payload.get("investigation_requests", []))
@@ -642,6 +680,28 @@ class Maintainer:
         payload.pop("ci_started_at", None)
         self.store.save(job["id"], "patch", payload=payload, receipt={}, error=None)
         return True
+
+    def prefetch_inspections(self, snapshot, queries):
+        """Hydrate omitted requested files from their frozen commit before reading excerpts."""
+        from ..system_state import readable, record_repository
+
+        paths = set()
+        for query in queries:
+            candidates = ([query.path] if query.path else
+                          [path for path in sorted(snapshot["entries"])
+                           if query.query.casefold() in path.casefold()][:4])
+            paths.update(path for path in candidates if path in snapshot["entries"] and readable(path))
+        if not paths:
+            return
+        with self.company.db.transaction() as conn:
+            cached = conn.execute("SELECT files,metadata FROM repository_evidence WHERE commit=%s",
+                                  (snapshot["commit"],)).fetchone()
+        if not cached or paths <= set(cached["files"]):
+            return
+        files, coverage = self.github.read_inspection_files(snapshot, queries, previous=cached["files"])
+        metadata = {**cached["metadata"], "coverage": coverage}
+        with self.company.db.transaction() as conn:
+            record_repository(conn, snapshot, files, metadata)
 
     def refresh_repository(self):
         from ..system_state import record_repository

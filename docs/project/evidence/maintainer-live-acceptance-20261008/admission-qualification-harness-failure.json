@@ -1,0 +1,8 @@
+{
+  "state": "harness_exception_type_mismatch",
+  "production_changes": 0,
+  "production_database_writes": 0,
+  "model_calls": 0,
+  "error": "Traceback (most recent call last):\n  File \"/opt/admission-probe.py\", line 105, in <module>\n    baseline = exercise(old_company, old_store)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/admission-probe.py\", line 72, in exercise\n    call = store.prepare_call(job, \"triage\", \"Fixture owner admission\")\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/baseline-store.py\", line 383, in prepare_call\n    raise Deferred(\"company_work_has_priority\")\nquant_company.maintenance.frozen_store.Deferred: company_work_has_priority\n\nTraceback (most recent call last):\n  File \"/var/lib/quant-company/operator/maintainer-live-admission-98796b9/operator-qualify-admission.py\", line 88, in <module>\n    output=run([\"docker\",\"run\",\"--rm\",\"--pull\",\"never\",\"--network\",network,\"--read-only\",\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/var/lib/quant-company/operator/maintainer-live-admission-98796b9/operator-qualify-admission.py\", line 19, in run\n    raise RuntimeError(\"Qualification command failed: \"+args[0])\nRuntimeError: Qualification command failed: docker\n",
+  "corrected": "Catch the original frozen module Deferred type as well as candidate Deferred; same actual baseline source and success criteria."
+}

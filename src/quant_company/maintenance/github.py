@@ -125,13 +125,14 @@ class GitHub:
             raise ValueError("source_context_too_large")
         return output
 
-    def read_repository(self, snapshot, previous=None):
+    def read_repository(self, snapshot, previous=None, *, priority_paths=()):
         """Read only allowlisted text blobs, reusing content-addressed evidence from the prior commit."""
         from ..system_state import readable
 
         previous = previous or {}
         output, omitted, total, reused, fetched = {}, [], 0, 0, 0
-        for path in sorted(snapshot["entries"], key=repository_evidence_order):
+        priority_paths = set(priority_paths)
+        for path in sorted(snapshot["entries"], key=lambda path: (path not in priority_paths, repository_evidence_order(path))):
             entry = snapshot["entries"][path]
             if not readable(path):
                 continue
@@ -161,6 +162,20 @@ class GitHub:
                         "read_files": len(output), "read_bytes": total, "reused_files": reused,
                         "fetched_files": fetched, "omitted_paths": omitted,
                         "boundary": "allowlisted text blobs only; no credentials, binaries, links or arbitrary repository"}
+
+    def read_inspection_files(self, snapshot, queries, previous=None):
+        """Prioritize requested safe paths within the existing exact-commit read limits."""
+        from ..system_state import readable
+        from .policy import CodeQuery
+
+        priority_paths = []
+        for value in queries:
+            query = CodeQuery.model_validate(value)
+            paths = ([query.path] if query.path else
+                     [path for path in sorted(snapshot["entries"])
+                      if query.query.casefold() in path.casefold()][:4])
+            priority_paths.extend(path for path in paths if path in snapshot["entries"] and readable(path))
+        return self.read_repository(snapshot, previous, priority_paths=priority_paths)
 
     def current_metadata(self, snapshot):
         from ..system_state import readable

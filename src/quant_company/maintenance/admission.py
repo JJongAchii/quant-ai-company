@@ -16,6 +16,9 @@ def owner_call_waiting(conn, company):
         CROSS JOIN maintenance_control control
         WHERE c.response IS NULL AND c.due_at<=now()
           AND j.state IN ('triage','patch','design','evaluate')
+          AND c.id LIKE ('maint-'||j.id::text||CASE
+              WHEN COALESCE(j.payload->>'diagnostic_revision','0')='0' THEN '-'
+              ELSE '-r'||(j.payload->>'diagnostic_revision')||'-' END||'%%')
           AND j.payload->>'request_revision'=p.revision::text
           AND j.payload->'owners' ? p.owner_user
           AND p.owner_user=ANY(%s)

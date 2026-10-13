@@ -1,0 +1,37 @@
+{
+  "captured_at": "2026-10-13T03:39:08.231049+00:00",
+  "cases": [
+    "stale diagnostic revision reservation",
+    "explicit safe file omitted by 2MB read order",
+    "filename lookup returned no code",
+    "previous exact implementation dropped by stateless context reducer"
+  ],
+  "baseline": {
+    "missing_prefetch_methods": 3,
+    "stale_diagnostic_revision_assertion_failed": true,
+    "continuity_and_filename_assertion_failures": 2
+  },
+  "candidate": {
+    "related_tests_passed": 56,
+    "seconds": 8.86,
+    "ruff": "passed",
+    "database": "disposable real PostgreSQL 14 port 56432",
+    "model_and_GitHub": "fixtures",
+    "slack": "not used",
+    "production_writes": 0,
+    "model_calls": 0
+  },
+  "limits": {
+    "prompt_characters": 88000,
+    "repository_read_bytes": 2000000,
+    "blob_read_bytes": 100000,
+    "investigation_rounds": 4,
+    "model_effort_and_auth_changed": false
+  },
+  "source_sha256": {
+    "src/quant_company/maintenance/admission.py": "dddd2defb996cd6db06318b7a3eb117f04270b77a56977cb590fa629d44ee268",
+    "src/quant_company/maintenance/github.py": "e37c05a439e11327c3bb8f15c5116e015210eea0f67f295ee9ee79d618937a66",
+    "src/quant_company/maintenance/runner.py": "70ab9e7461e14b2fa9e53ca100047e2a95ae48a55a03e25b51cb93f4bcec814f",
+    "src/quant_company/maintenance/investigation.py": "4664c5d8c055a7ed4869adb493a06a356cdfefd1001ab87b6f4c3c7520fe851e"
+  }
+}
