@@ -50,3 +50,54 @@ CREATE TABLE IF NOT EXISTS video_asset_usage (
 CREATE INDEX IF NOT EXISTS video_asset_usage_recent ON video_asset_usage(used_at);
 -- v3: findings never stop production. Attempts, fixes and remaining findings travel with the job to the owner.
 ALTER TABLE video_jobs ADD COLUMN IF NOT EXISTS qa jsonb NOT NULL DEFAULT '{}'::jsonb;
+-- v4: performance analytics of published episodes (VIDEO_ANALYTICS_ENABLED). Uploads are the owner's own (Slack file
+-- delivery), so each public upload is linked to its job by the title suffix; reads only, except the reporting jobs.
+CREATE TABLE IF NOT EXISTS video_publications (
+ youtube_id text PRIMARY KEY CHECK(youtube_id ~ '^[A-Za-z0-9_-]{11}$'),
+ job_id uuid REFERENCES video_jobs(id), edition_id uuid REFERENCES brief_editions(id),
+ edition_kind text CHECK(edition_kind IN ('am','close')), title text NOT NULL, proposed_title text,
+ published_at timestamptz NOT NULL, duration_s integer NOT NULL CHECK(duration_s>=0), thumbnail_url text,
+ matched_by text CHECK(matched_by IN ('title_suffix','exact_title','manual')),
+ created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS video_publications_recent ON video_publications(published_at);
+-- One YouTube Reporting API job per report type; created once, its receipt kept.
+CREATE TABLE IF NOT EXISTS video_report_jobs (
+ report_type text PRIMARY KEY, job_id text NOT NULL, receipt jsonb NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
+-- Each downloaded daily report; a newer report for the same type and day replaces that day's rows, never adds to them.
+CREATE TABLE IF NOT EXISTS video_report_downloads (
+ report_id text PRIMARY KEY, report_type text NOT NULL, day date NOT NULL, report_created timestamptz NOT NULL,
+ sha256 text NOT NULL, row_count integer NOT NULL, applied boolean NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS video_reach_daily (
+ youtube_id text NOT NULL, day date NOT NULL, source text NOT NULL, impressions integer NOT NULL CHECK(impressions>=0),
+ clicks numeric NOT NULL CHECK(clicks>=0), report_id text NOT NULL REFERENCES video_report_downloads(report_id),
+ PRIMARY KEY(youtube_id,day,source)
+);
+CREATE TABLE IF NOT EXISTS video_snapshots (
+ youtube_id text NOT NULL REFERENCES video_publications(youtube_id), horizon text NOT NULL CHECK(horizon IN ('d3','d7','d28')),
+ window_start date NOT NULL, window_end date NOT NULL, metrics jsonb NOT NULL,
+ taken_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(youtube_id,horizon)
+);
+-- One model request per analysis (stable request ID); the receipt follows the video_effects model rules. The
+-- request (prompt, thumbnail file digests, effort) is frozen on the first ask and re-sent unchanged.
+CREATE TABLE IF NOT EXISTS video_analyses (
+ id uuid PRIMARY KEY, kind text NOT NULL CHECK(kind IN ('video','weekly')), request_id text NOT NULL UNIQUE,
+ youtube_id text REFERENCES video_publications(youtube_id), week date, request_digest text NOT NULL,
+ request jsonb, state text NOT NULL CHECK(state IN ('running','completed','failed','rejected')), receipt jsonb, output jsonb,
+ message_id uuid REFERENCES messages(id), created_at timestamptz NOT NULL DEFAULT now(), completed_at timestamptz
+);
+-- Proposed in the weekly review; only the owner's Slack decision makes a lesson active. Active lessons are frozen into
+-- each new video job's policy, so a job's prompt never changes after it was created.
+CREATE TABLE IF NOT EXISTS video_lessons (
+ id uuid PRIMARY KEY, analysis_id uuid NOT NULL REFERENCES video_analyses(id), text text NOT NULL,
+ scope text NOT NULL CHECK(scope IN ('title','thumbnail','opening','structure','length','keywords')),
+ evidence jsonb NOT NULL, state text NOT NULL DEFAULT 'proposed' CHECK(state IN ('proposed','active','rejected','retired')),
+ decided_by text, decided_at timestamptz, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS video_lesson_actions (
+ event_key text PRIMARY KEY, lesson_id uuid NOT NULL REFERENCES video_lessons(id), owner_user text NOT NULL,
+ action text NOT NULL CHECK(action IN ('adopt','reject','retire')), outcome text NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);

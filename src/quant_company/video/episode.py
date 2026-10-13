@@ -483,7 +483,15 @@ company's building) or uses the fallback. Without a nameable subject, brief is j
 least one PHOTO: the day's main subject, shown in its issue card and used as thumbnail_image; reuse each id where it fits."""
 
 
-def episode_prompt(source, feedback='', library=None, illustrations=False):
+LESSON_RULE = ("channel_lessons are standing lessons the owner adopted from the performance of earlier episodes (title "
+               "hook, thumbnail, opening, structure, length, keywords). Apply each where today's lines allow it. Every "
+               "rule above (source lines, cited numbers, labels, title rules) and the owner's fixed rules take precedence; "
+               "a lesson never justifies a fact, number or wording outside the cited lines.")
+
+
+def episode_prompt(source, feedback='', library=None, illustrations=False, lessons=()):
+    """lessons: the owner-adopted lessons frozen in the job policy at creation ([{id, scope, text}]); none leaves the
+    prompt exactly as before, so frozen requests of older jobs keep their identity."""
     shelf = {k: {'tags': v.get('tags', []), 'kind': v.get('kind', ''),
                  **({'subject': v['subject'][:80]} if v.get('kind') == '자료사진' and v.get('subject') else {})}
              for k, v in (library or {}).items()}
@@ -522,6 +530,9 @@ def episode_prompt(source, feedback='', library=None, illustrations=False):
             + TITLE_GUIDE + '\n'
             + (FACTS_GUIDE + '\n' if source.get('format') == 'facts' else '')
             + (ILLUSTRATION_GUIDE + '\n' if illustrations else '')
+            + (LESSON_RULE + '\n' if lessons else '')
             + json.dumps({'day': str(source['day']), 'cutoff': str(source['cutoff']), 'edition': edition,
                           'lines': prompt_claims(source),
-                          'assets': shelf, 'revision_feedback': feedback}, ensure_ascii=False))
+                          'assets': shelf, 'revision_feedback': feedback,
+                          **({'channel_lessons': [f"[{x['scope']}] {x['text']}" for x in lessons]} if lessons else {})},
+                         ensure_ascii=False))

@@ -239,6 +239,14 @@ def render_range(page, start, end, out, ffmpeg):
     return str(out)
 
 
+def scene_timings(scenes):
+    """Rendered start/end of every card, kept in the manifest (and so in video_jobs.artifacts after the files are
+    pruned): the performance analysis maps the audience retention curve onto these scenes."""
+    return [{'id': s['id'], 'type': s['type'],
+             'heading': str(s['data'].get('title') or s['data'].get('question') or s['type'])[:80],
+             't0': s['t0'], 't1': s['t1']} for s in scenes]
+
+
 class MotionRenderer:
     def __init__(self, settings, aligner=None, library=None):
         self.settings = settings
@@ -536,7 +544,8 @@ class MotionRenderer:
                     'audio_quality': measured, 'findings': list(findings), 'review': review or {'frames': [], 'audio': {}},
                     'files': {n: checksum(directory / n) for n in names},
                     'generated_images': sorted(self.generated_used),
-                    'chapters': chapters, 'description': description, 'directory': str(directory)}
+                    'chapters': chapters, 'scenes': scene_timings(scenes), 'description': description,
+                    'directory': str(directory)}
         manifest['digest'] = digest(manifest)
         (directory / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
         return manifest

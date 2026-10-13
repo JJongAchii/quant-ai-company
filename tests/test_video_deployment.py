@@ -17,7 +17,7 @@ def test_video_profile_defaults_off_and_isolates_media_credentials():
         'config', '--format', 'json'], check=True, capture_output=True, text=True)
     services = json.loads(result.stdout)['services']
     for name in ('api', 'worker', 'dispatch', 'slack-socket', 'news-worker', 'video-worker'):
-        for flag in ('VIDEO_ENABLED', 'VIDEO_UPLOAD_ENABLED', 'VIDEO_PUBLISH_ENABLED'):
+        for flag in ('VIDEO_ENABLED', 'VIDEO_UPLOAD_ENABLED', 'VIDEO_PUBLISH_ENABLED', 'VIDEO_ANALYTICS_ENABLED'):
             assert services[name]['environment'][flag] == 'false'
     media = services['video-worker']
     mounts = {m['target'] for m in media['volumes']}
@@ -32,6 +32,8 @@ def test_video_profile_defaults_off_and_isolates_media_credentials():
     assert media['environment']['VIDEO_MODEL'] == 'claude-opus-5-5' and media['environment']['VIDEO_VOICE'] == 'Vincent'
     assert media['environment']['VIDEO_REASONING_EFFORT'] == 'xhigh' and media['environment']['VIDEO_REVIEW_EFFORT'] == 'max'
     assert media['environment']['VIDEO_MODEL_RUNTIME_URL'] == 'http://claude-runtime:8080'
+    # The dispatcher gates analytics posts and the API/socket accept lesson clicks with the same channel setting.
+    assert {services[n]['environment']['VIDEO_ANALYTICS_CHANNEL_ID'] for n in ('dispatch', 'slack-socket', 'video-worker')} == {''}
     assert set(media['depends_on']) == {'postgres', 'claude-runtime'}
     assert not any(k.startswith('MODEL_PROVIDER') for k in media['environment'])
     # The Slack dispatcher delivers the owner's files: it reads the video volume and nothing else of the media worker.
