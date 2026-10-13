@@ -133,6 +133,14 @@ def usage(conn, lineage_id):
             WHERE r.trial_id=t.id AND r.settled_at IS NULL))""", (lineage_id,)).fetchone()["trials"]
 
 
+LINEAGE_EXHAUSTED = "Cumulative scientific lineage budget exhausted"
+
+
+def exhausted(conn, row, authority):
+    """No signed trial capacity left; shared by reservations and planning triage (T8)."""
+    return usage(conn, authority.id) >= min(row["trial_limit"], authority.max_total_trials)
+
+
 def bind_experiment(conn, project_id, lineage_id, trial_id, signature):
     """Only trusted build receipts supply this signature, under the project lock."""
     old = conn.execute("""SELECT lineage_id,trial_id FROM research_scientific_lineage_experiments
@@ -191,7 +199,7 @@ def reserve(conn, spec, trial_id):
                            (trial_id,)).fetchone()
     if pending:
         raise PolicyError("Scientific trial already has an unresolved execution reservation")
-    if usage(conn, authority.id) >= min(row["trial_limit"], authority.max_total_trials):
-        raise PolicyError("Cumulative scientific lineage budget exhausted")
+    if exhausted(conn, row, authority):
+        raise PolicyError(LINEAGE_EXHAUSTED)
     conn.execute("INSERT INTO research_scientific_lineage_trials(trial_id,lineage_id) VALUES(%s,%s) ON CONFLICT DO NOTHING",
                  (trial_id, authority.id))
