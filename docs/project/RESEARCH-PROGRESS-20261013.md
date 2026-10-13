@@ -1,6 +1,6 @@
 # 연구 진행상황 — 2026-10-13
 
-두 번째 실제 경제평가의 계산·결과 수신과 초기 해석이 완료됐다. 현재 독립 검증 단계가 진행 중이며 다음 모델 요청5는 queued다. 지금은 추가 owner 승인 대기가 아니다. 검증 판정과 두 번째 최종 보고서는 아직 없다.
+두 번째 실제 경제평가의 계산·결과 수신과 초기 해석이 완료됐다. 11:28:39 KST 재확인에서는 독립 검증의 모델 요청5가 실제 Astra max/CLI0.160.1 running이다. 지금은 추가 owner 승인 대기가 아니다. 검증 판정과 두 번째 최종 보고서는 아직 없다.
 
 마지막 실제 확인 2026-10-13T02:28:39.458233+00:00에서 audit attempt1은 running, 최신 요청5은 running이며 stage error는 없다. 4개 선행 모델 응답이 완료되어 다음 요청으로 이어졌다. [마지막 상태 읽기](evidence/etf-exploration-20260930/second-result-final-status-check-20261013.json).
 
@@ -16,7 +16,7 @@
 
 ## 검증 서버의 대기와 진행
 
-11:12 확인 시 다음 audit request3가 queued였고, 해당 Temporal activity에 heartbeat timeout 두 건을 확인했다. 서버는 같은 durable request를 재시도했다. 11:17:49 기존 request3의 응답과 commit이 완료됐고, 다음 request4도 11:20:32 완료됐다. 11:22:19에는 다음 request5가 queued다. 현재 stage는 audit/running, task는 pending이며 stage error는 없다. 현재 모델 추론이나 경제평가가 실행 중이라고 표시하지 않는다.
+11:12 확인 시 다음 audit request3가 queued였고, 해당 Temporal activity에 heartbeat timeout 두 건을 확인했다. 서버는 같은 durable request를 재시도했다. 11:17:49 기존 request3의 응답과 commit이 완료됐고, 다음 request4도 11:20:32 완료됐다. 11:22:19에는 다음 request5가 queued였다. 당시 stage는 audit/running, task는 pending이며 stage error는 없었다. 해당 대기 상태를 모델 추론이나 경제평가 실행으로 표시하지 않는다. 11:28:39 재확인에서는 그 요청5의 실제 모델 실행과 fault없음을 확인했다.
 
 기존 request3의 Temporal workflow는 COMPLETED이며 동일 요청을 재사용한 이력을 확인했다. 이 상태 확인에서는 운영자가 계정·runtime·직원 응답을 바꾸거나 새 실험·turn을 만들지 않았다. 반복 heartbeat timeout의 영수증을 보존했으며, 이를 운영자가 원인까지 수정한 것으로 주장하지 않는다.
 
