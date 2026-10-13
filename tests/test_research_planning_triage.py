@@ -203,3 +203,18 @@ def test_commands_are_read_only(tmp_path, conditional):  # noqa: F811
         command(settings, "preview", question="00000000-0000-0000-0000-000000000000", company=company)
     with company.db.transaction() as conn:
         assert conn.execute("SELECT count(*) AS n FROM research_literature").fetchone()["n"] == before
+
+
+def test_replay_uses_task_time_packet_facts(conditional):  # noqa: F811
+    value = bundle_for(conditional)
+    value["packets"] = []
+    first = value["tasks"][0] | {"packet_present": False, "packet_provenance": "fixture: before attachment"}
+    later = value["tasks"][0] | {"id": "00000000-0000-0000-0000-000000000002", "created_at": "2026-09-30T00:00:00Z",
+                                 "proposal": value["tasks"][0]["proposal"] | {"title": "Later fixture task"}}
+    value["tasks"] = [first, later]
+    report = replay(value)
+    first_t7, later_t7 = (next(c for c in task["checks"] if c["code"] == "T7") for task in report["tasks"])
+    assert first_t7["status"] == "fail" and first_t7["message"].startswith("Real data readiness requires")
+    assert "before attachment" in first_t7["message"]
+    assert later_t7["status"] == "not_declared"
+    assert report["summary"]["stopped_before_data_stage"] == 1

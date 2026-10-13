@@ -166,6 +166,10 @@ class ReplayTask(MissionModel):
     declared_estimand: Estimand | None = None
     declared_execution_timing: ExecutionTiming | None = None
     declaration_provenance: str = ""
+    # Packet facts at this task's proposal time; when set they override the envelope snapshot.
+    packet_present: bool | None = None
+    blocking_gaps: list[str] | None = None
+    packet_provenance: str = ""
 
 
 class ReplayBundle(MissionModel):
@@ -218,6 +222,9 @@ def replay(value):
             else:
                 checks["T6"] = passed("T6", task.declaration_provenance)
             fact = packets.get(envelope.name)
+            if task.packet_present is not None:
+                fact = ReplayPacket(envelope=envelope.name, packet_present=task.packet_present,
+                                    blocking_gaps=task.blocking_gaps, provenance=task.packet_provenance)
             if fact is None or fact.packet_present is None:
                 checks["T7"] = skipped("T7", "Packet state at proposal time is not recorded", "not_declared")
             elif not fact.packet_present:
