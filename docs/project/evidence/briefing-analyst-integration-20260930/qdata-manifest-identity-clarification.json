@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-01T04:47:05.194295+00:00",
+  "scope": "Clarifies a misleading boolean in earlier read-only preservation manifests. Original records are retained. No data source or deployment changes.",
+  "field": "qdata_code_archive_identity_preserved",
+  "earlier_boolean_compared": "The entire manifest, including newly declared publicFunctions, rather than code/archive identity",
+  "actual_code_archive_identity_preserved": true,
+  "unchanged_manifest_fields": {
+    "schemaVersion": 1,
+    "repository": "quant-data",
+    "commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+    "baseCommit": "050433aad2f06b9cf58a034cf1c3b4952583fcd7",
+    "archiveSha256": "8bb50549a923f3ec39bb1e6ffce2ac182ed41d368275614e55f60686707a138c",
+    "buildContext": "QDATA_BUILD_CONTEXT (exact committed archive)",
+    "mutatesCollectorOrLake": false
+  },
+  "public_functions_added": [
+    "qdata.api.load_ecos",
+    "qdata.api.load_fred",
+    "qdata.api.load_krx_index",
+    "qdata.api.load_prices"
+  ],
+  "original_manifest_sha256": {
+    "source-preservation-and-preview-manifest.json": "8241f8b2c9eccbc07fe7cf6306511e0fbbb2bf17a343de4ea289a8b4d7130577",
+    "source-preservation-and-preview-manifest-v39.json": "9f5d689217707f9a47c351aa1fd50a5d8938b8ddd053afcd0c67dbbe671db924",
+    "source-preservation-and-preview-manifest-v40.json": "c677d0a1cfc180a9f64712ca17531e9d0d1f6c5ceb1558ea62e5cfa0ce5319bf"
+  },
+  "host_modified": false
+}

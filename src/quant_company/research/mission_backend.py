@@ -24,6 +24,7 @@ from .adaptive_contracts import AdaptiveAssignment, AdaptiveManifest, digest_mod
 from .builds import base_workspace, build_trial, profile_for
 from .mission_contracts import MissionSpec, TrialOutcome
 from .missions import MissionStore
+from .policy_contracts import require_scope, scoped_kwargs
 from .runner import ReportPublisher
 from .worker import read_json, sha_file
 from .workspace import canonical_path
@@ -93,6 +94,28 @@ class MissionBackend:
             return conn.execute("""SELECT id,title,uri,content,available_at,synthetic FROM sources
                 WHERE id=ANY(%s) ORDER BY id""", (sorted(identities),)).fetchall()
 
+    def _data_policy_reports(self, snapshot):
+        """Retain the reviewed data evidence in every exploratory mission and audit."""
+        policy = MissionSpec.model_validate(snapshot["spec"]).data.policy
+        if policy is None:
+            return {}
+        if not snapshot.get("program_id"):
+            raise PolicyError("Exploratory mission has no program data assessment")
+        from .data_evidence import load_packets
+        from .programs import ProgramStore
+
+        with self.company.db.transaction() as conn:
+            store = ProgramStore(self.company)
+            store.require_authorized(conn, snapshot)
+            _, program, spec = store.locked(conn, snapshot["program_id"], active=True)
+            task = conn.execute("SELECT proposal FROM research_program_tasks WHERE mission_id=%s AND state='accepted'",
+                                (snapshot["id"],)).fetchone()
+            envelope = next(e for e in spec.envelopes if e.name == task["proposal"]["envelope"])
+        packet = load_packets(self.company, program, {envelope.name: envelope}).get(envelope.name)
+        if packet is None or packet[0].blocking_gaps:
+            raise PolicyError("Exploratory mission data evidence is unavailable or blocked")
+        return {"exploratory-data/" + name: packet[1]["reports/" + name] for name in policy.evidence_reports}
+
     def _compact(self, snapshot):
         """A navigable index; the full immutable snapshot remains available as a scoped file."""
         fields = ("id", "project_id", "owner_user", "revision", "manifest_digest", "state", "stage", "cycle",
@@ -101,6 +124,14 @@ class MissionBackend:
         if snapshot.get("program_id"):
             result["program_id"] = snapshot["program_id"]
         result["spec"] = snapshot["spec"]
+        spec = MissionSpec.model_validate(snapshot["spec"])
+        if spec.research_scope is not None:
+            result["research_scope"] = spec.research_scope.model_dump(mode="json")
+        if snapshot.get("scientific_lineage") is not None:
+            from .scientific_lineages import summary
+
+            result["scientific_lineage"] = summary(snapshot["scientific_lineage"])
+            result["scientific_lineage"]["full_history_file"] = "mission/scientific-lineage.json"
         result["full_history_file"] = "mission/history.json"
         result["full_spec_file"] = "mission/spec.json"
         result["incumbent_scope"] = (
@@ -125,6 +156,8 @@ class MissionBackend:
             result["spec"] = {key: spec[key] for key in ("schema_version", "title", "kind", "objective", "base_cost_bps",
                 "stress_cost_bps", "risk_constraints", "development", "sealed", "code", "allowed_changes", "resources", "search")}
             result["spec"]["large_data_manifest_file"] = "mission/spec.json"
+            if spec["data"].get("policy") is not None:
+                result["spec"]["data"] = {"policy": spec["data"]["policy"]}
         if len(_json(result)) > 30000:
             raise PolicyError("mission_scope_context_requires_bounded_specification")
         return result
@@ -140,6 +173,11 @@ class MissionBackend:
             "mission/history.json": self._entry(self._blob(directory, "history", snapshot)),
             "mission/spec.json": self._entry(self._blob(directory, "spec", snapshot["spec"])),
         }
+        if snapshot.get("scientific_lineage") is not None:
+            mappings["mission/scientific-lineage.json"] = self._entry(self._blob(
+                directory, "scientific-lineage", snapshot["scientific_lineage"]))
+        for name, data in self._data_policy_reports(snapshot).items():
+            mappings[name] = self._entry(self._file(directory / (hashlib.sha256(data).hexdigest() + ".txt"), data))
         sources = self._sources(snapshot)
         source_index = []
         for source in sources:
@@ -148,6 +186,8 @@ class MissionBackend:
             source_index.append({"source_id": source["id"], "file": name, "title": source["title"][:200]})
         stage = snapshot["stage"]["stage"]
         extra = {"mission": self._compact(snapshot), "evidence_sources": source_index}
+        if snapshot.get("scientific_lineage", {}).get("origins"):
+            extra["required_lineage_reads"] = ["mission/scientific-lineage.json"]
         # Staff can inspect the specific predecessor/critique without paging through
         # the entire append-only history. Full history remains available for older evidence.
         relevant = {}
@@ -277,6 +317,11 @@ class MissionBackend:
                 kwargs = {"repair_source_ids": row["result"]["repair_source_ids"],
                           "repair_rationale": row["result"]["rationale"]}
             self.store.set_plan(conn, current["id"], manifest.trial_id, manifest.plan, actor="engineer", **kwargs)
+            if manifest.spec.scientific_lineage is not None:
+                from .scientific_lineages import bind_experiment
+
+                bind_experiment(conn, project["id"], manifest.spec.scientific_lineage.id,
+                                manifest.trial_id, receipt["code_signature"])
             result = {"proposal": row["result"], "build_receipt": receipt}
             conn.execute("""UPDATE research_mission_stages SET state='completed',result=%s,error=NULL,updated_at=now()
                 WHERE id=%s""", (Jsonb(result), row["id"]))
@@ -363,7 +408,8 @@ class MissionBackend:
                     "worker_id", "claimed_at", "heartbeat_at", "sequence", "updated_at")}
         evidence.update(state="failed", reason=reason, source="terminal_worker_state_record")
         path = self._blob(self.root / "failures" / str(job["id"]), "failure", evidence)
-        return TrialOutcome(id=stable("mission-failure:" + str(job["id"])), plan=manifest.plan,
+        return TrialOutcome(**scoped_kwargs(manifest.spec), id=stable("mission-failure:" + str(job["id"])),
+            plan=manifest.plan,
             status="technical_failure", started_at=job["claimed_at"] or job["created_at"],
             finished_at=job["heartbeat_at"] or job["updated_at"],
             evidence_files={str(path.relative_to(self.root)): sha_file(path)}, failure_code=reason,
@@ -386,6 +432,7 @@ class MissionBackend:
                 validated = self._validated(job)
                 references = {name: hashlib.sha256(content).hexdigest() for name, content in validated.contents.items()}
                 outcome = TrialOutcome(id=stable("mission-outcome:" + str(job["id"]) + ":" + job["artifact_sha256"]),
+                    **scoped_kwargs(validated.manifest.spec),
                     plan=validated.manifest.plan, status="result", started_at=validated.receipt.started_at,
                     finished_at=validated.receipt.completed_at, evidence_files=references,
                     qualification={"path": "qualification.json", "sha256": validated.receipt.qualification_sha256},
@@ -476,7 +523,8 @@ class MissionBackend:
             bindings.append(AuditTrialBinding(trial_id=row["trial_id"], plan_digest=value.manifest.plan_digest,
                 outcome_digest=row["digest"], archive_sha256=value.archive_sha256,
                 implementer_request_id=actors[row["trial_id"]]))
-        binding = AuditBinding(mission_id=snapshot["id"], revision=snapshot["revision"],
+        binding = AuditBinding(**scoped_kwargs(MissionSpec.model_validate(snapshot["spec"])),
+            mission_id=snapshot["id"], revision=snapshot["revision"],
             mission_digest=snapshot["manifest_digest"], validator_request_id=validator_request_id, trials=tuple(bindings))
         history = ReportHistory(current_cycle=snapshot["cycle"],
             cumulative_scientific_trials=sum(trial.receipt.scientific_trials_added for trial in trials),
@@ -484,6 +532,10 @@ class MissionBackend:
             trial_cycles={str(trial.manifest.trial_id): _trial(snapshot, trial.manifest.trial_id)["cycle"] for trial in trials},
             best_trial_id=UUID(snapshot["incumbent_trial_id"]) if snapshot["incumbent_trial_id"] else None,
             last_trial_id=UUID(snapshot["stage"]["trial_id"]))
+        if snapshot.get("scientific_lineage") is not None:
+            from dataclasses import replace
+
+            history = replace(history, scientific_lineage=snapshot["scientific_lineage"])
         return tuple(trials), binding, history
 
     def _audit_context(self, snapshot, row, profile, mappings):
@@ -501,7 +553,7 @@ class MissionBackend:
         qlab_profile = self._qlab_profile()
         package = prepare_audit_package(directory, trials, mission_spec=MissionSpec.model_validate(snapshot["spec"]),
             binding=binding, qlab_profile=qlab_profile, history=history,
-            supplements=audit_supplements(trials))
+            supplements={**audit_supplements(trials), **self._data_policy_reports(snapshot)})
         required_reads = {}
         resident_paths = []
         for chunk in audit_context(package):
@@ -693,6 +745,17 @@ class MissionBackend:
                   "revision": snapshot["revision"], "manifest_digest": snapshot["manifest_digest"],
                   "summary": report["summary"], "report": published,
                   "interpretation": "독립 감사 파일에 연결된 개발구간 연구입니다. 확증·투자 승인은 포함하지 않습니다."}
+        scope = MissionSpec.model_validate(snapshot["spec"]).research_scope
+        scope_metadata = {"research_scope": scope.model_dump(mode="json")} if scope is not None else {}
+        source.update(scope_metadata)
+        if scope is not None and scope.data_mode == "frozen_vintage_retrospective":
+            source["interpretation"] = (
+                "고정 수정본과 가정된 가용 시각의 조건부 사후 연구입니다. 과거 실제 알파·정확 재현·"
+                "분배금 총수익·실제 체결·배치·2026 미노출 확인을 입증하지 않습니다.")
+        policy = report["summary"].get("data_policy")
+        if policy is not None:
+            source["interpretation"] = ("가정하 인과성만 감사한 탐색 연구입니다. 당시 공개 시각·수정 이력은 미확인이고, "
+                                        "가설 생성에만 사용합니다. 확증·운영 승격의 근거로 인정하지 않습니다.")
         content = _json(source).decode()
         if len(content) > 100000:
             raise PolicyError("mission_verified_source_too_large")
@@ -706,10 +769,12 @@ class MissionBackend:
                 raise PolicyError("mission_publication_job_changed")
             conn.execute("""INSERT INTO sources(id,title,uri,content,available_at,project_id,approved,synthetic,metadata)
                 VALUES (%s,%s,%s,%s,now(),%s,true,%s,%s)""",
-                         (source_id, "자율 연구 개발구간 보고서", published["uri"], content, project["id"],
-                          self.company.settings.fixture_mode, Jsonb({"kind": "adaptive_discovery",
+                         (source_id, "한계를 명시한 ETF 탐색 연구 보고서" if policy else "자율 연구 개발구간 보고서",
+                          published["uri"], content, project["id"],
+                          self.company.settings.fixture_mode, Jsonb({**scope_metadata, "kind": "adaptive_discovery",
                           "mission_id": current["id"], "trial_id": live_trial["id"],
-                          "manifest_digest": current["manifest_digest"], "audit_scope_digest": verified.package.scope_digest})))
+                          "manifest_digest": current["manifest_digest"], "audit_scope_digest": verified.package.scope_digest,
+                          **({"data_policy": policy} if policy else {})})))
             self.store.checkpoint(conn, current["id"], live_trial["id"], verify=lambda: publication)
             if meaning is not None:
                 from .library import publish_library
@@ -718,6 +783,8 @@ class MissionBackend:
             task = self.company._new_task(conn, project, "director",
                 f"독립 검증을 마친 연구 출처 {source_id}를 read_source로 읽고 소유자를 태그하여 최종 보고하세요. "
                 "보고서 링크·기존 최선과 이번 결과·개발구간 한계·다음 단계를 짧게 정리하세요. "
+                + ("한계를 명시한 탐색 연구이며 당시 공개 시각·수정 이력은 미확인이라고 명시하세요. "
+                   "확증·운영 승격의 근거로 인정하지 않습니다. " if policy else "") +
                 "새 위임·실험·투자 승인을 추가하지 마세요. 합성 fixture라면 실제 금융 성과가 아님을 명시하세요.",
                 task_id=stable("mission-report:" + live_trial["id"]), status_only=True, kind="answer")
             self.company._new_turn(conn, task)
@@ -746,6 +813,9 @@ class MissionBackend:
                                (snapshot["id"], key)).fetchone()
             if row and row["state"] in {"received", "completed"}:
                 value = MeaningReview.model_validate(row["result"])
+                require_scope(MissionSpec.model_validate(snapshot["spec"]), value)
+                if snapshot["spec"]["data"].get("policy") and value.conclusion == "supported":
+                    raise PolicyError("Retrospective exploration cannot establish supported findings")
                 result = next(o for o in snapshot["outcomes"] if o["id"] == current_trial["result_id"])
                 if str(value.trial_id) != current_trial["id"] or value.outcome_digest != result["digest"]:
                     raise PolicyError("Meaning review is not bound to the validated outcome")

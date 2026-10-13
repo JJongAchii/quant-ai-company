@@ -1,0 +1,47 @@
+{
+  "written_before_model_output": true,
+  "case": "am-20260923-fresh-format9-validation9",
+  "scope": "Assistant reading of sixteen frozen excerpts, not supplied to the writer or reviewer; not independent human expert certification.",
+  "material_checks": [
+    {
+      "topic": "Completed US close and conflicting points",
+      "source_ids": ["7b2633bde4fa7b1522f48fb74eeee469b0c0a755", "f4387486e1fa6d90c353e52e06b53cb2778929fb"],
+      "check": "September 22 close: Dow 51,863.69 (-185.14 points, -0.36%), S&P 500 7,764.64 (-0.06 point, about flat), Nasdaq Composite 27,244.28 (+122.18, +0.45%) at another record. One article prints Dow -85.14 and S&P -0.6 despite those levels; do not silently use its inconsistent point changes."
+    },
+    {
+      "topic": "Technology dispersion, not a broad rally",
+      "source_ids": ["7b2633bde4fa7b1522f48fb74eeee469b0c0a755"],
+      "check": "Sandisk and Micron gained while Uber and Lyft fell. Explain the split between AI/storage beneficiaries and app/service exposures where material; do not infer overall advance/decline breadth from named stocks."
+    },
+    {
+      "topic": "US-Iran meeting versus military threat",
+      "source_ids": ["76c87a7da794dadc1beffc3c11122d11392e15fc", "6dbf4493e26ac8a2f17dff96e4039bc24ef10966", "d28b9c42f8e81f1f69abcafd2dbff333da1d9e44"],
+      "check": "Trump reported a three-hour US-Iran meeting and further talks but disclosed no agreement. The same day he also threatened military escalation, while Iranian military voices threatened retaliation. Keep talks, conditions, agreement and execution distinct."
+    },
+    {
+      "topic": "Oil settlement versus earlier intraday rise",
+      "source_ids": ["f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0", "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d"],
+      "check": "The later reported September 22 close was WTI October $94.59 (-1.2%) and Brent November $99.25 (-1.1%). An earlier CNBC observation had both higher and up, so do not blend it into the close. Saudi pipeline low-rate restart was reported, with partial supply recovery planned by September 26, not full restoration confirmed."
+    },
+    {
+      "topic": "Distinct Fed signals and European inflation",
+      "source_ids": ["f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf", "5da1a91c21adedc0d7f10392e9ab16d284480b1d"],
+      "check": "Collins favored somewhat tighter rates and warned persistent above-target inflation; Barkin said pressure is not merely oil/tariffs and did not commit to a number of future hikes. Williams and Jefferson addressed the functioning of monetary operations and liquidity tools, not a new policy-rate vote. ECB Lane warned about a second energy-price wave while the ECB's existing rate move and forecast are background."
+    },
+    {
+      "topic": "Diesel ban remains under consideration",
+      "source_ids": ["54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb"],
+      "check": "Bessent said a full or partial US diesel export ban was being examined, with Trump supporting a fast decision; no ban was reported implemented. Record US diesel $6.53 per gallon and global supply/US-refiner tradeoff matter if featured."
+    },
+    {
+      "topic": "Korean data date and AI investment status",
+      "source_ids": ["bbd821f9a5d0dcb025ff3f262b5738fcb11cdc3b", "692a6aedcb9ac858e8b9f4d58259c32fa6653eda"],
+      "check": "KOSPI 7,017.91 (+0.15%) and KOSDAQ 834.38 (-0.23%) are September 22 prior-session background, not a September 23 close. The BlackRock-linked 20 trillion won project remained at nonbinding LOI stage with no binding investment or formal task-force meeting; do not present it as financed construction."
+    }
+  ],
+  "lower_priority_or_context": [
+    "The CNBC morning newsletter and SBS all-up US market report refer to the preceding session; do not overwrite the September 22 mixed close.",
+    "Two reported EU sanctions delistings accompany an extension for thousands of other targets, not a wholesale repeal.",
+    "UK local fuel-cost anecdotes do not establish a new global close or Korean firm earnings."
+  ]
+}

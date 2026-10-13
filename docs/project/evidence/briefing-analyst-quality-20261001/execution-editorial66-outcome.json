@@ -1,0 +1,84 @@
+{
+  "state": "closed_failed",
+  "source_commit": "b1f5b8393b67678da912a257a0e9cadc3aacc617",
+  "scope": "Explicit bounded development correction of the completed nine-of-twelve review on historical frozen originals. Preserve source cutoff, actual prior drafts and receipts. Add only the three originals requested by that review from the same frozen candidate set. Two new calls under a distinct development identity: editorial correction and independent full final review. No source refresh, deadline reset, Slack publication or scheduled-timing certification. Normal automatic publication remains enabled.",
+  "model_attempts": [
+    {
+      "phase": "revise",
+      "request_id": "news-brief-e7b4df6d-a174-5730-860e-f4ac452e8814-revise",
+      "state": "fault",
+      "request_sha256": "18ab8f15574e687576c6a0b441865b0c0e7f93a7f93c132525e463abeec6abf3",
+      "started_at": "2026-10-07T13:38:01.206986+00:00",
+      "timeout_seconds": 360,
+      "prompt_chars": 85405,
+      "fault": {
+        "code": "timeout",
+        "message": "Codex timed out; reconcile this request before replacing it."
+      }
+    }
+  ],
+  "completed_model_calls": 0,
+  "inherited_completed_model_calls": 5,
+  "slack_calls": 0,
+  "database_mutations": 0,
+  "automatic_retry": false,
+  "started_at": "2026-10-07T13:37:49.855081+00:00",
+  "closed_at": "2026-10-07T13:44:04.878545+00:00",
+  "source_manifest": {
+    "collected_at": "2026-10-07T11:31:19.783150+00:00",
+    "sealed_at": "2026-10-07T11:31:39.313689+00:00",
+    "candidate_count": 96,
+    "origin_groups": 7,
+    "independent_close_reports": 3,
+    "input_ready": true,
+    "candidate_chars": 196563,
+    "locked_observations": 2,
+    "collection_error_count": 3,
+    "model_selection": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "source": "pinned",
+      "revision": 2
+    },
+    "database_read_only_verified": true
+  },
+  "fresh_collection": false,
+  "scheduled_timing_certification": false,
+  "previous_failed_record_preserved": true,
+  "completed_model_calls_replayed": false,
+  "passed": false,
+  "error_type": "ValueError",
+  "error": "model_fault_no_retry",
+  "reconciliation": {
+    "request_id": "news-brief-e7b4df6d-a174-5730-860e-f4ac452e8814-revise",
+    "state": "failed",
+    "fault": {
+      "code": "timeout",
+      "message": "Codex timed out; reconcile this request before replacing it.",
+      "retry_after_seconds": 0
+    },
+    "started_at": 1791380284.6363032,
+    "completed_at": null,
+    "failed_at": null,
+    "brief_execution": {
+      "output_contract": "brief_editorial_v1",
+      "timeout_seconds": 360,
+      "version": 1
+    },
+    "requested_execution": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh"
+    },
+    "account": {
+      "profile": "primary",
+      "revision": 2
+    },
+    "receipt_sha256": "33ff9580d4f7c0bf674be494bf4b7a24860ed1bbcc4ac137b7b75fde0a02d981",
+    "brief_lane_busy": false,
+    "sessions": [],
+    "recorded_at": "2026-10-07T13:45:59.496169+00:00",
+    "model_calls": 0,
+    "slack_calls": 0,
+    "database_mutations": 0
+  }
+}

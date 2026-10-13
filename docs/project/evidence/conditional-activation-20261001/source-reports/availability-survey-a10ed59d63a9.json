@@ -1,0 +1,222 @@
+{
+  "exact_key_version_survey": [
+    {
+      "delete_markers": 0,
+      "key": "qdata/clean/krx_etf.parquet",
+      "truncated": false,
+      "versions": [
+        {
+          "etag": "\"60a57bd1e44f19b93edb86c1f91d6412\"",
+          "last_modified": "2026-09-30T11:08:15+00:00",
+          "latest": true,
+          "size_bytes": 78876475,
+          "version_id": "null"
+        }
+      ]
+    },
+    {
+      "delete_markers": 0,
+      "key": "qdata/clean/krx_etf_meta.parquet",
+      "truncated": false,
+      "versions": [
+        {
+          "etag": "\"3144eaad7f60cb4a16b25df903c32faf\"",
+          "last_modified": "2026-09-30T11:08:16+00:00",
+          "latest": true,
+          "size_bytes": 24529223,
+          "version_id": "null"
+        }
+      ]
+    },
+    {
+      "delete_markers": 0,
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220801.parquet",
+      "truncated": false,
+      "versions": [
+        {
+          "etag": "\"f32fe591b5ec11d0e5904fc7eec10c3f\"",
+          "last_modified": "2026-07-29T00:09:25+00:00",
+          "latest": true,
+          "size_bytes": 96594,
+          "version_id": "null"
+        }
+      ]
+    },
+    {
+      "delete_markers": 0,
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221229.parquet",
+      "truncated": false,
+      "versions": [
+        {
+          "etag": "\"bc0b24032cb19dcbebf4fc8224d8ab07\"",
+          "last_modified": "2026-07-29T00:09:26+00:00",
+          "latest": true,
+          "size_bytes": 107351,
+          "version_id": "null"
+        }
+      ]
+    },
+    {
+      "delete_markers": 0,
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230102.parquet",
+      "truncated": false,
+      "versions": [
+        {
+          "etag": "\"ff9a67c692fa592bb61eedc0e6f3c68b\"",
+          "last_modified": "2026-07-29T00:09:26+00:00",
+          "latest": true,
+          "size_bytes": 106918,
+          "version_id": "null"
+        }
+      ]
+    },
+    {
+      "delete_markers": 0,
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251230.parquet",
+      "truncated": false,
+      "versions": [
+        {
+          "etag": "\"411c2d5a3995da545e6cc1ee7380e816\"",
+          "last_modified": "2026-07-29T00:09:34+00:00",
+          "latest": true,
+          "size_bytes": 168265,
+          "version_id": "null"
+        }
+      ]
+    }
+  ],
+  "historical_publication_receipts_recovered": false,
+  "local_inventory": {
+    "directories": {
+      "archive/krx_etf": {
+        "exists": false,
+        "files": 0
+      },
+      "logs": {
+        "exists": false,
+        "files": 0
+      },
+      "raw/krx_etf/archive": {
+        "exists": false,
+        "files": 0
+      },
+      "raw/krx_etf/ohlcv": {
+        "exists": true,
+        "file_bodies_read": false,
+        "files": 3579,
+        "filesystem_modification_year_counts": {
+          "2026": 3579
+        },
+        "suffix_counts": {
+          ".parquet": 3579
+        }
+      },
+      "raw/krx_etf/receipts": {
+        "exists": false,
+        "files": 0
+      },
+      "raw/krx_etf/snapshot": {
+        "exists": true,
+        "file_bodies_read": false,
+        "files": 3582,
+        "filesystem_modification_year_counts": {
+          "2026": 3582
+        },
+        "suffix_counts": {
+          ".parquet": 3582
+        }
+      },
+      "raw/krx_etf/vintages": {
+        "exists": false,
+        "files": 0
+      },
+      "receipts/krx_etf": {
+        "exists": false,
+        "files": 0
+      },
+      "vintages/krx_etf": {
+        "exists": false,
+        "files": 0
+      }
+    },
+    "filesystem_times_are_not_source_publication_receipts": true,
+    "root": "/Users/achii/Quant/data-lake"
+  },
+  "named_archive_prefixes": {
+    "backups/qdata/": {
+      "child_prefixes": [],
+      "direct_object_count": 0,
+      "listing_pages": 1
+    },
+    "qdata-raw/archive/krx_etf/": {
+      "child_prefixes": [],
+      "direct_object_count": 0,
+      "listing_pages": 1
+    },
+    "qdata-raw/receipts/krx_etf/": {
+      "child_prefixes": [],
+      "direct_object_count": 0,
+      "listing_pages": 1
+    },
+    "qdata-raw/vintages/krx_etf/": {
+      "child_prefixes": [],
+      "direct_object_count": 0,
+      "listing_pages": 1
+    },
+    "qdata/archive/krx_etf/": {
+      "child_prefixes": [],
+      "direct_object_count": 0,
+      "listing_pages": 1
+    },
+    "qdata/receipts/krx_etf/": {
+      "child_prefixes": [],
+      "direct_object_count": 0,
+      "listing_pages": 1
+    },
+    "qdata/vintages/krx_etf/": {
+      "child_prefixes": [],
+      "direct_object_count": 0,
+      "listing_pages": 1
+    }
+  },
+  "observed_at": "2026-09-30T22:47:28.137271+00:00",
+  "other_unlisted_backups_exist": "unknown",
+  "pipeline_log_metadata": {
+    "listing_pages": 1,
+    "log_bodies_read": false,
+    "object_last_modified_year_counts": {
+      "2026": 109
+    },
+    "objects": 109,
+    "pipeline_key_year_counts": {
+      "2026": 108
+    }
+  },
+  "preparation_clean_bytes_recovered": false,
+  "price_bodies_read_by_this_survey": false,
+  "prior_evidence_sha256": {
+    "docs/project/evidence/etf-raw-lineage-20260930/raw-body-manifest.json": "d1d0b0f87230f075582324ac3882fe5ee041bb3d0d978fda4707f58aa634ff31",
+    "docs/project/evidence/etf-raw-lineage-20260930/raw-lineage-receipt.json": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a",
+    "docs/project/evidence/research-programs-20260929/etf-s3-version-history-readback.json": "24970ad5f509f77bd8cb49bac54fc38c564a915b0361be138bf44ca74b675057",
+    "docs/project/evidence/research-programs-20260930/etf-provenance-recovery.json": "c813a2e9c4e7f6e39aeece7e325283451c71281eb2decb004883962a4718d170"
+  },
+  "production_mutated": false,
+  "raw_dataset_children": {
+    "children": [
+      "qdata-raw/raw/krx_etf/index/",
+      "qdata-raw/raw/krx_etf/ohlcv/",
+      "qdata-raw/raw/krx_etf/profile/",
+      "qdata-raw/raw/krx_etf/snapshot/"
+    ],
+    "direct_object_count": 0,
+    "pages": 1,
+    "prefix": "qdata-raw/raw/krx_etf/"
+  },
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "scope": "listed_mirror_and_known_local_paths_only_not_all_possible_backups",
+  "script_sha256": "2afd85e6a73d3565fe93991ef6e5c1a6820f296572e38bd89f38a2a8ac6dca60",
+  "sealed_price_rows_read": false,
+  "source_policy_is_not_per_session_receipt": true,
+  "strategy_performance_computed": false
+}

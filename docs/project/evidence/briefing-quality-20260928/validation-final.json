@@ -1,0 +1,28 @@
+{
+  "recorded_at": "2026-09-28T01:13:10.095300+00:00",
+  "policy": "evaluation-policy-final.json",
+  "format_version": 8,
+  "validation_version": 6,
+  "selection_version": 3,
+  "frozen_policy_files_unchanged": true,
+  "final_scoped_regression": {
+    "command": "UV_CACHE_DIR=/private/tmp/uv-cache uv run pytest -q tests/test_briefing.py tests/test_briefing_analyst.py tests/test_briefing_content.py tests/test_briefing_quality.py tests/test_briefing_temporal.py --junitxml=docs/project/evidence/briefing-quality-20260928/briefing-final.xml",
+    "junit": "briefing-final.xml",
+    "junit_sha256": "fce15691586b589757700e40de02e93f2c326b73e4baec4a5c3110dd657eab57",
+    "tests": 103,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 41.775,
+    "temporal_tests": 3
+  },
+  "prior_full_regression": {
+    "receipt": "validation-v5.json",
+    "passed": 1087,
+    "skipped": 36,
+    "scope": "Format 7 / validation 5; do not claim full regression on final format 8 / validation 6."
+  },
+  "ruff": "UV_CACHE_DIR=/private/tmp/uv-cache uv run ruff check . passed",
+  "git_diff_check": "passed",
+  "environment": "Real isolated local PostgreSQL and local Temporal; fixture model and simulated Slack in pytest. Actual model receipts are separate."
+}

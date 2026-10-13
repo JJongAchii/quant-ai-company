@@ -1,0 +1,21 @@
+{
+  "completed_codex_turns": 27,
+  "completed_staff_report_reads": 3,
+  "curve_shape_mismatches": 0,
+  "data_readiness_granted": false,
+  "exact_staff_report_copies": 4,
+  "missing_raw_dates": 0,
+  "observed_at": "2026-09-30T08:18:17.740154+00:00",
+  "operator_script_sha256": {
+    "attach-etf-provenance.py": "657d120ec8763d83dc01727a24da8e93d966c1579bdad701ab96e368b733f9bc",
+    "read-etf-provenance-stage.py": "10139471c6016b196d157125e0a8f0910b949cc0ca5f94d3413c7142e199b261",
+    "trace-etf-provenance.py": "151c2d6119e2ee96c1bf99b7c2c2a8728068e68739a500a625412a293eea3bdc"
+  },
+  "raw_object_sessions": 835,
+  "rows_checked": 8350,
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "strategy_performance_computed": false,
+  "verification": "actual pinned qdata API reconstruction; installed-service packet qualification and atomic evidence attachment; actual PostgreSQL staff readback",
+  "whole_repository_ruff": "passed_after_integrating_9089a7c_with_new_provenance_evidence"
+}

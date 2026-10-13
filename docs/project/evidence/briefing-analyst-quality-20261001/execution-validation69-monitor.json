@@ -1,0 +1,55 @@
+{
+  "recorded_at": "2026-10-07T23:14:21.292841+00:00",
+  "publication_enabled": true,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "database_mutations": 0,
+  "continuous": null,
+  "problems": null,
+  "editions": [
+    {
+      "id": "f8004fe8-789b-5df2-8dfa-a06f11903d91",
+      "kind": "am",
+      "day": "2026-10-08",
+      "due_at": "2026-10-08T07:45:00+09:00",
+      "state": "committed",
+      "content_passed": false,
+      "checks_passed": 0,
+      "delivery": "confirmed",
+      "delivered_at": "2026-10-07T22:55:02.743289+00:00",
+      "delivery_delay_seconds": 602.743,
+      "problems": [
+        "execution_failed",
+        "late_brief",
+        "full_content_not_qualified",
+        "late_slack_delivery"
+      ]
+    },
+    {
+      "id": "91dd3647-e807-5370-8a2c-14226429dd3f",
+      "kind": "pm",
+      "day": "2026-10-08",
+      "due_at": "2026-10-08T17:45:00+09:00",
+      "state": "waiting",
+      "content_passed": false,
+      "checks_passed": null,
+      "delivery": "not_requested",
+      "delivered_at": null,
+      "delivery_delay_seconds": null,
+      "problems": []
+    },
+    {
+      "id": "b463d3df-94d9-5a93-be1d-4454dadbf098",
+      "kind": "am",
+      "day": "2026-10-09",
+      "due_at": "2026-10-09T07:45:00+09:00",
+      "state": "waiting",
+      "content_passed": false,
+      "checks_passed": null,
+      "delivery": "not_requested",
+      "delivered_at": null,
+      "delivery_delay_seconds": null,
+      "problems": []
+    }
+  ]
+}

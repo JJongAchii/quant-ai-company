@@ -1,0 +1,37 @@
+{
+  "checked_at": "2026-09-30T06:27:15.094413+00:00",
+  "scope": "read-only host inventory and officially published BLS formats; no DB or Slack write",
+  "inventory": {
+    "current_release": "/opt/quant-company/releases/f1947f4bf22471816a352ec848d373c4d6d97267",
+    "release_commit": "dccf7a78e28fb36ac05bb021fc0c1d27f6b1f7bf",
+    "briefing_enabled": "false",
+    "briefing_publish_enabled": "false",
+    "briefing_channel_id": "",
+    "role_present": false,
+    "credential_present": true,
+    "credential_fields": [
+      "app_id",
+      "app_token",
+      "bot_token",
+      "bot_user_id",
+      "signing_secret"
+    ]
+  },
+  "bls": [
+    {
+      "format": "html",
+      "url": "https://www.bls.gov/schedule/2026/09_sched.htm",
+      "status": 403
+    },
+    {
+      "format": "list",
+      "url": "https://www.bls.gov/schedule/2026/09_sched_list.htm",
+      "status": 403
+    },
+    {
+      "format": "ics",
+      "url": "https://www.bls.gov/schedule/news_release/bls.ics",
+      "status": 403
+    }
+  ]
+}

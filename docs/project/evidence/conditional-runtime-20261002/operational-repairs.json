@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "source_commit": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+  "recorded_at": "2026-10-02T06:22:01.206387+00:00",
+  "technical_failures": [
+    {
+      "stage": "worker_activation_01",
+      "reason": "ordinary process cwd inspection denied",
+      "restoration": "old config and unit restarted; retained release preserved"
+    },
+    {
+      "stage": "worker_activation_02",
+      "reason": "ExecStart includes changing process timestamps; comparison had to use command fields",
+      "restoration": "old config and unit restarted"
+    },
+    {
+      "stage": "server_cutover_01",
+      "reason": "new managed directory inherited restrictive root umask",
+      "restoration": "compatible previous services/config restored; immutable staged bytes retained"
+    },
+    {
+      "stage": "guarded_server_retries",
+      "reason": "busy shared lock and independently changed roles; no effects before preflight",
+      "restoration": "captured current role bytes and new baseline"
+    },
+    {
+      "stage": "model_ledger_recovery_attempt_01",
+      "reason": "additional process ended with137; state was independently reread before continuation",
+      "restoration": "networkless isolated validation and conditional ledger update; no model invocation or feed commit"
+    }
+  ],
+  "repairs": {
+    "managed_directory": "exact retained file hashes checked; uid10001 and mode0555",
+    "selected_import_paths": "PYTHONPATH explicitly points to qualified source and every installed service source is hashed",
+    "worker_start": "preserved actual existing interpreter/ExecStart; checked clean pin, fresh start and systemd WorkingDirectory; NoNewPrivileges retained"
+  },
+  "scientific_trials_added": 0,
+  "protected_engine_changed": false,
+  "sealed_prices_read": false,
+  "candidate_performance_computed": false
+}

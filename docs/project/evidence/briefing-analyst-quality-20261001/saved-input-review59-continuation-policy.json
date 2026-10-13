@@ -1,0 +1,23 @@
+{
+  "recorded_at": "2026-10-07T02:35:28.910617+00:00",
+  "case": "analyst-saved-input-schema-repair-20261007",
+  "request_id": "news-brief-bb1277ee-79d6-5154-af9e-0924b02ad067-review",
+  "request_sha256": "5c96c3a4cadac24f9da5fa8c11ae1caad9a6f5ea34e4ae0a041a00044478bdc2",
+  "controller_sha256": "32c4f7d0e994f4c8469f168856ad26dfb24ce7f3d37b7d5887cdd39797bf0291",
+  "sdk_image_id": "sha256:6410935ccd43590e960a13d7555d097fb1feff720d6ab4e57afb2a2e8ecb79ca",
+  "scope": "One independent full-original-to-visible-main saved-input review after one confirmed source-preserving manual correction. Not fresh/on-time/five-day qualification.",
+  "original_case_receipt_preserved": true,
+  "completed_writer_calls": 1,
+  "additional_model_calls_cap": 1,
+  "maximum_total_model_calls": 4,
+  "max_repairs": 1,
+  "writer_replay": false,
+  "slack_calls": 0,
+  "criteria": "All12 unchanged; zero mechanical rejection, complete original accounting, independent main-only audit.",
+  "original_licensed_source_chars": 50029,
+  "source_snapshot_changed": false,
+  "transport_context_limit": 88000,
+  "transport_fix": "Only remove duplicate typed prose/proof inventory from the critic; complete unchanged originals, own-source attribution, actual annotated main text and all stable visible IDs retained.",
+  "raw_provider_sha256": "b2e9df190c8687a53729e4a07da46ef3cefc0474aed54904f3acf9cd7ab03670",
+  "derived_draft_sha256": "5ba8f3a14d832a97e7bc8758430cd556ab57857dfb5c0a7b68100d4a73b13304"
+}

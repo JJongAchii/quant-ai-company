@@ -1,0 +1,8 @@
+{
+  "source_commit": "0ff6657f98b175162609259394b1cec20382904a",
+  "run_id": 37411764420,
+  "status": "completed",
+  "conclusion": "success",
+  "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37411764420",
+  "scope": "Exact integrated source including actual installed research baseline; PostgreSQL/Temporal/service CI. Model and Slack integration checks remain simulated."
+}

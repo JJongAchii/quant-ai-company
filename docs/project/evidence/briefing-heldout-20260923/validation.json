@@ -1,0 +1,27 @@
+{
+  "recorded_at": "2026-09-23T02:09:30.624665+00:00",
+  "suite": {
+    "command": "UV_CACHE_DIR=/private/tmp/uv-cache uv run pytest -q --junitxml=docs/project/evidence/briefing-heldout-20260923/regression-final.xml",
+    "tests": 1108,
+    "passed": 1072,
+    "skipped": 36,
+    "failures": 0,
+    "errors": 0,
+    "briefing_temporal_tests": 3,
+    "briefing_temporal_skipped": 0,
+    "junit_sha256": "532739315739118504ad8d19c61f5adf00f13596e7efcc61eadd302267bb24d0"
+  },
+  "late_qualification_check": "passed separately after the full suite began, against the same local PostgreSQL",
+  "ruff": "uv run ruff check . passed after code changes",
+  "files_sha256": {
+    "src/quant_company/briefing/editor.py": "dd0a9b92d9b83923135d9a3e606049d0e88b34795e78b9d76fa0539d3feac741",
+    "src/quant_company/briefing/coverage.py": "f7736f6f848531c35c115656585bc7a8b4a8e06c9617fba07ff651ec4d412496",
+    "src/quant_company/briefing/store.py": "1af55a409c76f0bd766f4bb4d738979bb208c80a9b6bafc6abe148e4a039ed0d",
+    "src/quant_company/briefing/qualification.py": "95615bb26a45e191011a4af22d5c4a2a08911633e1006aa46c7e7dac69334b93",
+    "scripts/evaluate_briefing.py": "096e3393573e0e5af126369fe171ae65340f4bb9e4d42b3e8e6ef92c80a3a858",
+    "tests/test_briefing_content.py": "067e5368196ee16806f7f710b4d210af496d7b481c2b57225c3f9f9f72be2d99",
+    "tests/test_briefing_quality.py": "1df2c773960581f29326c7a664ef8915bd0a1dc1482cd00b1a6e4de01976cafe"
+  },
+  "source_snapshot_sha256": "08576c88e2edc261d3eebdbade92ff913a80b72e5a8cab653998fd04d5c95fb0",
+  "model_and_slack_scope": "The pytest suite uses fixture model and simulated Slack; actual subscription-model receipts are evaluated separately. No Slack send."
+}

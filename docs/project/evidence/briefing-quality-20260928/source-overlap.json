@@ -1,0 +1,19 @@
+{
+  "am-20260924": {
+    "count": 16,
+    "previously_selected_ids": [],
+    "previously_selected_urls": [
+      "https://www.etoday.co.kr/news/view/2628820"
+    ]
+  },
+  "pm-20260923": {
+    "count": 16,
+    "previously_selected_ids": [
+      "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0"
+    ],
+    "previously_selected_urls": [
+      "https://www.etoday.co.kr/news/view/2628820",
+      "https://www.etoday.co.kr/news/view/2628817"
+    ]
+  }
+}

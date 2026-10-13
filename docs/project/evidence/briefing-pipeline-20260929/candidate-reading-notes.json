@@ -1,0 +1,61 @@
+{
+  "written_before_planner_and_writer": "2026-09-29T01:10:11.010474+00:00",
+  "scope": "Independent reading of candidate originals before model response; add remaining selected-source notes before writer; not shared with model.",
+  "checks": [
+    {
+      "topic": "us_close",
+      "source_ids": [
+        "7749fe93a900fb36780cd09f8495a9b1607192d6",
+        "584a1c794f77cc0b80f80e9e5ca8789382b8e338"
+      ],
+      "expectation": "US September 28 close S&P 7683.69 -0.77%, Nasdaq 26820.38 -0.92%, Dow 51481.51 -0.67%; semiconductor index -1.61%, Nvidia +1.68% diverges. Do not reuse the Korean Monday close as today."
+    },
+    {
+      "topic": "rates_and_policy",
+      "source_ids": [
+        "7749fe93a900fb36780cd09f8495a9b1607192d6",
+        "584a1c794f77cc0b80f80e9e5ca8789382b8e338",
+        "c4805b63bb785aa49baeefaa00db7b7100fc208a",
+        "b8eea4f79a2254ac97fb27339badd965b5fc3a39",
+        "d9147bb241a05e9fbf6d6170ba1c1e006aef2b8c"
+      ],
+      "expectation": "10-year 5.241% at 3pm US versus earlier 5.234%; 2-year 4.918% earlier. FedWatch 70.3% is market pricing, prior week 57.6%, not a decided hike. Current rate 3.75-4.00% after +0.25pt with Collins and Musalem views; Bessent argues productivity and cautions against further tightening, not a Fed decision. Quantify the rate channel and preserve contrary policy view if selected."
+    },
+    {
+      "topic": "oil_and_talks",
+      "source_ids": [
+        "09e24b0727ec06db4de910d618075f316dfdea66",
+        "6409347ee0adfd3f26bacfac42828177f454c522",
+        "527e9cdf701add700af4b2fa5bff8af5d93f06c4",
+        "36aca3ef6704a4b44d528b7aec193b22fefc9da6"
+      ],
+      "expectation": "Oil pared >4% intraday spike: Brent November 105.28 +0.92% reported settlement; WTI 92.60 +0.21% source calls October contract, avoid inferring settlement timestamp or correcting its month without proof. Saudi pipeline recovery reported 3.5m bpd versus 7m max and US conditional sanctions relief are actual mitigating reports. Iran denies direct NY talks while mediator separate meetings are reported; these can coexist. Seven-day offer rejected, no agreement or implemented reopening."
+    },
+    {
+      "topic": "equity_breadth",
+      "source_ids": [
+        "65bda2f95b7ea8fa74713799f926c534943a9684"
+      ],
+      "expectation": "45% negative 3-month beta Goldman versus CNBC nearly40%; historical multi-month correlation statistic, not share of stocks declining in latest session. Tech concentration and energy offsets; dotcom analogy qualified by mature cash-generating tech."
+    },
+    {
+      "topic": "ai_corporate_policy",
+      "source_ids": [
+        "bf30ef2919921ff1f6394969bf817145f63da58f",
+        "b0f48035fff19831f03849bd21d596e5af2a513d",
+        "df3a633ac3b71b46af3b1e7c2c5c23f1759db6c2"
+      ],
+      "expectation": "Nvidia buyback authorized +150bn to235bn, not already executed; AMD agrees all-stock8.2bn World Labs deal closing later this year, not completed and not same-session cause for after-close release. Khanna proposed recursive-AI restrictions/auditors/liability are legislation being introduced with no House vote expected before midterms, not active bans."
+    },
+    {
+      "topic": "next_checks",
+      "source_ids": [
+        "c4805b63bb785aa49baeefaa00db7b7100fc208a",
+        "d9147bb241a05e9fbf6d6170ba1c1e006aef2b8c"
+      ],
+      "expectation": "Tuesday JOLTS forecast7.24m vs7.27m; Sep30 PCE headline0.4%mom/core0.3% forecasts, Oct2 employment100k forecast. Only supplied original release times; far dates in prose if outside calendar2day window. Preserve Korea implications and observable condition that could weaken rates/energy explanation."
+    }
+  ],
+  "selection_rule": "Choose full close/corroboration, large rate/oil move, observed opposing supply or diplomacy development, important AI corporate/policy event, and near-term releases. Generic routine news must not displace these. Inspect chosen full text rather than trusting source-plan reasons.",
+  "publication": "disabled"
+}

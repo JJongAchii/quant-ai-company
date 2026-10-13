@@ -103,6 +103,11 @@ def targets(company, conn, project):
 
 def short_command(text):
     value = re.sub(r"[.!。]+$", "", text.strip()).strip()
+    cancel = re.fullmatch(r"연구 프로그램 취소 ([a-f0-9-]{36}) ([a-f0-9]{64})", value)
+    if cancel:
+        return {"action": "cancel_program", "program_id": cancel[1], "manifest_digest": cancel[2]}
+    if value.startswith("연구 프로그램 취소"):
+        return {"action": "clarify"}
     if re.fullmatch(r"(?:연구\s+)?(?:승인|승인해|승인해줘|승인해 줘|승인해 주세요|승인합니다)", value):
         return {"action": "approve_pending"}
     if value == "연구 취소":
@@ -206,7 +211,26 @@ def apply_owner_command(company, conn, project, task, event_key, command, contex
                   or event.channel != project["channel"] or event.thread_ts != project["thread_ts"]
                   or event.team_id != company.settings.slack_team_id):
         raise PolicyError("Research owner event does not match this thread")
-    if command["action"] in {"approve", "cancel", "status"} and not (event and event.binding):
+    if command["action"] == "cancel_program":
+        choices = targets(company, conn, project)
+        current = [t for t in choices if t.kind == "program"
+                   and str(t.target_id) == command["program_id"]
+                   and t.manifest_digest == command["manifest_digest"]
+                   and t.revision == project["revision"]
+                   and t.state in {"active", "pending_approval"}]
+        fresh = bool(event and event.origin == "event_callback" and len(current) == 1
+                     and Decimal(event.event_ts) >= Decimal(str(current[0].created_at.timestamp())))
+        if project["status"] != "active" or not fresh:
+            result = _explain(company, conn, project, task, choices, "취소할 현재 프로그램의 전체 ID와 digest를 확인할 수 없습니다.")
+            target = None
+        else:
+            selected = current[0]
+            company._event(conn, "research_approval_authorized", {"schema_version": 1,
+                "owner_event_id": event_key, "task_id": str(task["id"]), "action": "cancel",
+                "target": selected.model_dump(mode="json"), "provenance": event.model_dump(mode="json")}, project["id"])
+            adapters(company)["program"].apply(conn, project, task, event_key, "cancel", selected)
+            target, result = str(selected.target_id), "cancel"
+    elif command["action"] in {"approve", "cancel", "status"} and not (event and event.binding):
         result = ResearchStore(company).owner_command(conn, project, task, event_key, command)
         target = command.get("job_id")
     else:

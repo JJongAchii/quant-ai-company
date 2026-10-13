@@ -1,0 +1,85 @@
+{
+  "approved_engine_history_comparison": {
+    "first_signal_history_rows_per_ticker": {
+      "069500": 104,
+      "102110": 104,
+      "153130": 104,
+      "157450": 104,
+      "196230": 104,
+      "214980": 104,
+      "229200": 104,
+      "305720": 104,
+      "357870": 104,
+      "371460": 104
+    },
+    "history_rows_compared": 3420050,
+    "max_relative_error": 8.759892516049765e-16,
+    "rebased_price_mismatches": 0,
+    "same_day_or_future_rows_exposed": 0,
+    "signal_dates_checked": 730,
+    "source_publication_or_revision_times_proven": false,
+    "uses_generated_available_at_assumption": true
+  },
+  "approved_input_files": {
+    "development.json": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574",
+    "warmup.json": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81"
+  },
+  "approved_inputs_changed": false,
+  "claims_not_established": [
+    "historically_received_point_in_time_vintage",
+    "actual_order_fills_or_cash_distribution_total_return",
+    "GMM_feature_validity_fitting_or_profitability"
+  ],
+  "current_api_panel": {
+    "bytes": 1313757,
+    "cohort": [
+      "069500",
+      "229200",
+      "153130",
+      "214980",
+      "196230",
+      "157450",
+      "371460",
+      "102110",
+      "357870",
+      "305720"
+    ],
+    "preparation_source_bytes_recovered": false,
+    "rows": 8350,
+    "sessions": 835,
+    "sha256": "84994bb5141434483581d42622b4545d543b23f010a4c7830e9a4acd0974c7de",
+    "stored_private": true,
+    "window": {
+      "end": "2025-12-30",
+      "start": "2022-08-01"
+    }
+  },
+  "current_api_source": {
+    "etag": "\"60a57bd1e44f19b93edb86c1f91d6412\"",
+    "last_modified": "2026-09-30T10:25:52+00:00",
+    "size_bytes": 78876475,
+    "uri": "s3://insight-invest-datalake/qdata/clean/krx_etf.parquet",
+    "version_id": null
+  },
+  "current_vs_approved_field_differences": {
+    "adj_close": 8350
+  },
+  "data_readiness_decision": "not_made",
+  "observed_at": "2026-09-30T10:43:11.878090+00:00",
+  "performance_computed": false,
+  "production_mutated": false,
+  "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "protected_engine_sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+  "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52",
+  "qdata_package_files_verified": 47,
+  "remaining_gaps": [
+    "preparation_source_bytes_and_original_transform_receipt",
+    "historical_publication_collection_and_revision_receipts"
+  ],
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "scope": "protected_history_equivalence_and_current_api_export_only",
+  "script_sha256": "f060a3fd5bc73d4ee2b0040b21fb1a95fbcfe8f0882c297a33681e77e624ef22",
+  "sealed_price_rows_returned_or_used": false,
+  "strategy_or_prediction_code_called": false
+}

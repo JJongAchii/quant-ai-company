@@ -1,0 +1,52 @@
+{
+  "recorded_at": "2026-10-07T23:02:53.365016+00:00",
+  "source_commit": "ca5ebb3eafd217e801f1e39bcf990bd5dc2abc4c",
+  "scope": "Historical Oct7 frozen-original development review using isolated staged68 image; not a fresh or scheduled qualification.",
+  "state": "closed",
+  "passed": false,
+  "completed_model_calls": 1,
+  "attempts": [
+    {
+      "phase": "final_review",
+      "state": "completed",
+      "seconds": 423.843,
+      "timeout_seconds": 720,
+      "prompt_chars": 87708,
+      "request_sha256": "6b498766101616f2722932ff5571f45a06bb4e0b2d8202d126d2b237c7142379",
+      "usage": {
+        "input_tokens": 46341,
+        "cached_input_tokens": 0,
+        "output_tokens": 18353,
+        "reasoning_output_tokens": 9840
+      }
+    }
+  ],
+  "checks": {
+    "numbers": true,
+    "sources": true,
+    "timing": true,
+    "causality": true,
+    "materiality": false,
+    "counterevidence": true,
+    "transmission": true,
+    "alternatives": true,
+    "falsifiability": true,
+    "coverage": false,
+    "depth": true,
+    "readability": false
+  },
+  "verdict": "reduce",
+  "mechanical_rejections": {},
+  "source_notes_violations": [],
+  "slack_calls": 0,
+  "database_mutations": 0,
+  "preserved_completed_editorial_response_reused": true,
+  "remaining_issues": [
+    "Missing real trade-balance deterioration and persistence of growth drag",
+    "Missing attributed existing company investment exposure",
+    "Repeated unit/conditions and unexplained industry terminology",
+    "Further discovery questions could not be read within the frozen source budget"
+  ],
+  "actual_response_sha256": "e6fe44dcd624cd0d272de116b3ea86acdd39de5a11682a97f0fb072e9962c7bc",
+  "quality_certified": false
+}

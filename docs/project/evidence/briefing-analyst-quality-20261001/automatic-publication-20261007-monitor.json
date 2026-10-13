@@ -1,0 +1,57 @@
+{
+  "recorded_at": "2026-10-07T07:13:26.811357+00:00",
+  "source_commit": "bfa923b392cc880e54978cc28041970d6cc06dd6",
+  "monitor_commit": "202c01fbc044d84a07e5350e94b2e624ea4b764e",
+  "script_sha256": "e58284dd51d1765ffdf184d7260b11cc54b30ecfc16712c41dabd42a0d03025f",
+  "policy_sha256": "e86fe536d793724d8361bf15074ebda27070b2d249ed3cb59c78ba64ca25b3aa",
+  "unit_hashes": {
+    "service": "171fe38f886b55743d3f02e072a45982d8e4e3f757ac05c21fa5010041f1632d",
+    "timer": "7321e84ad87a83b6359825c1cadb120e186e2d9f0049920bb21f135f0769ff54"
+  },
+  "calendar_utc": [
+    "*-*-* 22:58:00 UTC",
+    "*-*-* 08:58:00 UTC"
+  ],
+  "timer": "NextElapseUSecRealtime=Wed 2026-10-07 08:58:00 UTC\nActiveState=active",
+  "retired_bounded_timer": "ActiveState=inactive\nUnitFileState=disabled",
+  "initial_service": "Result=success\nExecMainStatus=0",
+  "initial_editions": [
+    {
+      "id": "3042a447-de8b-55fe-9a56-72014df5c2b9",
+      "day": "2026-10-07",
+      "kind": "pm",
+      "due_at": "2026-10-07T17:45:00+09:00",
+      "state": "waiting",
+      "delivery": "not_requested",
+      "problems": []
+    },
+    {
+      "id": "f8004fe8-789b-5df2-8dfa-a06f11903d91",
+      "day": "2026-10-08",
+      "kind": "am",
+      "due_at": "2026-10-08T07:45:00+09:00",
+      "state": "waiting",
+      "delivery": "not_requested",
+      "problems": []
+    },
+    {
+      "id": "91dd3647-e807-5370-8a2c-14226429dd3f",
+      "day": "2026-10-08",
+      "kind": "pm",
+      "due_at": "2026-10-08T17:45:00+09:00",
+      "state": "waiting",
+      "delivery": "not_requested",
+      "problems": []
+    }
+  ],
+  "result_path": "/var/lib/quant-company/monitoring/analyst-continuous/results/latest.json",
+  "publication_enabled": true,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "database_mutations": 0,
+  "alert_delivery": "Metadata persisted; no automatic Slack alert or model repair.",
+  "automatic_replay": false,
+  "automatic_publication_changed": false,
+  "end_date": null,
+  "quality_certified": false
+}

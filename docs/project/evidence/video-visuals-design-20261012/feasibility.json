@@ -1,0 +1,120 @@
+{
+  "record": "video-visuals-design-20261012",
+  "purpose": "Feasibility checks for per-episode visuals (owner request 2026-10-12: more varied, story-specific images; real photos or realistic images for trust; Codex gpt-image)",
+  "current_state": {
+    "library": "14 human-curated images in /var/lib/quant-company/video-assets (11 illustrations, 3 photos); one image per tag, so the same picture repeats (for example 'investors-flow' for every 수급 scene)",
+    "template": "fixed card template, 12 card types (docs/DAILY_BRIEF_DESIGN_SPEC.md)",
+    "style_rule": "DAILY_BRIEF_DESIGN_SPEC section 9: one fixed flat/isometric editorial style, brand colours, no text, logos, real people, real buildings or specific events; no photo-like generated images",
+    "server_codex": "codex-runtime passes features.image_generation=false and disables the shell tool (providers/codex_runner.py DISABLED_FEATURES); no per-episode image generation is wired"
+  },
+  "codex_image_generation_local": {
+    "at": "2026-10-12T08:05Z",
+    "cli": "codex-cli 0.160.1 on the owner's Mac, ChatGPT login, features.image_generation=true, ephemeral scratch directory",
+    "prompt": "16:9 editorial illustration: semiconductor wafer with glowing memory chips and an upward trend line, isometric editorial style, navy/gold/cream, no text, letters, logos or people",
+    "result": {
+      "seconds": 117,
+      "size": "1920x1080 PNG",
+      "sha256": "0582600a53906acd149eb2b2626d37baf05f74c7b38eb6ecea9644a548deafcb",
+      "evidence_copy": "codex-sample-wafer.jpg (960 px JPEG)",
+      "usage_tokens": {
+        "input": 140206,
+        "cached_input": 106880,
+        "output": 1228
+      },
+      "assessment": "brand palette, no text/logo/people, polished semi-realistic 3D editorial look; reads as an illustration, not a photo of an event"
+    },
+    "mechanics": "Codex used its built-in imagegen skill; the image was written under CODEX_HOME/generated_images/<thread>/ and the agent copied and resized it with shell commands. A server lane should keep the shell disabled and have the runtime collect the file from generated_images itself.",
+    "not_yet_verified": "verified on the server the same day (see codex_image_generation_server)"
+  },
+  "wikimedia_commons_search": {
+    "api": "commons.wikimedia.org/w/api.php generator=search, prop=imageinfo with extmetadata (LicenseShortName, Artist, AttributionRequired, Restrictions)",
+    "filter": "CC0, public domain or CC BY (no SA), width >= 1600 px, no Restrictions",
+    "results": [
+      {
+        "query": "Samsung Electronics Pyeongtaek",
+        "license_ok": 11,
+        "problem": "top results are White House photos of a 2022 presidential visit (identifiable real people, a specific event)"
+      },
+      {
+        "query": "oil tanker strait of Hormuz",
+        "license_ok": 8,
+        "problem": "top results are U.S. Navy photos of a destroyer after a collision (wrong subject, misleading for an oil story)"
+      },
+      {
+        "query": "Korea Exchange Yeouido",
+        "license_ok": 0,
+        "problem": "no results"
+      },
+      {
+        "query": "container ship Busan port",
+        "license_ok": 5,
+        "problem": "mostly military cargo operations; one usable NASA satellite image of the port"
+      }
+    ],
+    "conclusion": "licence metadata is reliable and automatic; relevance is not. Automatic selection is unsafe: candidates must be checked visually (Claude with image attachments) against rules (subject match, no identifiable people, no accident/military/event photos) before use, and accepted photos cached in the library."
+  },
+  "codex_image_generation_server": {
+    "at": "2026-10-12T08:18Z (17:18 KST), codex-runtime idle (no codex exec running)",
+    "how": "one codex exec inside quant-company-codex-runtime-1 as uid 10001 with the runtime's restrictive flags (ignore user config, read-only sandbox, ephemeral, no MCP/apps/agents/memories), model gpt-6-astra, reasoning low, features.image_generation=true, shell_tool/unified_exec/view_image false",
+    "result": {
+      "exit": 0,
+      "seconds": 36,
+      "file": "CODEX_HOME/generated_images/<thread>/exec-<uuid>.png",
+      "size": "1672x941 PNG, 2,032,016 bytes",
+      "sha256": "cf88922bc03843f5eab5b93a8513fcb100714d2b3872912f594f4f2b0c39bc65",
+      "evidence_copy": "server-codex-sample-port.jpg",
+      "usage_tokens": {
+        "input": 20177,
+        "output": 184
+      },
+      "commands_run_by_model": 0
+    },
+    "assessment": "the tool works with the shell disabled and writes the file itself; output is photorealistic (container ship at a port at dawn, brand colours, no text/logo/people). Photorealistic generated images get an on-screen 'AI 생성 이미지' chip and a YouTube altered/synthetic-content reminder in the delivery message.",
+    "cleanup": "the test image was copied out and deleted from the runtime's generated_images (directory empty afterwards)"
+  },
+  "deployment_20261012": {
+    "decision": "owner: '응 너가 최적의 방법으로 진행해줘' / '그냥 해' (recommended options: realistic editorial scenes allowed with an on-screen chip, real photos only after Claude's visual check, picture generation first)",
+    "why_separate_service": "the running codex-runtime is built from another lineage (codex_release.py, CLI 0.160.1; the worktree pins 0.154.0) and serves briefing and news, so it is not modified; video-image-runtime reuses its runner parts and login with its own receipts",
+    "image_runtime": {
+      "module": "src/quant_company/providers/video_image_runtime.py",
+      "image": "quant-company-codex:5e885d0a-combined71-3-retryid-image2",
+      "compose": "/var/lib/quant-company/releases/video-image-runtime-20261012/video-image-runtime.compose.yaml (added to the video-worker compose set)",
+      "features": "image_generation plus the code-mode bridge (code_mode, code_mode_host, code_mode_only) that exposes it in CLI 0.160.1; shell, files, apps, MCP, agents, memories and web stay disabled",
+      "first_attempt": "image1 disabled the code-mode bridge: Codex answered 'image tool is unavailable' (stderr 'code-mode host is disabled'); the runtime recorded invalid_output and did not retry",
+      "e2e": {
+        "seconds": 34.0,
+        "size": "1672x941",
+        "bytes": 2157634,
+        "replay_seconds": 0.2,
+        "download_sha256_matches": true,
+        "generated_images_dir_after": "empty"
+      }
+    },
+    "worker": {
+      "image": "quant-company-video:7b37ac4-fargate6",
+      "settings": {
+        "VIDEO_IMAGE_RUNTIME_URL": "http://video-image-runtime:8080",
+        "VIDEO_IMAGE_MODEL": "gpt-6-astra",
+        "VIDEO_IMAGE_EFFORT": "low"
+      },
+      "task_definition": "quant-company-render:6 (image b238c97-fargate8)",
+      "deployed_at": "2026-10-12T10:51:58Z (19:51:58 KST), 0 active video jobs, no apply- scripts"
+    },
+    "fargate_picture_render": {
+      "task": "5ca2b08646cc4318a4305f9e7834e542",
+      "capacity": "FARGATE_SPOT",
+      "wall_s": 247.0,
+      "duration_s": 291.883,
+      "generated_images": [
+        "gen-1"
+      ],
+      "frames": [
+        "fargate-render-flows-scene.jpg (AI 생성 이미지 chip, single arrows in the ticker)",
+        "fargate-render-thumbnail.jpg (picture on the right, red progress strip)"
+      ],
+      "note": "the thumbnail panel crops the centre of the picture; framing is part of step 4"
+    },
+    "tests": "tests/test_video_image_runtime.py (5) and tests/test_video_illustrations.py (7); full suite 2209 passed, 54 skipped, 0 failed",
+    "cleanup": "test receipts and images removed from /var/lib/quant-company/codex/video-image-jobs"
+  }
+}

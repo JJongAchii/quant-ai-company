@@ -1,0 +1,29 @@
+{
+  "scope": "Same-source development ONLY; max2 completedcalls reached; no fresh qualification",
+  "passed": false,
+  "checks_passed": 11,
+  "checks": {
+    "numbers": true,
+    "sources": true,
+    "timing": true,
+    "causality": true,
+    "materiality": true,
+    "counterevidence": true,
+    "transmission": true,
+    "alternatives": true,
+    "falsifiability": true,
+    "coverage": false,
+    "depth": true,
+    "readability": true
+  },
+  "rejected": {},
+  "remaining_missing_material_facts": [
+    {
+      "source_id": "e10d7677e85bae1afb40fbbea8455b7f9159fb4b",
+      "fact": "제재 대상에는 중국·홍콩에서 활동하는 전자부품 조달 지원망도 포함됐다.",
+      "quote": "이란의 군용 항공기·탄도미사일 개발에 필요한 전자부품을 조달한 카보슈콤 아시아 R&D 그룹과 이를 지원한 홍콩 소재 EC 모조 테크놀로지, 중국에서 활동하는 리 펜 EC 모조 대표 등도 제재 명단에 올랐다."
+    }
+  ],
+  "all_previous_repair_target_facts_covered": true,
+  "slack": "not_called"
+}

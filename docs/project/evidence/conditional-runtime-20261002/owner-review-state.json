@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-02T06:32:44.177475+00:00",
+  "notice": {
+    "id": "59444618-2248-572f-a162-4225b6202b98",
+    "status": "delivered",
+    "sent_ts": "1790922433.911529",
+    "attempts": 1,
+    "agent": "director",
+    "channel": "C0C2B9EUEGM",
+    "thread_ts": "1789633942.673909"
+  },
+  "programs": [
+    {
+      "id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+      "state": "active",
+      "manifest_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+      "approval_event_id": "slack:T0C1YRDRPNF:C0C2B9EUEGM:1790641272.310813:director:action:21f480c4-d59f-45e7-ac2e-2cf91aa109e8:approve"
+    }
+  ],
+  "actual_jobs": 0,
+  "actual_scientific_trials": 0,
+  "runtime_pause": {
+    "id": 1,
+    "paused_until": null,
+    "reason": null
+  },
+  "owner_approval_fabricated": false
+}

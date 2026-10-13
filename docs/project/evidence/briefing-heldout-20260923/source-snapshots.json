@@ -1,0 +1,282 @@
+{
+  "mode": "historical_originals_before_exact_scheduled_cutoff",
+  "raw_originals_sha256": "08576c88e2edc261d3eebdbade92ff913a80b72e5a8cab653998fd04d5c95fb0",
+  "model": "not_yet_called",
+  "slack": "not_connected",
+  "snapshots": {
+    "am-20260923": {
+      "cutoff": "2026-09-22T22:10:00+00:00",
+      "raw_article_count": 256,
+      "eligible_count": 247,
+      "selected_count": 16,
+      "bundle_sha256": "d8e68739a67978518bd1b1554385b180148af2e18ec91a2b40498ab816bc333b",
+      "selected": [
+        {
+          "id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+          "title": "美-이란 관계 주시하며 숨죽인 뉴욕증시…기술주 약진 속 혼조세(종합)",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-22T21:44:03+00:00",
+          "retrieved_at": "2026-09-22T21:50:08.335144+00:00",
+          "sha256": "bef316935fc541283a6919599489a41fe5e73d553e949dcf3658f292ba72f270"
+        },
+        {
+          "id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+          "title": "뉴욕증시, AI 수요 지속 기대에 상승⋯나스닥, 사상 최고치 [글로벌마켓 모닝 브리핑]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-21T23:46:00+00:00",
+          "retrieved_at": "2026-09-21T23:48:54.055887+00:00",
+          "sha256": "5b5072967b2ef1cc450fe0adcf57c41f004106d6b7179b0b822077ff338ee60d"
+        },
+        {
+          "id": "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf",
+          "title": "美연준 인사 '인플레 경고' 잇따라…\"더 긴축적 금리가 도움\"",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-22T17:25:01+00:00",
+          "retrieved_at": "2026-09-22T21:08:12.447912+00:00",
+          "sha256": "74538de268d7afca14cf497338a1deb0658b96c1c299cb5faba4d2480a0ee0bf"
+        },
+        {
+          "id": "d05c45f5a0ab89f31dad6fb34ea0e464cdfa82c2",
+          "title": "임기근 국조실장, 세종전통시장 찾아 추석 물가 점검",
+          "publisher": "이투데이",
+          "published_at": "2026-09-22T07:52:00+00:00",
+          "retrieved_at": "2026-09-22T08:00:21.952698+00:00",
+          "sha256": "6f0e482cfb245d4362777cb8f2a8553c0db95e663dd34d2792931e5de04ee494"
+        },
+        {
+          "id": "f4387486e1fa6d90c353e52e06b53cb2778929fb",
+          "title": "뉴욕증시, 미ㆍ이란 ‘3시간 협상’에도 혼조…나스닥 0.45%↑[상보]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-22T21:51:00+00:00",
+          "retrieved_at": "2026-09-22T22:00:04.513283+00:00",
+          "sha256": "8953b47836114d5fc7c1a042e8972ed24483faf1bbb2e1c88230d2cb10304504"
+        },
+        {
+          "id": "76c87a7da794dadc1beffc3c11122d11392e15fc",
+          "title": "美ㆍ이란, 유엔서 3시간 회담⋯트럼프 “곧 추가 협상”",
+          "publisher": "이투데이",
+          "published_at": "2026-09-22T21:50:00+00:00",
+          "retrieved_at": "2026-09-22T22:00:07.029197+00:00",
+          "sha256": "c2eceeeff6d69e09e22343283058866634130cb3841493fb64237777419fea7e"
+        },
+        {
+          "id": "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+          "title": "[뉴욕증시] AI·반도체 랠리…국제유가 대폭 하락",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-21T22:48:00+00:00",
+          "retrieved_at": "2026-09-21T22:53:49.739167+00:00",
+          "sha256": "02e2131d3d65f8ce52588523950cc708c97b272055d63bf55dabbd8101b8a375"
+        },
+        {
+          "id": "4751ea68d07334f3b7c147b60b27dae2f9780c40",
+          "title": "Trump slams Iran and Cuba, defends AI growth in boastful UN speech",
+          "publisher": "CNBC",
+          "published_at": "2026-09-22T19:00:39+00:00",
+          "retrieved_at": "2026-09-22T19:06:15.369369+00:00",
+          "sha256": "026aa4b2257ceeadc4f2700ee374cbc197dcbe948dc25b532a1f5e8a7cf50c6e"
+        },
+        {
+          "id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+          "title": "국제유가, 미국ㆍ이란 대화 기대감에 급락⋯WTI 4.51%↓ [상보]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-21T21:21:00+00:00",
+          "retrieved_at": "2026-09-21T21:22:30.270757+00:00",
+          "sha256": "c1a48d9f063012afe5f0f11cddc36ea468561921ff7c56b998e5ffea0991f7f8"
+        },
+        {
+          "id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+          "title": "국제유가, 사우디 원유수출 회복 기대에 하락⋯미ㆍ이란 협상도 영향 [상보]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-22T21:50:00+00:00",
+          "retrieved_at": "2026-09-22T22:00:01.916771+00:00",
+          "sha256": "25d9f47f307bda856fc66514df97d17bb5a3369ee166cac09d42e47e9045031b"
+        },
+        {
+          "id": "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+          "title": "Oil prices reverse gains as United Nations General Assembly meeting lifts hopes for Iran war diplomacy",
+          "publisher": "CNBC",
+          "published_at": "2026-09-22T09:30:24+00:00",
+          "retrieved_at": "2026-09-22T09:30:42.364090+00:00",
+          "sha256": "9564061afae093c88d2f1288a8a4842c6576fe0dcd875db1fcdf76e30d927f0e"
+        },
+        {
+          "id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+          "title": "뉴욕증시, 'AI낙관론'에 메타·인텔 급등…나스닥 사상 최고치(종합)",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-21T21:24:26+00:00",
+          "retrieved_at": "2026-09-21T21:32:53.660026+00:00",
+          "sha256": "b1ab176c77aae47099d2162ff64fd5e50dc503339df658e282040b63c829fd16"
+        },
+        {
+          "id": "6dbf4493e26ac8a2f17dff96e4039bc24ef10966",
+          "title": "'합의' '전멸' 양자택일 압박…미-이란 3시간 회담",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-22T21:18:00+00:00",
+          "retrieved_at": "2026-09-22T21:29:44.404353+00:00",
+          "sha256": "c62c017ae7f87dc44e727010c112b2940227488226567eeb6318f1fc0a25a51e"
+        },
+        {
+          "id": "d28b9c42f8e81f1f69abcafd2dbff333da1d9e44",
+          "title": "Trump tells UN he has 'big decision' on whether to 'annihilate' Iran or make peace deal",
+          "publisher": "BBC News",
+          "published_at": "2026-09-22T20:19:08+00:00",
+          "retrieved_at": "2026-09-22T21:50:11.031756+00:00",
+          "sha256": "bc2e622d41cf293862c05c287ed7d4b065cffa78f60e6a83e39ebe19dc3c1188"
+        },
+        {
+          "id": "f6b2d1709b0c605a88e0c34b63e5ecc8ed649f69",
+          "title": "이란 매체 \"아라그치 외무, 유엔총회서 윗코프 미 특사와 회동\"",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-22T19:55:00+00:00",
+          "retrieved_at": "2026-09-22T20:08:54.292986+00:00",
+          "sha256": "89778f566f77d61a42bcf24070c7757726136043d3f9505f85d4cd96f6b1ab0f"
+        },
+        {
+          "id": "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb",
+          "title": "Trump administration is examining whether a diesel export ban is feasible, Treasury Secretary says",
+          "publisher": "CNBC",
+          "published_at": "2026-09-22T19:40:11+00:00",
+          "retrieved_at": "2026-09-22T19:46:35.393994+00:00",
+          "sha256": "8da35484e0bb42262281f3e3c89d9fb6ceaac3d9fb78320409bf145d9a2840b9"
+        }
+      ]
+    },
+    "pm-20260921": {
+      "cutoff": "2026-09-21T10:40:00+00:00",
+      "raw_article_count": 215,
+      "eligible_count": 215,
+      "selected_count": 16,
+      "bundle_sha256": "87791a6fe3a491990df4d4801ff0c04a507532e4f38feccad57aefd2cef6c28d",
+      "selected": [
+        {
+          "id": "d3c13a1dd642cbad0be2f3a6cbde732c881df876",
+          "title": "코스피, 국내외 호재에 '7천피' 탈환…7,007.72 마감(종합)",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-21T07:37:21+00:00",
+          "retrieved_at": "2026-09-21T07:50:23.791670+00:00",
+          "sha256": "be93ca59cfc46f9779e34e04fe7f0b130b1f83cf808764e5dff5a13e4a3fed42"
+        },
+        {
+          "id": "b2033f1cb5e9f929308763838c1a5287ea191866",
+          "title": "KOSPI Reclaims 7,000 Mark after 7 Trading Sessions",
+          "publisher": "KBS World",
+          "published_at": "2026-09-21T08:22:57+00:00",
+          "retrieved_at": "2026-09-21T10:06:31.825681+00:00",
+          "sha256": "487b72088fdb3bdecfc0ed17275a1aa2cb5887cfb79567050a784bfa1251a95f"
+        },
+        {
+          "id": "ff8917a4601610247c5ae78e6bd2c3db76e600f4",
+          "title": "Eurosystem brings central bank money to tokenised finance",
+          "publisher": "European Central Bank",
+          "published_at": "2026-09-21T10:00:00+00:00",
+          "retrieved_at": "2026-09-21T10:00:51.762476+00:00",
+          "sha256": "0a6a41717f762f0c4f79b8fd938744ee54b133a6e1fa9db7a1016725324d03d6"
+        },
+        {
+          "id": "a75052c1bc9cbfe8361a3e2577352f4098db284b",
+          "title": "신한금융, 신한은행장 등 자회사 대표이사 승계절차 개시",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-21T09:22:19+00:00",
+          "retrieved_at": "2026-09-21T09:32:48.159984+00:00",
+          "sha256": "15aa3532db021f5d466fecb00b544c20e280b5efe6ea90d30b6512f7f97b5f9e"
+        },
+        {
+          "id": "5b0c211f02b9f11ccd0b7e5fce3ddf4c0852e9b4",
+          "title": "전쟁 이후 첫 러시아 총선서 집권당 압승…더 강해진 푸틴",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-21T10:25:00+00:00",
+          "retrieved_at": "2026-09-21T10:33:50.984281+00:00",
+          "sha256": "d8f391bc8645143e613ba1ef4f50ed299de2972be0e094c19f74ea942dec2dee"
+        },
+        {
+          "id": "46855144bd2ba8b5a9b97a66e528ae2c612a85a5",
+          "title": "\"호르무즈 지나던 유조선, 정체불명 발사체에 피격\"",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-21T10:18:00+00:00",
+          "retrieved_at": "2026-09-21T10:23:33.705201+00:00",
+          "sha256": "764931fc864e90013428dc70d434fd8198f88e6ee8b43cf29d44ebb16dfec4ef"
+        },
+        {
+          "id": "db09a5fd2fb3bed514c728a8e75dc3bef8bb2aa8",
+          "title": "Volkswagen woes deepen as blue-chip index exit follows latest profit warning",
+          "publisher": "CNBC",
+          "published_at": "2026-09-21T09:56:27+00:00",
+          "retrieved_at": "2026-09-21T10:06:47.679067+00:00",
+          "sha256": "4790777ce62aec3539ece079111b39fa1b5f619266a65f9de709a389cd41dd35"
+        },
+        {
+          "id": "5bcf48b4a1fe57b62dc09a31a86e137b2fc65fe4",
+          "title": "삼성전자, 5% 급등 '27만전자' 회복…SK하이닉스 0.6%↑",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-21T07:55:00+00:00",
+          "retrieved_at": "2026-09-21T08:00:34.718235+00:00",
+          "sha256": "a01f18058f47ddfd0fca6dd21025108fd24ad8d8fce94e561e27b00dc5e0b2c7"
+        },
+        {
+          "id": "d79adecddbc46a0bbed707f3de3c9a9976d11f80",
+          "title": "Here's what the Saudi East-West pipeline shutdown means for Asia's biggest crude importers",
+          "publisher": "CNBC",
+          "published_at": "2026-09-21T08:29:13+00:00",
+          "retrieved_at": "2026-09-21T09:56:38.134116+00:00",
+          "sha256": "84a0d11f3933033690188e89a37802f6b99e710352d4dbca2b75e8bf9aa5fd02"
+        },
+        {
+          "id": "4b1941defec32725eeb8d4e5ff682b4f295a50ab",
+          "title": "Treasury yields ease as global borrowing costs tumble",
+          "publisher": "CNBC",
+          "published_at": "2026-09-21T08:21:18+00:00",
+          "retrieved_at": "2026-09-21T08:35:25.756942+00:00",
+          "sha256": "d94a6e512679c69b4eb7242a7a11fe3a9d9ecdb60eade0a728585aa8041ff331"
+        },
+        {
+          "id": "66febe9b10fdbdc4ee424bd7089a6c93b1fdd579",
+          "title": "[특징주] 네오사피엔스, 코스닥 상장 첫날 243% 급등(종합)",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-21T06:39:56+00:00",
+          "retrieved_at": "2026-09-21T06:59:47.391173+00:00",
+          "sha256": "659d94c16515775f384275c93fe10d994cce28ba78caf5b5e9666ce76681d6b2"
+        },
+        {
+          "id": "ab930cb9f78cb640e99b4ca5b30a8597f8774e2e",
+          "title": "美 현지 생산에 문 두드리는 중국차…현대차·기아, 미중 정상회담 촉각",
+          "publisher": "이투데이",
+          "published_at": "2026-09-21T08:37:00+00:00",
+          "retrieved_at": "2026-09-21T08:42:05.322546+00:00",
+          "sha256": "a6030090a9c40a9cdf02ddc07479b53873442f5cd2bd001988681583e2ac24ef"
+        },
+        {
+          "id": "2d53927f8b09f4a1c09f0496a3ce35a92281e6e4",
+          "title": "아시아증시, 美ㆍ中 정상회담 기대감 속 일제히 상승",
+          "publisher": "이투데이",
+          "published_at": "2026-09-21T07:49:00+00:00",
+          "retrieved_at": "2026-09-21T08:00:25.046243+00:00",
+          "sha256": "c25058fc8824a4adf06f2cd034d7b1581cb764855432860d5148de6ea55c2006"
+        },
+        {
+          "id": "996dd9f805b4d6647f9d5c845116b895f9f1408c",
+          "title": "미·중, 정상회담 앞두고 뉴욕서 무역협상⋯관세ㆍAIㆍ희토류 테이블에",
+          "publisher": "이투데이",
+          "published_at": "2026-09-21T07:43:00+00:00",
+          "retrieved_at": "2026-09-21T07:50:03.176080+00:00",
+          "sha256": "0d093ec3137598439ac0efe311bc9959037de74e580f8ccbfb080899e4f9795b"
+        },
+        {
+          "id": "cbfd307b9bce27dece44175b2f8a28086c0e14a4",
+          "title": "US and China discuss AI safety plan ahead of Trump-Xi summit",
+          "publisher": "BBC News",
+          "published_at": "2026-09-21T05:50:56+00:00",
+          "retrieved_at": "2026-09-21T06:00:27.755511+00:00",
+          "sha256": "bcb6db652047e321117c14a8c3e1bd2e0ed7d34f72f3255e1e88b7e67a70fc43"
+        },
+        {
+          "id": "d6e3d9d266b9914fc9e4883f03ca0ab7a4262795",
+          "title": "Nvidia boss rejects AI extinction fears as 'doomsday narratives'",
+          "publisher": "BBC News",
+          "published_at": "2026-09-21T00:34:53+00:00",
+          "retrieved_at": "2026-09-21T00:43:54.103198+00:00",
+          "sha256": "26a20d23def0797f354694c25fff549a8388428f8bbb7cae1bee0e6122aca857"
+        }
+      ]
+    }
+  }
+}

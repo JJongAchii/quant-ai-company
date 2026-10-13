@@ -1,0 +1,24 @@
+{
+  "recorded_at": "2026-09-27T22:57:57.345078+00:00",
+  "scope": "Assistant source-reading notes recorded before opening the new writer response. These notes are not sent to the writer or reviewer and are not human expert certification.",
+  "am_checks": [
+    "Separate the 23 September US close from the older 22 September background report.",
+    "Explain strong PMI activity and rising price pressures, with the prior quarter-point hike; distinguish differing intraday futures probabilities from a policy decision.",
+    "Show both higher oil prices and the open diplomatic route, conditional reopening proposal, and White House denial of the reported diesel export restriction.",
+    "Balance Muse adoption and stock momentum against Amazon blocking access and consumer privacy concerns.",
+    "Treat MS spending through 2030 as a plan with security, power and water constraints, not immediate earnings.",
+    "Identify the upcoming US-China AI/chip-policy meeting without inventing a time or agreement.",
+    "Keep Korean oil diversification/storage targets as a long-term policy, not an immediate supply increase.",
+    "Do not treat BOK holiday cash issuance as a change in monetary stance."
+  ],
+  "pm_checks": [
+    "Explain the Korean close and intraday retreat, sector concentration and differing foreign flows in cash, futures and semiconductor names.",
+    "Distinguish domestic equities, Korean bond yields and the 15:30 FX reference; do not invent a 20:00 FX close.",
+    "Balance semiconductor momentum with dividend/buyback effects and different foreign flows in Samsung and SK Hynix.",
+    "Separate US-Iran talks, actual progress, the conditional reopening proposal and possible French military involvement.",
+    "Explain Collins/Lane inflation warnings with the prior hike and Lane baseline of some later energy relief; no central-bank certainty.",
+    "Identify the upcoming US-China AI safety/channel discussion and unchanged advanced-chip restrictions.",
+    "Separate oil contract months and old/current trading sessions.",
+    "Explain Korea resource security targets with scale and implementation dates."
+  ]
+}

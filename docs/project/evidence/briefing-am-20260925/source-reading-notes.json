@@ -1,0 +1,15 @@
+{
+  "recorded_at": "2026-09-28T01:54:17.199112+00:00",
+  "scope": "Assistant reading checklist after frozen source selection but before opening the writer response. Not sent to writer/reviewer; not human independent certification.",
+  "checks": [
+    "Use the 24 September completed US session as the current close: Dow -0.31%, S&P 500 -0.02%, Nasdaq Composite +0.1% from the short US close article. Earlier all-down articles describe the 23 September session and cannot be today’s numbers.",
+    "Explain the cross-asset contrast: 24 September oil rose on a reported Houthi missile attack against Saudi export-related locations while US equity indices were mixed. Six missiles were reported intercepted; do not invent damage, lost barrels or confirmed supply outages.",
+    "Distinguish the 24 September Brent November $106.60 / WTI November $94.61 close from the 23 September $103.08 / $92.16 previous close and from other intraday quotes. Contract months and venue must be preserved.",
+    "Name both escalation and mitigation: UAE actually halted Iranian-carrier flights under US sanctions, whereas a phased US-Iran Hormuz reopening and blockade relief was under discussion, not signed or implemented. The latter is a serious countervailing development even if oil rose.",
+    "Fed Paulson discussed further modest rate moves after last week’s quarter-point hike to 3.75-4%; her statement is a view, not another decision. Explain discount-rate channel and condition for reversal.",
+    "Trump–Xi arrival and summit timing, AI/chip/trade issues and uncertain business-delegation dinner participation are separate. Arrival and attendees do not prove a trade or export-control agreement.",
+    "Meta Muse Charm is forthcoming with few product details; distinguish investor optimism from revenue or adoption proven by sales.",
+    "The protein-price and Texas solar human-interest features may be background or excluded with a reason, unless their market significance is supported by these originals.",
+    "For the Korean holiday edition, do not invent a domestic closing price or same-day Korean market response. Keep the key US conclusions and next Korean-session conditions readable in the main post."
+  ]
+}

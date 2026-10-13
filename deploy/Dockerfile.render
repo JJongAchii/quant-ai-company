@@ -1,0 +1,31 @@
+# Render-only image for the ECS Fargate task (`quant-company video render-task --prefix s3://...`).
+# It holds the motion renderer, Chromium, FFmpeg and the alignment runtime: no lake/qdata extra and no database, Slack,
+# speech or model credentials. The task role reaches only s3://<render bucket>/render/* and models/ (deploy/render.json).
+# Build for linux/amd64 (the task definition's runtime platform) and push by digest:
+#   docker buildx build --platform linux/amd64 -f deploy/Dockerfile.render --build-arg RELEASE_COMMIT=$(git rev-parse HEAD) .
+FROM ghcr.io/astral-sh/uv:0.11.28@sha256:0f36cb9361a3346885ca3677e3767016687b5a170c1a6b88465ec14aefec90aa AS uv-dist
+FROM python:3.12-slim-bookworm@sha256:782412e85d0f0984994c290652577d4018aff08145c85b262bb63dc0c7522254 AS render
+ARG RELEASE_COMMIT=unqualified
+LABEL org.opencontainers.image.revision=$RELEASE_COMMIT
+# Fargate's /dev/shm cannot be resized, so Chromium keeps its shared memory in /tmp.
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy \
+    PATH=/app/.venv/bin:$PATH PLAYWRIGHT_BROWSERS_PATH=/opt/playwright HF_HOME=/state/models \
+    TOKENIZERS_PARALLELISM=false VIDEO_CHROMIUM_ARGS=--disable-dev-shm-usage COMPANY_CODE_COMMIT=$RELEASE_COMMIT
+COPY --from=uv-dist /uv /usr/local/bin/uv
+WORKDIR /opt/company
+RUN ln -s /opt/company /app
+COPY pyproject.toml uv.lock ./
+# Dependencies, Chromium and FFmpeg first: a code-only change rebuilds just the last layer.
+RUN apt-get update && apt-get install --yes --no-install-recommends ffmpeg fonts-noto-cjk \
+    && uv sync --frozen --no-dev --no-install-project --extra video \
+    && /app/.venv/bin/playwright install --with-deps chromium \
+    && rm -rf /var/lib/apt/lists/* /root/.cache \
+    && chmod -R a+rX /opt/playwright \
+    && groupadd --gid 10001 company \
+    && useradd --uid 10001 --gid 10001 --create-home company \
+    && mkdir -p /state/video /state/video-assets /models \
+    && chown -R 10001:10001 /state /models
+COPY src ./src
+RUN uv sync --frozen --no-dev --no-editable --extra video && rm -rf /root/.cache
+USER 10001:10001
+CMD ["quant-company", "video", "render-task", "--help"]

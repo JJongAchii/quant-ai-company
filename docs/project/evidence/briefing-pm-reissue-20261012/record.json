@@ -1,0 +1,40 @@
+{
+  "recorded_at": "2026-10-12T22:25:00+09:00",
+  "authorization": "제대로 해,, 모든 권한이든 뭐든 다 사전 허용 및 승인 해줄테니까 제대로만 만들어줘 ㅜ 오늘 오후 꺼도 정상적으로 다시 해주고. 내일부터 자동으로 돌아갈 것들도 제대로 되게 해주고.",
+  "original_edition": {"id": "9473536f-12b8-552b-ba48-6beb1d198577", "kind": "pm", "cutoff_kst": "2026-10-12 16:10",
+                       "due_kst": "2026-10-12 17:25", "committed_kst": "2026-10-12 17:25:01",
+                       "salvaged_from": "blocked", "error": "uncertain",
+                       "calls": ["plan completed", "inventory completed", "write retry invalid_brief_response",
+                                 "write-r1 blocked uncertain (runtime retry-ID skew, fixed 17:15)"]},
+  "reissue": {
+    "method": "Operator controller in news-worker using the deployed service's prompt, contract and validation functions; company DB opened READ ONLY; Codex subscription gpt-6-astra xhigh, profile primary; no paid API.",
+    "first_run": {"edition_id": "c4ddcce4-8c94-5655-9ebb-8a2b77a56872", "published": false,
+                  "reason": "Independent review 7/12: KOSPI/KOSDAQ closes missing (no collected KRX close at the 16:10 cutoff; writer values rejected as collected_observation_modified); repair skipped brief_context_limit."},
+    "second_run": {"edition_id": "47950d79-3d93-566e-9d0e-2c46ae661f06", "published": true,
+                   "market_data": "Lake read window moved to 21:44 KST for the confirmed regular-session KRX close (KOSPI 6384.24, KOSDAQ 849.19, as of 15:30 KST); original articles keep the 16:10 cutoff.",
+                   "review": {"verdict": "reduce", "checks_passed": 6,
+                              "passed": ["numbers", "sources", "timing", "causality", "transmission", "falsifiability"],
+                              "failed": ["materiality", "counterevidence", "alternatives", "coverage", "depth", "readability"]},
+                   "repair_skipped": "brief_context_limit",
+                   "presentation_changes": ["reissue label line", "removed the stale line '확인 부족: 코스닥, 코스피' (closes stated in the overview from the close articles; KRX dataset rows withheld as read after the 16:10 cutoff: evidence_not_in_frozen_original)"]}
+  },
+  "delivery": {"channel_id": "C0C2E59B1AA", "bot_user_id": "U0C4PJDR8G3", "root_ts": "1791811104.069979",
+               "thread_reply_ts": "1791811105.693989", "posted_kst": "2026-10-12 22:18",
+               "readback_exact": [true, true], "post_calls": 2, "duplicate_guard": "metadata ID lookup before each post"},
+  "registration": {"project_id": "c8b80556-44a6-5a10-8223-e8f6973eb47e", "sources_linked": 27,
+                   "video_job_v2": "de2e3147-a696-5196-9a7c-79de9f858776", "video_format": "full"},
+  "video_v1": {"job": "02a27a7c-1929-580f-b444-160bca078dc1", "delivered_kst": "2026-10-12 22:16:53",
+               "incident": "screen fix named image bank-of-korea outside the library; Fargate tasks fc744889, 66eae9c8, 7ddd53e9 and the local fallback failed with KeyError; scene bok image set to rates-bonds by an operator reconciliation, re-rendered on Fargate Spot task 513dd069 (20 segments, 162.2 s)"},
+  "deployed": {
+    "video-worker": {"image": "quant-company-video:7b37ac4-fargate7", "at_kst": "2026-10-12 21:54",
+                     "changes": ["uncertain Claude turn = failed attempt", "screen fix scenes naming images outside the library keep their data"]},
+    "news-worker": {"image": "quant-company:7b37ac4-briefing-final-0", "at_kst": "2026-10-12 22:18"},
+    "dispatch": {"image": "quant-company-housing-rental:737b3dd66b82a348d22eaa9e26bfa8d3149ab548-dispatch-briefing-final", "at_kst": "2026-10-12 22:18"},
+    "briefing_file_sha256": {"store.py": "bb0b12cb51ad0abdd70a3577c6a687b3376e5922af0957622c4d1a2a556b1c6d",
+                             "execution.py": "ddccf6a1506fece168ffb2f53976a9ba6e76b595f84c46bf31effecee5a6038b",
+                             "runner.py": "a8e9e14f355e96cb242b446f83d815e21c9912a0d32790d536927422fd253990",
+                             "repair.py": "0726417177c03781b849d7cbb3ddbf02ce5586ca0d467fdb91786c475f4b314c"},
+    "policy_digest_changed": false
+  },
+  "public_content_policy": "Metadata and digests only; the brief text, prompts and model output stay in the private release directory /var/lib/quant-company/releases/analyst-pm-20261012-reissue."
+}

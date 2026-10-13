@@ -43,7 +43,7 @@ def runner_from_environment() -> CodexRunner:
 
 
 def create_app(*, runner: CodexRunner | None = None, token: str | None = None,
-               runner_factory=None) -> FastAPI:
+               runner_factory=None, max_request_bytes: int = MAX_REQUEST_BYTES) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         yield
@@ -81,7 +81,7 @@ def create_app(*, runner: CodexRunner | None = None, token: str | None = None,
             body = bytearray()
             async for part in request.stream():
                 body.extend(part)
-                if len(body) > MAX_REQUEST_BYTES:
+                if len(body) > max_request_bytes:
                     return JSONResponse({"code": "invalid_request", "message": "Request exceeds byte limit.",
                                          "retry_after_seconds": 0}, status_code=413)
             payload = ProviderRequest.model_validate(strict_json(body))

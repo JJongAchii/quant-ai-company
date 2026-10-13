@@ -1,0 +1,18 @@
+{
+  "case": "pm-20260930-v36",
+  "cutoff": "2026-09-30T19:30:00+09:00",
+  "raw_sha256": "37e2f7b89b933123bfe9bf44b8aa5b091b8beb2a6f9ac2833ecaabb63fdee12f",
+  "policy_sha256": "3ad567dff32bb1ccc9a596e0e0592e55b736157dda5b3a88de819f89cdd79737",
+  "source_bundle_sha256": "2027b91359b447994d8df0940e09e1b36ad8f1c95e1c6acd1b23b5be48b5f7db",
+  "editor_code_sha256": "534b47e7edfeccc82905c41bd2688f3d657bccb21648198efcd6fb3b6b763223",
+  "raw_articles": 177,
+  "eligible": 177,
+  "candidate_count": 96,
+  "market_close_reports": 4,
+  "excluded": [],
+  "overlap_with_prior_AM_candidates": 10,
+  "new_candidate_ids": 86,
+  "note": "Different cutoff but overlapping market day/originals; not two independent days",
+  "slack": "not_called",
+  "model_calls": 0
+}

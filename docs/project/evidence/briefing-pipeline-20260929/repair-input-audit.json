@@ -1,0 +1,13 @@
+{
+  "recorded_at": "2026-09-29T02:08:25.375148+00:00",
+  "prompt_chars": 83459,
+  "all_originals_preserved": true,
+  "original_count": 20,
+  "original_chars": 38454,
+  "previous_draft_roundtrip_equal": true,
+  "source_alias_count": 14,
+  "missing_fact_count": 22,
+  "review_semantic_instructions_unchanged_since": "bb511b2",
+  "writer_instruction_changes": "Consolidated repeated requirements; mandatory complete originals, evidence, semantic checks and numeric/date validators preserved.",
+  "request_sha256": "ac2c2a0c9c6055c786016e4773632ad16305549c291d6c4059ca714a75c83213"
+}

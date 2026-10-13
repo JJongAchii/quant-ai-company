@@ -1,0 +1,18 @@
+{
+  "recorded_at": "2026-10-07T01:07:50.262857+00:00",
+  "unit": "analyst-execution59-temporal-readback",
+  "timer": {
+    "NextElapseUSecRealtime": "Wed 2026-10-07 01:45:00 UTC",
+    "ActiveState": "active",
+    "SubState": "waiting"
+  },
+  "purpose": "Read the next natural Temporal run after the pre-upgrade run has continued as new.",
+  "result_path": "/var/lib/quant-company/releases/analyst-execution59-temporal-postrollover.json",
+  "model_calls": 0,
+  "slack_calls": 0,
+  "changes_company_settings": false,
+  "source_sha256": "2218e1bb6733d29378acd7054317f6efbb927493868dd83b1c67e0fe4a9d3bce",
+  "current_old_run_deadline_seconds": 1080,
+  "next_run_expected_deadline_seconds": 1560,
+  "next_run_deadline_verified": false
+}

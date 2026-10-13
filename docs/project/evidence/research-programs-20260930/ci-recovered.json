@@ -1,0 +1,141 @@
+{
+  "earlier_failure_reason": "GitHub account payment or spending limit prevented any job steps; user reported resolution.",
+  "earlier_run": {
+    "conclusion": "failure",
+    "event": "pull_request",
+    "headSha": "dbb3884b0511018c5b113ba3e7a2042864cc2ab6",
+    "jobs": [
+      {
+        "completedAt": "2026-09-30T06:45:45Z",
+        "conclusion": "failure",
+        "databaseId": 109772941211,
+        "name": "service",
+        "startedAt": "2026-09-30T06:45:42Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36679929421/job/109772941211"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36679929421"
+  },
+  "observed_at": "2026-09-30T08:16:35.590520+00:00",
+  "run": {
+    "conclusion": "success",
+    "event": "pull_request",
+    "headSha": "9089a7ce60543d00acb452b3e19b9db20eac3f1a",
+    "jobs": [
+      {
+        "completedAt": "2026-09-30T08:09:59Z",
+        "conclusion": "success",
+        "databaseId": 109795951874,
+        "name": "service",
+        "startedAt": "2026-09-30T08:02:55Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-09-30T08:02:57Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-09-30T08:02:56Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-30T08:03:09Z",
+            "conclusion": "success",
+            "name": "Initialize containers",
+            "number": 2,
+            "startedAt": "2026-09-30T08:02:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-30T08:03:10Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 3,
+            "startedAt": "2026-09-30T08:03:09Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-30T08:03:11Z",
+            "conclusion": "success",
+            "name": "Run astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff",
+            "number": 4,
+            "startedAt": "2026-09-30T08:03:10Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-30T08:03:13Z",
+            "conclusion": "success",
+            "name": "Install core dependencies",
+            "number": 5,
+            "startedAt": "2026-09-30T08:03:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-30T08:03:13Z",
+            "conclusion": "success",
+            "name": "Lint",
+            "number": 6,
+            "startedAt": "2026-09-30T08:03:13Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-30T08:03:13Z",
+            "conclusion": "skipped",
+            "name": "Regression reproduces on base",
+            "number": 7,
+            "startedAt": "2026-09-30T08:03:13Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-30T08:09:57Z",
+            "conclusion": "success",
+            "name": "PostgreSQL, Temporal and service regression tests",
+            "number": 8,
+            "startedAt": "2026-09-30T08:03:13Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-30T08:09:57Z",
+            "conclusion": "success",
+            "name": "Post Run astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff",
+            "number": 14,
+            "startedAt": "2026-09-30T08:09:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-30T08:09:57Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 15,
+            "startedAt": "2026-09-30T08:09:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-30T08:09:58Z",
+            "conclusion": "success",
+            "name": "Stop containers",
+            "number": 16,
+            "startedAt": "2026-09-30T08:09:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-30T08:09:58Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 17,
+            "startedAt": "2026-09-30T08:09:58Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36687289789/job/109795951874"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36687289789"
+  },
+  "schema_version": 1,
+  "scope": "CI success for the integrated 9089a7c revision, before the new provenance evidence commit."
+}

@@ -1,0 +1,32 @@
+{
+  "sandbox": {
+    "schema_version": 1,
+    "spec_digest": "79b9aa689bc2b41af5f0f61160e3b77cf944b9956c35e2a3b6110a1e323149d1",
+    "code_commit": "62431bc58f48598dc1e8b9d1cfbc107006f8ab72",
+    "profile_id": "kr-etf-research-v2",
+    "pid": 595019,
+    "exit_code": 0,
+    "timed_out": false,
+    "started_at": "2026-10-01T03:46:52.093474+00:00",
+    "completed_at": "2026-10-01T03:46:52.208364+00:00",
+    "stdout_path": "/home/achii/quant-company-qualification/exploration-20261001/namespace-fixture/output/stdout.log",
+    "stderr_path": "/home/achii/quant-company-qualification/exploration-20261001/namespace-fixture/output/stderr.log"
+  },
+  "sandbox_mocked": false,
+  "synthetic_policy_roundtrip": true,
+  "research_price_rows_read": false,
+  "scientific_trials_added": 0,
+  "data_policy_fingerprint": "715319cfd796211e7a666f253f255d5de5aba13f7b1fcd3c4b513699bd4cdf62",
+  "data_policy_digest": "f3c28a83c7e45c615505dd24e858c58aa7a559a99a896b2feaf773e6f3c1af1d",
+  "stage_receipt_sha256": "da44c428c685bd74f905914ef3030b570c53d649380a736ddfc8781830b0dadc",
+  "profile_sha256": "5d780fe9ea6777319319c00f15778585b5a600e6ced532a51d835f59099c9afe",
+  "state": "exact_worker_release_qualified_not_active",
+  "candidate_company_commit": "3c848af95dc33b7da444a55018fd41d374c10025",
+  "candidate_directory": "/home/achii/quant-company-qualification/exploration-20261001/release-candidates/3c848af95dc33b7da444a55018fd41d374c10025",
+  "candidate_config_sha256": "67659f99fa6ce5400410c54c597fd9e2c906d54d7ec222ad064264004a9289c9",
+  "release_receipt_sha256": "715d4c8190fadfe83856a12670a8eb3c7f953f720ee4ea93888295c7e4491457",
+  "active_config_unchanged": true,
+  "active_company_commit": "eec5e2326dc5ecfcfe8bc7a98840afec0820242a",
+  "observed_at": "2026-10-01T03:46:52.241169+00:00",
+  "hostname": "DESKTOP-5T00NAF"
+}

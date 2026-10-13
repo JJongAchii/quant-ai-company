@@ -1,0 +1,316 @@
+{
+  "cases": [
+    {
+      "kind": "am",
+      "day": "2026-09-22",
+      "cutoff": "2026-09-22T07:10:00+09:00",
+      "bundle_sha256": "bcb71eae11fec9bdbb967414c45e095a987521ee39dbd3d80d7b9757416a5dae",
+      "documents": 16,
+      "excerpt_characters": 28543,
+      "sources": [
+        {
+          "id": "08bba8a5854670b32d1d37c5ca5c5eef877d9669",
+          "publisher": "이투데이",
+          "url": "https://www.etoday.co.kr/news/view/2628230",
+          "original_sha256": "fa27457d538ba885418c05ff217730a9628262877ef25aab5f55da58c74f6530",
+          "excerpt_sha256": "1d86405e065f25911b36557b72db0e03ad9bd0a43772adfe8f9553c8a4b6435e",
+          "published_at": "2026-09-21T21:31:00Z",
+          "retrieved_at": "2026-09-21T21:32:39.224195Z"
+        },
+        {
+          "id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+          "publisher": "연합뉴스",
+          "url": "https://www.yna.co.kr/view/AKR20260922006551075",
+          "original_sha256": "b1ab176c77aae47099d2162ff64fd5e50dc503339df658e282040b63c829fd16",
+          "excerpt_sha256": "a6d53fac2b2434b9c6461b694ec03a64e1c82c6d0cad21e4a3bc155b5876ca23",
+          "published_at": "2026-09-21T21:24:26Z",
+          "retrieved_at": "2026-09-21T21:32:53.660026Z"
+        },
+        {
+          "id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+          "publisher": "CNBC",
+          "url": "https://www.cnbc.com/2026/09/21/trump-xi-china-summit-trade-tariffs.html",
+          "original_sha256": "f1678d98a797f6af4e22e55f1a871370c3800b347088e2b2a0f34455d29f19ea",
+          "excerpt_sha256": "1766d122493f60f648bc200cb813f3e163060ea10c084b6e297f6d4a94f07ca6",
+          "published_at": "2026-09-21T21:21:21Z",
+          "retrieved_at": "2026-09-21T21:35:44.702823Z"
+        },
+        {
+          "id": "ff8917a4601610247c5ae78e6bd2c3db76e600f4",
+          "publisher": "European Central Bank",
+          "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260921~e754847a7b.en.html",
+          "original_sha256": "0a6a41717f762f0c4f79b8fd938744ee54b133a6e1fa9db7a1016725324d03d6",
+          "excerpt_sha256": "863be6a3b7288dc8efe4e7a43166f3e99ce38227bcc4e9e301ebabdcefeb611b",
+          "published_at": "2026-09-21T10:00:00Z",
+          "retrieved_at": "2026-09-21T10:00:51.762476Z"
+        },
+        {
+          "id": "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+          "publisher": "SBS 뉴스",
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764783",
+          "original_sha256": "866dfdaf5adea37601b326a2b27d9e585920f9dd2b649fed2a62c9f10bd7b9ca",
+          "excerpt_sha256": "6558d7527bb2a34e64d50f5ca3c9b14cfa60103f02e5856fa4f68d4c9633e523",
+          "published_at": "2026-09-21T21:20:00Z",
+          "retrieved_at": "2026-09-21T21:32:46.265911Z"
+        },
+        {
+          "id": "0023ecad6e84f1d23292db0078e5912145e1852f",
+          "publisher": "연합뉴스",
+          "url": "https://www.yna.co.kr/view/AKR20260922007600071",
+          "original_sha256": "ce8874bd5c6104e8ad38c628de6b5b679494a51d47508e85c40e756c7316e153",
+          "excerpt_sha256": "793ef2406ddd57b0e281ad3617a3b84ad81123118a26f01875cd03a4d90b7eba",
+          "published_at": "2026-09-21T21:11:03Z",
+          "retrieved_at": "2026-09-21T21:22:47.460389Z"
+        },
+        {
+          "id": "7f4f853766b5dc50bf53c1c88ee6a23f93411328",
+          "publisher": "CNBC",
+          "url": "https://www.cnbc.com/2026/09/21/meta-muse-personal-ai-agent-downloads.html",
+          "original_sha256": "49041af212a97105a33acf3ef186ef1082b6c5252127645c97534a804429e0bb",
+          "excerpt_sha256": "e53f29a0fceb6cbb5f5964e179c052fa9c355fd190261098313101b5179bb916",
+          "published_at": "2026-09-21T21:25:11Z",
+          "retrieved_at": "2026-09-21T21:25:36.889041Z"
+        },
+        {
+          "id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151",
+          "publisher": "BBC News",
+          "url": "https://www.bbc.co.uk/news/articles/cm4gjr1qepr8o",
+          "original_sha256": "b69083e003219c97b6455dc9730da833e378742c464e3a3ff8aaba3cabd4c8bd",
+          "excerpt_sha256": "169c3be4f832ba82c059b440d853710dbe28adef164e241cfb6c3b760adfdc55",
+          "published_at": "2026-09-21T21:06:26Z",
+          "retrieved_at": "2026-09-21T21:15:16.076748Z"
+        },
+        {
+          "id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+          "publisher": "이투데이",
+          "url": "https://www.etoday.co.kr/news/view/2628228",
+          "original_sha256": "c1a48d9f063012afe5f0f11cddc36ea468561921ff7c56b998e5ffea0991f7f8",
+          "excerpt_sha256": "0e22229208bd5840c084cc46793cf0a4502c3ea3f9f07f0e43a800eeafaa2434",
+          "published_at": "2026-09-21T21:21:00Z",
+          "retrieved_at": "2026-09-21T21:22:30.270757Z"
+        },
+        {
+          "id": "57b4e958756bfd076e4ffe0a2c39a8121f88a694",
+          "publisher": "이투데이",
+          "url": "https://www.etoday.co.kr/news/view/2628225",
+          "original_sha256": "3fd5a2b54bab8e9e6cc45ad0979585a54ba9cc07781c102a220713d3ef91ee93",
+          "excerpt_sha256": "ccbccf9bf23c30c0a9465eb82b377796f0dff6ae20e4af28c022279a6a37593d",
+          "published_at": "2026-09-21T21:04:00Z",
+          "retrieved_at": "2026-09-21T21:12:24.347981Z"
+        },
+        {
+          "id": "c6c3354fb2013f469d8065e51066fee65821c56f",
+          "publisher": "연합뉴스",
+          "url": "https://www.yna.co.kr/view/AKR20260922006500075",
+          "original_sha256": "f2d6ce0f348074620236612e67bcd14ee200c73a3d60c91ce305f1849d65b252",
+          "excerpt_sha256": "4bd6e80d7850896eb965c883796d86d07abe6f3154e9001770bac6ed09874628",
+          "published_at": "2026-09-21T20:16:13Z",
+          "retrieved_at": "2026-09-21T20:22:05.259901Z"
+        },
+        {
+          "id": "3dde2b5129d47d1e1f8d374fed1d73a36529f3ac",
+          "publisher": "SBS 뉴스",
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764810",
+          "original_sha256": "c4735801f15c9f3bf28f862c6279fe81cd7296a854d405fd8e1947cbceb0c561",
+          "excerpt_sha256": "b5f03285de70a6da90e7c05b42e48fb0f969dff4cc91e9d0d207e871cf86bd26",
+          "published_at": "2026-09-21T20:26:00Z",
+          "retrieved_at": "2026-09-21T20:32:03.148480Z"
+        },
+        {
+          "id": "53be9c4c65a0f487c3d094677c68d367d04dfedd",
+          "publisher": "SBS 뉴스",
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764764",
+          "original_sha256": "2cc574a2f5099cf65755b8d61569e0d01500248f7abfdff46a0f8db0052d101c",
+          "excerpt_sha256": "9da3c9e3c229803a5198992b56ecaa232fae1b8b92c348360a0158adec746b48",
+          "published_at": "2026-09-21T19:16:00Z",
+          "retrieved_at": "2026-09-21T19:21:14.505152Z"
+        },
+        {
+          "id": "49134ea9e806961c96d90a905e435a2b6ca8ad79",
+          "publisher": "UK Foreign, Commonwealth & Development Office",
+          "url": "https://www.gov.uk/government/speeches/un-human-rights-council-63-uk-statement-for-the-interactive-dialogue-on-iran",
+          "original_sha256": "95b22dfcc890175be84cb20e1a32dda5c0092239d7b6bc62aaa5cef6e36dd5b3",
+          "excerpt_sha256": "109bccf37f56cb6caadb23d3c6718c21b36660342616240db0b1c228a8aceafd",
+          "published_at": "2026-09-21T14:32:02Z",
+          "retrieved_at": "2026-09-21T14:37:34.901744Z"
+        },
+        {
+          "id": "bf4a2f2fa3a60d1f38b1fa44fb392a5a6dce4f25",
+          "publisher": "CNBC",
+          "url": "https://www.cnbc.com/2026/09/21/5-things-to-know-before-the-stock-market-opens.html",
+          "original_sha256": "bbb6dc96a02d3db319f0a32f3172c5e3c77ea98ddf84ae8a8af2e95ef29de1f9",
+          "excerpt_sha256": "2c84e1dc7f271f35d1ba83ee47767fea2fc93bd58fa439b88dc41344ab73b443",
+          "published_at": "2026-09-21T12:35:50Z",
+          "retrieved_at": "2026-09-21T12:39:25.390887Z"
+        },
+        {
+          "id": "cbfd307b9bce27dece44175b2f8a28086c0e14a4",
+          "publisher": "BBC News",
+          "url": "https://www.bbc.co.uk/news/articles/c8vgyzn2d31yo",
+          "original_sha256": "bcb6db652047e321117c14a8c3e1bd2e0ed7d34f72f3255e1e88b7e67a70fc43",
+          "excerpt_sha256": "eb5b922e010ae5797a4db31ca00f92c3b7de82014b02b420bb2155a2df952ff3",
+          "published_at": "2026-09-21T05:50:56Z",
+          "retrieved_at": "2026-09-21T06:00:27.755511Z"
+        }
+      ]
+    },
+    {
+      "kind": "pm",
+      "day": "2026-09-22",
+      "cutoff": "2026-09-22T07:57:47.313760Z",
+      "bundle_sha256": "3bd43a4ab27a9b31b29f43d09bcd5cdff866d6f1ed09a373485ea9f423578a6b",
+      "documents": 16,
+      "excerpt_characters": 31996,
+      "sources": [
+        {
+          "id": "128202d1c644ee110f1f5526935127319ae82b56",
+          "publisher": "연합뉴스",
+          "url": "https://www.yna.co.kr/view/AKR20260922145651008",
+          "original_sha256": "48daaf38ee4dec72b301598ec3f22161f35889797ca6792672692e9ea4b046e1",
+          "excerpt_sha256": "7b5c7189cd647bf4a38e76042e403d95dd0386b17fea3092111b628a1cd81364",
+          "published_at": "2026-09-22T07:16:25Z",
+          "retrieved_at": "2026-09-22T07:29:35.124773Z"
+        },
+        {
+          "id": "bbd821f9a5d0dcb025ff3f262b5738fcb11cdc3b",
+          "publisher": "KBS World",
+          "url": "https://world.kbs.co.kr/service/news_view.htm?Seq_Code=204428&lang=e",
+          "original_sha256": "557154c751367d70e692b4ea16c2bc5020e85779f3a343a90d228e9847a1d074",
+          "excerpt_sha256": "50ce3aa0de0b2a76cfee10da17f78b8eef89713cd5d1938c0135eb531670766e",
+          "published_at": "2026-09-22T07:06:32Z",
+          "retrieved_at": "2026-09-22T07:07:54.316870Z"
+        },
+        {
+          "id": "82b028a344fdeb87ff250448189320fcefc618df",
+          "publisher": "이투데이",
+          "url": "https://www.etoday.co.kr/news/view/2628640",
+          "original_sha256": "c4470e47b742378291c268ca853aa7016340b7ae63990756b2ce3f356067681e",
+          "excerpt_sha256": "561c467d79b01f36c685200660851dd43c3f325b1e494577271dd17e32dbfd96",
+          "published_at": "2026-09-22T06:30:00Z",
+          "retrieved_at": "2026-09-22T06:38:12.019314Z"
+        },
+        {
+          "id": "4181f0c2af11004abab7c2db85851bfb7886cf5d",
+          "publisher": "이투데이",
+          "url": "https://www.etoday.co.kr/news/view/2628560",
+          "original_sha256": "08fd0773ebeb2be8ca974d5c8f9ec021f7b1ae189a06acb0e22626864d35f998",
+          "excerpt_sha256": "d977405354b0cb9cdf6cdea4fd7178fc48bd2217ccb4a5f503c8c0f47631ef6d",
+          "published_at": "2026-09-22T06:30:00Z",
+          "retrieved_at": "2026-09-22T06:38:14.574105Z"
+        },
+        {
+          "id": "488bdafa950e4a9501e9b8251b255cd6698c8570",
+          "publisher": "SBS 뉴스",
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008766296",
+          "original_sha256": "1a143b9204d0f34ebc19630f3aa73963e5803bc0466d6b1423c88513451ac653",
+          "excerpt_sha256": "be124bf3462c1f8879cf1ef6e0e286ad6300e44a95ea9211527443b28d058a1c",
+          "published_at": "2026-09-22T07:45:00Z",
+          "retrieved_at": "2026-09-22T07:50:23.363469Z"
+        },
+        {
+          "id": "f38495fa69b6b6dc59bc35b47dc9135056a5cb2a",
+          "publisher": "연합뉴스",
+          "url": "https://www.yna.co.kr/view/AKR20260922073251017",
+          "original_sha256": "e860ed4c095011074a0abf3c1eb80d2b2c9c77ae0a2299b442bd1dd186a586bb",
+          "excerpt_sha256": "86dd9b7d1d2435a34a1d3619d696741b67adab864e3bf160d67b8ce450f0db1b",
+          "published_at": "2026-09-22T07:23:32Z",
+          "retrieved_at": "2026-09-22T07:29:48.322224Z"
+        },
+        {
+          "id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+          "publisher": "이투데이",
+          "url": "https://www.etoday.co.kr/news/view/2628308",
+          "original_sha256": "5b5072967b2ef1cc450fe0adcf57c41f004106d6b7179b0b822077ff338ee60d",
+          "excerpt_sha256": "46db350fefd525f832dc0f9c0e25368e9b908c5222d56c114035f5120ea3af7c",
+          "published_at": "2026-09-21T23:46:00Z",
+          "retrieved_at": "2026-09-21T23:48:54.055887Z"
+        },
+        {
+          "id": "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+          "publisher": "SBS 뉴스",
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764907",
+          "original_sha256": "02e2131d3d65f8ce52588523950cc708c97b272055d63bf55dabbd8101b8a375",
+          "excerpt_sha256": "f30c5cc9748d220e625c4ea0b86314c95753ab919cf6da483e5e1cfdd9f3c69f",
+          "published_at": "2026-09-21T22:48:00Z",
+          "retrieved_at": "2026-09-21T22:53:49.739167Z"
+        },
+        {
+          "id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+          "publisher": "이투데이",
+          "url": "https://www.etoday.co.kr/news/view/2628228",
+          "original_sha256": "c1a48d9f063012afe5f0f11cddc36ea468561921ff7c56b998e5ffea0991f7f8",
+          "excerpt_sha256": "0e22229208bd5840c084cc46793cf0a4502c3ea3f9f07f0e43a800eeafaa2434",
+          "published_at": "2026-09-21T21:21:00Z",
+          "retrieved_at": "2026-09-21T21:22:30.270757Z"
+        },
+        {
+          "id": "c47ace294846384d3e56e44072728e783537800e",
+          "publisher": "CNBC",
+          "url": "https://www.cnbc.com/2026/09/22/oil-iran-us-bessent-un-crude.html",
+          "original_sha256": "776eb98710042bb68f120cacc57d0c9b88c3884367e616669336701ca1c11c5d",
+          "excerpt_sha256": "fb4660ae598ff12a35a32d24960dc0758dc21cf11a9954b928f15f74052693f4",
+          "published_at": "2026-09-22T05:55:48Z",
+          "retrieved_at": "2026-09-22T06:27:12.572266Z"
+        },
+        {
+          "id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+          "publisher": "연합뉴스",
+          "url": "https://www.yna.co.kr/view/AKR20260922006551075",
+          "original_sha256": "b1ab176c77aae47099d2162ff64fd5e50dc503339df658e282040b63c829fd16",
+          "excerpt_sha256": "a6d53fac2b2434b9c6461b694ec03a64e1c82c6d0cad21e4a3bc155b5876ca23",
+          "published_at": "2026-09-21T21:24:26Z",
+          "retrieved_at": "2026-09-21T21:32:53.660026Z"
+        },
+        {
+          "id": "f6a6901325618500df86580eedff17f0d8e64b76",
+          "publisher": "SBS 뉴스",
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008766074",
+          "original_sha256": "db6b4dd0192c58c38b47afad58b7c646328610f7c2c429026c98bb7c5698e9b9",
+          "excerpt_sha256": "3a09969fa3436eff2ff04d903f16af061788f60435b723c501c36ba7376d8d5c",
+          "published_at": "2026-09-22T06:17:00Z",
+          "retrieved_at": "2026-09-22T06:28:20.258169Z"
+        },
+        {
+          "id": "bde80c5a4779a8f7b707d39454d3c8481cc6ff37",
+          "publisher": "CNBC",
+          "url": "https://www.cnbc.com/2026/09/22/cnbc-daily-open-ai-meta-muse.html",
+          "original_sha256": "30d8d05b132e77083f8c2f571a621103cafaaa67bee56076779dccfe925792ba",
+          "excerpt_sha256": "ae1b8b8b541dbcb9685ea32476fb186a316e3e74d083a495aa33f95238d57389",
+          "published_at": "2026-09-22T06:09:14Z",
+          "retrieved_at": "2026-09-22T06:16:52.926827Z"
+        },
+        {
+          "id": "d8d032fb5ceba798fecf9f56cd3c01e1fd40b4ef",
+          "publisher": "BBC News",
+          "url": "https://www.bbc.co.uk/news/articles/cwm2qpmepmlzo",
+          "original_sha256": "cd08f9a4c124749a17bd0636d356fc4e99e792ed1883390ece771fb65004df96",
+          "excerpt_sha256": "5bd31979e095fde8c788f598c40d52046cb75a160618a1540619d38af4f621e5",
+          "published_at": "2026-09-22T05:16:07Z",
+          "retrieved_at": "2026-09-22T05:37:23.458039Z"
+        },
+        {
+          "id": "f45edfbad52e19fd3b724efbcae4a9573af35fda",
+          "publisher": "CNBC",
+          "url": "https://www.cnbc.com/2026/09/22/india-nse-ipo-billion-nasdaq.html",
+          "original_sha256": "ece31f755c495d6c6ae7780650d6938a11347cc18a109ac233c14b3b8d78a651",
+          "excerpt_sha256": "745e4b1d9b60b71681cd2a513ec11a552c8ab3ed2c525760c318eab18e1f99d5",
+          "published_at": "2026-09-22T04:00:28Z",
+          "retrieved_at": "2026-09-22T04:03:47.148394Z"
+        },
+        {
+          "id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151",
+          "publisher": "BBC News",
+          "url": "https://www.bbc.co.uk/news/articles/cm4gjr1qepr8o",
+          "original_sha256": "b69083e003219c97b6455dc9730da833e378742c464e3a3ff8aaba3cabd4c8bd",
+          "excerpt_sha256": "169c3be4f832ba82c059b440d853710dbe28adef164e241cfb6c3b760adfdc55",
+          "published_at": "2026-09-21T21:06:26Z",
+          "retrieved_at": "2026-09-21T21:15:16.076748Z"
+        }
+      ]
+    }
+  ],
+  "originals": "Existing company collection, read-only snapshot; bounded excerpts, not a new web search or a complete market-data census.",
+  "historical_lake_backfill": false,
+  "slack": "not_called",
+  "discovery_comparison": "Writer policies were compared on the same newly selected frozen source bundle; this is not a randomized end-to-end comparison of both collection policies."
+}

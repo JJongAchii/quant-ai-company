@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-01T04:01:39.709309+00:00",
+  "code_commit": "bbabee0e3516e0d514b9b3d6d4ba95f1aaa01c6f",
+  "raw_receipt_sha256": "557f857c59de2ba6b8dcde8f4c7ae15dbb6d15fd50a5cdab797a814603b12658",
+  "same_source_and_raw_model_output": true,
+  "frozen_v38_rejected": {
+    "kosdaq_previous": "reported_change_direction_or_unit_not_in_evidence",
+    "us_september_jobs": "unsupported_event_number",
+    "macro_interpretation": "unsupported_prose_number",
+    "diplomacy_counterpoint": "unsupported_prose_number",
+    "trade_counterpoint": "unsupported_prose_number",
+    "tech_fact": "unsupported_prose_number"
+  },
+  "prospective_v40_rejected": {},
+  "new_model_writer_calls": 0,
+  "six_raw_issues_preserved": true,
+  "fresh_qualification": false,
+  "source_rule_limit": "Known partial original remains for this saved-source technical diagnosis; actual new input collection excludes it.",
+  "scope": "Exact units, quarter, month and legal-reference repair, not acceptance of the frozen38case or new expert/five-day qualification"
+}

@@ -1,0 +1,10 @@
+{
+  "credential_contents_printed": false,
+  "credential_files_added_to_git": false,
+  "observed_at": "2026-09-30T12:08:38.585728+00:00",
+  "schema_version": 1,
+  "short_lived_operator_auth_files_removed": [
+    "lightsail-ephemeral-key",
+    "lightsail-ephemeral-key-cert.pub"
+  ]
+}

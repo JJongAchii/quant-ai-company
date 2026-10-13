@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "slug": "anglerfish",
+  "revision": 6,
+  "sourceRequest": "이어서 진행해줘",
+  "outcome": "Recover approved research planning and data review without discarding source reads after a narration-only output rejection.",
+  "deliverables": [
+    {
+      "id": "DIAGNOSIS",
+      "description": "Read production stage, turn and dispatch receipts"
+    },
+    {
+      "id": "APPLICATION",
+      "description": "Integrate deployed prior-task navigation fix and add one bounded same-attempt private-output correction"
+    },
+    {
+      "id": "VALIDATION",
+      "description": "Real PostgreSQL continuation and full history identity regression; full company tests and lint"
+    },
+    {
+      "id": "REVIEW",
+      "description": "Prepare reviewed PR and exact worker-only release for the new correction"
+    },
+    {
+      "id": "LIVE_CHECK",
+      "description": "After reviewed activation verify the same queued turn resumes without replay"
+    }
+  ],
+  "constraints": [
+    "No changes to program digest, frozen inputs, evaluator, roles, account selection or scientific budget",
+    "No uncertain charge/write replay; keep existing stable turn ID",
+    "Company evidence stays in this repository"
+  ],
+  "workspace": "Existing isolated qws attachment",
+  "previousIntent": "INTENT-v5.json"
+}

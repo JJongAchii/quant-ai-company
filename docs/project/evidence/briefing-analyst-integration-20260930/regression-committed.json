@@ -1,0 +1,14 @@
+{
+  "scope": "Actual local full suite on committed source-preserving integration; real PostgreSQL/Temporal included, cloud/live tests skipped",
+  "candidate_commit": "c3f8070fd02eaf3f51619a8418e6cfa9240804d5",
+  "command": ".venv/bin/pytest -q -x --tb=short --junitxml=docs/project/evidence/briefing-analyst-integration-20260930/regression-committed.xml",
+  "passed": 1533,
+  "skipped": 46,
+  "failed": 0,
+  "warnings": 12,
+  "elapsed_seconds": 400.86,
+  "lint": "All checks passed!",
+  "uv_lock": "Resolved93packages, lock unchanged",
+  "slack": "not_connected",
+  "deployed": false
+}

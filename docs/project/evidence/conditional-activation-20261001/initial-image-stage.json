@@ -1,0 +1,13 @@
+{
+  "active_changed": false,
+  "archive_sha256": "ee53642382b9406d7d572a854b76c8ff4bb960efb32778624518a16feea826d8",
+  "images": [],
+  "market_backtest_executed": false,
+  "phase": "staging",
+  "previous_app": "/opt/quant-company/releases/ea092f419b4b679df4c25e479a8cb361b4d046ff",
+  "production_database_mutated": false,
+  "schema_version": 1,
+  "scientific_authority_granted": false,
+  "source_commit": "19807db8d1817a3a495ac10eee34b1bac2d287fe",
+  "started_at": "2026-10-02T01:00:38.800013+00:00"
+}

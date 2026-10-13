@@ -1,0 +1,292 @@
+{
+ "first_run": {
+  "edition_id": "c4ddcce4-8c94-5655-9ebb-8a2b77a56872",
+  "phase": "ready",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "xhigh",
+  "account_profile": "primary",
+  "market_data": null,
+  "calls": [
+   {
+    "phase": "write",
+    "request_id": "news-brief-c4ddcce4-8c94-5655-9ebb-8a2b77a56872-write",
+    "output_contract": "brief_compose_v1",
+    "prompt_chars": 87310,
+    "state": "completed",
+    "seconds": 762.13,
+    "validation": "accepted",
+    "label": null,
+    "request_sha256": "f59c57a767366f76924b98a124d3935f2d6b33084fabef4226629a3bdeb869ef",
+    "response_sha256": "7294f0c2db5d9fcbccc09eed258af75cafd8fd206a388379157100bc42e447be",
+    "verdict": null,
+    "checks": null,
+    "rejected_ids": null,
+    "repair_mode": null,
+    "rejected_items": [
+     "calendar-warsh",
+     "observation-kosdaq",
+     "observation-kospi",
+     "overview-market"
+    ]
+   },
+   {
+    "phase": "review",
+    "request_id": "news-brief-c4ddcce4-8c94-5655-9ebb-8a2b77a56872-review",
+    "output_contract": "brief_review_v2",
+    "prompt_chars": 85442,
+    "state": "completed",
+    "seconds": 744.39,
+    "validation": "accepted",
+    "label": null,
+    "request_sha256": "99cd8dd42565a820693a57cc79b3a7fbaa4be738d286bff78195b0b3bbf56707",
+    "response_sha256": "6ebd3bfa06fc064e99b83cc0a9ee36276c0a002b1a0cbbb93bc4688f82886ca6",
+    "verdict": "reduce",
+    "checks": {
+     "numbers": false,
+     "sources": true,
+     "timing": true,
+     "causality": true,
+     "materiality": false,
+     "counterevidence": false,
+     "transmission": true,
+     "alternatives": true,
+     "falsifiability": true,
+     "coverage": false,
+     "depth": true,
+     "readability": false
+    },
+    "rejected_ids": [
+     "energy-fact"
+    ],
+    "repair_mode": null,
+    "rejected_items": []
+   }
+  ],
+  "review": {
+   "verdict": "reduce",
+   "checks": {
+    "numbers": false,
+    "sources": true,
+    "timing": true,
+    "causality": true,
+    "materiality": false,
+    "counterevidence": false,
+    "transmission": true,
+    "alternatives": true,
+    "falsifiability": true,
+    "coverage": false,
+    "depth": true,
+    "readability": false
+   },
+   "checks_passed": 7,
+   "rejected_ids": [
+    "energy-fact"
+   ],
+   "concerns": 8
+  },
+  "quality": {
+   "reduced": true,
+   "missing_core": [
+    "kosdaq",
+    "kospi"
+   ],
+   "issue_count": 5,
+   "repair_skipped": "brief_context_limit",
+   "revision_used": false,
+   "source_notes_unresolved": true,
+   "review_withheld": false,
+   "rejected": {
+    "overview-market": "unsupported_prose_number",
+    "observation-kospi": "collected_observation_modified",
+    "observation-kosdaq": "collected_observation_modified",
+    "calendar-warsh": "evidence_not_in_frozen_original",
+    "energy-fact": "semantic_review"
+   }
+  },
+  "parts_chars": [
+   9828,
+   3227
+  ],
+  "parts_sha256": [
+   "9b2d4642b37435435b19462b6b556c727d81d135eeddc92ead7b893c18cfc11e",
+   "0fb30988cce746c4b782dd28dd2ca055716f0f0474b5fcfb42240b89a0a3ca7c"
+  ]
+ },
+ "second_run": {
+  "edition_id": "47950d79-3d93-566e-9d0e-2c46ae661f06",
+  "phase": "ready",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "xhigh",
+  "account_profile": "primary",
+  "market_data": {
+   "read_at": "2026-10-12T12:44:02.469158+00:00",
+   "original_cutoff": "2026-10-12T16:10:00+09:00",
+   "observations": [
+    "data-kospi",
+    "data-kosdaq"
+   ]
+  },
+  "calls": [
+   {
+    "phase": "write",
+    "request_id": "news-brief-47950d79-3d93-566e-9d0e-2c46ae661f06-write",
+    "output_contract": "brief_compose_v1",
+    "prompt_chars": 85915,
+    "state": "completed",
+    "seconds": 935.97,
+    "validation": "accepted",
+    "label": null,
+    "request_sha256": "7d3fdbeb8aa4a464e69cae5193cb5002c0db74150840f605034e0e36ea3c746d",
+    "response_sha256": "387bc72b4a565f4598a41d334b330b622fc8afba0f30f8635250ddd74c360624",
+    "verdict": null,
+    "checks": null,
+    "rejected_ids": null,
+    "repair_mode": null,
+    "rejected_items": [
+     "data-kosdaq",
+     "data-kospi",
+     "overview-cross-assets",
+     "watch-warsh-calendar"
+    ]
+   },
+   {
+    "phase": "review",
+    "request_id": "news-brief-47950d79-3d93-566e-9d0e-2c46ae661f06-review",
+    "output_contract": "brief_review_v2",
+    "prompt_chars": 86284,
+    "state": "completed",
+    "seconds": 759.17,
+    "validation": "accepted",
+    "label": null,
+    "request_sha256": "3d657848a9a5ef6c3f26b53eb3ce071db57351b20836e487583fc69f1d052561",
+    "response_sha256": "a7433e5651cd7b2de4aa70de102cf02d2feae4fbfb13074386d3891ca1ebb4ec",
+    "verdict": "reduce",
+    "checks": {
+     "numbers": true,
+     "sources": true,
+     "timing": true,
+     "causality": true,
+     "materiality": false,
+     "counterevidence": false,
+     "transmission": true,
+     "alternatives": false,
+     "falsifiability": true,
+     "coverage": false,
+     "depth": false,
+     "readability": false
+    },
+    "rejected_ids": [],
+    "repair_mode": null,
+    "rejected_items": []
+   }
+  ],
+  "review": {
+   "verdict": "reduce",
+   "checks": {
+    "numbers": true,
+    "sources": true,
+    "timing": true,
+    "causality": true,
+    "materiality": false,
+    "counterevidence": false,
+    "transmission": true,
+    "alternatives": false,
+    "falsifiability": true,
+    "coverage": false,
+    "depth": false,
+    "readability": false
+   },
+   "checks_passed": 6,
+   "rejected_ids": [],
+   "concerns": 7
+  },
+  "quality": {
+   "reduced": true,
+   "missing_core": [
+    "kosdaq",
+    "kospi"
+   ],
+   "issue_count": 6,
+   "repair_skipped": "brief_context_limit",
+   "revision_used": false,
+   "source_notes_unresolved": true,
+   "review_withheld": true,
+   "rejected": {
+    "overview-cross-assets": "unsupported_prose_number",
+    "data-kospi": "evidence_not_in_frozen_original",
+    "data-kosdaq": "evidence_not_in_frozen_original",
+    "watch-warsh-calendar": "evidence_not_in_frozen_original"
+   }
+  },
+  "parts_chars": [
+   11325,
+   3350
+  ],
+  "parts_sha256": [
+   "32685a45251509cab694710c54485f578b1fe1ebcac0d4704e1cc79af8ff17a2",
+   "0f5e746ef28c5ddf2597f9fecec7c93c5f8e16b727cf22cd86fb52bb2fcedc2d"
+  ]
+ },
+ "preflight": {
+  "team_id": "T0C1YRDRPNF",
+  "bot_user_id": "U0C4PJDR8G3",
+  "channel_id": "C0C2E59B1AA",
+  "channel_name": null,
+  "parts": [
+   11418,
+   3350
+  ],
+  "blocks": [
+   4,
+   2
+  ],
+  "mode": "preflight",
+  "root_already_posted": false
+ },
+ "send": {
+  "team_id": "T0C1YRDRPNF",
+  "bot_user_id": "U0C4PJDR8G3",
+  "channel_id": "C0C2E59B1AA",
+  "channel_name": null,
+  "parts": [
+   11418,
+   3350
+  ],
+  "blocks": [
+   4,
+   2
+  ],
+  "mode": "send",
+  "root_ts": "1791811104.069979",
+  "permalink": "https://achiisquantresearch.slack.com/archives/C0C2E59B1AA/p1791811104069979?thread_ts=1791811104.069979&cid=C0C2E59B1AA",
+  "deliveries": [
+   {
+    "index": 0,
+    "id": "d36bec94-1e0c-5b62-8cc2-d6586b88c1a8",
+    "ts": "1791811104.069979",
+    "posted_now": true,
+    "readback_exact": true,
+    "readback_matches": true,
+    "thread_ts": "1791811104.069979"
+   },
+   {
+    "index": 1,
+    "id": "8577b1c3-7408-5de5-8647-d7562ac7cd2f",
+    "ts": "1791811105.693989",
+    "posted_now": true,
+    "readback_exact": true,
+    "readback_matches": true,
+    "thread_ts": "1791811104.069979"
+   }
+  ],
+  "all_readback_match": true
+ },
+ "register": {
+  "project_id": "c8b80556-44a6-5a10-8223-e8f6973eb47e",
+  "thread_ts": "1791811104.069979",
+  "sources_inserted": 27,
+  "video_job": "de2e3147-a696-5196-9a7c-79de9f858776",
+  "video_job_inserted": true,
+  "format": "full"
+ }
+}

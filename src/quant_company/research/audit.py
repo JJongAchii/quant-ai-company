@@ -27,6 +27,7 @@ from .adaptive_contracts import AdaptiveManifest, record_digest
 from .adaptive_report import ReportHistory, ValidatedAdaptiveTrial, _model
 from .contracts import Digest
 from .mission_contracts import AuditPublication, EvidenceRef, MissionSpec, relative_path
+from .policy_contracts import ScopedRecord, require_scope
 from .report import MAX_EXPANDED_BYTES, MAX_MEMBER_BYTES, ValidationError, _json, _require, _sha256
 
 REQUEST_ID = Annotated[str, Field(pattern=r"^[a-zA-Z0-9_-]{1,80}$")]
@@ -47,8 +48,8 @@ class AuditTrialBinding(AuditModel):
     implementer_request_id: REQUEST_ID
 
 
-class AuditBinding(AuditModel):
-    schema_version: Literal[1] = 1
+class AuditBinding(ScopedRecord):
+    schema_version: Literal[1, 2] = 1
     mission_id: UUID
     revision: int = Field(ge=1, strict=True)
     mission_digest: Digest
@@ -93,6 +94,8 @@ class VerifiedAudit:
     def public_receipt(self) -> dict[str, Any]:
         _require(self._seal is _VERIFIED, "verified_audit_required")
         return {
+            **({"research_scope": self.package.binding.research_scope.model_dump(mode="json")}
+               if self.package.binding.research_scope is not None else {}),
             "api": AUDIT_API, "mission_id": str(self.package.binding.mission_id),
             "mission_digest": self.package.binding.mission_digest,
             "objective_digest": self.package.objective_digest, "scope_digest": self.package.scope_digest,
@@ -229,6 +232,7 @@ def _match_trials(binding: AuditBinding, trials: tuple[ValidatedAdaptiveTrial, .
              "reported_trial_scope_mismatch")
     for item in binding.trials:
         trial = by_id[item.trial_id]
+        _require(trial.manifest.spec.research_scope == binding.research_scope, "audit_research_scope_mismatch")
         _require(trial.manifest.mission_id == binding.mission_id
                  and trial.manifest.mission_digest == binding.mission_digest
                  and trial.manifest.plan_digest == item.plan_digest
@@ -244,6 +248,12 @@ def prepare_audit_package(
 ) -> AuditPackage:
     """Copy validated immutable inputs; never create an audit or a pass verdict."""
     _match_trials(binding, trials)
+    require_scope(mission_spec, binding)
+    _require((history.scientific_lineage is not None) == (mission_spec.research_scope is not None),
+             "audit_lineage_history_mismatch")
+    if mission_spec.research_scope is not None:
+        _require(history.scientific_lineage.get("scientific_lineage_id")
+                 == str(mission_spec.research_scope.scientific_lineage_id), "audit_lineage_history_mismatch")
     _require(record_digest(mission_spec) == binding.mission_digest
              and all(trial.manifest.spec == mission_spec for trial in trials), "audit_mission_scope_mismatch")
     destination = destination.absolute()
@@ -303,6 +313,7 @@ def _load_package(root: Path, expected: AuditBinding, profile: QlabProfile) -> A
     _require(_file(root, "scope/binding.json").read_bytes() == _canonical(expected.model_dump(mode="json")),
              "audit_binding_content_mismatch")
     spec = _model(MissionSpec, _file(root, "scope/mission.json").read_bytes(), "\x00not-a-lease-token\x00")
+    require_scope(spec, expected)
     _require(record_digest(spec) == expected.mission_digest
              and _file(root, "scope/objective.json").read_bytes() == _canonical(spec.objective.model_dump(mode="json")),
              "audit_objective_content_mismatch")
@@ -488,6 +499,8 @@ def audit_publication(
     for name, digest in {**audit.package.scope_files, **audit.audit_files, report.path: report.sha256}.items():
         _require(_sha256(_file(audit.package.root, name).read_bytes()) == digest, "verified_audit_expired")
     return AuditPublication(
+        **({"schema_version": 2, "research_scope": audit.package.binding.research_scope}
+           if audit.package.binding.research_scope is not None else {}),
         trial_id=trial_id, mission_digest=audit.package.binding.mission_digest, outcome_digest=match.outcome_digest,
         source_id=source_id, audit_files=dict(audit.audit_files), verification=audit.verification, report=report,
         verifier_role="validator", verifier_commit=audit.package.qlab_commit, published_at=published_at,

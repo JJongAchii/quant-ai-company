@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="22" time="3.874" timestamp="2026-09-23T08:46:15.534245+09:00" hostname="MacBook-Pro.local"><testcase classname="tests.test_briefing_content" name="test_topic_sampling_keeps_major_issues_when_local_news_are_newest" time="2.244" /><testcase classname="tests.test_briefing_content" name="test_us_story_and_korean_open_cannot_replace_korean_closing_report" time="0.001" /><testcase classname="tests.test_briefing_content" name="test_overview_is_validated_and_thin_brief_cannot_claim_complete_content" time="0.006" /><testcase classname="tests.test_briefing_content" name="test_literal_source_quote_linebreak_survives_nested_artifact_decoding" time="0.002" /><testcase classname="tests.test_briefing_content" name="test_evaluation_call_preserves_fault_and_never_calls_again_over_receipt" time="0.007" /><testcase classname="tests.test_briefing_content" name="test_six_substantive_issues_survive_in_main_post_without_silent_thread_overflow" time="0.001" /><testcase classname="tests.test_briefing_content" name="test_source_coverage_cannot_be_empty_duplicated_or_claim_uncited_items" time="0.001" /><testcase classname="tests.test_briefing_content" name="test_missing_major_issue_preserves_useful_partial_but_cannot_pass" time="0.257" /><testcase classname="tests.test_briefing_content" name="test_confirmed_editorial_failure_gets_only_one_frozen_repair_and_recheck[True]" time="0.257" /><testcase classname="tests.test_briefing_content" name="test_confirmed_editorial_failure_gets_only_one_frozen_repair_and_recheck[False]" time="0.242" /><testcase classname="tests.test_briefing_content" name="test_uncertain_revision_is_not_replaced_with_another_model_call" time="0.201" /><testcase classname="tests.test_briefing_content" name="test_isolated_condition_repair_preserves_facts_and_still_requires_full_review" time="0.228"><failure message="AssertionError: assert {'issues': [{...e-1'}]}], ...} == {'summary': [...}, ...}], ...}&#10;  &#10;  Omitting 8 identical items, use -vv to show&#10;  Differing items:&#10;  {'observations': [{'id': 'nasdaq', 'unit': 'pt', 'as_of': '2026-09-21T20:00:00Z', 'basis': 'close', ...}, {'id': 'sp500', 'unit': 'pt', 'as_of': '2026-09-21T20:00:00Z', 'basis': 'close', ...}]} != {'observations': [{'id': 'sp500', 'evidence': [{'source_id': 'source-1', 'quote': 'On September 21, 2026, the S&amp;P 500 ...tion outside technology was mixed. 한국 반도체 업종의 흐름은 추가로 확인해야 합니다.'}], 'instrument': 'nasdaq', 'value': '17100.00', ...}]}&#10;  Use -v to get more diff">brief = (&lt;quant_company.briefing.store.BriefStore object at 0x12da1bc20&gt;, {'at': datetime.datetime(2026, 9, 22, 7, 10, tzinfo=zoneinfo.ZoneInfo(key='Asia/Seoul'))})
+
+    def test_isolated_condition_repair_preserves_facts_and_still_requires_full_review(brief):  # noqa: F811
+        store, _ = brief
+        edition = seed(brief)
+        original = proposal()
+        store.commit(response(store.prepare()["request"], original))
+        value = review().model_dump()
+        value.update(verdict="reduce", rejected_ids=["condition"], concerns=["어느 관측이 현재 해석을 약화하는지 확인 조건을 구체화해야 합니다."])
+        value["checks"]["falsifiability"] = False
+        failed = BriefReview.model_validate(value)
+        store.commit(response(store.prepare()["request"], failed))
+        request = store.prepare()["request"]
+        payload = json.loads(request["prompt"].split("BRIEF DATA JSON:\n")[1])
+        assert payload["revision_feedback"]["repair_mode"] == "conditions_only"
+        assert payload["revision_feedback"]["allowed_ids"] == ["condition"]
+        replacement = original.issues[0].next_check.model_copy(update={"text": "비기술 업종의 참여가 개선되지 않으면 시장 전반의 회복이라는 해석을 유보합니다."})
+        patch = ConditionPatch(replacements=[replacement])
+        corrected = apply_condition_patch(original, patch, ["condition"])
+        assert corrected.issues[0].fact == original.issues[0].fact
+        assert corrected.observations == original.observations
+        assert corrected.issues[0].next_check == replacement
+        for invalid in [ConditionPatch(replacements=[replacement, replacement]),
+                        ConditionPatch(replacements=[replacement.model_copy(update={"id": "fact"})])]:
+            with pytest.raises(ValueError, match="condition_patch_scope_rejected"):
+                apply_condition_patch(original, invalid, ["condition"])
+        store.commit(response(request, patch))
+        final = store.prepare()["request"]
+        assert final["request_id"].endswith("-final_review") and "main_post_preview" in final["prompt"]
+        store.commit(response(final))
+        with store.db.transaction() as conn:
+            row = conn.execute("SELECT * FROM brief_editions WHERE id=%s", (edition.id,)).fetchone()
+&gt;       assert row["proposal"] == corrected.model_dump(mode="json")
+E       AssertionError: assert {'issues': [{...e-1'}]}], ...} == {'summary': [...}, ...}], ...}
+E
+E         Omitting 8 identical items, use -vv to show
+E         Differing items:
+E         {'observations': [{'id': 'nasdaq', 'unit': 'pt', 'as_of': '2026-09-21T20:00:00Z', 'basis': 'close', ...}, {'id': 'sp500', 'unit': 'pt', 'as_of': '2026-09-21T20:00:00Z', 'basis': 'close', ...}]} != {'observations': [{'id': 'sp500', 'evidence': [{'source_id': 'source-1', 'quote': 'On September 21, 2026, the S&amp;P 500 ...tion outside technology was mixed. 한국 반도체 업종의 흐름은 추가로 확인해야 합니다.'}], 'instrument': 'nasdaq', 'value': '17100.00', ...}]}
+E         Use -v to get more diff
+
+tests/test_briefing_content.py:253: AssertionError</failure></testcase><testcase classname="tests.test_briefing_content" name="test_migration_updates_existing_phase_constraint" time="0.145" /><testcase classname="tests.test_briefing_content" name="test_exact_written_quantity_and_month_conversion[2.5 million-250\ub9cc]" time="0.001" /><testcase classname="tests.test_briefing_content" name="test_exact_written_quantity_and_month_conversion[5\ub9cc2048.83-52048.83]" time="0.000" /><testcase classname="tests.test_briefing_content" name="test_exact_written_quantity_and_month_conversion[1\uc8703\ucc9c\uc5b5-1300000000000]" time="0.000" /><testcase classname="tests.test_briefing_content" name="test_exact_written_quantity_and_month_conversion[-2.3 billion--23\uc5b5]" time="0.000" /><testcase classname="tests.test_briefing_content" name="test_exact_written_quantity_and_month_conversion[10 November-11\uc6d4 10\uc77c]" time="0.000" /><testcase classname="tests.test_briefing_content" name="test_exact_written_quantity_and_month_conversion[$110bn-1,100\uc5b5 \ub2ec\ub7ec]" time="0.000" /><testcase classname="tests.test_briefing_content" name="test_spelled_out_counts_and_entity_names_are_not_false_price_errors" time="0.001" /><testcase classname="tests.test_briefing_content" name="test_reported_change_uses_local_direction_and_actual_unit" time="0.001" /><testcase classname="tests.test_briefing_content" name="test_crypto_rolling_window_uses_korean_reporting_date_not_us_equity_session" time="0.003" /></testsuite></testsuites>

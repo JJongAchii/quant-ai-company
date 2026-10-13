@@ -1,0 +1,44 @@
+{
+  "recorded_at": "2026-09-29T01:58:35.010206+00:00",
+  "scope": "Independent reading before repaired model response; not supplied to writer or reviewer. Actual supplemental originals are in frozen revise-bundle.",
+  "checks": [
+    {
+      "source_id": "22704ca45c33fc070043ec58b5377efed5487c04",
+      "main_post_requirements": [
+        "Nvidia/Hugging Face agreement was announced September 3; September 28 reporting concerns bidding history, not a newly announced takeover today.",
+        "OpenAI proposed investment/custom-chip distribution and AMD/Salesforce interest are anonymously sourced reports, not completed investments.",
+        "Do not attribute the September 28 stock rise to a new $13bn acquisition announcement."
+      ]
+    },
+    {
+      "source_id": "df3a633ac3b71b46af3b1e7c2c5c23f1759db6c2",
+      "main_post_requirements": [
+        "AMD agreed to an $8.2bn all-stock World Labs acquisition; expected closing later this year, not already closed.",
+        "Report published 21:41 UTC after US regular close; do not present it as the cause of that session return.",
+        "World models support physical/robotics applications and long-term chip planning; this is a plausible mechanism, not booked revenue."
+      ]
+    },
+    {
+      "source_id": "fdaa97099d2eecfce47002d4c286aff619b2ee09",
+      "main_post_requirements": [
+        "Reported monthly average Hormuz crude transit 9.36m barrels/day, up 3.56m from August, versus 15m before conflict/about60%.",
+        "Kpler estimate includes inferred AIS-dark shipping; not an official verified count or a daily reopening decision.",
+        "Distinct mitigation from Saudi pipeline recovery; do not add the two quantities as independent total supply."
+      ]
+    },
+    {
+      "source_id": "b8eea4f79a2254ac97fb27339badd965b5fc3a39",
+      "main_post_requirements": [
+        "Bessent urged patience on further tightening, arguing AI/deregulation improve non-inflationary growth.",
+        "Treasury secretary view is an opposing policy argument, not a Fed vote or evidence productivity has conclusively offset inflation.",
+        "Keep actual Fed rate increase/range and Collins/Musalem signals alongside this counterview."
+      ]
+    }
+  ],
+  "original_sha256": {
+    "22704ca45c33fc070043ec58b5377efed5487c04": "e9666816c68e7e4939db8a57f78468d4e747b6dfe699a69ae96e04f0fb3e1405",
+    "df3a633ac3b71b46af3b1e7c2c5c23f1759db6c2": "8931e992950171be67d53c67782a4c010127bf3d74228683ed283bf2c3d77845",
+    "fdaa97099d2eecfce47002d4c286aff619b2ee09": "295194bdb9c779d43a70567674fc8a740dcbccdf9454d60e05b7b350e616834b",
+    "b8eea4f79a2254ac97fb27339badd965b5fc3a39": "23b57cbd732a5f53542682e3963298be89bd2c3817131f5ad5321357b011a110"
+  }
+}

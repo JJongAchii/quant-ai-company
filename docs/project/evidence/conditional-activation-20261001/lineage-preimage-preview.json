@@ -1,0 +1,63 @@
+{
+  "basis": "actual_read_only_database_baseline; must be rechecked by the deployed history() function",
+  "history": {
+    "origins": [
+      {
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "task_digest": "f087051936d6f6e43bf0a72e137b5a31ba3452e8ce75ee149038da5e6b363e76",
+        "task_id": "1a9683ac-5e26-57ad-acba-6d9dc05da416"
+      },
+      {
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "task_digest": "2578d2b90a11b52ea5853628c5121785a5a5f2a7fa2364997799d2016ce9159c",
+        "task_id": "2733156b-0a7e-50dc-995c-93cf58bf114b"
+      },
+      {
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "task_digest": "cadda7b237424d43b85ada213eb24ac46c95fad9944571af3ac81d2eacf87896",
+        "task_id": "3487f863-0d39-50a0-8fd5-15b67332a7a9"
+      },
+      {
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "task_digest": "2899505bb0a801dbadcccb1a1191bb6aecbad55d8b86b9fb46e225b701c96e21",
+        "task_id": "3bf21cca-034b-5927-992a-6a62c7d72972"
+      },
+      {
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "task_digest": "d410c8987e3c31879850a8cd746bb31ddf24634ec534a9de825d70eb28a3168b",
+        "task_id": "875a7d41-e6e5-5a67-94cf-8b7d9d8c2d00"
+      },
+      {
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "task_digest": "c22f3950d00e397f8c0aa79b1accd590d9a21d6fe1b1cc6cf9f48cc3ecd64369",
+        "task_id": "a226d13d-cd5e-5324-a202-71791215d3bd"
+      },
+      {
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "task_digest": "63f7c4a377d08dad692566b285d993c04c20f8925ef0b0cf1e015e2f49754418",
+        "task_id": "b5ce3cb7-d71b-5720-9f2d-72c9b1df7d18"
+      },
+      {
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "task_digest": "bfb21536d7efc746123951d3413fd7993fd3b1499f463769620b1e77aa4d0542",
+        "task_id": "dae4bd01-7477-55c7-810e-9e4fbec59dfb"
+      },
+      {
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "task_digest": "762e00528f391a5288e364f430ea496a091be1108ac30501a27b2d2e9054ad4c",
+        "task_id": "dc0e9eac-040d-5eac-9a6d-69fd2c32a0f6"
+      },
+      {
+        "program_id": "e06537d3-fac3-5c8c-bf25-ddabb3c7e282",
+        "task_digest": "a4c59ff5e91a5718e4e7234becab12b091dcf6bc14844519c6588ab71ad60c26",
+        "task_id": "fc6f31a6-b04e-5878-ada1-a113ccb5bd8d"
+      }
+    ],
+    "project_id": "9aac0de4-2b97-5195-a720-287d324234f3",
+    "scientific_lineage_id": "b6a31ea2-8da9-5f67-97dd-2e304cde30c3",
+    "trial_limit": null,
+    "trials": []
+  },
+  "history_digest": "50fc1f64e78541f0a867e070df20d5b179546b246377a8c30f302cdb28d22a8e",
+  "owner_authorized": false
+}

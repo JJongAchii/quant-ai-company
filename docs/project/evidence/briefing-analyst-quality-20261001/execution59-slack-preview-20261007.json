@@ -1,0 +1,94 @@
+{
+  "recorded_at": "2026-10-07T04:34:36.482091+00:00",
+  "scope": "Explicitly authorized manual unqualified saved-input preview, not automatic or fresh acceptance.",
+  "initial_send_receipt": {
+    "workspace": "Achii's Quant Research",
+    "team_id": "T0C1YRDRPNF",
+    "channel_id": "C0C2E59B1AA",
+    "channel_name": "daily-brief",
+    "bot_user_id": "U0C4PJDR8G3",
+    "channel_name_verified_live": false,
+    "publish_enabled": false,
+    "prior_events": 0,
+    "parts": [
+      9634,
+      3413,
+      712,
+      227
+    ],
+    "permalink": "https://achiisquantresearch.slack.com/archives/C0C2E59B1AA/p1791345972111889?thread_ts=1791345972.111889&cid=C0C2E59B1AA",
+    "root_ts": "1791345972.111889",
+    "deliveries": [
+      {
+        "index": 0,
+        "client_msg_id": "a8f14beb-c9cc-5f07-b4f4-18b841d3795c",
+        "text_sha256": "c69463e4da2f93748c632b9b762ada6b97401e89b70663a13b38cf598f21c0c7",
+        "channel": "C0C2E59B1AA",
+        "ts": "1791345972.111889",
+        "thread_ts": null,
+        "returned_text_matches": false
+      },
+      {
+        "index": 1,
+        "client_msg_id": "32145819-9ea5-568d-965d-70aa68d435f8",
+        "text_sha256": "20a6176f757da958b3263f178a2e2b51c4fcca9e49f6fe113cfd3f4f5e57d969",
+        "channel": "C0C2E59B1AA",
+        "ts": "1791345973.489809",
+        "thread_ts": "1791345972.111889",
+        "returned_text_matches": true
+      },
+      {
+        "index": 2,
+        "client_msg_id": "ed567bfe-5849-5b2b-88e5-613e599b1d81",
+        "text_sha256": "2984c1157ac02eae531e83e0c4674023f26e8929e53b2f5bd7c13dc9201de864",
+        "channel": "C0C2E59B1AA",
+        "ts": "1791345974.894879",
+        "thread_ts": "1791345972.111889",
+        "returned_text_matches": true
+      },
+      {
+        "index": 3,
+        "client_msg_id": "c64d9347-f95a-5779-9e63-1412ad95a837",
+        "text_sha256": "50f8f87c7d9ab5878ee7a831b7a14a408400510596861f991e31df62606667dd",
+        "channel": "C0C2E59B1AA",
+        "ts": "1791345976.287239",
+        "thread_ts": "1791345972.111889",
+        "returned_text_matches": true
+      }
+    ],
+    "readback_confirmed": true,
+    "readback_scope": "all_thread_messages",
+    "model_calls": 0,
+    "scheduled_policy_changed": false,
+    "content_qualified": false
+  },
+  "delivery_only_repair_receipt": {
+    "operation": "analyst-preview59-block-transport-repair-once",
+    "original_operation": "analyst-saved-input-quality-preview-20261007-schema59-once",
+    "channel": "C0C2E59B1AA",
+    "root_ts": "1791345972.111889",
+    "readback_verified": true,
+    "complete_block_text_matches": true,
+    "main_chars": 9634,
+    "blocks": 4,
+    "deleted_only_our_automatic_duplicate_chunks": [
+      "1791345972.068929",
+      "1791345972.092589"
+    ],
+    "visible_main_messages": 1,
+    "thread_messages": 3,
+    "editorial_changes": 0,
+    "model_calls": 0,
+    "content_qualified": false,
+    "automatic_publication": false,
+    "permalink": "https://achiisquantresearch.slack.com/archives/C0C2E59B1AA/p1791345972111889?thread_ts=1791345972.111889&cid=C0C2E59B1AA"
+  },
+  "initial_readback_limitation": "Initial response root text was only the final automatic split. Initial confirmation covered thread messages; final receipt confirms the complete main block text.",
+  "final_visible_main_messages": 1,
+  "final_thread_messages": 3,
+  "final_complete_main_verified": true,
+  "editorial_changes_during_delivery_repair": 0,
+  "content_qualified": false,
+  "publication_enabled": false,
+  "permalink": "https://achiisquantresearch.slack.com/archives/C0C2E59B1AA/p1791345972111889"
+}

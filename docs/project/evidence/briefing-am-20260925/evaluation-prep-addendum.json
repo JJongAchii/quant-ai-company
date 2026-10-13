@@ -1,0 +1,8 @@
+{
+  "frozen_at": "2026-09-28T01:52:20.516302+00:00",
+  "before_opening_original_contents": true,
+  "policy_sha256": "55b593a710a3de65fe7b1c9b0b0094c351c1c7d2ea3994ce5a5d1c753ecc3857",
+  "preparer": ".local/prepare-briefing-am-20260925.py",
+  "preparer_sha256": "974d22a0999d8467581c6c59ca5d5a4d479c724d2cac11c19afc620825e71365",
+  "change": "Only output paths changed from the previously qualified bundle construction script. Source selection, parser, cutoff and item limit are unchanged."
+}

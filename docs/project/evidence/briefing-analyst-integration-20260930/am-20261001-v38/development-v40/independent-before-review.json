@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-01T03:47:43.824099+00:00",
+  "scope": "Previously read19saved originals and exact raw repair output, evaluated mechanically with prospective40. Same-source development only.",
+  "code_commit": "bbabee0e3516e0d514b9b3d6d4ba95f1aaa01c6f",
+  "new_model_writer_calls": 0,
+  "new_sources": 0,
+  "mechanical_rejections": 0,
+  "closed_v38_case_not_reclassified": true,
+  "whole_source_qualification": false,
+  "known_original_gap": "Hormuzsource supplied6000of6235characters; no tail retrieval or synthetic replacement",
+  "visible_main": "All6raw issues and the employment calendar survive after exact normalizations, versus4issues under frozen38.",
+  "root_concerns": [
+    "Investment200bn is still not explicitly described as part of existing350bnexcluding150bnshipbuilding.",
+    "Micron and AI product-risk/industry governance are still combined despite different economic mechanisms.",
+    "Main is dense; distinguish needed economic implications from redundant caveats."
+  ],
+  "model_budget": "4completedoriginalcasecalls plus at most1developmentreview <= original5callceiling; no more repair",
+  "slack": "not_called",
+  "expert_qualification": false
+}

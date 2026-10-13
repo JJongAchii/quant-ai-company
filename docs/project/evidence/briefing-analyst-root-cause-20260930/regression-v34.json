@@ -1,0 +1,13 @@
+{
+  "scope": "Actual local full suite before append-only protocol; not deployment/Slack qualification",
+  "command": ".venv/bin/pytest -q -x --tb=short --junitxml=docs/project/evidence/briefing-analyst-root-cause-20260930/regression-v34.xml",
+  "passed": 1383,
+  "skipped": 38,
+  "failed": 0,
+  "warnings": 12,
+  "elapsed_seconds": 386.01,
+  "format_version": 15,
+  "validation_version": 34,
+  "lint": "All checks passed!",
+  "note": "Local real PostgreSQL; skipped cloud/Temporal/Slack checks do not establish deployment."
+}

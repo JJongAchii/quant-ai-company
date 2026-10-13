@@ -1,0 +1,14 @@
+{
+  "case": "pm-20260928-fresh-format9-validation11",
+  "scope": "Independent read-only qdata market-number check after writer request was already frozen; no changes to the frozen model input",
+  "lake_readback": "lake-levels-readback.json",
+  "source_identity": "s3://insight-invest-datalake/qdata/clean/krx_index.parquet etag fcc15fe382a5a1e111b1a721144f8c0c",
+  "source_last_modified_utc": "2026-09-28T10:23:45+00:00",
+  "edition_cutoff_utc": "2026-09-28T10:40:00+00:00",
+  "finding": "The currently readable object was modified 16 minutes 15 seconds before the edition cutoff, remained the same identity during the bounded read, and contains the September 28 KOSPI/KOSDAQ rows. The objective index levels in the syndicated articles agree with qdata. This readback was taken the following morning, so it is corroboration and evidence of pre-cutoff object availability; it was not a live at-cutoff edition collection receipt.",
+  "comparisons": [
+    {"instrument": "KOSPI", "session": "2026-09-28", "qdata_close": "6889.74", "qdata_prior_20260923": "7080.92", "computed_change_percent": "-2.69993", "article_close": "6889.74", "article_change_percent": "-2.70", "match": true},
+    {"instrument": "KOSDAQ", "session": "2026-09-28", "qdata_close": "846.58", "qdata_prior_20260923": "844.48", "computed_change_percent": "+0.24867", "article_close": "846.58", "article_change_percent": "+0.25", "match": true}
+  ],
+  "limits": "This qdata index file contains index level/turnover, not investor-group cash flows or sector breadth. News-source selection still omitted the comprehensive closing report."
+}

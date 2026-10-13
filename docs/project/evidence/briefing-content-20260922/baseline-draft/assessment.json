@@ -1,0 +1,1541 @@
+{
+  "proposal": {
+    "summary": [
+      {
+        "id": "summary_equities",
+        "evidence": [
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "이날 뉴욕증권거래소(NYSE)에서 기술주 중심의 나스닥 종합지수는 전장보다 599.55포인트(2.3%) 뛴 27,122.09로 마감하며 종가 기준 사상 최고치를 경신했다."
+          },
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "스탠더드앤드푸어스(S&P) 500지수 종가는 전장 대비 114.20포인트(1.5%) 오른 7,764.70으로 집계됐다.\n다우존스30 산업평균지수는 366.19포인트(0.7%) 오른 52,048.83으로 거래를 마쳤다."
+          }
+        ],
+        "text": "미국 증시는 AI 관련주 강세 속에 상승 마감했다. 나스닥 종합은 2.3% 올라 종가 최고치를 경신했고, S&P 500은 1.5%, 다우는 0.7% 상승했다. 기술주 중심 지수의 상승폭이 컸지만 시장 전체의 상승 종목 분포는 확인되지 않았다.",
+        "kind": "fact"
+      },
+      {
+        "id": "summary_oil",
+        "evidence": [
+          {
+            "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+            "quote": "21일(현지시간) 뉴욕상업거래소에서 10월물 미국 서부 텍사스산 원유(WTI)는 전 거래일 대비 4.52달러(4.51%) 하락한 배럴당 95.78달러에 마감했다."
+          },
+          {
+            "source_id": "0023ecad6e84f1d23292db0078e5912145e1852f",
+            "quote": "다만 아직 관련국들과 협상이 진행 중이어서 세부 내용은 바뀔 수 있으며 실제 참여 여부와 시점도 불확실하다고 미 당국자들은 전했다."
+          },
+          {
+            "source_id": "08bba8a5854670b32d1d37c5ca5c5eef877d9669",
+            "quote": "뉴욕 채권시장에서 10년물 금리는 5bp(1bp=0.01%포인트) 하락한 4.95%를 기록했다."
+          },
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "10년 만기 미 국채 금리는 2bp(1bp=0.01%포인트) 떨어진 4.972%를 기록했다."
+          }
+        ],
+        "text": "유가 하락이 지속되면 한국의 에너지 수입 비용에는 완화 요인이 될 수 있다. 다만 중동 시설 피해와 미확정 재건 계획을 보면 공급 정상화로 단정하기 어렵다. 미국 금리도 하락 보도는 일치하지만 수치가 달라 완화 강도는 유보한다.",
+        "kind": "interpretation"
+      },
+      {
+        "id": "summary_korea",
+        "evidence": [
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "여기에 더해 AI 속도 조절론 속에서도 여전히 주요 기업들이 AI 지출을 줄이지 않는 것을 보고 시장에 낙관론이 퍼진 것도 영향을 줬다."
+          },
+          {
+            "source_id": "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+            "quote": "미중 정상회담을 사흘 앞두고 양국이 AI 위험을 통제하기 위한 공식 협의체를 신설하기로 합의했습니다."
+          },
+          {
+            "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+            "quote": "They will have to navigate thorny issues such as artificial intelligence, the Iran war, tariffs and sanctions, on top of ongoing tensions around export controls, rare earths and more."
+          }
+        ],
+        "text": "한국장에서는 AI 수요 기대가 실제 주문 전망으로 이어지는지, 유가 하락이 원화 기준 원가에도 전달되는지가 중요하다. 미중 AI 대화 합의는 진전이지만 수출통제와 제재가 함께 남아 있어 국내 기술주 전반의 수혜를 확정할 근거는 부족하다.",
+        "kind": "interpretation"
+      }
+    ],
+    "overview": [],
+    "observations": [
+      {
+        "id": "dow_close",
+        "evidence": [
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "다우존스30 산업평균지수는 366.19포인트(0.7%) 오른 52,048.83으로 거래를 마쳤다."
+          }
+        ],
+        "instrument": "dow",
+        "value": "52048.83",
+        "unit": "pt",
+        "session_date": "2026-09-21",
+        "as_of": "2026-09-21T20:00:00Z",
+        "basis": "close",
+        "venue": "미국 현물시장(NYSE·Nasdaq)",
+        "previous_value": null,
+        "previous_session_date": null,
+        "reported_change": "0.7",
+        "change_unit": "%"
+      },
+      {
+        "id": "nasdaq_close",
+        "evidence": [
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "이날 뉴욕증권거래소(NYSE)에서 기술주 중심의 나스닥 종합지수는 전장보다 599.55포인트(2.3%) 뛴 27,122.09로 마감하며 종가 기준 사상 최고치를 경신했다."
+          }
+        ],
+        "instrument": "nasdaq",
+        "value": "27122.09",
+        "unit": "pt",
+        "session_date": "2026-09-21",
+        "as_of": "2026-09-21T20:00:00Z",
+        "basis": "close",
+        "venue": "Nasdaq",
+        "previous_value": null,
+        "previous_session_date": null,
+        "reported_change": "2.3",
+        "change_unit": "%"
+      },
+      {
+        "id": "sp500_close",
+        "evidence": [
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "스탠더드앤드푸어스(S&P) 500지수 종가는 전장 대비 114.20포인트(1.5%) 오른 7,764.70으로 집계됐다."
+          }
+        ],
+        "instrument": "sp500",
+        "value": "7764.70",
+        "unit": "pt",
+        "session_date": "2026-09-21",
+        "as_of": "2026-09-21T20:00:00Z",
+        "basis": "close",
+        "venue": "미국 현물시장(NYSE·Nasdaq)",
+        "previous_value": null,
+        "previous_session_date": null,
+        "reported_change": "1.5",
+        "change_unit": "%"
+      }
+    ],
+    "issues": [
+      {
+        "headline": "외교 기대에 유가 급락, 시설 복구는 여전히 미확정",
+        "fact": {
+          "id": "oil_fact",
+          "evidence": [
+            {
+              "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+              "quote": "국제유가는 미국과 이란이 대화를 통한 외교적 해법을 모색할 거라는 기대감에 급락했다.\n21일(현지시간) 뉴욕상업거래소에서 10월물 미국 서부 텍사스산 원유(WTI)는 전 거래일 대비 4.52달러(4.51%) 하락한 배럴당 95.78달러에 마감했다."
+            },
+            {
+              "source_id": "0023ecad6e84f1d23292db0078e5912145e1852f",
+              "quote": "다만 아직 관련국들과 협상이 진행 중이어서 세부 내용은 바뀔 수 있으며 실제 참여 여부와 시점도 불확실하다고 미 당국자들은 전했다."
+            }
+          ],
+          "text": "NYMEX의 WTI 10월물은 4.51% 내린 배럴당 95.78달러로 마감했다. 이투데이는 미국·이란 대화 기대를 하락 배경으로 보도했다. 미국의 중동 에너지시설 재건 출자 추진 보도도 나왔지만, 참여국과 집행 시점은 확정되지 않았다.",
+          "kind": "fact"
+        },
+        "interpretation": {
+          "id": "oil_interpretation",
+          "evidence": [
+            {
+              "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+              "quote": "국제유가는 미국과 이란이 대화를 통한 외교적 해법을 모색할 거라는 기대감에 급락했다."
+            },
+            {
+              "source_id": "0023ecad6e84f1d23292db0078e5912145e1852f",
+              "quote": "이 때문에 호르무즈 해협이 완전히 재개방되더라도 에너지 공급난이 상당 기간 이어질 수 있다는 관측이 나온다."
+            },
+            {
+              "source_id": "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+              "quote": "베선트 장관은 당장 이틀 뒤부터 모든 이란 항공사의 운영이 중단될 거라며 연료나 착륙 서비스를 제공하는 해외 공항은 달러 결제망에서 퇴출하겠다고 경고했습니다."
+            }
+          ],
+          "text": "원유 공급 차질 우려가 줄어 가격 하락이 이어진다면 에너지 사용 기업의 비용 부담을 낮출 수 있다. 다만 달러 가격 하락이 한국 기업의 원화 비용 감소와 같지는 않다. 환율과 구매 조건을 확인해야 한다. 시설 피해가 남아 있고 제재 압박도 이어져, 대화 기대만으로 지속적인 원가 개선을 전제하기 어렵다.",
+          "kind": "interpretation"
+        },
+        "next_check": {
+          "id": "oil_next",
+          "evidence": [
+            {
+              "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+              "quote": "TD증권 역시 호르무즈 해협을 통한 수출이 꾸준히 늘고 있고 중동 지역 전반에서 유입되는 물량이 전쟁 이전 수준의 약 80%에 달했다고 전했다."
+            },
+            {
+              "source_id": "0023ecad6e84f1d23292db0078e5912145e1852f",
+              "quote": "이 때문에 호르무즈 해협이 완전히 재개방되더라도 에너지 공급난이 상당 기간 이어질 수 있다는 관측이 나온다."
+            }
+          ],
+          "text": "회담 성사 여부와 함께 중동 원유 수출량, 피해 시설의 실제 재가동을 확인한다. 협상 소식 없이도 수출 회복이 이어지면 물량 개선 설명에 힘이 실린다. 대화가 진전돼도 시설 복구가 지연되거나 유가가 반등하면 지속적인 비용 완화 해석을 낮춘다.",
+          "kind": "condition"
+        },
+        "analysis": {
+          "horizon": "days_weeks",
+          "causal_basis": "conditional_hypothesis",
+          "mechanism": {
+            "id": "oil_mechanism",
+            "evidence": [
+              {
+                "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+                "quote": "국제유가는 미국과 이란이 대화를 통한 외교적 해법을 모색할 거라는 기대감에 급락했다."
+              }
+            ],
+            "text": "외교 진전이 공급 중단 우려를 낮추고 유가 하락을 지속시킨다면 수입 에너지 비용과 기업 현금흐름에 유리할 수 있다. 국내 원가 전달은 달러/원과 계약 조건에 따라 달라진다.",
+            "kind": "interpretation"
+          },
+          "alternative": {
+            "id": "oil_alternative",
+            "evidence": [
+              {
+                "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+                "quote": "TD증권 역시 호르무즈 해협을 통한 수출이 꾸준히 늘고 있고 중동 지역 전반에서 유입되는 물량이 전쟁 이전 수준의 약 80%에 달했다고 전했다."
+              }
+            ],
+            "text": "외교 기대보다 이미 진행 중인 수출 물량 회복이 가격 하락에 기여했을 수도 있다. 공급량과 협상 진전이 별개로 확인돼야 두 설명의 상대적 중요성을 판단할 수 있다.",
+            "kind": "interpretation"
+          }
+        },
+        "counterpoint": {
+          "id": "oil_counterpoint",
+          "evidence": [
+            {
+              "source_id": "08bba8a5854670b32d1d37c5ca5c5eef877d9669",
+              "quote": "뉴욕 채권시장에서 10년물 금리는 5bp(1bp=0.01%포인트) 하락한 4.95%를 기록했다."
+            },
+            {
+              "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+              "quote": "10년 만기 미 국채 금리는 2bp(1bp=0.01%포인트) 떨어진 4.972%를 기록했다."
+            }
+          ],
+          "text": "미국 국채 금리의 정확한 수준은 자료가 충돌한다. 이투데이는 10년물 4.95%·5bp 하락, 연합뉴스는 4.972%·2bp 하락으로 보도했다. 관측 시점이 없어 한 값을 종가로 채택하거나 실질금리 하락으로 해석하지 않는다.",
+          "kind": "fact"
+        }
+      },
+      {
+        "headline": "미중 AI 대화의 진전과 통상·제재 압박이 공존",
+        "fact": {
+          "id": "diplomacy_fact",
+          "evidence": [
+            {
+              "source_id": "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+              "quote": "미중 정상회담을 사흘 앞두고 양국이 AI 위험을 통제하기 위한 공식 협의체를 신설하기로 합의했습니다."
+            },
+            {
+              "source_id": "cbfd307b9bce27dece44175b2f8a28086c0e14a4",
+              "quote": "Top US and Chinese officials have discussed creating a new \"notification mechanism\" for AI incidents that could affect national security, Treasury Secretary Scott Bessent told reporters on Sunday."
+            },
+            {
+              "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+              "quote": "They will have to navigate thorny issues such as artificial intelligence, the Iran war, tariffs and sanctions, on top of ongoing tensions around export controls, rare earths and more."
+            },
+            {
+              "source_id": "3dde2b5129d47d1e1f8d374fed1d73a36529f3ac",
+              "quote": "공동성명에는 \"공급망을 교란하는 자의적인 수출제한 조치를 포함해, 유해한 과잉생산과 시장왜곡을 초래하는 경제적 강압 및 비시장 정책·관행에 단호히 반대한다\"는 문구가 포함됐습니다."
+            }
+          ],
+          "text": "SBS는 미중이 AI 위험 대응 협의체 신설에 합의했다고 보도했다. 앞선 BBC 보도의 협의 단계보다 진전된 내용이다. 그러나 CNBC는 관세·수출통제·희토류 문제가 여전히 쟁점이라고 전했고, 한미일 공동성명도 공급망을 교란하는 수출제한에 반대했다.",
+          "kind": "fact"
+        },
+        "interpretation": {
+          "id": "diplomacy_interpretation",
+          "evidence": [
+            {
+              "source_id": "cbfd307b9bce27dece44175b2f8a28086c0e14a4",
+              "quote": "He said the meeting also covered other topics, including plans to \"operationalise\" a process to identify potential tariff cuts on goods called the Board of Trade."
+            },
+            {
+              "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+              "quote": "Despite gestures of goodwill surrounding the lead-up to the summit, the two sides continue to lob accusations and launch retaliatory trade actions."
+            }
+          ],
+          "text": "협의가 실제 관세 인하나 수출허가 개선으로 이어진다면 한국 수출기업의 판매·조달 불확실성이 줄 수 있다. 하지만 AI 사고 대응 대화와 무역 규제 완화는 별개다. 제재나 수출제한이 유지된다면 협의체 출범만으로 매출과 비용 전망을 바꾸기 어렵다. 현재 자료에는 회담 기대에 대한 한국 시장의 가격 반응도 없다.",
+          "kind": "interpretation"
+        },
+        "next_check": {
+          "id": "diplomacy_next",
+          "evidence": [
+            {
+              "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+              "quote": "President Donald Trump and Chinese leader Xi Jinping are expected to discuss ways to strengthen their fragile trade truce when they meet face-to-face in Washington this week."
+            },
+            {
+              "source_id": "cbfd307b9bce27dece44175b2f8a28086c0e14a4",
+              "quote": "He said the meeting also covered other topics, including plans to \"operationalise\" a process to identify potential tariff cuts on goods called the Board of Trade."
+            }
+          ],
+          "text": "이번 주 워싱턴 정상회담의 공동 발표에서 관세 대상 품목, 수출통제 변경, 시행일이 명시되는지 확인한다. AI 안전 대화만 구체화되고 무역 조치가 그대로라면 국내 수출기업의 비용·매출 개선 해석은 약해진다. 정확한 회담 시각은 미확인이다.",
+          "kind": "condition"
+        },
+        "analysis": {
+          "horizon": "days_weeks",
+          "causal_basis": "conditional_hypothesis",
+          "mechanism": {
+            "id": "diplomacy_mechanism",
+            "evidence": [
+              {
+                "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+                "quote": "They will have to navigate thorny issues such as artificial intelligence, the Iran war, tariffs and sanctions, on top of ongoing tensions around export controls, rare earths and more."
+              }
+            ],
+            "text": "실제 관세·수출통제 완화가 이뤄지면 영향을 받는 한국 기업의 시장 접근과 원재료 조달 조건이 개선될 수 있다. 협의체 설립 자체에는 현금흐름 개선을 보장하는 내용이 없다.",
+            "kind": "interpretation"
+          },
+          "alternative": {
+            "id": "diplomacy_alternative",
+            "evidence": [
+              {
+                "source_id": "cbfd307b9bce27dece44175b2f8a28086c0e14a4",
+                "quote": "Top US and Chinese officials have discussed creating a new \"notification mechanism\" for AI incidents that could affect national security, Treasury Secretary Scott Bessent told reporters on Sunday."
+              },
+              {
+                "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+                "quote": "Despite gestures of goodwill surrounding the lead-up to the summit, the two sides continue to lob accusations and launch retaliatory trade actions."
+              }
+            ],
+            "text": "협의체가 안보 사고 통지에만 집중하고 통상 갈등은 이어질 수 있다. 이 경우 외교적 진전과 기업의 영업 여건 개선은 분리해서 평가해야 한다.",
+            "kind": "interpretation"
+          }
+        },
+        "counterpoint": null
+      }
+    ],
+    "internals": [
+      {
+        "id": "ecb_settlement",
+        "evidence": [
+          {
+            "source_id": "ff8917a4601610247c5ae78e6bd2c3db76e600f4",
+            "quote": "Banks and market infrastructures to join in a gradual approach"
+          },
+          {
+            "source_id": "ff8917a4601610247c5ae78e6bd2c3db76e600f4",
+            "quote": "The Eurosystem today launched Pontes, a solution that enables wholesale transactions in tokenised assets to be settled in central bank money."
+          }
+        ],
+        "text": "유럽에서는 ECB가 디지털 토큰 형태의 자산 거래를 중앙은행 화폐로 결제하는 Pontes를 출범시켰다. 은행과 시장 인프라의 참여는 단계적으로 진행된다. 해당 발표가 당일 자산 가격에 미친 영향은 제공 자료에서 확인되지 않는다.",
+        "kind": "fact"
+      }
+    ],
+    "watchpoints": [
+      {
+        "id": "watch_kr_semiconductors",
+        "evidence": [
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "여기에 더해 AI 속도 조절론 속에서도 여전히 주요 기업들이 AI 지출을 줄이지 않는 것을 보고 시장에 낙관론이 퍼진 것도 영향을 줬다."
+          }
+        ],
+        "text": "한국장 개장 후 반도체 강세가 나타나면 국내 기업의 주문·매출 전망 발표가 동반되는지 확인한다. 가격 상승만으로 미국 AI 수요의 국내 실적 전달이 확인됐다고 판단하지 않는다.",
+        "kind": "condition"
+      },
+      {
+        "id": "watch_kr_energy_cost",
+        "evidence": [
+          {
+            "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+            "quote": "21일(현지시간) 뉴욕상업거래소에서 10월물 미국 서부 텍사스산 원유(WTI)는 전 거래일 대비 4.52달러(4.51%) 하락한 배럴당 95.78달러에 마감했다."
+          }
+        ],
+        "text": "한국장에서는 달러/원과 에너지 사용 업종의 원가 전망을 함께 확인한다. 원화 약세나 구매가격 조정 지연이 유가 하락 효과를 상쇄하면 원가 수혜 해석을 낮춘다.",
+        "kind": "condition"
+      },
+      {
+        "id": "watch_kr_trade",
+        "evidence": [
+          {
+            "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+            "quote": "They will have to navigate thorny issues such as artificial intelligence, the Iran war, tariffs and sanctions, on top of ongoing tensions around export controls, rare earths and more."
+          }
+        ],
+        "text": "한국 수출기업과 연결되는 관세·수출허가 변경 발표를 확인한다. 대상 품목과 시행 조건이 없는 외교 발언만 나오면 수출기업의 실적 개선 판단은 보류한다.",
+        "kind": "condition"
+      }
+    ],
+    "watch_results": [],
+    "calendar": [
+      {
+        "id": "us_china_summit",
+        "evidence": [
+          {
+            "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+            "quote": "President Donald Trump and Chinese leader Xi Jinping are expected to discuss ways to strengthen their fragile trade truce when they meet face-to-face in Washington this week."
+          },
+          {
+            "source_id": "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+            "quote": "모레(24일) 오후 트럼프 대통령이 공항에 직접 나가 시 주석을 맞이하고, 이튿날 백악관 환영식에서는 미군 최정예 전략폭격기인 B-2와 F-22 랩터 전투기 4대가 축하 비행을 펼칩니다."
+          },
+          {
+            "source_id": "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+            "quote": "현지시간 24일 열리는 미중 정상회담은 향후 글로벌 첨단 기술과 통상, 중동 안보 질서의 향방을 가를 최대 분수령이 될 전망입니다."
+          }
+        ],
+        "title": "이번 주 워싱턴 미중 정상회담",
+        "at": null,
+        "source_timezone": "America/New_York",
+        "status": "time_unconfirmed",
+        "note": "정확한 개최 시각 미확인. SBS 본문은 현지시간 24일 회담으로 쓰면서 24일 도착 다음 날 백악관 환영식도 언급해 세부 일정 재확인이 필요하다."
+      }
+    ],
+    "limitations": [
+      "미 국채 10년물의 수준과 변동폭이 매체 간 충돌하고 관측 시각도 없어 수치 관측값을 제외했다. 실질금리·기대물가·기간 프리미엄으로 분해할 자료도 없다.",
+      "KRX 지수·업종별 등락·상승 종목 분포·투자자 수급·달러/원 자료가 없다. 국내 영향은 조건으로만 제시했다.",
+      "WTI는 NYMEX 10월물의 마감 보도이지만 해당 계약의 정확한 마감 기준 시각이 제공되지 않아 구조화 관측값을 생략했다. 미국 주식 종가 시각을 원유에 적용하지 않았다.",
+      "미국 시장 전체의 상승 종목 분포와 지수 기여도가 없어 일부 기술주 상승을 전면적인 시장 확산으로 해석하지 않았다.",
+      "이전 브리핑과 과거 비교 스냅샷이 없어 이전 발간물 대비 변화와 서비스 계산 비교를 제시할 수 없다.",
+      "오늘 밤 미국 경제지표의 확정 발표 일정·컨센서스·수정치가 제공되지 않았다. 미중 회담의 정확한 시각도 미확인이다.",
+      "일부 CNBC 본문은 제공 발췌가 중간에 끝난다. 인용 범위 밖의 합의 내용이나 기업 전망을 추정하지 않았다."
+    ]
+  },
+  "bundle": {
+    "edition": {
+      "id": "0c5f181d-77f0-55cb-a89e-aa0bba30c345",
+      "day": "2026-09-22",
+      "kind": "am",
+      "due_at": "2026-09-22T07:30:00+09:00",
+      "starts_at": "2026-09-22T06:50:00+09:00",
+      "cutoff": "2026-09-22T07:10:00+09:00",
+      "expires_at": "2026-09-22T08:30:00+09:00",
+      "us_session": "2026-09-21",
+      "kr_session": "2026-09-22",
+      "previous_us_session": "2026-09-18",
+      "previous_kr_session": "2026-09-21",
+      "weekly": null
+    },
+    "documents": [
+      {
+        "id": "08bba8a5854670b32d1d37c5ca5c5eef877d9669",
+        "url": "https://www.etoday.co.kr/news/view/2628230",
+        "title": "뉴욕증시, AI주 급등에 상승⋯나스닥 최고치 경신 [종합]",
+        "publisher": "이투데이",
+        "kind": "media",
+        "origin_group": "etoday",
+        "content": "▲뉴욕증권거래소에서 21일(현지시간) 트레이더가 주가를 살피고 있다. 뉴욕/UPI연합뉴스\n뉴욕증시는 AI 관련주가 급등하자 상승했다.\n21일(현지시간) 뉴욕증권거래소에서 다우지수는 전 거래일 대비 366.19포인트(0.7%) 오른 5만2048.83에 마감했다. S&P500지수는 114.20포인트(1.5%) 오른 7764.70, 기술주 중심의 나스닥지수는 599.55포인트(2.3%) 상승한 2만7122.09에 거래를 마쳤다. 나스닥지수는 종가 기준 사상 최고치를 경신했다.\n주요 종목으로는 마이크로소프트가 1.59% 상승했고 애플은 0.85% 올랐다. 엔비디아는 2.30%, 테슬라는 3.03% 상승했다.\n특히 AI주가 강세를 보였다. 인텔은 12.14% 상승했고 AMD는 9.95% 올랐다. AMD는 시가총액이 1조 달러를 돌파했다. 퀄컴도 9.29% 올랐다.\n미국 안팎에서 AI 개발 속도 조절론과 인류멸망론으로 인해 여러 논쟁이 벌어지고 있지만, 여전히 AI가 기업 실적의 토대가 될 거라는 시장의 기대는 여전한 상황이다.\n이런 가운데 젠슨 황 엔비디아 최고경영자(CEO)는 AI가 인류를 멸종시킬 거라는 우려를 일축했다. 그는 전날 CBS뉴스 인터뷰에서 “2030년 세상이 종말할 리가 없다”며 “세상 종말 가능성은 0%”라고 말했다. 그는 “사람들을 겁주는 건 불필요하고 무책임한 행동”이라고 덧붙였다.\nAI주 강세와 더불어 국제유가와 국채 금리가 하락한 점도 주가를 떠받쳤다고 CNBC방송은 설명했다.\n국제유가는 미국과 이란이 대화를 통한 외교적 해법을 모색할 거라는 기대감에 급락했다. 뉴욕상업거래소에서 10월물 미국 서부 텍사스산 원유(WTI)는 전 거래일 대비 4.52달러(4.51%) 하락한 배럴당 95.78달러에 마감했다. 런던 ICE선물거래소에서 11월물 브렌트유는 3.53달러(3.4%) 내린 배럴당 100.34달러로 집계됐다.\n앞서 도널드 트럼프 미국 대통령은 폭스뉴스 인터뷰에서 ‘유엔총회 참석을 계기로 이란 대통령과 회담할 가능성’에 관한 질문에 “아마도 열려 있을 것”이라고 답했다. 트럼프 대통령은 “내가 궁금한 건 이란이라는 나라 전체를 진짜 날려버려야 하느냐는 것”이라며 “그들이 얌전히 행동하는 게 좋을 것”이라고 설명했다.\n뉴욕타임스(NYT)는 트럼프 행정부 관계자들을 인용해 사우디아라비아 요청에도 불구하고 트럼프 대통령이 당분간 친이란 성향의 후티 반군에 대한 폭격을 자제하기로 했다고 보도하기도 했다.\n한편 JP모건체이스는 보고서에서 사우디가 테러 공격을 받아 동서 송유관을 폐쇄했지만, 중동 지역의 원유 수출이 회복력을 보인다고 밝혔다. TD증권 역시 호르무즈 해협을 통한 수출이 꾸준히 늘고 있고 중동 지역 전반에서 유입되는 물량이 전쟁 이전 수준의 약 80%에 달했다고 전했다.\n국채 금리도 하락했다. 뉴욕 채권시장에서 10년물 금리는 5bp(1bp=0.01%포인트) 하락한 4.95%를 기록했다.\n달러는 상승했다. 유로ㆍ달러 환율은 0.2% 하락한 1.1464달러, 파운드ㆍ달러 환율은 0.2% 내린 1.3367달러를 기록했다. 달러ㆍ엔 환율은 0.4% 상승한 157.43엔으로 집계됐다.\n가상자산은 강세다. 코인마켓캡에 따르면 한국시간 22일 오전 6시 28분 현재 비트코인은 24시간 전 대비 7.17% 상승한 8만6603.20달러에 거래되고 있다. 이더리움은 5.65% 오른 2769.45달러에 거래 중이다.",
+        "published_at": "2026-09-21T21:31:00Z",
+        "retrieved_at": "2026-09-21T21:32:39.224195Z",
+        "sha256": "fa27457d538ba885418c05ff217730a9628262877ef25aab5f55da58c74f6530",
+        "registration": "etoday-global",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.etoday.co.kr/news/view/2628230",
+          "title": "뉴욕증시, AI주 급등에 상승⋯나스닥 최고치 경신 [종합] - 이투데이",
+          "bylines": [
+            "고대영"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-22T06:31:00+09:00",
+          "retrieved_at": "2026-09-21T21:32:39.224195+00:00",
+          "article_chars": 1661,
+          "last_modified": null,
+          "requested_url": "https://www.etoday.co.kr/news/view/2628230",
+          "original_bytes": 139691,
+          "publisher_host": "www.etoday.co.kr",
+          "original_sha256": "fa27457d538ba885418c05ff217730a9628262877ef25aab5f55da58c74f6530",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "articleBody",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+        "url": "https://www.yna.co.kr/view/AKR20260922006551075",
+        "title": "뉴욕증시, 'AI낙관론'에 메타·인텔 급등…나스닥 사상 최고치(종합)",
+        "publisher": "연합뉴스",
+        "kind": "media",
+        "origin_group": "yonhap",
+        "content": "김경윤기자\nAI에이전트 소비자 반응에 메타 11%↑…AMD 시가총액 1조 달러 돌파\n미·이란 협상 기대에 국제유가 큰폭 하락…10년물 美국채 금리도 5% 아래로\n이미지 확대\n월스트리트\n[UPI=연합뉴스. 재판매 및 DB 금지]\n(로스앤젤레스=연합뉴스) 김경윤 특파원 = 인공지능(AI) 관련주가 급등하고 유가가 하락하면서 21일(현지시간) 미국 뉴욕증시 3대 지수가 일제히 강세로 마감했다.\n이날 뉴욕증권거래소(NYSE)에서 기술주 중심의 나스닥 종합지수는 전장보다 599.55포인트(2.3%) 뛴 27,122.09로 마감하며 종가 기준 사상 최고치를 경신했다.\n상승률은 지난달 4일(2.6%) 이후 가장 컸다.\n스탠더드앤드푸어스(S&P) 500지수 종가는 전장 대비 114.20포인트(1.5%) 오른 7,764.70으로 집계됐다.\n다우존스30 산업평균지수는 366.19포인트(0.7%) 오른 52,048.83으로 거래를 마쳤다.\n이날 투자자들이 AI 낙관론에 베팅하면서 관련주가 큰 폭으로 상승했다.\n우선 메타의 개인용 업무 수행 AI에이전트 '뮤즈'가 애플 앱스토어 무료 애플리케이션(앱) 부문 1위에 오르며 좋은 반응을 얻은 것이 연쇄적으로 관련 주에도 영향을 끼쳤다.\n메타의 주가는 이날 11.4% 뛰며, 지난해 4월 이래 가장 큰 급등세를 보였다.\n이와 함께 반도체 기업 AMD 주가는 이날 10% 상승한 615.52달러로 마감하며 시가총액 1조 달러(약 1천375조원)를 넘겼다.\nAMD는 엔비디아, 브로드컴, 마이크론에 이어 시가총액 1조 달러를 달성한 미국 반도체 기업 대열에 들게 됐다.\n인텔 주가는 무려 12.1% 올랐고, 퀄컴도 9.3%의 상승세를 기록했다.\n매슈 브라이슨 웨드부시 애널리스트는 \"AI 에이전트의 실질적인 연산장치 제조사는 인텔과 AMD 단 두 곳뿐\"이라며 AI에 필수적인 중앙처리장치(CPU) 제조사가 주목받은 이유를 설명했다.\n여기에 더해 AI 속도 조절론 속에서도 여전히 주요 기업들이 AI 지출을 줄이지 않는 것을 보고 시장에 낙관론이 퍼진 것도 영향을 줬다.\n이미지 확대\n메타\n[로이터=연합뉴스. 재판매 및 DB 금지]\n유가가 4거래일 연속 하락세를 이어가고 국채 금리가 반락하면서 주식시장의 상승세를 떠받쳤다\n유엔총회를 앞두고 미국과 이란 전쟁이 외교적 해법을 찾을지도 모른다는 기대에 이날 국제유가는 큰 폭으로 떨어졌다.\n서부 텍사스산 원유(WTI) 10월 인도분은 4.5% 내린 배럴당 95.78달러, 브렌트유 11월 인도분은 3.4% 내린 배럴당 100.34달러로 마감했다.\n인플레이션(물가 상승) 우려가 완화되면서 고공 행진하던 미 국채 금리도 안정되는 모습을 보였다.\n10년 만기 미 국채 금리는 2bp(1bp=0.01%포인트) 떨어진 4.972%를 기록했다. 30년 만기 국채 금리는 5.305%였다.\n아트 호건 B.라일리 웰스 수석 시장 전략가는 \"유가와 미국 10년물 국채 금리 두 요소만 본다면 단기적으로 시장이 역풍에서 순풍으로 전환됐다\"고 설명했다.\nheeva@yna.co.kr\n제보는 카카오톡 okjebo\n<저작권자(c) 연합뉴스,\n무단 전재-재배포, AI 학습 및 활용 금지>\n2026년09월22일 06시24분 송고\n#뉴욕증시\n#마감\n공유하기\nURL이 복사되었습니다.\n본문 글자 크기 조정\n제보",
+        "published_at": "2026-09-21T21:24:26Z",
+        "retrieved_at": "2026-09-21T21:32:53.660026Z",
+        "sha256": "b1ab176c77aae47099d2162ff64fd5e50dc503339df658e282040b63c829fd16",
+        "registration": "yonhap-international",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.yna.co.kr/view/AKR20260922006551075",
+          "title": "뉴욕증시, 'AI낙관론'에 메타·인텔 급등…나스닥 사상 최고치(종합) | 연합뉴스",
+          "bylines": [
+            "김경윤"
+          ],
+          "redirects": [],
+          "content_type": "text/html;charset=utf-8",
+          "published_at": "2026-09-22T06:24:26+09:00",
+          "retrieved_at": "2026-09-21T21:32:53.660026+00:00",
+          "article_chars": 1603,
+          "last_modified": null,
+          "requested_url": "https://www.yna.co.kr/view/AKR20260922006551075",
+          "original_bytes": 163179,
+          "publisher_host": "www.yna.co.kr",
+          "original_sha256": "b1ab176c77aae47099d2162ff64fd5e50dc503339df658e282040b63c829fd16",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "article",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+        "url": "https://www.cnbc.com/2026/09/21/trump-xi-china-summit-trade-tariffs.html",
+        "title": "Trump, Xi seek trade stability and deals, but AI, tariffs and Iran loom large. What to watch",
+        "publisher": "CNBC",
+        "kind": "media",
+        "origin_group": "cnbc",
+        "content": "Key Points\nPresident Donald Trump and Chinese leader Xi Jinping are expected to discuss ways to strengthen their fragile trade truce when they meet face-to-face in Washington this week.\nThey will have to navigate thorny issues such as artificial intelligence, the Iran war, tariffs and sanctions, on top of ongoing tensions around export controls, rare earths and more.\n\"A number of inconsistent viewpoints seem to be jostling each other,\" China expert Claire Reade told CNBC.\nChina's President Xi Jinping (R) and US President Donald Trump visit the Temple of Heaven on May 14, 2026 in Beijing, China.\nChina Pool | Getty Images\nPresident Donald Trump and Chinese leader Xi Jinping's aims of bolstering trade stability and clinching economic wins could be scrambled by a roiling debate over artificial intelligence, as well as shifting U.S. tariffs and an Iran war-related sanctions operation.\nThe two leaders are expected to seek ways to strengthen their fragile trade truce when they meet in Washington for their second face-to-face summit this year.\nDespite gestures of goodwill surrounding the lead-up to the summit, the two sides continue to lob accusations and launch retaliatory trade actions.\nTreasury Secretary Scott Bessent, in an interview with CNBC's \"Squawk Box\" on Monday, said the \"great respect\" Trump and Xi have for each other trickles down to broader U.S.-China negotiations.\nHe then noted, \"We had some deliverables that have not been completely fulfilled\" by China as part of a trade agreement Trump and Xi reached in Busan, South Korea, nearly a year ago.\nSome China analysts have raised concerns about the unusually top-down diplomatic arrangement between the two economic superpowers.\n\"A number of inconsistent viewpoints seem to be jostling each other,\" as Trump dictates \"the overarching approach\" toward China \"while letting more negative actions occur at the margins,\" said Claire Reade, a senior associate with the Trustee Chair in Chinese Business and Economics at the Center for Strategic and International Studies.\nThe summit comes with less than six weeks left in a U.S. election cycle that has largely centered on Americans' cost of living concerns. Trump, whose polling marks on that key issue have sunk to new lows, has even more of an incentive to emerge from the summit with Xi touting some form of economic deal.\nHere's where the U.S.-China trade relationship stands and what's at risk when Trump and Xi meet:\nState of trade\nLast year's explosive trade war saw the two economic superpowers hike tariffs on each other's goods to dizzying heights: U.S. levies on Chinese imports hit 145% at the peak of the squabble, while Beijing's retaliatory duties reached 125%.\nThose tariffs were slashed in May 2025 after trade negotiators in Switzerland struck a temporary deal, which was extended in mid-August. Trump and Xi then made an agreement in Busan that led the countries to further scale back their tit-for-tat trade measures.\nAs part of that deal, China agreed to",
+        "published_at": "2026-09-21T21:21:21Z",
+        "retrieved_at": "2026-09-21T21:35:44.702823Z",
+        "sha256": "f1678d98a797f6af4e22e55f1a871370c3800b347088e2b2a0f34455d29f19ea",
+        "registration": "cnbc-technology",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.cnbc.com/2026/09/21/trump-xi-china-summit-trade-tariffs.html",
+          "title": "Trump, Xi seek trade deals, but AI, tariffs and Iran loom large",
+          "bylines": [
+            "Kevin Breuninger"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-21T21:21:21+0000",
+          "retrieved_at": "2026-09-21T21:35:44.702823+00:00",
+          "article_chars": 10714,
+          "last_modified": null,
+          "requested_url": "https://www.cnbc.com/2026/09/21/trump-xi-china-summit-trade-tariffs.html",
+          "original_bytes": 888100,
+          "publisher_host": "www.cnbc.com",
+          "original_sha256": "f1678d98a797f6af4e22e55f1a871370c3800b347088e2b2a0f34455d29f19ea",
+          "content_truncated": false,
+          "excerpt_truncated": true,
+          "article_extraction": "main",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "ff8917a4601610247c5ae78e6bd2c3db76e600f4",
+        "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260921~e754847a7b.en.html",
+        "title": "Eurosystem brings central bank money to tokenised finance",
+        "publisher": "European Central Bank",
+        "kind": "official",
+        "origin_group": "ecb",
+        "content": "PRESS RELEASE\nEurosystem brings central bank money to tokenised finance\n21 September 2026\nPontes enables wholesale tokenised asset transactions to be settled in central bank money\nLaunch marks first step in implementing the Eurosystem's strategy for tokenised finance\nBanks and market infrastructures to join in a gradual approach\nThe Eurosystem today launched Pontes, a solution that enables wholesale transactions in tokenised assets to be settled in central bank money. Pontes is the first initiative under the Eurosystem’s strategic programme to make central bank money fit for a tokenised future and to support the development of this rapidly evolving financial ecosystem.\n“The Eurosystem is working to enable a more integrated, innovative and resilient European financial market in the digital age,” said Christine Lagarde, president of the ECB. “We will continue to make progress in close collaboration with the market.”\nTokenisation is the process of issuing or representing assets in the form of digital “tokens”, typically recorded on distributed ledger technology (DLT) networks. For wholesale financial markets, this technology has the potential to make transactions faster and more efficient by bundling multiple steps of an asset’s lifecycle – from issuance and trading to settlement, custody and servicing – and by enabling automation and the development of innovative solutions through smart contracts.\nPontes builds on the outcome of the Eurosystem’s 2024 tests using DLT for central bank money settlement, during which stakeholders from the public and private sectors indicated that access to a risk-free settlement asset was crucial for the wider adoption of this new technology. Pontes will initially offer a core set of services, to be expanded over time in line with market needs and technological developments. Enhanced features and longer operating hours will be introduced gradually, with full implementation expected by 2028.\n“Pontes brings the stability and trust of central bank money to the European tokenised finance ecosystem,” said Piero Cipollone, member of the ECB’s Executive Board. “It will give an important advantage to help it scale.”\nThe market is already showing significant interest in Pontes. An initial group of market participants and DLT operators[1] has completed onboarding and is ready to start using Pontes immediately. Additional participants are committed to connecting to Pontes in the coming months.\nThis engagement demonstrates confidence in the potential of this innovation to put Europe at the forefront of the transformation of financial services. The Eurosystem will support this transformation and continue to enhance Pontes in line with evolving market needs.\nThe development of an integrated ecosystem for DLT-based financial services continues under Appia, involving experimentation and analytical work by the Eurosystem, Danmarks Nationalbank and stakeholders from the public and private sectors, with the goal of delivering a blueprint",
+        "published_at": "2026-09-21T10:00:00Z",
+        "retrieved_at": "2026-09-21T10:00:51.762476Z",
+        "sha256": "0a6a41717f762f0c4f79b8fd938744ee54b133a6e1fa9db7a1016725324d03d6",
+        "registration": "ecb-press",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260921~e754847a7b.en.html",
+          "title": "Eurosystem brings central bank money to tokenised finance",
+          "bylines": [],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-21",
+          "retrieved_at": "2026-09-21T10:00:51.762476+00:00",
+          "article_chars": 4011,
+          "last_modified": null,
+          "requested_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260921~e754847a7b.en.html",
+          "original_bytes": 105778,
+          "publisher_host": "www.ecb.europa.eu",
+          "original_sha256": "0a6a41717f762f0c4f79b8fd938744ee54b133a6e1fa9db7a1016725324d03d6",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "main",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764783",
+        "title": "'미중 AI 대화' 공식화…B-2 띄우고 시진핑 극진 환대",
+        "publisher": "SBS 뉴스",
+        "kind": "media",
+        "origin_group": "sbs",
+        "content": "<앵커>\n미중 정상회담을 사흘 앞두고 양국이 AI 위험을 통제하기 위한 공식 협의체를 신설하기로 합의했습니다. 트럼프 대통령은 시진핑 국가주석에게 역대 최고 수준의 환대를 할 거라고 예고했습니다.\n워싱턴에서 이한석 특파원입니다.\n<기자>\n스콧 베선트 미 재무장관은 뉴욕에서 허리펑 중국 국무원 부총리와 고위급 회담을 갖고 미중 AI 대화를 공식화했다고 밝혔습니다.\n양국은 오는 11월 APEC 정상회의가 열리는 중국 선전에서 후속 회담을 열고, 통제가 불가능한 AI 에이전트와 비국가 행위자의 사이버 위협 등에 대응할 규칙과 프로토콜을 논의할 방침입니다.\n양국이 AI 협의체를 통해 AI가 초래할 위험을 방지하고 대응하기 위한 규칙과 절차를 마련하겠다는 취지로 해석됩니다.\n안보 전선에서는 팽팽한 압박이 이어졌습니다.\n베선트 장관은 당장 이틀 뒤부터 모든 이란 항공사의 운영이 중단될 거라며 연료나 착륙 서비스를 제공하는 해외 공항은 달러 결제망에서 퇴출하겠다고 경고했습니다.\n이어 중국 인민은행 등 금융당국이 이 과정에 깊이 관여하고 있다며, 대이란 제재에 중국의 적극적인 협조를 공개 압박했습니다.\n이런 가운데 11년 만에 시진핑 중국 국가주석의 미국 방문을 앞두고 트럼프 대통령은 파격적인 환대를 예고했습니다.\n모레(24일) 오후 트럼프 대통령이 공항에 직접 나가 시 주석을 맞이하고, 이튿날 백악관 환영식에서는 미군 최정예 전략폭격기인 B-2와 F-22 랩터 전투기 4대가 축하 비행을 펼칩니다.\n멜라니아 여사까지 사흘 동안 3차례 공식행사에 동행하는 등 최고 수준의 예우를 갖춥니다.\n의전을 중시하는 중국을 배려해 극진히 대접하면서도, 압도적인 군사력을 바탕으로 패권의 위력을 과시해 담판의 주도권을 쥐겠다는 전략으로 보입니다.\n현지시간 24일 열리는 미중 정상회담은 향후 글로벌 첨단 기술과 통상, 중동 안보 질서의 향방을 가를 최대 분수령이 될 전망입니다.\n(영상취재 : 오정식, 영상편집 : 이승열)",
+        "published_at": "2026-09-21T21:20:00Z",
+        "retrieved_at": "2026-09-21T21:32:46.265911Z",
+        "sha256": "866dfdaf5adea37601b326a2b27d9e585920f9dd2b649fed2a62c9f10bd7b9ca",
+        "registration": "sbs-world",
+        "receipt": {
+          "ok": true,
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764783",
+          "title": "'미중 AI 대화' 공식화…B-2 띄우고 시진핑 극진 환대",
+          "bylines": [
+            "이한석 기자"
+          ],
+          "redirects": [],
+          "content_type": "text/html;charset=utf-8",
+          "published_at": "2026-09-22T06:20:07+09:00",
+          "retrieved_at": "2026-09-21T21:32:46.265911+00:00",
+          "article_chars": 959,
+          "last_modified": null,
+          "requested_url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764783",
+          "original_bytes": 129048,
+          "publisher_host": "news.sbs.co.kr",
+          "original_sha256": "866dfdaf5adea37601b326a2b27d9e585920f9dd2b649fed2a62c9f10bd7b9ca",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "articleBody",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "0023ecad6e84f1d23292db0078e5912145e1852f",
+        "url": "https://www.yna.co.kr/view/AKR20260922007600071",
+        "title": "\"美, 이란전 피해 중동 에너지시설 재건에 6.8조원 출자 추진\"",
+        "publisher": "연합뉴스",
+        "kind": "media",
+        "origin_group": "yonhap",
+        "content": "이유미기자\nWSJ \"사우디 등 8개국에 美동일액 출자 요청…기금 총 13.7조원 규모\"\n이란과 종전합의 전 재건은 시기상조 지적도…걸프국 이해관계도 엇갈려\n이미지 확대\n트럼프 대통령과 셰이크 무함마드 빈 자이드 알나하얀 UAE 대통령\n[AP=연합뉴스 자료사진. 재판매 및 DB 금지]\n(워싱턴=연합뉴스) 이유미 특파원 = 도널드 트럼프 미국 행정부가 이란전으로 파괴된 중동 지역 에너지 시설을 재건하는 데 50억 달러(약 6조8천억원)를 출자하는 방안을 추진하고 있다고 월스트리트저널(WSJ)이 21일(현지시간) 보도했다.\nWSJ이 입수한 문건과 미국 및 중동 관계자들의 발언에 따르면 트럼프 행정부는 미국이 50억 달러를 출자하고 중동 8개국에도 같은 규모의 출자를 요청해 총 100억달러(약 13조7천억원) 규모의 기금을 조성하는 방안을 제안했다.\n대상 국가는 사우디아라비아, 아랍에미리트(UAE), 카타르, 바레인, 쿠웨이트, 오만, 이라크, 요르단 등이다.\n기금 명칭은 '동맹 신뢰·건설 파트너십'(Partnership for Allied Trust and Construction·Pact)으로, 미국 국제개발금융공사(DFC)가 운용하는 방안이 검토되고 있다.\n기금은 7개월 가까이 이어진 이란전으로 파괴된 송유관과 정유시설 등 에너지 기반 시설을 재건하는 한편 에너지 수송에 있어 호르무즈 해협 의존도를 낮추는 데 초점을 맞출 것으로 보인다.\n다만 아직 관련국들과 협상이 진행 중이어서 세부 내용은 바뀔 수 있으며 실제 참여 여부와 시점도 불확실하다고 미 당국자들은 전했다.\nWSJ은 이번 구상이 이란전으로 세계 에너지 시장이 크게 흔들리고 중동의 송유관과 정유시설이 파괴돼 복구에 막대한 비용이 들게 됐다는 점을 트럼프 행정부가 사실상 인정한 것이라고 평가했다.\n지난 2월 말 시작된 이란전 과정에서 이란은 미국과 이스라엘의 공격에 맞서 미사일과 드론으로 반격하면서 역내 정유시설과 유전, 천연가스 수출 터미널 수십 곳에 상당한 피해를 줬다.\n이 때문에 호르무즈 해협이 완전히 재개방되더라도 에너지 공급난이 상당 기간 이어질 수 있다는 관측이 나온다. 에너지 전문가와 당국자들은 역내 에너지 기반 시설 복구에 수백억 달러가 필요할 것으로 추산하고 있다.\n중동 일각에서는 이란과 완전한 평화 합의가 이뤄지지 않은 상태에서 에너지 시설 재건에 나서는 것은 시기상조라는 지적도 나온다. 새로 건설하거나 복구한 시설이 다시 이란의 미사일이나 드론 공격 대상이 될 수 있기 때문이다.\n사우디아라비아와 UAE는 호르무즈 해협을 거치지 않는 대체 수송로를 활용할 수 있는 반면, 쿠웨이트와 카타르 등은 여전히 해협에 대한 의존도가 높아 국가별로 이해관계가 엇갈리는 점도 기금 조성의 변수로 거론된다.\nyumi@yna.co.kr\n제보는 카카오톡 okjebo\n<저작권자(c) 연합뉴스,\n무단 전재-재배포, AI 학습 및 활용 금지>\n2026년09월22일 06시11분 송고\n#트럼프\n#이란\n공유하기\nURL이 복사되었습니다.\n본문 글자 크기 조정\n제보",
+        "published_at": "2026-09-21T21:11:03Z",
+        "retrieved_at": "2026-09-21T21:22:47.460389Z",
+        "sha256": "ce8874bd5c6104e8ad38c628de6b5b679494a51d47508e85c40e756c7316e153",
+        "registration": "yonhap-international",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.yna.co.kr/view/AKR20260922007600071",
+          "title": "\"美, 이란전 피해 중동 에너지시설 재건에 6.8조원 출자 추진\" | 연합뉴스",
+          "bylines": [
+            "이유미"
+          ],
+          "redirects": [],
+          "content_type": "text/html;charset=utf-8",
+          "published_at": "2026-09-22T06:11:03+09:00",
+          "retrieved_at": "2026-09-21T21:22:47.460389+00:00",
+          "article_chars": 1479,
+          "last_modified": null,
+          "requested_url": "https://www.yna.co.kr/view/AKR20260922007600071",
+          "original_bytes": 161537,
+          "publisher_host": "www.yna.co.kr",
+          "original_sha256": "ce8874bd5c6104e8ad38c628de6b5b679494a51d47508e85c40e756c7316e153",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "article",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "7f4f853766b5dc50bf53c1c88ee6a23f93411328",
+        "url": "https://www.cnbc.com/2026/09/21/meta-muse-personal-ai-agent-downloads.html",
+        "title": "Meta's Muse AI agent downloads are surging. Here's how it compares to ChatGPT, Grok and Claude",
+        "publisher": "CNBC",
+        "kind": "media",
+        "origin_group": "cnbc",
+        "content": "Key Points\nMeta's Muse AI personal agent tool overtook ChatGPT as the leading iOS free app in the U.S. on Friday.\nThe app had 730,000 downloads over the roughly five days following its release on Sep. 8, according to the analytics firm Sensor Tower.\nThe app is powered by Meta's Muse Spark family of AI models and is a major push by CEO Mark Zuckerberg into the AI agent market.\nIn this article\nMETA\nwatch now\nVIDEO4:4304:43\nPiper Sandler's Tom Champion on Muse: Meta has developed a very potent product\nThe Exchange\nMeta's Muse AI personal agent tool has only been out for nearly two weeks, and it's topping the app store charts.\nThe social media giant's Muse app is currently ahead of popular services like OpenAI's ChatGPT, Polymarket and Kashi on Apple's iOS app store for the category of free smartphone programs in the U.S. as of Monday. It's also ahead of rival AI apps like Anthropic's Claude and SpaceXAI's Grok AI, in addition to the Facebook-parent's own Meta AI app.\nThe Muse app overtook ChatGPT as the leading iOS free app in the U.S. on Friday, and racked up 730,000 downloads over about five days after it launched on Sep. 8, according to the analytics firm Sensor Tower. As of Monday, Muse has since logged over 2.5 million downloads since its debut, the market intelligence company said.\nMuse's cumulative downloads topped Claude and Grok during the same 13-day post-launch window, with those apps recording 400,000 and 200,000 downloads, respectively. ChatGPT obtained 3.1 million downloads during that time frame, Sensor Tower said.\nThe firm noted that the apps had staggered platform releases split between Apple and Google Play, which would impact their totals.\nMeta pitched the app as a way for consumers to manage and direct supercharged digital assistants that can perform a number of tasks across the web, like filling out electronic forms and organizing email inboxes. The app, which is powered by Meta's Muse Spark family of AI models, represents a major push by CEO Mark Zuckerberg into the AI agent market, which the freely available OpenClaw tool helped popularize earlier this year among developers and technology enthusiasts.\n\"I think up to this point most of the agentic use cases have not really been for normal people,\" Bernstein analyst Stacy Rasgon told CNBC in a \"Squawk on the Street\" interview on Monday. \"Now you've got Meta's Muse and other agents out there that are starting to maybe get more potential for more broad-based adoption.\"\nRead more CNBC tech news\nElon Musk talks up AI safety while fighting regulation in wild week of strange alliances\nOpenAI's latest AI revelation is a 'serious situation,' Microsoft's Suleyman tells CNBC\nAnthropic and OpenAI need truly independent safety evaluators, experts say in public letter\nAI safety debate meets reality at Dreamforce as business leaders say last year's models are enough\nThe buzz around Meta was also reflected in the stock, which surged more than 11% on Monday. Wells Fargo lifted its price target ",
+        "published_at": "2026-09-21T21:25:11Z",
+        "retrieved_at": "2026-09-21T21:25:36.889041Z",
+        "sha256": "49041af212a97105a33acf3ef186ef1082b6c5252127645c97534a804429e0bb",
+        "registration": "cnbc-technology",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.cnbc.com/2026/09/21/meta-muse-personal-ai-agent-downloads.html",
+          "title": "Meta's Muse AI agent tops rivals on Apple App Store",
+          "bylines": [
+            "Jonathan Vanian"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-21T18:28:51+0000",
+          "retrieved_at": "2026-09-21T21:25:36.889041+00:00",
+          "article_chars": 5523,
+          "last_modified": null,
+          "requested_url": "https://www.cnbc.com/2026/09/21/meta-muse-personal-ai-agent-downloads.html",
+          "original_bytes": 842778,
+          "publisher_host": "www.cnbc.com",
+          "original_sha256": "49041af212a97105a33acf3ef186ef1082b6c5252127645c97534a804429e0bb",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "main",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151",
+        "url": "https://www.bbc.co.uk/news/articles/cm4gjr1qepr8o",
+        "title": "Paramount settles lawsuit with US states, clearing way for $110bn merger with Warner Bros",
+        "publisher": "BBC News",
+        "kind": "media",
+        "origin_group": "bbc",
+        "content": "Image source, Getty Images\nImage caption,\nA coalition of states led by California had challenged the deal, raising concerns over competition across film and television.\nByFrancisco Velasquez\nBusiness reporterReporting fromNew York\nPublished\n21 September 2026, 18:30 BST\nUpdated 18 minutes ago\nParamount Skydance has settled a lawsuit with dozens of US states, removing a major hurdle to its $110bn (£82.8bn) merger with Warner Bros Discovery.\nCalifornia Attorney General Rob Bonta told a news conference that state officials agreed to terms after securing commitments to protect competition across film and television, and broadcasting.\nStill, \"the settlement is not a vote of support for this merger,\" Bonta said. \"I don't think these two companies should merge.\"\nParamount chief executive David Ellison hailed the resolution, saying: \"Our shared aim was an outcome that best serves consumers, workers and - most importantly -the creative community so vital to the art of visual storytelling.\"\nIn a statement, Ellison said that now the state attorneys general and the Writers Guild of America (WGA) concerns had been addressed, \"we have complete clearance for this merger and look forward to putting these commitments into action\".\nEllison had previously threatened to move studio operations out of California.\nHowever, the WGA said it continues to believe the deal \"will cause damage to writers and the industry at large\".\nThe guild said it was forced to settle its own lawsuit because, as a non-profit, it could not afford to fight the merger alone without government support.\nThe studio is set to pay $17.5m into the WGA health fund, cover legal fees, and prohibit writer layoffs at CBS News Broadcast for five years.\nBonta said the settlement will help boost film production in the US. Under the agreement, Paramount must release at least 30 films each year.\nTo prevent the studio from fulfilling its annual quota with low-budget or automated content, Bonta said there were strict guardrails against \"AI-generated\" films.\nOfficials wanted to guarantee \"real, robust movies\" that generate economic activity and put people back to work, he added.\nIf Paramount fails to meet its annual production quota, it will be forced to sell its 49% stake in Miramax.\n\"Divestitures are part of our solutions to all three markets,\" Bonta said, arguing the deal turned what could have been a \"falling off the cliff in domestic production into a huge increase,\" leading to more movies, jobs, and economic activity.\nThough Ellison previously indicated the merged company would keep its headquarters in California for the foreseeable future, Bonta clarified that this commitment was not written into the legal agreement.\n\"It's not part of the deal,\" Bonta said.\nTo ensure remaining terms are enforced, Paramount has agreed to the appointment of an independent monitor to oversee ongoing compliance with the settlement.\nCalifornia led the legal push alongside a coalition of state attorneys general from Arizona, Col",
+        "published_at": "2026-09-21T21:06:26Z",
+        "retrieved_at": "2026-09-21T21:15:16.076748Z",
+        "sha256": "b69083e003219c97b6455dc9730da833e378742c464e3a3ff8aaba3cabd4c8bd",
+        "registration": "bbc-business",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.bbc.co.uk/news/articles/cm4gjr1qepr8o",
+          "title": "Paramount reaches settlement with states in $110bn Warner Bros merger - BBC News",
+          "bylines": [
+            "Francisco Velasquez"
+          ],
+          "redirects": [],
+          "content_type": "text/html",
+          "published_at": "2026-09-21T17:30:15.707Z",
+          "retrieved_at": "2026-09-21T21:15:16.076748+00:00",
+          "article_chars": 3787,
+          "last_modified": null,
+          "requested_url": "https://www.bbc.co.uk/news/articles/cm4gjr1qepr8o",
+          "original_bytes": 396870,
+          "publisher_host": "www.bbc.co.uk",
+          "original_sha256": "b69083e003219c97b6455dc9730da833e378742c464e3a3ff8aaba3cabd4c8bd",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "article",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+        "url": "https://www.etoday.co.kr/news/view/2628228",
+        "title": "국제유가, 미국ㆍ이란 대화 기대감에 급락⋯WTI 4.51%↓ [상보]",
+        "publisher": "이투데이",
+        "kind": "media",
+        "origin_group": "etoday",
+        "content": "▲미국 텍사스에 펌프잭이 보인다. 텍사스/로이터연합뉴스\n국제유가는 미국과 이란이 대화를 통한 외교적 해법을 모색할 거라는 기대감에 급락했다.\n21일(현지시간) 뉴욕상업거래소에서 10월물 미국 서부 텍사스산 원유(WTI)는 전 거래일 대비 4.52달러(4.51%) 하락한 배럴당 95.78달러에 마감했다. 런던 ICE선물거래소에서 11월물 브렌트유는 3.53달러(3.4%) 내린 배럴당 100.34달러로 집계됐다.\n앞서 도널드 트럼프 미국 대통령은 폭스뉴스 인터뷰에서 ‘유엔총회 참석을 계기로 이란 대통령과 회담할 가능성’에 관한 질문에 “아마도 열려 있을 것”이라고 답했다. 트럼프 대통령은 “내가 궁금한 건 이란이라는 나라 전체를 진짜 날려버려야 하느냐는 것”이라며 “그들이 얌전히 행동하는 게 좋을 것”이라고 설명했다.\n뉴욕타임스(NYT)는 트럼프 행정부 관계자들을 인용해 사우디아라비아 요청에도 불구하고 트럼프 대통령이 당분간 친이란 성향의 후티 반군에 대한 폭격을 자제하기로 했다고 보도하기도 했다.\n한편 JP모건체이스는 보고서에서 사우디가 테러 공격을 받아 동서 송유관을 폐쇄했지만, 중동 지역의 원유 수출이 회복력을 보인다고 밝혔다. TD증권 역시 호르무즈 해협을 통한 수출이 꾸준히 늘고 있고 중동 지역 전반에서 유입되는 물량이 전쟁 이전 수준의 약 80%에 달했다고 전했다.",
+        "published_at": "2026-09-21T21:21:00Z",
+        "retrieved_at": "2026-09-21T21:22:30.270757Z",
+        "sha256": "c1a48d9f063012afe5f0f11cddc36ea468561921ff7c56b998e5ffea0991f7f8",
+        "registration": "etoday-global",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.etoday.co.kr/news/view/2628228",
+          "title": "국제유가, 미국ㆍ이란 대화 기대감에 급락⋯WTI 4.51%↓ [상보] - 이투데이",
+          "bylines": [
+            "고대영"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-22T06:21:00+09:00",
+          "retrieved_at": "2026-09-21T21:22:30.270757+00:00",
+          "article_chars": 665,
+          "last_modified": null,
+          "requested_url": "https://www.etoday.co.kr/news/view/2628228",
+          "original_bytes": 137238,
+          "publisher_host": "www.etoday.co.kr",
+          "original_sha256": "c1a48d9f063012afe5f0f11cddc36ea468561921ff7c56b998e5ffea0991f7f8",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "articleBody",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "57b4e958756bfd076e4ffe0a2c39a8121f88a694",
+        "url": "https://www.etoday.co.kr/news/view/2628225",
+        "title": "[속보] 국제유가, 급락⋯WTI 4.51%↓",
+        "publisher": "이투데이",
+        "kind": "media",
+        "origin_group": "etoday",
+        "content": "국제유가는 21일(현지시간) 급락했다. 뉴욕상업거래소에서 10월물 미국 서부 텍사스산 원유(WTI)는 전 거래일 대비 4.52달러(4.51%) 하락한 배럴당 95.78달러에 마감했다. 런던 ICE선물거래소에서 11월물 브렌트유는 3.53달러(3.4%) 내린 배럴당 100.34달러로 집계됐다.",
+        "published_at": "2026-09-21T21:04:00Z",
+        "retrieved_at": "2026-09-21T21:12:24.347981Z",
+        "sha256": "3fd5a2b54bab8e9e6cc45ad0979585a54ba9cc07781c102a220713d3ef91ee93",
+        "registration": "etoday-global",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.etoday.co.kr/news/view/2628225",
+          "title": "[속보] 국제유가, 급락⋯WTI 4.51%↓ - 이투데이",
+          "bylines": [
+            "고대영"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-22T06:04:00+09:00",
+          "retrieved_at": "2026-09-21T21:12:24.347981+00:00",
+          "article_chars": 163,
+          "last_modified": null,
+          "requested_url": "https://www.etoday.co.kr/news/view/2628225",
+          "original_bytes": 134676,
+          "publisher_host": "www.etoday.co.kr",
+          "original_sha256": "3fd5a2b54bab8e9e6cc45ad0979585a54ba9cc07781c102a220713d3ef91ee93",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "articleBody",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "c6c3354fb2013f469d8065e51066fee65821c56f",
+        "url": "https://www.yna.co.kr/view/AKR20260922006500075",
+        "title": "뉴욕증시, AI주 급등에 '들썩'…나스닥 2.3% 뛰며 최고치 마감",
+        "publisher": "연합뉴스",
+        "kind": "media",
+        "origin_group": "yonhap",
+        "content": "김경윤기자\n이미지 확대\n뉴욕 증권거래소\n[AFP=연합뉴스 자료사진. 재판매 및 DB 금지]\n(로스앤젤레스=연합뉴스) 김경윤 특파원 = 인공지능(AI) 관련주가 급등하고 유가가 하락하면서 21일(현지시간) 미국 뉴욕증시 3대 지수가 일제히 강세로 마감했다.\n이날 뉴욕증권거래소(NYSE)에서 기술주 중심의 나스닥 종합지수는 전장보다 599.55포인트(2.3%) 뛴 27,122.09로 마감하며 종가 기준 사상 최고치를 경신했다.\n스탠더드앤드푸어스(S&P) 500지수 종가는 전장 대비 114.20포인트(1.5%) 오른 7,764.70으로 집계됐다.\n다우존스30 산업평균지수는 366.19포인트(0.7%) 오른 52,048.83으로 거래를 마쳤다.\nheeva@yna.co.kr\n제보는 카카오톡 okjebo\n<저작권자(c) 연합뉴스,\n무단 전재-재배포, AI 학습 및 활용 금지>\n2026년09월22일 05시16분 송고\n#뉴욕증시\n#마감\n공유하기\nURL이 복사되었습니다.\n본문 글자 크기 조정\n제보",
+        "published_at": "2026-09-21T20:16:13Z",
+        "retrieved_at": "2026-09-21T20:22:05.259901Z",
+        "sha256": "f2d6ce0f348074620236612e67bcd14ee200c73a3d60c91ce305f1849d65b252",
+        "registration": "yonhap-market",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.yna.co.kr/view/AKR20260922006500075",
+          "title": "뉴욕증시, AI주 급등에 '들썩'…나스닥 2.3% 뛰며 최고치 마감 | 연합뉴스",
+          "bylines": [
+            "김경윤"
+          ],
+          "redirects": [],
+          "content_type": "text/html;charset=utf-8",
+          "published_at": "2026-09-22T05:16:13+09:00",
+          "retrieved_at": "2026-09-21T20:22:05.259901+00:00",
+          "article_chars": 499,
+          "last_modified": null,
+          "requested_url": "https://www.yna.co.kr/view/AKR20260922006500075",
+          "original_bytes": 156676,
+          "publisher_host": "www.yna.co.kr",
+          "original_sha256": "f2d6ce0f348074620236612e67bcd14ee200c73a3d60c91ce305f1849d65b252",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "article",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "3dde2b5129d47d1e1f8d374fed1d73a36529f3ac",
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764810",
+        "title": "\"경제 강압 반대\"…미중정상회담 앞두고 중국 견제 목소리",
+        "publisher": "SBS 뉴스",
+        "kind": "media",
+        "origin_group": "sbs",
+        "content": "▲ 조현 외교부 장관과 마코 루비오 미국 국무장관, 모테기 도시미쓰 일본 외무상이 21일(현지시간) 뉴욕에서 회담하기 앞서 기념촬영을 하고 있다.\n미중정상회담을 사흘 앞두고 한미일 외교장관이 중국을 상대로 경고 메시지를 발신했습니다.\n미국이 동맹인 한국과 일본을 규합해 중국을 공개적으로 견제하면서 양국 정상회담 목전에 신경전을 벌이는 양상입니다.\n다만 중국이 내정 간섭으로 판단하는 타이완과 남중국해 문제에 있어서는 다소 수위를 조절하는 모습도 보였습니다.\n조현 외교부 장관과 마코 루비오 미 국무장관, 모테기 도시미쓰 일본 외무상은 21일(현지시간) 유엔총회가 열리는 뉴욕에서 만나 회담을 하고 공동성명을 냈습니다.\n공동성명에는 북한과의 대화 재개 필요성이 맨 앞에 적시됐습니다.\n'대화의 길은 여전히 열려 있음을 재확인하고 북한이 대화에 복귀할 것을 촉구한다'는 내용이 들어간 것입니다.\n김정은 북한 국무위원장과의 연내 대화 재개를 추진하는 도널드 트럼프 대통령의 의지와 '페이스메이커' 역할을 하겠다는 한국 정부의 의향이 반영된 것으로 풀이됩니다.\n공동성명에 '장관들은 관련 유엔 안전보장이사회 결의에 따른 북한의 완전한 비핵화와 북한의 핵·탄도미사일 프로그램을 위한 수익 창출 지원 금지에 대한 확고한 의지를 재확인했다'는 내용도 들어갔습니다.\n대화 재개의 필요성을 확인하면서 북한 비핵화를 최종 목표로 제시한 셈입니다.\n북한은 비핵화는 대화의 의제가 될 수 없다고 거듭 선을 긋고 있습니다.\n공동성명에서 한미일의 대북 대응 공조와 함께 눈에 띄는 부분은 중국을 겨냥한 메시지입니다.\n공동성명에는 \"공급망을 교란하는 자의적인 수출제한 조치를 포함해, 유해한 과잉생산과 시장왜곡을 초래하는 경제적 강압 및 비시장 정책·관행에 단호히 반대한다\"는 문구가 포함됐습니다.\n중국을 직접 거론한 것은 아니지만 중국의 희토류 수출통제를 비롯해 미국이 그간 중국의 산업정책과 관련해 문제 삼아온 부분이 상당수 들어갔고 '단호히 반대한다'는 비교적 높은 수위의 표현도 이어졌습니다.\n공동성명에는 또 한미일 외교장관들이 타이완해협에서의 평화·안정 유지의 중요성을 강조했고 양안 문제의 평화적 해결을 독려했으며 일방적으로 현상을 변경하려는 어떠한 시도에도 반대했다는 문구가 포함됐습니다.\n'일방적 현상 변경 시도'는 주로 중국의 남중국해 영유권 확대 시도를 겨냥한 표현입니다.\n다만 이번 공동성명에 남중국해가 적시되지는 않고 표현도 일부 완화됐습니다.\n작년 9월 유엔총회를 계기로 도출된 한미일 외교장관 성명에는 \"남중국해를 포함한 인도태평양 수역에서 위험하고 불안정을 야기하는 행위를 포함해 현상을 변경하려는 어떠한 시도에도 반대한다\"는 표현이 있었습니다.\n타이완과 관련해서도 1년 전 공동성명에는 '타이완 인근에서 불안정을 야기하는 행위가 점점 빈번해지고 있어 우려한다'는 내용이 새로 추가됐는데 이번엔 빠졌습니다.\n중국은 한미일의 타이완·남중국해 거론 자체를 내정 간섭으로 보고 있습니다.\n작년 9월 한미일 외교장관 성명이 나왔을 때도 \"강한 불만을 표하고 단호히 반대한다\"는 입장을 냈습니다.\n미중정상회담을 불과 사흘 앞두고 미국이 한일 동맹과 함께 경제적 강압과 비시장 정책을 문제 삼으며 중국을 강하게 압박하는 한편 중국이 핵심 이익으로 여기는 분야에 대해서는 다소 수위를 조절하며 자극을 피하려 한 것이라는 분석이 나옵니다.\n이달 초에도 미국은 주요 20개국(G20) 재무장관 회의에서 중국의 비시장정책을 겨냥한 공동성명 채택을 추진하며 중국과 샅바싸움을 벌였습니다.\n결국 중국의 반대로 공동성명은 채택되지 못했지만 미국은 나머지 국가들과 의장성명을 발표하며 신경전을 이어갔습니다.\n(사진=연합뉴스)",
+        "published_at": "2026-09-21T20:26:00Z",
+        "retrieved_at": "2026-09-21T20:32:03.148480Z",
+        "sha256": "c4735801f15c9f3bf28f862c6279fe81cd7296a854d405fd8e1947cbceb0c561",
+        "registration": "sbs-world",
+        "receipt": {
+          "ok": true,
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764810",
+          "title": "\"경제 강압 반대\"…미중정상회담 앞두고 중국 견제 목소리",
+          "bylines": [
+            "백운 기자"
+          ],
+          "redirects": [],
+          "content_type": "text/html;charset=utf-8",
+          "published_at": "2026-09-22T05:26:51+09:00",
+          "retrieved_at": "2026-09-21T20:32:03.148480+00:00",
+          "article_chars": 1792,
+          "last_modified": null,
+          "requested_url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764810",
+          "original_bytes": 126084,
+          "publisher_host": "news.sbs.co.kr",
+          "original_sha256": "c4735801f15c9f3bf28f862c6279fe81cd7296a854d405fd8e1947cbceb0c561",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "articleBody",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "53be9c4c65a0f487c3d094677c68d367d04dfedd",
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764764",
+        "title": "이란 매체 \"미, 이란 유엔 총회 대표단 일부 비자 거부\"",
+        "publisher": "SBS 뉴스",
+        "kind": "media",
+        "origin_group": "sbs",
+        "content": "▲ 마수드 페제시키안 이란 대통령\n미국 정부가 유엔 총회에 참석하는 마수드 페제시키안 이란 대통령 대표단 중 공보팀을 포함한 일부 수행원의 비자 발급을 거부했다고 이란 국영 매체가 21일(현지시간) 보도했습니다.\n국영 IRNA 통신은 \"미국 정부의 전례 없는 적대적 조치로 공보팀을 포함한 고위급 대표단 일부 구성원에 대한 비자 발급이 거부됐다\"고 전했습니다.\n반관영 메흐르 통신도 이란 대통령실 대변인을 인용해 관련 소식을 보도했습니다.\n에스마일 바가이 이란 외무부 대변인은 엑스(X)를 통해 도널드 트럼프 미국 행정부가 최근 보도 내용에 불만을 품고 미국 주요 언론사 3곳의 백악관 출입을 금지한 조치를 언급하며, 이번 비자 거부가 \"정보 접근권을 짓밟는 행위\"라고 맹비난했습니다.\n그는 \"미국 정부가 마음에 들지 않는 자국 기자들의 출입을 막고, 침묵시키고 싶은 이란 대통령의 공보팀을 비롯한 외국 기자들마저 차단하는 것은 접근을 관리하는 것이 아니라 진실을 숨기려는 것\"이라고 비판했습니다.\n앞서 미 국무부는 지난 17일 이란 대표단의 유엔 총회 참석을 위한 여행은 승인하되, 지난해와 마찬가지로 사치품 및 기타 물품 구매를 금지하는 등의 제한 조치를 가할 것이라고 밝힌 바 있습니다.\n(사진=AP, 연합뉴스)",
+        "published_at": "2026-09-21T19:16:00Z",
+        "retrieved_at": "2026-09-21T19:21:14.505152Z",
+        "sha256": "2cc574a2f5099cf65755b8d61569e0d01500248f7abfdff46a0f8db0052d101c",
+        "registration": "sbs-world",
+        "receipt": {
+          "ok": true,
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764764",
+          "title": "이란 매체 \"미, 이란 유엔 총회 대표단 일부 비자 거부\"",
+          "bylines": [
+            "백운 기자"
+          ],
+          "redirects": [],
+          "content_type": "text/html;charset=utf-8",
+          "published_at": "2026-09-22T04:16:16+09:00",
+          "retrieved_at": "2026-09-21T19:21:14.505152+00:00",
+          "article_chars": 625,
+          "last_modified": null,
+          "requested_url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764764",
+          "original_bytes": 119990,
+          "publisher_host": "news.sbs.co.kr",
+          "original_sha256": "2cc574a2f5099cf65755b8d61569e0d01500248f7abfdff46a0f8db0052d101c",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "articleBody",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "49134ea9e806961c96d90a905e435a2b6ca8ad79",
+        "url": "https://www.gov.uk/government/speeches/un-human-rights-council-63-uk-statement-for-the-interactive-dialogue-on-iran",
+        "title": "UN Human Rights Council 63: UK Statement for the Interactive Dialogue on Iran",
+        "publisher": "UK Foreign, Commonwealth & Development Office",
+        "kind": "official",
+        "origin_group": "uk-government",
+        "content": "Speech\nUN Human Rights Council 63: UK Statement for the Interactive Dialogue on Iran\nUK Statement for the Interactive Dialogue on Iran. Delivered by the UK's Permanent Representative to the WTO and UN, Kumar Iyer.\nFrom:\nForeign, Commonwealth & Development Office and Kumar Iyer CMG\nPublished:\n21 September 2026\nLocation:\nGeneva\nDelivered on:\n21 September 2026 (Transcript of the speech, exactly as it was delivered)\nThe United Kingdom thanks the Fact-Finding Mission for its report.\nWe remain horrified by the dire human rights situation in Iran.\nThe Mission’s findings regarding the violent repression of peaceful protests that began in December, including the use of lethal force against those who posed no imminent threat, such as children, are particularly alarming. The crackdown was the deadliest in the Islamic Republic’s history.\nIran’s abhorrent use of the death penalty, prolonged nationwide internet shutdowns, torture and ill treatment, and restrictions on fundamental freedoms fuel cycles of repression for the people of Iran.\nThe report documents civilian deaths arising from the March 2026 conflict – in Minab in Iran, and across the region. Innocent civilians should never be caught in the crossfire.\nThe United Kingdom continues to support the work of the Fact-Finding Mission and the Special Rapporteur. Independent documentation of violations is essential to accountability, justice for victims and survivors, and the prevention of future abuses.\nThe UK calls on the Iranian authorities to end the use of repression and to respect the human rights and fundamental freedoms of all people in Iran.",
+        "published_at": "2026-09-21T14:32:02Z",
+        "retrieved_at": "2026-09-21T14:37:34.901744Z",
+        "sha256": "95b22dfcc890175be84cb20e1a32dda5c0092239d7b6bc62aaa5cef6e36dd5b3",
+        "registration": "govuk-fcdo",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.gov.uk/government/speeches/un-human-rights-council-63-uk-statement-for-the-interactive-dialogue-on-iran",
+          "title": "UN Human Rights Council 63: UK Statement for the Interactive Dialogue on Iran - GOV.UK",
+          "bylines": [
+            "Foreign, Commonwealth & Development Office"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-21T15:32:02+01:00",
+          "retrieved_at": "2026-09-21T14:37:34.901744+00:00",
+          "article_chars": 1614,
+          "last_modified": null,
+          "requested_url": "https://www.gov.uk/government/speeches/un-human-rights-council-63-uk-statement-for-the-interactive-dialogue-on-iran",
+          "original_bytes": 66460,
+          "publisher_host": "www.gov.uk",
+          "original_sha256": "95b22dfcc890175be84cb20e1a32dda5c0092239d7b6bc62aaa5cef6e36dd5b3",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "main",
+          "earliest_publication": "2026-09-20T14:37:33.258512+00:00",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "bf4a2f2fa3a60d1f38b1fa44fb392a5a6dce4f25",
+        "url": "https://www.cnbc.com/2026/09/21/5-things-to-know-before-the-stock-market-opens.html",
+        "title": "Trump-Xi summit preparations, outlets fight White House ban, Nissan's U.S. ambitions and more in Morning Squawk",
+        "publisher": "CNBC",
+        "kind": "media",
+        "origin_group": "cnbc",
+        "content": "This is CNBC's Morning Squawk newsletter. Subscribe here to receive future editions in your inbox.\nHappy Monday. In the latest sign of the air travel industry's focus on premium offerings, so-called budget airline king Bill Franke told CNBC that even he's coming around to first-class seats.\nStock futures are rising this morning. The three major averages are coming off a mixed week.\nHere are five key things investors need to know to start the trading day:\n1. Flip of a switch\nGemini AI signage during the Google I/O Developers Conference in Mountain View, California, US, on Tuesday, May 19, 2026.\nDavid Paul Morris | Bloomberg | Getty Images\nThe artificial intelligence safety debate continued to play out over the weekend. Technology leaders are forming alliances over the issue, while lawmakers are deciding how to respond.\nHere's what to know to start the week:\nGoogle added to safety fears on Friday when it revealed that its Gemini model hacked three other companies without permission. It's the first time the company has disclosed such an incident.\nPresident Donald Trump, meanwhile, continued to call the outbreak of AI safety concerns a hoax. The president said on Saturday that he is forming an \"AI Force\" and will appoint an AI \"czar,\" but gave few details about either plan.\nAs CNBC's Kif Leswing and Ashley Capoot report, Nvidia CEO Jensen Huang has become a key ally for Trump as the two push back against calls for a development slowdown. Experts say that Huang exercises outsized influence in the White House.\nTesla CEO Elon Musk said last week that he preferred to have companies regulate one another, rather than the government.\nMore than 100 AI experts warned that they do not have enough resources and protections to adequately test AI models for safety.\nElevated concerns about the potential for AI to harm humanity have placed renewed attention on the role of a \"kill switch.\" But as CNBC's Samantha Subin writes, such a tool could be a logistical nightmare.\n2. Summit prep\nScott Bessent, US treasury secretary, during a House Financial Services Committee hearing in Washington, DC, US, on Tuesday, Sept. 15, 2026.\nGraeme Sloan | Bloomberg | Getty Images\nTreasury Secretary Scott Bessent had what he called a \"successful\" meeting with Chinese Vice Premier He Lifeng yesterday, saying the two parties discussed establishing a \"U.S.-China AI Dialogue.\" The meeting came ahead of Chinese President Xi Jinping's visit to the U.S. later this week for a summit with Trump.\nStock futures are rising this morning as oil prices and Treasury yields both cool. Surging yields last week put pressure on the Dow Jones Industrial Average, which recorded its biggest weekly loss since March. Follow live market updates here.\n3. White House ban\nUS President Donald Trump speaks to journalists before boarding Marine One as he departs from the South Lawn of the White House in Washington, DC, on March 20, 2026 for his Mar-a-Lago residence, where he will spend the weekend.\nBrendan Smialowsk",
+        "published_at": "2026-09-21T12:35:50Z",
+        "retrieved_at": "2026-09-21T12:39:25.390887Z",
+        "sha256": "bbb6dc96a02d3db319f0a32f3172c5e3c77ea98ddf84ae8a8af2e95ef29de1f9",
+        "registration": "cnbc-technology",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.cnbc.com/2026/09/21/5-things-to-know-before-the-stock-market-opens.html",
+          "title": "5 things to know before the stock market opens Monday",
+          "bylines": [
+            "Alex Harring"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-21T12:22:25+0000",
+          "retrieved_at": "2026-09-21T12:39:25.390887+00:00",
+          "article_chars": 6724,
+          "last_modified": null,
+          "requested_url": "https://www.cnbc.com/2026/09/21/5-things-to-know-before-the-stock-market-opens.html",
+          "original_bytes": 943405,
+          "publisher_host": "www.cnbc.com",
+          "original_sha256": "bbb6dc96a02d3db319f0a32f3172c5e3c77ea98ddf84ae8a8af2e95ef29de1f9",
+          "content_truncated": false,
+          "excerpt_truncated": true,
+          "article_extraction": "main",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "cbfd307b9bce27dece44175b2f8a28086c0e14a4",
+        "url": "https://www.bbc.co.uk/news/articles/c8vgyzn2d31yo",
+        "title": "US and China discuss AI safety plan ahead of Trump-Xi summit",
+        "publisher": "BBC News",
+        "kind": "media",
+        "origin_group": "bbc",
+        "content": "Image source, Treasury Secretary Scott Bessent/X\nImage caption,\nUS Treasury Secretary Scott Bessent met China's Vice Premier He Lifeng\nByOsmond Chia\nBusiness reporter\nPublished\n9 minutes ago\nTop US and Chinese officials have discussed creating a new \"notification mechanism\" for AI incidents that could affect national security, Treasury Secretary Scott Bessent told reporters on Sunday.\nBessent made the comments after what he called \"successful\" talks with Chinese Vice Premier He Lifeng in New York.\nThe meeting came as US President Donald Trump and his Chinese counterpart Xi Jinping are due to hold a summit in Washington later this week.\nAI has come under intense scrutiny in recent days after researchers warned of the potential risks posed by the technology and some of the industry's most high profile figures called for developers to take a more cautious approach.\n\"We think that, just like with any cross-border activity, that moving from opaque to more transparency between the number one and the number two AI powers in the world is very important,\" Bessent told reporters after the talks.\nHe said the meeting also covered other topics, including plans to \"operationalise\" a process to identify potential tariff cuts on goods called the Board of Trade.\nA truce in the tariffs war between the world's two biggest economies is due to expire on 10 November.\nThe BBC has contacted the Chinese embassy in the US for comment.\nChinese state news agency Xinhua said the two sides had \"candid, in-depth and constructive exchanges on key economic and trade issues\", noting that they had discussed AI.\nBessent said in a post on X on Sunday that the talks \"help lay the groundwork for President Trump to advance America's economic interests and deliver results for the American people.\"\nThe US and China are locked in a race to dominate the AI and technology industries.\nIn recent days Washington has faced calls to slow down the development of AI over fears abouts its potential negative impact on humanity.\nTrump has largely dismissed those concerns, arguing that there are sufficient policies around AI and that the US cannot lose its edge to China.\nHe said earlier this month \"whoever wins in AI, wins.\"\nRelated topics\nInternational Business\nChina\nArtificial intelligence\nXi Jinping\nDonald Trump\nMore on this story\nAI poses huge risks to national security without guardrails, minister says\nPublished\n5 days ago\nWhy Trump is all-in on AI despite the warnings\nPublished\n4 days ago",
+        "published_at": "2026-09-21T05:50:56Z",
+        "retrieved_at": "2026-09-21T06:00:27.755511Z",
+        "sha256": "bcb6db652047e321117c14a8c3e1bd2e0ed7d34f72f3255e1e88b7e67a70fc43",
+        "registration": "bbc-business",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.bbc.co.uk/news/articles/c8vgyzn2d31yo",
+          "title": "US and China discuss AI safety plan ahead of Trump-Xi summit - BBC News",
+          "bylines": [
+            "Osmond Chia"
+          ],
+          "redirects": [],
+          "content_type": "text/html",
+          "published_at": "2026-09-21T05:50:56.388Z",
+          "retrieved_at": "2026-09-21T06:00:27.755511+00:00",
+          "article_chars": 2483,
+          "last_modified": null,
+          "requested_url": "https://www.bbc.co.uk/news/articles/c8vgyzn2d31yo",
+          "original_bytes": 384475,
+          "publisher_host": "www.bbc.co.uk",
+          "original_sha256": "bcb6db652047e321117c14a8c3e1bd2e0ed7d34f72f3255e1e88b7e67a70fc43",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "article",
+          "publication_time_basis": "page_metadata"
+        }
+      }
+    ],
+    "source_coverage": {
+      "topic_sources": {
+        "market": [
+          "08bba8a5854670b32d1d37c5ca5c5eef877d9669",
+          "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+          "c6c3354fb2013f469d8065e51066fee65821c56f"
+        ],
+        "macro_policy": [
+          "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+          "ff8917a4601610247c5ae78e6bd2c3db76e600f4"
+        ],
+        "geopolitics": [
+          "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+          "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+          "0023ecad6e84f1d23292db0078e5912145e1852f",
+          "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+          "3dde2b5129d47d1e1f8d374fed1d73a36529f3ac",
+          "53be9c4c65a0f487c3d094677c68d367d04dfedd",
+          "49134ea9e806961c96d90a905e435a2b6ca8ad79",
+          "bf4a2f2fa3a60d1f38b1fa44fb392a5a6dce4f25",
+          "cbfd307b9bce27dece44175b2f8a28086c0e14a4"
+        ],
+        "corporate": [
+          "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+          "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+          "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+          "7f4f853766b5dc50bf53c1c88ee6a23f93411328",
+          "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151",
+          "cbfd307b9bce27dece44175b2f8a28086c0e14a4"
+        ],
+        "cross_asset": [
+          "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+          "57b4e958756bfd076e4ffe0a2c39a8121f88a694"
+        ]
+      },
+      "missing_topics": [],
+      "meaning": "Headline-based collection coverage only; the reviewer must assess materiality and omissions."
+    },
+    "collection_errors": [],
+    "morning_watchpoints": [],
+    "analyst_procedure": {
+      "employee": "market_brief",
+      "version": "2026-09-22.1",
+      "digest": "3f945a68b61dcc528fdf9dd5a24a9176ed710ccc2408c2088fef8ca1edcf25e2",
+      "procedure": "# Analyst — 애널리스트\n\n담당: 미국·한국 시장을 경제적 근거로 분석하고, 첫 메시지만 읽어도 그날의 시황과 핵심 변화를\n이해할 수 있는 브리핑 및 후속 답변을 만든다. 뉴스 선정의 기준은 변화의 중요도와 근거의 질이다.\n이 절차와 합성 사례 통과는 자격증·실제 전문가 역량·예측 정확도를 증명하지 않는다.\n\n## 분석 절차\n\n1. 미국/한국 거래일·자료 기준 시각·원문 발행일을 확인한다. 정규장, 시간외, 잠정 값과 관측 시점을\n   구분한다. 오래된 수치를 오늘 값으로 쓰거나 ETF를 지수로 바꾸지 않는다.\n2. 무엇이 새로 바뀌었는지 식별한다. 경제지표는 전기 대비 변화와 컨센서스 대비 차이를 구분하고\n   수정치·기저효과·계절조정·전월/전년 비교를 확인한다. 예상치가 없으면 서프라이즈를 단정하지 않는다.\n3. 중요한 사건마다 경제적 전달 경로를 제시한다. 정책/지표/기업 사건이 매출·마진·현금흐름,\n   할인율·위험 프리미엄, 자금조달·유동성, 수요·공급 중 무엇을 통해 어느 자산/업종에 영향을 주는지\n   구체적으로 설명한다. 근거 없는 중간 연결은 가설로 표시하고, 원인을 구분할 수 없으면 판단을 유보한다.\n4. 분야별로 필요한 관점을 선택한다. 금리는 명목/실질·기대 인플레이션·기간 프리미엄을, 주식은\n   이익 전망/밸류에이션·지수 기여도/상승 종목 분포를, 실적은 일회성/반복 이익·가이던스를,\n   환율은 환산 효과/수출입 비용·외화 부채를 구분한다. 유가·정책은 공급/수요와 시행 시점을 확인한다.\n   근거가 없는 세부 지표를 필수 칸을 채우기 위해 만들어 내지 않는다.\n5. 미국 사건을 한국 시장에 연결할 때 환율·업종별 수요·원가·자금조달 중 실제 연결 고리를 설명한다.\n   미국 지수가 올랐다는 이유만으로 한국 지수 상승을 예측하지 않는다. 영향의 시계는 당일/수일~수주/\n   수개월로 구분하며 개인의 보유 자산·투자 기간·위험 선호를 추정하지 않는다.\n6. 핵심 설명마다 그럴듯한 다른 설명을 검토한다. 반대 근거가 실제로 있으면 우선 다루고, 대안이\n   가설이면 가설이라고 쓴다. 가격과 뉴스가 동시에 움직였다는 사실만으로 인과관계를 확정하지 않는다.\n   '이미 반영됐다', '위험 선호가 회복됐다', '수급 때문에'라는 표현도 해당 증거가 필요하다.\n7. 어떤 관측이 현재 해석을 약화시키거나 바꿀지 정한다. 발표·시각이 확인되면 함께 적고,\n   막연한 '추가 모니터링'으로 끝내지 않는다. 근거 없는 목표가·수익률·시나리오 확률은 쓰지 않는다.\n8. 사실, 매체의 설명, 자체 가설과 불확실성을 구분한다. 근거를 인용한 짧은 분석 결론을 제공하며\n   숨겨진 사고과정은 요청하거나 노출하지 않는다. 숫자 계산은 도구/서비스 결과를 사용한다.\n\n## 읽기와 후속 점검\n\n- 본문은 핵심 결론 → 시장 전체 흐름 → 주요 숫자 → 주요 이슈와 배경 → 다음 확인할 일이다. 전문용어는 짧게 풀고\n  같은 사실을 반복하지 않는다. 다섯 가지 분석 소제목을 모든 이슈에 반복하지 않는다.\n- 핵심 세 줄은 본문을 대체하지 않는다. 시장·거시 정책·국제 정세·기업/업종·자산 간 흐름을 검토하고\n  중요한 사안은 최대 여섯 이슈까지 충분히 설명한다. 사건이 많은 날을 세 이슈로 잘라 내지 않는다.\n  확인된 사건과 배경, 지금 중요한 이유와 영향을 받는 대상을 자연스러운 문단으로 연결한다.\n- 검토자는 제공된 각 원문이 반영됐는지, 배경인지, 왜 중요하지 않은지 기록한다. 사실이 맞아도\n  중요한 사건을 빠뜨린 초안이나 제목만 늘어놓은 초안은 완성된 브리핑으로 통과시키지 않는다.\n- 결론을 바꿀 반대 근거는 본문에 반영한다. 상세 전달 경로·다른 설명·출처는 스레드에서 확인 가능하게 한다.\n- 아침 관찰의 원래 문장을 보존한다. 저녁의 결과가 판단을 바꿨다면 무엇 때문에 바뀌었는지 설명한다.\n  자료가 부족하면 판단 불가로 남기며, 조건부 전망이 맞았다는 것과 원인 설명이 입증됐다는 것을 구분한다.\n- 정기 작성/검토는 고정 입력과 지정 JSON 계약만 사용하며 도구를 호출하지 않는다. 대화에서는\n  제공된 원문을 read_source로 읽고, 최신 사실은 web_search/web_read 또는 finance_search/finance_read로\n  확인한다. 계산이 필요하면 calculate/finance_compute의 결과를 확인한다. 새 조회와 원래 기준 시각을 구분한다.\n- 정정은 같은 스레드에 원래 주장·바뀐 내용·근거·확인 시각을 남긴다. say에 실제 답을 적는다.\n- 전문역량 사례의 피드백은 실수 방지에 사용하며 시황 근거로 인용하지 않는다. 미측정 분야를 숙련으로\n  주장하지 않는다. 실제 평가 이력은 총괄의 staff_status에서 확인하며 합성 점수를 전문가 인증으로 바꾸지 않는다.\n- 발간 상태는 briefing_status의 영수증으로 확인한다. previewed/queued/uncertain은 전달 완료가 아니다.\n  자동 동료 위임·예약·거래·백테스트·모델 학습·설정 변경 권한은 없다. 사용자의 직접 멘션 또는\n  `금융전략 검토: 요청 내용`만 서비스가 금융전략 팀장에게 연결한다.\n",
+      "meaning": "Reviewed work procedure, not a qualification certificate or new tool permission."
+    },
+    "locked_observations": [],
+    "market_context": [],
+    "data_diagnostics": [
+      {
+        "error": "historical_current_lake_snapshot_not_available"
+      }
+    ],
+    "exchange_closes": {
+      "US": "2026-09-21T20:00:00+00:00",
+      "KR": "2026-09-22T06:30:00+00:00"
+    },
+    "evaluation": {
+      "mode": "actual_cached_originals",
+      "slack": "not_connected",
+      "scheduled_publication": false,
+      "snapshot_at": "2026-09-21T22:10:00+00:00"
+    },
+    "quote_conflicts": []
+  },
+  "raw_proposal": {
+    "summary": [
+      {
+        "id": "summary_equities",
+        "evidence": [
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "이날 뉴욕증권거래소(NYSE)에서 기술주 중심의 나스닥 종합지수는 전장보다 599.55포인트(2.3%) 뛴 27,122.09로 마감하며 종가 기준 사상 최고치를 경신했다."
+          },
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "스탠더드앤드푸어스(S&P) 500지수 종가는 전장 대비 114.20포인트(1.5%) 오른 7,764.70으로 집계됐다.\n다우존스30 산업평균지수는 366.19포인트(0.7%) 오른 52,048.83으로 거래를 마쳤다."
+          }
+        ],
+        "text": "미국 증시는 AI 관련주 강세 속에 상승 마감했다. 나스닥 종합은 2.3% 올라 종가 최고치를 경신했고, S&P 500은 1.5%, 다우는 0.7% 상승했다. 기술주 중심 지수의 상승폭이 컸지만 시장 전체의 상승 종목 분포는 확인되지 않았다.",
+        "kind": "fact"
+      },
+      {
+        "id": "summary_oil",
+        "evidence": [
+          {
+            "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+            "quote": "21일(현지시간) 뉴욕상업거래소에서 10월물 미국 서부 텍사스산 원유(WTI)는 전 거래일 대비 4.52달러(4.51%) 하락한 배럴당 95.78달러에 마감했다."
+          },
+          {
+            "source_id": "0023ecad6e84f1d23292db0078e5912145e1852f",
+            "quote": "다만 아직 관련국들과 협상이 진행 중이어서 세부 내용은 바뀔 수 있으며 실제 참여 여부와 시점도 불확실하다고 미 당국자들은 전했다."
+          },
+          {
+            "source_id": "08bba8a5854670b32d1d37c5ca5c5eef877d9669",
+            "quote": "뉴욕 채권시장에서 10년물 금리는 5bp(1bp=0.01%포인트) 하락한 4.95%를 기록했다."
+          },
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "10년 만기 미 국채 금리는 2bp(1bp=0.01%포인트) 떨어진 4.972%를 기록했다."
+          }
+        ],
+        "text": "유가 하락이 지속되면 한국의 에너지 수입 비용에는 완화 요인이 될 수 있다. 다만 중동 시설 피해와 미확정 재건 계획을 보면 공급 정상화로 단정하기 어렵다. 미국 금리도 하락 보도는 일치하지만 수치가 달라 완화 강도는 유보한다.",
+        "kind": "interpretation"
+      },
+      {
+        "id": "summary_korea",
+        "evidence": [
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "여기에 더해 AI 속도 조절론 속에서도 여전히 주요 기업들이 AI 지출을 줄이지 않는 것을 보고 시장에 낙관론이 퍼진 것도 영향을 줬다."
+          },
+          {
+            "source_id": "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+            "quote": "미중 정상회담을 사흘 앞두고 양국이 AI 위험을 통제하기 위한 공식 협의체를 신설하기로 합의했습니다."
+          },
+          {
+            "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+            "quote": "They will have to navigate thorny issues such as artificial intelligence, the Iran war, tariffs and sanctions, on top of ongoing tensions around export controls, rare earths and more."
+          }
+        ],
+        "text": "한국장에서는 AI 수요 기대가 실제 주문 전망으로 이어지는지, 유가 하락이 원화 기준 원가에도 전달되는지가 중요하다. 미중 AI 대화 합의는 진전이지만 수출통제와 제재가 함께 남아 있어 국내 기술주 전반의 수혜를 확정할 근거는 부족하다.",
+        "kind": "interpretation"
+      }
+    ],
+    "overview": [],
+    "observations": [
+      {
+        "id": "nasdaq_close",
+        "evidence": [
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "이날 뉴욕증권거래소(NYSE)에서 기술주 중심의 나스닥 종합지수는 전장보다 599.55포인트(2.3%) 뛴 27,122.09로 마감하며 종가 기준 사상 최고치를 경신했다."
+          }
+        ],
+        "instrument": "nasdaq",
+        "value": "27122.09",
+        "unit": "pt",
+        "session_date": "2026-09-21",
+        "as_of": "2026-09-21T20:00:00Z",
+        "basis": "close",
+        "venue": "Nasdaq",
+        "previous_value": null,
+        "previous_session_date": null,
+        "reported_change": "2.3",
+        "change_unit": "%"
+      },
+      {
+        "id": "sp500_close",
+        "evidence": [
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "스탠더드앤드푸어스(S&P) 500지수 종가는 전장 대비 114.20포인트(1.5%) 오른 7,764.70으로 집계됐다."
+          }
+        ],
+        "instrument": "sp500",
+        "value": "7764.70",
+        "unit": "pt",
+        "session_date": "2026-09-21",
+        "as_of": "2026-09-21T20:00:00Z",
+        "basis": "close",
+        "venue": "미국 현물시장(NYSE·Nasdaq)",
+        "previous_value": null,
+        "previous_session_date": null,
+        "reported_change": "1.5",
+        "change_unit": "%"
+      },
+      {
+        "id": "dow_close",
+        "evidence": [
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "다우존스30 산업평균지수는 366.19포인트(0.7%) 오른 52,048.83으로 거래를 마쳤다."
+          }
+        ],
+        "instrument": "dow",
+        "value": "52048.83",
+        "unit": "pt",
+        "session_date": "2026-09-21",
+        "as_of": "2026-09-21T20:00:00Z",
+        "basis": "close",
+        "venue": "미국 현물시장(NYSE·Nasdaq)",
+        "previous_value": null,
+        "previous_session_date": null,
+        "reported_change": "0.7",
+        "change_unit": "%"
+      }
+    ],
+    "issues": [
+      {
+        "headline": "AI 앱의 소비자 반응이 반도체 수요 기대로 연결",
+        "fact": {
+          "id": "ai_fact",
+          "evidence": [
+            {
+              "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+              "quote": "우선 메타의 개인용 업무 수행 AI에이전트 '뮤즈'가 애플 앱스토어 무료 애플리케이션(앱) 부문 1위에 오르며 좋은 반응을 얻은 것이 연쇄적으로 관련 주에도 영향을 끼쳤다.\n메타의 주가는 이날 11.4% 뛰며, 지난해 4월 이래 가장 큰 급등세를 보였다."
+            },
+            {
+              "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+              "quote": "특히 AI주가 강세를 보였다."
+            },
+            {
+              "source_id": "7f4f853766b5dc50bf53c1c88ee6a23f93411328",
+              "quote": "As of Monday, Muse has since logged over 2.5 million downloads since its debut, the market intelligence company said."
+            }
+          ],
+          "text": "메타는 11.4% 상승했다. 연합뉴스는 개인용 AI 에이전트 ‘뮤즈’의 앱스토어 인기와 관련주 상승을 연결해 설명했다. 인텔과 AMD도 크게 올랐다. CNBC가 인용한 다운로드 집계는 소비자 관심을 보여주지만, 유료 매출이나 이익 실적을 제시한 자료는 아니다.",
+          "kind": "fact"
+        },
+        "interpretation": {
+          "id": "ai_interpretation",
+          "evidence": [
+            {
+              "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+              "quote": "매슈 브라이슨 웨드부시 애널리스트는 \"AI 에이전트의 실질적인 연산장치 제조사는 인텔과 AMD 단 두 곳뿐\"이라며 AI에 필수적인 중앙처리장치(CPU) 제조사가 주목받은 이유를 설명했다."
+            },
+            {
+              "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+              "quote": "유가가 4거래일 연속 하락세를 이어가고 국채 금리가 반락하면서 주식시장의 상승세를 떠받쳤다"
+            }
+          ],
+          "text": "사용 확대가 지속적인 연산 수요로 이어진다면 반도체 공급사의 매출 기대를 높일 수 있다. 한국 반도체에도 이 경로가 중요하지만 미국 CPU 기업의 상승만으로 국내 기업의 주문 증가를 확인할 수는 없다. 현재 근거는 이익 증가의 확정보다 수요 기대에 가깝고, 금리 하락에 따른 주식 가치 평가 변화도 함께 작용했을 가능성이 있다.",
+          "kind": "interpretation"
+        },
+        "next_check": {
+          "id": "ai_next",
+          "evidence": [
+            {
+              "source_id": "7f4f853766b5dc50bf53c1c88ee6a23f93411328",
+              "quote": "As of Monday, Muse has since logged over 2.5 million downloads since its debut, the market intelligence company said."
+            },
+            {
+              "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+              "quote": "여기에 더해 AI 속도 조절론 속에서도 여전히 주요 기업들이 AI 지출을 줄이지 않는 것을 보고 시장에 낙관론이 퍼진 것도 영향을 줬다."
+            }
+          ],
+          "text": "다음 기업 발표에서 AI 서비스의 지속 사용·수익화와 반도체 주문 전망을 확인한다. 다운로드 증가에도 주문·매출 전망이 개선되지 않으면 실적 전달 가설은 약해진다. 국내 반도체 강세가 나타나더라도 주문 근거가 없으면 미국 가격 움직임과의 동행으로만 평가한다.",
+          "kind": "condition"
+        },
+        "analysis": {
+          "horizon": "days_weeks",
+          "causal_basis": "conditional_hypothesis",
+          "mechanism": {
+            "id": "ai_mechanism",
+            "evidence": [
+              {
+                "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+                "quote": "매슈 브라이슨 웨드부시 애널리스트는 \"AI 에이전트의 실질적인 연산장치 제조사는 인텔과 AMD 단 두 곳뿐\"이라며 AI에 필수적인 중앙처리장치(CPU) 제조사가 주목받은 이유를 설명했다."
+              }
+            ],
+            "text": "AI 서비스 이용 확대가 추가 연산장치 구매로 이어진다면 공급사의 미래 현금흐름 기대가 개선될 수 있다. 한국 기업에 대한 전달은 해당 수요와의 실제 공급 관계 및 주문 확인이 조건이다.",
+            "kind": "interpretation"
+          },
+          "alternative": {
+            "id": "ai_alternative",
+            "evidence": [
+              {
+                "source_id": "08bba8a5854670b32d1d37c5ca5c5eef877d9669",
+                "quote": "AI주 강세와 더불어 국제유가와 국채 금리가 하락한 점도 주가를 떠받쳤다고 CNBC방송은 설명했다."
+              }
+            ],
+            "text": "새로운 이익 전망보다 국채 금리 하락에 따른 할인율 부담 완화가 상승에 기여했을 수도 있다. 기업별 이익 전망과 가치 평가 자료가 없어 기여도를 분리할 수 없다.",
+            "kind": "interpretation"
+          }
+        },
+        "counterpoint": null
+      },
+      {
+        "headline": "외교 기대에 유가 급락, 시설 복구는 여전히 미확정",
+        "fact": {
+          "id": "oil_fact",
+          "evidence": [
+            {
+              "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+              "quote": "국제유가는 미국과 이란이 대화를 통한 외교적 해법을 모색할 거라는 기대감에 급락했다.\n21일(현지시간) 뉴욕상업거래소에서 10월물 미국 서부 텍사스산 원유(WTI)는 전 거래일 대비 4.52달러(4.51%) 하락한 배럴당 95.78달러에 마감했다."
+            },
+            {
+              "source_id": "0023ecad6e84f1d23292db0078e5912145e1852f",
+              "quote": "다만 아직 관련국들과 협상이 진행 중이어서 세부 내용은 바뀔 수 있으며 실제 참여 여부와 시점도 불확실하다고 미 당국자들은 전했다."
+            }
+          ],
+          "text": "NYMEX의 WTI 10월물은 4.51% 내린 배럴당 95.78달러로 마감했다. 이투데이는 미국·이란 대화 기대를 하락 배경으로 보도했다. 미국의 중동 에너지시설 재건 출자 추진 보도도 나왔지만, 참여국과 집행 시점은 확정되지 않았다.",
+          "kind": "fact"
+        },
+        "interpretation": {
+          "id": "oil_interpretation",
+          "evidence": [
+            {
+              "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+              "quote": "국제유가는 미국과 이란이 대화를 통한 외교적 해법을 모색할 거라는 기대감에 급락했다."
+            },
+            {
+              "source_id": "0023ecad6e84f1d23292db0078e5912145e1852f",
+              "quote": "이 때문에 호르무즈 해협이 완전히 재개방되더라도 에너지 공급난이 상당 기간 이어질 수 있다는 관측이 나온다."
+            },
+            {
+              "source_id": "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+              "quote": "베선트 장관은 당장 이틀 뒤부터 모든 이란 항공사의 운영이 중단될 거라며 연료나 착륙 서비스를 제공하는 해외 공항은 달러 결제망에서 퇴출하겠다고 경고했습니다."
+            }
+          ],
+          "text": "원유 공급 차질 우려가 줄어 가격 하락이 이어진다면 에너지 사용 기업의 비용 부담을 낮출 수 있다. 다만 달러 가격 하락이 한국 기업의 원화 비용 감소와 같지는 않다. 환율과 구매 조건을 확인해야 한다. 시설 피해가 남아 있고 제재 압박도 이어져, 대화 기대만으로 지속적인 원가 개선을 전제하기 어렵다.",
+          "kind": "interpretation"
+        },
+        "next_check": {
+          "id": "oil_next",
+          "evidence": [
+            {
+              "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+              "quote": "TD증권 역시 호르무즈 해협을 통한 수출이 꾸준히 늘고 있고 중동 지역 전반에서 유입되는 물량이 전쟁 이전 수준의 약 80%에 달했다고 전했다."
+            },
+            {
+              "source_id": "0023ecad6e84f1d23292db0078e5912145e1852f",
+              "quote": "이 때문에 호르무즈 해협이 완전히 재개방되더라도 에너지 공급난이 상당 기간 이어질 수 있다는 관측이 나온다."
+            }
+          ],
+          "text": "회담 성사 여부와 함께 중동 원유 수출량, 피해 시설의 실제 재가동을 확인한다. 협상 소식 없이도 수출 회복이 이어지면 물량 개선 설명에 힘이 실린다. 대화가 진전돼도 시설 복구가 지연되거나 유가가 반등하면 지속적인 비용 완화 해석을 낮춘다.",
+          "kind": "condition"
+        },
+        "analysis": {
+          "horizon": "days_weeks",
+          "causal_basis": "conditional_hypothesis",
+          "mechanism": {
+            "id": "oil_mechanism",
+            "evidence": [
+              {
+                "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+                "quote": "국제유가는 미국과 이란이 대화를 통한 외교적 해법을 모색할 거라는 기대감에 급락했다."
+              }
+            ],
+            "text": "외교 진전이 공급 중단 우려를 낮추고 유가 하락을 지속시킨다면 수입 에너지 비용과 기업 현금흐름에 유리할 수 있다. 국내 원가 전달은 달러/원과 계약 조건에 따라 달라진다.",
+            "kind": "interpretation"
+          },
+          "alternative": {
+            "id": "oil_alternative",
+            "evidence": [
+              {
+                "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+                "quote": "TD증권 역시 호르무즈 해협을 통한 수출이 꾸준히 늘고 있고 중동 지역 전반에서 유입되는 물량이 전쟁 이전 수준의 약 80%에 달했다고 전했다."
+              }
+            ],
+            "text": "외교 기대보다 이미 진행 중인 수출 물량 회복이 가격 하락에 기여했을 수도 있다. 공급량과 협상 진전이 별개로 확인돼야 두 설명의 상대적 중요성을 판단할 수 있다.",
+            "kind": "interpretation"
+          }
+        },
+        "counterpoint": {
+          "id": "oil_counterpoint",
+          "evidence": [
+            {
+              "source_id": "08bba8a5854670b32d1d37c5ca5c5eef877d9669",
+              "quote": "뉴욕 채권시장에서 10년물 금리는 5bp(1bp=0.01%포인트) 하락한 4.95%를 기록했다."
+            },
+            {
+              "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+              "quote": "10년 만기 미 국채 금리는 2bp(1bp=0.01%포인트) 떨어진 4.972%를 기록했다."
+            }
+          ],
+          "text": "미국 국채 금리의 정확한 수준은 자료가 충돌한다. 이투데이는 10년물 4.95%·5bp 하락, 연합뉴스는 4.972%·2bp 하락으로 보도했다. 관측 시점이 없어 한 값을 종가로 채택하거나 실질금리 하락으로 해석하지 않는다.",
+          "kind": "fact"
+        }
+      },
+      {
+        "headline": "미중 AI 대화의 진전과 통상·제재 압박이 공존",
+        "fact": {
+          "id": "diplomacy_fact",
+          "evidence": [
+            {
+              "source_id": "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+              "quote": "미중 정상회담을 사흘 앞두고 양국이 AI 위험을 통제하기 위한 공식 협의체를 신설하기로 합의했습니다."
+            },
+            {
+              "source_id": "cbfd307b9bce27dece44175b2f8a28086c0e14a4",
+              "quote": "Top US and Chinese officials have discussed creating a new \"notification mechanism\" for AI incidents that could affect national security, Treasury Secretary Scott Bessent told reporters on Sunday."
+            },
+            {
+              "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+              "quote": "They will have to navigate thorny issues such as artificial intelligence, the Iran war, tariffs and sanctions, on top of ongoing tensions around export controls, rare earths and more."
+            },
+            {
+              "source_id": "3dde2b5129d47d1e1f8d374fed1d73a36529f3ac",
+              "quote": "공동성명에는 \"공급망을 교란하는 자의적인 수출제한 조치를 포함해, 유해한 과잉생산과 시장왜곡을 초래하는 경제적 강압 및 비시장 정책·관행에 단호히 반대한다\"는 문구가 포함됐습니다."
+            }
+          ],
+          "text": "SBS는 미중이 AI 위험 대응 협의체 신설에 합의했다고 보도했다. 앞선 BBC 보도의 협의 단계보다 진전된 내용이다. 그러나 CNBC는 관세·수출통제·희토류 문제가 여전히 쟁점이라고 전했고, 한미일 공동성명도 공급망을 교란하는 수출제한에 반대했다.",
+          "kind": "fact"
+        },
+        "interpretation": {
+          "id": "diplomacy_interpretation",
+          "evidence": [
+            {
+              "source_id": "cbfd307b9bce27dece44175b2f8a28086c0e14a4",
+              "quote": "He said the meeting also covered other topics, including plans to \"operationalise\" a process to identify potential tariff cuts on goods called the Board of Trade."
+            },
+            {
+              "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+              "quote": "Despite gestures of goodwill surrounding the lead-up to the summit, the two sides continue to lob accusations and launch retaliatory trade actions."
+            }
+          ],
+          "text": "협의가 실제 관세 인하나 수출허가 개선으로 이어진다면 한국 수출기업의 판매·조달 불확실성이 줄 수 있다. 하지만 AI 사고 대응 대화와 무역 규제 완화는 별개다. 제재나 수출제한이 유지된다면 협의체 출범만으로 매출과 비용 전망을 바꾸기 어렵다. 현재 자료에는 회담 기대에 대한 한국 시장의 가격 반응도 없다.",
+          "kind": "interpretation"
+        },
+        "next_check": {
+          "id": "diplomacy_next",
+          "evidence": [
+            {
+              "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+              "quote": "President Donald Trump and Chinese leader Xi Jinping are expected to discuss ways to strengthen their fragile trade truce when they meet face-to-face in Washington this week."
+            },
+            {
+              "source_id": "cbfd307b9bce27dece44175b2f8a28086c0e14a4",
+              "quote": "He said the meeting also covered other topics, including plans to \"operationalise\" a process to identify potential tariff cuts on goods called the Board of Trade."
+            }
+          ],
+          "text": "이번 주 워싱턴 정상회담의 공동 발표에서 관세 대상 품목, 수출통제 변경, 시행일이 명시되는지 확인한다. AI 안전 대화만 구체화되고 무역 조치가 그대로라면 국내 수출기업의 비용·매출 개선 해석은 약해진다. 정확한 회담 시각은 미확인이다.",
+          "kind": "condition"
+        },
+        "analysis": {
+          "horizon": "days_weeks",
+          "causal_basis": "conditional_hypothesis",
+          "mechanism": {
+            "id": "diplomacy_mechanism",
+            "evidence": [
+              {
+                "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+                "quote": "They will have to navigate thorny issues such as artificial intelligence, the Iran war, tariffs and sanctions, on top of ongoing tensions around export controls, rare earths and more."
+              }
+            ],
+            "text": "실제 관세·수출통제 완화가 이뤄지면 영향을 받는 한국 기업의 시장 접근과 원재료 조달 조건이 개선될 수 있다. 협의체 설립 자체에는 현금흐름 개선을 보장하는 내용이 없다.",
+            "kind": "interpretation"
+          },
+          "alternative": {
+            "id": "diplomacy_alternative",
+            "evidence": [
+              {
+                "source_id": "cbfd307b9bce27dece44175b2f8a28086c0e14a4",
+                "quote": "Top US and Chinese officials have discussed creating a new \"notification mechanism\" for AI incidents that could affect national security, Treasury Secretary Scott Bessent told reporters on Sunday."
+              },
+              {
+                "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+                "quote": "Despite gestures of goodwill surrounding the lead-up to the summit, the two sides continue to lob accusations and launch retaliatory trade actions."
+              }
+            ],
+            "text": "협의체가 안보 사고 통지에만 집중하고 통상 갈등은 이어질 수 있다. 이 경우 외교적 진전과 기업의 영업 여건 개선은 분리해서 평가해야 한다.",
+            "kind": "interpretation"
+          }
+        },
+        "counterpoint": null
+      }
+    ],
+    "internals": [
+      {
+        "id": "ecb_settlement",
+        "evidence": [
+          {
+            "source_id": "ff8917a4601610247c5ae78e6bd2c3db76e600f4",
+            "quote": "Banks and market infrastructures to join in a gradual approach"
+          },
+          {
+            "source_id": "ff8917a4601610247c5ae78e6bd2c3db76e600f4",
+            "quote": "The Eurosystem today launched Pontes, a solution that enables wholesale transactions in tokenised assets to be settled in central bank money."
+          }
+        ],
+        "text": "유럽에서는 ECB가 디지털 토큰 형태의 자산 거래를 중앙은행 화폐로 결제하는 Pontes를 출범시켰다. 은행과 시장 인프라의 참여는 단계적으로 진행된다. 해당 발표가 당일 자산 가격에 미친 영향은 제공 자료에서 확인되지 않는다.",
+        "kind": "fact"
+      }
+    ],
+    "watchpoints": [
+      {
+        "id": "watch_kr_semiconductors",
+        "evidence": [
+          {
+            "source_id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+            "quote": "여기에 더해 AI 속도 조절론 속에서도 여전히 주요 기업들이 AI 지출을 줄이지 않는 것을 보고 시장에 낙관론이 퍼진 것도 영향을 줬다."
+          }
+        ],
+        "text": "한국장 개장 후 반도체 강세가 나타나면 국내 기업의 주문·매출 전망 발표가 동반되는지 확인한다. 가격 상승만으로 미국 AI 수요의 국내 실적 전달이 확인됐다고 판단하지 않는다.",
+        "kind": "condition"
+      },
+      {
+        "id": "watch_kr_energy_cost",
+        "evidence": [
+          {
+            "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+            "quote": "21일(현지시간) 뉴욕상업거래소에서 10월물 미국 서부 텍사스산 원유(WTI)는 전 거래일 대비 4.52달러(4.51%) 하락한 배럴당 95.78달러에 마감했다."
+          }
+        ],
+        "text": "한국장에서는 달러/원과 에너지 사용 업종의 원가 전망을 함께 확인한다. 원화 약세나 구매가격 조정 지연이 유가 하락 효과를 상쇄하면 원가 수혜 해석을 낮춘다.",
+        "kind": "condition"
+      },
+      {
+        "id": "watch_kr_trade",
+        "evidence": [
+          {
+            "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+            "quote": "They will have to navigate thorny issues such as artificial intelligence, the Iran war, tariffs and sanctions, on top of ongoing tensions around export controls, rare earths and more."
+          }
+        ],
+        "text": "한국 수출기업과 연결되는 관세·수출허가 변경 발표를 확인한다. 대상 품목과 시행 조건이 없는 외교 발언만 나오면 수출기업의 실적 개선 판단은 보류한다.",
+        "kind": "condition"
+      }
+    ],
+    "watch_results": [],
+    "calendar": [
+      {
+        "id": "us_china_summit",
+        "evidence": [
+          {
+            "source_id": "bbe3e842d0ad3533bf684a7ff088a84361eff9b7",
+            "quote": "President Donald Trump and Chinese leader Xi Jinping are expected to discuss ways to strengthen their fragile trade truce when they meet face-to-face in Washington this week."
+          },
+          {
+            "source_id": "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+            "quote": "모레(24일) 오후 트럼프 대통령이 공항에 직접 나가 시 주석을 맞이하고, 이튿날 백악관 환영식에서는 미군 최정예 전략폭격기인 B-2와 F-22 랩터 전투기 4대가 축하 비행을 펼칩니다."
+          },
+          {
+            "source_id": "ec3c41e2376f8cf67dd34138bea5a14683cdc849",
+            "quote": "현지시간 24일 열리는 미중 정상회담은 향후 글로벌 첨단 기술과 통상, 중동 안보 질서의 향방을 가를 최대 분수령이 될 전망입니다."
+          }
+        ],
+        "title": "이번 주 워싱턴 미중 정상회담",
+        "at": null,
+        "source_timezone": "America/New_York",
+        "status": "time_unconfirmed",
+        "note": "정확한 개최 시각 미확인. SBS 본문은 현지시간 24일 회담으로 쓰면서 24일 도착 다음 날 백악관 환영식도 언급해 세부 일정 재확인이 필요하다."
+      }
+    ],
+    "limitations": [
+      "미 국채 10년물의 수준과 변동폭이 매체 간 충돌하고 관측 시각도 없어 수치 관측값을 제외했다. 실질금리·기대물가·기간 프리미엄으로 분해할 자료도 없다.",
+      "KRX 지수·업종별 등락·상승 종목 분포·투자자 수급·달러/원 자료가 없다. 국내 영향은 조건으로만 제시했다.",
+      "WTI는 NYMEX 10월물의 마감 보도이지만 해당 계약의 정확한 마감 기준 시각이 제공되지 않아 구조화 관측값을 생략했다. 미국 주식 종가 시각을 원유에 적용하지 않았다.",
+      "미국 시장 전체의 상승 종목 분포와 지수 기여도가 없어 일부 기술주 상승을 전면적인 시장 확산으로 해석하지 않았다.",
+      "이전 브리핑과 과거 비교 스냅샷이 없어 이전 발간물 대비 변화와 서비스 계산 비교를 제시할 수 없다.",
+      "오늘 밤 미국 경제지표의 확정 발표 일정·컨센서스·수정치가 제공되지 않았다. 미중 회담의 정확한 시각도 미확인이다.",
+      "일부 CNBC 본문은 제공 발췌가 중간에 끝난다. 인용 범위 밖의 합의 내용이나 기업 전망을 추정하지 않았다."
+    ]
+  },
+  "rejected": {
+    "ai_fact": "evidence_not_in_frozen_original"
+  },
+  "review": null,
+  "parts": [
+    "*09/22 아침 브리핑 · 미국장과 오늘 · 축약판*\n자료 기준 09/22 07:10 KST\n\n*오늘의 핵심*\n• 미국 증시는 AI 관련주 강세 속에 상승 마감했다. 나스닥 종합은 2.3% 올라 종가 최고치를 경신했고, S&amp;P 500은 1.5%, 다우는 0.7% 상승했다. 기술주 중심 지수의 상승폭이 컸지만 시장 전체의 상승 종목 분포는 확인되지 않았다. [2]\n• 해석: 유가 하락이 지속되면 한국의 에너지 수입 비용에는 완화 요인이 될 수 있다. 다만 중동 시설 피해와 미확정 재건 계획을 보면 공급 정상화로 단정하기 어렵다. 미국 금리도 하락 보도는 일치하지만 수치가 달라 완화 강도는 유보한다. [9] <https://www.yna.co.kr/view/AKR20260922007600071|[6]>\n• 해석: 한국장에서는 AI 수요 기대가 실제 주문 전망으로 이어지는지, 유가 하락이 원화 기준 원가에도 전달되는지가 중요하다. 미중 AI 대화 합의는 진전이지만 수출통제와 제재가 함께 남아 있어 국내 기술주 전반의 수혜를 확정할 근거는 부족하다. [2] [5]\n\n*주요 숫자* · 2026-09-21 정규장\n• S&amp;P 500 7,764.7 pt · 보도상 +1.5% [2]\n• 나스닥 종합 27,122.09 pt · 보도상 +2.3% [2]\n• 다우 52,048.83 pt · 보도상 +0.7% [2]\n\n*흐름을 만든 이야기*\n*외교 기대에 유가 급락, 시설 복구는 여전히 미확정*\nNYMEX의 WTI 10월물은 4.51% 내린 배럴당 95.78달러로 마감했다. 이투데이는 미국·이란 대화 기대를 하락 배경으로 보도했다. 미국의 중동 에너지시설 재건 출자 추진 보도도 나왔지만, 참여국과 집행 시점은 확정되지 않았다. [9] [6]\n해석·가설 · 원유 공급 차질 우려가 줄어 가격 하락이 이어진다면 에너지 사용 기업의 비용 부담을 낮출 수 있다. 다만 달러 가격 하락이 한국 기업의 원화 비용 감소와 같지는 않다. 환율과 구매 조건을 확인해야 한다. 시설 피해가 남아 있고 제재 압박도 이어져, 대화 기대만으로 지속적인 원가 개선을 전제하기 어렵다. [9] [6]\n\n함께 볼 점 · 미국 국채 금리의 정확한 수준은 자료가 충돌한다. 이투데이는 10년물 4.95%·5bp 하락, 연합뉴스는 4.972%·2bp 하락으로 보도했다. 관측 시점이 없어 한 값을 종가로 채택하거나 실질금리 하락으로 해석하지 않는다. <https://www.etoday.co.kr/news/view/2628230|[1]> [2]\n\n*미중 AI 대화의 진전과 통상·제재 압박이 공존*\nSBS는 미중이 AI 위험 대응 협의체 신설에 합의했다고 보도했다. 앞선 BBC 보도의 협의 단계보다 진전된 내용이다. 그러나 CNBC는 관세·수출통제·희토류 문제가 여전히 쟁점이라고 전했고, 한미일 공동성명도 공급망을 교란하는 수출제한에 반대했다. [5] <https://www.bbc.co.uk/news/articles/c8vgyzn2d31yo|[16]>\n해석·가설 · 협의가 실제 관세 인하나 수출허가 개선으로 이어진다면 한국 수출기업의 판매·조달 불확실성이 줄 수 있다. 하지만 AI 사고 대응 대화와 무역 규제 완화는 별개다. 제재나 수출제한이 유지된다면 협의체 출범만으로 매출과 비용 전망을 바꾸기 어렵다. 현재 자료에는 회담 기대에 대한 한국 시장의 가격 반응도 없다. [16] [3]\n\n시장 내부: 유럽에서는 ECB가 디지털 토큰 형태의 자산 거래를 중앙은행 화폐로 결제하는 Pontes를 출범시켰다. 은행과 시장 인프라의 참여는 단계적으로 진행된다. 해당 발표가 당일 자산 가격에 미친 영향은 제공 자료에서 확인되지 않는다. <https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260921~e754847a7b.en.html|[4]>\n\n*다음 확인할 것*\n• 한국장 개장 후 반도체 강세가 나타나면 국내 기업의 주문·매출 전망 발표가 동반되는지 확인한다. 가격 상승만으로 미국 AI 수요의 국내 실적 전달이 확인됐다고 판단하지 않는다. <https://www.yna.co.kr/view/AKR20260922006551075|[2]>\n• 한국장에서는 달러/원과 에너지 사용 업종의 원가 전망을 함께 확인한다. 원화 약세나 구매가격 조정 지연이 유가 하락 효과를 상쇄하면 원가 수혜 해석을 낮춘다. <https://www.etoday.co.kr/news/view/2628228|[9]>\n• 한국 수출기업과 연결되는 관세·수출허가 변경 발표를 확인한다. 대상 품목과 시행 조건이 없는 외교 발언만 나오면 수출기업의 실적 개선 판단은 보류한다. <https://www.cnbc.com/2026/09/21/trump-xi-china-summit-trade-tariffs.html|[3]>\n• 시각 미확인 · 이번 주 워싱턴 미중 정상회담 [미확인] 정확한 개최 시각 미확인. SBS 본문은 현지시간 24일 회담으로 쓰면서 24일 도착 다음 날 백악관 환영식도 언급해 세부 일정 재확인이 필요하다. [3] <https://news.sbs.co.kr/news/endPage.do?news_id=N1008764783|[5]>\n내용 확인 중 · 시장 전체 흐름이나 핵심 이슈 분석이 충분하지 않아 축약판으로 제공합니다.\n지수 확인 · 나스닥 종합, S&P 500: 단일 매체 보도 기준\n\nAnalyst · AI 시장분석 · 근거와 추가 설명은 스레드",
+    "*상세 근거·추가 지표*\n• S&amp;P 500 7,764.7 pt · 보도상 +1.5% · 정규장 종가 09/22 05:00 KST · 미국 현물시장(NYSE·Nasdaq) [2]\n• 나스닥 종합 27,122.09 pt · 보도상 +2.3% · 정규장 종가 09/22 05:00 KST · Nasdaq [2]\n• 다우 52,048.83 pt · 보도상 +0.7% · 정규장 종가 09/22 05:00 KST · 미국 현물시장(NYSE·Nasdaq) [2]\n*외교 기대에 유가 급락, 시설 복구는 여전히 미확정* · 분석 시계: 수일~수주\n전달 경로 · 외교 진전이 공급 중단 우려를 낮추고 유가 하락을 지속시킨다면 수입 에너지 비용과 기업 현금흐름에 유리할 수 있다. 국내 원가 전달은 달러/원과 계약 조건에 따라 달라진다. [9]\n다른 설명·가설 · 외교 기대보다 이미 진행 중인 수출 물량 회복이 가격 하락에 기여했을 수도 있다. 공급량과 협상 진전이 별개로 확인돼야 두 설명의 상대적 중요성을 판단할 수 있다. [9]\n판단을 다시 볼 조건 · 회담 성사 여부와 함께 중동 원유 수출량, 피해 시설의 실제 재가동을 확인한다. 협상 소식 없이도 수출 회복이 이어지면 물량 개선 설명에 힘이 실린다. 대화가 진전돼도 시설 복구가 지연되거나 유가가 반등하면 지속적인 비용 완화 해석을 낮춘다. [9] [6]\n*미중 AI 대화의 진전과 통상·제재 압박이 공존* · 분석 시계: 수일~수주\n전달 경로 · 실제 관세·수출통제 완화가 이뤄지면 영향을 받는 한국 기업의 시장 접근과 원재료 조달 조건이 개선될 수 있다. 협의체 설립 자체에는 현금흐름 개선을 보장하는 내용이 없다. [3]\n다른 설명·가설 · 협의체가 안보 사고 통지에만 집중하고 통상 갈등은 이어질 수 있다. 이 경우 외교적 진전과 기업의 영업 여건 개선은 분리해서 평가해야 한다. [16] [3]\n판단을 다시 볼 조건 · 이번 주 워싱턴 정상회담의 공동 발표에서 관세 대상 품목, 수출통제 변경, 시행일이 명시되는지 확인한다. AI 안전 대화만 구체화되고 무역 조치가 그대로라면 국내 수출기업의 비용·매출 개선 해석은 약해진다. 정확한 회담 시각은 미확인이다. [3] [16]\n*확인 한계*\n작성 과정에서 확인이 부족한 자료는 제외했습니다. 확인되지 않은 예상값·수급은 제공하지 않습니다.\n검증에서 근거·시점 확인이 부족한 항목 1개를 제외했습니다.\n수집 데이터에 지연·결측이 있습니다. 과거 비교 자료는 각 기준일을 표시하며 오늘 값으로 쓰지 않습니다.\n[6] <https://www.yna.co.kr/view/AKR20260922007600071|연합뉴스> · 발행 09/22 06:11 KST · 조회 09/22 06:22 KST\n[1] <https://www.etoday.co.kr/news/view/2628230|이투데이> · 발행 09/22 06:31 KST · 조회 09/22 06:32 KST\n[2] <https://www.yna.co.kr/view/AKR20260922006551075|연합뉴스> · 발행 09/22 06:24 KST · 조회 09/22 06:32 KST\n[12] <https://news.sbs.co.kr/news/endPage.do?news_id=N1008764810|SBS 뉴스> · 발행 09/22 05:26 KST · 조회 09/22 05:32 KST\n[3] <https://www.cnbc.com/2026/09/21/trump-xi-china-summit-trade-tariffs.html|CNBC> · 발행 09/22 06:21 KST · 조회 09/22 06:35 KST\n[16] <https://www.bbc.co.uk/news/articles/c8vgyzn2d31yo|BBC News> · 발행 09/21 14:50 KST · 조회 09/21 15:00 KST\n[5] <https://news.sbs.co.kr/news/endPage.do?news_id=N1008764783|SBS 뉴스> · 발행 09/22 06:20 KST · 조회 09/22 06:32 KST\n[9] <https://www.etoday.co.kr/news/view/2628228|이투데이> · 발행 09/22 06:21 KST · 조회 09/22 06:22 KST\n[4] <https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr260921~e754847a7b.en.html|European Central Bank> · 발행 09/21 19:00 KST · 조회 09/21 19:00 KST"
+  ],
+  "quality": {
+    "format_version": 4,
+    "reduced": true,
+    "substantive": false,
+    "issue_count": 2,
+    "missing_core": [],
+    "rejected": {
+      "ai_fact": "evidence_not_in_frozen_original"
+    },
+    "source_count": 9,
+    "fallback": null,
+    "assurance": {
+      "dow": "single_source",
+      "nasdaq": "single_source",
+      "sp500": "single_source"
+    },
+    "quote_conflicts": [],
+    "data_diagnostics": [
+      {
+        "error": "historical_current_lake_snapshot_not_available"
+      }
+    ],
+    "calendar_items": 1
+  },
+  "passed": false,
+  "scope": "One saved original-source snapshot and actual provider responses; not human expert certification, five-day qualification or Slack delivery."
+}

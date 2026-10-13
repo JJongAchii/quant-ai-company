@@ -1,0 +1,20 @@
+{
+  "checked_at": "2026-09-29T04:31:37.653594+00:00",
+  "installed_release": "fac61efe624f843c2edc5aec51b8d1e0c7c989cb",
+  "candidate": "ff8df9be0745a0ababcadc661c21fd930fa001fc",
+  "changed_paths": 828,
+  "blocked_by_installed_maintenance_policy": 675,
+  "critical_examples": [
+    "deploy/compose.yaml",
+    "deploy/maintenance_release.py",
+    "pyproject.toml",
+    "src/quant_company/cli.py",
+    "src/quant_company/config.py",
+    "src/quant_company/db.py",
+    "uv.lock"
+  ],
+  "policy": "installed deploy/maintenance_release.py validate_tree; candidate policy cannot authorize itself",
+  "publication": "disabled",
+  "host_modified": false,
+  "conclusion": "A reviewed full-service release path is required. The maintenance release contract cannot install this candidate and must not be bypassed."
+}

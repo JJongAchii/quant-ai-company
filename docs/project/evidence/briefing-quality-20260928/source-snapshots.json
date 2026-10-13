@@ -1,0 +1,282 @@
+{
+  "mode": "historical_originals_before_exact_scheduled_cutoff",
+  "raw_originals_sha256": "e051b09d8541fc494041b720e422d050a70b3f13feb11c1332cbeb2a86b6fe33",
+  "model": "not_yet_called",
+  "slack": "not_connected",
+  "snapshots": {
+    "am-20260924": {
+      "cutoff": "2026-09-23T22:10:00+00:00",
+      "raw_article_count": 188,
+      "eligible_count": 188,
+      "selected_count": 16,
+      "bundle_sha256": "e725aff7aad1cbf6d4f9584c8c5e9184bd91c0f772907309d6829276a92cb9eb",
+      "selected": [
+        {
+          "id": "6628c5bbf737f74bb55fb562c84adfa2d3bdf4a8",
+          "title": "뉴욕증시, 연준 추가 금리인상 우려·국채금리 급등에 하락",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-23T20:53:00+00:00",
+          "retrieved_at": "2026-09-23T21:03:28.523356+00:00",
+          "sha256": "0f0eea62b56c8b409ac50f0821494685b21298a95ae60490fdfdeed107b92730"
+        },
+        {
+          "id": "db0cb2f6f4f3c1ba12bcab1e26ebf917d88ccf05",
+          "title": "뉴욕증시, 연준 추가 금리인상 우려·국채금리 급등에 하락",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-23T20:17:59+00:00",
+          "retrieved_at": "2026-09-23T20:22:34.512710+00:00",
+          "sha256": "deb40689d62d6b347e1fdeb14d206864eacad47bf6853b25059923dd6a89429e"
+        },
+        {
+          "id": "a135df313f2e5f19f874e876364936b47e18d518",
+          "title": "한은 \"추석 앞두고 3조 6천억 원 규모 화폐 공급\"",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-23T04:27:00+00:00",
+          "retrieved_at": "2026-09-23T04:38:51.202970+00:00",
+          "sha256": "7d7d1da1a4784a79bdec4d69344a4b94b4c1bc18f2cff92a8839936e0e6b8bab"
+        },
+        {
+          "id": "2763305a4da2b215198dccf4e07eb9f697d5fab3",
+          "title": "Market sees next Fed hike in October, following Barr comments and hot inflation reading",
+          "publisher": "CNBC",
+          "published_at": "2026-09-23T16:56:22+00:00",
+          "retrieved_at": "2026-09-23T16:59:00.940036+00:00",
+          "sha256": "c86e3b9b09834c587ea125d9ef8054a6188910179580d505f761ca56aa1999e1"
+        },
+        {
+          "id": "0a6279dfea2dbe7a7c1c0d8b940331f0f290a7ab",
+          "title": "뉴욕증시, 미ㆍ이란 ‘3시간 협상’에도 혼조⋯나스닥 0.45%↑[상보]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-22T22:20:00+00:00",
+          "retrieved_at": "2026-09-22T22:30:31.211241+00:00",
+          "sha256": "a2cb313e27d56b912704b01632865d7794012e00e23eaef9236b61ac84bfb54a"
+        },
+        {
+          "id": "fa6fd8dc375f5b67ea5dbbd3bdd0ba0aad8d52c3",
+          "title": "AI superpower ambitions take centre stage as Trump and Xi meet",
+          "publisher": "BBC News",
+          "published_at": "2026-09-23T22:01:17+00:00",
+          "retrieved_at": "2026-09-23T22:04:42.609024+00:00",
+          "sha256": "3f90259ee8d54c665cfada380d23a96aa4c903f86c0f55857dc751c08b7f1c1a"
+        },
+        {
+          "id": "a7621e683ee947d3f5de3fc1db91daf25e819e32",
+          "title": "Meta's standoff with Amazon over Muse could be a sign of things to come",
+          "publisher": "CNBC",
+          "published_at": "2026-09-23T21:04:47+00:00",
+          "retrieved_at": "2026-09-23T21:12:28.646055+00:00",
+          "sha256": "8c338b5eb6a1f77700c40bfab0ec169a25635a7a07556bcf2ddc4754c43f3fd5"
+        },
+        {
+          "id": "2f6fbec7c83aaa58fa35430986b0e3e48334cead",
+          "title": "전쟁 위험에도…MS, 중동 AI 인프라에 13조원 투자",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-23T20:14:09+00:00",
+          "retrieved_at": "2026-09-23T20:22:41.042877+00:00",
+          "sha256": "7ac742263398a8e435e2e1444ba6c21a2ffe66537255ce1e88efae55781def71"
+        },
+        {
+          "id": "9f63f545a8b9669e83a500622e169061558889d4",
+          "title": "국제유가, 미국·이란 긴장에 반등…브렌트 3.9% 급등",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-23T20:53:00+00:00",
+          "retrieved_at": "2026-09-23T21:03:31.209480+00:00",
+          "sha256": "41da431258f4822c63adc5d915d1e74691bedd2fcbc917411f97b7c5a09d251a"
+        },
+        {
+          "id": "9e15c94b01ca742352e4b2f759a48e65eee1390c",
+          "title": "국제유가, 美·이란 긴장에 반등…브렌트 3.9% 급등해 100달러선",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-23T19:45:15+00:00",
+          "retrieved_at": "2026-09-23T19:52:05.847315+00:00",
+          "sha256": "b6723fc5fb4df213bb31452147d591f562c98ecffc3ab71a27d6a9146158276f"
+        },
+        {
+          "id": "1ff20fbcf8e7950460778a0e54c0b8003295ee54",
+          "title": "뉴욕증시, 국채금리 급등에 하락⋯나스닥 1%대↓ [상보]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-23T21:48:00+00:00",
+          "retrieved_at": "2026-09-23T21:54:04.687194+00:00",
+          "sha256": "087468f26d15aedd31a780f447774a77db7ac16fdd5e147f7b26aa8a96823bd7"
+        },
+        {
+          "id": "d0a265623b802cf53dcba7d61a34788d0c3c531e",
+          "title": "[속보] 국제유가, 미·이란 긴장 속 반등⋯브렌트유 3.86%↑",
+          "publisher": "이투데이",
+          "published_at": "2026-09-23T21:13:00+00:00",
+          "retrieved_at": "2026-09-23T21:23:39.629180+00:00",
+          "sha256": "b1aab6ba956083889094e2a16a889a8ba2a8080ebcea3d68a1474c0c54159f01"
+        },
+        {
+          "id": "019bd754a0a8ab3b9ad5cf97f8fafaee10954cb0",
+          "title": "Oil prices rise, snap five day losing streak as Iran vows it will not surrender",
+          "publisher": "CNBC",
+          "published_at": "2026-09-23T19:16:31+00:00",
+          "retrieved_at": "2026-09-23T19:21:02.890872+00:00",
+          "sha256": "998de2a88fdafff3849c5fae9422d41b0297b482ff6855a38c5a263ad797f51a"
+        },
+        {
+          "id": "d193f4a977dae85275069cb9e2fc5785cef0fe5d",
+          "title": "Iran's president tells Trump it will never 'bend the knee'",
+          "publisher": "BBC News",
+          "published_at": "2026-09-23T15:58:13+00:00",
+          "retrieved_at": "2026-09-23T16:19:46.183241+00:00",
+          "sha256": "594b4b6c9522f511a8544d00cdaa774dbf54c0e052e937d3a71dc66da335647d"
+        },
+        {
+          "id": "480523fd5f97b07af773d0453d18952fe76e1910",
+          "title": "Azerbaijan pardons Frenchman after EU lifts sanctions on Russian billionaire",
+          "publisher": "BBC News",
+          "published_at": "2026-09-23T14:32:42+00:00",
+          "retrieved_at": "2026-09-23T14:58:43.725684+00:00",
+          "sha256": "41a9d30cfabfe0acf638925e4877e4515d3e408835e667d9be09c9e8338d59dc"
+        },
+        {
+          "id": "54e036895c2164dc95a2a71d79c2f4c36cb710c7",
+          "title": "S. Korea to Cut Middle East Oil Dependence to 50% by 2035, Expand Reserves",
+          "publisher": "KBS World",
+          "published_at": "2026-09-23T06:18:45+00:00",
+          "retrieved_at": "2026-09-23T06:31:22.730220+00:00",
+          "sha256": "c4e413f1a3bf0ca2ea05097720c05bc81a2bed2f57f9bb6d56fc1c6239ad6e47"
+        }
+      ]
+    },
+    "pm-20260923": {
+      "cutoff": "2026-09-23T10:40:00+00:00",
+      "raw_article_count": 199,
+      "eligible_count": 199,
+      "selected_count": 16,
+      "bundle_sha256": "4b3d53f12f88de8cb43acf6df60e0c5cbbb7e94a6a1a44142310f1090bd56bb1",
+      "selected": [
+        {
+          "id": "3155236565fe5ca068f1f32cfd14e3c9138f8631",
+          "title": "코스피, 추석연휴 앞두고 또 '전강후약'…0.9% 올라 7,080(종합)",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-23T07:07:39+00:00",
+          "retrieved_at": "2026-09-23T07:12:05.245985+00:00",
+          "sha256": "9f12d55f0fa86bea827ce0dfab79ee666717c319fec1d4bb501b1f02388dc211"
+        },
+        {
+          "id": "4c858feaad66c47bc229df23e405fbb732c682c1",
+          "title": "코스피, 0.9% 올라 7,080…4거래일 연속 상승",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-23T06:51:00+00:00",
+          "retrieved_at": "2026-09-23T07:01:40.416158+00:00",
+          "sha256": "7e2ef45554b4051e60caf8c9b0458fa1e386f50f6a2c95891e7e661690c70c54"
+        },
+        {
+          "id": "a135df313f2e5f19f874e876364936b47e18d518",
+          "title": "한은 \"추석 앞두고 3조 6천억 원 규모 화폐 공급\"",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-23T04:27:00+00:00",
+          "retrieved_at": "2026-09-23T04:38:51.202970+00:00",
+          "sha256": "7d7d1da1a4784a79bdec4d69344a4b94b4c1bc18f2cff92a8839936e0e6b8bab"
+        },
+        {
+          "id": "cd2c1e8a1a44601c39098212daf0b2332e231e7d",
+          "title": "Fed's Collins warns inflation could be 'notably' higher after backing rate hike",
+          "publisher": "CNBC",
+          "published_at": "2026-09-23T07:33:14+00:00",
+          "retrieved_at": "2026-09-23T07:41:18.337454+00:00",
+          "sha256": "5f746a9d1281072b5e9a2222fb433cba7bd4e84491f30104544f835f6b8cf36e"
+        },
+        {
+          "id": "f2a295d28f66f5771a0bd10d82117c591f0f9ec5",
+          "title": "뉴욕증시, 미ㆍ이란 3시간 담판에도 숨고르기⋯다우↓ㆍ나스닥 사상 최고 [종합]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-22T22:39:00+00:00",
+          "retrieved_at": "2026-09-22T22:40:39.354506+00:00",
+          "sha256": "61250fe2281a00925bce18a9bf04e40aa96c54e35be09fa97e08349d8eb4f94f"
+        },
+        {
+          "id": "0a6279dfea2dbe7a7c1c0d8b940331f0f290a7ab",
+          "title": "뉴욕증시, 미ㆍ이란 ‘3시간 협상’에도 혼조⋯나스닥 0.45%↑[상보]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-22T22:20:00+00:00",
+          "retrieved_at": "2026-09-22T22:30:31.211241+00:00",
+          "sha256": "a2cb313e27d56b912704b01632865d7794012e00e23eaef9236b61ac84bfb54a"
+        },
+        {
+          "id": "51a0c4bb7995086f0fc121be0977a3cb237055b8",
+          "title": "Trump-Xi summit puts AI safety talks on the table but neither side wants to slow down",
+          "publisher": "CNBC",
+          "published_at": "2026-09-23T07:36:47+00:00",
+          "retrieved_at": "2026-09-23T07:45:54.443270+00:00",
+          "sha256": "6c4e867b55cb69febb34c8bf45aa42b42769d5591caac20c2ff341fcf05e244e"
+        },
+        {
+          "id": "2df6c7ce5ada6411de8a78f510d30d3cb38fa989",
+          "title": "삼성전자, 연휴 앞두고 3%대 급등마감…SK하이닉스도 1.2%↑",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-23T06:58:00+00:00",
+          "retrieved_at": "2026-09-23T07:11:52.235411+00:00",
+          "sha256": "3fe775ba4cee7d1b4e262000479a5da405e449fa541e215432e9e733a31464c1"
+        },
+        {
+          "id": "eef15b24bd15c7bf6a25828bcca2fdffcfc1ba69",
+          "title": "[뉴욕증시] 이란과 대화 재개에 유가 하락…혼조세 마감",
+          "publisher": "SBS 뉴스",
+          "published_at": "2026-09-22T22:39:00+00:00",
+          "retrieved_at": "2026-09-22T22:50:59.911749+00:00",
+          "sha256": "5434dbccc9f827b8bd37725e1346840b3e4f5925464f35353d431dff439fc145"
+        },
+        {
+          "id": "c5e584c5bce41c36808bf1d12ecc932dee7c4076",
+          "title": "Oil prices mixed after U.S. and Iran talk for hours at UN meeting",
+          "publisher": "CNBC",
+          "published_at": "2026-09-23T08:36:50+00:00",
+          "retrieved_at": "2026-09-23T08:42:13.445587+00:00",
+          "sha256": "3b5692f7372715aad4f363169dc84fe0ec4961bef066bd41cc5537e098510fe7"
+        },
+        {
+          "id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+          "title": "국제유가, 사우디 원유수출 회복 기대에 하락⋯미ㆍ이란 협상도 영향 [상보]",
+          "publisher": "이투데이",
+          "published_at": "2026-09-22T21:50:00+00:00",
+          "retrieved_at": "2026-09-22T22:00:01.916771+00:00",
+          "sha256": "25d9f47f307bda856fc66514df97d17bb5a3369ee166cac09d42e47e9045031b"
+        },
+        {
+          "id": "852b93b97dd7694a7408a9c264dc9fcfcfcda062",
+          "title": "마크롱, 호르무즈 파병 가능성 시사…\"더 개입할 준비 돼있어\"",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-23T08:37:03+00:00",
+          "retrieved_at": "2026-09-23T08:42:56.844163+00:00",
+          "sha256": "2056582306908c1f65a8927923741ea6972d68744142d1cd50b4668c197528e1"
+        },
+        {
+          "id": "45a1ff52fbbb9fb1027751e918bb1f72a1bda0b9",
+          "title": "국고채 금리 유가 하락에 동반 하락…3년물 연 4.006%(종합)",
+          "publisher": "연합뉴스",
+          "published_at": "2026-09-23T08:14:01+00:00",
+          "retrieved_at": "2026-09-23T08:23:05.652280+00:00",
+          "sha256": "ca0d0d9ee1665494100385d5bd656293531b9434097aedba4c21b25e3a0c38a1"
+        },
+        {
+          "id": "54e036895c2164dc95a2a71d79c2f4c36cb710c7",
+          "title": "S. Korea to Cut Middle East Oil Dependence to 50% by 2035, Expand Reserves",
+          "publisher": "KBS World",
+          "published_at": "2026-09-23T06:18:45+00:00",
+          "retrieved_at": "2026-09-23T06:31:22.730220+00:00",
+          "sha256": "c4e413f1a3bf0ca2ea05097720c05bc81a2bed2f57f9bb6d56fc1c6239ad6e47"
+        },
+        {
+          "id": "19f0d6ace0af4c4a8ddf74fbd39d5fc4790f26f4",
+          "title": "US and Iran hold first talks since June after Trump's 'annihilation' threat",
+          "publisher": "BBC News",
+          "published_at": "2026-09-23T06:12:56+00:00",
+          "retrieved_at": "2026-09-23T06:31:19.885561+00:00",
+          "sha256": "78ab647622900d18f2ac226a8b76f8a7dfd2ff701cea59db3cfbf4d288f14c68"
+        },
+        {
+          "id": "356e4030df1cb13e0cf53545b91014fa124f7007",
+          "title": "US, Iranian Officials Hold Talks amid UNGA Meetings in New York",
+          "publisher": "KBS World",
+          "published_at": "2026-09-23T04:24:38+00:00",
+          "retrieved_at": "2026-09-23T04:39:04.043293+00:00",
+          "sha256": "8b301c20bdfb81ca740067d918ff9fb2394ed4199bc9213a238764da9d1d0fad"
+        }
+      ]
+    }
+  }
+}

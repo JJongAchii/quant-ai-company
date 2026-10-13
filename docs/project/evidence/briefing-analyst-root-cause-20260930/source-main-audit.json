@@ -1,0 +1,107 @@
+{
+  "created_at": "2026-09-30T05:55:40.164349+00:00",
+  "format_version": 13,
+  "validation_version": 31,
+  "finding": "Writer stored essential supported context in Issue.interpretation; format 12 deliberately hid it in the thread. Prompt and renderer now agree all analytical claim fields are visible. This same-source replay demonstrates placement only, not a semantic quality pass.",
+  "cases": [
+    {
+      "case": "AM29",
+      "frozen_assessment": "docs/project/evidence/briefing-analyst-quality-20260929/development-v25-replay/assessment.json",
+      "sha256": "d869452be391c0ff33a0ecfd5f95a4f05c31c928ee220f2da733184ec2fa06b0",
+      "rejected": {},
+      "previous_main_chars": 5853,
+      "current_main_chars": 6881,
+      "current_review_prompt_chars": 82233,
+      "restored_interpretations": [
+        {
+          "id": "rates_detail",
+          "text": "이투데이가 전한 다음 달 0.25%포인트 이상 인상 확률은 70.3%로 일주일 전 57.6%보다 높습니다. 금리선물의 평가이며 연준 결정은 아닙니다. 장기금리에는 재정·발행 부담도 있어 물가 전망만으로 상승 원인을 분리할 수 없습니다.",
+          "old_main_visible": false,
+          "new_main_visible": true,
+          "new_review_visible": true
+        },
+        {
+          "id": "energy_detail",
+          "text": "이란의 초점은 해협·봉쇄이고 미국은 핵 양보를 요구해 의제 차이가 남았습니다. 이란 측의 새 직접협상 계획 부인과 중재국을 통한 개별 접촉 보도는 구분해야 합니다. 유가 상승폭 축소만으로 외교 진전을 입증할 수 없습니다.",
+          "old_main_visible": false,
+          "new_main_visible": true,
+          "new_review_visible": true
+        },
+        {
+          "id": "trade_detail",
+          "text": "이번 대상은 전체 미중 교역 4,150억달러의 일부입니다. 명단 공개를 모든 품목의 관세 철폐나 금융시장 전면 개방으로 확대해 해석할 수 없습니다. 금융기관 신청도 관련 법규에 따른 심사 대상입니다.",
+          "old_main_visible": false,
+          "new_main_visible": true,
+          "new_review_visible": true
+        },
+        {
+          "id": "ai_capital_detail",
+          "text": "페이페이 리는 AMD의 수석과학자 겸 부사장이 될 예정입니다. 연구 인력과 미래 모델 역량 확보라는 성격이 강하며 당장의 칩 매출 증가를 입증하는 발표는 아닙니다.",
+          "old_main_visible": false,
+          "new_main_visible": true,
+          "new_review_visible": true
+        },
+        {
+          "id": "ai_policy_detail",
+          "text": "제이 오버놀티·로리 트라한의 초당적 FRONTIER안도 독립 감사와 위험 모델 종료 권한을 제안했습니다. 규제 논의가 복수로 진행되지만 특정 모델 기능의 제한을 AI 전체의 현재 사용 금지로 해석할 수는 없습니다.",
+          "old_main_visible": false,
+          "new_main_visible": true,
+          "new_review_visible": true
+        }
+      ]
+    },
+    {
+      "case": "PM22",
+      "frozen_assessment": "docs/project/evidence/briefing-analyst-quality-20260929/fresh-pm-20260922/development-v28-replay/assessment.json",
+      "sha256": "1e1dc39bb464723de654c62d40226c229baa76c2710a38565c5360d50197a7c6",
+      "rejected": {},
+      "previous_main_chars": 5358,
+      "current_main_chars": 6511,
+      "current_review_prompt_chars": 79783,
+      "restored_interpretations": [
+        {
+          "id": "iran_interpretation",
+          "text": "항공 제재는 운송·결제 상대방까지 압박하는 방식입니다. 외교 기대만으로 한국 수입기업의 에너지 조달 부담이 이미 줄었다고 판단할 수 없습니다.",
+          "old_main_visible": false,
+          "new_main_visible": true,
+          "new_review_visible": true
+        },
+        {
+          "id": "ai_interpretation",
+          "text": "LG의 규격 자격과 협력은 매출 확정과 다릅니다. SK하이닉스 보도도 기존 소송의 위험을 알린 것으로, 당일 주가 하락의 원인으로 단정할 수 없습니다.",
+          "old_main_visible": false,
+          "new_main_visible": true,
+          "new_review_visible": true
+        },
+        {
+          "id": "bok_interpretation",
+          "text": "이자보상배율은 영업이익으로 이자를 감당하는 정도입니다. 총량 비율보다 이익과 현금흐름이 취약기업까지 개선되는지가 신용위험 판단에 더 직접적입니다.",
+          "old_main_visible": false,
+          "new_main_visible": true,
+          "new_review_visible": true
+        },
+        {
+          "id": "uber_interpretation",
+          "text": "국내 음식배달 재진입의 핵심은 현지 플랫폼·기술·브랜드를 확보하는 데 있습니다. 경쟁 심사에서는 서비스 결합이 이용자와 입점업체의 선택을 얼마나 제한하는지가 중요합니다.",
+          "old_main_visible": false,
+          "new_main_visible": true,
+          "new_review_visible": true
+        },
+        {
+          "id": "paramount_interpretation",
+          "text": "미국 내 제작 비중도 처음 2년간 20%, 이후 3년간 30% 초과로 높여야 합니다. 합병 효과를 볼 때 규모 확대뿐 아니라 제작 장소와 물량을 유지하는 비용도 함께 따져야 합니다.",
+          "old_main_visible": false,
+          "new_main_visible": true,
+          "new_review_visible": true
+        },
+        {
+          "id": "china_interpretation",
+          "text": "협의 채널의 출범과 기술·통상 제한의 완화는 다른 단계입니다. 이 보도만으로 한국 기술기업의 시장 접근 조건이 개선됐다고 판단할 수 없습니다.",
+          "old_main_visible": false,
+          "new_main_visible": true,
+          "new_review_visible": true
+        }
+      ]
+    }
+  ]
+}

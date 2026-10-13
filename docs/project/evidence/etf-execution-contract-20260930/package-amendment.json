@@ -1,0 +1,17 @@
+{
+  "final_package_file_sha256": "b43fca312d4f24bffde03cbc5367f875f623dc373a32b1197f3fa40e8de2c9e4",
+  "final_review_digest": "7cf3713a1972e90842e2758fd8bbc03da30d11044f7ff95dae5c19bf4ef13376",
+  "initial_package_file_sha256": "1adef9d2eed0d03e3cb87243223910d33a58d460d82e9e133f92b82dbbfc2388",
+  "initial_review_digest": "49487dae09d5bcf968de552a0c70d0523794dbf14f5389424a149a1cfb0f3334",
+  "observed_at": "2026-09-30T23:03:46.686109+00:00",
+  "production_mutated": false,
+  "readiness_granted": false,
+  "reason": "Independent admission review requested explicit fields, gates, result propagation and cross-program lineage.",
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "script_sha256": "4559551ba8172f2904e08c432199a85fb5ad68d70662c4467ddb7b76efc476bf",
+  "unchanged_input_files": {
+    "development.json": "7ec748039094e171d17ddfa966c89ed5fb80f254516c0808346f850906ae9c2b",
+    "warmup.json": "d7d240e4f325d89106ba0364f43370174792a6e4e5155489118b2f0e641f6882"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "recorded_at": "2026-10-06T05:24:20.685552+00:00",
+  "source_commit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
+  "code_identical_doc_head": "267ec12a03f912a32cdf327c34e9db0408c898d2",
+  "runtime_build_inputs_byte_identical": true,
+  "command": ".venv/bin/pytest -q -m 'not live' tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py",
+  "tests": 1867,
+  "passed": 1819,
+  "skipped": 48,
+  "failures": 0,
+  "errors": 0,
+  "seconds": 494.426,
+  "skip_reasons": {
+    "Set CODEX_CONFIG_PROBE=1 for the local CLI probe": 2,
+    "Hard PDF memory qualification requires Linux RLIMIT_AS": 1,
+    "Requires explicit operator runtime profile on the registered Linux 3070": 1,
+    "Real pinned qlab checkout required: QUANT_TEST_QLAB_ROOT": 35,
+    "Opt-in approved 3070 and verified runtime required": 7,
+    "Opt-in real 3070, committed ETF checkout and prepared science runtime required": 1,
+    "Requires explicit operator-reviewed runtime profile on the 3070; no Mac fallback": 1
+  },
+  "report_sha256": "488451c868174c89f9af73bdcaefd917bf8b0820415aaa4e7a6dd2f772941d40",
+  "PostgreSQL": "real",
+  "Temporal": "real",
+  "model_and_slack": "simulated",
+  "extra_working_tree_tests": "Existing separate storage cleanup tests were also collected; their source is not in the Analyst runtime archive.",
+  "GitHub_CI": "No check run was created for the two latest PR updates. Actions remain enabled; no settings were changed. Last actual integrated cloud release CI0ff succeeded run37411764420. This receipt is the local same-command verification, not a GitHub result.",
+  "owner_preview_approval": "chat-analyst-preview-approved-20261002",
+  "slack_publication": false
+}

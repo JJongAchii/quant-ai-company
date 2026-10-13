@@ -1,0 +1,42 @@
+{
+  "written_before_model_output": true,
+  "case": "am-20260922-fresh-after-contract-repair",
+  "scope": "Assistant reading of the sixteen frozen excerpts; these notes are not supplied to the writer or reviewer and are not independent human expert certification.",
+  "material_checks": [
+    {
+      "topic": "Completed US close and concentration",
+      "source_ids": ["08bba8a5854670b32d1d37c5ca5c5eef877d9669", "2b7e91ad74af68290f4a95af3dae32d237c17a89"],
+      "check": "September 21 close: Dow 52,048.83 (+0.7%), S&P 500 7,764.70 (+1.5%), Nasdaq Composite 27,122.09 (+2.3%) at a record. Meta rose 11.4%, AMD about 10%, Intel about 12%; do not treat a few AI stocks as proof of market-wide breadth without an advance/decline measure."
+    },
+    {
+      "topic": "Oil, rates and dollar do not tell the same story",
+      "source_ids": ["08bba8a5854670b32d1d37c5ca5c5eef877d9669", "2b7e91ad74af68290f4a95af3dae32d237c17a89", "ee106e6206f30aea0a6c4d0999349aeef2df0e43"],
+      "check": "WTI October settled at $95.78 (-4.51%); Brent November at $100.34 (-3.4%). A possible US-Iran meeting and reported restraint on Houthi strikes are not a ceasefire. Regional exports were reported near 80% of prewar levels despite Saudi pipeline closure. Ten-year Treasury yields differ across reports (4.95% versus 4.972%), while the dollar rose versus euro and yen in one source; date and basis must be clear."
+    },
+    {
+      "topic": "Meta usage versus monetization",
+      "source_ids": ["7f4f853766b5dc50bf53c1c88ee6a23f93411328", "558b8b51bb4ac18d42abcf1722733ccd2b718ba4", "2b7e91ad74af68290f4a95af3dae32d237c17a89"],
+      "check": "Muse overtook ChatGPT in one US iOS free-app ranking, with 730,000 downloads in about five days and more than 2.5 million cumulative by Monday; staggered platform launches limit competitor comparison. Downloads do not establish paying users or cash flow. AMD crossed a reported $1tn market value, not $1tn revenue."
+    },
+    {
+      "topic": "US-China and Iran policy status",
+      "source_ids": ["ec3c41e2376f8cf67dd34138bea5a14683cdc849", "bbe3e842d0ad3533bf684a7ff088a84361eff9b7", "3dde2b5129d47d1e1f8d374fed1d73a36529f3ac"],
+      "check": "Bessent reported a new bilateral AI-risk dialogue, with a November follow-up planned, alongside unresolved trade/export-control issues and a separate warning about service to Iranian airlines in two days. A summit, friendly ceremony or official warning is not a new trade agreement or implemented sanction. The US-Japan-Korea foreign ministers' supply-chain statement is a separate diplomatic action; it did not name China directly."
+    },
+    {
+      "topic": "Official European wholesale settlement launch",
+      "source_ids": ["ff8917a4601610247c5ae78e6bd2c3db76e600f4"],
+      "check": "The ECB announced Pontes already launched for wholesale tokenized-asset settlement in central-bank money, with an initial group onboarded and full implementation expected by 2028. It is neither a retail CBDC nor evidence of immediate crypto-token returns."
+    },
+    {
+      "topic": "Energy reconstruction proposal and corporate M&A",
+      "source_ids": ["0023ecad6e84f1d23292db0078e5912145e1852f", "0a9d4bdb6f69a621c79e1c7b31bb248b4b108151"],
+      "check": "The reported US $5bn plus requested regional $5bn reconstruction fund remains a proposal, with participation and timing unresolved; damaged energy capacity can outlast a strait reopening. Paramount's settlement removes a hurdle to a reported $110bn Warner Bros merger, subject to commitments, but should displace main macro drivers only if its market relevance is explained."
+    }
+  ],
+  "lower_priority_or_context": [
+    "Iranian media's reported delegation visa refusal and a UK human-rights speech should not be transformed into a new trade or oil policy without a specific market link.",
+    "The short oil and US-close wire updates duplicate fuller market stories and should not count as independent confirmation.",
+    "Any cryptocurrency 24-hour change needs its quoted observation time; it is not a US equity close."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "recorded_at": "2026-10-06T11:48:10.877180+00:00",
+  "validation_version": 58,
+  "scope": "Implementation regression, not actual content qualification.",
+  "tests": 285,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "receipt_sha256": "3456bccac705e796dfb63680dfae01692e7da08e6c868b177eb8173b663dd287",
+  "postgresql": "real database",
+  "temporal": "actual test environment",
+  "model_and_slack": "fixtures / simulated transports",
+  "lint": "ruff passed on briefing source/tests and preview release helper",
+  "verified": [
+    "20complete originals and source budget enforced",
+    "Large review roundtrip preserves exact bodies, publication microseconds, proposal and main text",
+    "Source notes patch happens at most once; mechanical and all12semantic gates unchanged",
+    "Frozen input reused exactly during fallback; no duplicate dataset append",
+    "Bounded observation and preview release preserve disabled publication"
+  ],
+  "fresh_cloud_content_pass": false,
+  "actual_slack_delivery_verified_in_this_run": false
+}

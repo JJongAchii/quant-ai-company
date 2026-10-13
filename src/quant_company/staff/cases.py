@@ -13,6 +13,7 @@ from .packs import STAFF
 SUITE_VERSION = "staff-objective-v2"
 FAMILIES = {
     "financial_strategist": ("cashflow_discounting", "put_call_parity"),
+    "market_brief": ("macro_surprises_and_causality", "earnings_fx_and_breadth"),
     "data": ("availability_and_duplicates", "missing_keys_and_coverage"),
     "researcher_kr": ("publication_lag", "overlapping_labels"),
     "researcher_global": ("cross_market_cutoffs", "currency_direction"),
@@ -65,6 +66,49 @@ def make_case(employee: str, seed: str, variant=0):
         row({"claim": "고정된 양의 미래 현금흐름의 가격은 할인율이 오르면 하락한다."})
         row({"claim": "유럽형 연속배당 옵션 공식을 미국형 이산배당 옵션의 정확한 가격으로 사용할 수 있다."}, True)
         rule = "성립하지 않는 주장의 id를 reject_ids에 넣으세요."
+    elif employee == "market_brief":
+        if variant == 0:
+            consensus = rng.randint(28, 40)/10
+            actual = round(consensus-rng.randint(1, 5)/10, 1)
+            prior = round(actual+rng.randint(2, 6)/10, 1)
+            revised = round(prior-0.1, 1)
+            before_yield = rng.randint(350, 500)/100
+            after_yield = round(before_yield-rng.randint(5, 20)/100, 2)
+            metrics = {"surprise_pp": actual-consensus, "change_from_revised_pp": actual-revised,
+                       "yield_change_bp": (after_yield-before_yield)*100}
+            question = (f"합성 물가 전년비: 실제 {actual}%, 발표 전 컨센서스 {consensus}%, 전월 최초 {prior}%, "
+                f"전월 수정 {revised}%. 같은 관측창의 명목 국채 수익률 {before_yield}% → {after_yield}%. "
+                "surprise_pp, change_from_revised_pp, yield_change_bp를 계산하세요. "
+                "성장주가 올랐다는 관측 외에 실질금리·기업이익·포지셔닝·다른 사건 자료는 없습니다.")
+            row({"claim": "물가 상승률이 둔화했으므로 물가 수준도 전년보다 하락했다."}, True)
+            row({"claim": "물가 둔화와 성장주 상승이 함께 관측됐으므로 물가가 상승의 유일한 원인으로 입증됐다."}, True)
+            row({"claim": "명목금리 하락만으로 실질금리도 같은 폭 하락했다고 확정할 수 있다."}, True)
+            row({"claim": "다른 조건이 같다면 할인율 하락은 미래 현금흐름의 현재가치에 우호적이지만, 실제 원인 확정에는 다른 증거가 필요하다."})
+            row({"claim": "컨센서스 대비 차이와 수정된 전월 값 대비 변화는 서로 다른 비교다."})
+        else:
+            actual = rng.randint(10, 25)
+            consensus = actual+rng.randint(1, 5)
+            prior = actual-rng.randint(1, 5)
+            fx_before = rng.randint(1200, 1400)
+            fx_after = fx_before+rng.randint(10, 50)
+            index_before = rng.randint(2500, 3200)
+            index_after = index_before+rng.randint(10, 80)
+            total = 1000
+            advancing = rng.randint(250, 450)
+            metrics = {"earnings_surprise_pct": (actual/consensus-1)*100,
+                       "index_return_pct": (index_after/index_before-1)*100,
+                       "advancer_share_pct": advancing/total*100}
+            question = (f"합성 EPS: 실제 {actual}, 발표 전 예상 {consensus}, 전년 동기 {prior}, 동일 회계 기준. "
+                f"달러/원(KRW/USD) {fx_before} → {fx_after}. 시가총액 가중지수 {index_before} → {index_after}, "
+                f"상승 종목 {advancing}/{total}. earnings_surprise_pct, index_return_pct, advancer_share_pct 계산. "
+                "수출기업의 원가·외화부채·헤지·주가 반응 자료는 없습니다.")
+            row({"claim": "EPS가 전년보다 증가했으므로 시장 예상 대비로도 긍정적인 서프라이즈다."}, True)
+            row({"claim": "시가총액 가중지수가 올랐으므로 대부분의 종목이 상승했다."}, True)
+            row({"claim": "달러/원 상승은 원화 강세를 뜻한다."}, True)
+            row({"claim": "원화 약세이면 모든 수출기업의 이익과 주가가 반드시 오른다."}, True)
+            row({"claim": "EPS의 전년 비교와 예상 대비 차이는 다를 수 있으며, 환율의 순이익 효과는 비용·부채·헤지에 따라 달라진다."})
+        rule = ("숫자는 제공된 비교 기준을 지키세요. 제공 자료만으로 성립하지 않거나 인과를 확정하는 "
+                "주장의 id를 reject_ids에 넣으세요. 조건부 설명을 관측된 사실로 바꾸지 마세요.")
     elif employee == "data":
         question = f"의사결정 {cutoff}. 제공 표본의 결함을 판별하세요."
         tick = "T" + str(rng.randint(100, 999))

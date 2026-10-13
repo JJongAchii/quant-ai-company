@@ -1,0 +1,1605 @@
+{
+  "proposal": null,
+  "bundle": {
+    "edition": {
+      "id": "5c744d96-20fe-589c-a3ae-4710aae2ddbc",
+      "day": "2026-09-23",
+      "kind": "am",
+      "due_at": "2026-09-23T07:30:00+09:00",
+      "starts_at": "2026-09-23T06:50:00+09:00",
+      "cutoff": "2026-09-23T07:10:00+09:00",
+      "expires_at": "2026-09-23T08:30:00+09:00",
+      "us_session": "2026-09-22",
+      "kr_session": "2026-09-23",
+      "previous_us_session": "2026-09-21",
+      "previous_kr_session": "2026-09-22",
+      "weekly": null
+    },
+    "documents": [
+      {
+        "id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+        "url": "https://www.yna.co.kr/view/AKR20260923009351075",
+        "title": "美-이란 관계 주시하며 숨죽인 뉴욕증시…기술주 약진 속 혼조세(종합)",
+        "publisher": "연합뉴스",
+        "kind": "media",
+        "origin_group": "yonhap",
+        "content": "김경윤기자\n국제유가 5거래일 연속 하락으로 증시 견인…샌디스크↑·우버↓ 희비 엇갈려\n이미지 확대\n뉴욕증권거래소(NYSE)\n[UPI=연합뉴스. 재판매 및 DB 금지]\n(로스앤젤레스=연합뉴스) 김경윤 특파원 = 유엔총회에서 마주한 미국과 이란의 행보를 시장이 예의주시하는 가운데 뉴욕증시 3대 지수가 혼조세로 마무리됐다.\n22일(현지시간) 기술주 중심의 나스닥 종합지수는 전장보다 122.18포인트(0.45%) 오른 27,244.28로 마감하며 종가 기준으로 사상 최고치를 경신했다.\n스탠더드앤드푸어스(S&P) 500지수는 전장보다 0.06포인트(0.0%) 내린 7,764.64로 거의 변동이 없었고, 다우존스30 산업평균지수 종가는 185.14포인트(0.36%) 내린 51,863.69였다.\n이미지 확대\n도널드 트럼프 미국 대통령\n[AFP=연합뉴스. 재판매 및 DB 금지]\n이날 뉴욕 유엔총회에서는 시장이 주목할만한 발언이 이어졌다.\n도널드 트럼프 미국 대통령 뉴욕 유엔총회에서 기자들과 만나 \"(이란과의 회담이) 아주 좋은 회담이었다\"며 \"매우 생산적인 회담을 했으며, 아주 가까운 시일 안에 추가 회담이 예정돼 있다\"고 말했다.\n이보다 앞서 트럼프 대통령은 기조연설에서 \"중대한 결정을 내려야 한다\"며 이란과의 합의와 공격 가능성을 동시에 거론하기도 했다.\n이외에도 이란이 미국의 군사적 압박 완화를 조건으로 7일 이내 호르무즈 해협 재개방안을 제안했다는 보도도 나왔다.\n원유 투자자들은 일일이 반응하기보다는 가시적인 공급 회복에 주목해 전날의 기조를 이어갔다.\n브렌트유 11월물과 서부 텍사스산 원유(WTI) 10월물은 각각 1.1%, 1.2% 내리며 배럴당 100달러 아래서 거래됐고, 주식 시장을 떠받치는 재료가 됐다.\n이미지 확대\nAI 에이전트\n[로이터=연합뉴스. 재판매 및 DB 금지]\n인공지능(AI) 관련주의 약진도 이어졌다.\n메타의 AI 어시스턴트 '뮤즈'가 소비자들에게 좋은 반응을 얻으면서 전날에 이어 반도체 기업 주가가 큰 폭으로 올랐다. 샌디스크 주가는 6.8%, 마이크론은 5% 뛰었다.\n뮤즈는 이메일 작성부터 예약, 일정 관리 등 비서 역할을 할 수 있는 AI 서비스다.\n반면, 뮤즈가 기존 서비스를 대체할 가능성이 커지면서 우버와 리프트, 익스피디아 등 소비자를 상대로 하는 기술주는 주춤하는 모습을 보였다.\nS&P 500지수에 포함된 차량공유 서비스 우버의 주가는 이날 1.3%, 리프트는 2.4% 내렸다.\nheeva@yna.co.kr\n제보는 카카오톡 okjebo\n<저작권자(c) 연합뉴스,\n무단 전재-재배포, AI 학습 및 활용 금지>\n2026년09월23일 06시44분 송고\n#혼조세\n#뉴욕증시\n공유하기\nURL이 복사되었습니다.\n본문 글자 크기 조정\n제보",
+        "published_at": "2026-09-22T21:44:03Z",
+        "retrieved_at": "2026-09-22T21:50:08.335144Z",
+        "sha256": "bef316935fc541283a6919599489a41fe5e73d553e949dcf3658f292ba72f270",
+        "registration": "yonhap-market",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.yna.co.kr/view/AKR20260923009351075",
+          "title": "美-이란 관계 주시하며 숨죽인 뉴욕증시…기술주 약진 속 혼조세(종합) | 연합뉴스",
+          "bylines": [
+            "김경윤"
+          ],
+          "redirects": [],
+          "content_type": "text/html;charset=utf-8",
+          "published_at": "2026-09-23T06:44:03+09:00",
+          "retrieved_at": "2026-09-22T21:50:08.335144+00:00",
+          "article_chars": 1335,
+          "last_modified": null,
+          "requested_url": "https://www.yna.co.kr/view/AKR20260923009351075",
+          "original_bytes": 164754,
+          "publisher_host": "www.yna.co.kr",
+          "original_sha256": "bef316935fc541283a6919599489a41fe5e73d553e949dcf3658f292ba72f270",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "article",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+        "url": "https://www.etoday.co.kr/news/view/2628308",
+        "title": "뉴욕증시, AI 수요 지속 기대에 상승⋯나스닥, 사상 최고치 [글로벌마켓 모닝 브리핑]",
+        "publisher": "이투데이",
+        "kind": "media",
+        "origin_group": "etoday",
+        "content": "▲미국 뉴욕증권거래소(NYSE)에서 트레이더들이 근무하고 있다. (뉴욕/UPI연합뉴스)\n뉴욕증시 마감\n뉴욕증시는 AI 관련주가 급등하자 상승했다.\n21일(현지시간) 뉴욕증권거래소에서 다우지수는 전 거래일 대비 366.19포인트(0.7%) 오른 5만2048.83에 마감했다. S&P500지수는 114.20포인트(1.5%) 오른 7764.70, 기술주 중심의 나스닥지수는 599.55포인트(2.3%) 상승한 2만7122.09에 거래를 마쳤다. 나스닥지수는 종가 기준 사상 최고치를 경신했다.\n주요 종목으로는 마이크로소프트가 1.59% 상승했고 애플은 0.85% 올랐다. 엔비디아는 2.30%, 테슬라는 3.03% 상승했다.\n특히 AI주가 강세를 보였다. 인텔은 12.14% 상승했고 AMD는 9.95% 올랐다. AMD는 시가총액이 1조 달러를 돌파했다. 퀄컴도 9.29% 올랐다.\n미국 안팎에서 AI 개발 속도 조절론과 인류멸망론으로 인해 여러 논쟁이 벌어지고 있지만, 여전히 AI가 기업 실적의 토대가 될 거라는 시장의 기대는 여전한 상황이다.\n이런 가운데 젠슨 황 엔비디아 최고경영자(CEO)는 AI가 인류를 멸종시킬 거라는 우려를 일축했다. 그는 전날 CBS뉴스 인터뷰에서 “2030년 세상이 종말할 리가 없다”며 “세상 종말 가능성은 0%”라고 말했다. 그는 “사람들을 겁주는 건 불필요하고 무책임한 행동”이라고 덧붙였다.\nAI주 강세와 더불어 국제유가와 국채 금리가 하락한 점도 주가를 떠받쳤다고 CNBC방송은 설명했다.\n미국 국채 금리는 하락했다. 뉴욕 채권시장에서 10년물 금리는 5bp(1bp=0.01%포인트) 하락한 4.95%를 기록했다.\n달러는 상승했다. 유로ㆍ달러 환율은 0.2% 하락한 1.1464달러, 파운드ㆍ달러 환율은 0.2% 내린 1.3367달러를 기록했다. 달러ㆍ엔 환율은 0.4% 상승한 157.43엔으로 집계됐다.\n국제유가\n국제유가는 미국과 이란이 대화를 통한 외교적 해법을 모색할 거라는 기대감에 급락했다.\n21일(현지시간) 뉴욕상업거래소에서 10월물 미국 서부 텍사스산 원유(WTI)는 전 거래일 대비 4.52달러(4.51%) 하락한 배럴당 95.78달러에 마감했다. 런던 ICE선물거래소에서 11월물 브렌트유는 3.53달러(3.4%) 내린 배럴당 100.34달러로 집계됐다.\n앞서 도널드 트럼프 미국 대통령은 폭스뉴스 인터뷰에서 ‘유엔총회 참석을 계기로 이란 대통령과 회담할 가능성’에 관한 질문에 “아마도 열려 있을 것”이라고 답했다. 트럼프 대통령은 “내가 궁금한 건 이란이라는 나라 전체를 진짜 날려버려야 하느냐는 것”이라며 “그들이 얌전히 행동하는 게 좋을 것”이라고 설명했다.\n뉴욕타임스(NYT)는 트럼프 행정부 관계자들을 인용해 사우디아라비아 요청에도 불구하고 트럼프 대통령이 당분간 친이란 성향의 후티 반군에 대한 폭격을 자제하기로 했다고 보도하기도 했다.\n한편 JP모건체이스는 보고서에서 사우디가 테러 공격을 받아 동서 송유관을 폐쇄했지만, 중동 지역의 원유 수출이 회복력을 보인다고 밝혔다. TD증권 역시 호르무즈 해협을 통한 수출이 꾸준히 늘고 있고 중동 지역 전반에서 유입되는 물량이 전쟁 이전 수준의 약 80%에 달했다고 전했다.\n뉴욕금값 마감\n뉴욕금값이 21일(현지시간) 미국 연방준비제도(Fedㆍ연준)의 추가 연속 금리 인상 가능성을 저울질하면서 1% 가까이 내렸다.\n뉴욕상품거래소(COMEX)에서 12월 인도분 금 선물 가격은 전 거래일 대비 41.00달러(0.93%) 하락한 온스당 4383.90달러에 마감했다. 4거래일 만에 아래로 향했다.\n국제유가가 100달러 아래로 떨어졌음에도 투자자들이 연준의 추가 연속 금리 인상 위험을 주시하면서 금값이 약세를 보였다는 분석이다.\n앞서 지난주 연준은 9월 연방공개시장위원회(FOMC)에서 만장일치로 기준금리를 3.75∼4.00%로 0.25%포인트(1bp=0.01%포인트) 인상했다. 함께 공개된 점도표에서는 올해 말 기준금리 중간값이 4.1%로 제시되며 연내 한 차례 추가 인상이 단행될 것임을 시사했다.\n오스탄 굴스비 미국 시카고연방준비은행 총재는 공급 충격이 반복되고 장기화하면 연준도 금리 인상 등으로 대응해야 한다고 봤다. 또 물가 상승에 수요 과열까지 가세했다면 연준이 예고한 한 차례 추가 인상만으로는 부족할 수 있다고 진단했다. 굴스비는 올해 FOMC 투표권이 없지만 내년에는 표결권을 갖는다.\n블룸버그통신에 따르면 굴스비 총재는 이날 런던에서 열린 ‘오피셜 통화 금융기관 포럼’에서 “공급 충격은 더 빈번하게 발생하고, 더 큰 충격을 주며, 더 오래 지속되고 있다”며 “인플레이션을 유발하는 공급 충격이 지속성을 띠기 시작하면 이를 일시적인 현상으로 보고 넘길 수 있다는 논리는 더 이상 성립하지 않는다”고 말했다. 이어 “이러한 충격과 그로 인해 발생하는 인플레이션에 대한 연준의 대응이 수요 과열에 대응할 때만큼 공격적일 필요는 없지만, 그렇다고 고통 없이 이뤄질 수 있는 것은 아니다”고 설명했다.\n그는 또 “물가 상승 압력이 수요 과열에서도 비롯되고 있다면 연준이 중간값 전망으로 제시한 한 차례의 추가 금리 인상만으로는 물가 안정을 회복하기에 충분하지 않을 수 있다”고 언급했다.\n전일에는 연준 내 대표적 매파 인사로 꼽히는 닐 카시카리 미국 미니애폴리스 연방준비은행(연은) 총재가 미국 경제의 인플레이션이 단순히 유가 상승에 따른 것이 아니라, 경제 전반의 모든 부문에서 지나치게 높은 수준이라고 진단했다.\n존 윌리엄스 뉴욕 연은 총재는 22일 뉴욕에서 열리는 2026년 미국 국채시장 콘퍼런스에서 연설할 예정이다.\n아울러 트레이더들에 따르면 런던 금시장 가격 결정 경매에서 매수 희망 물량의 4배에 달하는 금이 매물로 나온 것도 금값에 하락 압력을 가했다.\n글로벌X ETF의 저스틴 린 애널리스트는 “케빈 워시 연준 의장이 금리를 인상한 이후 연준 독립성을 둘러싼 논란은 대체로 지나갔고, 향후 금리 경로에 관한 지침도 전반적으로 예상에 부합했다”며 “이에 따라 금시장에는 뚜렷한 서사가 없고 단기적으로 새로운 촉매도 비교적 부족한 상황”이라고 말했다. 이어 “이처럼 별다른 재료가 없는 상황에서 금값은 유가 움직임과 전반",
+        "published_at": "2026-09-21T23:46:00Z",
+        "retrieved_at": "2026-09-21T23:48:54.055887Z",
+        "sha256": "5b5072967b2ef1cc450fe0adcf57c41f004106d6b7179b0b822077ff338ee60d",
+        "registration": "etoday-global",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.etoday.co.kr/news/view/2628308",
+          "title": "뉴욕증시, AI 수요 지속 기대에 상승⋯나스닥, 사상 최고치 [글로벌마켓 모닝 브리핑] - 이투데이",
+          "bylines": [
+            "배준호"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-22T08:46:00+09:00",
+          "retrieved_at": "2026-09-21T23:48:54.055887+00:00",
+          "article_chars": 3254,
+          "last_modified": null,
+          "requested_url": "https://www.etoday.co.kr/news/view/2628308",
+          "original_bytes": 144802,
+          "publisher_host": "www.etoday.co.kr",
+          "original_sha256": "5b5072967b2ef1cc450fe0adcf57c41f004106d6b7179b0b822077ff338ee60d",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "articleBody",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+        "url": "https://www.yna.co.kr/view/AKR20260922056200002",
+        "title": "한은 \"금리 0.25%p 오르면 가계 3.3조·기업 3.7조 이자부담↑\"",
+        "publisher": "연합뉴스",
+        "kind": "media",
+        "origin_group": "yonhap",
+        "content": "이도흔기자\n\"기준금리 인상, 자산가격 상승세 제약해 금융취약성 완화\"\n\"대출금리 5개월, 연체율 15개월 뒤 가장 크게 반응\"\n이미지 확대\n한국은행\n[연합뉴스 자료사진]\n(서울=연합뉴스) 이도흔 기자 = 한국은행이 최근 기준금리 인상이 가계부채 누증과 수도권 주택가격 상승 등에 따른 금융취약성을 완화하는 데 기여할 것으로 전망했다.\n다만 금리 인상에 따른 대출금리 상승은 시차를 두고 차주의 이자 부담과 연체 위험을 높일 수 있다고 봤다.\n한은은 23일 발표한 금융안정상황 보고서에서 기준금리 인상이 자산가격 상승세를 제약해 금융취약성 완화에 도움이 될 수 있다고 밝혔다.\n금융취약성지수(FVI)는 주택가격 등 자산가격을 중심으로 상승세를 보이고 있다. FVI는 2024년 1분기 37.6에서 올해 2분기 46.5로 9분기째 꾸준히 상승했다.\n그러나 한은은 금리 인상이 차입 유인과 위험 선호를 약화시켜 주택가격 상승 기대를 낮추는 효과가 있다고 봤다.\n실제 과거 통화정책 긴축 전환 이후 FVI는 시차를 두고 자산가격 부문을 중심으로 하락하는 모습을 보였다.\n기준금리 인상 후 8분기가 지나면 신용지수는 1.3, 자산가격 지수는 4.5 떨어지는 것으로 나타났다.\n장정수 부총재보는 \"올해 2분기 FVI는 장기평균수준으로 올랐고, 3분기에도 상승세가 이어질 것으로 추정된다\"면서도 \"7, 8월 연속 금리 인상에 나선 점과 정부가 부동산 대책을 발표한 점 등이 FVI 상승 제약 요인으로 작용할 것으로 보인다\"고 했다.\n이미지 확대\n[한국은행 제공. 재판매 및 DB 금지]\n다만, 금리 인상은 시장금리 상승을 통해 차주의 이자 부담을 키우는 부작용도 있다.\n특히 가계대출 관리 강화와 생산적 금융을 통한 기업대출 확대 정책 등이 맞물리면서 가계대출 금리가 기업대출 금리보다 크게 상승했다.\n지난 5월 연 4.31% 수준이었던 대출금리는 6월 4.34%, 7월 4.37%로 올랐다.\n한은은 기준금리 인상 이후 대출금리는 약 5개월 뒤, 은행 연체율은 15개월 뒤 가장 크게 반응하는 것으로 추정됐다.\n임광규 금융안정국장은 \"금리가 0.25% 오를 경우 가계는 3조3천억원, 기업은 3조7천억원 정도 이자부담이 늘어난다\"고 설명했다.\n가계의 평균적인 대응 여력은 과거 인상기보다 양호한 편이다.\n변동금리대출 비중은 2021년 7월 말 68.4%에서 2026년 6월 말 56.1%로 하락했고, 가계 취약차주 비중 역시 6∼7% 내외의 비교적 낮은 수준을 유지하고 있다.\n기업은 상대적으로 부담이 크다. 부채비율과 이자보상배율은 대체로 장기평균 수준이지만 연체율과 변동금리대출 비중이 과거 인상기보다 높다.\n이에 한계기업 비중도 24년 4분기 17.1%에서 지난해 4분기 19.1%까지 올랐다.\n다만 최근 경기 개선과 기업대출 확대 유인에 따른 가산금리 부담 완화가 금리 상승 압력을 일부 상쇄할 것으로 한은은 예상했다.\n한은은 \"상환능력이 떨어지는 취약부문에는 대출금리 상승의 부정적 영향이 상대적으로 빠르고 크게 나타날 수 있다\"며 \"취약부문의 연체 증가가 신용도 하락과 차환조건 악화로 인한 추가 연체로 이어지는 악순환이 나타날 가능성을 유의해야 한다\"고 밝혔다.\n임 국장은 \"통화정책과 거시건전성 정책은 상호보완적으로 운용해야 하고, 금리가 오르면서 금융불안이 높아지는 부분은 재정정책을 통해 보완적인 정책 공조가 이뤄져야 한다\"고 강조했다.\nleedh@yna.co.kr\n제보는 카카오톡 okjebo\n<저작권자(c) 연합뉴스,\n무단 전재-재배포, AI 학습 및 활용 금지>\n2026년09월22일 11시00분 송고\n#한국은행\n공유하기\nURL이 복사되었습니다.\n본문 글자 크기 조정\n제보",
+        "published_at": "2026-09-22T02:00:46Z",
+        "retrieved_at": "2026-09-22T02:07:20.917493Z",
+        "sha256": "dca060280cc195e17edbed62fc23f1965fac4d476979e18c0c46a7c32b24cbea",
+        "registration": "yonhap-economy",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.yna.co.kr/view/AKR20260922056200002",
+          "title": "한은 \"금리 0.25%p 오르면 가계 3.3조·기업 3.7조 이자부담↑\" | 연합뉴스",
+          "bylines": [
+            "이도흔"
+          ],
+          "redirects": [],
+          "content_type": "text/html;charset=utf-8",
+          "published_at": "2026-09-22T11:00:46+09:00",
+          "retrieved_at": "2026-09-22T02:07:20.917493+00:00",
+          "article_chars": 1782,
+          "last_modified": null,
+          "requested_url": "https://www.yna.co.kr/view/AKR20260922056200002",
+          "original_bytes": 163934,
+          "publisher_host": "www.yna.co.kr",
+          "original_sha256": "dca060280cc195e17edbed62fc23f1965fac4d476979e18c0c46a7c32b24cbea",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "article",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf",
+        "url": "https://www.yna.co.kr/view/AKR20260923003500072",
+        "title": "美연준 인사 '인플레 경고' 잇따라…\"더 긴축적 금리가 도움\"",
+        "publisher": "연합뉴스",
+        "kind": "media",
+        "origin_group": "yonhap",
+        "content": "김연숙기자\n콜린스 \"인플레 지속 가능성 커져\"…바킨 \"물가 압력, 일시 요인 아냐\"\n윌리엄스 \"금리 통제 수단 잘 작동…변화 맞춰 미세조정 가능\"\n이미지 확대\n수전 콜린스 미국 보스턴 연방준비은행(연은) 총재\n[로이터=연합뉴스 자료사진. 재판매 및 DB 금지]\n(뉴욕=연합뉴스) 김연숙 특파원 = 미국 연방준비제도(Fed·연준) 고위 인사들이 지난주 연준의 기준금리 인상 이후 물가 안정과 금융 시스템의 구조적 안정을 강조하는 발언을 잇달아 내놨다.\n수전 콜린스 미국 보스턴 연방준비은행(연은) 총재는 22일(현지시간) 링크트인에 올린 글에서 \"현재 가용한 모든 정보를 고려할 때, 물가상승률이 2%를 상당히 웃도는 수준으로 지속될 시나리오의 가능성이 커졌다고 본다\"고 진단했다.\n콜린스 총재는 \"물가 상승 압력이 커졌지만, 노동 시장 여건은 전반적으로 견조해 보이며 실업률 또한 낮은 수준을 유지하고 있다\"고 설명했다.\n그는 이어 \"노동시장이 보다 안정적인 기반을 갖춘 만큼, 통화정책은 물가 안정으로의 시의적절한 복귀에 초점을 맞출 수 있게 됐다\"고 적었다.\n콜린스 총재는 \"특히 지난 5년 반 동안 물가상승률이 지나치게 높았던 점을 고려하면 더욱 그렇다\"며 \"다소 더 긴축적인 연방기금금리는 물가상승률이 목표 수준으로 지속 가능하게 복귀하도록 하는 데 도움이 될 것\"이라고 강조했다.\n톰 바킨 리치먼드 연은 총재도 이날 볼티모어에서 열린 행사 연설에서 최근 미국 경제가 지속적인 소비와 탄탄한 성장세를 바탕으로 오히려 견조해지고 있다고 평가하면서도, 최근의 물가 상승세가 단순히 에너지나 관세 등 일시적인 공급망 요인에 그치지 않는다고 경고했다.\n바킨 총재는 \"인플레이션 관련 위험이 최대 고용과 관련된 위험보다 여전히 더 크다\"며 \"그것이 우리가 지난주 회의에서 기준금리를 인상한 이유\"라고 말했다.\n그는 다만 추가 금리 인상 필요성이나 횟수에 대해서는 \"앞으로 지켜봐야 할 것\"이라며 신중한 태도를 취했다.\n이미지 확대\n존 윌리엄스 미국 뉴욕 연방준비은행(연은) 총재\n[로이터=연합뉴스 자료사진. 재판매 및 DB 금지]\n연준의 정책 집행 체제와 시장 인프라 정비 작업에 대한 발언도 이어졌다.\n로이터 통신에 따르면 존 윌리엄스 뉴욕 연은 총재는 금리 통제 수단이 잘 작동하고 있다고 평가하면서도, 금융 시장 변화에 맞춰 미세 조정하는 것도 가능하다고 밝혔다.\n윌리엄스 총재는 이날 뉴욕에서 열린 미 국채 시장 콘퍼런스의 기조연설에서 현재의 단기 금리 관리 도구를 활용해 금융 시스템에 '충분한' 지급준비금을 공급하는 방식이 핵심 금융시장의 원활한 기능을 지원하고 금리를 통제하는 데 \"매우 효과적인 것으로 입증됐다\"고 말했다.\n그는 \"시간에 따라 시장이 진화하면서, 우리는 정책 도구가 본연의 기능을 수행하는 데 적합하도록 해야 한다\"며 시장 상황에 따른 유연한 보완 가능성도 열어뒀다.\n필립 제퍼슨 연준 부의장은 같은 행사에서 최근 연준이 비상 대출 창구(재할인창구)를 개선함으로써 금융기관들의 이용이 한층 수월해졌으며, 이는 시장 유동성과 금융 안정성 및 통화 정책 집행을 뒷받침한다고 말했다.\nnomad@yna.co.kr\n제보는 카카오톡 okjebo\n<저작권자(c) 연합뉴스,\n무단 전재-재배포, AI 학습 및 활용 금지>\n2026년09월23일 02시25분 송고\n#연준\n#기준금리\n공유하기\nURL이 복사되었습니다.\n본문 글자 크기 조정\n제보",
+        "published_at": "2026-09-22T17:25:01Z",
+        "retrieved_at": "2026-09-22T21:08:12.447912Z",
+        "sha256": "74538de268d7afca14cf497338a1deb0658b96c1c299cb5faba4d2480a0ee0bf",
+        "registration": "yonhap-international",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.yna.co.kr/view/AKR20260923003500072",
+          "title": "美연준 인사 '인플레 경고' 잇따라…\"더 긴축적 금리가 도움\" | 연합뉴스",
+          "bylines": [
+            "김연숙"
+          ],
+          "redirects": [],
+          "content_type": "text/html;charset=utf-8",
+          "published_at": "2026-09-23T02:25:01+09:00",
+          "retrieved_at": "2026-09-22T21:08:12.447912+00:00",
+          "article_chars": 1654,
+          "last_modified": null,
+          "requested_url": "https://www.yna.co.kr/view/AKR20260923003500072",
+          "original_bytes": 164511,
+          "publisher_host": "www.yna.co.kr",
+          "original_sha256": "74538de268d7afca14cf497338a1deb0658b96c1c299cb5faba4d2480a0ee0bf",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "article",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "f4387486e1fa6d90c353e52e06b53cb2778929fb",
+        "url": "https://www.etoday.co.kr/news/view/2628820",
+        "title": "뉴욕증시, 미ㆍ이란 ‘3시간 협상’에도 혼조…나스닥 0.45%↑[상보]",
+        "publisher": "이투데이",
+        "kind": "media",
+        "origin_group": "etoday",
+        "content": "▲뉴욕증권거래소에서 16일(현지시간) 트레이더가 주가를 살피고 있다. 뉴욕/AP연합뉴스\n뉴욕증시가 22일(현지시간) 혼조세를 보였다. 미국과 이란의 3시간 협상에도 뚜렷한 진전이 확인되지 않으면서 중동 정세를 둘러싼 불확실성이 투자심리를 눌렀다. 다우지수는 하락한 반면 기술주 중심의 나스닥지수는 이틀 연속 사상 최고치를 경신했다.\n이날 다우지수는 전장보다 85.14포인트(0.36%) 내린 5만1863.69에 거래를 마쳤다. S&P500지수는 전 거래일 대비 0.6포인트(0.0%) 내린 7764.64에, 나스닥지수는 전장보다 122.18포인트(0.45%) 뛴 2만7244.28에 장을 끝냈다.\n도널드 트럼프 미국 대통령이 이날 유엔총회 연설에서 이란과의 전쟁 종식을 위한 합의 가능성을 언급한 데 이어 미국과 이란 대표단이 약 3시간 동안 협상했다는 사실을 공개했지만 시장의 경계심을 완전히 해소하지는 못했다.\n그는 유엔 총회의 일반 토론 연설에서 11월 미국 중간선거 직후 전쟁이 종결될 것이라는 견해를 나타냈다. 또한 회담을 “매우 좋았다”고 평가하고 추가 회담이 가까운 시일 안에 열릴 것이라고 밝혔으나 구체적인 내용은 공개하지 않았다.\n이에 투자자들은 미·이란 협상의 향방을 지켜보며 최근 상승폭이 컸던 종목을 중심으로 차익 실현에 나섰다. 스티브 소스닉 인터랙티브브로커스 수석전략가는 “장세에 한숨 돌리는 분위기가 감지된다”고 말했다.\n시장에서는 당분간 중동 정세가 증시의 핵심 변수로 작용할 것이라는 전망이 나온다. 세븐스 리포트의 톰 에세이는 “미국과 이란의 휴전 협상에서 진전이 확인될 경우 국제유가와 국채금리가 추가로 하락하고 주가는 상승할 수 있다”고 말했다.\nAI 관련주는 강세를 이어갔다. 마크 해켓 네이션와이드의 수석 시장 전략가는 “하이테크주에 대한 투자와 열기가 되살아났다. 그 자금을 어딘가에서 조달해야 한다”고 지적했다. 금융주가 하이테크주 상승을 위한 ‘자금 공급원’이 되고 있다고 짚었다.",
+        "published_at": "2026-09-22T21:51:00Z",
+        "retrieved_at": "2026-09-22T22:00:04.513283Z",
+        "sha256": "8953b47836114d5fc7c1a042e8972ed24483faf1bbb2e1c88230d2cb10304504",
+        "registration": "etoday-global",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.etoday.co.kr/news/view/2628820",
+          "title": "뉴욕증시, 미ㆍ이란 ‘3시간 협상’에도 혼조…나스닥 0.45%↑[상보] - 이투데이",
+          "bylines": [
+            "변효선"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-23T06:51:00+09:00",
+          "retrieved_at": "2026-09-22T22:00:04.513283+00:00",
+          "article_chars": 966,
+          "last_modified": null,
+          "requested_url": "https://www.etoday.co.kr/news/view/2628820",
+          "original_bytes": 141247,
+          "publisher_host": "www.etoday.co.kr",
+          "original_sha256": "8953b47836114d5fc7c1a042e8972ed24483faf1bbb2e1c88230d2cb10304504",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "articleBody",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "76c87a7da794dadc1beffc3c11122d11392e15fc",
+        "url": "https://www.etoday.co.kr/news/view/2628816",
+        "title": "美ㆍ이란, 유엔서 3시간 회담⋯트럼프 “곧 추가 협상”",
+        "publisher": "이투데이",
+        "kind": "media",
+        "origin_group": "etoday",
+        "content": "“조만간 추가 회담…합의는 이란에도 유리”\n▲도널드 트럼프 미국 대통령이 지난달 31일(현지시간) 백악관 집무실에서 발언하고 있다. 워싱턴 D.C.(미국)/AP연합뉴스\n도널드 트럼프 미국 대통령이 미국과 이란 측이 22일(현지시간) 약 3시간 동안 회담했다고 밝혔다. 트럼프 대통령이 유엔총회 연설에서 이란을 향해 협상이 이뤄지지 않을 경우 강경 대응에 나설 수 있다고 경고한 직후 양측 간 접촉 사실이 공개되면서 약 7개월째 이어지고 있는 전쟁을 끝내기 위한 협상에 다시 속도가 붙을지 주목된다.\nAP통신에 따르면 트럼프 대통령은 이날 기자들과 만나 이란과 미국 측 회담에 대해 “아주 생산적인 회담을 했다”며 “회담은 세 시간가량 이어졌다”고 밝혔다. 이어 “아주 가까운 시일 내에 추가 회담이 열릴 것”이라며 “결과를 지켜보겠다. 분명한 것은 합의하는 것이 이란에도 유리할 것이라는 점이다”고 덧붙였다. 다만 구체적인 협상 내용이나 합의 여부에 대해서는 상세히 언급하지 않았다.\n이번 접촉은 트럼프 대통령이 유엔총회 연설에서 이란을 강하게 압박한 직후 이뤄졌다. 트럼프 대통령은 이날 연설에서 이란이 호르무즈 해협을 완전히 다시 열고 전쟁 종식 방안을 협상하는 문제를 미국 중간선거 이후로 미루기 위해 협상을 지연시키고 있다고 주장했다.\n그는 합의가 조속히 이뤄지지 않을 경우 이란에 대한 군사적 대응 수위를 높일 수 있다는 취지의 경고도 내놨다. 미국과 이란 간 전쟁은 지난 2월 말 시작돼 7개월 가까이 이어지고 있다.",
+        "published_at": "2026-09-22T21:50:00Z",
+        "retrieved_at": "2026-09-22T22:00:07.029197Z",
+        "sha256": "c2eceeeff6d69e09e22343283058866634130cb3841493fb64237777419fea7e",
+        "registration": "etoday-global",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.etoday.co.kr/news/view/2628816",
+          "title": "美ㆍ이란, 유엔서 3시간 회담⋯트럼프 “곧 추가 협상” - 이투데이",
+          "bylines": [
+            "변효선"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-23T06:27:00+09:00",
+          "retrieved_at": "2026-09-22T22:00:07.029197+00:00",
+          "article_chars": 743,
+          "last_modified": null,
+          "requested_url": "https://www.etoday.co.kr/news/view/2628816",
+          "original_bytes": 139064,
+          "publisher_host": "www.etoday.co.kr",
+          "original_sha256": "c2eceeeff6d69e09e22343283058866634130cb3841493fb64237777419fea7e",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "articleBody",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764907",
+        "title": "[뉴욕증시] AI·반도체 랠리…국제유가 대폭 하락",
+        "publisher": "SBS 뉴스",
+        "kind": "media",
+        "origin_group": "sbs",
+        "content": "뉴욕증시입니다.\n미 증시 3대지수가 일제히 상승했습니다.\n나스닥은 2.26% 오르며 사상 최대치를 경신했고 S&P500은 7천7백선을 회복했습니다.\n업종별로는 커뮤니케이션이 3%, 기술주가 2% 오른 반면 에너지는 유가 하락 여파로 2% 약세를 보였습니다.\n뉴욕증시가 인공지능과 반도체주의 랠리에 힘입어 일제히 상승했습니다.\n증시를 짓눌렀던 국제유가와 국채금리가 동반 하락하면서 투자 심리가 빠르게 안정을 찾았습니다.\n오늘 시장 관심은 중동발 리스크 '완화'에 쏠렸습니다.\n트럼프 미국 대통령이 이번 유엔 총회 기간 이란 대통령과의 회담 가능성을 내비치면서 지정학적 긴장감이 완화되었고, 원유 공급 회복 기대도 겹치면서 서부텍사스산원유와 브렌트유가 큰 폭으로 떨어졌습니다.\n유가 안정은 곧바로 인플레이션 압박을 낮춰 미 10년 만기 국채금리를 심리적 저항선인 5% 아래로 끌어내렸고, 고금리 타격을 입었던 성장주들에 강력한 호재로 작용했습니다.\n종목별로는 AI 반도체주의 활약이 돋보였는데요, 차세대 AI 인프라 확충과 연산 수요 급증에 힘입어 AMD가 10%에 가까운 급등세를 탔고 사상 처음으로 시가총액 1조 달러 고지를 밟았습니다.\n메타 역시 자체 개발한 AI 에이전트 '뮤즈'가 앱스토어 다운로드 1위를 석권하며 흥행 돌풍을 일으키자 11% 넘게 폭등했습니다.\n이번 주 열릴 미·중 정상회담과 중동 외교전의 결과에 따라 증시의 추가 상승 여부가 판가름날 전망입니다.",
+        "published_at": "2026-09-21T22:48:00Z",
+        "retrieved_at": "2026-09-21T22:53:49.739167Z",
+        "sha256": "02e2131d3d65f8ce52588523950cc708c97b272055d63bf55dabbd8101b8a375",
+        "registration": "sbs-economy",
+        "receipt": {
+          "ok": true,
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764907",
+          "title": "[뉴욕증시] AI·반도체 랠리…국제유가 대폭 하락",
+          "bylines": [
+            "SBS NEWS"
+          ],
+          "redirects": [],
+          "content_type": "text/html;charset=utf-8",
+          "published_at": "2026-09-22T07:48:58+09:00",
+          "retrieved_at": "2026-09-21T22:53:49.739167+00:00",
+          "article_chars": 712,
+          "last_modified": null,
+          "requested_url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008764907",
+          "original_bytes": 124735,
+          "publisher_host": "news.sbs.co.kr",
+          "original_sha256": "02e2131d3d65f8ce52588523950cc708c97b272055d63bf55dabbd8101b8a375",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "articleBody",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "4751ea68d07334f3b7c147b60b27dae2f9780c40",
+        "url": "https://www.cnbc.com/2026/09/22/trump-un-speech-today.html",
+        "title": "Trump slams Iran and Cuba, defends AI growth in boastful UN speech",
+        "publisher": "CNBC",
+        "kind": "media",
+        "origin_group": "cnbc",
+        "content": "Key Points\nPresident Donald Trump focused on a wide range of threats the U.S. faces from abroad during an address to the United Nations General Assembly.\nTrump defended his decision to launch a war against Iran and slammed Cuba as a \"failed state.\"\nHe also touted a new military deal with Greenland and Denmark.\nwatch now\nVIDEO37:4837:48\nPresident Trump: America is back and our country is stronger today than ever before\nSquawk on the Street\nPresident Donald Trump on Tuesday focused on a wide range of threats the U.S. faces from abroad during a frequently boastful address to the United Nations General Assembly in Manhattan.\nTrump, in a roughly 37-minute speech, also directly criticized the U.N. itself, and reaffirmed his view that the U.S. artificial intelligence industry should continue its rapid growth with few restraints or guardrails.\nTrump defended his decision to launch a war against Iran, accusing the Islamic Republic of seeking to erect a defensive missile arsenal before making a \"mad dash to a nuclear bomb.\"\nwatch now\nVIDEO4:4704:47\nTrump: I believe we’ll make a deal with Iran right after the election\nSquawk on the Street\nAs the war approaches its eighth month with no clear end in sight, Trump said he is poised to make a \"big decision\" on whether to make a deal or quickly \"annihilate\" the country.\nHe then predicted once again that a deal will be made \"right after\" the Nov. 3 midterm elections, claiming \"it doesn't make sense for them not to.\"\n\"They're waiting to see how I do in the midterm election,\" he said. \"What they don't realize is that I'm not running.\"\n\"I gave absolutely no credence and will not give credence to the election when it comes to Iran. It doesn't even enter my mind. The only thing that does is that Iran will never have a nuclear weapon,\" Trump said.\nAt a bilateral meeting with United Kingdom Prime Minister Andy Burnham after the speech, Trump added that he believes global energy prices, which have shot up due to the war and created upward inflation pressure, will retreat right after the conflict ends.\n\"I think as soon as the war's over, the numbers are going to come way down,\" Trump said, adding, \"pricing generally, because oil is the big thing.\"\nIn his address, Trump also touted a military deal with Greenland and Denmark, saying it gives the U.S. \"the complete ability to do what is necessary to defend the American continent, and also Europe and other places.\" That agreement was signed at a trilateral meeting later Tuesday morning.\nwatch now\nVIDEO3:0403:04\nTrump: We're going to encourage 'super intelligence,' not rein it in\nSquawk on the Street\nTrump called Cuba an \"absolutely failed state\" and accused it of \"coordinating with left-wing radicals and Communist networks\" in the U.S.\n\"Communism will never be coming to America, but freedom will be coming to Cuba,\" Trump told the assembled leaders. He said Secretary of State Marco Rubio is in negotiations with the island nation.\nAs he spoke, the Cuban delegation stood up and l",
+        "published_at": "2026-09-22T19:00:39Z",
+        "retrieved_at": "2026-09-22T19:06:15.369369Z",
+        "sha256": "026aa4b2257ceeadc4f2700ee374cbc197dcbe948dc25b532a1f5e8a7cf50c6e",
+        "registration": "cnbc-world",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.cnbc.com/2026/09/22/trump-un-speech-today.html",
+          "title": "Trump slams Iran and Cuba, boasts about record in UN speech",
+          "bylines": [
+            "Kevin Breuninger"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-22T14:24:57+0000",
+          "retrieved_at": "2026-09-22T19:06:15.369369+00:00",
+          "article_chars": 4983,
+          "last_modified": null,
+          "requested_url": "https://www.cnbc.com/2026/09/22/trump-un-speech-today.html",
+          "original_bytes": 833257,
+          "publisher_host": "www.cnbc.com",
+          "original_sha256": "026aa4b2257ceeadc4f2700ee374cbc197dcbe948dc25b532a1f5e8a7cf50c6e",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "main",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+        "url": "https://www.etoday.co.kr/news/view/2628228",
+        "title": "국제유가, 미국ㆍ이란 대화 기대감에 급락⋯WTI 4.51%↓ [상보]",
+        "publisher": "이투데이",
+        "kind": "media",
+        "origin_group": "etoday",
+        "content": "▲미국 텍사스에 펌프잭이 보인다. 텍사스/로이터연합뉴스\n국제유가는 미국과 이란이 대화를 통한 외교적 해법을 모색할 거라는 기대감에 급락했다.\n21일(현지시간) 뉴욕상업거래소에서 10월물 미국 서부 텍사스산 원유(WTI)는 전 거래일 대비 4.52달러(4.51%) 하락한 배럴당 95.78달러에 마감했다. 런던 ICE선물거래소에서 11월물 브렌트유는 3.53달러(3.4%) 내린 배럴당 100.34달러로 집계됐다.\n앞서 도널드 트럼프 미국 대통령은 폭스뉴스 인터뷰에서 ‘유엔총회 참석을 계기로 이란 대통령과 회담할 가능성’에 관한 질문에 “아마도 열려 있을 것”이라고 답했다. 트럼프 대통령은 “내가 궁금한 건 이란이라는 나라 전체를 진짜 날려버려야 하느냐는 것”이라며 “그들이 얌전히 행동하는 게 좋을 것”이라고 설명했다.\n뉴욕타임스(NYT)는 트럼프 행정부 관계자들을 인용해 사우디아라비아 요청에도 불구하고 트럼프 대통령이 당분간 친이란 성향의 후티 반군에 대한 폭격을 자제하기로 했다고 보도하기도 했다.\n한편 JP모건체이스는 보고서에서 사우디가 테러 공격을 받아 동서 송유관을 폐쇄했지만, 중동 지역의 원유 수출이 회복력을 보인다고 밝혔다. TD증권 역시 호르무즈 해협을 통한 수출이 꾸준히 늘고 있고 중동 지역 전반에서 유입되는 물량이 전쟁 이전 수준의 약 80%에 달했다고 전했다.",
+        "published_at": "2026-09-21T21:21:00Z",
+        "retrieved_at": "2026-09-21T21:22:30.270757Z",
+        "sha256": "c1a48d9f063012afe5f0f11cddc36ea468561921ff7c56b998e5ffea0991f7f8",
+        "registration": "etoday-global",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.etoday.co.kr/news/view/2628228",
+          "title": "국제유가, 미국ㆍ이란 대화 기대감에 급락⋯WTI 4.51%↓ [상보] - 이투데이",
+          "bylines": [
+            "고대영"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-22T06:21:00+09:00",
+          "retrieved_at": "2026-09-21T21:22:30.270757+00:00",
+          "article_chars": 665,
+          "last_modified": null,
+          "requested_url": "https://www.etoday.co.kr/news/view/2628228",
+          "original_bytes": 137238,
+          "publisher_host": "www.etoday.co.kr",
+          "original_sha256": "c1a48d9f063012afe5f0f11cddc36ea468561921ff7c56b998e5ffea0991f7f8",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "articleBody",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+        "url": "https://www.etoday.co.kr/news/view/2628817",
+        "title": "국제유가, 사우디 원유수출 회복 기대에 하락⋯미ㆍ이란 협상도 영향 [상보]",
+        "publisher": "이투데이",
+        "kind": "media",
+        "origin_group": "etoday",
+        "content": "▲베네수엘라 카비마스의 마라카이보 호수에 있는 원유 펌프잭이 보인다. 로이터연합뉴스\n국제유가가 22일(현지시간) 하락했다. 사우디아라비아의 원유 수출이 회복될 것이라는 관측과 미국과 이란 간 협상 진전 기대가 맞물리면서 국제유가가 하락했다.\n뉴욕상업거래소에서 10월 인도분 미국 서부텍사스산원유(WTI) 가격은 전장보다 1.2% 내린 배럴당 94.59에 장을 마감했다. 런던ICE선물거래소의 브렌트유 11월물 가격은 전장 대비 1.1% 하락한 배럴당 99.25달러에 거래를 끝냈다.\n블룸버그통신은 이날 공격을 받아 일시 가동이 중단된 사우디의 동서 송유관이 재가동을 준비하고 있다고 보도했다. 사우디는 26일까지 원유 공급을 일정 부분 회복한다는 계획인 것으로 전해졌다. 로이터통신도 이날 해당 송유관이 소량이나마 다시 가동되기 시작했으며 홍해 연안 항구를 통한 원유 수출이 이날 중 재개될 가능성이 있다고 보도했다.\n사우디 원유 수출 차질이 완화될 것이라는 기대가 커지면서 중동 지역의 에너지 공급을 둘러싼 우려도 다소 후퇴했다. 이에 원유 선물시장에서는 매도세가 우위를 보였다.\n미국과 이란 간 협상 재개 움직임도 유가에 하방 압력을 가했다. 도널드 트럼프 미국 대통령은 이날 유엔총회가 열리고 있는 미국 뉴욕에서 미국과 이란 대표단이 약 3시간 동안 협의를 진행했다고 밝혔다. 트럼프 대통령은 이번 협의에 대해 “매우 좋았다”고 평가하면서 가까운 시일 내 후속 협상이 열릴 예정이라고 말했다.\n앞서 트럼프 대통령은 이날 유엔총회 연설에서 “이란과 미국은 오는 11월 미국 중간선거 직후 합의에 도달할 것”이라고 주장했다.\n마이클 린치 스트래티직 에너지 앤드 이코노믹 리서치 대표는 “시장이 트럼프 대통령의 발언을 심각하게 받아들이지는 않았지만 이란과의 협상이 진전될 것이라는 기대가 선물가격을 끌어내렸다”고 설명했다.\n국제유가는 장중 한때 배럴당 92.4달러까지 떨어지며 근월물 기준 2주 만에 최저치를 기록했다.\n뉴욕 금 선물가격도 하락세를 이어갔다. 뉴욕상품거래소(COMEX)에서 거래가 가장 활발한 12월물 금 선물은 전 거래일보다 7.5달러(0.2%) 내린 온스당 4376.4달러에 거래를 마쳤다. 이날 미국 채권시장에서 장기금리가 상승하면서 이자를 지급하지 않는 금의 투자 매력이 떨어질 것이라는 인식이 매도세를 자극했다.",
+        "published_at": "2026-09-22T21:50:00Z",
+        "retrieved_at": "2026-09-22T22:00:01.916771Z",
+        "sha256": "25d9f47f307bda856fc66514df97d17bb5a3369ee166cac09d42e47e9045031b",
+        "registration": "etoday-global",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.etoday.co.kr/news/view/2628817",
+          "title": "국제유가, 사우디 원유수출 회복 기대에 하락⋯미ㆍ이란 협상도 영향 [상보] - 이투데이",
+          "bylines": [
+            "변효선"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-23T06:38:00+09:00",
+          "retrieved_at": "2026-09-22T22:00:01.916771+00:00",
+          "article_chars": 1140,
+          "last_modified": null,
+          "requested_url": "https://www.etoday.co.kr/news/view/2628817",
+          "original_bytes": 142255,
+          "publisher_host": "www.etoday.co.kr",
+          "original_sha256": "25d9f47f307bda856fc66514df97d17bb5a3369ee166cac09d42e47e9045031b",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "articleBody",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+        "url": "https://www.cnbc.com/2026/09/22/oil-iran-us-bessent-un-crude.html",
+        "title": "Oil prices reverse gains as United Nations General Assembly meeting lifts hopes for Iran war diplomacy",
+        "publisher": "CNBC",
+        "kind": "media",
+        "origin_group": "cnbc",
+        "content": "Key Points\nU.S. Treasury Secretary Scott Bessent told CNBC that all Iranian airlines will be shut down from Wednesday.\nInvestors are still keeping an eye on a possible diplomatic solution as Iranian President Masoud Pezeshkian is set to fly to the United Nations in New York.\nIn this article\n@LCO26X\nFuel tankers carrying Iraqi oil arrive at the coastal storage facilities of the Baniyas Oil Terminal in Tartus province, Syria, on September 13, 2026.\nHasan Belal | Anadolu | Getty Images\nOil rose Tuesday amid concerns of growing Iran-U.S. tensions, after U.S. Treasury Secretary Scott Bessent told CNBC that all Iranian airlines will be shut down from Wednesday.\nFutures for international benchmark Brent crude for November delivery gained 1.19% at $101.53 a barrel as of 3:58 a.m. ET. U.S. West Texas Intermediate futures for October advanced 0.7% at $96.45 per barrel, easing from a session high of $97.42.\nBrent\nBessent told CNBC that all Iranian airlines will be shut down from Wednesday. \"How do we do that? That if they land, you cannot provide them with fuel. You cannot provide them with landing services, you cannot sell them tickets, or you will be knocked out of the dollar system,\" Bessent said on CNBC's \"Squawk Box.\"\nInvestors are still eyeing a possible diplomatic solution to the Mideast conflict, following news that Iranian president Masoud Pezeshkian is set to fly to the United Nations in New York.\nPezeshkian will address the assembly and present Iran's positions on \"international developments,\" with a particular focus on its war with the U.S. and Israel, according to the country's semi-official Tasnim news agency. Talks with the leaders of several countries are also scheduled to take place Sept. 22 to 26, and 28, on the sidelines of the event.\nWTI\nAttention will likely remain focused on diplomatic developments, said Lukman Otunuga, head of market research at online brokerage FXTM.\n\"Confirmation of direct talks between Washington and Tehran could place additional selling pressure on prices by improving expectations for regional supply,\" Otunuga said.\n\"Conversely, Tehran has warned that renewed escalation would trigger a significant response, which could push crude prices higher,\" he added.\n—CNBC's Anniek Bao contributed to the report.\nChoose CNBC as your preferred source on Google and never miss a moment from the most trusted name in business news.",
+        "published_at": "2026-09-22T09:30:24Z",
+        "retrieved_at": "2026-09-22T09:30:42.364090Z",
+        "sha256": "9564061afae093c88d2f1288a8a4842c6576fe0dcd875db1fcdf76e30d927f0e",
+        "registration": "cnbc-world",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.cnbc.com/2026/09/22/oil-iran-us-bessent-un-crude.html",
+          "title": "oil, iran, us, bessent, UN, crude",
+          "bylines": [
+            "Justina Lee"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-22T04:22:20+0000",
+          "retrieved_at": "2026-09-22T09:30:42.364090+00:00",
+          "article_chars": 2388,
+          "last_modified": null,
+          "requested_url": "https://www.cnbc.com/2026/09/22/oil-iran-us-bessent-un-crude.html",
+          "original_bytes": 766142,
+          "publisher_host": "www.cnbc.com",
+          "original_sha256": "9564061afae093c88d2f1288a8a4842c6576fe0dcd875db1fcdf76e30d927f0e",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "main",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "6dbf4493e26ac8a2f17dff96e4039bc24ef10966",
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008766841",
+        "title": "'합의' '전멸' 양자택일 압박…미-이란 3시간 회담",
+        "publisher": "SBS 뉴스",
+        "kind": "media",
+        "origin_group": "sbs",
+        "content": "<앵커>\n트럼프 미국 대통령이 유엔 총회 연설에서 이란에게는 합의 아니면 전멸이라는 선택지가 주어졌다고 압박했습니다. 유엔 총회가 진행되는 사이 미국과 이란 대표단은 직접 만나 3시간 가까이 회담을 진행했습니다.\n워싱턴에서 전병남 특파원입니다.\n<기자>\n유엔총회 연설장에 들어선 도널드 트럼프 미 대통령.\n38분 간의 연설에서 트럼프는 '합의'와 '전멸'이라는 양자택일의 선택지를 제시하며 이란을 강력하게 압박했습니다.\n[도널드 트럼프/미 대통령 : 저는 중대한 결정을 내려야 합니다. 이란을 재건해 과거보다 훨씬 더 위대한 나라를 만들 협상을 맺을까요, 아니면 신속하게 전멸시켜 다시는 사람들을 죽이고 다른 국가들을 파괴할 기회를 박탈해야 할까요.]\n트럼프는 이란의 핵무기 보유를 결코 용납하지 않을 것이라며 국제사회가 대 이란 경제 고립 작전에 동참해 달라고 촉구했습니다.\n[도널드 트럼프/미 대통령 : 우리가 단결한다면 머지않아 51년간 이어져 온 이란의 테러 위협에서 벗어난 세상을 보게 될 것입니다. 유가도 과거 그 어느 때보다 더 큰 폭으로 떨어질 겁니다.]\n인공지능 분야에서는 중국에 대한 우위를 강조하며 국제적인 규제 확대 움직임에 반대했습니다.\n4년 7개월 가까이 이어진 우크라이나 전쟁도 빨리 종전될 거라고 주장했습니다.\n이란 대표단은 트럼프 연설 도중 퇴장했는데, 이후 진행된 젤렌스키 우크라이나 대통령과의 회담 도중 트럼프 대통령은 미국과 이란 대표단이 뉴욕 유엔 본부에서 접촉했다고 밝혔습니다.\n[도널드 트럼프/미 대통령 : 회담은 3시간 동안 진행됐습니다. 아주 좋고 매우 생산적인 회의였습니다. 조만간 다음 회담도 예정되어 있습니다.]\n트럼프는 합의하는 것이 이란에 분명히 유리하다며 중간선거 직후 합의가 성사될 거라고 전망했습니다.\n이란 국영 IRIB 방송도 관련 사실을 확인하며 \"호르무즈 해협 재개방을 위한 이란의 조건을 전달하기 위한 목적의 회담\"이라고 보도했습니다.\n반면 이란 군부는 \"트럼프 발언은 국내 정치 선전용\"이라며 강력한 군사적 보복을 예고했습니다.\n한편 오늘(23일) 트럼프 연설에서 대북 메시지는 포함되지 않았습니다.\n만약 트럼프가 북미 대화 재개 의지를 여전히 갖고 있다면 모레 열릴 미중 정상회담에서 시진핑 중국 국가주석에게 관련 협조를 구할 것으로 전망됩니다.\n(영상취재 : 박은하, 영상편집 : 정성훈, 디자인 : 심수현)",
+        "published_at": "2026-09-22T21:18:00Z",
+        "retrieved_at": "2026-09-22T21:29:44.404353Z",
+        "sha256": "c62c017ae7f87dc44e727010c112b2940227488226567eeb6318f1fc0a25a51e",
+        "registration": "sbs-world",
+        "receipt": {
+          "ok": true,
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008766841",
+          "title": "'합의' '전멸' 양자택일 압박…미-이란 3시간 회담",
+          "bylines": [
+            "전병남 기자"
+          ],
+          "redirects": [],
+          "content_type": "text/html;charset=utf-8",
+          "published_at": "2026-09-23T06:18:07+09:00",
+          "retrieved_at": "2026-09-22T21:29:44.404353+00:00",
+          "article_chars": 1164,
+          "last_modified": null,
+          "requested_url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008766841",
+          "original_bytes": 131071,
+          "publisher_host": "news.sbs.co.kr",
+          "original_sha256": "c62c017ae7f87dc44e727010c112b2940227488226567eeb6318f1fc0a25a51e",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "articleBody",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "d28b9c42f8e81f1f69abcafd2dbff333da1d9e44",
+        "url": "https://www.bbc.co.uk/news/articles/c52e0ywl9pr7o",
+        "title": "Trump tells UN he has 'big decision' on whether to 'annihilate' Iran or make peace deal",
+        "publisher": "BBC News",
+        "kind": "media",
+        "origin_group": "bbc",
+        "content": "Figure caption,\nWatch: Trump threatens to 'annihilate' Iran if no deal reached\nByBernd Debusmann Jr, Khashayar Joneidi, Sarah Smith and Nada Tawfik\nUnited Nations General Assembly\nPublished\n22 September 2026, 19:48 BST\nUpdated 1 hour ago\nPresident Donald Trump has told the United Nations General Assembly he faces a \"big decision\" on whether to strike Iran again or pursue a peace deal.\nA single member of Iran's delegation watched on during the president's speech in New York, in which he said he could \"annihilate\" the Islamic Republic if the conflict went unresolved.\nBefore a standing-room-only audience, Trump also rejected \"global government\", vowed to broker peace between Russia and Ukraine and ensure the US wins the artificial intelligence race.\nHis tone contrasted with remarks earlier by UN Secretary General António Guterres, who warned global divisions were deepening and underscored the \"interdependence\" of the world's peoples.\nLive coverage of Trump at UN\nTrump's speech on Tuesday came on a day of high-level diplomacy at the United Nations. He's meeting more than a dozen world leaders as wars in the Middle East and Ukraine test his foreign policy agenda.\nHe began by touting his accomplishments on the economy, immigration, the border and tackling violent crime, in remarks that sounded more pitched to voters in November's US midterm elections than the diplomats in Manhattan.\nHe spent much of his address justifying the war with Iran, which has spiked global oil prices while dragging down his approval ratings since the US and Israel launched the military action in February.\nImage source, EPA\nImage caption,\nTrump also signed a deal with Denmark to beef up US military presence on Greenland\nTrump argued that the conflict had prevented Tehran from obtaining a nuclear weapon and demonstrated the value of what he described as peace through strength - ultimatums rather than deal-making or compromise.\n\"Will a deal be made with Iran that lets them rebuild and create a far greater country than it ever was before?\" he said.\n\"Or do I annihilate the Islamic Republic and do it quickly, never giving them a chance to kill and destroy people and countries again? Do I drive them into hell?\"\nTrump said he believed an Iran deal, which has so far eluded him, would come right after November's elections.\nThe remarks were indicative of his foreign-policy strategy of coercive diplomacy - threatening overwhelming force while keeping negotiations open.\nTrump later told reporters that American officials had had a \"very productive\" three-hour meeting with the Iranian delegation on the sidelines of the general assembly.\nIran state TV confirmed that Foreign Minister Abbas Araghchi had met US Special Envoy to the Middle East Steve Witkoff, although there was no comment from officials in Tehran.\nIn his speech, Trump once again predicted his diplomacy would end Russia's war in Ukraine, which has shown little sign of letting up as the two sides trade tit-for-tat missile and drone ",
+        "published_at": "2026-09-22T20:19:08Z",
+        "retrieved_at": "2026-09-22T21:50:11.031756Z",
+        "sha256": "bc2e622d41cf293862c05c287ed7d4b065cffa78f60e6a83e39ebe19dc3c1188",
+        "registration": "bbc-world",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.bbc.co.uk/news/articles/c52e0ywl9pr7o",
+          "title": "Trump tells UN he has 'big decision' on whether to 'annihilate' Iran or make peace deal - BBC News",
+          "bylines": [
+            "Bernd Debusmann Jr, Khashayar Joneidi, Sarah Smith and Nada Tawfik"
+          ],
+          "redirects": [],
+          "content_type": "text/html",
+          "published_at": "2026-09-22T18:48:23.828Z",
+          "retrieved_at": "2026-09-22T21:50:11.031756+00:00",
+          "article_chars": 5855,
+          "last_modified": null,
+          "requested_url": "https://www.bbc.co.uk/news/articles/c52e0ywl9pr7o",
+          "original_bytes": 444242,
+          "publisher_host": "www.bbc.co.uk",
+          "original_sha256": "bc2e622d41cf293862c05c287ed7d4b065cffa78f60e6a83e39ebe19dc3c1188",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "article",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "f6b2d1709b0c605a88e0c34b63e5ecc8ed649f69",
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008766814",
+        "title": "이란 매체 \"아라그치 외무, 유엔총회서 윗코프 미 특사와 회동\"",
+        "publisher": "SBS 뉴스",
+        "kind": "media",
+        "origin_group": "sbs",
+        "content": "▲ 스티브 위트코프 미국 중동특사와 아바스 아라그치 이란 외무부 장관\n아바스 아라그치 외무장관이 유엔총회를 계기로 미국의 중동 특사인 스티브 윗코프와 전격 회동했다고 이란 국영 IRIB 방송이 22일(현지시간) 보도했습니다.\nIRIB는 소식통을 인용해 아라그치 장관이 윗코프 특사의 만남 요청을 전격 수락했으며, 호르무즈 해협 재개방을 위한 이란의 조건을 전달하기 위한 목적이었다고 전했습니다.\n이 소식통은 \"막후 회동을 통해 이란의 확고한 입장이 미국 대표에게 가감 없이 전달됐다\"고 말했습니다.\nIRIB에 따르면 이란이 호르무즈 해협 재개방의 전제 조건으로 미국 측에 제시한 핵심 요구사항은 ▲ 해상 봉쇄의 즉각적인 해제 ▲ 동결된 이란 자산 전체의 즉각적인 반환(지급) ▲ 저항의 축이 얽힌 모든 전선에서의 전쟁 종식 등입니다.\n(사진=AP, 연합뉴스)",
+        "published_at": "2026-09-22T19:55:00Z",
+        "retrieved_at": "2026-09-22T20:08:54.292986Z",
+        "sha256": "89778f566f77d61a42bcf24070c7757726136043d3f9505f85d4cd96f6b1ab0f",
+        "registration": "sbs-world",
+        "receipt": {
+          "ok": true,
+          "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008766814",
+          "title": "이란 매체 \"아라그치 외무, 유엔총회서 윗코프 미 특사와 회동\"",
+          "bylines": [
+            "박재현 기자"
+          ],
+          "redirects": [],
+          "content_type": "text/html;charset=utf-8",
+          "published_at": "2026-09-23T04:55:54+09:00",
+          "retrieved_at": "2026-09-22T20:08:54.292986+00:00",
+          "article_chars": 424,
+          "last_modified": null,
+          "requested_url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008766814",
+          "original_bytes": 118982,
+          "publisher_host": "news.sbs.co.kr",
+          "original_sha256": "89778f566f77d61a42bcf24070c7757726136043d3f9505f85d4cd96f6b1ab0f",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "articleBody",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb",
+        "url": "https://www.cnbc.com/2026/09/22/trump-diesel-export-ban-urkaine-russia-iran.html",
+        "title": "Trump administration is examining whether a diesel export ban is feasible, Treasury Secretary says",
+        "publisher": "CNBC",
+        "kind": "media",
+        "origin_group": "cnbc",
+        "content": "Key Points\nTreasury Secretary Scott Bessent said the Trump administration is considering a full or partial ban on diesel exports.\nPresident Donald Trump said he supports an export ban. \"I've said let's not send out the diesel. We make a lot of diesel,\" Trump said.\nwatch now\nVIDEO2:3202:32\nDow Jones Energy chief oil analyst: A diesel export ban would be short-term positive for prices, but would have worse long-term impact\nPower Lunch\nThe Trump administration is looking into whether implementing a diesel export ban would ease record high prices for the critical fuel, Treasury Secretary Scott Bessent said Tuesday.\n\"We're examining whether it's feasible in terms of the overall refining capacity and whether a full or partial ban would work,\" Bessent said at a bilateral meeting between President Donald Trump and Ukrainian President Volodymyr Zelenskyy at the United Nations.\nTrump said Tuesday that he's called for a diesel export ban \"within my people.\" The president said a decision would be made \"fast one way or another\" on whether to implement a ban.\n\"I've said let's not send out the diesel. We make a lot of diesel,\" Trump told reporters. Republican lawmakers like Sen. Chuck Grassley of Iowa have called for an export ban as high diesel prices hit farmers and truckers ahead of the November midterm elections.\nDiesel in the U.S. has surged to a record high $6.53 per gallon, about $2.84 more expensive than during the same period last year, according to data from AAA. In California, diesel costs $8.44 per gallon.\nFuel prices have jumped as the wars in Eastern Europe and the Middle East have slashed global refining capacity.\nUkraine's attacks on Russian refineries have forced Moscow to implement a diesel export ban. Refineries in the Middle East have also come under attack from Iran and its allies. And product exports through the Strait of Hormuz are constrained due to Iranian threats to tankers.\nU.S. refiners have jumped into the breach, ramping up diesel exports to help supply the world and take advantage of sky-high profit margins. Diesel cost around $207 a barrel Tuesday, more than $100 more expensive than the crude oil that is refined into the fuel.\nDiesel plays an essential role in the economy. It fuels the trucks and trains that deliver goods to market and the farm equipment that harvests crops. Higher diesel prices trickle down to consumers in their higher grocery bills and what they pay for consumer products.\nChoose CNBC as your preferred source on Google and never miss a moment from the most trusted name in business news.",
+        "published_at": "2026-09-22T19:40:11Z",
+        "retrieved_at": "2026-09-22T19:46:35.393994Z",
+        "sha256": "8da35484e0bb42262281f3e3c89d9fb6ceaac3d9fb78320409bf145d9a2840b9",
+        "registration": "cnbc-world",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.cnbc.com/2026/09/22/trump-diesel-export-ban-urkaine-russia-iran.html",
+          "title": "Trump examining diesel export ban, Treasury Secretary says",
+          "bylines": [
+            "Spencer Kimball"
+          ],
+          "redirects": [],
+          "content_type": "text/html; charset=utf-8",
+          "published_at": "2026-09-22T18:16:19+0000",
+          "retrieved_at": "2026-09-22T19:46:35.393994+00:00",
+          "article_chars": 2566,
+          "last_modified": null,
+          "requested_url": "https://www.cnbc.com/2026/09/22/trump-diesel-export-ban-urkaine-russia-iran.html",
+          "original_bytes": 777942,
+          "publisher_host": "www.cnbc.com",
+          "original_sha256": "8da35484e0bb42262281f3e3c89d9fb6ceaac3d9fb78320409bf145d9a2840b9",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "main",
+          "publication_time_basis": "page_metadata"
+        }
+      },
+      {
+        "id": "fd9fea4d91f006ff807a5234d4e563808c26e2bd",
+        "url": "https://www.bbc.co.uk/news/articles/c6dj4k98107do",
+        "title": "Ukraine anger as EU removes Russian oligarchs from sanctions list",
+        "publisher": "BBC News",
+        "kind": "media",
+        "origin_group": "bbc",
+        "content": "Image source, Reuters\nImage caption,\nUsmanov is described as having particularly close ties to President Putin\nByRobert Greenall\nPublished\n22 minutes ago\nThe European Union is to remove sanctions on two oligarchs imposed after Russia's full-scale invasion of Ukraine in 2022, according to reports, prompting anger in Ukraine.\nFrance had campaigned for Russian-Uzbek billionaire Alisher Usmanov to be taken off the list, citing \"national security concerns\". Luxembourg called for the removal of Russian-Israeli businessman Mikhail Fridman, who is suing the country for the release of frozen assets.\nLatvia initially opposed the deal but agreed to a compromise, part of which involved extending sanctions on nearly 3,000 other individuals and entities for three years.\nUkrainian officials said the move was \"unacceptable\" and sent the wrong signal to Moscow.\n\"Moscow is celebrating because it got what it wanted: a sense of impunity, the humiliation of the EU, and division among Europeans,\" Foreign Minister Andriy Sybiha said on X.\nHe urged all EU member states to instead announce national sanctions on the two individuals. Latvia has already said it would do so.\nKremlin spokesperson Dmitry Peskov earlier welcomed the prospect of the two oligarchs being taken off the list, claiming the EU's sanctions were illegal and all Russians should be removed.\nUsmanov founded USM Holding company, an investment group that owns iron, steel and copper suppliers, and the Megafon telecommunications company. He has in the past had ties with the English Premier League clubs Arsenal and Everton.\nThe EU froze his assets in 2022, describing him as \"a pro-Kremlin oligarch with particularly close ties to Russian president Vladimir Putin\". Usmanov said the decision was \"unfair\".\nIt has been reported that France's initiative was linked to a prospective prisoner release deal with Azerbaijan.\nImage source, Reuters\nImage caption,\nFridman has avoided condemning Putin outright for the war in Ukraine\nFridman, a Russian-Israeli citizen born in Ukraine, is the founder of the Alfa Group investment conglomerate, with key interests in energy and banking. The EU has described him as a top Russian financier and enabler of Putin's inner circle.\nFridman himself said at the time of Russia's full-scale invasion that the conflict should end as soon as possible, but avoided outright condemnation of President Putin.\nHis Russian-Latvian business partner Pyotr Aven was stripped of Latvia's highest civilian honour in 2022 for failing to condemn the invasion of Ukraine.\nThis may have influenced Latvia's opposition to the move, vetoing it in a vote by EU ambassadors on Monday.\nHowever, on Tuesday it changed its vote to an abstention as a compromise was reached. The new deal involved extending sanctions on some remaining 2,600 individuals and entities to three years. Until now, sanctions had to be renewed every six months.\nLatvian Prime Minister Andris Kulbergs also announced that France had agreed to start talks ",
+        "published_at": "2026-09-22T19:06:06Z",
+        "retrieved_at": "2026-09-22T19:28:39.820119Z",
+        "sha256": "dbd86a177af530c7b7961af7879f1b2e9a07d6aff72a186fde77131f5bc9d0ad",
+        "registration": "bbc-world",
+        "receipt": {
+          "ok": true,
+          "url": "https://www.bbc.co.uk/news/articles/c6dj4k98107do",
+          "title": "Ukraine anger as EU removes Russian oligarchs from sanctions list - BBC News",
+          "bylines": [
+            "Robert Greenall"
+          ],
+          "redirects": [],
+          "content_type": "text/html",
+          "published_at": "2026-09-22T19:06:06.531Z",
+          "retrieved_at": "2026-09-22T19:28:39.820119+00:00",
+          "article_chars": 3435,
+          "last_modified": null,
+          "requested_url": "https://www.bbc.co.uk/news/articles/c6dj4k98107do",
+          "original_bytes": 422820,
+          "publisher_host": "www.bbc.co.uk",
+          "original_sha256": "dbd86a177af530c7b7961af7879f1b2e9a07d6aff72a186fde77131f5bc9d0ad",
+          "content_truncated": false,
+          "excerpt_truncated": false,
+          "article_extraction": "article",
+          "publication_time_basis": "page_metadata"
+        }
+      }
+    ],
+    "source_coverage": {
+      "topic_sources": {
+        "market": [
+          "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+          "ccb3c80db4440c17ab55825873c042f6bbe24735",
+          "f4387486e1fa6d90c353e52e06b53cb2778929fb",
+          "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6"
+        ],
+        "macro_policy": [
+          "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+          "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf"
+        ],
+        "geopolitics": [
+          "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+          "f4387486e1fa6d90c353e52e06b53cb2778929fb",
+          "76c87a7da794dadc1beffc3c11122d11392e15fc",
+          "4751ea68d07334f3b7c147b60b27dae2f9780c40",
+          "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+          "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+          "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+          "6dbf4493e26ac8a2f17dff96e4039bc24ef10966",
+          "d28b9c42f8e81f1f69abcafd2dbff333da1d9e44",
+          "f6b2d1709b0c605a88e0c34b63e5ecc8ed649f69",
+          "fd9fea4d91f006ff807a5234d4e563808c26e2bd"
+        ],
+        "corporate": [
+          "ccb3c80db4440c17ab55825873c042f6bbe24735",
+          "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+          "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+          "4751ea68d07334f3b7c147b60b27dae2f9780c40"
+        ],
+        "cross_asset": [
+          "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+          "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+          "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+          "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+          "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb"
+        ]
+      },
+      "missing_topics": [],
+      "meaning": "Headline-based collection coverage only; the reviewer must assess materiality and omissions."
+    },
+    "collection_errors": [],
+    "morning_watchpoints": [],
+    "analyst_procedure": {
+      "employee": "market_brief",
+      "version": "2026-09-22.1",
+      "digest": "3f945a68b61dcc528fdf9dd5a24a9176ed710ccc2408c2088fef8ca1edcf25e2",
+      "procedure": "# Analyst — 애널리스트\n\n담당: 미국·한국 시장을 경제적 근거로 분석하고, 첫 메시지만 읽어도 그날의 시황과 핵심 변화를\n이해할 수 있는 브리핑 및 후속 답변을 만든다. 뉴스 선정의 기준은 변화의 중요도와 근거의 질이다.\n이 절차와 합성 사례 통과는 자격증·실제 전문가 역량·예측 정확도를 증명하지 않는다.\n\n## 분석 절차\n\n1. 미국/한국 거래일·자료 기준 시각·원문 발행일을 확인한다. 정규장, 시간외, 잠정 값과 관측 시점을\n   구분한다. 오래된 수치를 오늘 값으로 쓰거나 ETF를 지수로 바꾸지 않는다.\n2. 무엇이 새로 바뀌었는지 식별한다. 경제지표는 전기 대비 변화와 컨센서스 대비 차이를 구분하고\n   수정치·기저효과·계절조정·전월/전년 비교를 확인한다. 예상치가 없으면 서프라이즈를 단정하지 않는다.\n3. 중요한 사건마다 경제적 전달 경로를 제시한다. 정책/지표/기업 사건이 매출·마진·현금흐름,\n   할인율·위험 프리미엄, 자금조달·유동성, 수요·공급 중 무엇을 통해 어느 자산/업종에 영향을 주는지\n   구체적으로 설명한다. 근거 없는 중간 연결은 가설로 표시하고, 원인을 구분할 수 없으면 판단을 유보한다.\n4. 분야별로 필요한 관점을 선택한다. 금리는 명목/실질·기대 인플레이션·기간 프리미엄을, 주식은\n   이익 전망/밸류에이션·지수 기여도/상승 종목 분포를, 실적은 일회성/반복 이익·가이던스를,\n   환율은 환산 효과/수출입 비용·외화 부채를 구분한다. 유가·정책은 공급/수요와 시행 시점을 확인한다.\n   근거가 없는 세부 지표를 필수 칸을 채우기 위해 만들어 내지 않는다.\n5. 미국 사건을 한국 시장에 연결할 때 환율·업종별 수요·원가·자금조달 중 실제 연결 고리를 설명한다.\n   미국 지수가 올랐다는 이유만으로 한국 지수 상승을 예측하지 않는다. 영향의 시계는 당일/수일~수주/\n   수개월로 구분하며 개인의 보유 자산·투자 기간·위험 선호를 추정하지 않는다.\n6. 핵심 설명마다 그럴듯한 다른 설명을 검토한다. 반대 근거가 실제로 있으면 우선 다루고, 대안이\n   가설이면 가설이라고 쓴다. 가격과 뉴스가 동시에 움직였다는 사실만으로 인과관계를 확정하지 않는다.\n   '이미 반영됐다', '위험 선호가 회복됐다', '수급 때문에'라는 표현도 해당 증거가 필요하다.\n7. 어떤 관측이 현재 해석을 약화시키거나 바꿀지 정한다. 발표·시각이 확인되면 함께 적고,\n   막연한 '추가 모니터링'으로 끝내지 않는다. 근거 없는 목표가·수익률·시나리오 확률은 쓰지 않는다.\n8. 사실, 매체의 설명, 자체 가설과 불확실성을 구분한다. 근거를 인용한 짧은 분석 결론을 제공하며\n   숨겨진 사고과정은 요청하거나 노출하지 않는다. 숫자 계산은 도구/서비스 결과를 사용한다.\n\n## 읽기와 후속 점검\n\n- 본문은 핵심 결론 → 시장 전체 흐름 → 주요 숫자 → 주요 이슈와 배경 → 다음 확인할 일이다. 전문용어는 짧게 풀고\n  같은 사실을 반복하지 않는다. 다섯 가지 분석 소제목을 모든 이슈에 반복하지 않는다.\n- 핵심 세 줄은 본문을 대체하지 않는다. 시장·거시 정책·국제 정세·기업/업종·자산 간 흐름을 검토하고\n  중요한 사안은 최대 여섯 이슈까지 충분히 설명한다. 사건이 많은 날을 세 이슈로 잘라 내지 않는다.\n  확인된 사건과 배경, 지금 중요한 이유와 영향을 받는 대상을 자연스러운 문단으로 연결한다.\n- 검토자는 제공된 각 원문이 반영됐는지, 배경인지, 왜 중요하지 않은지 기록한다. 사실이 맞아도\n  중요한 사건을 빠뜨린 초안이나 제목만 늘어놓은 초안은 완성된 브리핑으로 통과시키지 않는다.\n- 결론을 바꿀 반대 근거는 본문에 반영한다. 상세 전달 경로·다른 설명·출처는 스레드에서 확인 가능하게 한다.\n- 아침 관찰의 원래 문장을 보존한다. 저녁의 결과가 판단을 바꿨다면 무엇 때문에 바뀌었는지 설명한다.\n  자료가 부족하면 판단 불가로 남기며, 조건부 전망이 맞았다는 것과 원인 설명이 입증됐다는 것을 구분한다.\n- 정기 작성/검토는 고정 입력과 지정 JSON 계약만 사용하며 도구를 호출하지 않는다. 대화에서는\n  제공된 원문을 read_source로 읽고, 최신 사실은 web_search/web_read 또는 finance_search/finance_read로\n  확인한다. 계산이 필요하면 calculate/finance_compute의 결과를 확인한다. 새 조회와 원래 기준 시각을 구분한다.\n- 정정은 같은 스레드에 원래 주장·바뀐 내용·근거·확인 시각을 남긴다. say에 실제 답을 적는다.\n- 전문역량 사례의 피드백은 실수 방지에 사용하며 시황 근거로 인용하지 않는다. 미측정 분야를 숙련으로\n  주장하지 않는다. 실제 평가 이력은 총괄의 staff_status에서 확인하며 합성 점수를 전문가 인증으로 바꾸지 않는다.\n- 발간 상태는 briefing_status의 영수증으로 확인한다. previewed/queued/uncertain은 전달 완료가 아니다.\n  자동 동료 위임·예약·거래·백테스트·모델 학습·설정 변경 권한은 없다. 사용자의 직접 멘션 또는\n  `금융전략 검토: 요청 내용`만 서비스가 금융전략 팀장에게 연결한다.\n",
+      "meaning": "Reviewed work procedure, not a qualification certificate or new tool permission."
+    },
+    "locked_observations": [],
+    "market_context": [],
+    "data_diagnostics": [
+      {
+        "error": "historical_current_lake_snapshot_not_available"
+      }
+    ],
+    "exchange_closes": {
+      "US": "2026-09-22T20:00:00+00:00",
+      "KR": "2026-09-23T06:30:00+00:00"
+    },
+    "evaluation": {
+      "mode": "actual_cached_originals",
+      "slack": "not_connected",
+      "scheduled_publication": false,
+      "snapshot_at": "2026-09-22T22:10:00+00:00",
+      "selection_version": 3
+    },
+    "quote_conflicts": []
+  },
+  "raw_proposal": {
+    "summary": [
+      {
+        "id": "summary_equities",
+        "evidence": [
+          {
+            "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+            "quote": "22일(현지시간) 기술주 중심의 나스닥 종합지수는 전장보다 122.18포인트(0.45%) 오른 27,244.28로 마감하며 종가 기준으로 사상 최고치를 경신했다."
+          },
+          {
+            "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+            "quote": "스탠더드앤드푸어스(S&P) 500지수는 전장보다 0.06포인트(0.0%) 내린 7,764.64로 거의 변동이 없었고, 다우존스30 산업평균지수 종가는 185.14포인트(0.36%) 내린 51,863.69였다."
+          }
+        ],
+        "text": "나스닥은 최고치를 경신했지만 S&P 500은 제자리, 다우는 하락했다. AI 강세가 시장 전체 상승으로 이어지지는 않았다.",
+        "kind": "fact"
+      },
+      {
+        "id": "summary_energy",
+        "evidence": [
+          {
+            "source_id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+            "quote": "사우디아라비아의 원유 수출이 회복될 것이라는 관측과 미국과 이란 간 협상 진전 기대가 맞물리면서 국제유가가 하락했다."
+          },
+          {
+            "source_id": "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+            "quote": "U.S. Treasury Secretary Scott Bessent told CNBC that all Iranian airlines will be shut down from Wednesday."
+          },
+          {
+            "source_id": "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb",
+            "quote": "Treasury Secretary Scott Bessent said the Trump administration is considering a full or partial ban on diesel exports."
+          }
+        ],
+        "text": "원유 공급 회복 기대는 비용 부담 완화에 우호적이다. 다만 이란 항공 제재와 미국의 경유 수출 제한 검토가 있어 에너지 물가 안정으로 단정하기 어렵다.",
+        "kind": "interpretation"
+      },
+      {
+        "id": "summary_korea",
+        "evidence": [
+          {
+            "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+            "quote": "메타의 AI 어시스턴트 '뮤즈'가 소비자들에게 좋은 반응을 얻으면서 전날에 이어 반도체 기업 주가가 큰 폭으로 올랐다."
+          },
+          {
+            "source_id": "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf",
+            "quote": "최근의 물가 상승세가 단순히 에너지나 관세 등 일시적인 공급망 요인에 그치지 않는다고 경고했다."
+          },
+          {
+            "source_id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+            "quote": "기업은 상대적으로 부담이 크다. 부채비율과 이자보상배율은 대체로 장기평균 수준이지만 연체율과 변동금리대출 비중이 과거 인상기보다 높다."
+          }
+        ],
+        "text": "한국에서는 반도체 수요 기대와 차입 비용 부담을 함께 봐야 한다. 유가 하락만으로 미국의 추가 긴축이나 국내 취약기업 위험이 해소됐다고 판단하기는 이르다.",
+        "kind": "interpretation"
+      }
+    ],
+    "overview": [
+      {
+        "id": "overview_session",
+        "evidence": [
+          {
+            "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+            "quote": "22일(현지시간) 기술주 중심의 나스닥 종합지수는 전장보다 122.18포인트(0.45%) 오른 27,244.28로 마감하며 종가 기준으로 사상 최고치를 경신했다."
+          },
+          {
+            "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+            "quote": "스탠더드앤드푸어스(S&P) 500지수는 전장보다 0.06포인트(0.0%) 내린 7,764.64로 거의 변동이 없었고, 다우존스30 산업평균지수 종가는 185.14포인트(0.36%) 내린 51,863.69였다."
+          },
+          {
+            "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+            "quote": "21일(현지시간) 뉴욕증권거래소에서 다우지수는 전 거래일 대비 366.19포인트(0.7%) 오른 5만2048.83에 마감했다. S&P500지수는 114.20포인트(1.5%) 오른 7764.70, 기술주 중심의 나스닥지수는 599.55포인트(2.3%) 상승한 2만7122.09에 거래를 마쳤다."
+          },
+          {
+            "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+            "quote": "반면, 뮤즈가 기존 서비스를 대체할 가능성이 커지면서 우버와 리프트, 익스피디아 등 소비자를 상대로 하는 기술주는 주춤하는 모습을 보였다."
+          }
+        ],
+        "text": "미국 현지 22일 나스닥 종합은 27,244.28로 0.45% 상승했다. S&P 500은 7,764.64로 거의 변동이 없었고 다우는 51,863.69로 0.36% 하락했다. 전장의 동반 상승에서 지수별 차별화로 바뀌었다. 반도체 강세와 차량공유주 약세가 겹쳐 AI가 만드는 기회와 기존 서비스의 대체 위험이 동시에 드러났다. 상승 종목 수와 지수 기여도는 없어 상승의 폭을 확정할 수 없다.",
+        "kind": "interpretation"
+      },
+      {
+        "id": "overview_cross_asset",
+        "evidence": [
+          {
+            "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+            "quote": "21일(현지시간) 뉴욕증권거래소에서 다우지수는 전 거래일 대비 366.19포인트(0.7%) 오른 5만2048.83에 마감했다."
+          },
+          {
+            "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+            "quote": "미국 국채 금리는 하락했다. 뉴욕 채권시장에서 10년물 금리는 5bp(1bp=0.01%포인트) 하락한 4.95%를 기록했다."
+          },
+          {
+            "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+            "quote": "달러는 상승했다. 유로ㆍ달러 환율은 0.2% 하락한 1.1464달러, 파운드ㆍ달러 환율은 0.2% 내린 1.3367달러를 기록했다. 달러ㆍ엔 환율은 0.4% 상승한 157.43엔으로 집계됐다."
+          },
+          {
+            "source_id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+            "quote": "이날 미국 채권시장에서 장기금리가 상승하면서 이자를 지급하지 않는 금의 투자 매력이 떨어질 것이라는 인식이 매도세를 자극했다."
+          }
+        ],
+        "text": "자산 간 신호도 엇갈렸다. 현지 21일 보도에서는 미 국채 10년 금리가 5bp 하락한 4.95%였지만 달러는 강세였다. 달러·엔은 157.43엔으로 0.4% 상승했다. 최신 보도는 원유 하락과 장기금리 상승을 함께 전해 전장의 동반 하락 구도가 유지됐다고 볼 수 없다. 최신 금리 수준과 달러/원은 확인되지 않는다. 달러 강세가 이어진다면 한국의 달러 결제 원가에는 부담이 될 수 있지만 원유 하락의 상쇄 정도는 판단할 수 없다.",
+        "kind": "interpretation"
+      }
+    ],
+    "observations": [
+      {
+        "id": "sp500_close",
+        "evidence": [
+          {
+            "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+            "quote": "스탠더드앤드푸어스(S&P) 500지수는 전장보다 0.06포인트(0.0%) 내린 7,764.64로 거의 변동이 없었고, 다우존스30 산업평균지수 종가는 185.14포인트(0.36%) 내린 51,863.69였다."
+          }
+        ],
+        "instrument": "sp500",
+        "value": "7764.64",
+        "unit": "pt",
+        "session_date": "2026-09-22",
+        "as_of": "2026-09-22T20:00:00Z",
+        "basis": "close",
+        "venue": "미국 주식시장·S&P 500 지수",
+        "previous_value": null,
+        "previous_session_date": null,
+        "reported_change": "-0.06",
+        "change_unit": "pt"
+      },
+      {
+        "id": "nasdaq_close",
+        "evidence": [
+          {
+            "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+            "quote": "22일(현지시간) 기술주 중심의 나스닥 종합지수는 전장보다 122.18포인트(0.45%) 오른 27,244.28로 마감하며 종가 기준으로 사상 최고치를 경신했다."
+          }
+        ],
+        "instrument": "nasdaq",
+        "value": "27244.28",
+        "unit": "pt",
+        "session_date": "2026-09-22",
+        "as_of": "2026-09-22T20:00:00Z",
+        "basis": "close",
+        "venue": "NASDAQ·나스닥 종합지수",
+        "previous_value": null,
+        "previous_session_date": null,
+        "reported_change": "0.45",
+        "change_unit": "%"
+      },
+      {
+        "id": "dow_close",
+        "evidence": [
+          {
+            "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+            "quote": "스탠더드앤드푸어스(S&P) 500지수는 전장보다 0.06포인트(0.0%) 내린 7,764.64로 거의 변동이 없었고, 다우존스30 산업평균지수 종가는 185.14포인트(0.36%) 내린 51,863.69였다."
+          }
+        ],
+        "instrument": "dow",
+        "value": "51863.69",
+        "unit": "pt",
+        "session_date": "2026-09-22",
+        "as_of": "2026-09-22T20:00:00Z",
+        "basis": "close",
+        "venue": "미국 주식시장·다우존스 산업평균지수",
+        "previous_value": null,
+        "previous_session_date": null,
+        "reported_change": "-0.36",
+        "change_unit": "%"
+      }
+    ],
+    "issues": [
+      {
+        "headline": "원유는 하락했지만 해협 재개방은 조건부 제안",
+        "fact": {
+          "id": "oil_fact",
+          "evidence": [
+            {
+              "source_id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+              "quote": "뉴욕상업거래소에서 10월 인도분 미국 서부텍사스산원유(WTI) 가격은 전장보다 1.2% 내린 배럴당 94.59에 장을 마감했다. 런던ICE선물거래소의 브렌트유 11월물 가격은 전장 대비 1.1% 하락한 배럴당 99.25달러에 거래를 끝냈다."
+            },
+            {
+              "source_id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+              "quote": "사우디는 26일까지 원유 공급을 일정 부분 회복한다는 계획인 것으로 전해졌다."
+            },
+            {
+              "source_id": "76c87a7da794dadc1beffc3c11122d11392e15fc",
+              "quote": "다만 구체적인 협상 내용이나 합의 여부에 대해서는 상세히 언급하지 않았다."
+            },
+            {
+              "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+              "quote": "이외에도 이란이 미국의 군사적 압박 완화를 조건으로 7일 이내 호르무즈 해협 재개방안을 제안했다는 보도도 나왔다."
+            }
+          ],
+          "text": "NYMEX WTI 10월물은 1.2% 내린 배럴당 94.59달러, ICE 브렌트 11월물은 1.1% 내린 99.25달러에 마감했다. 사우디는 26일까지 공급 일부를 회복할 계획으로 보도됐다. 미·이란 회담의 구체적 합의는 공개되지 않았고, 이란의 7일 이내 호르무즈 재개방안은 미국의 군사적 압박 완화를 조건으로 한다.",
+          "kind": "fact"
+        },
+        "interpretation": {
+          "id": "oil_interpretation",
+          "evidence": [
+            {
+              "source_id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+              "quote": "사우디아라비아의 원유 수출이 회복될 것이라는 관측과 미국과 이란 간 협상 진전 기대가 맞물리면서 국제유가가 하락했다."
+            },
+            {
+              "source_id": "76c87a7da794dadc1beffc3c11122d11392e15fc",
+              "quote": "다만 구체적인 협상 내용이나 합의 여부에 대해서는 상세히 언급하지 않았다."
+            }
+          ],
+          "text": "보도는 공급 회복과 협상 기대를 유가 하락 배경으로 제시했다. 실제 수출 증가로 이어지면 한국의 원유 도입 비용 완화에 도움이 될 수 있다. 다만 회담 개최와 해협 정상화는 다르며, 종전 기대만으로 공급 위험이 사라졌다고 볼 수 없다.",
+          "kind": "interpretation"
+        },
+        "next_check": {
+          "id": "oil_next",
+          "evidence": [
+            {
+              "source_id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+              "quote": "사우디는 26일까지 원유 공급을 일정 부분 회복한다는 계획인 것으로 전해졌다."
+            },
+            {
+              "source_id": "f6b2d1709b0c605a88e0c34b63e5ecc8ed649f69",
+              "quote": "IRIB에 따르면 이란이 호르무즈 해협 재개방의 전제 조건으로 미국 측에 제시한 핵심 요구사항은 ▲ 해상 봉쇄의 즉각적인 해제 ▲ 동결된 이란 자산 전체의 즉각적인 반환(지급) ▲ 저항의 축이 얽힌 모든 전선에서의 전쟁 종식 등입니다."
+            }
+          ],
+          "text": "26일까지 사우디의 실제 수출 회복과 해협 재개방 조건 수용 여부를 확인한다. 회담이 이어져도 물량이 늘지 않으면 공급 정상화 해석은 약해진다.",
+          "kind": "condition"
+        },
+        "analysis": {
+          "horizon": "days_weeks",
+          "causal_basis": "reported_explanation",
+          "mechanism": {
+            "id": "oil_mechanism",
+            "evidence": [
+              {
+                "source_id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+                "quote": "사우디 원유 수출 차질이 완화될 것이라는 기대가 커지면서 중동 지역의 에너지 공급을 둘러싼 우려도 다소 후퇴했다."
+              }
+            ],
+            "text": "공급 회복이 실현된다면 원유 조달 단가를 낮춰 수입국의 비용과 현금흐름에 우호적으로 작용할 수 있다. 환율과 정제유 가격에 따라 최종 비용 효과는 달라진다.",
+            "kind": "interpretation"
+          },
+          "alternative": {
+            "id": "oil_alternative",
+            "evidence": [
+              {
+                "source_id": "76c87a7da794dadc1beffc3c11122d11392e15fc",
+                "quote": "그는 합의가 조속히 이뤄지지 않을 경우 이란에 대한 군사적 대응 수위를 높일 수 있다는 취지의 경고도 내놨다."
+              }
+            ],
+            "text": "하락이 실제 공급 증가보다 협상 발언에 대한 일시적 반응이었다면, 군사 압박의 재강화로 되돌려질 수 있다.",
+            "kind": "interpretation"
+          }
+        },
+        "counterpoint": {
+          "id": "oil_counterpoint",
+          "evidence": [
+            {
+              "source_id": "f6b2d1709b0c605a88e0c34b63e5ecc8ed649f69",
+              "quote": "IRIB에 따르면 이란이 호르무즈 해협 재개방의 전제 조건으로 미국 측에 제시한 핵심 요구사항은 ▲ 해상 봉쇄의 즉각적인 해제 ▲ 동결된 이란 자산 전체의 즉각적인 반환(지급) ▲ 저항의 축이 얽힌 모든 전선에서의 전쟁 종식 등입니다."
+            },
+            {
+              "source_id": "6dbf4493e26ac8a2f17dff96e4039bc24ef10966",
+              "quote": "트럼프는 합의하는 것이 이란에 분명히 유리하다며 중간선거 직후 합의가 성사될 거라고 전망했습니다."
+            }
+          ],
+          "text": "이란 측 요구에는 해상 봉쇄 해제, 동결자산 전액 반환, 관련 전선의 전쟁 종식이 포함된다. 트럼프의 중간선거 직후 합의 전망도 상대국이 수락한 일정이나 합의가 아니다.",
+          "kind": "fact"
+        }
+      },
+      {
+        "headline": "이란 항공 제재와 경유 수출 제한은 별도의 공급 위험",
+        "fact": {
+          "id": "policy_fact",
+          "evidence": [
+            {
+              "source_id": "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+              "quote": "Bessent told CNBC that all Iranian airlines will be shut down from Wednesday."
+            },
+            {
+              "source_id": "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+              "quote": "That if they land, you cannot provide them with fuel. You cannot provide them with landing services, you cannot sell them tickets, or you will be knocked out of the dollar system"
+            },
+            {
+              "source_id": "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb",
+              "quote": "Treasury Secretary Scott Bessent said the Trump administration is considering a full or partial ban on diesel exports."
+            },
+            {
+              "source_id": "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb",
+              "quote": "Diesel cost around $207 a barrel Tuesday, more than $100 more expensive than the crude oil that is refined into the fuel."
+            }
+          ],
+          "text": "베선트 미 재무장관은 수요일부터 이란 항공사 운항을 차단하고 연료·착륙·발권 서비스 제공자를 달러 시스템에서 배제하겠다고 밝혔다. 미국 정부는 경유 수출 전면·부분 금지도 검토 중이며 아직 시행 결정은 아니다. 경유는 배럴당 약 207달러로 원유보다 100달러 이상 비싸다고 보도됐다.",
+          "kind": "fact"
+        },
+        "interpretation": {
+          "id": "policy_interpretation",
+          "evidence": [
+            {
+              "source_id": "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb",
+              "quote": "Fuel prices have jumped as the wars in Eastern Europe and the Middle East have slashed global refining capacity."
+            },
+            {
+              "source_id": "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb",
+              "quote": "U.S. refiners have jumped into the breach, ramping up diesel exports to help supply the world and take advantage of sky-high profit margins."
+            }
+          ],
+          "text": "원유가 내려도 정제시설 손상과 제품 수출 제약이 지속되면 경유 비용은 높게 남을 수 있다. 미국의 수출 제한까지 시행되면 미국 밖 운송·농업에는 부담이고 한국 정유사의 수출 채산성에는 다른 방향의 영향을 줄 수 있다.",
+          "kind": "interpretation"
+        },
+        "next_check": {
+          "id": "policy_next",
+          "evidence": [
+            {
+              "source_id": "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+              "quote": "Bessent told CNBC that all Iranian airlines will be shut down from Wednesday."
+            },
+            {
+              "source_id": "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb",
+              "quote": "Treasury Secretary Scott Bessent said the Trump administration is considering a full or partial ban on diesel exports."
+            }
+          ],
+          "text": "항공 제재의 실제 집행과 경유 수출 제한의 결정·예외 범위를 확인한다. 수출이 유지되고 경유와 원유의 가격 차가 줄어들면 제품 공급 부족 해석은 약해진다.",
+          "kind": "condition"
+        },
+        "analysis": {
+          "horizon": "days_weeks",
+          "causal_basis": "conditional_hypothesis",
+          "mechanism": {
+            "id": "policy_mechanism",
+            "evidence": [
+              {
+                "source_id": "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb",
+                "quote": "Higher diesel prices trickle down to consumers in their higher grocery bills and what they pay for consumer products."
+              },
+              {
+                "source_id": "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+                "quote": "You cannot provide them with landing services, you cannot sell them tickets, or you will be knocked out of the dollar system"
+              }
+            ],
+            "text": "정제 능력이 줄어든 상황에서 수출까지 제한된다면 국제 경유 공급이 감소해 운송비와 상품 원가를 높일 수 있다. 항공 서비스 제재는 관련 거래의 달러 결제 접근성을 제약할 수 있다.",
+            "kind": "interpretation"
+          },
+          "alternative": {
+            "id": "policy_alternative",
+            "evidence": [
+              {
+                "source_id": "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb",
+                "quote": "U.S. refiners have jumped into the breach, ramping up diesel exports to help supply the world and take advantage of sky-high profit margins."
+              }
+            ],
+            "text": "수출 금지가 시행되지 않거나 정유사의 추가 공급이 부족분을 메운다면 국제 제품 가격의 추가 상승은 제한될 수 있다.",
+            "kind": "interpretation"
+          }
+        },
+        "counterpoint": null
+      },
+      {
+        "headline": "AI 흥행은 반도체에 호재, 기존 플랫폼에는 대체 위험",
+        "fact": {
+          "id": "ai_fact",
+          "evidence": [
+            {
+              "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+              "quote": "메타의 AI 어시스턴트 '뮤즈'가 소비자들에게 좋은 반응을 얻으면서 전날에 이어 반도체 기업 주가가 큰 폭으로 올랐다. 샌디스크 주가는 6.8%, 마이크론은 5% 뛰었다."
+            },
+            {
+              "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+              "quote": "반면, 뮤즈가 기존 서비스를 대체할 가능성이 커지면서 우버와 리프트, 익스피디아 등 소비자를 상대로 하는 기술주는 주춤하는 모습을 보였다."
+            },
+            {
+              "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+              "quote": "S&P 500지수에 포함된 차량공유 서비스 우버의 주가는 이날 1.3%, 리프트는 2.4% 내렸다."
+            },
+            {
+              "source_id": "6dbf4493e26ac8a2f17dff96e4039bc24ef10966",
+              "quote": "인공지능 분야에서는 중국에 대한 우위를 강조하며 국제적인 규제 확대 움직임에 반대했습니다."
+            }
+          ],
+          "text": "메타의 AI 비서 뮤즈에 대한 소비자 반응과 함께 샌디스크는 6.8%, 마이크론은 5% 올랐다. 반면 우버는 1.3%, 리프트는 2.4% 내렸으며 보도는 기존 서비스 대체 가능성을 거론했다. 트럼프는 AI 분야의 국제 규제 확대에 반대하는 입장을 밝혔다.",
+          "kind": "fact"
+        },
+        "interpretation": {
+          "id": "ai_interpretation",
+          "evidence": [
+            {
+              "source_id": "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+              "quote": "차세대 AI 인프라 확충과 연산 수요 급증에 힘입어 AMD가 10%에 가까운 급등세를 탔고 사상 처음으로 시가총액 1조 달러 고지를 밟았습니다."
+            },
+            {
+              "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+              "quote": "뮤즈는 이메일 작성부터 예약, 일정 관리 등 비서 역할을 할 수 있는 AI 서비스다."
+            }
+          ],
+          "text": "사용 확대가 연산·메모리 주문으로 연결된다면 한국 반도체에도 수요 경로가 생긴다. 그러나 인기와 주가 상승은 이익 확정이 아니다. 예약 등을 대신하는 기능이 기존 플랫폼의 고객 접점을 바꿀 수 있어 기술주 내부에서도 매출 노출을 구분해야 한다.",
+          "kind": "interpretation"
+        },
+        "next_check": {
+          "id": "ai_next",
+          "evidence": [
+            {
+              "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+              "quote": "미국 안팎에서 AI 개발 속도 조절론과 인류멸망론으로 인해 여러 논쟁이 벌어지고 있지만, 여전히 AI가 기업 실적의 토대가 될 거라는 시장의 기대는 여전한 상황이다."
+            }
+          ],
+          "text": "반도체 업체의 주문·매출 전망과 AI 서비스의 유료 이용 전환을 확인한다. 이용 확산에도 주문이 늘지 않으면 실적 개선보다 가치평가 상승 중심의 해석이 더 타당해진다.",
+          "kind": "condition"
+        },
+        "analysis": {
+          "horizon": "months",
+          "causal_basis": "conditional_hypothesis",
+          "mechanism": {
+            "id": "ai_mechanism",
+            "evidence": [
+              {
+                "source_id": "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+                "quote": "차세대 AI 인프라 확충과 연산 수요 급증에 힘입어 AMD가 10%에 가까운 급등세를 탔고 사상 처음으로 시가총액 1조 달러 고지를 밟았습니다."
+              },
+              {
+                "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+                "quote": "반면, 뮤즈가 기존 서비스를 대체할 가능성이 커지면서 우버와 리프트, 익스피디아 등 소비자를 상대로 하는 기술주는 주춤하는 모습을 보였다."
+              }
+            ],
+            "text": "AI 사용 확대가 인프라 구매로 이어질 때 반도체 매출에 전달될 수 있다. 반대로 비서 기능이 기존 앱의 이용을 대체한다면 플랫폼의 중개 수익은 압박받을 수 있다.",
+            "kind": "interpretation"
+          },
+          "alternative": {
+            "id": "ai_alternative",
+            "evidence": [
+              {
+                "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+                "quote": "여전히 AI가 기업 실적의 토대가 될 거라는 시장의 기대는 여전한 상황이다."
+              }
+            ],
+            "text": "주가가 아직 확인되지 않은 수익화 기대를 주로 반영했다면, 실제 주문 증가 없이도 단기 상승이 나타날 수 있다. 소비자 반응만으로 현금흐름 개선을 입증할 수는 없다.",
+            "kind": "interpretation"
+          }
+        },
+        "counterpoint": null
+      },
+      {
+        "headline": "연준의 추가 긴축 경고, 인상 횟수는 미확정",
+        "fact": {
+          "id": "fed_fact",
+          "evidence": [
+            {
+              "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+              "quote": "앞서 지난주 연준은 9월 연방공개시장위원회(FOMC)에서 만장일치로 기준금리를 3.75∼4.00%로 0.25%포인트(1bp=0.01%포인트) 인상했다. 함께 공개된 점도표에서는 올해 말 기준금리 중간값이 4.1%로 제시되며 연내 한 차례 추가 인상이 단행될 것임을 시사했다."
+            },
+            {
+              "source_id": "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf",
+              "quote": "다소 더 긴축적인 연방기금금리는 물가상승률이 목표 수준으로 지속 가능하게 복귀하도록 하는 데 도움이 될 것"
+            },
+            {
+              "source_id": "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf",
+              "quote": "최근의 물가 상승세가 단순히 에너지나 관세 등 일시적인 공급망 요인에 그치지 않는다고 경고했다."
+            },
+            {
+              "source_id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+              "quote": "뉴욕상품거래소(COMEX)에서 거래가 가장 활발한 12월물 금 선물은 전 거래일보다 7.5달러(0.2%) 내린 온스당 4376.4달러에 거래를 마쳤다."
+            }
+          ],
+          "text": "연준은 지난주 기준금리를 0.25%포인트 올려 3.75∼4.00%로 정했고, 점도표의 연말 중간값은 4.1%였다. 콜린스는 더 긴축적인 금리가 물가 안정에 도움이 된다고 했고 바킨은 물가 압력이 일시적 공급 요인에 그치지 않는다고 경고했다. COMEX 금 12월물은 0.2% 내린 온스당 4376.4달러로 마감했다.",
+          "kind": "fact"
+        },
+        "interpretation": {
+          "id": "fed_interpretation",
+          "evidence": [
+            {
+              "source_id": "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf",
+              "quote": "최근의 물가 상승세가 단순히 에너지나 관세 등 일시적인 공급망 요인에 그치지 않는다고 경고했다."
+            },
+            {
+              "source_id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+              "quote": "이날 미국 채권시장에서 장기금리가 상승하면서 이자를 지급하지 않는 금의 투자 매력이 떨어질 것이라는 인식이 매도세를 자극했다."
+            }
+          ],
+          "text": "물가 압력이 에너지 밖에서도 지속되면 유가 하락만으로 긴축 부담이 풀리기 어렵다. 이는 성장주의 미래 이익에 적용하는 할인율과 기업 조달 비용을 제약할 수 있다. 다만 금리의 실질·명목 요인을 분리할 자료는 없어 금 약세를 인플레이션 전망 변화로 단정하지 않는다.",
+          "kind": "interpretation"
+        },
+        "next_check": {
+          "id": "fed_next",
+          "evidence": [
+            {
+              "source_id": "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf",
+              "quote": "물가 상승 압력이 커졌지만, 노동 시장 여건은 전반적으로 견조해 보이며 실업률 또한 낮은 수준을 유지하고 있다"
+            }
+          ],
+          "text": "다음 물가·고용 지표에서 비에너지 물가와 노동시장 강도를 확인한다. 물가 압력이 완화되고 고용이 약해지면 추가 긴축 경고의 무게가 줄어든다. 제공 자료에는 정확한 발표 일정이 없다.",
+          "kind": "condition"
+        },
+        "analysis": {
+          "horizon": "days_weeks",
+          "causal_basis": "conditional_hypothesis",
+          "mechanism": {
+            "id": "fed_mechanism",
+            "evidence": [
+              {
+                "source_id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+                "quote": "이날 미국 채권시장에서 장기금리가 상승하면서 이자를 지급하지 않는 금의 투자 매력이 떨어질 것이라는 인식이 매도세를 자극했다."
+              }
+            ],
+            "text": "추가 긴축이 시장금리를 높인다면 미래 현금흐름의 현재가치를 낮추고 이자를 지급하지 않는 금의 기회비용을 높일 수 있다.",
+            "kind": "interpretation"
+          },
+          "alternative": {
+            "id": "fed_alternative",
+            "evidence": [
+              {
+                "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+                "quote": "아울러 트레이더들에 따르면 런던 금시장 가격 결정 경매에서 매수 희망 물량의 4배에 달하는 금이 매물로 나온 것도 금값에 하락 압력을 가했다."
+              }
+            ],
+            "text": "금시장 자체의 매도 물량이 더 중요했다면 금 약세만으로 긴축 전망 강화를 읽기 어렵다. 이전 보도의 경매 공급 초과는 이런 대안의 가능성을 보여줄 뿐 최신 수급을 입증하지 않는다.",
+            "kind": "interpretation"
+          }
+        },
+        "counterpoint": {
+          "id": "fed_counterpoint",
+          "evidence": [
+            {
+              "source_id": "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf",
+              "quote": "그는 다만 추가 금리 인상 필요성이나 횟수에 대해서는"
+            },
+            {
+              "source_id": "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf",
+              "quote": "신중한 태도를 취했다."
+            },
+            {
+              "source_id": "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf",
+              "quote": "로이터 통신에 따르면 존 윌리엄스 뉴욕 연은 총재는 금리 통제 수단이 잘 작동하고 있다고 평가하면서도, 금융 시장 변화에 맞춰 미세 조정하는 것도 가능하다고 밝혔다."
+            },
+            {
+              "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+              "quote": "함께 공개된 점도표에서는 올해 말 기준금리 중간값이 4.1%로 제시되며 연내 한 차례 추가 인상이 단행될 것임을 시사했다."
+            }
+          ],
+          "text": "바킨은 추가 인상 필요성과 횟수에는 판단을 유보했다. 점도표는 전망이며 인상 약속이 아니다. 윌리엄스의 금리 통제 수단 평가 역시 정책금리 인하 신호로 해석할 근거는 없다.",
+          "kind": "interpretation"
+        }
+      },
+      {
+        "headline": "한국의 금리 부담은 취약기업에 시차를 두고 전달",
+        "fact": {
+          "id": "korea_fact",
+          "evidence": [
+            {
+              "source_id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+              "quote": "한은 \"금리 0.25%p 오르면 가계 3.3조·기업 3.7조 이자부담↑\""
+            },
+            {
+              "source_id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+              "quote": "한은은 기준금리 인상 이후 대출금리는 약 5개월 뒤, 은행 연체율은 15개월 뒤 가장 크게 반응하는 것으로 추정됐다."
+            },
+            {
+              "source_id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+              "quote": "기업은 상대적으로 부담이 크다. 부채비율과 이자보상배율은 대체로 장기평균 수준이지만 연체율과 변동금리대출 비중이 과거 인상기보다 높다."
+            }
+          ],
+          "text": "한은 관련 보도는 기준금리 0.25%포인트 상승 시 가계 이자 부담이 3.3조원, 기업은 3.7조원 늘어난다는 추정을 전했다. 대출금리는 약 5개월, 은행 연체율은 15개월 뒤 가장 크게 반응하는 것으로 추정됐다. 기업 연체율과 변동금리대출 비중은 과거 인상기보다 높다.",
+          "kind": "fact"
+        },
+        "interpretation": {
+          "id": "korea_interpretation",
+          "evidence": [
+            {
+              "source_id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+              "quote": "기준금리 인상이 자산가격 상승세를 제약해 금융취약성 완화에 도움이 될 수 있다고 밝혔다."
+            },
+            {
+              "source_id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+              "quote": "취약부문의 연체 증가가 신용도 하락과 차환조건 악화로 인한 추가 연체로 이어지는 악순환이 나타날 가능성을 유의해야 한다"
+            }
+          ],
+          "text": "긴축은 자산가격 과열을 줄일 수 있지만, 상환 여력이 약한 기업에는 이자 비용과 차환 부담을 높일 수 있다. 반도체 수요 기대가 좋아져도 국내 기업 전반의 현금흐름 개선으로 확대해서 볼 수 없는 이유다.",
+          "kind": "interpretation"
+        },
+        "next_check": {
+          "id": "korea_next",
+          "evidence": [
+            {
+              "source_id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+              "quote": "다만 최근 경기 개선과 기업대출 확대 유인에 따른 가산금리 부담 완화가 금리 상승 압력을 일부 상쇄할 것으로 한은은 예상했다."
+            }
+          ],
+          "text": "기업 대출금리·가산금리와 취약차주 연체율을 확인한다. 가산금리 하락과 영업현금흐름 개선이 이자 부담을 상쇄한다면 신용 악화 해석은 약해진다.",
+          "kind": "condition"
+        },
+        "analysis": {
+          "horizon": "months",
+          "causal_basis": "conditional_hypothesis",
+          "mechanism": {
+            "id": "korea_mechanism",
+            "evidence": [
+              {
+                "source_id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+                "quote": "취약부문의 연체 증가가 신용도 하락과 차환조건 악화로 인한 추가 연체로 이어지는 악순환이 나타날 가능성을 유의해야 한다"
+              }
+            ],
+            "text": "변동금리 차입 비용이 오르면 상환 재원이 줄고 연체·신용도 하락을 거쳐 차환 조건이 악화될 수 있다. 이 경로는 취약기업의 현금흐름에 더 큰 제약이 될 수 있다.",
+            "kind": "interpretation"
+          },
+          "alternative": {
+            "id": "korea_alternative",
+            "evidence": [
+              {
+                "source_id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+                "quote": "다만 최근 경기 개선과 기업대출 확대 유인에 따른 가산금리 부담 완화가 금리 상승 압력을 일부 상쇄할 것으로 한은은 예상했다."
+              }
+            ],
+            "text": "경기 개선과 기업대출 가산금리 완화가 충분하다면 금리 인상이 곧바로 연체 증가로 이어지지 않을 수 있다.",
+            "kind": "interpretation"
+          }
+        },
+        "counterpoint": {
+          "id": "korea_counterpoint",
+          "evidence": [
+            {
+              "source_id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+              "quote": "가계의 평균적인 대응 여력은 과거 인상기보다 양호한 편이다."
+            },
+            {
+              "source_id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+              "quote": "한은은 23일 발표한 금융안정상황 보고서에서 기준금리 인상이 자산가격 상승세를 제약해 금융취약성 완화에 도움이 될 수 있다고 밝혔다."
+            },
+            {
+              "source_id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+              "quote": "2026년09월22일 11시00분 송고"
+            }
+          ],
+          "text": "가계의 평균 대응 여력은 과거보다 양호하다는 평가도 있다. 한은 기사에는 본문 발표일과 송고일이 엇갈려 보고서의 정확한 공개 시점은 확정하지 않는다.",
+          "kind": "fact"
+        }
+      }
+    ],
+    "internals": [
+      {
+        "id": "index_quote_conflict",
+        "evidence": [
+          {
+            "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+            "quote": "스탠더드앤드푸어스(S&P) 500지수는 전장보다 0.06포인트(0.0%) 내린 7,764.64로 거의 변동이 없었고, 다우존스30 산업평균지수 종가는 185.14포인트(0.36%) 내린 51,863.69였다."
+          },
+          {
+            "source_id": "f4387486e1fa6d90c353e52e06b53cb2778929fb",
+            "quote": "이날 다우지수는 전장보다 85.14포인트(0.36%) 내린 5만1863.69에 거래를 마쳤다. S&P500지수는 전 거래일 대비 0.6포인트(0.0%) 내린 7764.64에, 나스닥지수는 전장보다 122.18포인트(0.45%) 뛴 2만7244.28에 장을 끝냈다."
+          }
+        ],
+        "text": "핵심 지수 종가는 두 매체가 일치하지만 하락 포인트는 다르다. 다우는 연합뉴스 185.14포인트·이투데이 85.14포인트, S&P 500은 각각 0.06포인트·0.6포인트다. 관측값의 등락은 연합뉴스 기준이며 차이는 해소되지 않았다.",
+        "kind": "fact"
+      },
+      {
+        "id": "eu_sanctions",
+        "evidence": [
+          {
+            "source_id": "fd9fea4d91f006ff807a5234d4e563808c26e2bd",
+            "quote": "France had campaigned for Russian-Uzbek billionaire Alisher Usmanov to be taken off the list, citing \"national security concerns\". Luxembourg called for the removal of Russian-Israeli businessman Mikhail Fridman, who is suing the country for the release of frozen assets."
+          },
+          {
+            "source_id": "fd9fea4d91f006ff807a5234d4e563808c26e2bd",
+            "quote": "The new deal involved extending sanctions on some remaining 2,600 individuals and entities to three years. Until now, sanctions had to be renewed every six months."
+          },
+          {
+            "source_id": "fd9fea4d91f006ff807a5234d4e563808c26e2bd",
+            "quote": "He urged all EU member states to instead announce national sanctions on the two individuals. Latvia has already said it would do so."
+          }
+        ],
+        "text": "EU는 우스마노프·프리드만 제재 해제 방침과 함께 다른 대상의 제재를 3년으로 연장하는 타협을 이뤘다는 보도다. 라트비아는 독자 제재를 예고했다. 일부 해제를 대러 제재 전반의 완화로 해석하기는 어렵고, 실제 적용 대상과 국가별 집행을 구분해야 한다.",
+        "kind": "interpretation"
+      }
+    ],
+    "watchpoints": [
+      {
+        "id": "watch_semiconductors",
+        "evidence": [
+          {
+            "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+            "quote": "샌디스크 주가는 6.8%, 마이크론은 5% 뛰었다."
+          }
+        ],
+        "text": "한국 반도체가 미국 메모리주 강세에 동행하는지, 상승이 관련 대형주 밖으로 확산되는지 확인한다. 동행만으로 주문 증가가 입증되는 것은 아니다.",
+        "kind": "condition"
+      },
+      {
+        "id": "watch_energy_fx",
+        "evidence": [
+          {
+            "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+            "quote": "달러ㆍ엔 환율은 0.4% 상승한 157.43엔으로 집계됐다."
+          },
+          {
+            "source_id": "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb",
+            "quote": "Diesel cost around $207 a barrel Tuesday, more than $100 more expensive than the crude oil that is refined into the fuel."
+          }
+        ],
+        "text": "달러/원과 정제유 가격을 함께 확인한다. 원화 약세나 경유 가격 상승이 이어지면 원유 하락의 국내 원가 절감 효과는 줄어들 수 있다.",
+        "kind": "condition"
+      },
+      {
+        "id": "watch_diplomacy",
+        "evidence": [
+          {
+            "source_id": "76c87a7da794dadc1beffc3c11122d11392e15fc",
+            "quote": "다만 구체적인 협상 내용이나 합의 여부에 대해서는 상세히 언급하지 않았다."
+          },
+          {
+            "source_id": "6dbf4493e26ac8a2f17dff96e4039bc24ef10966",
+            "quote": "만약 트럼프가 북미 대화 재개 의지를 여전히 갖고 있다면 모레 열릴 미중 정상회담에서 시진핑 중국 국가주석에게 관련 협조를 구할 것으로 전망됩니다."
+          },
+          {
+            "source_id": "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+            "quote": "이번 주 열릴 미·중 정상회담과 중동 외교전의 결과에 따라 증시의 추가 상승 여부가 판가름날 전망입니다."
+          }
+        ],
+        "text": "미·이란 후속 회담에서 공급 정상화 조건이 좁혀지는지 확인한다. 미·중 정상회담은 원문상 모레 예정으로 보도됐으며, 결과가 실제 정책 변화로 이어지는지 구분한다.",
+        "kind": "condition"
+      }
+    ],
+    "watch_results": [],
+    "calendar": [
+      {
+        "id": "iran_airline_measures",
+        "evidence": [
+          {
+            "source_id": "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+            "quote": "Bessent told CNBC that all Iranian airlines will be shut down from Wednesday."
+          }
+        ],
+        "title": "미국의 이란 항공사 서비스 차단 예고",
+        "at": null,
+        "source_timezone": "America/New_York",
+        "status": "time_unconfirmed",
+        "note": "미국 보도상 수요일부터. 실제 집행과 서비스 제공자 대상 조치 확인."
+      },
+      {
+        "id": "us_china_meeting",
+        "evidence": [
+          {
+            "source_id": "6dbf4493e26ac8a2f17dff96e4039bc24ef10966",
+            "quote": "한편 오늘(23일) 트럼프 연설에서 대북 메시지는 포함되지 않았습니다."
+          },
+          {
+            "source_id": "6dbf4493e26ac8a2f17dff96e4039bc24ef10966",
+            "quote": "만약 트럼프가 북미 대화 재개 의지를 여전히 갖고 있다면 모레 열릴 미중 정상회담에서 시진핑 중국 국가주석에게 관련 협조를 구할 것으로 전망됩니다."
+          }
+        ],
+        "title": "미·중 정상회담",
+        "at": null,
+        "source_timezone": "Asia/Seoul",
+        "status": "time_unconfirmed",
+        "note": "한국 보도는 오늘(23일)을 기준으로 모레 개최라고 설명. 개최지와 구체적 시각은 제공되지 않음."
+      }
+    ],
+    "limitations": [
+      "최신 미국 주식 종가는 제공된 정규장 종료 시각을 사용했다. 매체 간 다우·S&P 500 하락 포인트 충돌은 본문에 명시했다. 나스닥 전일 종가와 최신 보도의 포인트 변화는 완전히 연결되지 않아 previous_value를 넣지 않았다.",
+      "WTI 최신 종가와 계약·거래소는 확인되지만 상품 정산 시각이 제공되지 않아 관측 배열에는 넣지 않고 본문에 보존했다. 미국 주식 종료 시각을 원유 정산 시각으로 대체하지 않았다.",
+      "금 자료는 COMEX 선물로 등록된 금 현물과 다르므로 관측 배열에서 제외했다. 최신 미 국채 수익률 수준·달러/원·KRX 수급·종목별 상승 분포·암호자산 자료는 없다. 이전 거래일의 금리·외환 수치는 본문에서 날짜를 구분했다.",
+      "한은 기사의 본문 발표일과 송고일 불일치는 본문에 명시했다. 금리 민감도는 보도된 추정치이며 실현된 추가 이자 지급액으로 해석하지 않았다.",
+      "미국 지표 발표 시각과 컨센서스, 미·이란 후속 회담 일정, 경유 수출 제한 결정 시각은 제공되지 않았다. 미·중 회담은 상대 날짜만 있어 한국 시간의 구체적 발표 시각을 만들지 않았다.",
+      "이란 항공 조치는 장관의 시행 예고이며 집행 완료를 확인하는 자료는 없다. 호르무즈 재개방 제안의 상대 기한은 보존했지만 임의의 만료 날짜로 변환하지 않았다.",
+      "EU 제재 연장 대상 규모는 원문 안에서도 약 3,000과 약 2,600으로 다르게 서술된다. 대상 수는 확정하지 않았다. 그린란드 군사협정은 서명 사실이 있으나 제공 자료만으로 구체적 시장·교역 노출 변화가 확인되지 않아 주요 이슈에서 제외했다.",
+      "이전 브리핑과 비교 가능한 저장 자료가 없으므로 전장 원문만 배경으로 활용했다. 이전 세션의 후티 폭격 자제·중동 수출 회복 보도는 최신 공급 회복 논의의 배경이며 새로운 조치로 재사용하지 않았다."
+    ]
+  },
+  "rejected": {},
+  "review": {
+    "verdict": "reduce",
+    "checks": {
+      "numbers": true,
+      "sources": true,
+      "timing": true,
+      "causality": true,
+      "materiality": true,
+      "counterevidence": false,
+      "transmission": true,
+      "alternatives": true,
+      "falsifiability": true,
+      "coverage": false,
+      "depth": false,
+      "readability": true
+    },
+    "source_assessments": [
+      {
+        "source_id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+        "treatment": "covered",
+        "reason": "지수 혼조, 반도체 상승과 플랫폼 약세, 유가 하락 및 조건부 해협 재개방 제안을 본문에 반영했다.",
+        "item_ids": [
+          "summary_equities",
+          "overview_session",
+          "oil_fact",
+          "ai_fact"
+        ]
+      },
+      {
+        "source_id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+        "treatment": "background",
+        "reason": "21일 전장 기사다. 금리·달러의 당시 방향과 기존 연준 인상·점도표를 날짜를 구분한 배경으로 활용했고 최신 종가로 대체하지 않았다.",
+        "item_ids": [
+          "overview_cross_asset",
+          "fed_fact",
+          "fed_counterpoint"
+        ]
+      },
+      {
+        "source_id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+        "treatment": "covered",
+        "reason": "가계·기업 이자 부담 규모, 전달 시차, 기업 취약성과 자산가격 안정 효과를 설명했다. 가계 대응 여력과 원문의 날짜 충돌도 공개했다.",
+        "item_ids": [
+          "korea_fact",
+          "korea_interpretation",
+          "korea_counterpoint"
+        ]
+      },
+      {
+        "source_id": "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf",
+        "treatment": "covered",
+        "reason": "콜린스·바킨의 물가 경고와 추가 인상 판단 유보를 함께 반영했다. 윌리엄스의 정책 집행 도구 평가를 금리 인하 신호와 구별했다.",
+        "item_ids": [
+          "fed_fact",
+          "fed_interpretation",
+          "fed_counterpoint"
+        ]
+      },
+      {
+        "source_id": "f4387486e1fa6d90c353e52e06b53cb2778929fb",
+        "treatment": "background",
+        "reason": "최신 지수 혼조와 협상 불확실성은 다른 원문과 중복된다. 지수 하락 포인트가 연합뉴스와 다른 점은 독자에게 공개했다.",
+        "item_ids": [
+          "index_quote_conflict"
+        ]
+      },
+      {
+        "source_id": "76c87a7da794dadc1beffc3c11122d11392e15fc",
+        "treatment": "covered",
+        "reason": "회담과 구체적 합의 공개를 구분하고 협상 기대가 해협 정상화의 증거는 아니라는 핵심 불확실성을 본문에 반영했다.",
+        "item_ids": [
+          "oil_fact",
+          "oil_interpretation"
+        ]
+      },
+      {
+        "source_id": "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+        "treatment": "background",
+        "reason": "전장 AI·반도체 랠리의 배경 기사로 최신 세션 수치가 아니다. 연산 수요의 전달 경로에 활용했고 미·중 회담은 별도 최신 기사로 본문 일정에 반영됐다.",
+        "item_ids": [
+          "ai_interpretation",
+          "ai_mechanism",
+          "watch_diplomacy"
+        ]
+      },
+      {
+        "source_id": "4751ea68d07334f3b7c147b60b27dae2f9780c40",
+        "treatment": "background",
+        "reason": "이란 압박과 AI 규제 반대 발언은 다른 기사와 중복된다. 그린란드 군사협정·쿠바 발언에는 이 브리핑의 주요 자산에 연결할 구체적 경제 노출이 제시되지 않았다.",
+        "item_ids": []
+      },
+      {
+        "source_id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+        "treatment": "background",
+        "reason": "21일 유가 하락과 당시 중동 수출 회복의 배경이다. 최신 22일 유가와 사우디 공급 상황을 설명하는 기사와 구분할 필요가 있다.",
+        "item_ids": []
+      },
+      {
+        "source_id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+        "treatment": "background",
+        "reason": "유가·금 종가, 장기금리 상승과 26일 공급 회복 계획은 반영했다. 그러나 송유관이 소량 재가동되기 시작했다는 별도의 실제 진전 보도가 빠져 완전한 반영으로 인정하기 어렵다.",
+        "item_ids": [
+          "oil_fact",
+          "oil_interpretation",
+          "overview_cross_asset",
+          "fed_fact"
+        ]
+      },
+      {
+        "source_id": "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+        "treatment": "covered",
+        "reason": "항공사 서비스 차단 예고의 수요일 시행 시점과 연료·착륙·발권 제공자에 대한 달러 시스템 배제 방식을 반영했다. 장중 유가를 종가로 사용하지 않았다.",
+        "item_ids": [
+          "summary_energy",
+          "policy_fact",
+          "iran_airline_measures"
+        ]
+      },
+      {
+        "source_id": "6dbf4493e26ac8a2f17dff96e4039bc24ef10966",
+        "treatment": "background",
+        "reason": "AI 규제 반대, 합의 전망의 한계와 미·중 정상회담 일정은 반영했다. 그러나 이란 군부의 군사적 보복 경고라는 중요한 반대 신호가 본문에서 빠졌다.",
+        "item_ids": [
+          "ai_fact",
+          "oil_counterpoint",
+          "us_china_meeting"
+        ]
+      },
+      {
+        "source_id": "d28b9c42f8e81f1f69abcafd2dbff333da1d9e44",
+        "treatment": "background",
+        "reason": "트럼프의 압박·합의 전망과 미·이란 접촉은 다른 원문과 중복된다. 이란 국영방송의 접촉 확인도 별도 SBS 기사에 있어 독립된 추가 합의로 볼 수 없다.",
+        "item_ids": []
+      },
+      {
+        "source_id": "f6b2d1709b0c605a88e0c34b63e5ecc8ed649f69",
+        "treatment": "covered",
+        "reason": "해상 봉쇄 해제, 동결자산 반환, 관련 전선 종전이라는 이란 측 요구를 본문에 명시해 회담 개최와 조건 수용을 구별했다.",
+        "item_ids": [
+          "oil_counterpoint"
+        ]
+      },
+      {
+        "source_id": "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb",
+        "treatment": "covered",
+        "reason": "경유 수출 제한의 검토 단계, 경유·원유 가격 차, 정제 능력 손상과 미국 밖 운송·농업 및 한국 정유업 노출을 본문에 설명했다.",
+        "item_ids": [
+          "summary_energy",
+          "policy_fact",
+          "policy_interpretation"
+        ]
+      },
+      {
+        "source_id": "fd9fea4d91f006ff807a5234d4e563808c26e2bd",
+        "treatment": "covered",
+        "reason": "두 인물의 제재 해제와 다른 대상의 3년 연장, 라트비아 독자 제재를 함께 반영해 전반적 제재 완화라는 오해를 방지했다.",
+        "item_ids": [
+          "eu_sanctions"
+        ]
+      }
+    ],
+    "rejected_ids": [],
+    "concerns": [
+      "사우디 공급 회복을 기대·계획 중심으로 설명하면서 송유관의 소량 재가동 보도를 누락했다. 이미 보도된 진전과 향후 수출 확인을 구분하는 깊이가 부족하다.",
+      "이란 군부의 군사적 보복 경고가 본문에 없다. 협상 조건과 제재 위험은 다뤘지만 별도의 중요한 군사적 반대 신호에 대한 커버리지는 부족하다."
+    ]
+  },
+  "parts": [
+    "*09/23 아침 브리핑 · 미국장과 오늘 · 축약판*\n자료 기준 09/23 07:10 KST\n\n확인 부족: 나스닥 종합, S&P 500\n자료 수집·작성·검토가 완료되지 않아 확인 지연을 알립니다. 이전 가격을 오늘 값으로 대체하지 않습니다.\n\nAnalyst · AI 시장분석 · 근거와 추가 설명은 스레드",
+    "*상세 근거·추가 지표*\n수집 데이터에 지연·결측이 있습니다. 과거 비교 자료는 각 기준일을 표시하며 오늘 값으로 쓰지 않습니다."
+  ],
+  "quality": {
+    "format_version": 6,
+    "reduced": true,
+    "substantive": false,
+    "issue_count": 0,
+    "missing_core": [
+      "nasdaq",
+      "sp500"
+    ],
+    "rejected": {},
+    "source_count": 0,
+    "fallback": "editorial_review_withheld",
+    "assurance": {},
+    "quote_conflicts": [],
+    "data_diagnostics": [
+      {
+        "error": "historical_current_lake_snapshot_not_available"
+      }
+    ],
+    "calendar_items": 0
+  },
+  "passed": false,
+  "correction": null,
+  "scope": "One saved original-source snapshot and actual provider responses; not human expert certification, five-day qualification or Slack delivery."
+}

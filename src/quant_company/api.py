@@ -54,6 +54,12 @@ def create_app(settings: Settings | None = None, company: Company | None = None,
         if not hmac.compare_digest(authorization, "Bearer " + token):
             raise HTTPException(401, "Operator authentication required")
 
+    @app.get("/v1/videos", dependencies=[Depends(operator)])
+    def videos():
+        from .video.store import VideoStore
+
+        return VideoStore(company).status()
+
     @app.exception_handler(PolicyError)
     async def policy_error(request: Request, exc: PolicyError):
         from fastapi.responses import JSONResponse

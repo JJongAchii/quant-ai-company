@@ -1,0 +1,35 @@
+{
+  "recorded_at": "2026-10-02T04:03:57.149333+00:00",
+  "outcome": "initial_fixture_failures_preserved",
+  "entries": [
+    {
+      "private_original_junit": "context-and-preview-v49.xml",
+      "sha256": "d15a2c86180d16f7f12740717b8a1abc9d1f677205d8fb11fe32a322eccb57ef",
+      "testsuite": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "1",
+        "skipped": "0",
+        "tests": "11",
+        "time": "2.762",
+        "timestamp": "2026-10-02T09:52:42.329936+09:00",
+        "hostname": "MacBook-Pro.local"
+      }
+    },
+    {
+      "private_original_junit": "context-and-preview-v49-corrected.xml",
+      "sha256": "467804e6908d140500f59ea45b53441b0048fcbf005a0e207f675e1ae6a3c0d4",
+      "testsuite": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "1",
+        "skipped": "0",
+        "tests": "11",
+        "time": "2.592",
+        "timestamp": "2026-10-02T09:57:36.697764+09:00",
+        "hostname": "MacBook-Pro.local"
+      }
+    }
+  ],
+  "scope": "Original failure traces retained private and byte-identical; corrected bounded-context fixture and current regression success recorded separately."
+}

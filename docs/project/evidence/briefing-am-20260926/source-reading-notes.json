@@ -1,0 +1,32 @@
+{
+  "written_before_model_output": true,
+  "case": "am-20260926-heldout",
+  "scope": "Independent reading of the frozen sixteen excerpts; these notes are not supplied to the writer or reviewer and are not extra source material.",
+  "material_checks": [
+    {
+      "topic": "US close and prior-day contrast",
+      "source_ids": ["1ea4f7745cf54a932cfc15a7adff7dcd26f18ce3", "5d71625a9f7907fa738fe83c2e102b130d89d086", "0e4f611267193cc1f861e6ef22816113af050410"],
+      "check": "Identify the September 25 US close: Dow 51,828.62 (+0.93%), S&P 500 7,743.41 (+0.51%), Nasdaq Composite 27,068.72 (+0.48%). The September 24 mixed close and rates/oil pressure are dated background, not today's result."
+    },
+    {
+      "topic": "Oil reversal and actual supply",
+      "source_ids": ["b2e337b68587080410828bead08ef17d92931e82", "76023abf00882a4c6bf043a0cc72cc906c4615b3", "71888117cb7419ed2fe3bb41c3cac0e1b855f447"],
+      "check": "WTI November settled at $92.41 (-2.33%) and Brent November at $104.32 (-2.14%) after the prior day's attack-related rise. Saudi exports reached 6m bpd versus 3.4m in August despite East-West pipeline damage; Hormuz traffic remains below prewar. Separate export observations from merely expected reopening."
+    },
+    {
+      "topic": "Conditional Hormuz plan and opposing evidence",
+      "source_ids": ["7aad44f11b5e90fdddc45e5d8d8de16e51ead788", "277d1662e5e4dbe60e94609cf0ff0dcfb837e780", "a99c850ba387a56d560795e1137ba084683eff5d"],
+      "check": "Iran says the seven-day plan starts only after US acceptance and demanded actions; it describes reopening on day six and final talks on day seven. The earlier June MOU broke down; a senior Iranian official says acceptance would not mean nuclear concessions. Do not turn proposal, talks, or US optimism into an implemented deal."
+    },
+    {
+      "topic": "US-China extension versus unresolved policy",
+      "source_ids": ["a7620c488928b32cd69270c2c62e035334481884", "bfda76e15ec3596a37fa0851fb86326e22541e29"],
+      "check": "The reported trade truce moved from November 10 to January 10, while detailed agriculture/rare-earth terms were expected Monday September 28. AI chip controls, Taiwan and Iran differences persist. Treat officials' descriptions, analyst opinions and actual policy actions distinctly."
+    }
+  ],
+  "lower_priority_or_context": [
+    "EU request for UK China-vehicle tariff alignment is a reported proposal, not a new UK tariff decision.",
+    "Brazil inflation, BoK tokenization organization and Meta options commentary need explicit current-market relevance to displace the main issues.",
+    "One earlier CNBC oil article prints apparent WTI/Brent price-label conflicts against the later close reports; do not blend its numbers into the September 25 settlement."
+  ]
+}

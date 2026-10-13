@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "head_sha": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+  "run_id": 36964093804,
+  "job_id": 110703939418,
+  "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36964093804",
+  "conclusion": "success",
+  "completed_at": "2026-10-02T04:28:47Z",
+  "passed": 1737,
+  "skipped": 47,
+  "deselected_live": 1,
+  "log_sha256": "2b9dcfb66a21ce23e0a57313b9e504ae92c7694a26aa6233b6e7780611e89541",
+  "real_postgresql_temporal": true,
+  "slack_model_fixtures": true,
+  "actual_official_model_calls": false
+}

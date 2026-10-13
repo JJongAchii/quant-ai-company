@@ -1,0 +1,69 @@
+{
+  "constraints": [
+    "Company repository only; preserve frozen research provenance",
+    "Existing official subscription authentication; no paid resources",
+    "PostgreSQL records and Temporal execution; preserve ambiguous receipts",
+    "Keep 07:30/20:00 KST scheduling; Analyst display identity retains stable market_brief technical ID and existing receipt routing",
+    "Publication disabled until real-data and Slack qualification",
+    "Read qdata only through its public API in the existing credential-isolated worker; bounded small datasets, no full large-table scans"
+  ],
+  "createdAt": "2026-09-22T07:25:21.405733+00:00",
+  "decisionGates": [
+    "Real Slack activation requires the configured dedicated app and successful source and five-trading-day qualification."
+  ],
+  "deliverables": [
+    {
+      "id": "IDENTITY",
+      "description": "Analyst bot owns briefing and follow-up",
+      "acceptance": [
+        "Role, generated and packaged Slack manifests, footer and guide use Analyst identity",
+        "Stable IDs, permission boundaries and strategist routing preserved"
+      ]
+    },
+    {
+      "id": "ANALYSIS",
+      "description": "Professional analytical contract and review",
+      "acceptance": [
+        "Required evidence-backed mechanism, alternative explanation, horizon and causal basis per issue",
+        "Shared professional procedure frozen into writer/reviewer requests; semantic rejection removes unsupported analysis",
+        "Compact readable main message and tested source/number/kind validation"
+      ]
+    },
+    {
+      "id": "DEVELOPMENT",
+      "description": "Measured and version-scoped analyst development",
+      "acceptance": [
+        "Two synthetic analyst case families, independent numeric/defect oracles and existing bounded practice integration",
+        "Failures feed back into frozen briefing inputs; no synthetic pass presented as certification"
+      ]
+    },
+    {
+      "id": "VALIDATION",
+      "description": "Reviewable local integration and evidence",
+      "acceptance": [
+        "Real PostgreSQL/Temporal regression and deterministic saved examples",
+        "Actual-model and Slack limitations labelled; publication remains disabled",
+        "Documentation, evidence and completed qws checks"
+      ]
+    }
+  ],
+  "nonGoals": [
+    "Trading, training, backtests, portfolio access",
+    "Automatic strategist work",
+    "Pretending fixtures or five future observation days have been verified"
+  ],
+  "outcome": "Analyst owns daily_brief with evidence-backed economic analysis, explicit alternatives and falsifiability, shared professional procedures and version-scoped capability practice.",
+  "revision": 3,
+  "revisionReason": "User requests the Analyst bot to own daily briefings with professional analytical procedures and demonstrable capability checks.",
+  "schemaVersion": 1,
+  "slug": "amberjack",
+  "sourceRequest": "이것 관련해서는 애널리스트 봇이 해주면 좋을거 같고, 실제 이 봇의 전문성도 애널리스트 수준의 전문성을 갖추고서 분석해서 브리핑할 수 있도록 구현해줘.",
+  "stopConditions": [
+    "Preserve an uncertain model or Slack result without automatic new-ID replay.",
+    "Record unavailable real integration conditions; keep publishing disabled until qualification."
+  ],
+  "supersedes": {
+    "intentDigest": "08e33109a07c",
+    "intentFile": "INTENT-v2.json"
+  }
+}

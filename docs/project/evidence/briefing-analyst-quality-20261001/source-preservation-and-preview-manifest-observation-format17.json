@@ -1,0 +1,103 @@
+{
+  "at": "2026-10-06T07:32:53.046699+00:00",
+  "scope": "Bounded prospective operating observation of12 scheduled editions across5 KR trading days, after the current PM case closes. No publication or content gate change.",
+  "previous_commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+  "candidate_commit": "04216a7a126484c1a1b3295dd42786f68732edd5",
+  "runtime_changes": [
+    {
+      "path": "deploy/.env.example",
+      "kind": "modify",
+      "before_sha256": "a01218106d586f6a90541f53de1e8bd76182760ba7f61e973ae50280c03fbdf6",
+      "after_sha256": "0bbfe84fbb554bb5b50a0c13c368ac659fdb09137bb6cfc0c04b57ea2771bd6a"
+    },
+    {
+      "path": "deploy/analyst_preview_release.py",
+      "kind": "modify",
+      "before_sha256": "088dd2424f4c04a052416139bd1702fc04ebd601d829905bdf07b146dd92def1",
+      "after_sha256": "31c47a071d49381f2307b934df49505de810537f41453b8176c6b49d5c0611c6"
+    },
+    {
+      "path": "deploy/compose.yaml",
+      "kind": "modify",
+      "before_sha256": "b511a2e8da4dd0213c13a91fad4f435a3a732b17fbc895de5e392bcb6a7c9951",
+      "after_sha256": "ffedc4afb0fd11aaf97b108942894fd8560830bfc88070054cdf7c63b64a3c17"
+    },
+    {
+      "path": "src/quant_company/briefing/schedule.py",
+      "kind": "modify",
+      "before_sha256": "8fadb041f8b005bd8536f7d2fa8a9ddbecf6da9bd15ebec6e12513a2c1e0d830",
+      "after_sha256": "e967aee8dc9e3c046cd0cb14c1ac2efdaa62609f724546586c5a579f43761675"
+    },
+    {
+      "path": "src/quant_company/briefing/store.py",
+      "kind": "modify",
+      "before_sha256": "0ca1a138664ae68d3e41399762ae9266cf74e864f55d658ed15f2f08ec809dd2",
+      "after_sha256": "dab05daec1fdaf6a8975fd1d4860ec4c6d4ccfe8a95b5afb5822cd9b35d5a006"
+    },
+    {
+      "path": "src/quant_company/config.py",
+      "kind": "modify",
+      "before_sha256": "8c9d779390d392d66db0f90cc676158370315a4b4f9b56da3ffb46157e70e062",
+      "after_sha256": "4320a4436bb158676b742d80e67ea80b39ecb94ddf54b24b437b5c779042f6a4"
+    }
+  ],
+  "runtime_changes_count": 6,
+  "deleted_paths": [],
+  "preserve_codex_runtime": true,
+  "preserve_api": true,
+  "implementation_version": {
+    "format": 17,
+    "validation": 56,
+    "schedule": 4,
+    "quote_reference": 1
+  },
+  "protected_preview_approval": {
+    "owner_approval_id": "chat-analyst-preview-approved-20261002",
+    "answer": "\ubc1c\uc1a1 \uc5c6\ub294 \ubbf8\ub9ac\ubcf4\uae30 \uc124\uce58 \uc2b9\uc778",
+    "scope": "Analyst and briefing lane private preview; preserve company/research/provider source, other roles, credentials and receipts; zero automated Slack writes."
+  },
+  "proposed_preview": {
+    "publication": false,
+    "channel": "C0C2E59B1AA",
+    "owner": "U0C250E23NW",
+    "source_notes": true,
+    "max_revisions": 0,
+    "evaluation_edition_id": "b72483f9-d52b-51d6-92ba-25625a9cb50e",
+    "evaluation_edition_ids": [
+      "02cfddb9-e401-5634-af9c-b124a6f54cf8",
+      "05a23b7f-dfb9-51d9-bda0-9747f482e75c",
+      "3042a447-de8b-55fe-9a56-72014df5c2b9",
+      "4d933b4e-3814-54bf-943a-48029aa76124",
+      "56e7ca37-1579-559a-955a-0d76e38de330",
+      "7d6f4a1e-4611-5aa7-ac5d-0d1b4c1157eb",
+      "91dd3647-e807-5370-8a2c-14226429dd3f",
+      "9473536f-12b8-552b-ba48-6beb1d198577",
+      "b463d3df-94d9-5a93-be1d-4454dadbf098",
+      "b72483f9-d52b-51d6-92ba-25625a9cb50e",
+      "cfc0bd9a-c815-5ce0-a29f-4f411c5f9383",
+      "f8004fe8-789b-5df2-8dfa-a06f11903d91"
+    ],
+    "data_worker_memory_bytes": 402653184,
+    "selected_updates": [
+      "news-worker",
+      "dispatch",
+      "briefing-data-worker"
+    ]
+  },
+  "source_archive_scope": [
+    "src",
+    "deploy",
+    "pyproject.toml",
+    "uv.lock",
+    "README.md"
+  ],
+  "source_archive_prefix": "quant-company/",
+  "frozen_content_policy": "prospective-operating-20261007-20261014-format17-policy.json",
+  "frozen_content_policy_sha256": "64770fb924301c783aa5c97785f07df5f625d89d0fdb9f46cc048905b1fa01af",
+  "installed_company_and_research_source_preserved_exactly": true,
+  "existing_non_analyst_roles_preserved_exactly": true,
+  "qdata_code_archive_identity_preserved": true,
+  "editorial_and_data_reader_source_byte_identical_to_current_pm": true,
+  "deployment": "not_performed",
+  "slack": "not_called"
+}

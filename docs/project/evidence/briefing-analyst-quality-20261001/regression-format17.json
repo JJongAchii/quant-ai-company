@@ -1,0 +1,22 @@
+{
+  "recorded_at": "2026-10-06T07:01:16.031268+00:00",
+  "format_version": 17,
+  "validation_version": 56,
+  "tests": 209,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "postgres": "real local disposable databases",
+  "slack": "simulated transports; actual block delivery remains separate",
+  "models": "fixtures; no real content quality inference from regression",
+  "junit_sha256": "4db840312d4fd4a85546952810a213ce7497000186aa66b593c0956e593b2969",
+  "checks": [
+    "Primary two issues precede secondary issues without moving main evidence to thread",
+    "Complete long main/citations preserved within Slack section bounds",
+    "Root receipt then thread delivery; uncertain effects remain unreplayed",
+    "07:45 AM,17:45 PM and delayed official close handling",
+    "Early PM lake values remain previous-session context",
+    "Original fact/date checks and full review remain mandatory",
+    "Existing credentials, permission paths and preview preservation unchanged"
+  ]
+}

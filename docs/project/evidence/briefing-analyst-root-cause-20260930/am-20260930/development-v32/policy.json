@@ -1,0 +1,25 @@
+{
+  "frozen_at": "2026-09-30T06:58:01.075614+00:00",
+  "scope": "Same-source development replay, never fresh qualification",
+  "format_version": 13,
+  "validation_version": 32,
+  "max_completed_calls": 2,
+  "model": "gpt-6-astra",
+  "source_rule": "Exactly the frozen repaired AM18 originals; no search backfill or new supplements",
+  "frozen_case_outcome": "../frozen-case-outcome.json",
+  "mechanical_before_fix": {
+    "overview_korea_start": "unsupported_prose_number",
+    "consumer_alternative": "unsupported_prose_number"
+  },
+  "mechanical_after_fix": {
+    "overview_korea_start": "unsupported_prose_number"
+  },
+  "repair_request_sha256": "8f1b54bc03ec09456a67ccc999ec0cb1f42e6fc4d0214dab85c7e572e3169bf3",
+  "acceptance": [
+    "Zero mechanical/quote conflicts",
+    "All12 actual independent semantic checks",
+    "Independent original-to-visible-main comparison"
+  ],
+  "slack": "not_called",
+  "deployment": "not_performed"
+}

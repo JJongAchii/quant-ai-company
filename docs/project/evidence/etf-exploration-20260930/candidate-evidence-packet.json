@@ -1,0 +1,68 @@
+{
+  "blocking_gaps": [],
+  "data_policy": {
+    "availability": "assumed_trade_date_2359_kst",
+    "confirmation_eligible": false,
+    "deployment_eligible": false,
+    "evidence_reports": {
+      "exploration-assumptions-3b42f60976aa.json": "3b42f60976aa98127dc968c648b864e3e4108ab05076e64c0d919e50b12d36e1",
+      "history-proof-eba944f4686c.json": "eba944f4686c8b5fe60f0f363118e81156f26d9dfcd0689811226671d6284667",
+      "input-check.json": "d968bb62677540c0c8b85ce3f7d7ac8c2930f1bfa4dd240804af1c25de82d07a",
+      "raw-lineage-f8a0595989be.json": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a"
+    },
+    "mode": "retrospective_exploration",
+    "prices": "krx_reference_adjusted_open_to_next_open",
+    "result_use": "hypothesis_generation_only",
+    "revision_vintages": "unverified",
+    "source_identity": "frozen_inputs_reconstructed_curve"
+  },
+  "engine": {
+    "path": "/state/research/provisioned/data-evidence/engine.py",
+    "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc"
+  },
+  "envelope": "etf_strategy",
+  "execution_profile_digest": "942a9897b1f4382c10e8c66757c651a9dd190b176f2bbf7ae3f5316a55c7a2cf",
+  "input_files": {
+    "development.json": {
+      "path": "/state/research/provisioned/data-evidence/development.json",
+      "sha256": "6482c63da05e443a51560f119cd715500026aeab8d787ecd2dfa201f19a00574"
+    },
+    "warmup.json": {
+      "path": "/state/research/provisioned/data-evidence/warmup.json",
+      "sha256": "e3dc0ed5aa86d2abdad96d39d92b313bf1fa74a13c2f662bcd76d184a578ba81"
+    }
+  },
+  "lake_id": "krx-s3-kr_etf-30784209bf06e53313b8",
+  "program_digest": "04cee0f99abab3dfb94b37756a195753960fffd5a3f623ce0dd3563bf776d162",
+  "reports": {
+    "exploration-assumptions-3b42f60976aa.json": {
+      "path": "/state/research/provisioned/data-evidence/exploration-assumptions-3b42f60976aa.json",
+      "sha256": "3b42f60976aa98127dc968c648b864e3e4108ab05076e64c0d919e50b12d36e1"
+    },
+    "history-proof-eba944f4686c.json": {
+      "path": "/state/research/provisioned/data-evidence/history-proof-eba944f4686c.json",
+      "sha256": "eba944f4686c8b5fe60f0f363118e81156f26d9dfcd0689811226671d6284667"
+    },
+    "input-check.json": {
+      "path": "/state/research/provisioned/data-evidence/input-check.json",
+      "sha256": "d968bb62677540c0c8b85ce3f7d7ac8c2930f1bfa4dd240804af1c25de82d07a"
+    },
+    "limitations.json": {
+      "path": "/state/research/provisioned/data-evidence/limitations.json",
+      "sha256": "c0b1635d630091443b191d1b90da8d4ee86452e19ac09650ab7d492469945fe2"
+    },
+    "provenance-recovery-c813a2e9c4e7.json": {
+      "path": "/state/research/provisioned/data-evidence/provenance-recovery-c813a2e9c4e7.json",
+      "sha256": "c813a2e9c4e7f6e39aeece7e325283451c71281eb2decb004883962a4718d170"
+    },
+    "qdata-readback.json": {
+      "path": "/state/research/provisioned/data-evidence/qdata-readback.json",
+      "sha256": "7b18376afed4ded3ec565df2530e27af915992e2abd9973f6f9f09f04aef1979"
+    },
+    "raw-lineage-f8a0595989be.json": {
+      "path": "/state/research/provisioned/data-evidence/raw-lineage-f8a0595989be.json",
+      "sha256": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a"
+    }
+  },
+  "schema_version": 1
+}

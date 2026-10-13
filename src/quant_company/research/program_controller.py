@@ -20,6 +20,8 @@ PROGRAM_STAGES = {
     "program_proposal": ("researcher_kr", ResearchTaskProposal,
         "Read the original sources. Propose a falsifiable task inside ONE exact program envelope. "
         "Inspect the available data_evidence_packets and frozen engine before specifying a fill method. "
+        "For frozen_vintage_retrospective choose novel_hypothesis only. Read the cross-program scientific lineage "
+        "history, including negative results; a new title or input hash does not establish a new experiment. "
         "Distinguish exact replication, market transfer, and novel hypothesis. Record original claim, "
         "method, departures, contradictions, prior negative findings and predecessor mission IDs. "
         "Set predecessor_mission_ids only from allowed_predecessor_mission_ids in MISSION DATA JSON. "
@@ -34,13 +36,47 @@ PROGRAM_STAGES = {
         "For source_ids use only evidence_sources.source_id values and read each mapped original completely. "
         "Data packet file paths are evidence files, not source_ids. "
         "Check point-in-time availability, delistings, corporate actions, coverage and executable prices. "
-        "For exact replication check original conditions. Unknown checks are false; block missing evidence."),
+        "For exact replication check original conditions. Unknown checks are false; block missing evidence. "
+        "For MissionSpec v3 copy its canonical research_scope and use DataAssessment schema_version=2. "
+        "Do not include top-level data_policy_digest or evaluation_prices in version 2; those are legacy fields. "
+        "Retrospective conditional_ready requires packet_digest and evaluation_price_contract_verified=true, "
+        "coverage=true, point_in_time=false, original_conditions=false, executable_prices=false. "
+        "Only the exact owner-bound typed historical gap codes may remain; every other gap blocks. "
+        "A numeric quality receipt is not a data assessment or an execution approval. "
+        "For legacy MissionSpec v1/v2, only an explicit data.policy permits its stated historical timing/vintage "
+        "assumptions be acknowledged for retrospective exploration. Verify coverage and theoretical evaluation "
+        "prices independently; keep point_in_time, executable_prices and original_conditions false. "
+        "Return exploratory_only with evaluation_prices=true and the exact data_policy_digest from the packet "
+        "identity only if that limited scope is supported and no other blocking gaps remain. Otherwise block. "
+        "An exploratory policy never permits ready or exact replication."),
     "program_selection": ("director", TaskDecision,
         "Select accept, revise or wait using the original evidence, task and independent data assessment. "
         "Compare the proposed fill method with the frozen engine in data_evidence_packets when available. "
         "Accept only a feasible, distinct task inside the approved envelope and remaining program budget. "
-        "A negative scientific result is useful evidence. Do not infer data readiness from employee agreement."),
+        "A negative scientific result is useful evidence. Do not infer data readiness from employee agreement. "
+        "exploratory_only is admissible solely inside the exact owner-approved retrospective data policy; "
+        "it is hypothesis generation and cannot authorize confirmation or deployment."),
 }
+
+
+def data_assessment_output_schema(context):
+    """Expose only the assessment version authorized for this program task."""
+    envelope = context["task"]["proposal"]["envelope"]
+    scoped = context.get("research_scopes", {}).get(envelope) is not None
+    schema = DataAssessment.model_json_schema()
+    properties = schema["properties"]
+    properties["schema_version"] = {"type": "integer", "const": 2 if scoped else 1}
+    schema["required"].append("schema_version")
+    incompatible = ("data_policy_digest", "evaluation_prices") if scoped else (
+        "research_scope", "packet_digest", "evaluation_price_contract_verified")
+    for field in incompatible:
+        properties.pop(field)
+    if scoped:
+        properties["research_scope"] = {"$ref": "#/$defs/ResearchScope"}
+        schema["required"].append("research_scope")
+    properties["decision"]["enum"] = [
+        "ready", "conditional_ready" if scoped else "exploratory_only", "blocked"]
+    return schema
 
 
 def _prior_task_context(row):
@@ -101,6 +137,15 @@ class ProgramApprovalAdapter:
             revision=target.revision, manifest_digest=target.manifest_digest, event_key=event_key, action=action)
         text = ("연구 프로그램을 승인했습니다. 자료 검토·데이터 확인·과제 선정 후 승인된 예산 안에서 연구합니다."
                 if action == "approve" else "프로그램의 새 연구를 중단하고 진행 중 실행의 취소와 대사를 요청했습니다.")
+        if action == "approve":
+            _, _, spec = ProgramStore(self.company).locked(conn, target.target_id)
+            if any(e.template.data.policy is not None for e in spec.envelopes):
+                text = ("한계를 명시한 탐색 연구 프로그램을 승인했습니다. 독립 데이터 검토 후 승인된 예산 안에서 "
+                        "가설을 탐색합니다. 당시 공개 시각·수정 이력은 미확인이고, 확증·운영 승격의 근거로 인정하지 않습니다.")
+            elif any(e.template.data_policy is not None and e.template.data_policy.mode == "frozen_vintage_retrospective"
+                     for e in spec.envelopes):
+                text = ("조건부 사후 연구 프로그램을 승인했습니다. 독립 데이터 판정과 누적 계보 예산 확인 후 "
+                        "가설을 탐색합니다. 당시 공개 시각·수정 이력은 미확인이고, 역사적 알파·실제 체결·배치 승인은 포함하지 않습니다.")
         conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (text, task["id"]))
         self.company._message(conn, project, task["id"], "director", "status", text)
 
@@ -109,6 +154,16 @@ def program_tool(company, conn, project, task, arguments):
     if task["agent"] != "director" or not company.settings.company_autonomous_research_enabled:
         raise PolicyError("Program tools require the director and enabled autonomous research")
     store = ProgramStore(company)
+    if arguments.get("action") == "program_lineage_history" and set(arguments) == {
+            "action", "scientific_lineage_id", "originating_task_refs"}:
+        from .policy_contracts import ScientificLineageAuthority
+        from .scientific_lineages import history
+
+        authority = ScientificLineageAuthority(id=arguments["scientific_lineage_id"], max_total_trials=1,
+            history_digest="0" * 64, originating_task_refs=arguments["originating_task_refs"])
+        payload, digest = history(conn, project["id"], authority)
+        return {"history": payload, "history_digest": digest,
+                "authority": "Read-only approval preimage. A fresh signed program must authorize the lineage and cap."}
     if arguments == {"action": "program_catalog"}:
         from .adaptive_contracts import digest_model
         from .builds import ServerResearchProfile
@@ -119,6 +174,9 @@ def program_tool(company, conn, project, task, arguments):
         for raw in profiles.values():
             profile = ServerResearchProfile.model_validate(raw)
             public.append({"execution_profile": profile.public_profile.id,
+                **({"data_policy_digest": profile.public_profile.data_policy_digest,
+                    "result_scope": profile.public_profile.result_scope}
+                   if profile.public_profile.schema_version == 2 else {}),
                 "execution_profile_digest": digest_model(profile.public_profile),
                 "base_commit": profile.base_commit, "write_paths": profile.allowed_write_paths,
                 "input_names": profile.public_profile.evaluation_input_names,
@@ -212,6 +270,22 @@ class ProgramController:
                         else:
                             self.store.decide(conn, program["id"], task["id"], row["result"], actor=row["actor"])
                 except (PolicyError, ValidationError) as exc:
+                    if stage == "program_data":
+                        failures = row["context"].get("_data_output_failures", 0) + 1
+                        context = {**row["context"], "_data_output_failures": failures}
+                        if failures >= 3:
+                            context["_program_hold"] = {"reason": "repeated_data_output_contract_failure",
+                                                        "failure_count": failures}
+                        conn.execute("""UPDATE research_mission_stages SET state='waiting',context=%s,error=%s,
+                            retry_at=%s,updated_at=now() WHERE id=%s""",
+                                     (Jsonb(context), str(exc)[:1200],
+                                      None if failures >= 3 else now() + timedelta(minutes=5), identity))
+                        if failures >= 3:
+                            self.company._event(conn, "research_program_stage_held", {
+                                "stage_id": str(identity), "reason": "repeated_data_output_contract_failure",
+                                "failure_count": failures, "scope": "Data artifact contract failure; no research judgment."},
+                                project["id"])
+                        return {"state": "waiting"}
                     conn.execute("""UPDATE research_mission_stages SET state='waiting',error=%s,retry_at=%s
                         WHERE id=%s""", (str(exc)[:1200], now() + timedelta(minutes=5), identity))
                     return {"state": "waiting"}
@@ -237,20 +311,42 @@ class ProgramController:
                 prefix = "data/" + envelope_name + "/"
                 mappings.update({prefix + name: entry for name, entry in attached.items()})
                 packet_index.append({"envelope": envelope_name, "packet_digest": digest,
+                    **({"research_scope": packet.research_scope.model_dump(mode="json"),
+                        "gaps": [gap.model_dump(mode="json") for gap in packet.gaps]}
+                       if packet.research_scope is not None else {}),
                     "blocking_gaps": packet.blocking_gaps,
                     "identity_file": prefix + "identity.json", "engine_file": prefix + "engine",
                     "report_files": [prefix + "reports/" + name for name in sorted(packet.reports)],
                     "input_files": [prefix + "inputs/" + name for name in sorted(packet.input_files)]})
                 if stage == "program_data":
                     required_data_reads.extend(prefix + name for name in required)
+            lineage_index = []
+            for envelope_name, envelope in sorted(chosen.items()):
+                authority = envelope.template.scientific_lineage
+                if authority is None:
+                    continue
+                from .scientific_lineages import overview, summary
+
+                lineage = overview(conn, project["id"], authority.id)
+                name = "scientific-lineages/" + str(authority.id) + ".json"
+                mappings[name] = backend._entry(backend._blob(directory, "scientific-lineage", lineage))
+                required_data_reads.append(name)
+                lineage_index.append({"envelope": envelope_name, **summary(lineage), "full_history_file": name,
+                                      "signed_authority": authority.model_dump(mode="json")})
             context = {"program": as_json(program), "usage": status, "task": as_json(task),
+                **({"research_scopes": {name: e.template.research_scope.model_dump(mode="json")
+                    for name, e in chosen.items() if e.template.research_scope is not None}}
+                   if spec.schema_version == 2 else {}),
                 "prior_tasks": [_prior_task_context(item) for item in tasks if not task or item["id"] != task["id"]][-12:],
                 "allowed_predecessor_mission_ids": [m["id"] for m in status["missions"]],
                 "evidence_sources": index, "_private_files": mappings,
                 "data_evidence_packets": packet_index, "required_data_reads": required_data_reads,
+                **({"scientific_lineages": lineage_index} if lineage_index else {}),
                 "evidence_version": evidence_version,
                 "available_files": [{"name": name, "sha256": item["sha256"], "size": item["size"]}
                                     for name, item in mappings.items()]}
+            if row and "_data_output_failures" in row["context"]:
+                context["_data_output_failures"] = row["context"]["_data_output_failures"]
             actor = PROGRAM_STAGES[stage][0]
             MissionStore(self.company)._actor(actor)
             if not row:

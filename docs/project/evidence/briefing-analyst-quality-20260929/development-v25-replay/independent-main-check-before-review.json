@@ -1,0 +1,21 @@
+{
+  "stage": "before_final_model_review",
+  "edition": "2026-09-29-am",
+  "validation_version": 25,
+  "mechanical_rejections": 0,
+  "observed_improvements": [
+    "The visible main has both independently published source references on each US core index close.",
+    "The October WTI close is not stated as a market value; a visible sentence says the reported delivery month conflicts with the trading date.",
+    "The Korean prior-session FX level and change, September CBSI manufacturing divergence, dated US yields and contrasting Treasury Secretary view appear in the main.",
+    "The Hormuz transit estimate, Saudi bypass pipeline, Brent contract and Qatar LNG development are separate rather than conflated.",
+    "The October 2 employment report survives the seven-day calendar window with source-supported relative date and time conversions."
+  ],
+  "remaining_questions_for_independent_review": [
+    "The Hormuz 60% throughput is an estimate derived from Kpler and AIS-disabled ship accounting. The main states the figure without naming the estimator or the measurement caveat; assess whether this overstates certainty.",
+    "Assess whether the relatively long five-issue main and multiple next-check bullets remain readable in Slack.",
+    "Confirm every material fact from all twenty selected originals has sufficient visible coverage and that no reported assertion is promoted to a verified outcome.",
+    "The previous reviewer missed the expired WTI contract and its old verdict cannot certify this revised output. The final review must independently apply the current rule and twelve checks."
+  ],
+  "slack": "not_called",
+  "decision": "No publication decision before the final independent response"
+}

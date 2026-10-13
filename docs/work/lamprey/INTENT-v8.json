@@ -1,0 +1,61 @@
+{
+  "constraints": [
+    "PostgreSQL owns authority and records; Temporal owns execution and retries",
+    "Official ChatGPT authentication and existing isolation; no paid API or unsandboxed fallback",
+    "Protected engine, old prepared input bytes and historical signed program receipts are preserved",
+    "Company evidence remains in this repository; research repositories are read-only integration targets"
+  ],
+  "createdAt": "2026-10-01T08:08:09.092598+00:00",
+  "decisionGates": [
+    "Fail closed on active or ambiguous execution drift; reconcile before cutover",
+    "Fresh canonical policy and lineage require their own signed owner program approval",
+    "Actual employees determine independent data admissibility and task selection"
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "Read actual releases, active jobs, reservations and configuration identities before changes",
+        "Preserve unrelated services, credentials, signed legacy authorities and uncertain effects",
+        "Record exact source, CI, backup and health receipts for any operational change"
+      ],
+      "description": "Current production and worker baseline plus qualified compatible release intake",
+      "id": "RELEASE_INTAKE"
+    },
+    {
+      "acceptance": [
+        "Keep frozen draft receipts and original input bytes unchanged",
+        "Independently verify numerical, coverage, price-estimand and file identities without sealed data or market performance",
+        "Canonical policy binds actual input and evidence bytes; no retrospective PIT claim"
+      ],
+      "description": "Immutable real input numeric qualification, policy evidence and compatible profile preparation",
+      "id": "REAL_DATA_PACKET"
+    },
+    {
+      "acceptance": [
+        "Use actual database revision, task origins and cumulative budget history",
+        "Expose exact canonical policy, lineage and budget digest for owner review",
+        "Record actual staff decisions and signed Slack approval separately from local engineering checks; no experiment before required authority"
+      ],
+      "description": "Canonical program with cumulative scientific history, actual review and signed owner gate",
+      "id": "PROGRAM_REVIEW"
+    }
+  ],
+  "nonGoals": [
+    "No market backtest or heavy training in the company service release slice",
+    "No live orders, paper/live capital allocation or sealed price reads"
+  ],
+  "outcome": "Prepare and safely take over the qualified conditional research runtime, freeze the real numeric data and policy packet with inherited scientific history, and advance actual staff review and signed canonical Slack program approval.",
+  "revision": 8,
+  "revisionReason": "User authorized the next operational intake and actual staff/program approval stage after completed implementation qualification.",
+  "schemaVersion": 1,
+  "slug": "lamprey",
+  "sourceRequest": "응 진행해줘 — 운영 인수, 실제 입력 패킷과 프로그램 승인 절차 진행",
+  "stopConditions": [
+    "Never automatically replay an uncertain external write, charge or execution",
+    "New unknown data gaps, policy/hash mismatch or changed program history require a revised concrete proposal"
+  ],
+  "supersedes": {
+    "intentDigest": "8e90e63b8149",
+    "intentFile": "INTENT-v7.json"
+  }
+}

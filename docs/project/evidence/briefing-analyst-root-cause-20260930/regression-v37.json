@@ -1,0 +1,18 @@
+{
+  "scope": "Full local v37 suite, real PostgreSQL; not Slack/cloud qualification. Last offline supplemented-source parity assertion additionally rerun and passed after full suite.",
+  "command": ".venv/bin/pytest -q -x --tb=short --junitxml=docs/project/evidence/briefing-analyst-root-cause-20260930/regression-v37.xml",
+  "passed": 1396,
+  "skipped": 38,
+  "failed": 0,
+  "warnings": 12,
+  "elapsed_seconds": 375.52,
+  "format_version": 15,
+  "validation_version": 37,
+  "lint": "All checks passed!",
+  "real_postgresql": true,
+  "post_suite_offline_source_parity_test": {
+    "passed": 1,
+    "elapsed_seconds": 2.63
+  },
+  "subsequent_change": "v38 prompt-only explicit own-claim new-number/date and signed-transaction instructions; not actual model qualification"
+}

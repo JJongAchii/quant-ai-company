@@ -1,0 +1,21 @@
+# Optional overlay: render on ECS Fargate (docs/daily-video.md, deploy/render.json). Add after video.compose.yaml with
+# --profile video --profile claude once the stack, the task definition and the worker access key secret exist.
+# Only the media worker receives the render credentials; the render task itself holds no database, Slack or model keys.
+services:
+  video-worker:
+    environment:
+      VIDEO_RENDER_BACKEND: remote
+      VIDEO_RENDER_REGION: ${VIDEO_RENDER_REGION:-ap-northeast-2}
+      VIDEO_RENDER_BUCKET: ${VIDEO_RENDER_BUCKET:?set VIDEO_RENDER_BUCKET (stack output BucketName)}
+      VIDEO_RENDER_CLUSTER: ${VIDEO_RENDER_CLUSTER:?set VIDEO_RENDER_CLUSTER (stack output ClusterName)}
+      VIDEO_RENDER_TASK_DEFINITION: ${VIDEO_RENDER_TASK_DEFINITION:?set VIDEO_RENDER_TASK_DEFINITION (family:revision)}
+      VIDEO_RENDER_SUBNETS: ${VIDEO_RENDER_SUBNETS:?set VIDEO_RENDER_SUBNETS (JSON list of public subnets)}
+      VIDEO_RENDER_SECURITY_GROUP: ${VIDEO_RENDER_SECURITY_GROUP:?set VIDEO_RENDER_SECURITY_GROUP (stack output)}
+      VIDEO_RENDER_ATTEMPTS: ${VIDEO_RENDER_ATTEMPTS:-3}
+      VIDEO_RENDER_TIMEOUT_MINUTES: ${VIDEO_RENDER_TIMEOUT_MINUTES:-90}
+      AWS_SHARED_CREDENTIALS_FILE: /run/secrets/render_aws_credentials
+    secrets: [database_password, temporal_api_key, model_runtime_token, render_aws_credentials]
+secrets:
+  render_aws_credentials:
+    # [default] profile of the quant-company-render-worker access key; root:10001 0440. Never commit it.
+    file: ${STATE_DIR:-/var/lib/quant-company}/secrets/render_aws_credentials

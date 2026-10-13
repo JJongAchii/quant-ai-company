@@ -1,0 +1,35 @@
+{
+  "at": "2026-09-30T11:07:30.662733+00:00",
+  "scope": "Independent original-to-main and prior-draft comparison BEFORE final review",
+  "documents_read": 20,
+  "rejected": {},
+  "quote_conflicts": [],
+  "main_chars": 6466,
+  "review_prompt_chars": 78888,
+  "repair_targets_covered": [
+    "Fiscal63.2trillion estimate with other discussed allocation",
+    "KR3year6.5bp move and FX3.9won move",
+    "Japan production-1.7 versus+1.7 expected and China PMI expansion",
+    "Requested LNG physical supply with global-price exposure",
+    "HistoricalQ2 official FX sales distinguished from today",
+    "PCE headline/core forecasts and already observed offsets",
+    "Ukraine attributed economic loss, operationaloffset and remaining risk"
+  ],
+  "prior_core_facts_preserved": [
+    "KRX prices, session reversal, foreign flow discrepancy and breadth",
+    "Memory product/quarter baselines and existing demand offsets",
+    "Treasury temporal comparison and differing Fed urgency",
+    "Oil supply1632.8만barrels/day, Brent latest rebound and actual refinedfuel divergence",
+    "Iran response/denial/implementation order",
+    "Ukraine actual outage and causal qualification"
+  ],
+  "potential_remaining_material_gaps": [
+    "PCE source Julyrevision0.2~0.3pp and3% forecast, spendingAug0.8vsJuly0.2, observed ex-gas5.7% not numerically shown",
+    "LNG annual130만t visible but domestic import3% scale absent",
+    "Q2 official FXsales96.12억 visible but decline fromQ1 136.28억 absent",
+    "Ukraine estimate annualfixedasset10billion and maximaldaily10hour alerts omitted"
+  ],
+  "old_policy_range_invented": false,
+  "review_result_known": false,
+  "slack": "not_called"
+}

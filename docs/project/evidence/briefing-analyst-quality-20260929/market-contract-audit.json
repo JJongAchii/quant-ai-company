@@ -1,0 +1,14 @@
+{
+  "kind": "independent_post_cutoff_development_audit",
+  "edition": "2026-09-29-am",
+  "observed_us_session": "2026-09-28",
+  "reported_contract": "2026-10 NYMEX WTI futures",
+  "reported_close_source_id": "09e24b0727ec06db4de910d618075f316dfdea66",
+  "reported_close_claim_id": "oil_offsets",
+  "exchange_rule": "NYMEX Light Sweet Crude Oil futures, rule 200102.F",
+  "exchange_rule_url": "https://www.cmegroup.com/rulebook/NYMEX/2/200.pdf",
+  "certain_expiry_bound": "2026-09-25",
+  "finding": "The October-delivery contract must stop trading before September 25. A September 28 close for that contract is impossible under this rule, even though a selected news original states it. The exact last trading day is not needed for this conclusion.",
+  "effect": "Withhold the October WTI level and change. Retain separately sourced Brent and physical-supply developments if their own evidence passes review.",
+  "scope": "Rule checked after the saved edition cutoff. It is a development audit and a general exchange constraint, not a contemporaneous market-price source or permission to insert a replacement price."
+}

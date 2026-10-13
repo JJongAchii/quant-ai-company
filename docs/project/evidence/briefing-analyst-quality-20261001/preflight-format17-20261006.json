@@ -1,0 +1,21 @@
+{
+  "commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+  "format": 15,
+  "validation": 56,
+  "editor_sha256": "7d4cb4ec2d2d3454907779e66b6ae49fdc9430eb0065c242f5a4e17ae439a720",
+  "enabled": true,
+  "publish": false,
+  "authorized": true,
+  "evaluation_edition": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+  "max_revisions": 0,
+  "source_notes": true,
+  "policy": "09aa0007a634689f9cbb14b69a552f8198e9483ee6dbb9af5073fd88269718bb",
+  "running_brief_calls": 0,
+  "model": "gpt-6-astra",
+  "checked_at": "2026-10-06T07:00:23.874116+00:00",
+  "today_pm_row_exists": false,
+  "today_pm_model_calls": 0,
+  "source_titles_or_bodies_inspected": false,
+  "source_receipt_sha256": "31f92639be4a690c3843b0274297b666bc0938f1c208983a18718d6d03144d84",
+  "purpose": "Metadata-only preflight before prospective policy amendment. Unrelated installed ec1 controller fix is preserved exactly; older failed AM cases remain closed."
+}

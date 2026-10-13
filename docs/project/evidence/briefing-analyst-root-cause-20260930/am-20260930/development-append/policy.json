@@ -1,0 +1,14 @@
+{
+  "frozen_at": "2026-09-30T08:32:33.433819+00:00",
+  "scope": "Same18 frozen originals development append-only verification; NOT fresh qualification",
+  "format_version": 15,
+  "validation_version": 35,
+  "max_completed_calls": 2,
+  "repair": "One scoped material append and one full independent review; prior accepted draft immutable",
+  "source_rule": "Same18 frozen originals and exact frozen previous KR close/reference; no new sources",
+  "prior_review_sha256": "9eb5b010fd3be88ab6ba27e490e7e31cdc4d2e63f0923e0863b3619e24269ccf",
+  "prior_writer_sha256": "4c793199325056accf5356fd5206504b52d171817d97683ecd4d6e9582e73909",
+  "request_id": "news-brief-eval-1f3ebe29b5829a377b01f8f9022a141e",
+  "slack": "not_called",
+  "deployment": "not_performed"
+}

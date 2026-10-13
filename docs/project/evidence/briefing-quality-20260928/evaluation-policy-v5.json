@@ -1,0 +1,52 @@
+{
+  "frozen_at": "2026-09-27T23:08:49.390357+00:00",
+  "format_version": 7,
+  "validation_version": 5,
+  "selection_version": 3,
+  "editorial_digest": "4229ffa0d9b988eb0b2b07c335b9762ccb9783693716a75513715febfdcf73cb",
+  "procedure_digest": "ffe675f1a5df9f052688fc48f5a6f054f365185bd2ffa7aba328fe3848d9b417",
+  "files_sha256": {
+    "src/quant_company/briefing/editor.py": "31eeb8ff275818f15f8bb5c9c701e19bd7f850f8567c3721cd16004c35d7ac7c",
+    "src/quant_company/briefing/coverage.py": "f7736f6f848531c35c115656585bc7a8b4a8e06c9617fba07ff651ec4d412496",
+    "src/quant_company/briefing/numeric.py": "aa81ee23fecb1d3f8a2686724e170e77679148bb06bd146ac5a5b7f531e61952",
+    "src/quant_company/briefing/inputs.py": "955c814c29c4bc1e723ea4b59f790c1b6e9449643570ca304b648d331cc8286a",
+    "src/quant_company/briefing/store.py": "aa2cbbe158b430ec78efc7a2e3527519dcae61f9ff3231e9dad6c75932ab11eb",
+    "src/quant_company/briefing/qualification.py": "95615bb26a45e191011a4af22d5c4a2a08911633e1006aa46c7e7dac69334b93",
+    "src/quant_company/staff/playbooks/market_brief.md": "ffe675f1a5df9f052688fc48f5a6f054f365185bd2ffa7aba328fe3848d9b417",
+    "scripts/evaluate_briefing.py": "27e89836b776fda68e1c13035f3f12fe3afa6ed2d46e92898e807cd60d3b65c1",
+    ".local/briefing-quality-read-20260928.py": "a5cfa96e1d2681fb77effcd97206225263fe93dd6df2ee05259c29d02b7f73be",
+    ".local/fetch-briefing-quality-20260928.py": "e27794bb94b6f895fee55f9c7053c46b1d239660abb65d104416153096c2037a",
+    ".local/prepare-briefing-quality-20260928.py": "d6e679cbc91e18b87329bfeffe53623e88cbdd07b0f9c1565425cdf73f19af6b"
+  },
+  "cases": [
+    "am-20260924",
+    "pm-20260923"
+  ],
+  "case_selection": "First unused completed AM and PM editions following the prior 2026-09-23 AM evaluation. Fixed before reading source titles or bodies. These are unseen editions; overlapping originals are counted separately.",
+  "source_selection": "Same bounded cached-original SQL selection as inputs.collect: 30 hours, at most 48 articles per origin, 600 total, then unchanged selection v3. No retrospective current lake values, search or calendar fetch.",
+  "checks": [
+    "alternatives",
+    "causality",
+    "counterevidence",
+    "coverage",
+    "depth",
+    "falsifiability",
+    "materiality",
+    "numbers",
+    "readability",
+    "sources",
+    "timing",
+    "transmission"
+  ],
+  "pass": "All twelve semantic checks true, verdict publish, no mechanical rejection, complete core observations, no unresolved quote conflict. All first attempts and one possible repair retained.",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "max_writer_reviewer_calls_per_case": 4,
+  "repair": "Only one after a confirmed failure, using the service mechanically accepted draft and combined rejections. Offline replay does not qualify live timing. No uncertain replay.",
+  "latency": "Record actual writer, review, repair and final-review seconds. Compare their sum with 20-minute nominal and 30-minute final window; excludes queue and collection.",
+  "slack": "not_called",
+  "production_settings": "unchanged",
+  "supersedes_for_subsequent_evaluation": "evaluation-policy.json",
+  "change_reason": "AM first attempt exposed exact translation false rejections: quarter percentage point, Oct./October with year, and a fifth. Normalize these exact quantities/dates, retain fractional and amount counterexamples; no source reselection or writer/reviewer prompt change.",
+  "evaluation_scope": "AM continuation is development after observed numeric-validation defects, with one permitted full model repair informed by the completed first semantic review. PM keeps its frozen original bundle and writer request; no prior PM model output has been inspected. Preserve initial validation-4 failure and do not label repaired AM a clean unseen pass."
+}

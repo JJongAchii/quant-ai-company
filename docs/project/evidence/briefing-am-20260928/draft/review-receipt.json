@@ -1,0 +1,35 @@
+{
+  "request_id": "news-brief-eval-2e9d3bad56f642ce44a308476f68ff26",
+  "request_sha256": "5c17cdee6e6478404826a0082d28c283eccf26a8eb057e7b7074dceb68867551",
+  "elapsed_seconds": 113.236,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "request_id": "news-brief-eval-2e9d3bad56f642ce44a308476f68ff26",
+    "decision": {
+      "say": "",
+      "status": "complete",
+      "delegations": [],
+      "messages": [],
+      "artifacts": [
+        {
+          "title": "BriefReview",
+          "content": "{\"verdict\":\"reduce\",\"checks\":{\"numbers\":true,\"sources\":true,\"timing\":true,\"causality\":true,\"materiality\":true,\"counterevidence\":true,\"transmission\":true,\"alternatives\":true,\"falsifiability\":true,\"coverage\":false,\"depth\":false,\"readability\":true},\"source_assessments\":[{\"source_id\":\"7e05f7d340dfe4f3a375f2d628eeeff781c6c4c1\",\"treatment\":\"covered\",\"reason\":\"금리 부담과 AI 투자·실적의 상쇄 경로를 함께 설명하고, 다른 기사의 주가 방향과 비교 기준이 불명확하다는 점도 본문에 공개했다.\",\"item_ids\":[\"overview_session\",\"rates_mechanism\",\"rates_counter\"]},{\"source_id\":\"e09e615b222049450980166cf9b0b3c88603f8c7\",\"treatment\":\"covered\",\"reason\":\"KODEX200의 과거 기간 수익률과 코스피200의 고점 대비 조정을 구분했다. ETF 수익률을 오늘 지수 등락으로 바꾸지 않았다.\",\"item_ids\":[\"overview_korea\"]},{\"source_id\":\"6ceba6098836e9245f6461534ff67f7e2feba2d6\",\"treatment\":\"not_material\",\"reason\":\"과거 외부 수탁업체 개인정보 유출과 공격 통계이며, 현재 결제·금융시장 운영 차질을 보여주는 근거가 없어 주요 시황에서 제외할 수 있다.\",\"item_ids\":[]},{\"source_id\":\"0a29d0b746f78fd37bdea746c0ed635bc1e9b562\",\"treatment\":\"background\",\"reason\":\"전기차·퇴직연금 논의는 정책 배경이지만 구체적인 결정, 지원 규모나 시행 조건이 발표되지 않아 주요 변화로 다루지 않아도 된다.\",\"item_ids\":[]},{\"source_id\":\"cd8ee43875f68e1245babea0ce685d2d2bdb9c3e\",\"treatment\":\"not_material\",\"reason\":\"영국 당국은 사태가 수습됐다고 보며 배후는 수사 중이다. 확인된 에너지 공급 차질이나 시장 파급이 없어 별도 핵심 이슈로 요구하지 않는다.\",\"item_ids\":[]},{\"source_id\":\"9d7df865e48cc4abb5fc3f53d7df8c6d6ec97c3a\",\"treatment\":\"covered\",\"reason\":\"추가 협상 가능성과 입장차, 원유 2200만 배럴 통과에 대한 미국 측 발언을 본문에 반영했다. 통행 정상화의 독립 확인과도 구분했다.\",\"item_ids\":[\"iran_fact\",\"iran_mechanism\",\"iran_counter\"]},{\"source_id\":\"4cd1ba7cf9a5eef33608b800c2c79532a50505eb\",\"treatment\":\"background\",\"reason\":\"제주 면세점의 과거 연간 매출·이용률 감소와 개선 건의가 중심이다. 새 실적 전망이나 확정 정책이 없어 이번 주 주요 변화보다 우선순위가 낮다.\",\"item_ids\":[]},{\"source_id\":\"a5515fb0ed52ddac583fd05b478ef875530320e9\",\"treatment\":\"covered\",\"reason\":\"Muse의 구독 해지 기능과 반복 매출 경로를 설명했다. 구독 지출 증가율과 실물 구독의 낮은 취약성도 가시적인 반대 근거로 제시했다.\",\"item_ids\":[\"ai_fact\",\"ai_mechanism\",\"ai_counter\"]},{\"source_id\":\"24aa686f207525bcdb913f6247c3eaf9165fb0b6\",\"treatment\":\"background\",\"reason\":\"부분 반영에 그쳤다. 인상 확률·미국 금리·두 연준 인사는 담았지만, PMI 58.4와 62개월 최고라는 성장 근거 및 일본·독일 등으로 번진 국채 매도세가 빠져 완전한 반영으로 볼 수 없다.\",\"item_ids\":[\"rates_fact\",\"rates_counter\",\"overview_session\"]},{\"source_id\":\"622f4a74bd1092e9343237c13390e1ca53fa9cc8\",\"treatment\":\"covered\",\"reason\":\"현금에서 증권 담보로의 변경, 이달 말·다음 달 단계적 시행, 98% 인정과 50% 이상 부담 감소 전망, 재평가·추가 담보 및 한도 확대 추진을 구분했다.\",\"item_ids\":[\"ksd_fact\",\"ksd_mechanism\",\"ksd_counter\"]},{\"source_id\":\"f72f5b80378fea799b32a2b4fc9065d16b8a0c3d\",\"treatment\":\"covered\",\"reason\":\"7일 계획의 조건과 거절, 추가 협상 예상일 및 양측 요구 차이를 반영했다. 말미의 북한 관련 해석은 확정 정책 변화가 없어 별도 핵심 이슈로 요구하지 않는다.\",\"item_ids\":[\"iran_fact\",\"iran_check\",\"iran_talks\"]},{\"source_id\":\"b3c48c0418e82b9c0202a2a0848fa0796fd1d257\",\"treatment\":\"covered\",\"reason\":\"법원의 조달 배제 유지와 호주 상원 출석 요구를 설명하고 화요일 경영진 회동을 본문 점검 일정에 담았다. 미확인 만찬 예정은 이보다 부차적이다.\",\"item_ids\":[\"ai_fact\",\"ai_mechanism\",\"ai_ceo_meeting\"]},{\"source_id\":\"f418653fd734a0a7ad1262bedc0ed60ddaa11596\",\"treatment\":\"background\",\"reason\":\"해협 수출 제한의 배경만 주로 사용했다. WSJ가 전한 미국 중간선거 이후 폭격 재개 가능성은 일반적인 공격 위험 언급에 그쳐, 협상과 병존하는 구체적 확전 시나리오가 본문에서 빠졌다.\",\"item_ids\":[\"iran_mechanism\",\"watch_energy\"]},{\"source_id\":\"04b7af7effa70fd1cb57b30c74725b47084f3449\",\"treatment\":\"background\",\"reason\":\"북한 비핵화 문구의 변화는 외교 배경이나 북미대화 의도는 추정이다. 확정된 무역·공급망 조치나 시장 영향이 없어 주요 시황에서 제외할 수 있다.\",\"item_ids\":[]},{\"source_id\":\"933da0069ebe4907fc024db3836353ee7cc29855\",\"treatment\":\"covered\",\"reason\":\"거절 이후에도 남은 외교 경로와 이란 대통령의 기존 양해각서 단계적 이행 의사를 본문에 반영했다. 당사자 발언이라는 한계도 보인다.\",\"item_ids\":[\"iran_counter\",\"iran_alternative\"]},{\"source_id\":\"bd2105f35e5c08dcb1b76b148327227bb5428c70\",\"treatment\":\"covered\",\"reason\":\"재개방 제안 거절이라는 중복 내용 외에 고유한 핵 사찰단 입국 허용 발언을 본문 반대 근거로 보존하고 실제 사찰 실행과 구분했다.\",\"item_ids\":[\"iran_counter\"]}],\"rejected_ids\":[],\"concerns\":[\"coverage·depth: 금리 상승의 핵심 실물 근거인 PMI 58.4·62개월 최고와 글로벌 국채 매도 확산이 빠져, 성장 요인과 자산 간 파급 설명이 충분하지 않습니다.\",\"coverage: CNBC 원문의 중간선거 이후 폭격 재개 가능성 보도가 빠졌습니다. 일반적인 공격 위험 언급만으로는 협상과 병존하는 확전 시나리오의 시계를 전달하지 못합니다.\"]}",
+          "source_ids": []
+        }
+      ],
+      "tools": [],
+      "memories": [],
+      "follow_up": null
+    },
+    "thread_id": "01a0e701-682a-7370-b389-cdae622b4851",
+    "usage": {
+      "input_tokens": 38100,
+      "cached_input_tokens": 0,
+      "output_tokens": 3515,
+      "reasoning_output_tokens": 1267
+    },
+    "provider": "codex",
+    "web_searches": []
+  }
+}

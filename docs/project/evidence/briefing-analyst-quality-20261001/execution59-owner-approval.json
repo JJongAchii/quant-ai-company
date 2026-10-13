@@ -1,0 +1,15 @@
+{
+  "recorded_at": "2026-10-07T00:31:46Z",
+  "owner_approval_id": "chat-analyst-execution-approved-20261007",
+  "approved": true,
+  "user_answer": "15분 설정한 이유가 있어? 꼭 필요한거야? 암튼 승인할게",
+  "reviewed_candidate_commit": "d9ba0b63d5cb6d497dc9677b55f863d85efbb851",
+  "scope": "Install the tested Analyst execution59 preview including Codex runtime changes and evaluate the fresh October 7 PM case at the actual xhigh setting.",
+  "previous_owner_approval_id": "chat-analyst-preview-approved-20261002",
+  "preservation": ["Official ChatGPT authentication", "Other roles and feature overlays", "Slack and database secrets", "All existing effect and model receipts"],
+  "publication_enabled": false,
+  "fresh_edition_id": "3042a447-de8b-55fe-9a56-72014df5c2b9",
+  "necessary_installation_correction": "The helper now explicitly links the new execution approval to the existing owned preview. Existing image identity, active root-owned receipt and installed source base must still match. Analyst model source and content criteria are unchanged.",
+  "installation_correction_verification": {"tests_passed": 26, "failed": 0, "lint": "passed", "actual_model_calls": 0, "slack_calls": 0},
+  "content_quality_qualified": false
+}

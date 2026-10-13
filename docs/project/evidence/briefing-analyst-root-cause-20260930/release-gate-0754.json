@@ -1,0 +1,36 @@
+{
+  "checked_at": "2026-09-30T08:05:41.720339+00:00",
+  "previous_commit": "5defb8cb9dd7c655214663b05670cd2896006b30",
+  "candidate_commit": "4f85bfcc4330c8191538ade2ee65f5227cc5e5b9",
+  "policy_sha256": "ad70fa99329889af9a2c9aea48b3cf3a30575211bbde985f30aab6d71509d100",
+  "validator": "installed deploy/maintenance_release.py:validate_tree",
+  "accepted": false,
+  "error": "release_file_deleted",
+  "changed_file_count": 1113,
+  "critical_changed_paths": [
+    "deploy/.env.example",
+    "deploy/Dockerfile.quant-code-update",
+    "deploy/autonomous-research.compose.yaml",
+    "deploy/compose.yaml",
+    "deploy/data-watch.compose.yaml",
+    "deploy/maintenance_release.py",
+    "deploy/model-accounts.compose.yaml",
+    "deploy/pinned-worker-roles-compat.compose.yaml",
+    "deploy/prepare-pinned-worker-roles.py",
+    "deploy/qdata-source.json",
+    "deploy/quant_feed_quality_release.py",
+    "deploy/state_backup.py",
+    "deploy/test_deployment_contract.py",
+    "pyproject.toml",
+    "src/quant_company/cli.py",
+    "src/quant_company/config.py",
+    "src/quant_company/db.py",
+    "src/quant_company/roles.json",
+    "uv.lock"
+  ],
+  "roles_added": [
+    "market_brief"
+  ],
+  "roles_removed": [],
+  "host_modified": false
+}

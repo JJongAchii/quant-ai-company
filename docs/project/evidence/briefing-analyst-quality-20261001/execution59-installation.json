@@ -1,0 +1,324 @@
+{
+  "recorded_at": "2026-10-07T01:08:40.322510+00:00",
+  "source_commit": "15215a4e7c7d3188551278c1ec36fed85d428436",
+  "reviewed_model_source_commit": "d9ba0b63d5cb6d497dc9677b55f863d85efbb851",
+  "owner_approval": "execution59-owner-approval.json",
+  "state": "preview_active_actual_cloud",
+  "publication_enabled": false,
+  "format_version": 17,
+  "validation_version": 59,
+  "schedule_version": 4,
+  "installed": true,
+  "actual_model_quality_evaluated": false,
+  "goal_complete": false,
+  "cutover": {
+    "action": "cutover",
+    "recorded_at": "2026-10-07T01:05:33.725013+00:00",
+    "exit_code": 0,
+    "phase": "preview_active",
+    "base": "0ea670b7b0637d91a46714b73ef8df96d979cc6f",
+    "commit": "15215a4e7c7d3188551278c1ec36fed85d428436",
+    "owner_approval": "chat-analyst-execution-approved-20261007",
+    "previous_owner_approval_id": "chat-analyst-preview-approved-20261002",
+    "publication_enabled": false,
+    "database_backup": {
+      "file": "analyst-preview-15215a4e7c7d3188551278c1ec36fed85d428436.postgres.dump",
+      "bytes": 373064856,
+      "sha256": "bb6bf57d19ba249f7d75f885c31116b66b26fc7b0811cd2aebb1d3c91d9046ec"
+    },
+    "running_services_unchanged": true,
+    "existing_feature_environment_and_runtime_preserved": true,
+    "unrelated_services_preserved": true,
+    "evaluation_editions": [
+      "3042a447-de8b-55fe-9a56-72014df5c2b9"
+    ],
+    "quality_and_slack_acceptance": "separate; not certified by installation",
+    "images": [
+      {
+        "target": "app",
+        "id": "sha256:b8f2a52940728cffb0b149f3d600c40dfda13c26665835b049d8b0942236feb5",
+        "tag": "quant-company:15215a4e7c7d3188551278c1ec36fed85d428436-profile0",
+        "source_verified": true,
+        "services": [
+          "news-worker",
+          "dispatch"
+        ]
+      },
+      {
+        "target": "app",
+        "id": "sha256:500509a1b4533805255378740cb5169b44086004b38b89df8201fa7d17d8f880",
+        "tag": "quant-company:15215a4e7c7d3188551278c1ec36fed85d428436-profile1",
+        "source_verified": true,
+        "services": [
+          "briefing-data-worker"
+        ]
+      },
+      {
+        "target": "codex",
+        "id": "sha256:6410935ccd43590e960a13d7555d097fb1feff720d6ab4e57afb2a2e8ecb79ca",
+        "tag": "quant-company-codex:15215a4e7c7d3188551278c1ec36fed85d428436-profile2",
+        "source_verified": true,
+        "services": [
+          "codex-runtime"
+        ]
+      }
+    ]
+  },
+  "postinstall": {
+    "recorded_at": "2026-10-07T01:07:17.982920+00:00",
+    "mode": "postinstall",
+    "current": "15215a4e7c7d3188551278c1ec36fed85d428436",
+    "phase": "preview_active",
+    "error": null,
+    "verified_images": 3,
+    "backup": {
+      "file": "analyst-preview-15215a4e7c7d3188551278c1ec36fed85d428436.postgres.dump",
+      "bytes": 373064856,
+      "sha256": "bb6bf57d19ba249f7d75f885c31116b66b26fc7b0811cd2aebb1d3c91d9046ec"
+    },
+    "containers": [
+      {
+        "name": "/quant-company-api-1",
+        "image": "quant-company-command-help:04a465865cf18dbc3cf2fb1aaa4191f6ca7e55ac",
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "health": "healthy"
+      },
+      {
+        "name": "/quant-company-news-worker-1",
+        "image": "quant-company:15215a4e7c7d3188551278c1ec36fed85d428436-profile0",
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "health": null
+      },
+      {
+        "name": "/quant-company-dispatch-1",
+        "image": "quant-company:15215a4e7c7d3188551278c1ec36fed85d428436-profile0",
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "health": null
+      },
+      {
+        "name": "/quant-company-briefing-data-worker-1",
+        "image": "quant-company:15215a4e7c7d3188551278c1ec36fed85d428436-profile1",
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "health": null
+      },
+      {
+        "name": "/quant-company-codex-runtime-1",
+        "image": "quant-company-codex:15215a4e7c7d3188551278c1ec36fed85d428436-profile2",
+        "running": true,
+        "oom": false,
+        "restarts": 0,
+        "health": "healthy"
+      }
+    ],
+    "source_profiles": [
+      {
+        "service": "news-worker",
+        "all_sources_match": true,
+        "module_parent": "/opt/company/src",
+        "values": {
+          "FORMAT_VERSION": 17,
+          "VALIDATION_VERSION": 59,
+          "EXECUTION_VERSION": 1,
+          "PHASE_SECONDS": {
+            "plan": 360,
+            "write": 1440,
+            "review": 720,
+            "revise": 360,
+            "final_review": 360
+          }
+        }
+      },
+      {
+        "service": "dispatch",
+        "all_sources_match": true,
+        "module_parent": "/opt/company/src",
+        "values": {
+          "FORMAT_VERSION": 17,
+          "VALIDATION_VERSION": 59,
+          "EXECUTION_VERSION": 1,
+          "PHASE_SECONDS": {
+            "plan": 360,
+            "write": 1440,
+            "review": 720,
+            "revise": 360,
+            "final_review": 360
+          }
+        }
+      },
+      {
+        "service": "briefing-data-worker",
+        "all_sources_match": true,
+        "module_parent": "/opt/company/src",
+        "values": {
+          "FORMAT_VERSION": 17,
+          "VALIDATION_VERSION": 59,
+          "EXECUTION_VERSION": 1,
+          "PHASE_SECONDS": {
+            "plan": 360,
+            "write": 1440,
+            "review": 720,
+            "revise": 360,
+            "final_review": 360
+          }
+        }
+      },
+      {
+        "service": "codex-runtime",
+        "all_sources_match": true,
+        "module_parent": "/app/.venv/lib/python3.12/site-packages",
+        "values": {
+          "FORMAT_VERSION": 15,
+          "VALIDATION_VERSION": 56,
+          "EXECUTION_VERSION": 1,
+          "PHASE_SECONDS": {
+            "plan": 360,
+            "write": 1440,
+            "review": 720,
+            "revise": 360,
+            "final_review": 360
+          }
+        }
+      }
+    ],
+    "codex_cli": "codex-cli 0.160.1",
+    "database": {
+      "analyst_policy": {
+        "revision": 2,
+        "binding": {
+          "model": "gpt-6-astra",
+          "reasoning_effort": "xhigh"
+        }
+      },
+      "pm_editions": 0,
+      "pm_model_calls": 0,
+      "pm_slack_rows": 0,
+      "prior_am": {
+        "state": "previewed",
+        "error": "timeout",
+        "committed_at": "2026-10-06T22:55:00.124842+00:00"
+      },
+      "sending_effects": 0
+    },
+    "publication_enabled": false,
+    "evaluation_editions": [
+      "3042a447-de8b-55fe-9a56-72014df5c2b9"
+    ],
+    "actual_model_quality_evaluated": false,
+    "independent_content_review": "Pending the scheduled fresh PM case",
+    "scope": "Actual cloud installation and read-only postinstall proof; not a model or Slack content pass"
+  },
+  "temporal": {
+    "recorded_at": "2026-10-07T01:07:18.483015+00:00",
+    "workflows": [
+      {
+        "workflow": "company-brief-collection-v1",
+        "status": "RUNNING",
+        "task_queue": "quant-company-brief-collection",
+        "run_id": "483aac43-207a-4c3a-b4be-cfaaff3534d4",
+        "run_started_at": "2026-10-07T01:01:56.461412+00:00",
+        "scheduled_activities_in_run": 6,
+        "latest_start_to_close_seconds": 300,
+        "latest_heartbeat_seconds": 0,
+        "workflow_task_failures": 0
+      },
+      {
+        "workflow": "company-brief-editorial-v1",
+        "status": "RUNNING",
+        "task_queue": "quant-company-news-model",
+        "run_id": "b403a81e-6346-47c2-8df3-136f40e583fb",
+        "run_started_at": "2026-10-07T00:34:23.561985+00:00",
+        "scheduled_activities_in_run": 49,
+        "latest_start_to_close_seconds": 1080,
+        "latest_heartbeat_seconds": 30,
+        "workflow_task_failures": 0
+      },
+      {
+        "workflow": "company-brief-data-v1",
+        "status": "RUNNING",
+        "task_queue": "quant-company-brief-data",
+        "run_id": "198f76a5-d896-47d8-99e0-57a8d9308a93",
+        "run_started_at": "2026-10-07T01:03:12.824441+00:00",
+        "scheduled_activities_in_run": 8,
+        "latest_start_to_close_seconds": 90,
+        "latest_heartbeat_seconds": 0,
+        "workflow_task_failures": 0
+      }
+    ],
+    "real_temporal_execution_budget_verified": false,
+    "old_run_may_retain_original_deadline_until_continue_as_new": true,
+    "model_calls": 0,
+    "slack_calls": 0,
+    "model_authentication_mounted": false,
+    "temporal_operations": [
+      "DescribeWorkflowExecution",
+      "GetWorkflowExecutionHistory"
+    ],
+    "credentials": "Only the existing Temporal secret is mounted read-only; never printed or copied."
+  },
+  "temporal_rollover_readback": {
+    "recorded_at": "2026-10-07T01:07:50.262857+00:00",
+    "unit": "analyst-execution59-temporal-readback",
+    "timer": {
+      "NextElapseUSecRealtime": "Wed 2026-10-07 01:45:00 UTC",
+      "ActiveState": "active",
+      "SubState": "waiting"
+    },
+    "purpose": "Read the next natural Temporal run after the pre-upgrade run has continued as new.",
+    "result_path": "/var/lib/quant-company/releases/analyst-execution59-temporal-postrollover.json",
+    "model_calls": 0,
+    "slack_calls": 0,
+    "changes_company_settings": false,
+    "source_sha256": "2218e1bb6733d29378acd7054317f6efbb927493868dd83b1c67e0fe4a9d3bce",
+    "current_old_run_deadline_seconds": 1080,
+    "next_run_expected_deadline_seconds": 1560,
+    "next_run_deadline_verified": false
+  },
+  "temporal_versioning": "The current pre-upgrade loop retains its original18-minute activity limit for deterministic replay. Its next natural run uses26 minutes; a read-only real-cloud recheck is scheduled for10:45 KST, before the17:00 fresh writing window.",
+  "codex_profile_note": "The SDK image retains unused legacy editorial modules. Editorial format17/validation59 runs in the news worker; the SDK uses the preserved runtime with the new direct schemas and phase budgets. All profile sources match their approved inventories.",
+  "verification": {
+    "clean_owned_slice_tests_previously_passed": 404,
+    "updated_installer_tests_passed": 27,
+    "lint": "passed",
+    "model_in_regression": "simulated subprocess executable",
+    "slack_in_regression": "simulated transport",
+    "new_analyst_model_calls_at_installation": 0,
+    "new_analyst_slack_calls_at_installation": 0
+  },
+  "next_case": {
+    "policy": "prospective-pm-20261007-execution59-policy.json",
+    "id": "3042a447-de8b-55fe-9a56-72014df5c2b9",
+    "collection_kst": "2026-10-07 16:40",
+    "cutoff_kst": "2026-10-07 17:00",
+    "due_kst": "2026-10-07 17:45",
+    "deadline_kst": "2026-10-07 17:55",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "xhigh",
+    "maximum_distinct_calls": 5,
+    "maximum_confirmed_repairs": 1,
+    "semantic_checks_required": 12,
+    "mechanical_rejections_allowed": 0,
+    "independent_original_to_visible_main_audit_required": true
+  },
+  "observation": "Existing dispatcher persists the frozen edition, stage receipts and final observation in PostgreSQL. One fresh PM case cannot establish the five-day or Slack/human acceptance criteria.",
+  "prior_am_failure": "b72483f9-d52b-51d6-92ba-25625a9cb50e remains closed with timeout; never replayed or regraded.",
+  "earlier_installation_rollback_and_verified_restoration": "execution59-cutover640-rollback.json",
+  "installation_manifest_sha256": "82580999310c5cad8dbd45b263de23096c33a92c6dcedb46a756de9d3eb69aec",
+  "installed_model_assignment_flag_parity": {
+    "services": [
+      "news-worker",
+      "dispatch",
+      "briefing-data-worker"
+    ],
+    "model_assignments_enabled": true,
+    "model_accounts_enabled": true,
+    "preview_and_evaluation_flags_equal": true
+  }
+}

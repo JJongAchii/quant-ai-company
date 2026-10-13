@@ -1,0 +1,46 @@
+{
+  "completed_at": "2026-10-02T04:42:32.053797+00:00",
+  "images": [
+    {
+      "base_image": "quant-company:289dc70c6858ea229476216d7ea4c1c10ece68ff",
+      "base_image_id": "sha256:5d0d7c42de26e9b89e8909001a4376577b91acb4d996342018486713cc837e53",
+      "build_log_sha256": "16caa1a0f2685d279b71d761e5eec775e1a2b84c7e3c6be003b52b2c5ab1eee1",
+      "image": "quant-company:231d6ba0755f658f167636a8ea2c3ef65b6af562-conditional",
+      "image_id": "sha256:7f305b5f8b235d065aa2b4d45106436f31355ec4b66fd78445453148472767ff",
+      "package_tree_sha256": "1f3a42938372173ebea7d2af9d8d461f8e4dd72c10306759a8e49a038d1d4098",
+      "service": "api",
+      "verification": {
+        "calendars_version": "4.13.2",
+        "git_version": null,
+        "program_digest": "be0d940bf5904c417d213898617b3f6c0fed19d2bfddd78460ec315e92b216af",
+        "schema3_parser_verified": true,
+        "signed_exact_cancel_parser_verified": true,
+        "source_commit": "231d6ba0755f658f167636a8ea2c3ef65b6af562"
+      }
+    },
+    {
+      "base_image": "quant-company:289dc70c6858ea229476216d7ea4c1c10ece68ff",
+      "base_image_id": "sha256:5d0d7c42de26e9b89e8909001a4376577b91acb4d996342018486713cc837e53",
+      "build_log_sha256": "1d872df56acf13de1a67343e09a4639d70f943faf98d18a49e53437494926950",
+      "image": "quant-company-autonomous:231d6ba0755f658f167636a8ea2c3ef65b6af562-conditional",
+      "image_id": "sha256:c55cde4b44b83df0b0e9c2b59682404fbb2544bea87dcd211f478296c44eb7d0",
+      "package_tree_sha256": "1f3a42938372173ebea7d2af9d8d461f8e4dd72c10306759a8e49a038d1d4098",
+      "service": "worker",
+      "verification": {
+        "calendars_version": "4.13.2",
+        "git_version": "git version 2.39.5",
+        "program_digest": "be0d940bf5904c417d213898617b3f6c0fed19d2bfddd78460ec315e92b216af",
+        "schema3_parser_verified": true,
+        "signed_exact_cancel_parser_verified": true,
+        "source_commit": "231d6ba0755f658f167636a8ea2c3ef65b6af562"
+      }
+    }
+  ],
+  "phase": "qualified_images_staged_not_active",
+  "previous_app": "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff",
+  "production_changed": false,
+  "schema_version": 1,
+  "scientific_authority_granted": false,
+  "source_commit": "231d6ba0755f658f167636a8ea2c3ef65b6af562",
+  "started_at": "2026-10-02T04:39:58.674240+00:00"
+}

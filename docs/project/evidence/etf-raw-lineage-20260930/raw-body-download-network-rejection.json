@@ -1,0 +1,4191 @@
+{
+  "failures": [
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220801.parquet",
+      "trade_date": "2022-08-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220802.parquet",
+      "trade_date": "2022-08-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220803.parquet",
+      "trade_date": "2022-08-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220804.parquet",
+      "trade_date": "2022-08-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220805.parquet",
+      "trade_date": "2022-08-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220808.parquet",
+      "trade_date": "2022-08-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220809.parquet",
+      "trade_date": "2022-08-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220810.parquet",
+      "trade_date": "2022-08-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220811.parquet",
+      "trade_date": "2022-08-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220812.parquet",
+      "trade_date": "2022-08-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220816.parquet",
+      "trade_date": "2022-08-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220817.parquet",
+      "trade_date": "2022-08-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220818.parquet",
+      "trade_date": "2022-08-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220819.parquet",
+      "trade_date": "2022-08-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220822.parquet",
+      "trade_date": "2022-08-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220823.parquet",
+      "trade_date": "2022-08-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220824.parquet",
+      "trade_date": "2022-08-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220825.parquet",
+      "trade_date": "2022-08-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220826.parquet",
+      "trade_date": "2022-08-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220829.parquet",
+      "trade_date": "2022-08-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220830.parquet",
+      "trade_date": "2022-08-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220831.parquet",
+      "trade_date": "2022-08-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220901.parquet",
+      "trade_date": "2022-09-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220902.parquet",
+      "trade_date": "2022-09-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220905.parquet",
+      "trade_date": "2022-09-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220906.parquet",
+      "trade_date": "2022-09-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220907.parquet",
+      "trade_date": "2022-09-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220908.parquet",
+      "trade_date": "2022-09-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220913.parquet",
+      "trade_date": "2022-09-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220914.parquet",
+      "trade_date": "2022-09-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220915.parquet",
+      "trade_date": "2022-09-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220916.parquet",
+      "trade_date": "2022-09-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220919.parquet",
+      "trade_date": "2022-09-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220920.parquet",
+      "trade_date": "2022-09-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220921.parquet",
+      "trade_date": "2022-09-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220922.parquet",
+      "trade_date": "2022-09-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220923.parquet",
+      "trade_date": "2022-09-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220926.parquet",
+      "trade_date": "2022-09-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220927.parquet",
+      "trade_date": "2022-09-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220928.parquet",
+      "trade_date": "2022-09-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220929.parquet",
+      "trade_date": "2022-09-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20220930.parquet",
+      "trade_date": "2022-09-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221004.parquet",
+      "trade_date": "2022-10-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221005.parquet",
+      "trade_date": "2022-10-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221006.parquet",
+      "trade_date": "2022-10-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221007.parquet",
+      "trade_date": "2022-10-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221011.parquet",
+      "trade_date": "2022-10-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221012.parquet",
+      "trade_date": "2022-10-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221013.parquet",
+      "trade_date": "2022-10-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221014.parquet",
+      "trade_date": "2022-10-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221017.parquet",
+      "trade_date": "2022-10-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221018.parquet",
+      "trade_date": "2022-10-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221019.parquet",
+      "trade_date": "2022-10-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221020.parquet",
+      "trade_date": "2022-10-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221021.parquet",
+      "trade_date": "2022-10-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221024.parquet",
+      "trade_date": "2022-10-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221025.parquet",
+      "trade_date": "2022-10-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221026.parquet",
+      "trade_date": "2022-10-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221027.parquet",
+      "trade_date": "2022-10-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221028.parquet",
+      "trade_date": "2022-10-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221031.parquet",
+      "trade_date": "2022-10-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221101.parquet",
+      "trade_date": "2022-11-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221102.parquet",
+      "trade_date": "2022-11-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221103.parquet",
+      "trade_date": "2022-11-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221104.parquet",
+      "trade_date": "2022-11-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221107.parquet",
+      "trade_date": "2022-11-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221108.parquet",
+      "trade_date": "2022-11-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221109.parquet",
+      "trade_date": "2022-11-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221110.parquet",
+      "trade_date": "2022-11-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221111.parquet",
+      "trade_date": "2022-11-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221114.parquet",
+      "trade_date": "2022-11-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221115.parquet",
+      "trade_date": "2022-11-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221116.parquet",
+      "trade_date": "2022-11-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221117.parquet",
+      "trade_date": "2022-11-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221118.parquet",
+      "trade_date": "2022-11-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221121.parquet",
+      "trade_date": "2022-11-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221122.parquet",
+      "trade_date": "2022-11-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221123.parquet",
+      "trade_date": "2022-11-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221124.parquet",
+      "trade_date": "2022-11-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221125.parquet",
+      "trade_date": "2022-11-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221128.parquet",
+      "trade_date": "2022-11-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221129.parquet",
+      "trade_date": "2022-11-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221130.parquet",
+      "trade_date": "2022-11-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221201.parquet",
+      "trade_date": "2022-12-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221202.parquet",
+      "trade_date": "2022-12-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221205.parquet",
+      "trade_date": "2022-12-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221206.parquet",
+      "trade_date": "2022-12-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221207.parquet",
+      "trade_date": "2022-12-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221208.parquet",
+      "trade_date": "2022-12-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221209.parquet",
+      "trade_date": "2022-12-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221212.parquet",
+      "trade_date": "2022-12-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221213.parquet",
+      "trade_date": "2022-12-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221214.parquet",
+      "trade_date": "2022-12-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221215.parquet",
+      "trade_date": "2022-12-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221216.parquet",
+      "trade_date": "2022-12-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221219.parquet",
+      "trade_date": "2022-12-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221220.parquet",
+      "trade_date": "2022-12-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221221.parquet",
+      "trade_date": "2022-12-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221222.parquet",
+      "trade_date": "2022-12-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221223.parquet",
+      "trade_date": "2022-12-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221226.parquet",
+      "trade_date": "2022-12-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221227.parquet",
+      "trade_date": "2022-12-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221228.parquet",
+      "trade_date": "2022-12-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20221229.parquet",
+      "trade_date": "2022-12-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230102.parquet",
+      "trade_date": "2023-01-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230103.parquet",
+      "trade_date": "2023-01-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230104.parquet",
+      "trade_date": "2023-01-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230105.parquet",
+      "trade_date": "2023-01-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230106.parquet",
+      "trade_date": "2023-01-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230109.parquet",
+      "trade_date": "2023-01-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230110.parquet",
+      "trade_date": "2023-01-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230111.parquet",
+      "trade_date": "2023-01-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230112.parquet",
+      "trade_date": "2023-01-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230113.parquet",
+      "trade_date": "2023-01-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230116.parquet",
+      "trade_date": "2023-01-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230117.parquet",
+      "trade_date": "2023-01-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230118.parquet",
+      "trade_date": "2023-01-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230119.parquet",
+      "trade_date": "2023-01-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230120.parquet",
+      "trade_date": "2023-01-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230125.parquet",
+      "trade_date": "2023-01-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230126.parquet",
+      "trade_date": "2023-01-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230127.parquet",
+      "trade_date": "2023-01-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230130.parquet",
+      "trade_date": "2023-01-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230131.parquet",
+      "trade_date": "2023-01-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230201.parquet",
+      "trade_date": "2023-02-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230202.parquet",
+      "trade_date": "2023-02-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230203.parquet",
+      "trade_date": "2023-02-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230206.parquet",
+      "trade_date": "2023-02-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230207.parquet",
+      "trade_date": "2023-02-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230208.parquet",
+      "trade_date": "2023-02-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230209.parquet",
+      "trade_date": "2023-02-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230210.parquet",
+      "trade_date": "2023-02-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230213.parquet",
+      "trade_date": "2023-02-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230214.parquet",
+      "trade_date": "2023-02-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230215.parquet",
+      "trade_date": "2023-02-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230216.parquet",
+      "trade_date": "2023-02-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230217.parquet",
+      "trade_date": "2023-02-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230220.parquet",
+      "trade_date": "2023-02-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230221.parquet",
+      "trade_date": "2023-02-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230222.parquet",
+      "trade_date": "2023-02-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230223.parquet",
+      "trade_date": "2023-02-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230224.parquet",
+      "trade_date": "2023-02-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230227.parquet",
+      "trade_date": "2023-02-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230228.parquet",
+      "trade_date": "2023-02-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230302.parquet",
+      "trade_date": "2023-03-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230303.parquet",
+      "trade_date": "2023-03-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230306.parquet",
+      "trade_date": "2023-03-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230307.parquet",
+      "trade_date": "2023-03-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230308.parquet",
+      "trade_date": "2023-03-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230309.parquet",
+      "trade_date": "2023-03-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230310.parquet",
+      "trade_date": "2023-03-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230313.parquet",
+      "trade_date": "2023-03-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230314.parquet",
+      "trade_date": "2023-03-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230315.parquet",
+      "trade_date": "2023-03-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230316.parquet",
+      "trade_date": "2023-03-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230317.parquet",
+      "trade_date": "2023-03-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230320.parquet",
+      "trade_date": "2023-03-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230321.parquet",
+      "trade_date": "2023-03-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230322.parquet",
+      "trade_date": "2023-03-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230323.parquet",
+      "trade_date": "2023-03-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230324.parquet",
+      "trade_date": "2023-03-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230327.parquet",
+      "trade_date": "2023-03-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230328.parquet",
+      "trade_date": "2023-03-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230329.parquet",
+      "trade_date": "2023-03-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230330.parquet",
+      "trade_date": "2023-03-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230331.parquet",
+      "trade_date": "2023-03-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230403.parquet",
+      "trade_date": "2023-04-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230404.parquet",
+      "trade_date": "2023-04-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230405.parquet",
+      "trade_date": "2023-04-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230406.parquet",
+      "trade_date": "2023-04-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230407.parquet",
+      "trade_date": "2023-04-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230410.parquet",
+      "trade_date": "2023-04-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230411.parquet",
+      "trade_date": "2023-04-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230412.parquet",
+      "trade_date": "2023-04-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230413.parquet",
+      "trade_date": "2023-04-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230414.parquet",
+      "trade_date": "2023-04-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230417.parquet",
+      "trade_date": "2023-04-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230418.parquet",
+      "trade_date": "2023-04-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230419.parquet",
+      "trade_date": "2023-04-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230420.parquet",
+      "trade_date": "2023-04-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230421.parquet",
+      "trade_date": "2023-04-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230424.parquet",
+      "trade_date": "2023-04-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230425.parquet",
+      "trade_date": "2023-04-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230426.parquet",
+      "trade_date": "2023-04-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230427.parquet",
+      "trade_date": "2023-04-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230428.parquet",
+      "trade_date": "2023-04-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230502.parquet",
+      "trade_date": "2023-05-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230503.parquet",
+      "trade_date": "2023-05-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230504.parquet",
+      "trade_date": "2023-05-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230508.parquet",
+      "trade_date": "2023-05-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230509.parquet",
+      "trade_date": "2023-05-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230510.parquet",
+      "trade_date": "2023-05-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230511.parquet",
+      "trade_date": "2023-05-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230512.parquet",
+      "trade_date": "2023-05-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230515.parquet",
+      "trade_date": "2023-05-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230516.parquet",
+      "trade_date": "2023-05-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230517.parquet",
+      "trade_date": "2023-05-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230518.parquet",
+      "trade_date": "2023-05-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230519.parquet",
+      "trade_date": "2023-05-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230522.parquet",
+      "trade_date": "2023-05-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230523.parquet",
+      "trade_date": "2023-05-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230524.parquet",
+      "trade_date": "2023-05-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230525.parquet",
+      "trade_date": "2023-05-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230526.parquet",
+      "trade_date": "2023-05-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230530.parquet",
+      "trade_date": "2023-05-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230531.parquet",
+      "trade_date": "2023-05-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230601.parquet",
+      "trade_date": "2023-06-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230602.parquet",
+      "trade_date": "2023-06-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230605.parquet",
+      "trade_date": "2023-06-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230607.parquet",
+      "trade_date": "2023-06-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230608.parquet",
+      "trade_date": "2023-06-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230609.parquet",
+      "trade_date": "2023-06-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230612.parquet",
+      "trade_date": "2023-06-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230613.parquet",
+      "trade_date": "2023-06-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230614.parquet",
+      "trade_date": "2023-06-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230615.parquet",
+      "trade_date": "2023-06-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230616.parquet",
+      "trade_date": "2023-06-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230619.parquet",
+      "trade_date": "2023-06-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230620.parquet",
+      "trade_date": "2023-06-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230621.parquet",
+      "trade_date": "2023-06-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230622.parquet",
+      "trade_date": "2023-06-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230623.parquet",
+      "trade_date": "2023-06-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230626.parquet",
+      "trade_date": "2023-06-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230627.parquet",
+      "trade_date": "2023-06-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230628.parquet",
+      "trade_date": "2023-06-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230629.parquet",
+      "trade_date": "2023-06-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230630.parquet",
+      "trade_date": "2023-06-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230703.parquet",
+      "trade_date": "2023-07-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230704.parquet",
+      "trade_date": "2023-07-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230705.parquet",
+      "trade_date": "2023-07-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230706.parquet",
+      "trade_date": "2023-07-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230707.parquet",
+      "trade_date": "2023-07-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230710.parquet",
+      "trade_date": "2023-07-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230711.parquet",
+      "trade_date": "2023-07-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230712.parquet",
+      "trade_date": "2023-07-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230713.parquet",
+      "trade_date": "2023-07-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230714.parquet",
+      "trade_date": "2023-07-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230717.parquet",
+      "trade_date": "2023-07-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230718.parquet",
+      "trade_date": "2023-07-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230719.parquet",
+      "trade_date": "2023-07-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230720.parquet",
+      "trade_date": "2023-07-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230721.parquet",
+      "trade_date": "2023-07-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230724.parquet",
+      "trade_date": "2023-07-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230725.parquet",
+      "trade_date": "2023-07-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230726.parquet",
+      "trade_date": "2023-07-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230727.parquet",
+      "trade_date": "2023-07-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230728.parquet",
+      "trade_date": "2023-07-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230731.parquet",
+      "trade_date": "2023-07-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230801.parquet",
+      "trade_date": "2023-08-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230802.parquet",
+      "trade_date": "2023-08-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230803.parquet",
+      "trade_date": "2023-08-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230804.parquet",
+      "trade_date": "2023-08-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230807.parquet",
+      "trade_date": "2023-08-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230808.parquet",
+      "trade_date": "2023-08-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230809.parquet",
+      "trade_date": "2023-08-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230810.parquet",
+      "trade_date": "2023-08-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230811.parquet",
+      "trade_date": "2023-08-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230814.parquet",
+      "trade_date": "2023-08-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230816.parquet",
+      "trade_date": "2023-08-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230817.parquet",
+      "trade_date": "2023-08-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230818.parquet",
+      "trade_date": "2023-08-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230821.parquet",
+      "trade_date": "2023-08-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230822.parquet",
+      "trade_date": "2023-08-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230823.parquet",
+      "trade_date": "2023-08-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230824.parquet",
+      "trade_date": "2023-08-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230825.parquet",
+      "trade_date": "2023-08-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230828.parquet",
+      "trade_date": "2023-08-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230829.parquet",
+      "trade_date": "2023-08-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230830.parquet",
+      "trade_date": "2023-08-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230831.parquet",
+      "trade_date": "2023-08-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230901.parquet",
+      "trade_date": "2023-09-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230904.parquet",
+      "trade_date": "2023-09-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230905.parquet",
+      "trade_date": "2023-09-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230906.parquet",
+      "trade_date": "2023-09-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230907.parquet",
+      "trade_date": "2023-09-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230908.parquet",
+      "trade_date": "2023-09-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230911.parquet",
+      "trade_date": "2023-09-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230912.parquet",
+      "trade_date": "2023-09-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230913.parquet",
+      "trade_date": "2023-09-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230914.parquet",
+      "trade_date": "2023-09-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230915.parquet",
+      "trade_date": "2023-09-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230918.parquet",
+      "trade_date": "2023-09-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230919.parquet",
+      "trade_date": "2023-09-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230920.parquet",
+      "trade_date": "2023-09-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230921.parquet",
+      "trade_date": "2023-09-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230922.parquet",
+      "trade_date": "2023-09-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230925.parquet",
+      "trade_date": "2023-09-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230926.parquet",
+      "trade_date": "2023-09-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20230927.parquet",
+      "trade_date": "2023-09-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231004.parquet",
+      "trade_date": "2023-10-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231005.parquet",
+      "trade_date": "2023-10-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231006.parquet",
+      "trade_date": "2023-10-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231010.parquet",
+      "trade_date": "2023-10-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231011.parquet",
+      "trade_date": "2023-10-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231012.parquet",
+      "trade_date": "2023-10-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231013.parquet",
+      "trade_date": "2023-10-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231016.parquet",
+      "trade_date": "2023-10-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231017.parquet",
+      "trade_date": "2023-10-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231018.parquet",
+      "trade_date": "2023-10-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231019.parquet",
+      "trade_date": "2023-10-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231020.parquet",
+      "trade_date": "2023-10-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231023.parquet",
+      "trade_date": "2023-10-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231024.parquet",
+      "trade_date": "2023-10-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231025.parquet",
+      "trade_date": "2023-10-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231026.parquet",
+      "trade_date": "2023-10-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231027.parquet",
+      "trade_date": "2023-10-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231030.parquet",
+      "trade_date": "2023-10-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231031.parquet",
+      "trade_date": "2023-10-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231101.parquet",
+      "trade_date": "2023-11-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231102.parquet",
+      "trade_date": "2023-11-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231103.parquet",
+      "trade_date": "2023-11-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231106.parquet",
+      "trade_date": "2023-11-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231107.parquet",
+      "trade_date": "2023-11-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231108.parquet",
+      "trade_date": "2023-11-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231109.parquet",
+      "trade_date": "2023-11-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231110.parquet",
+      "trade_date": "2023-11-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231113.parquet",
+      "trade_date": "2023-11-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231114.parquet",
+      "trade_date": "2023-11-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231115.parquet",
+      "trade_date": "2023-11-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231116.parquet",
+      "trade_date": "2023-11-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231117.parquet",
+      "trade_date": "2023-11-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231120.parquet",
+      "trade_date": "2023-11-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231121.parquet",
+      "trade_date": "2023-11-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231122.parquet",
+      "trade_date": "2023-11-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231123.parquet",
+      "trade_date": "2023-11-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231124.parquet",
+      "trade_date": "2023-11-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231127.parquet",
+      "trade_date": "2023-11-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231128.parquet",
+      "trade_date": "2023-11-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231129.parquet",
+      "trade_date": "2023-11-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231130.parquet",
+      "trade_date": "2023-11-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231201.parquet",
+      "trade_date": "2023-12-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231204.parquet",
+      "trade_date": "2023-12-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231205.parquet",
+      "trade_date": "2023-12-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231206.parquet",
+      "trade_date": "2023-12-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231207.parquet",
+      "trade_date": "2023-12-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231208.parquet",
+      "trade_date": "2023-12-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231211.parquet",
+      "trade_date": "2023-12-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231212.parquet",
+      "trade_date": "2023-12-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231213.parquet",
+      "trade_date": "2023-12-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231214.parquet",
+      "trade_date": "2023-12-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231215.parquet",
+      "trade_date": "2023-12-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231218.parquet",
+      "trade_date": "2023-12-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231219.parquet",
+      "trade_date": "2023-12-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231220.parquet",
+      "trade_date": "2023-12-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231221.parquet",
+      "trade_date": "2023-12-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231222.parquet",
+      "trade_date": "2023-12-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231226.parquet",
+      "trade_date": "2023-12-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231227.parquet",
+      "trade_date": "2023-12-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20231228.parquet",
+      "trade_date": "2023-12-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240102.parquet",
+      "trade_date": "2024-01-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240103.parquet",
+      "trade_date": "2024-01-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240104.parquet",
+      "trade_date": "2024-01-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240105.parquet",
+      "trade_date": "2024-01-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240108.parquet",
+      "trade_date": "2024-01-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240109.parquet",
+      "trade_date": "2024-01-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240110.parquet",
+      "trade_date": "2024-01-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240111.parquet",
+      "trade_date": "2024-01-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240112.parquet",
+      "trade_date": "2024-01-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240115.parquet",
+      "trade_date": "2024-01-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240116.parquet",
+      "trade_date": "2024-01-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240117.parquet",
+      "trade_date": "2024-01-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240118.parquet",
+      "trade_date": "2024-01-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240119.parquet",
+      "trade_date": "2024-01-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240122.parquet",
+      "trade_date": "2024-01-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240123.parquet",
+      "trade_date": "2024-01-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240124.parquet",
+      "trade_date": "2024-01-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240125.parquet",
+      "trade_date": "2024-01-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240126.parquet",
+      "trade_date": "2024-01-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240129.parquet",
+      "trade_date": "2024-01-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240130.parquet",
+      "trade_date": "2024-01-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240131.parquet",
+      "trade_date": "2024-01-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240201.parquet",
+      "trade_date": "2024-02-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240202.parquet",
+      "trade_date": "2024-02-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240205.parquet",
+      "trade_date": "2024-02-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240206.parquet",
+      "trade_date": "2024-02-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240207.parquet",
+      "trade_date": "2024-02-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240208.parquet",
+      "trade_date": "2024-02-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240213.parquet",
+      "trade_date": "2024-02-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240214.parquet",
+      "trade_date": "2024-02-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240215.parquet",
+      "trade_date": "2024-02-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240216.parquet",
+      "trade_date": "2024-02-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240219.parquet",
+      "trade_date": "2024-02-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240220.parquet",
+      "trade_date": "2024-02-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240221.parquet",
+      "trade_date": "2024-02-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240222.parquet",
+      "trade_date": "2024-02-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240223.parquet",
+      "trade_date": "2024-02-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240226.parquet",
+      "trade_date": "2024-02-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240227.parquet",
+      "trade_date": "2024-02-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240228.parquet",
+      "trade_date": "2024-02-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240229.parquet",
+      "trade_date": "2024-02-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240304.parquet",
+      "trade_date": "2024-03-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240305.parquet",
+      "trade_date": "2024-03-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240306.parquet",
+      "trade_date": "2024-03-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240307.parquet",
+      "trade_date": "2024-03-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240308.parquet",
+      "trade_date": "2024-03-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240311.parquet",
+      "trade_date": "2024-03-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240312.parquet",
+      "trade_date": "2024-03-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240313.parquet",
+      "trade_date": "2024-03-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240314.parquet",
+      "trade_date": "2024-03-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240315.parquet",
+      "trade_date": "2024-03-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240318.parquet",
+      "trade_date": "2024-03-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240319.parquet",
+      "trade_date": "2024-03-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240320.parquet",
+      "trade_date": "2024-03-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240321.parquet",
+      "trade_date": "2024-03-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240322.parquet",
+      "trade_date": "2024-03-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240325.parquet",
+      "trade_date": "2024-03-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240326.parquet",
+      "trade_date": "2024-03-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240327.parquet",
+      "trade_date": "2024-03-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240328.parquet",
+      "trade_date": "2024-03-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240329.parquet",
+      "trade_date": "2024-03-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240401.parquet",
+      "trade_date": "2024-04-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240402.parquet",
+      "trade_date": "2024-04-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240403.parquet",
+      "trade_date": "2024-04-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240404.parquet",
+      "trade_date": "2024-04-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240405.parquet",
+      "trade_date": "2024-04-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240408.parquet",
+      "trade_date": "2024-04-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240409.parquet",
+      "trade_date": "2024-04-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240411.parquet",
+      "trade_date": "2024-04-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240412.parquet",
+      "trade_date": "2024-04-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240415.parquet",
+      "trade_date": "2024-04-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240416.parquet",
+      "trade_date": "2024-04-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240417.parquet",
+      "trade_date": "2024-04-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240418.parquet",
+      "trade_date": "2024-04-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240419.parquet",
+      "trade_date": "2024-04-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240422.parquet",
+      "trade_date": "2024-04-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240423.parquet",
+      "trade_date": "2024-04-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240424.parquet",
+      "trade_date": "2024-04-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240425.parquet",
+      "trade_date": "2024-04-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240426.parquet",
+      "trade_date": "2024-04-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240429.parquet",
+      "trade_date": "2024-04-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240430.parquet",
+      "trade_date": "2024-04-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240502.parquet",
+      "trade_date": "2024-05-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240503.parquet",
+      "trade_date": "2024-05-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240507.parquet",
+      "trade_date": "2024-05-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240508.parquet",
+      "trade_date": "2024-05-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240509.parquet",
+      "trade_date": "2024-05-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240510.parquet",
+      "trade_date": "2024-05-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240513.parquet",
+      "trade_date": "2024-05-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240514.parquet",
+      "trade_date": "2024-05-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240516.parquet",
+      "trade_date": "2024-05-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240517.parquet",
+      "trade_date": "2024-05-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240520.parquet",
+      "trade_date": "2024-05-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240521.parquet",
+      "trade_date": "2024-05-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240522.parquet",
+      "trade_date": "2024-05-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240523.parquet",
+      "trade_date": "2024-05-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240524.parquet",
+      "trade_date": "2024-05-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240527.parquet",
+      "trade_date": "2024-05-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240528.parquet",
+      "trade_date": "2024-05-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240529.parquet",
+      "trade_date": "2024-05-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240530.parquet",
+      "trade_date": "2024-05-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240531.parquet",
+      "trade_date": "2024-05-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240603.parquet",
+      "trade_date": "2024-06-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240604.parquet",
+      "trade_date": "2024-06-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240605.parquet",
+      "trade_date": "2024-06-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240607.parquet",
+      "trade_date": "2024-06-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240610.parquet",
+      "trade_date": "2024-06-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240611.parquet",
+      "trade_date": "2024-06-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240612.parquet",
+      "trade_date": "2024-06-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240613.parquet",
+      "trade_date": "2024-06-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240614.parquet",
+      "trade_date": "2024-06-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240617.parquet",
+      "trade_date": "2024-06-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240618.parquet",
+      "trade_date": "2024-06-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240619.parquet",
+      "trade_date": "2024-06-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240620.parquet",
+      "trade_date": "2024-06-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240621.parquet",
+      "trade_date": "2024-06-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240624.parquet",
+      "trade_date": "2024-06-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240625.parquet",
+      "trade_date": "2024-06-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240626.parquet",
+      "trade_date": "2024-06-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240627.parquet",
+      "trade_date": "2024-06-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240628.parquet",
+      "trade_date": "2024-06-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240701.parquet",
+      "trade_date": "2024-07-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240702.parquet",
+      "trade_date": "2024-07-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240703.parquet",
+      "trade_date": "2024-07-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240704.parquet",
+      "trade_date": "2024-07-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240705.parquet",
+      "trade_date": "2024-07-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240708.parquet",
+      "trade_date": "2024-07-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240709.parquet",
+      "trade_date": "2024-07-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240710.parquet",
+      "trade_date": "2024-07-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240711.parquet",
+      "trade_date": "2024-07-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240712.parquet",
+      "trade_date": "2024-07-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240715.parquet",
+      "trade_date": "2024-07-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240716.parquet",
+      "trade_date": "2024-07-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240717.parquet",
+      "trade_date": "2024-07-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240718.parquet",
+      "trade_date": "2024-07-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240719.parquet",
+      "trade_date": "2024-07-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240722.parquet",
+      "trade_date": "2024-07-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240723.parquet",
+      "trade_date": "2024-07-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240724.parquet",
+      "trade_date": "2024-07-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240725.parquet",
+      "trade_date": "2024-07-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240726.parquet",
+      "trade_date": "2024-07-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240729.parquet",
+      "trade_date": "2024-07-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240730.parquet",
+      "trade_date": "2024-07-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240731.parquet",
+      "trade_date": "2024-07-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240801.parquet",
+      "trade_date": "2024-08-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240802.parquet",
+      "trade_date": "2024-08-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240805.parquet",
+      "trade_date": "2024-08-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240806.parquet",
+      "trade_date": "2024-08-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240807.parquet",
+      "trade_date": "2024-08-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240808.parquet",
+      "trade_date": "2024-08-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240809.parquet",
+      "trade_date": "2024-08-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240812.parquet",
+      "trade_date": "2024-08-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240813.parquet",
+      "trade_date": "2024-08-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240814.parquet",
+      "trade_date": "2024-08-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240816.parquet",
+      "trade_date": "2024-08-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240819.parquet",
+      "trade_date": "2024-08-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240820.parquet",
+      "trade_date": "2024-08-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240821.parquet",
+      "trade_date": "2024-08-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240822.parquet",
+      "trade_date": "2024-08-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240823.parquet",
+      "trade_date": "2024-08-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240826.parquet",
+      "trade_date": "2024-08-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240827.parquet",
+      "trade_date": "2024-08-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240828.parquet",
+      "trade_date": "2024-08-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240829.parquet",
+      "trade_date": "2024-08-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240830.parquet",
+      "trade_date": "2024-08-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240902.parquet",
+      "trade_date": "2024-09-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240903.parquet",
+      "trade_date": "2024-09-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240904.parquet",
+      "trade_date": "2024-09-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240905.parquet",
+      "trade_date": "2024-09-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240906.parquet",
+      "trade_date": "2024-09-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240909.parquet",
+      "trade_date": "2024-09-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240910.parquet",
+      "trade_date": "2024-09-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240911.parquet",
+      "trade_date": "2024-09-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240912.parquet",
+      "trade_date": "2024-09-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240913.parquet",
+      "trade_date": "2024-09-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240919.parquet",
+      "trade_date": "2024-09-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240920.parquet",
+      "trade_date": "2024-09-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240923.parquet",
+      "trade_date": "2024-09-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240924.parquet",
+      "trade_date": "2024-09-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240925.parquet",
+      "trade_date": "2024-09-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240926.parquet",
+      "trade_date": "2024-09-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240927.parquet",
+      "trade_date": "2024-09-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20240930.parquet",
+      "trade_date": "2024-09-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241002.parquet",
+      "trade_date": "2024-10-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241004.parquet",
+      "trade_date": "2024-10-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241007.parquet",
+      "trade_date": "2024-10-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241008.parquet",
+      "trade_date": "2024-10-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241010.parquet",
+      "trade_date": "2024-10-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241011.parquet",
+      "trade_date": "2024-10-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241014.parquet",
+      "trade_date": "2024-10-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241015.parquet",
+      "trade_date": "2024-10-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241016.parquet",
+      "trade_date": "2024-10-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241017.parquet",
+      "trade_date": "2024-10-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241018.parquet",
+      "trade_date": "2024-10-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241021.parquet",
+      "trade_date": "2024-10-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241022.parquet",
+      "trade_date": "2024-10-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241023.parquet",
+      "trade_date": "2024-10-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241024.parquet",
+      "trade_date": "2024-10-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241025.parquet",
+      "trade_date": "2024-10-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241028.parquet",
+      "trade_date": "2024-10-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241029.parquet",
+      "trade_date": "2024-10-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241030.parquet",
+      "trade_date": "2024-10-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241031.parquet",
+      "trade_date": "2024-10-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241101.parquet",
+      "trade_date": "2024-11-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241104.parquet",
+      "trade_date": "2024-11-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241105.parquet",
+      "trade_date": "2024-11-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241106.parquet",
+      "trade_date": "2024-11-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241107.parquet",
+      "trade_date": "2024-11-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241108.parquet",
+      "trade_date": "2024-11-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241111.parquet",
+      "trade_date": "2024-11-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241112.parquet",
+      "trade_date": "2024-11-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241113.parquet",
+      "trade_date": "2024-11-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241114.parquet",
+      "trade_date": "2024-11-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241115.parquet",
+      "trade_date": "2024-11-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241118.parquet",
+      "trade_date": "2024-11-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241119.parquet",
+      "trade_date": "2024-11-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241120.parquet",
+      "trade_date": "2024-11-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241121.parquet",
+      "trade_date": "2024-11-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241122.parquet",
+      "trade_date": "2024-11-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241125.parquet",
+      "trade_date": "2024-11-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241126.parquet",
+      "trade_date": "2024-11-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241127.parquet",
+      "trade_date": "2024-11-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241128.parquet",
+      "trade_date": "2024-11-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241129.parquet",
+      "trade_date": "2024-11-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241202.parquet",
+      "trade_date": "2024-12-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241203.parquet",
+      "trade_date": "2024-12-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241204.parquet",
+      "trade_date": "2024-12-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241205.parquet",
+      "trade_date": "2024-12-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241206.parquet",
+      "trade_date": "2024-12-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241209.parquet",
+      "trade_date": "2024-12-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241210.parquet",
+      "trade_date": "2024-12-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241211.parquet",
+      "trade_date": "2024-12-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241212.parquet",
+      "trade_date": "2024-12-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241213.parquet",
+      "trade_date": "2024-12-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241216.parquet",
+      "trade_date": "2024-12-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241217.parquet",
+      "trade_date": "2024-12-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241218.parquet",
+      "trade_date": "2024-12-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241219.parquet",
+      "trade_date": "2024-12-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241220.parquet",
+      "trade_date": "2024-12-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241223.parquet",
+      "trade_date": "2024-12-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241224.parquet",
+      "trade_date": "2024-12-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241226.parquet",
+      "trade_date": "2024-12-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241227.parquet",
+      "trade_date": "2024-12-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20241230.parquet",
+      "trade_date": "2024-12-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250102.parquet",
+      "trade_date": "2025-01-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250103.parquet",
+      "trade_date": "2025-01-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250106.parquet",
+      "trade_date": "2025-01-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250107.parquet",
+      "trade_date": "2025-01-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250108.parquet",
+      "trade_date": "2025-01-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250109.parquet",
+      "trade_date": "2025-01-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250110.parquet",
+      "trade_date": "2025-01-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250113.parquet",
+      "trade_date": "2025-01-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250114.parquet",
+      "trade_date": "2025-01-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250115.parquet",
+      "trade_date": "2025-01-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250116.parquet",
+      "trade_date": "2025-01-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250117.parquet",
+      "trade_date": "2025-01-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250120.parquet",
+      "trade_date": "2025-01-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250121.parquet",
+      "trade_date": "2025-01-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250122.parquet",
+      "trade_date": "2025-01-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250123.parquet",
+      "trade_date": "2025-01-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250124.parquet",
+      "trade_date": "2025-01-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250131.parquet",
+      "trade_date": "2025-01-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250203.parquet",
+      "trade_date": "2025-02-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250204.parquet",
+      "trade_date": "2025-02-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250205.parquet",
+      "trade_date": "2025-02-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250206.parquet",
+      "trade_date": "2025-02-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250207.parquet",
+      "trade_date": "2025-02-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250210.parquet",
+      "trade_date": "2025-02-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250211.parquet",
+      "trade_date": "2025-02-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250212.parquet",
+      "trade_date": "2025-02-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250213.parquet",
+      "trade_date": "2025-02-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250214.parquet",
+      "trade_date": "2025-02-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250217.parquet",
+      "trade_date": "2025-02-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250218.parquet",
+      "trade_date": "2025-02-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250219.parquet",
+      "trade_date": "2025-02-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250220.parquet",
+      "trade_date": "2025-02-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250221.parquet",
+      "trade_date": "2025-02-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250224.parquet",
+      "trade_date": "2025-02-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250225.parquet",
+      "trade_date": "2025-02-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250226.parquet",
+      "trade_date": "2025-02-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250227.parquet",
+      "trade_date": "2025-02-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250228.parquet",
+      "trade_date": "2025-02-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250304.parquet",
+      "trade_date": "2025-03-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250305.parquet",
+      "trade_date": "2025-03-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250306.parquet",
+      "trade_date": "2025-03-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250307.parquet",
+      "trade_date": "2025-03-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250310.parquet",
+      "trade_date": "2025-03-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250311.parquet",
+      "trade_date": "2025-03-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250312.parquet",
+      "trade_date": "2025-03-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250313.parquet",
+      "trade_date": "2025-03-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250314.parquet",
+      "trade_date": "2025-03-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250317.parquet",
+      "trade_date": "2025-03-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250318.parquet",
+      "trade_date": "2025-03-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250319.parquet",
+      "trade_date": "2025-03-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250320.parquet",
+      "trade_date": "2025-03-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250321.parquet",
+      "trade_date": "2025-03-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250324.parquet",
+      "trade_date": "2025-03-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250325.parquet",
+      "trade_date": "2025-03-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250326.parquet",
+      "trade_date": "2025-03-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250327.parquet",
+      "trade_date": "2025-03-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250328.parquet",
+      "trade_date": "2025-03-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250331.parquet",
+      "trade_date": "2025-03-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250401.parquet",
+      "trade_date": "2025-04-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250402.parquet",
+      "trade_date": "2025-04-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250403.parquet",
+      "trade_date": "2025-04-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250404.parquet",
+      "trade_date": "2025-04-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250407.parquet",
+      "trade_date": "2025-04-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250408.parquet",
+      "trade_date": "2025-04-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250409.parquet",
+      "trade_date": "2025-04-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250410.parquet",
+      "trade_date": "2025-04-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250411.parquet",
+      "trade_date": "2025-04-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250414.parquet",
+      "trade_date": "2025-04-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250415.parquet",
+      "trade_date": "2025-04-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250416.parquet",
+      "trade_date": "2025-04-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250417.parquet",
+      "trade_date": "2025-04-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250418.parquet",
+      "trade_date": "2025-04-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250421.parquet",
+      "trade_date": "2025-04-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250422.parquet",
+      "trade_date": "2025-04-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250423.parquet",
+      "trade_date": "2025-04-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250424.parquet",
+      "trade_date": "2025-04-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250425.parquet",
+      "trade_date": "2025-04-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250428.parquet",
+      "trade_date": "2025-04-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250429.parquet",
+      "trade_date": "2025-04-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250430.parquet",
+      "trade_date": "2025-04-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250502.parquet",
+      "trade_date": "2025-05-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250507.parquet",
+      "trade_date": "2025-05-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250508.parquet",
+      "trade_date": "2025-05-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250509.parquet",
+      "trade_date": "2025-05-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250512.parquet",
+      "trade_date": "2025-05-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250513.parquet",
+      "trade_date": "2025-05-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250514.parquet",
+      "trade_date": "2025-05-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250515.parquet",
+      "trade_date": "2025-05-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250516.parquet",
+      "trade_date": "2025-05-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250519.parquet",
+      "trade_date": "2025-05-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250520.parquet",
+      "trade_date": "2025-05-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250521.parquet",
+      "trade_date": "2025-05-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250522.parquet",
+      "trade_date": "2025-05-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250523.parquet",
+      "trade_date": "2025-05-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250526.parquet",
+      "trade_date": "2025-05-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250527.parquet",
+      "trade_date": "2025-05-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250528.parquet",
+      "trade_date": "2025-05-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250529.parquet",
+      "trade_date": "2025-05-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250530.parquet",
+      "trade_date": "2025-05-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250602.parquet",
+      "trade_date": "2025-06-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250604.parquet",
+      "trade_date": "2025-06-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250605.parquet",
+      "trade_date": "2025-06-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250609.parquet",
+      "trade_date": "2025-06-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250610.parquet",
+      "trade_date": "2025-06-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250611.parquet",
+      "trade_date": "2025-06-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250612.parquet",
+      "trade_date": "2025-06-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250613.parquet",
+      "trade_date": "2025-06-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250616.parquet",
+      "trade_date": "2025-06-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250617.parquet",
+      "trade_date": "2025-06-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250618.parquet",
+      "trade_date": "2025-06-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250619.parquet",
+      "trade_date": "2025-06-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250620.parquet",
+      "trade_date": "2025-06-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250623.parquet",
+      "trade_date": "2025-06-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250624.parquet",
+      "trade_date": "2025-06-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250625.parquet",
+      "trade_date": "2025-06-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250626.parquet",
+      "trade_date": "2025-06-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250627.parquet",
+      "trade_date": "2025-06-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250630.parquet",
+      "trade_date": "2025-06-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250701.parquet",
+      "trade_date": "2025-07-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250702.parquet",
+      "trade_date": "2025-07-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250703.parquet",
+      "trade_date": "2025-07-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250704.parquet",
+      "trade_date": "2025-07-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250707.parquet",
+      "trade_date": "2025-07-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250708.parquet",
+      "trade_date": "2025-07-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250709.parquet",
+      "trade_date": "2025-07-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250710.parquet",
+      "trade_date": "2025-07-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250711.parquet",
+      "trade_date": "2025-07-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250714.parquet",
+      "trade_date": "2025-07-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250715.parquet",
+      "trade_date": "2025-07-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250716.parquet",
+      "trade_date": "2025-07-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250717.parquet",
+      "trade_date": "2025-07-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250718.parquet",
+      "trade_date": "2025-07-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250721.parquet",
+      "trade_date": "2025-07-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250722.parquet",
+      "trade_date": "2025-07-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250723.parquet",
+      "trade_date": "2025-07-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250724.parquet",
+      "trade_date": "2025-07-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250725.parquet",
+      "trade_date": "2025-07-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250728.parquet",
+      "trade_date": "2025-07-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250729.parquet",
+      "trade_date": "2025-07-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250730.parquet",
+      "trade_date": "2025-07-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250731.parquet",
+      "trade_date": "2025-07-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250801.parquet",
+      "trade_date": "2025-08-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250804.parquet",
+      "trade_date": "2025-08-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250805.parquet",
+      "trade_date": "2025-08-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250806.parquet",
+      "trade_date": "2025-08-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250807.parquet",
+      "trade_date": "2025-08-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250808.parquet",
+      "trade_date": "2025-08-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250811.parquet",
+      "trade_date": "2025-08-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250812.parquet",
+      "trade_date": "2025-08-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250813.parquet",
+      "trade_date": "2025-08-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250814.parquet",
+      "trade_date": "2025-08-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250818.parquet",
+      "trade_date": "2025-08-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250819.parquet",
+      "trade_date": "2025-08-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250820.parquet",
+      "trade_date": "2025-08-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250821.parquet",
+      "trade_date": "2025-08-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250822.parquet",
+      "trade_date": "2025-08-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250825.parquet",
+      "trade_date": "2025-08-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250826.parquet",
+      "trade_date": "2025-08-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250827.parquet",
+      "trade_date": "2025-08-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250828.parquet",
+      "trade_date": "2025-08-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250829.parquet",
+      "trade_date": "2025-08-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250901.parquet",
+      "trade_date": "2025-09-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250902.parquet",
+      "trade_date": "2025-09-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250903.parquet",
+      "trade_date": "2025-09-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250904.parquet",
+      "trade_date": "2025-09-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250905.parquet",
+      "trade_date": "2025-09-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250908.parquet",
+      "trade_date": "2025-09-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250909.parquet",
+      "trade_date": "2025-09-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250910.parquet",
+      "trade_date": "2025-09-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250911.parquet",
+      "trade_date": "2025-09-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250912.parquet",
+      "trade_date": "2025-09-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250915.parquet",
+      "trade_date": "2025-09-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250916.parquet",
+      "trade_date": "2025-09-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250917.parquet",
+      "trade_date": "2025-09-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250918.parquet",
+      "trade_date": "2025-09-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250919.parquet",
+      "trade_date": "2025-09-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250922.parquet",
+      "trade_date": "2025-09-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250923.parquet",
+      "trade_date": "2025-09-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250924.parquet",
+      "trade_date": "2025-09-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250925.parquet",
+      "trade_date": "2025-09-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250926.parquet",
+      "trade_date": "2025-09-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250929.parquet",
+      "trade_date": "2025-09-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20250930.parquet",
+      "trade_date": "2025-09-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251001.parquet",
+      "trade_date": "2025-10-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251002.parquet",
+      "trade_date": "2025-10-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251010.parquet",
+      "trade_date": "2025-10-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251013.parquet",
+      "trade_date": "2025-10-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251014.parquet",
+      "trade_date": "2025-10-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251015.parquet",
+      "trade_date": "2025-10-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251016.parquet",
+      "trade_date": "2025-10-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251017.parquet",
+      "trade_date": "2025-10-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251020.parquet",
+      "trade_date": "2025-10-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251021.parquet",
+      "trade_date": "2025-10-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251022.parquet",
+      "trade_date": "2025-10-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251023.parquet",
+      "trade_date": "2025-10-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251024.parquet",
+      "trade_date": "2025-10-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251027.parquet",
+      "trade_date": "2025-10-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251028.parquet",
+      "trade_date": "2025-10-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251029.parquet",
+      "trade_date": "2025-10-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251030.parquet",
+      "trade_date": "2025-10-30"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251031.parquet",
+      "trade_date": "2025-10-31"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251103.parquet",
+      "trade_date": "2025-11-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251104.parquet",
+      "trade_date": "2025-11-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251105.parquet",
+      "trade_date": "2025-11-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251106.parquet",
+      "trade_date": "2025-11-06"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251107.parquet",
+      "trade_date": "2025-11-07"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251110.parquet",
+      "trade_date": "2025-11-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251111.parquet",
+      "trade_date": "2025-11-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251112.parquet",
+      "trade_date": "2025-11-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251113.parquet",
+      "trade_date": "2025-11-13"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251114.parquet",
+      "trade_date": "2025-11-14"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251117.parquet",
+      "trade_date": "2025-11-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251118.parquet",
+      "trade_date": "2025-11-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251119.parquet",
+      "trade_date": "2025-11-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251120.parquet",
+      "trade_date": "2025-11-20"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251121.parquet",
+      "trade_date": "2025-11-21"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251124.parquet",
+      "trade_date": "2025-11-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251125.parquet",
+      "trade_date": "2025-11-25"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251126.parquet",
+      "trade_date": "2025-11-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251127.parquet",
+      "trade_date": "2025-11-27"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251128.parquet",
+      "trade_date": "2025-11-28"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251201.parquet",
+      "trade_date": "2025-12-01"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251202.parquet",
+      "trade_date": "2025-12-02"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251203.parquet",
+      "trade_date": "2025-12-03"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251204.parquet",
+      "trade_date": "2025-12-04"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251205.parquet",
+      "trade_date": "2025-12-05"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251208.parquet",
+      "trade_date": "2025-12-08"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251209.parquet",
+      "trade_date": "2025-12-09"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251210.parquet",
+      "trade_date": "2025-12-10"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251211.parquet",
+      "trade_date": "2025-12-11"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251212.parquet",
+      "trade_date": "2025-12-12"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251215.parquet",
+      "trade_date": "2025-12-15"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251216.parquet",
+      "trade_date": "2025-12-16"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251217.parquet",
+      "trade_date": "2025-12-17"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251218.parquet",
+      "trade_date": "2025-12-18"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251219.parquet",
+      "trade_date": "2025-12-19"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251222.parquet",
+      "trade_date": "2025-12-22"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251223.parquet",
+      "trade_date": "2025-12-23"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251224.parquet",
+      "trade_date": "2025-12-24"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251226.parquet",
+      "trade_date": "2025-12-26"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251229.parquet",
+      "trade_date": "2025-12-29"
+    },
+    {
+      "error_type": "EndpointConnectionError",
+      "key": "qdata-raw/raw/krx_etf/snapshot/20251230.parquet",
+      "trade_date": "2025-12-30"
+    }
+  ],
+  "historical_publication_times_verified": false,
+  "objects": [],
+  "observed_at": "2026-09-30T10:36:53.254117+00:00",
+  "production_mutated": false,
+  "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "raw_price_bodies_read": true,
+  "schema_version": 1,
+  "scope": "current_raw_bodies_for_exact_approved_sessions",
+  "script_sha256": "f5db018643fac7e3ff5ddac040da507ed41afe33b68b8be58731b6260ecd6c1e",
+  "sealed_price_rows_read": false,
+  "source_manifest_sha256": "963dc1ea3420fb46802ba9ab50fea9d0f8c098777eaa0f67b603b4aa81235b68",
+  "total_bytes": 0
+}

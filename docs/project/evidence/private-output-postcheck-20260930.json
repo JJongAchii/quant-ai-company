@@ -1,0 +1,209 @@
+{
+  "containers": [
+    {
+      "name": "/quant-company-worker-1",
+      "id": "308eee976969",
+      "image": "quant-company-autonomous:0286ba3e7426ff6546b90e6926124ae65e71ba79",
+      "state": "running",
+      "restarts": 0,
+      "oom": false,
+      "health": null
+    },
+    {
+      "name": "/quant-company-api-1",
+      "id": "43a3f6cc0560",
+      "image": "quant-company:5defb8cb9dd7c655214663b05670cd2896006b30",
+      "state": "running",
+      "restarts": 0,
+      "oom": false,
+      "health": "healthy"
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "id": "9682e21e03fa",
+      "image": "quant-company:5defb8cb9dd7c655214663b05670cd2896006b30",
+      "state": "running",
+      "restarts": 0,
+      "oom": false,
+      "health": null
+    },
+    {
+      "name": "/quant-company-quant-feed-worker-1",
+      "id": "ec1eb15eab23",
+      "image": "quant-company:5defb8cb9dd7c655214663b05670cd2896006b30",
+      "state": "running",
+      "restarts": 0,
+      "oom": false,
+      "health": null
+    },
+    {
+      "name": "/quant-company-quant-codex-runtime-1",
+      "id": "b3fb07a97b26",
+      "image": "quant-company-codex:5defb8cb9dd7c655214663b05670cd2896006b30",
+      "state": "running",
+      "restarts": 0,
+      "oom": false,
+      "health": "healthy"
+    },
+    {
+      "name": "/quant-company-slack-socket-1",
+      "id": "3b9ad1e60c01",
+      "image": "quant-company:eec5e2326dc5ecfcfe8bc7a98840afec0820242a",
+      "state": "running",
+      "restarts": 0,
+      "oom": false,
+      "health": null
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "id": "cbf51d0f25f7",
+      "image": "quant-company-codex:d790b2ecf203b63a76425b8b2703c9d10250ff44",
+      "state": "running",
+      "restarts": 0,
+      "oom": false,
+      "health": "healthy"
+    },
+    {
+      "name": "/quant-company-data-watch-worker-1",
+      "id": "b900ca1d55f3",
+      "image": "quant-company:0e09b852e6a36e2fee52fb1cc7baab1c83a757ce",
+      "state": "running",
+      "restarts": 0,
+      "oom": false,
+      "health": null
+    },
+    {
+      "name": "/quant-company-housing-feed-worker-1",
+      "id": "7df307ee748d",
+      "image": "quant-company:c54667e2827506d50b4cbfaa63d924f2b69f21ab",
+      "state": "running",
+      "restarts": 0,
+      "oom": false,
+      "health": null
+    },
+    {
+      "name": "/quant-company-maintenance-1",
+      "id": "7266163c1e81",
+      "image": "quant-company-maintenance:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "state": "running",
+      "restarts": 1,
+      "oom": false,
+      "health": null
+    },
+    {
+      "name": "/quant-company-account-gateway-1",
+      "id": "54b595660ad3",
+      "image": "quant-company:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "state": "running",
+      "restarts": 0,
+      "oom": false,
+      "health": "healthy"
+    },
+    {
+      "name": "/quant-company-news-worker-1",
+      "id": "879e0263e71a",
+      "image": "quant-company:837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "state": "running",
+      "restarts": 0,
+      "oom": false,
+      "health": null
+    },
+    {
+      "name": "/quant-company-claude-runtime-1",
+      "id": "02252b5adc5f",
+      "image": "quant-company-claude:fde7681e0286501d8713e08e30a96991a88b9151",
+      "state": "running",
+      "restarts": 0,
+      "oom": false,
+      "health": "healthy"
+    },
+    {
+      "name": "/quant-company-postgres-1",
+      "id": "1c2512612076",
+      "image": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "state": "running",
+      "restarts": 0,
+      "oom": false,
+      "health": "healthy"
+    }
+  ],
+  "persistent_pin": [
+    "PINNED_COMPANY_WORKER_IMAGE=quant-company-autonomous:0286ba3e7426ff6546b90e6926124ae65e71ba79"
+  ],
+  "database": {
+    "now": "2026-09-30T07:55:06.134951+00:00",
+    "pause": {
+      "id": 1,
+      "paused_until": null,
+      "reason": null
+    },
+    "stage": {
+      "stage": "program_selection",
+      "state": "running",
+      "attempt": 1,
+      "task_id": "da7cd027-b603-5d9d-9665-77b3b844e6d2",
+      "error": null,
+      "updated_at": "2026-09-30T07:54:56.428646+00:00"
+    },
+    "recent_turns": [
+      {
+        "id": "4d1631b1-f067-50e5-838b-3aa3ce994eed",
+        "agent": "director",
+        "status": "running",
+        "sequence": 2,
+        "error": null,
+        "updated_at": "2026-09-30T07:54:56.800339+00:00",
+        "prompt_chars": 53877
+      },
+      {
+        "id": "8ae917cb-15dd-54b8-b51f-a4ce5bddb6b8",
+        "agent": "director",
+        "status": "completed",
+        "sequence": 1,
+        "error": null,
+        "updated_at": "2026-09-30T07:54:56.428646+00:00",
+        "prompt_chars": 41083
+      },
+      {
+        "id": "7bd220f1-fe08-5dce-8a22-38ce7f28aa34",
+        "agent": "data",
+        "status": "completed",
+        "sequence": 9,
+        "error": null,
+        "updated_at": "2026-09-30T07:54:15.567569+00:00",
+        "prompt_chars": 74051
+      },
+      {
+        "id": "be320aec-fa14-5d57-8b8f-b2b3f831ec33",
+        "agent": "data",
+        "status": "completed",
+        "sequence": 8,
+        "error": null,
+        "updated_at": "2026-09-30T07:53:59.992378+00:00",
+        "prompt_chars": 63158
+      }
+    ],
+    "program": {
+      "state": "active",
+      "digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b"
+    },
+    "missions": 0,
+    "tasks": [
+      {
+        "id": "2733156b-0a7e-50dc-995c-93cf58bf114b",
+        "state": "assessed",
+        "title": "고정 ETF 069500의 GMM 노출조절: 원천·시점성 차단 해소 후 조건부 개발검증",
+        "data_decision": "blocked",
+        "director_decision": null
+      },
+      {
+        "id": "b5ce3cb7-d71b-5720-9f2d-72c9b1df7d18",
+        "state": "waiting",
+        "title": "고정 ETF 069500의 GMM 노출조절: 데이터 차단 해소 후 조건부 개발검증",
+        "data_decision": "blocked",
+        "director_decision": "wait"
+      }
+    ]
+  },
+  "scope": "Actual worker-only activation followed by real program progress; no new scientific execution or manual Slack message."
+}

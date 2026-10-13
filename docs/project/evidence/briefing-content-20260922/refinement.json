@@ -1,0 +1,6 @@
+{
+  "reason": "Actual v4 AM writer omitted all core observations despite sourced closing prices. v3 output also misattributed one evidence quote.",
+  "change": "Explicit core observation and source/quote alignment instruction; deterministic missing-core gate already rejects incomplete output.",
+  "comparison_status": "Development refinement, not a held-out test. Original requests and outputs retained.",
+  "request_id": "news-brief-eval-v4-am-r2-11a7c25af82a0fa0"
+}

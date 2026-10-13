@@ -56,6 +56,10 @@ class NewsDiscoveryStore(NewsStore):
                 if active["next_at"] > datetime.now(UTC):
                     return {"state": "defer"}
                 return {"state": "ready", "request": active["request"]}
+            from ..briefing.store import priority_pending
+
+            if priority_pending(self.company):
+                return {"state": "defer", "reason": "briefing_priority"}
             latest = conn.execute("SELECT max(completed_at) AS at,count(*) AS n FROM news_searches").fetchone()
             optimized = self.company.settings.news_optimization_enabled
             if latest["at"] and latest["at"] > datetime.now(UTC)-timedelta(minutes=60 if optimized else 30):

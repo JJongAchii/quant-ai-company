@@ -1,0 +1,35 @@
+{
+  "request_id": "news-brief-eval-126b080f375608dd23a493ec135bd856",
+  "request_sha256": "8ca2a91391b61bb5a857eea5dffffe661526e676eb449569f593f12c681ee733",
+  "elapsed_seconds": 123.862,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "request_id": "news-brief-eval-126b080f375608dd23a493ec135bd856",
+    "decision": {
+      "say": "",
+      "status": "complete",
+      "delegations": [],
+      "messages": [],
+      "artifacts": [
+        {
+          "title": "BriefReview",
+          "content": "{\"verdict\":\"reduce\",\"checks\":{\"numbers\":true,\"sources\":true,\"timing\":true,\"causality\":true,\"materiality\":true,\"counterevidence\":false,\"transmission\":true,\"alternatives\":true,\"falsifiability\":true,\"coverage\":false,\"depth\":false},\"rejected_ids\":[],\"concerns\":[\"미중 통상 기사의 실제 보복 조치 지속과 베선트의 기존 합의 미이행 지적이 빠졌습니다. 향후 합의가 없을 가능성만으로 현재의 마찰을 대신할 수 없습니다.\",\"한미일 성명의 경제적 압박은 반영했지만 전년보다 타이완·남중국해 표현을 완화한 사실은 빠져 외교 신호의 양면성이 충분히 전달되지 않습니다.\",\"AMD의 주가와 사업 확장은 설명했지만 시가총액 1조 달러 돌파와 네 번째 반도체 기업이라는 비교가 빠졌습니다. 해당 원문의 핵심 변화와 규모를 충분히 다루지 못했습니다.\"],\"source_assessments\":[{\"source_id\":\"08bba8a5854670b32d1d37c5ca5c5eef877d9669\",\"treatment\":\"covered\",\"reason\":\"미국장 상승, 유가·금리 하락, 달러 강세와 시각을 명시한 암호자산 상승이 본문에 반영됐습니다. 금리 보도 간 차이도 공개했습니다.\",\"item_ids\":[\"overview_rates_fx\",\"summary_oil\",\"btc_rolling\",\"eth_rolling\",\"digital_fact\"]},{\"source_id\":\"2b7e91ad74af68290f4a95af3dae32d237c17a89\",\"treatment\":\"background\",\"reason\":\"지수·메타·금리와 AI 투자 유지 사실은 반영됐지만, AMD 시가총액 1조 달러 돌파라는 별도 주요 변화는 누락돼 부분 반영에 그칩니다.\",\"item_ids\":[\"overview_equities\",\"overview_rates_fx\",\"ai_fact\",\"safety_counterpoint\"]},{\"source_id\":\"bbe3e842d0ad3533bf684a7ff088a84361eff9b7\",\"treatment\":\"background\",\"reason\":\"회담 의제는 인용했지만 실제 보복 통상 조치 지속과 기존 합의 미이행 지적을 본문에 담지 않았습니다. 미래의 합의 실패 가정만으로는 충분하지 않습니다.\",\"item_ids\":[\"summary_policy\",\"summit_mechanism\",\"summit_alternative\",\"trump_xi_summit\"]},{\"source_id\":\"ff8917a4601610247c5ae78e6bd2c3db76e600f4\",\"treatment\":\"covered\",\"reason\":\"Pontes 출범, 중앙은행 화폐를 통한 도매 결제, 초기 참여기관 이용 준비와 2028년 전면 구현 계획을 반영했습니다.\",\"item_ids\":[\"digital_fact\",\"digital_mechanism\",\"digital_alternative\",\"digital_counterpoint\"]},{\"source_id\":\"ec3c41e2376f8cf67dd34138bea5a14683cdc849\",\"treatment\":\"covered\",\"reason\":\"AI 협의체 합의와 11월 후속 회담, 항공 서비스 관련 결제망 제재 경고를 반영했습니다. 회담 날짜는 매체 보도로 귀속하고 제재 집행 완료를 주장하지 않았습니다.\",\"item_ids\":[\"summary_policy\",\"summit_fact\",\"summit_mechanism\",\"trump_xi_summit\"]},{\"source_id\":\"0023ecad6e84f1d23292db0078e5912145e1852f\",\"treatment\":\"covered\",\"reason\":\"미국 50억 달러와 총 100억 달러 재건기금 제안, 참여·시점 불확실성, 시설 피해와 재공격 위험을 본문에서 함께 설명했습니다.\",\"item_ids\":[\"summary_oil\",\"oil_fact\",\"oil_alternative\",\"oil_counterpoint\"]},{\"source_id\":\"558b8b51bb4ac18d42abcf1722733ccd2b718ba4\",\"treatment\":\"background\",\"reason\":\"AMD 상승률·종가와 시스템 사업 확장은 반영했으나 기사의 핵심인 시가총액 1조 달러 돌파 및 네 번째 반도체 기업이라는 규모 비교가 빠졌습니다.\",\"item_ids\":[\"ai_fact\",\"ai_mechanism\"]},{\"source_id\":\"7f4f853766b5dc50bf53c1c88ee6a23f93411328\",\"treatment\":\"covered\",\"reason\":\"뮤즈 누적 다운로드와 에이전트 활용, 동기간 ChatGPT 비교 및 플랫폼 출시 차이에 따른 비교 한계를 본문에 반영했습니다.\",\"item_ids\":[\"summary_ai\",\"ai_fact\",\"ai_mechanism\",\"ai_counterpoint\"]},{\"source_id\":\"ee106e6206f30aea0a6c4d0999349aeef2df0e43\",\"treatment\":\"covered\",\"reason\":\"WTI 계약·종가·하락률과 외교 기대, 전쟁 이전 대비 약 80% 물량, 송유관 폐쇄 및 후티 폭격 자제 보도를 함께 반영했습니다.\",\"item_ids\":[\"summary_oil\",\"oil_fact\",\"oil_mechanism\",\"oil_counterpoint\"]},{\"source_id\":\"57b4e958756bfd076e4ffe0a2c39a8121f88a694\",\"treatment\":\"background\",\"reason\":\"같은 매체 유가 상보에 포함된 WTI·브렌트 종가의 속보입니다. 별도의 정책 변화나 독립 확인을 제공하지 않습니다.\",\"item_ids\":[]},{\"source_id\":\"c6c3354fb2013f469d8065e51066fee65821c56f\",\"treatment\":\"background\",\"reason\":\"연합뉴스 종합 기사와 동일한 미국 지수 종가 및 상승 배경을 전한 초기 기사로, 별도 핵심 변화가 없습니다.\",\"item_ids\":[]},{\"source_id\":\"0a9d4bdb6f69a621c79e1c7b31bb248b4b108151\",\"treatment\":\"covered\",\"reason\":\"합병 규모와 소송 합의, 연간 제작 의무·미이행 제재, 건강기금 지급·고용 보호 및 WGA의 반대 입장을 반영했습니다.\",\"item_ids\":[\"merger_fact\",\"merger_mechanism\",\"merger_alternative\",\"merger_counterpoint\"]},{\"source_id\":\"3dde2b5129d47d1e1f8d374fed1d73a36529f3ac\",\"treatment\":\"background\",\"reason\":\"경제적 강압에 대한 반대만 반영했습니다. 전년 성명보다 타이완·남중국해 표현을 낮춘 실제 완화 신호가 빠져 정상회담 전 정책 신호를 부분적으로 전달합니다.\",\"item_ids\":[\"summit_counterpoint\"]},{\"source_id\":\"53be9c4c65a0f487c3d094677c68d367d04dfedd\",\"treatment\":\"background\",\"reason\":\"이란 매체가 전한 일부 수행원 비자 거부는 외교 마찰의 배경입니다. 원문에는 정상 회담 취소나 에너지 공급 변화가 확인되지 않아 별도 주요 이슈 제외는 가능합니다.\",\"item_ids\":[]},{\"source_id\":\"49134ea9e806961c96d90a905e435a2b6ca8ad79\",\"treatment\":\"not_material\",\"reason\":\"이란 인권 상황에 대한 영국의 입장 표명으로, 새로운 경제 제재·통상 조치나 당일 자산가격에 연결되는 변화는 제시하지 않습니다.\",\"item_ids\":[]},{\"source_id\":\"bf4a2f2fa3a60d1f38b1fa44fb392a5a6dce4f25\",\"treatment\":\"covered\",\"reason\":\"구글의 무단 접근 공개, 안전 평가 자원 부족, 트럼프의 대응 구상과 지난주 금리 부담을 반영했습니다. 장전 선물을 종가로 혼동하지 않았습니다.\",\"item_ids\":[\"overview_equities\",\"safety_fact\",\"safety_mechanism\"]}]}",
+          "source_ids": []
+        }
+      ],
+      "tools": [],
+      "memories": [],
+      "follow_up": null
+    },
+    "thread_id": "01a0e6c3-53c3-7e50-bcbc-2560f050e3cf",
+    "usage": {
+      "input_tokens": 40142,
+      "cached_input_tokens": 0,
+      "output_tokens": 3903,
+      "reasoning_output_tokens": 1552
+    },
+    "provider": "codex",
+    "web_searches": []
+  }
+}

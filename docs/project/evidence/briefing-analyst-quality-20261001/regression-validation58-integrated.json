@@ -1,0 +1,24 @@
+{
+  "recorded_at": "2026-10-06T12:29:58.285369+00:00",
+  "source_commit": "04e60ba66509ebc552a5ea26520e2b919e034589",
+  "scope": "Analyst regression on the latest installed news/dispatch source with model assignments and trend overlay preserved.",
+  "tests": 288,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "receipt_sha256": "5b6b18707fbfdf31bd546915b45647b1a55a7c5e87e5a1892389eb56b06b1736",
+  "postgresql": "real database",
+  "temporal": "actual test environment",
+  "models_and_slack": "fixtures / simulated transports",
+  "source_profiles": 2,
+  "merge_conflicts": 0,
+  "source_changes_per_profile": 8,
+  "all_other_installed_source_files_preserved": true,
+  "followup_release_helper_tests": {
+    "tests": 20,
+    "failures": 0,
+    "receipt_sha256": "9ac9ce94fc2ec1e4bf96a006202e4ce2b118bfe68f89e3e0cb17499198a99222"
+  },
+  "actual_fresh_content_pass": false,
+  "actual_slack_delivery_verified": false
+}

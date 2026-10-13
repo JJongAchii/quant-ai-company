@@ -1,0 +1,63 @@
+{
+  "constraints": [
+    "Preserve legacy program/mission/profile encodings, approvals and historical PIT readiness gates",
+    "PostgreSQL owns authority, history and budgets; Temporal owns retries and timers",
+    "Protected domestic engine and market input bytes remain unchanged",
+    "No research execution authorization derives from this local implementation approval",
+    "Official ChatGPT authentication; no paid API or unsandboxed Codex fallback",
+    "New company evidence belongs in this repository; research repos are read-only integration targets"
+  ],
+  "createdAt": "2026-10-01T03:46:23.508659+00:00",
+  "decisionGates": [
+    "Versioned policy is bound and verified at each proposal, authorization, worker and result boundary",
+    "Only the reviewed historical evidence gaps may be acknowledged as conditional scope limitations; every other gap blocks",
+    "Real services and worker qualification evidence distinguish fixtures from real financial research",
+    "A later signed Slack owner action must authorize the final canonical program before first research execution"
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "Legacy serialized contract digests unchanged",
+        "Policy and scoped gaps enforced at authorization and atomic budget reservation",
+        "Inherited scientific history cannot reset through a new program"
+      ],
+      "description": "Versioned data policy, assessment and scientific lineage authority",
+      "id": "VERSIONED_CONTRACTS"
+    },
+    {
+      "acceptance": [
+        "Protected engine bytes unchanged",
+        "Plan, qualification, result, receipt, interpretation, audit, source and report reject missing or mismatched scope",
+        "Conditional evidence cannot authorize exact/historical/live claims"
+      ],
+      "description": "Trusted wrapper and consumer preserve conditional scope",
+      "id": "SCOPE_PROPAGATION"
+    },
+    {
+      "acceptance": [
+        "Meaningful failure tests plus real PostgreSQL and Temporal where available",
+        "Actual sandbox producer-consumer checks labelled separately from simulated host/Slack/Codex",
+        "Independent code review, lint and CI with reviewable evidence"
+      ],
+      "description": "Real-service regressions and bounded isolated producer-consumer qualification",
+      "id": "QUALIFICATION"
+    }
+  ],
+  "nonGoals": [
+    "No production deployment, research activation, sealed price reads, market backtests, live orders or Slack approval request in this implementation slice"
+  ],
+  "outcome": "Implement a versioned conditional retrospective research path with exact policy and input bindings, independent assessment, cross-program scientific lineage and immutable scope through execution, audits and reports; qualify it without production activation or market performance.",
+  "revision": 7,
+  "revisionReason": "User authorized implementing the reviewed conditional research specification; research execution still needs a fresh signed program.",
+  "schemaVersion": 1,
+  "slug": "lamprey",
+  "sourceRequest": "응 진행해 — reviewed conditional research implementation",
+  "stopConditions": [
+    "Keep ambiguous external execution receipts for reconciliation; never blind replay an uncertain execution",
+    "Fail closed on policy/input/profile/scope mismatch or new unclassified gaps"
+  ],
+  "supersedes": {
+    "intentDigest": "b3c652b7b56b",
+    "intentFile": "INTENT-v6.json"
+  }
+}

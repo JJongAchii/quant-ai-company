@@ -1,0 +1,12 @@
+{
+  "at": "2026-09-30T06:11:47.184080+00:00",
+  "stage": "before first writer",
+  "reason": "Input qualification found old playbook thread instruction and long review packet overflow. Aligned new procedure with format13 and losslessly compacted references; no original or source selection changed.",
+  "initial_policy": "../am-20260930-policy.json",
+  "format_version": 13,
+  "editorial_sha256": "92178c0e5e7d69bc32ef715f7133b832419008b8c2a8c2fd134eb551b0e8d5ae",
+  "procedure_digest": "a718301296872cd0dd2dab402a88cd917b4f93ab08c6645f8da1bfdf244707c1",
+  "request_id": "news-brief-eval-eb3a81eb48f6227b30e1214c4ebd9cdd",
+  "request_sha256": "40d0f357becfa22503a0a042fa8ab0b3c4ace85d7ff50435b86e463c13e1e94d",
+  "tests": "120 relevant passed"
+}

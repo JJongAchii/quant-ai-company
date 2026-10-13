@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from typing import Any, Literal
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -33,7 +34,7 @@ class ToolRequest(StrictModel):
     name: Literal["calculate", "knowledge_search", "read_source", "lake_catalog", "lake_describe", "lake_sample",
                   "company_history", "maintenance_review", "maintenance_status", "system_status", "repository_read",
                   "task_control", "finance_search", "finance_read", "web_search", "web_read",
-                  "finance_compute", "data_quality", "staff_status", "news_status", "research_control"]
+                  "finance_compute", "data_quality", "staff_status", "news_status", "briefing_status", "research_control"]
     arguments: dict[str, Any]
 
 
@@ -82,21 +83,75 @@ class ProviderSession(StrictModel):
     previous_request_id: str | None = Field(default=None, pattern=r"^[a-zA-Z0-9_-]{1,80}$")
 
 
+class ResearchStageOutput(StrictModel):
+    """A private file read or artifact; the service constructs the AgentDecision."""
+
+    action: Literal["read", "complete"]
+    read_path: str | None = Field(default=None, min_length=1, max_length=500)
+    read_offset: int | None = Field(default=None, ge=0, strict=True)
+    artifact_json: str | None = Field(default=None, min_length=1, max_length=60000)
+
+    @model_validator(mode="after")
+    def one_action(self):
+        if self.action == "read":
+            if self.read_path is None or self.read_offset is None or self.artifact_json is not None:
+                raise ValueError("A research read requires only a path and offset")
+        elif self.read_path is not None or self.read_offset is not None or self.artifact_json is None:
+            raise ValueError("Research completion requires only a serialized artifact")
+        return self
+
+
+class ProviderAttachment(StrictModel):
+    """An image the model must look at (rendered video frames); base64 without a data: prefix."""
+    name: str = Field(pattern=r"^[a-zA-Z0-9_.-]{1,80}$")
+    media_type: Literal["image/jpeg", "image/png"]
+    data: str = Field(min_length=4, max_length=1_500_000, pattern=r"^[A-Za-z0-9+/=]+$")
+
+
 class ProviderRequest(StrictModel):
     request_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,80}$")
     model: str = Field(min_length=1, max_length=80)
     # None preserves already-frozen requests from before explicit effort support.
     reasoning_effort: ReasoningEffort | None = None
+    # Service-owned absolute deadline; absent on legacy and non-Analyst requests.
+    brief_deadline_unix: int | None = Field(default=None, gt=0, strict=True)
     prompt: str = Field(min_length=1, max_length=90000)
     web_search: bool = False
     # Service-owned continuation, resolved against durable runtime receipts.
     session: ProviderSession | None = None
+    # Frames for the visual review; empty keeps every other request's wire shape and digest unchanged.
+    attachments: list[ProviderAttachment] = Field(default_factory=list, max_length=24)
     output_contract: Literal["agent_decision", "quant_brief_v1", "quant_brief_v2", "quant_brief_v3", "quant_brief_v4",
-                             "quant_critique_v1", "quant_critique_v2", "quant_search_v1"] = "agent_decision"
+                             "quant_critique_v1", "quant_critique_v2", "quant_search_v1",
+                             "research_stage_v1", "video_plan_v1", "video_review_v1", "video_episode_v1",
+                             "video_visual_review_v1", "video_screen_fix_v1",
+                             "brief_plan_v1", "brief_inventory_v1", "brief_inventory_v2", "brief_compose_v1",
+                             "brief_write_v1", "brief_review_v1", "brief_review_v2", "brief_conditions_v1",
+                             "brief_facts_v1", "brief_editorial_v1", "brief_editorial_v2", "brief_source_notes_v1"] = "agent_decision"
 
     @model_validator(mode="after")
     def scoped_output(self):
-        if self.output_contract == "quant_search_v1":
+        if self.attachments and self.output_contract != "video_visual_review_v1":
+            raise ValueError("Only the visual video review receives images")
+        if self.brief_deadline_unix is not None and not self.output_contract.startswith('brief_'):
+            raise ValueError('A briefing deadline requires a scoped Analyst request')
+        if self.output_contract.startswith("brief_"):
+            from .briefing.execution import valid_request
+
+            if not valid_request(self.request_id, self.output_contract) or self.web_search or self.session is not None:
+                raise ValueError("Brief output requires a matching tool-free Analyst phase")
+        elif self.output_contract in {"video_plan_v1", "video_review_v1", "video_episode_v1", "video_visual_review_v1",
+                                      "video_screen_fix_v1"}:
+            if not self.request_id.startswith("video-") or self.web_search or self.session is not None:
+                raise ValueError("Video output requires a tool-free video request")
+        elif self.output_contract == "research_stage_v1":
+            try:
+                canonical_id = str(UUID(self.request_id))
+            except ValueError:
+                raise ValueError("Research output requires a canonical company turn ID") from None
+            if canonical_id != self.request_id or self.web_search or self.session is not None:
+                raise ValueError("Research structured output requires a tool-free company turn")
+        elif self.output_contract == "quant_search_v1":
             if not self.request_id.startswith("quant-feed-") or not self.web_search:
                 raise ValueError("Quant discovery output requires a native-search Quant request")
         elif self.output_contract != "agent_decision" and (

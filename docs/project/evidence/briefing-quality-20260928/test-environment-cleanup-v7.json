@@ -1,0 +1,9 @@
+{
+  "recorded_at": "2026-09-28T01:44:14.522209+00:00",
+  "cluster": ".local/briefing-postgres",
+  "host": "127.0.0.1",
+  "port": 51441,
+  "action": "pg_ctl fast stop after final validation-7 regression",
+  "result": "server stopped",
+  "scope": "Task-owned isolated local cluster only; production PostgreSQL unchanged."
+}

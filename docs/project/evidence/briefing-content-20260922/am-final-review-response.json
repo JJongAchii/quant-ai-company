@@ -1,0 +1,35 @@
+{
+  "request_id": "news-brief-eval-c7c486a83fe17ffa2929212cfe69d8a1",
+  "request_sha256": "1dddfff36641f47ecb04a67ac97e9ddcc76442625847fc555e284388108389a5",
+  "elapsed_seconds": 116.512,
+  "runtime": "existing_credential_isolated_subscription",
+  "slack": "not_called",
+  "response": {
+    "request_id": "news-brief-eval-c7c486a83fe17ffa2929212cfe69d8a1",
+    "decision": {
+      "say": "",
+      "status": "complete",
+      "delegations": [],
+      "messages": [],
+      "artifacts": [
+        {
+          "title": "BriefReview",
+          "content": "{\"verdict\":\"publish\",\"checks\":{\"numbers\":true,\"sources\":true,\"timing\":true,\"causality\":true,\"materiality\":true,\"counterevidence\":true,\"transmission\":true,\"alternatives\":true,\"falsifiability\":true,\"coverage\":true,\"depth\":true,\"readability\":true},\"source_assessments\":[{\"source_id\":\"08bba8a5854670b32d1d37c5ca5c5eef877d9669\",\"treatment\":\"covered\",\"reason\":\"주식·유가·금리의 동행과 달러 강세를 반영했다. 코인은 원문 관측시각과 24시간 비교를 보존하고 금리 수치 충돌은 별도 명시했다.\",\"item_ids\":[\"overview_cross_asset\",\"btc_rolling\",\"eth_rolling\",\"digital_fact\",\"kr_energy_fx\"]},{\"source_id\":\"2b7e91ad74af68290f4a95af3dae32d237c17a89\",\"treatment\":\"covered\",\"reason\":\"미국 정규장 지수와 메타 급등, AI 지출 유지라는 주요 배경을 반영했다. 시장 전체 확산과 국내 실적 전이는 확인된 사실로 단정하지 않았다.\",\"item_ids\":[\"summary_equity\",\"overview_session\",\"dow_close\",\"nasdaq_close\",\"sp500_close\",\"ai_fact\",\"ai_mechanism\",\"kr_chip_orders\"]},{\"source_id\":\"bbe3e842d0ad3533bf684a7ff088a84361eff9b7\",\"treatment\":\"covered\",\"reason\":\"정상회담 기대와 관세·수출통제·제재 갈등을 함께 다뤘다. 협의 분위기와 기업에 적용되는 실제 조치를 구분했다.\",\"item_ids\":[\"summary_korea\",\"policy_interpretation\",\"policy_mechanism\",\"policy_alternative\",\"policy_next\",\"kr_trade_rules\",\"us_china_summit\"]},{\"source_id\":\"ff8917a4601610247c5ae78e6bd2c3db76e600f4\",\"treatment\":\"covered\",\"reason\":\"Pontes 출범, 초기 이용 준비와 2028년 단계적 구현을 반영했다. 기관 결제 인프라와 코인 매수 수요의 인과를 구분했다.\",\"item_ids\":[\"digital_fact\",\"digital_interpretation\",\"digital_mechanism\",\"digital_next\"]},{\"source_id\":\"ec3c41e2376f8cf67dd34138bea5a14683cdc849\",\"treatment\":\"covered\",\"reason\":\"AI 협의와 이란 항공 관련 결제망 제재 경고를 보도에 귀속했다. 정상회담 날짜의 내부 불일치는 확정 일정으로 변환하지 않았다.\",\"item_ids\":[\"summary_limits\",\"policy_fact\",\"policy_interpretation\",\"policy_mechanism\",\"us_china_summit\"]},{\"source_id\":\"0023ecad6e84f1d23292db0078e5912145e1852f\",\"treatment\":\"covered\",\"reason\":\"미국 출자 제안과 전체 기금 규모, 참여·시점의 불확실성을 보존했다. 시설 피해로 공급 정상화가 지연될 수 있다는 제약을 요약과 해석에 반영했다.\",\"item_ids\":[\"summary_limits\",\"oil_fact\",\"oil_interpretation\",\"oil_mechanism\",\"oil_next\"]},{\"source_id\":\"7f4f853766b5dc50bf53c1c88ee6a23f93411328\",\"treatment\":\"covered\",\"reason\":\"뮤즈 다운로드 규모와 챗GPT 비교, 플랫폼 출시 차이를 함께 제시했다. 다운로드를 유료 전환이나 이익으로 간주하지 않았다.\",\"item_ids\":[\"ai_fact\",\"ai_interpretation\",\"ai_next\"]},{\"source_id\":\"0a9d4bdb6f69a621c79e1c7b31bb248b4b108151\",\"treatment\":\"covered\",\"reason\":\"합병 규모와 소송 장벽 완화뿐 아니라 제작 의무·AI 제한·지분 매각 조건을 반영했다. 거래 실행과 수익성 개선을 구분했다.\",\"item_ids\":[\"merger_fact\",\"merger_interpretation\",\"merger_mechanism\",\"merger_alternative\",\"merger_next\"]},{\"source_id\":\"ee106e6206f30aea0a6c4d0999349aeef2df0e43\",\"treatment\":\"covered\",\"reason\":\"WTI 계약·가격·하락률과 외교 기대를 반영했다. 수출 물량의 전쟁 이전 대비 약 80% 회복도 제시하고 외교 효과와 기여를 분리할 수 없다고 밝혔다.\",\"item_ids\":[\"summary_limits\",\"oil_fact\",\"oil_interpretation\",\"oil_mechanism\",\"oil_alternative\",\"oil_counterpoint\",\"kr_energy_fx\"]},{\"source_id\":\"57b4e958756bfd076e4ffe0a2c39a8121f88a694\",\"treatment\":\"background\",\"reason\":\"같은 매체의 유가 속보로 후속 상보와 계약·마감 수치가 중복된다. 별도 주요 사건이나 독립 확인으로 추가할 필요가 없다.\",\"item_ids\":[]},{\"source_id\":\"c6c3354fb2013f469d8065e51066fee65821c56f\",\"treatment\":\"background\",\"reason\":\"같은 기자의 후속 종합기사에 포함된 지수 마감 속보다. 새로운 시장 동인이 없으며 독립적인 추가 확인으로 세지 않았다.\",\"item_ids\":[]},{\"source_id\":\"3dde2b5129d47d1e1f8d374fed1d73a36529f3ac\",\"treatment\":\"covered\",\"reason\":\"공급망 수출제한과 경제적 강압에 반대한다는 공동성명을 협상 중 압박의 근거로 반영했다. 성명만으로 상대국 행위가 입증됐다고 주장하지 않았다.\",\"item_ids\":[\"policy_counterpoint\"]},{\"source_id\":\"53be9c4c65a0f487c3d094677c68d367d04dfedd\",\"treatment\":\"covered\",\"reason\":\"이란 대표단 일부의 비자 거부를 보도 수준으로 제시했다. 이를 외교 불확실성으로 다루며 회담 무산이나 공급 차질 확정으로 확대하지 않았다.\",\"item_ids\":[\"oil_interpretation\"]},{\"source_id\":\"49134ea9e806961c96d90a905e435a2b6ca8ad79\",\"treatment\":\"background\",\"reason\":\"이란 인권 상황에 대한 영국의 외교적 입장이다. 새로운 경제 제재·공급 조치·시장 반응이 제시되지 않아 당일 시장의 별도 동인으로 삼기 어렵다.\",\"item_ids\":[]},{\"source_id\":\"bf4a2f2fa3a60d1f38b1fa44fb392a5a6dce4f25\",\"treatment\":\"covered\",\"reason\":\"지난주 금리 부담과 AI 안전 논쟁의 구체적 사건을 반영했다. 장전 선물 동향을 정규장 마감으로 사용하지 않았다.\",\"item_ids\":[\"overview_cross_asset\",\"policy_fact\"]},{\"source_id\":\"cbfd307b9bce27dece44175b2f8a28086c0e14a4\",\"treatment\":\"covered\",\"reason\":\"관세 휴전의 11월 10일 만료를 명시했다. AI 협의와 실제 관세·규제 변경을 구분해 협상 기대를 확정된 경제 효과로 확대하지 않았다.\",\"item_ids\":[\"policy_fact\"]}],\"rejected_ids\":[],\"concerns\":[]}",
+          "source_ids": []
+        }
+      ],
+      "tools": [],
+      "memories": [],
+      "follow_up": null
+    },
+    "thread_id": "01a0cb65-d00e-7fb3-9fb8-4c9937b0ffc4",
+    "usage": {
+      "input_tokens": 37167,
+      "cached_input_tokens": 0,
+      "output_tokens": 3673,
+      "reasoning_output_tokens": 1409
+    },
+    "provider": "codex",
+    "web_searches": []
+  }
+}

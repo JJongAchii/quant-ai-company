@@ -1,0 +1,51 @@
+{
+  "case": "pm-20261001-v41",
+  "frozen_at": "2026-10-01T04:47:05.194295+00:00",
+  "scope": "Prospective scheduled new Korean session. Frozen before future cutoff or original titles/content for that session; no model call, server configuration or Slack effect.",
+  "edition": {
+    "id": "a6c3dfce-2850-5cca-88e1-aa94fd3c48fb",
+    "day": "2026-10-01",
+    "kind": "pm",
+    "due_at": "2026-10-01T20:15:00+09:00",
+    "starts_at": "2026-10-01T19:10:00+09:00",
+    "cutoff": "2026-10-01T19:30:00+09:00",
+    "expires_at": "2026-10-01T21:15:00+09:00",
+    "us_session": null,
+    "kr_session": "2026-10-01",
+    "previous_us_session": null,
+    "previous_kr_session": "2026-09-30",
+    "weekly": null
+  },
+  "schedule_version": 2,
+  "format_version": 15,
+  "validation_version": 41,
+  "writer_sha256": "ab6f5e5e591247e6957927d6364546e5f9b35143f7aa6f62b5438964bf88d482",
+  "reviewer_sha256": "737912262bd2900b99dda9b07363bacf62eae3ba7901880643bd1b67305ca98b",
+  "editorial_patch_sha256": "8467811bacceb8cee83ef25c9e484070870add96fdf534dd669faea327a11ba2",
+  "analyst_pack_sha256": "a718301296872cd0dd2dab402a88cd917b4f93ab08c6645f8da1bfdf244707c1",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "max_completed_calls": 5,
+  "repair": "At most one confirmed repair: planner, writer, reviewer, repair, final review. Never replay uncertain effect with newID. Only confirmed unexecuted busy may retry exactsameID.",
+  "source_rule": "Registered enabled digest-matching company originals, published and stored before exact cutoff within30hours; freeze candidate identities/content and existing pre-cutoff market snapshot. No current search/lake historical backfill. Max96candidates,16selected,42000source chars. Requested frozen supplements remain within same budget.",
+  "acceptance": [
+    "All12 checks and publish verdict; zero mechanical or semantic rejects, quote conflicts",
+    "Independent original-to-visible-main audit before critique; all actual response receipts",
+    "No same-source development score counted as fresh qualification"
+  ],
+  "slack": "not_called",
+  "deployment": "not_performed",
+  "status": "awaiting_future_cutoff",
+  "code_commit": "14e603eef5d7a0b71178e173a60747238e97321d",
+  "complete_original_rule": "Known partial originals, article_chars beyond supplied body or bodies beyond12000characters are excluded. No manual untruncation of old cache; no retrospective current search/lake backfill.",
+  "known_source_overlap": "Some earlier-session originals within the allowed30-hour range have been read in prior cases. Record exact overlap in the later manifest; do not call those unseen originals or a separate trading day.",
+  "implementation_hashes": {
+    "src/quant_company/briefing/editor.py": "abf1bd26bec3c727524306014e74c535fdee41da6d06028f56fe054685f0dc44",
+    "src/quant_company/briefing/inputs.py": "ae863c274588e03152cfd3cf67cc9fea8058228d1b6b13f6f6ab3928cb871b14",
+    "src/quant_company/briefing/numeric.py": "540b30570020efaa326f2737efb0f0a6ba33f492a1ae355828f0e9a688a17005",
+    "src/quant_company/news/originals.py": "5b17e4099447c6c95c62dcdb55465cec587a8c0c51cecf2415c10ab84132ee1f",
+    "src/quant_company/news/store.py": "cc7984dac995abe2ec85a5fb2bfe3b743d63a9f4631200bc3ca7cf24a7c7d387"
+  },
+  "supersedes_unexecuted_policy": "fresh-pm-20261001-v40-policy.json",
+  "amendment_reason": "The completed development critique of the unchanged saved AM38 repair found unsupported immediate-reaction wording. Prospective writer/reviewer observation-time precision added before any PM original titles/content inspection or cutoff. Closed AM38 and development40 outcomes are not reclassified."
+}

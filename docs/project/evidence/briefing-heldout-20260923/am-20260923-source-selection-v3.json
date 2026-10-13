@@ -1,0 +1,108 @@
+{
+  "cutoff": "2026-09-22T22:10:00+00:00",
+  "raw_originals_sha256": "08576c88e2edc261d3eebdbade92ff913a80b72e5a8cab653998fd04d5c95fb0",
+  "selection_version": 3,
+  "selected_count": 16,
+  "added": [
+    {
+      "id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+      "title": "한은 \"금리 0.25%p 오르면 가계 3.3조·기업 3.7조 이자부담↑\""
+    },
+    {
+      "id": "fd9fea4d91f006ff807a5234d4e563808c26e2bd",
+      "title": "Ukraine anger as EU removes Russian oligarchs from sanctions list"
+    }
+  ],
+  "removed": [
+    {
+      "id": "d05c45f5a0ab89f31dad6fb34ea0e464cdfa82c2",
+      "title": "임기근 국조실장, 세종전통시장 찾아 추석 물가 점검"
+    },
+    {
+      "id": "2b7e91ad74af68290f4a95af3dae32d237c17a89",
+      "title": "뉴욕증시, 'AI낙관론'에 메타·인텔 급등…나스닥 사상 최고치(종합)"
+    }
+  ],
+  "selected": [
+    {
+      "id": "7b2633bde4fa7b1522f48fb74eeee469b0c0a755",
+      "title": "美-이란 관계 주시하며 숨죽인 뉴욕증시…기술주 약진 속 혼조세(종합)",
+      "sha256": "bef316935fc541283a6919599489a41fe5e73d553e949dcf3658f292ba72f270"
+    },
+    {
+      "id": "ccb3c80db4440c17ab55825873c042f6bbe24735",
+      "title": "뉴욕증시, AI 수요 지속 기대에 상승⋯나스닥, 사상 최고치 [글로벌마켓 모닝 브리핑]",
+      "sha256": "5b5072967b2ef1cc450fe0adcf57c41f004106d6b7179b0b822077ff338ee60d"
+    },
+    {
+      "id": "a96e22be34e9eb130b8c45be6abbce429c0eae7b",
+      "title": "한은 \"금리 0.25%p 오르면 가계 3.3조·기업 3.7조 이자부담↑\"",
+      "sha256": "dca060280cc195e17edbed62fc23f1965fac4d476979e18c0c46a7c32b24cbea"
+    },
+    {
+      "id": "f3583a2212fe5fc11ebc0e6b26f48b19d10dd7bf",
+      "title": "美연준 인사 '인플레 경고' 잇따라…\"더 긴축적 금리가 도움\"",
+      "sha256": "74538de268d7afca14cf497338a1deb0658b96c1c299cb5faba4d2480a0ee0bf"
+    },
+    {
+      "id": "f4387486e1fa6d90c353e52e06b53cb2778929fb",
+      "title": "뉴욕증시, 미ㆍ이란 ‘3시간 협상’에도 혼조…나스닥 0.45%↑[상보]",
+      "sha256": "8953b47836114d5fc7c1a042e8972ed24483faf1bbb2e1c88230d2cb10304504"
+    },
+    {
+      "id": "76c87a7da794dadc1beffc3c11122d11392e15fc",
+      "title": "美ㆍ이란, 유엔서 3시간 회담⋯트럼프 “곧 추가 협상”",
+      "sha256": "c2eceeeff6d69e09e22343283058866634130cb3841493fb64237777419fea7e"
+    },
+    {
+      "id": "3a09e750e784e6a14a7b89aa457a2a7d38e4f9b6",
+      "title": "[뉴욕증시] AI·반도체 랠리…국제유가 대폭 하락",
+      "sha256": "02e2131d3d65f8ce52588523950cc708c97b272055d63bf55dabbd8101b8a375"
+    },
+    {
+      "id": "4751ea68d07334f3b7c147b60b27dae2f9780c40",
+      "title": "Trump slams Iran and Cuba, defends AI growth in boastful UN speech",
+      "sha256": "026aa4b2257ceeadc4f2700ee374cbc197dcbe948dc25b532a1f5e8a7cf50c6e"
+    },
+    {
+      "id": "ee106e6206f30aea0a6c4d0999349aeef2df0e43",
+      "title": "국제유가, 미국ㆍ이란 대화 기대감에 급락⋯WTI 4.51%↓ [상보]",
+      "sha256": "c1a48d9f063012afe5f0f11cddc36ea468561921ff7c56b998e5ffea0991f7f8"
+    },
+    {
+      "id": "f01de1ff5e33630b8e4a494363c2bb8a4c5c7df0",
+      "title": "국제유가, 사우디 원유수출 회복 기대에 하락⋯미ㆍ이란 협상도 영향 [상보]",
+      "sha256": "25d9f47f307bda856fc66514df97d17bb5a3369ee166cac09d42e47e9045031b"
+    },
+    {
+      "id": "e4f6973d27e0f37d0797fc75204ec5eb8b1e842d",
+      "title": "Oil prices reverse gains as United Nations General Assembly meeting lifts hopes for Iran war diplomacy",
+      "sha256": "9564061afae093c88d2f1288a8a4842c6576fe0dcd875db1fcdf76e30d927f0e"
+    },
+    {
+      "id": "6dbf4493e26ac8a2f17dff96e4039bc24ef10966",
+      "title": "'합의' '전멸' 양자택일 압박…미-이란 3시간 회담",
+      "sha256": "c62c017ae7f87dc44e727010c112b2940227488226567eeb6318f1fc0a25a51e"
+    },
+    {
+      "id": "d28b9c42f8e81f1f69abcafd2dbff333da1d9e44",
+      "title": "Trump tells UN he has 'big decision' on whether to 'annihilate' Iran or make peace deal",
+      "sha256": "bc2e622d41cf293862c05c287ed7d4b065cffa78f60e6a83e39ebe19dc3c1188"
+    },
+    {
+      "id": "f6b2d1709b0c605a88e0c34b63e5ecc8ed649f69",
+      "title": "이란 매체 \"아라그치 외무, 유엔총회서 윗코프 미 특사와 회동\"",
+      "sha256": "89778f566f77d61a42bcf24070c7757726136043d3f9505f85d4cd96f6b1ab0f"
+    },
+    {
+      "id": "54ab29f3fab120ef8be1ff4cdf67a3cc199a7afb",
+      "title": "Trump administration is examining whether a diesel export ban is feasible, Treasury Secretary says",
+      "sha256": "8da35484e0bb42262281f3e3c89d9fb6ceaac3d9fb78320409bf145d9a2840b9"
+    },
+    {
+      "id": "fd9fea4d91f006ff807a5234d4e563808c26e2bd",
+      "title": "Ukraine anger as EU removes Russian oligarchs from sanctions list",
+      "sha256": "dbd86a177af530c7b7961af7879f1b2e9a07d6aff72a186fde77131f5bc9d0ad"
+    }
+  ]
+}

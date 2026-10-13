@@ -1,0 +1,17 @@
+{
+  "archived_reviews": {
+    "admission-draft-review-before-clarification.json": "0b91aedacb48cfade9999bc4fdbbfc258515411e1817895efa0db1ef11c6bc6e",
+    "data-draft-review-before-clarification.json": "2f965f434fb537dbbf90a07aecd5f5eb3f854316c2a02282084ccd10751f421f"
+  },
+  "current_runtime_admissible": false,
+  "final_package_sha256": "44b0e8063b1d0ff92f235b1745c17d2cb192b85b748b37f0a1f60b8c0a183413",
+  "final_review_digest": "d8520114b1adb978fe672847ac97c08dcd6eee3446bfcd555b8f0f9fd920c503",
+  "observed_at": "2026-09-30T23:09:46.479769+00:00",
+  "prior_package_sha256": "b43fca312d4f24bffde03cbc5367f875f623dc373a32b1197f3fa40e8de2c9e4",
+  "prior_review_digest": "7cf3713a1972e90842e2758fd8bbc03da30d11044f7ff95dae5c19bf4ef13376",
+  "production_mutated": false,
+  "reason": "Bind trusted wrapper scope propagation, first-cycle two-result ceiling and signed lineage cap.",
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "script_sha256": "887010d1ff81f211b2429b9439dccfdf7ef8523f7103aa8883b8fe394edc606d"
+}

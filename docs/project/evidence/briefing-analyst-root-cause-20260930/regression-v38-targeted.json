@@ -1,0 +1,12 @@
+{
+  "scope": "After prompt-only v38 change; targeted real PostgreSQL content/planning/quality tests, not actual model or Slack qualification",
+  "command": ".venv/bin/pytest -q tests/test_briefing_content.py tests/test_briefing_planning.py tests/test_briefing_quality.py --tb=short",
+  "passed": 127,
+  "skipped": 0,
+  "failed": 0,
+  "warnings": 10,
+  "elapsed_seconds": 7.89,
+  "validation_version": 38,
+  "prior_full_suite": "regression-v37.json",
+  "lint": "All checks passed!"
+}

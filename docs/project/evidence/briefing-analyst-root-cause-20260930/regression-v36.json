@@ -1,0 +1,13 @@
+{
+  "scope": "Actual local full suite finalformat15 validation36; not cloud/Slack qualification",
+  "command": ".venv/bin/pytest -q -x --tb=short --junitxml=docs/project/evidence/briefing-analyst-root-cause-20260930/regression-v36.xml",
+  "passed": 1394,
+  "skipped": 38,
+  "failed": 0,
+  "warnings": 12,
+  "elapsed_seconds": 374.32,
+  "format_version": 15,
+  "validation_version": 36,
+  "lint": "All checks passed!",
+  "real_postgresql": true
+}

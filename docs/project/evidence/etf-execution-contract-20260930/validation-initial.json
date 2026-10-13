@@ -1,0 +1,137 @@
+{
+  "all_passed": true,
+  "checks": [
+    {
+      "name": "review_package_digest",
+      "passed": true
+    },
+    {
+      "name": "all_package_file_hashes",
+      "passed": true
+    },
+    {
+      "name": "policy_canonical_digest",
+      "passed": true
+    },
+    {
+      "name": "program_schema_preview_digest",
+      "passed": true
+    },
+    {
+      "name": "public_profile_digest",
+      "passed": true
+    },
+    {
+      "name": "raw_manifest_hash",
+      "passed": true
+    },
+    {
+      "name": "lineage_receipt_hash",
+      "passed": true
+    },
+    {
+      "name": "availability_survey_hash",
+      "passed": true
+    },
+    {
+      "name": "official_source_review_hash",
+      "passed": true
+    },
+    {
+      "name": "staged_input_hashes",
+      "passed": true
+    },
+    {
+      "name": "approved_inputs_preserved",
+      "passed": true
+    },
+    {
+      "name": "protected_engine_preserved",
+      "passed": true
+    },
+    {
+      "name": "draft_has_no_authority",
+      "passed": true
+    },
+    {
+      "name": "PIT_unknown_remains_visible",
+      "passed": true
+    },
+    {
+      "name": "legacy_numeric_receipt_cannot_admit_draft",
+      "passed": true
+    },
+    {
+      "name": "exact_new_input_and_profile_bindings",
+      "passed": true
+    },
+    {
+      "name": "bounded_development_only",
+      "passed": true
+    },
+    {
+      "name": "current_ready_rejects_unverified_PIT",
+      "passed": true,
+      "rejection": "1 validation error for DataAssessment\n  Value error, Ready requires PIT, coverage and execution evidence [type=value_error, input_value={'decision': 'ready', 'ra...inal_conditions': False}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error"
+    },
+    {
+      "name": "current_schema_rejects_conditional_ready",
+      "passed": true,
+      "rejection": "1 validation error for DataAssessment\ndecision\n  Input should be 'ready' or 'blocked' [type=literal_error, input_value='conditional_ready', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/literal_error"
+    },
+    {
+      "name": "program_policy_extension_requires_new_schema",
+      "passed": true,
+      "rejection": "1 validation error for ResearchProgram\ndata_policy\n  Extra inputs are not permitted [type=extra_forbidden, input_value={'allowed_task_modes': ['... 'start': '2022-08-01'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
+    },
+    {
+      "name": "mission_policy_extension_requires_new_schema",
+      "passed": true,
+      "rejection": "1 validation error for MissionSpec\ndata_policy\n  Extra inputs are not permitted [type=extra_forbidden, input_value={'allowed_task_modes': ['... 'start': '2022-08-01'}}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
+    },
+    {
+      "name": "common_model_does_not_require_original_conditions",
+      "passed": true
+    },
+    {
+      "name": "old_registry_does_not_authorize_new_profile",
+      "passed": true,
+      "rejection": "Research execution profile is unavailable"
+    },
+    {
+      "name": "current_factory_rejects_nonready_quality_receipt",
+      "passed": true,
+      "rejection": "Scientific inputs failed the frozen quality and hash checks"
+    },
+    {
+      "name": "current_factory_requires_versioned_profile_change",
+      "passed": true,
+      "rejection": "Runtime profile ID differs from the market profile"
+    },
+    {
+      "name": "factory_rejection_created_no_workspace",
+      "passed": true
+    }
+  ],
+  "current_gate_source_hashes": {
+    "builds.py": "b67dab677278be939b9c1bc7addad7cc1599eca00731b6cc13ceb96fe44a60df",
+    "domestic_profile.py": "664c33d148f5a32c4c8d99093c5455c9a021c1f2e1a0e724de9157715ea1f1c9",
+    "mission_contracts.py": "e9db73be4c36e354922f3be72a64f7d187f64135d439cdf0ca8d81a9243f93fd",
+    "program_contracts.py": "20fb50ef1e0fcaecbd86af0d343c99da4432b039ec65041814cbe163a07b90e2",
+    "programs.py": "0e35b01c21f1427f9571bc769135ad1ca55c140d6a96d6ded41578770d0824d0"
+  },
+  "future_policy_implementation_test": false,
+  "observed_at": "2026-09-30T22:59:52.638827+00:00",
+  "price_performance_evaluation": false,
+  "production_database_or_Temporal_test": false,
+  "production_mutated": false,
+  "readiness_granted": false,
+  "review_digest": "49487dae09d5bcf968de552a0c70d0523794dbf14f5389424a149a1cfb0f3334",
+  "runtime_qualification": false,
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "scope": "local_draft_bindings_and_actual_current_schema_factory_rejections",
+  "script_sha256": "d55697e957dcacc11485221d03107ae082f5a964baebc5f6dee07105044b329f",
+  "sealed_price_rows_read": false,
+  "signed_Slack_test": false
+}

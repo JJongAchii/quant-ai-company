@@ -7,6 +7,7 @@ from datetime import timedelta
 
 import httpx
 
+from .briefing.contracts import BRIEFER
 from .company import Company, PolicyError, as_json, now
 from .config import Settings
 from .quant_feed.contracts import QUANT_FEED_AGENT
@@ -133,22 +134,32 @@ class SlackIngress:
                 return {"ok": True, "ignored": True}
             target = role
         else:
-            if role not in {"director", "reporter"} or not event.get("thread_ts"):
+            if role not in {"director", "reporter", BRIEFER} or not event.get("thread_ts"):
                 return {"ok": True, "ignored": True}
             with self.company.db.transaction() as conn:
                 project = conn.execute("""SELECT p.id,(EXISTS(SELECT 1 FROM news_events n WHERE n.project_id=p.id)
-                    OR EXISTS(SELECT 1 FROM news_digests d WHERE d.project_id=p.id)) AS news
+                    OR EXISTS(SELECT 1 FROM news_digests d WHERE d.project_id=p.id)) AS news,
+                    EXISTS(SELECT 1 FROM brief_editions b WHERE b.project_id=p.id) AS briefing
                     FROM projects p WHERE channel=%s AND thread_ts=%s""",
                                        (channel, thread_ts)).fetchone()
             if not project:
                 return {"ok": True, "ignored": True}
-            target = "reporter" if project["news"] else "director"
+            target = BRIEFER if project["briefing"] else "reporter" if project["news"] else "director"
             if role != target:
                 return {"ok": True, "ignored": True}
         original_text = text
         text = re.sub(r"<@[A-Z0-9]+>", "", text).strip()
         if account_channel and not text:
             text = original_text.strip()
+        # This human-authored command, or a direct strategist mention, is the only automatic handoff.
+        # The model has no delegation permission; a document cannot create a team-lead task.
+        if target == BRIEFER and event.get("thread_ts") and text.startswith("금융전략 검토:"):
+            with self.company.db.transaction() as conn:
+                brief = conn.execute("""SELECT 1 FROM brief_editions b JOIN projects p ON p.id=b.project_id
+                    WHERE p.channel=%s AND p.thread_ts=%s AND p.owner_user=%s""", (channel, thread_ts, user)).fetchone()
+            if brief and text.split(":", 1)[1].strip():
+                target = "financial_strategist"
+                text = text.split(":", 1)[1].strip()
         approval_context = {"origin": "event_callback", "team_id": payload["team_id"],
                             "app_id": payload["api_app_id"], "owner": user, "channel": channel,
                             "thread_ts": thread_ts, "event_ts": timestamp,
@@ -210,6 +221,10 @@ class SlackIngress:
         return {"ok": True, **result}
 
     def accept_interaction(self, role, payload, credential):
+        if role == BRIEFER:
+            from .video.slack_ui import accept
+
+            return accept(self, role, payload, credential)
         from .research.approvals import ACTIONS, ApprovalEvent
 
         try:
@@ -303,10 +318,22 @@ class SlackOutbox:
                 from .tech_feed.store import TechFeedStore
 
                 return TechFeedStore(self.company).gate(conn, row, claimed=True)
+            if row["message_kind"] == "briefing":
+                from .briefing.store import BriefStore
+
+                return BriefStore(self.company).gate(conn, row, claimed=True)
             if row["message_kind"] == "trend_feed":
                 from .trend_feed.store import TrendFeedStore
 
                 return TrendFeedStore(self.company).gate(conn, row, claimed=True)
+            if row['message_kind'] == 'video_review':
+                from .video.store import VideoStore
+
+                return VideoStore(self.company).gate(conn, row)
+            if row['message_kind'] == 'video_files':
+                from .video.store import VideoStore
+
+                return VideoStore(self.company).delivery_gate(conn, row)
             if row["message_kind"] == "housing_feed":
                 from .housing_feed.store import HousingFeedStore
 
@@ -347,6 +374,21 @@ class SlackOutbox:
                 return None
             if self.defer_news(conn, row):
                 return False
+            if row['message_kind'] == 'video_review':
+                from .video.store import VideoStore
+
+                if not VideoStore(self.company).gate(conn, row):
+                    return False
+            if row['message_kind'] == 'video_files':
+                from .video.store import VideoStore
+
+                if not VideoStore(self.company).delivery_gate(conn, row):
+                    return False
+            if row["message_kind"] == "briefing":
+                from .briefing.store import BriefStore
+
+                if not BriefStore(self.company).gate(conn, row):
+                    return False
             if row["message_kind"] == "data_watch":
                 from .data_watch.reporting import gate
                 from .data_watch.store import DataWatchStore
@@ -413,7 +455,7 @@ class SlackOutbox:
                 from .news.digest import NewsDigestStore
 
                 NewsDigestStore.settle_members(conn, row, status, sent_ts, error)
-            if status == "delivered" and sent_ts and row.get("message_kind") in {"news", "news_digest"} and not row["thread_ts"]:
+            if status == "delivered" and sent_ts and row.get("message_kind") in {"news", "news_digest", "briefing"} and not row["thread_ts"]:
                 conn.execute("UPDATE projects SET thread_ts=%s WHERE id=%s AND thread_ts IS NULL",
                              (sent_ts, row["project_id"]))
             if status == "delivered" and sent_ts and row["agent"] == "maintainer" and not row["thread_ts"]:
@@ -431,9 +473,14 @@ class SlackOutbox:
         if not row:
             return False
         token = self.credentials[row["agent"]]["bot_token"]
+        if row.get("message_kind") == "video_files":
+            # Episode files go through Slack's external upload API into the brief's thread (video/slack_files.py).
+            from .video.slack_files import deliver
+
+            return await deliver(self, row, token)
         # The stable client_msg_id helps correlation; it is not an exactly-once guarantee.
         body = {"channel": row["channel"], "thread_ts": row["thread_ts"],
-                "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT, QUANT_FEED_AGENT, "trend_scout", "maintainer"}
+                "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT, QUANT_FEED_AGENT, BRIEFER, "trend_scout", "maintainer"}
                 or row["message_kind"] == "data_watch"
                 else f"[지시 v{row['revision']}] {row['text']}",
                 "client_msg_id": row["id"],
@@ -444,6 +491,22 @@ class SlackOutbox:
         blocks = await asyncio.to_thread(blocks_for_outbox, self.company, row, self.credentials[row["agent"]])
         if blocks:
             body["blocks"] = blocks
+        if row.get("message_kind") == "video_review":
+            from .video.slack_ui import blocks as video_blocks
+
+            blocks = await asyncio.to_thread(video_blocks, self.company, row)
+            if blocks:
+                body['blocks'] = blocks
+        if row.get("message_kind") == "briefing":
+            from .briefing.slack_blocks import blocks as briefing_blocks
+
+            try:
+                body["blocks"] = briefing_blocks(row["text"])
+            except ValueError as error:
+                await asyncio.to_thread(self.settle, row, "blocked", error=str(error))
+                return True
+            # Slack builds accessible fallback text from these complete sections.
+            body.pop("text")
         if row.get("message_kind") == "housing_feed" and self.company.settings.housing_map_panel_enabled:
             from .housing_feed.maps import work_object
             from .housing_feed.store import HousingFeedStore
@@ -458,7 +521,8 @@ class SlackOutbox:
         method = "chat.postMessage"
         if row.get("update_ts"):
             method = "chat.update"
-            body = {key: body[key] for key in ("channel", "text")}
+            keys = ("channel", "blocks") if row.get("message_kind") == "briefing" else ("channel", "text")
+            body = {key: body[key] for key in keys}
             body["ts"] = row["update_ts"]
         try:
             async with httpx.AsyncClient(timeout=12, transport=self.transport) as client:
@@ -477,13 +541,14 @@ class SlackOutbox:
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_server_error")
                 return True
             result = response.json()
-            requires_receipt = (row.get("message_kind") in {"news", "news_digest", "tech_feed", "quant_feed", "data_watch", "housing_feed", "trend_feed"}
+            requires_receipt = (row.get("message_kind") in {"news", "news_digest", "tech_feed", "quant_feed",
+                                                            "data_watch", "briefing", "housing_feed", "trend_feed", "video_review"}
                                 or row["agent"] == "maintainer")
             if row.get("update_ts") and result.get("ts") != row["update_ts"] and result.get("ok"):
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_update_receipt_mismatch")
-            elif row.get("message_kind") in {"data_watch", "housing_feed", "trend_feed"} and result.get("ok") and (
+            elif row.get("message_kind") in {"data_watch", "housing_feed", "trend_feed", "video_review"} and result.get("ok") and (
                 not isinstance(result.get("ts"), str) or not re.fullmatch(r"\d+\.\d+", result["ts"])
-                or result.get("channel", None if row["message_kind"] in {"housing_feed", "trend_feed"} else row["channel"]) != row["channel"]
+                or result.get("channel", None if row["message_kind"] in {"housing_feed", "trend_feed", "video_review"} else row["channel"]) != row["channel"]
             ):
                 await asyncio.to_thread(self.settle, row, "uncertain", error=f"{row['message_kind']}_delivery_receipt_mismatch")
             elif result.get("ok") and (not requires_receipt or result.get("ts")):

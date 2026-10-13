@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-10-01T04:54:32.020355+00:00",
+  "source": "gh pr checks78 --json name,state,link,bucket after code14e603e push",
+  "code_commit": "14e603eef5d7a0b71178e173a60747238e97321d",
+  "check": "service",
+  "state": "SUCCESS",
+  "conclusion": "pass",
+  "job_url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36816592685/job/110222878434",
+  "scope": "GitHub CI PostgreSQL/Temporal/service/dependency/lint regression on committed implementation. Not real market expert qualification or cloud/Slack deployment."
+}

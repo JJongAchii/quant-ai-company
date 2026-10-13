@@ -1,0 +1,18 @@
+{
+  "archive_sha256": "2bc476d1ab681700d4d090258a7db1c41a09ee4bfa3d9d64ce3d2e7360d267a7",
+  "assignment": "reconstructed from controlled synthetic receipt; not a signed owner program",
+  "company_commit": "4f3bdb762d371455ea0883a73643ddfaf36b921a",
+  "financial_performance_claims": false,
+  "fixture_only": true,
+  "junit_sha256": "80717cc10e7c198e21cf18b59c8306395a855a71e8f186bc9d6468f8c5ecc025",
+  "kind": "actual-worker-archive-local-revalidation",
+  "production_changed_by_this_slice": false,
+  "real_snapshot_reads": 0,
+  "recorded_at": "2026-10-01T05:09:43.151174+00:00",
+  "research_authorization": false,
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "sealed_price_reads": 0,
+  "source_receipt_sha256": "2aedf150e90d7d736348d20a575cc266805d9b8710995ffd2a4509385e4654d8",
+  "strict_local_consumer_passed": true
+}

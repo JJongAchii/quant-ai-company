@@ -1,0 +1,45 @@
+{
+  "action": "stage",
+  "recorded_at": "2026-10-07T01:50:04.674282+00:00",
+  "exit_code": 0,
+  "phase": "staged",
+  "base": "15215a4e7c7d3188551278c1ec36fed85d428436",
+  "commit": "58866c588e4d513a3dbd532279f3ebae9e118227",
+  "owner_approval": "chat-analyst-execution-approved-20261007",
+  "previous_owner_approval_id": "chat-analyst-execution-approved-20261007",
+  "publication_enabled": false,
+  "running_services_unchanged": true,
+  "evaluation_editions": [
+    "3042a447-de8b-55fe-9a56-72014df5c2b9"
+  ],
+  "images": [
+    {
+      "target": "app",
+      "id": "sha256:bc7bed66c0b88336f2c1fa8207cd422e5bbc79cdd9cbd2980512604faec65a4a",
+      "tag": "quant-company:58866c588e4d513a3dbd532279f3ebae9e118227-profile0",
+      "source_verified": true,
+      "services": [
+        "news-worker",
+        "dispatch"
+      ]
+    },
+    {
+      "target": "app",
+      "id": "sha256:615dcf2ffecb61fdc78ed8abff0e932765f3f34211bbc1b80e8750199b86c58f",
+      "tag": "quant-company:58866c588e4d513a3dbd532279f3ebae9e118227-profile1",
+      "source_verified": true,
+      "services": [
+        "briefing-data-worker"
+      ]
+    },
+    {
+      "target": "codex",
+      "id": "sha256:b0ba7749723cafaf60e57e432fdbfb0b4b449fe5473d4cf84ccac7a6a8af1128",
+      "tag": "quant-company-codex:58866c588e4d513a3dbd532279f3ebae9e118227-profile2",
+      "source_verified": true,
+      "services": [
+        "codex-runtime"
+      ]
+    }
+  ]
+}

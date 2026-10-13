@@ -1,0 +1,20 @@
+{
+  "at": "2026-09-30T23:05:16.097844+00:00",
+  "scope": "Actual frozen-source completeness diagnosis before critique, no new current retrieval or source replacement",
+  "partial_sources": [
+    {
+      "id": "03fb0a6c60383d67627fafdcc7ffe1f763f4ebf1",
+      "original_article_chars": 6235,
+      "supplied_chars": 6000,
+      "missing_tail_chars": 235,
+      "excerpt_truncated": true
+    }
+  ],
+  "root_cause": [
+    "fetch_original retains onlyfirst6000chars despite SourceDocument max12000",
+    "NewsStore.save_original again stores only6000",
+    "briefing.inputs.document caps at6000 and admits known excerpt truncation"
+  ],
+  "consequence": "One selected long article has unknown tail; cannot claim independent reading of its whole original or full-source qualification",
+  "next_fix": "Prospectively preserve complete article body up to existing12000 SourceDocument bound; keep Reporter prompt6000bound; reject partial originals from Analyst candidate collection. Freeze newpolicy, do not replace current case originals."
+}

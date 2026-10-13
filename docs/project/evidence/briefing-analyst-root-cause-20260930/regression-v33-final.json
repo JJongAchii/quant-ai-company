@@ -1,0 +1,12 @@
+{
+  "scope": "Actual preceding local full suite before dated-FX display amendment",
+  "command": ".venv/bin/pytest -q -x --tb=short --junitxml=docs/project/evidence/briefing-analyst-root-cause-20260930/regression-v33-final.xml",
+  "passed": 1382,
+  "skipped": 38,
+  "failed": 0,
+  "warnings": 12,
+  "elapsed_seconds": 365.6,
+  "format_version": 14,
+  "validation_version": 33,
+  "lint": "passed"
+}

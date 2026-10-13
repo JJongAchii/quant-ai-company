@@ -1,0 +1,55 @@
+{
+  "constraints": [
+    "Company repository only; preserve frozen research provenance",
+    "Existing official subscription authentication; no paid resources",
+    "PostgreSQL records and Temporal execution; preserve ambiguous receipts",
+    "07:30 KST and KRX close + 50 minutes; dedicated Market Briefer",
+    "Publication disabled until real-data and Slack qualification"
+  ],
+  "createdAt": "2026-09-22T05:35:18.756104+00:00",
+  "decisionGates": [
+    "Real Slack activation requires the configured dedicated app and successful source and five-trading-day qualification."
+  ],
+  "deliverables": [
+    {
+      "id": "BRIEFING",
+      "description": "Sourced, reviewed market briefings and calendar scheduling",
+      "acceptance": [
+        "AM/PM calendar and content policies implemented",
+        "Frozen source/observation/proposal/review records and degraded edition behavior"
+      ]
+    },
+    {
+      "id": "INTEGRATION",
+      "description": "Dedicated Slack bot and durable service integration",
+      "acceptance": [
+        "Thread context and owner-requested strategist handoff",
+        "Publication gates and receipt-aware recovery",
+        "CLI/configuration/deployment/runbook"
+      ]
+    },
+    {
+      "id": "VALIDATION",
+      "description": "Real local database/workflow checks and honest activation evidence",
+      "acceptance": [
+        "PostgreSQL and Temporal integration tests",
+        "Relevant regression and lint",
+        "Actual source probes and explicit unverified rollout conditions"
+      ]
+    }
+  ],
+  "nonGoals": [
+    "Trading, training, backtests, portfolio access",
+    "Automatic strategist work",
+    "Pretending fixtures or five future observation days have been verified"
+  ],
+  "outcome": "Implement the approved daily_brief Market Briefer plan, including sourced AM/PM editions, durable scheduling/delivery, review, follow-up questions and explicit strategist handoff.",
+  "revision": 1,
+  "schemaVersion": 1,
+  "slug": "amberjack",
+  "sourceRequest": "Implement the plan.",
+  "stopConditions": [
+    "Preserve an uncertain model or Slack result without automatic new-ID replay.",
+    "Record unavailable real integration conditions; keep publishing disabled until qualification."
+  ]
+}

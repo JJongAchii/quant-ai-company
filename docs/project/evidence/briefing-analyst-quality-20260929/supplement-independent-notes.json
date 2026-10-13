@@ -1,0 +1,23 @@
+{
+  "edition": "2026-09-29-am",
+  "stage": "before_repair_writer",
+  "supplements": [
+    {
+      "source_id": "fdaa97099d2eecfce47002d4c286aff619b2ee09",
+      "material": "A media report citing Kpler estimates September Strait of Hormuz crude transit at 9.36 million barrels per day, up 3.56 million from August and about 60% of the prewar 15 million. AIS-disabled vessels are estimated, so this is not confirmation that the strait has reopened or risk ended. Keep distinct from the Saudi bypass-pipeline restoration."
+    },
+    {
+      "source_id": "b8eea4f79a2254ac97fb27339badd965b5fc3a39",
+      "material": "Treasury Secretary Bessent argued on September 27 against rushing additional Fed tightening, citing a productivity-led growth interpretation. This is a political/administration counterview, not an FOMC decision or the Fed chair's vote."
+    },
+    {
+      "source_id": "dd430206f6ba9e6263cf1ef0bbdc11209be8f9e1",
+      "material": "September Korean CBSI fell 0.5 point to 99.5, first sub-100 since April. Manufacturing fell 4.3 points to 99.5 amid strike/holiday disruptions and sector weakness while nonmanufacturing rose 2.2 points to 98.9. Do not attribute the aggregate move to oil alone; ESI rose 0.5 point."
+    },
+    {
+      "source_id": "9da630d63b581e6a92c3b8d6620aeff0df70625e",
+      "material": "A White House AI luncheon with named technology leaders was planned for US local September 29. Participation is partly tentative, agenda is safety versus innovation and China competition; a planned meeting is not an adopted policy. The source does not give a precise time or timezone conversion."
+    }
+  ],
+  "independent_correction": "A selected source's October 2026 WTI September 28 close conflicts with NYMEX rule 200102.F. Withhold that specific close even though the first model reviewer called it covered. The review also demanded an October 2 employment event that the former two-day window mechanically removed; a seven-day capped calendar now admits it."
+}

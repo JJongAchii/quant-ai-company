@@ -1,0 +1,82 @@
+{
+  "availability_assumption": "trade date at 23:59:00+09:00; generated field, not an observed publication timestamp",
+  "baseline_observed_at": "2026-09-30T22:50:50.764674+00:00",
+  "blocking_gap_dispositions": [
+    {
+      "disposition": "unresolved, expressly acknowledged for retrospective hypotheses only",
+      "prior_gap": "original S3 versions/preparation clean bytes"
+    },
+    {
+      "disposition": "unresolved, generated availability is an explicit assumption",
+      "prior_gap": "historical publication and revision timestamps"
+    },
+    {
+      "disposition": "relative curve and actual historical rebasing reproduced; original absolute anchor still unverified",
+      "prior_gap": "adj_close level differences"
+    },
+    {
+      "disposition": "theoretical open-to-next-open reference-price evaluation only; tasks requiring live fills or cash-reinvested total return must block",
+      "prior_gap": "live fills and cash distributions"
+    },
+    {
+      "disposition": "not within this new scope; proposals must follow the unchanged 09:00 historical cutoff and approved evaluator",
+      "prior_gap": "old 08:30/same-day-close request"
+    }
+  ],
+  "cohort": [
+    "069500",
+    "229200",
+    "153130",
+    "214980",
+    "196230",
+    "157450",
+    "371460",
+    "102110",
+    "357870",
+    "305720"
+  ],
+  "data_readiness_decision": "not_made",
+  "development": {
+    "end": "2025-12-30",
+    "start": "2023-01-02"
+  },
+  "historical_point_in_time_verified": false,
+  "historical_revision_vintages_verified": false,
+  "kind": "strategy",
+  "market": "kr_etf",
+  "operator_packet_is_not_a_readiness_verdict": true,
+  "permitted_task_modes": [
+    "novel_hypothesis",
+    "market_transfer"
+  ],
+  "preparation_time_source_bytes_recovered": false,
+  "prices": "positive frozen daily evaluation prices; actual fills, trading-halt liquidity, delisting settlement and cash distribution reinvestment are not certified",
+  "production_mutated": false,
+  "replaces_program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "required_gates": [
+    "separate signed owner program approval",
+    "current original citations and complete data evidence reads",
+    "independent coverage and evaluation-price assessment",
+    "director selection within remaining budgets",
+    "protected engine/input/profile identity",
+    "code causality and no sealed/future access",
+    "independent artifact-bound validity audit",
+    "independent interpretation (inconclusive or not_supported)"
+  ],
+  "result_use": "hypothesis generation only; ineligible for confirmation, portfolio adoption or paper/live deployment",
+  "return_convention": "KRX reference-price FLUC_RT chain, rebased to latest known raw close; theoretical adjusted open to next adjusted open, cash return zero",
+  "schema_version": 1,
+  "scientific_trials_added": 0,
+  "scope": "owner_review_proposal_for_retrospective_etf_strategy_exploration",
+  "sealed": {
+    "access": "prohibited",
+    "end": "2026-09-23",
+    "start": "2026-01-02"
+  },
+  "signal_cutoff": "09:00 KST; history dates strictly earlier and available_at strictly before cutoff under the declared assumption",
+  "source_identity": "frozen approved JSON inputs plus reconstructed relative price curve; original clean bytes and absolute adjustment anchor remain unavailable",
+  "warmup": {
+    "end": "2022-12-29",
+    "start": "2022-08-01"
+  }
+}

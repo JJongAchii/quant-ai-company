@@ -1,0 +1,67 @@
+{
+  "constraints": [
+    "Company repository only; preserve frozen research provenance",
+    "Existing official subscription authentication; no paid resources",
+    "PostgreSQL records and Temporal execution; preserve ambiguous receipts",
+    "Keep 07:30/20:00 KST scheduling; Analyst display identity retains stable market_brief technical ID and existing receipt routing",
+    "Publication disabled until real-data and Slack qualification",
+    "Read qdata only through its public API in the existing credential-isolated worker; bounded small datasets, no full large-table scans"
+  ],
+  "createdAt": "2026-09-27T22:45:06.220026+00:00",
+  "decisionGates": [
+    "Real Slack activation requires the configured dedicated app and successful source and five-trading-day qualification."
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "Render the competing interpretation in the main issue so conclusion-changing mitigation cannot be lost solely in the analysis thread",
+        "Assign distinct roles to summary, overview, issue facts and market internals; review the actual main post for repetition and internal implementation terms; freeze the policy before new source inspection"
+      ],
+      "description": "Source-sensitive editorial coverage and readable checkpoints",
+      "id": "EDITORIAL"
+    },
+    {
+      "acceptance": [
+        "Freeze previously unused AM and PM original-source snapshots at their scheduled cutoffs before submitting model requests",
+        "Assess actual provider output against originals for major omissions, factual accuracy, analytical support and standalone readability; preserve failures and uncertainty"
+      ],
+      "description": "Unseen-date actual-model content evaluation",
+      "id": "HELDOUT"
+    },
+    {
+      "acceptance": [
+        "Run appropriate regression and lint checks, with real PostgreSQL and Temporal where available",
+        "Publish complete input/request/response/assessment evidence and a readable result report with measured limitations"
+      ],
+      "description": "Regression and reviewable evidence",
+      "id": "VALIDATION"
+    },
+    {
+      "acceptance": [
+        "Record the exact requirements and remaining checks for five future scheduled trading-day previews and real Slack acceptance",
+        "Keep publication disabled and do not represent historical offline evaluation as the five-day preview"
+      ],
+      "description": "Future preview and Slack acceptance gate",
+      "id": "NEXT-GATE"
+    }
+  ],
+  "nonGoals": [
+    "Trading, training, backtests, portfolio access",
+    "Automatic strategist work",
+    "Pretending fixtures or five future observation days have been verified"
+  ],
+  "outcome": "Keep opposing interpretations visible in the main briefing, reduce repetition and implementation jargon, and evaluate the frozen changes on unused AM and PM source snapshots with real subscription responses, preserved failures and measured latency.",
+  "revision": 6,
+  "revisionReason": "Continue user-authorized Analyst briefing work: preserve competing explanations in the main post, remove repeated internal prose, and evaluate the frozen policy on unused original-source dates before scheduled preview.",
+  "schemaVersion": 1,
+  "slug": "amberjack",
+  "sourceRequest": "이어서 진행해 — 오전판의 상쇄 근거 누락과 반복 표현을 고치고, 새 날짜의 실제 자료로 내용 품질을 검증한다.",
+  "stopConditions": [
+    "Preserve an uncertain model or Slack result without automatic new-ID replay.",
+    "Record unavailable real integration conditions; keep publishing disabled until qualification."
+  ],
+  "supersedes": {
+    "intentDigest": "3b27b354ad2c",
+    "intentFile": "INTENT-v5.json"
+  }
+}

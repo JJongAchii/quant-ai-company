@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-09-30T11:45:33.040661+00:00",
+  "production_mutated": false,
+  "reason": "Permission denied (publickey); short-lived certificate renewal required",
+  "schema_version": 1,
+  "scientific_trial_replayed": false,
+  "staff_result_not_observed": true,
+  "state": "read_only_probe_failed_before_remote_command"
+}

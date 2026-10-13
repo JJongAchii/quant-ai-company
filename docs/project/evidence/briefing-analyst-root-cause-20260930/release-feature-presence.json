@@ -1,0 +1,18 @@
+{
+  "at": "2026-09-30T10:43:05.824376+00:00",
+  "scope": "Read-only local git tree of previously observed host link/image label commits; not attestation of actual image filesystem",
+  "commits": [
+    {
+      "commit": "5defb8cb9dd7c655214663b05670cd2896006b30",
+      "analyst_briefing_files": [],
+      "market_brief_role_definition": false
+    },
+    {
+      "commit": "837ac72a76cf94625afa2b4ccbee5eb103ae6e03",
+      "analyst_briefing_files": [],
+      "market_brief_role_definition": false
+    }
+  ],
+  "conclusion": "Observed linked/image source revisions lack this Analyst briefing module; a source-preserving integration is required, not only flags or instance addresses",
+  "deployment": "not_performed"
+}

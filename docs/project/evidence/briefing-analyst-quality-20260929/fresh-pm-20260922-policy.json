@@ -1,0 +1,25 @@
+{
+  "case": "pm-20260922-fresh-analyst-quality",
+  "frozen_at": "2026-09-29T06:03:03+00:00",
+  "selection_reason": "The September 23 PM writer effect is uncertain after a server backup; this is a distinct, previously unused Korean trading PM edition selected before querying its original titles/content. September 21 and 28 PM were previously evaluated.",
+  "edition": {
+    "day": "2026-09-22",
+    "kind": "pm",
+    "due_at": "2026-09-22T20:15:00+09:00",
+    "starts_at": "2026-09-22T19:10:00+09:00",
+    "cutoff": "2026-09-22T19:30:00+09:00",
+    "expires_at": "2026-09-22T21:15:00+09:00",
+    "us_session": null,
+    "kr_session": "2026-09-22",
+    "previous_us_session": null,
+    "previous_kr_session": "2026-09-21"
+  },
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "max_completed_calls": 5,
+  "repair": "At most one confirmed editorial repair, with request IDs reused for uncertain attempts.",
+  "source_rule": "Read-only company store: registered enabled use_for_summary articles with matching source digest, nonempty content, source publication and collection before exact cutoff, 30-hour publication window, per-origin 48 and global 600 bounds. No retrospective web, current data-lake or search backfill. At most 96 frozen candidates, validated plan at most 16 and 42000 source characters.",
+  "pass": "Valid plan and typed writer/reviewer output; zero mechanical rejections; all twelve semantic checks true and publish verdict; independent source-to-visible-main check made before reading writer output shows no material omission, temporal distortion or unsupported claim. One offline edition cannot qualify live timing or Slack delivery.",
+  "stop_on_unavailable": "If the original snapshot has no eligible closing reports or too little coverage, mark unavailable without substituting later sources or claiming quality.",
+  "offline_scope": "Historical source read-only; no Slack send, deployment, database mutation or paid API call."
+}

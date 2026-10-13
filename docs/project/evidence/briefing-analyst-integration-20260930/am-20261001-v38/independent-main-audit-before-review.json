@@ -1,0 +1,54 @@
+{
+  "at": "2026-09-30T23:14:44.333315+00:00",
+  "assessment_source": "first-draft/assessment.json",
+  "validation_version": 38,
+  "first_model_review_inspected": false,
+  "all_supplied_bodies_read": 16,
+  "complete_originals": 15,
+  "known_partial_originals": 1,
+  "scope": "Root source-to-visible-main review of the saved draft before first model critique; no added market input or qualification",
+  "findings": [
+    {
+      "severity": "blocking",
+      "item_id": "overview_us",
+      "issue": "One source ID was shortened by the writer; exact frozen ID/quote verification removes the US overview from the main post. The accepted main retains only the prior-Korea overview."
+    },
+    {
+      "severity": "review",
+      "item_id": "kosdaq_previous",
+      "issue": "The saved English original supports +0.72 percent and 855.91, but the spoken decimal syntax fails the frozen directional/number check. Keep this diagnostic without weakening the frozen evaluator."
+    },
+    {
+      "severity": "blocking",
+      "item_id": "diplomacy_interpretation",
+      "issue": "Frozen mechanical check rejects an unsupported prose number; a US offer and Qatar mediation source is absent from the accepted visible main even though source selection requested it."
+    },
+    {
+      "severity": "blocking",
+      "item_id": "source-completeness",
+      "issue": "Source9 contains only6000of6235characters. Full-original independent audit cannot qualify this case. No after-cutoff tail backfill."
+    },
+    {
+      "severity": "materiality",
+      "item_id": "investment",
+      "issue": "Main mentions200bn and existing350bn but does not plainly tell the reader that200bn is the strategic portion of the existing pledge excluding150bn shipbuilding. This is important to avoid reading it as additional capital."
+    },
+    {
+      "severity": "readability",
+      "item_id": "memory",
+      "issue": "Micron earnings and FTC product-risk investigation are combined into one headline despite different causal and time horizons. Source facts survive but the grouping burdens readers."
+    },
+    {
+      "severity": "coverage",
+      "item_id": "macro",
+      "issue": "Main shows headline PCE actual/consensus; core-PCE actual/consensus and explicit actual revised GDP are less accessible. High rates and fiscal supply counterevidence survive."
+    },
+    {
+      "severity": "readability",
+      "item_id": "layout",
+      "issue": "Five substantive stories and source-backed counterevidence are visible, but long multi-sentence blocks and repeated qualifiers/bp glossary interrupt scanning. This is stronger than a thin summary but is not a qualified professional brief."
+    }
+  ],
+  "slack": "not_called",
+  "expert_qualification": false
+}

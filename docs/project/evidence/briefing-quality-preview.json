@@ -1,0 +1,611 @@
+{
+  "mode": "synthetic_readability_example",
+  "not_actual_market_report": true,
+  "model": "not_called",
+  "slack": "not_sent",
+  "bundle": {
+    "edition": {
+      "id": "f2294794-afd2-5599-931f-b4f9e8b613a4",
+      "day": "2026-09-22",
+      "kind": "pm",
+      "due_at": "2026-09-22T20:00:00+09:00",
+      "starts_at": "2026-09-22T19:20:00+09:00",
+      "cutoff": "2026-09-22T19:40:00+09:00",
+      "expires_at": "2026-09-22T21:00:00+09:00",
+      "us_session": null,
+      "kr_session": "2026-09-22",
+      "previous_us_session": null,
+      "previous_kr_session": "2026-09-21",
+      "weekly": null
+    },
+    "documents": [
+      {
+        "id": "data-f2f00c51f3cd675ea79d2060",
+        "url": "https://example.org/briefing-sample/data",
+        "title": "Collected market data: krx_index",
+        "publisher": "수집 데이터 · krx_index",
+        "kind": "dataset",
+        "origin_group": "dataset:krx_index",
+        "content": "KOSPI | session=2026-09-22 | close=3000 pt | regular KRX close | previous_session=2026-09-21 | previous_close=2950 pt\nKOSDAQ | session=2026-09-22 | close=900 pt | regular KRX close | previous_session=2026-09-21 | previous_close=901 pt\nKOSPI · 2026-09-22 기준 · 종가 3000 pt · 1거래일 +1.69% / 5거래일 +0.17% / 20거래일 +0.67%\nKOSPI 거래대금 · 2026-09-22 · 100.00억원\nKOSDAQ · 2026-09-22 기준 · 종가 900 pt · 1거래일 -0.11% / 5거래일 +0.56% / 20거래일 +2.27%\nKOSDAQ 거래대금 · 2026-09-22 · 100.00억원",
+        "published_at": null,
+        "retrieved_at": "2026-09-22T19:30:00+09:00",
+        "sha256": "a637028fd8def52341acb10eb45e0f1c9e19bb951bd67e3fbf95d1f58b9b623b",
+        "registration": "qdata.api:krx_index",
+        "receipt": {
+          "source": {
+            "uri": "s3://example/qdata/clean/krx_index.parquet",
+            "etag": "synthetic-v1"
+          },
+          "rows": [
+            {
+              "date": "2026-09-22",
+              "index": "KOSPI",
+              "close": "3000",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-21",
+              "index": "KOSPI",
+              "close": "2950",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-18",
+              "index": "KOSPI",
+              "close": "2998",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-17",
+              "index": "KOSPI",
+              "close": "2997",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-16",
+              "index": "KOSPI",
+              "close": "2996",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-15",
+              "index": "KOSPI",
+              "close": "2995",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-14",
+              "index": "KOSPI",
+              "close": "2994",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-11",
+              "index": "KOSPI",
+              "close": "2993",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-10",
+              "index": "KOSPI",
+              "close": "2992",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-09",
+              "index": "KOSPI",
+              "close": "2991",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-08",
+              "index": "KOSPI",
+              "close": "2990",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-07",
+              "index": "KOSPI",
+              "close": "2989",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-04",
+              "index": "KOSPI",
+              "close": "2988",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-03",
+              "index": "KOSPI",
+              "close": "2987",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-02",
+              "index": "KOSPI",
+              "close": "2986",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-01",
+              "index": "KOSPI",
+              "close": "2985",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-08-31",
+              "index": "KOSPI",
+              "close": "2984",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-08-28",
+              "index": "KOSPI",
+              "close": "2983",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-08-27",
+              "index": "KOSPI",
+              "close": "2982",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-08-26",
+              "index": "KOSPI",
+              "close": "2981",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-08-25",
+              "index": "KOSPI",
+              "close": "2980",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-08-24",
+              "index": "KOSPI",
+              "close": "2979",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-22",
+              "index": "KOSDAQ",
+              "close": "900",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-21",
+              "index": "KOSDAQ",
+              "close": "901",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-18",
+              "index": "KOSDAQ",
+              "close": "898",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-17",
+              "index": "KOSDAQ",
+              "close": "897",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-16",
+              "index": "KOSDAQ",
+              "close": "896",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-15",
+              "index": "KOSDAQ",
+              "close": "895",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-14",
+              "index": "KOSDAQ",
+              "close": "894",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-11",
+              "index": "KOSDAQ",
+              "close": "893",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-10",
+              "index": "KOSDAQ",
+              "close": "892",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-09",
+              "index": "KOSDAQ",
+              "close": "891",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-08",
+              "index": "KOSDAQ",
+              "close": "890",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-07",
+              "index": "KOSDAQ",
+              "close": "889",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-04",
+              "index": "KOSDAQ",
+              "close": "888",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-03",
+              "index": "KOSDAQ",
+              "close": "887",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-02",
+              "index": "KOSDAQ",
+              "close": "886",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-09-01",
+              "index": "KOSDAQ",
+              "close": "885",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-08-31",
+              "index": "KOSDAQ",
+              "close": "884",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-08-28",
+              "index": "KOSDAQ",
+              "close": "883",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-08-27",
+              "index": "KOSDAQ",
+              "close": "882",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-08-26",
+              "index": "KOSDAQ",
+              "close": "881",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-08-25",
+              "index": "KOSDAQ",
+              "close": "880",
+              "value": "10000000000"
+            },
+            {
+              "date": "2026-08-24",
+              "index": "KOSDAQ",
+              "close": "879",
+              "value": "10000000000"
+            }
+          ],
+          "qdata_code_commit": "synthetic",
+          "available_at": "2026-09-22T19:30:00+09:00",
+          "note": "Provider link is attribution; exact object identity and frozen rows are retained in the edition.",
+          "synthetic": true
+        }
+      },
+      {
+        "id": "preview-1",
+        "url": "https://example.org/briefing-sample/1",
+        "title": "형식 검증용 가상 원문",
+        "publisher": "가상 출처 1",
+        "kind": "media",
+        "origin_group": "synthetic-1",
+        "content": "해외 고객사의 설비투자 확대 계획이 전해지며 대형 반도체주가 올랐다. 코스피 상승을 주도했지만 코스닥은 하락했다. 상승 종목 수는 하락 종목 수보다 적었다. 반도체 강세가 다른 업종으로 이어질지는 아직 확인되지 않았다.",
+        "published_at": "2026-09-22T19:25:00+09:00",
+        "retrieved_at": "2026-09-22T19:30:00+09:00",
+        "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "registration": "fixture",
+        "receipt": {
+          "synthetic": true
+        }
+      },
+      {
+        "id": "preview-2",
+        "url": "https://example.org/briefing-sample/2",
+        "title": "형식 검증용 가상 원문",
+        "publisher": "가상 출처 2",
+        "kind": "media",
+        "origin_group": "synthetic-2",
+        "content": "달러/원은 2026-09-22 19:00 KST 서울 외환시장 장중 1300 KRW/USD로 관측됐다. 수출주 강세와 달리 내수주는 약세였으며 업종 간 흐름이 엇갈렸다. 환율 변화가 이어지는지 추가 확인이 필요하다.",
+        "published_at": "2026-09-22T19:25:00+09:00",
+        "retrieved_at": "2026-09-22T19:30:00+09:00",
+        "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "registration": "fixture",
+        "receipt": {
+          "synthetic": true
+        }
+      },
+      {
+        "id": "preview-3",
+        "url": "https://example.org/briefing-sample/3",
+        "title": "형식 검증용 가상 원문",
+        "publisher": "가상 출처 3",
+        "kind": "calendar",
+        "origin_group": "synthetic-3",
+        "content": "가독성 검증용 가상 일정: 고객사 투자 설명회가 2026-09-22 09:30 America/New_York에 예정되어 있다. 반도체 주문 규모와 집행 시기가 확인 대상이다. 현재는 투자 계획이며 실제 주문의 확정 여부는 미정이다.",
+        "published_at": "2026-09-22T19:25:00+09:00",
+        "retrieved_at": "2026-09-22T19:30:00+09:00",
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+        "registration": "fixture",
+        "receipt": {
+          "synthetic": true
+        }
+      }
+    ],
+    "locked_observations": [
+      {
+        "id": "data-kospi",
+        "instrument": "kospi",
+        "value": "3000",
+        "unit": "pt",
+        "session_date": "2026-09-22",
+        "as_of": "2026-09-22T06:30:00+00:00",
+        "basis": "close",
+        "venue": "KRX",
+        "previous_value": "2950",
+        "previous_session_date": "2026-09-21",
+        "evidence": [
+          {
+            "source_id": "data-f2f00c51f3cd675ea79d2060",
+            "quote": "KOSPI | session=2026-09-22 | close=3000 pt | regular KRX close | previous_session=2026-09-21 | previous_close=2950 pt"
+          }
+        ]
+      },
+      {
+        "id": "data-kosdaq",
+        "instrument": "kosdaq",
+        "value": "900",
+        "unit": "pt",
+        "session_date": "2026-09-22",
+        "as_of": "2026-09-22T06:30:00+00:00",
+        "basis": "close",
+        "venue": "KRX",
+        "previous_value": "901",
+        "previous_session_date": "2026-09-21",
+        "evidence": [
+          {
+            "source_id": "data-f2f00c51f3cd675ea79d2060",
+            "quote": "KOSDAQ | session=2026-09-22 | close=900 pt | regular KRX close | previous_session=2026-09-21 | previous_close=901 pt"
+          }
+        ]
+      }
+    ],
+    "market_context": [
+      {
+        "text": "KOSPI · 2026-09-22 기준 · 종가 3000 pt · 1거래일 +1.69% / 5거래일 +0.17% / 20거래일 +0.67%",
+        "source_id": "data-f2f00c51f3cd675ea79d2060"
+      },
+      {
+        "text": "KOSPI 거래대금 · 2026-09-22 · 100.00억원",
+        "source_id": "data-f2f00c51f3cd675ea79d2060"
+      },
+      {
+        "text": "KOSDAQ · 2026-09-22 기준 · 종가 900 pt · 1거래일 -0.11% / 5거래일 +0.56% / 20거래일 +2.27%",
+        "source_id": "data-f2f00c51f3cd675ea79d2060"
+      },
+      {
+        "text": "KOSDAQ 거래대금 · 2026-09-22 · 100.00억원",
+        "source_id": "data-f2f00c51f3cd675ea79d2060"
+      }
+    ],
+    "data_diagnostics": [],
+    "collection_errors": [],
+    "morning_watchpoints": [
+      {
+        "id": "morning-semiconductor",
+        "text": "반도체 강세가 다른 업종으로 이어지는지"
+      }
+    ],
+    "exchange_closes": {
+      "KR": "2026-09-22T06:30:00+00:00"
+    }
+  },
+  "proposal": {
+    "summary": [
+      {
+        "id": "summary",
+        "evidence": [
+          {
+            "source_id": "preview-1",
+            "quote": "해외 고객사의 설비투자 확대 계획이 전해지며 대형 반도체주가 올랐다. 코스피 상승을 주도했지만 코스닥은 하락했다. 상승 종목 수는 하락 종목 수보다 적었다. 반도체 강세가 다른 업종으로 이어질지는 아직 확인되지 않았다."
+          }
+        ],
+        "text": "반도체가 코스피를 끌어올렸지만, 코스닥까지 온기가 퍼지지는 않았습니다.",
+        "kind": "fact"
+      }
+    ],
+    "observations": [
+      {
+        "id": "data-kosdaq",
+        "evidence": [
+          {
+            "source_id": "data-f2f00c51f3cd675ea79d2060",
+            "quote": "KOSDAQ | session=2026-09-22 | close=900 pt | regular KRX close | previous_session=2026-09-21 | previous_close=901 pt"
+          }
+        ],
+        "instrument": "kosdaq",
+        "value": "900",
+        "unit": "pt",
+        "session_date": "2026-09-22",
+        "as_of": "2026-09-22T06:30:00Z",
+        "basis": "close",
+        "venue": "KRX",
+        "previous_value": "901",
+        "previous_session_date": "2026-09-21",
+        "reported_change": null,
+        "change_unit": null
+      },
+      {
+        "id": "data-kospi",
+        "evidence": [
+          {
+            "source_id": "data-f2f00c51f3cd675ea79d2060",
+            "quote": "KOSPI | session=2026-09-22 | close=3000 pt | regular KRX close | previous_session=2026-09-21 | previous_close=2950 pt"
+          }
+        ],
+        "instrument": "kospi",
+        "value": "3000",
+        "unit": "pt",
+        "session_date": "2026-09-22",
+        "as_of": "2026-09-22T06:30:00Z",
+        "basis": "close",
+        "venue": "KRX",
+        "previous_value": "2950",
+        "previous_session_date": "2026-09-21",
+        "reported_change": null,
+        "change_unit": null
+      },
+      {
+        "id": "fx",
+        "evidence": [
+          {
+            "source_id": "preview-2",
+            "quote": "달러/원은 2026-09-22 19:00 KST 서울 외환시장 장중 1300 KRW/USD로 관측됐다. 수출주 강세와 달리 내수주는 약세였으며 업종 간 흐름이 엇갈렸다. 환율 변화가 이어지는지 추가 확인이 필요하다."
+          }
+        ],
+        "instrument": "usdkrw",
+        "value": "1300",
+        "unit": "KRW/USD",
+        "session_date": "2026-09-22",
+        "as_of": "2026-09-22T19:00:00+09:00",
+        "basis": "intraday",
+        "venue": "서울 외환시장",
+        "previous_value": null,
+        "previous_session_date": null,
+        "reported_change": null,
+        "change_unit": null
+      }
+    ],
+    "issues": [
+      {
+        "headline": "반도체 투자 기대가 지수를 밀어 올렸습니다",
+        "fact": {
+          "id": "story-fact",
+          "evidence": [
+            {
+              "source_id": "preview-1",
+              "quote": "해외 고객사의 설비투자 확대 계획이 전해지며 대형 반도체주가 올랐다. 코스피 상승을 주도했지만 코스닥은 하락했다. 상승 종목 수는 하락 종목 수보다 적었다. 반도체 강세가 다른 업종으로 이어질지는 아직 확인되지 않았다."
+            }
+          ],
+          "text": "해외 고객사의 투자 확대 계획에 대형 반도체주가 올랐습니다.",
+          "kind": "fact"
+        },
+        "interpretation": {
+          "id": "story-view",
+          "evidence": [
+            {
+              "source_id": "preview-1",
+              "quote": "해외 고객사의 설비투자 확대 계획이 전해지며 대형 반도체주가 올랐다. 코스피 상승을 주도했지만 코스닥은 하락했다. 상승 종목 수는 하락 종목 수보다 적었다. 반도체 강세가 다른 업종으로 이어질지는 아직 확인되지 않았다."
+            }
+          ],
+          "text": "반도체 수요에는 긍정적인 신호입니다. 다만 하락 종목이 더 많아 시장 전체의 강세로 보기는 이릅니다.",
+          "kind": "interpretation"
+        },
+        "next_check": {
+          "id": "story-next",
+          "evidence": [
+            {
+              "source_id": "preview-3",
+              "quote": "가독성 검증용 가상 일정: 고객사 투자 설명회가 2026-09-22 09:30 America/New_York에 예정되어 있다. 반도체 주문 규모와 집행 시기가 확인 대상이다. 현재는 투자 계획이며 실제 주문의 확정 여부는 미정이다."
+            }
+          ],
+          "text": "오늘 밤 고객사 설명회에서 실제 주문 규모와 집행 시기를 확인합니다.",
+          "kind": "condition"
+        },
+        "counterpoint": {
+          "id": "story-counter",
+          "evidence": [
+            {
+              "source_id": "preview-3",
+              "quote": "가독성 검증용 가상 일정: 고객사 투자 설명회가 2026-09-22 09:30 America/New_York에 예정되어 있다. 반도체 주문 규모와 집행 시기가 확인 대상이다. 현재는 투자 계획이며 실제 주문의 확정 여부는 미정이다."
+            }
+          ],
+          "text": "현재 확인된 것은 투자 계획이며 실제 주문의 확정 여부는 미정입니다.",
+          "kind": "fact"
+        }
+      }
+    ],
+    "internals": [],
+    "watchpoints": [],
+    "watch_results": [
+      {
+        "id": "watch-result",
+        "evidence": [
+          {
+            "source_id": "preview-1",
+            "quote": "해외 고객사의 설비투자 확대 계획이 전해지며 대형 반도체주가 올랐다. 코스피 상승을 주도했지만 코스닥은 하락했다. 상승 종목 수는 하락 종목 수보다 적었다. 반도체 강세가 다른 업종으로 이어질지는 아직 확인되지 않았다."
+          }
+        ],
+        "watch_id": "morning-semiconductor",
+        "outcome": "mixed",
+        "explanation": "반도체는 강했지만 다른 업종으로의 확산은 확인되지 않았습니다."
+      }
+    ],
+    "calendar": [
+      {
+        "id": "calendar",
+        "evidence": [
+          {
+            "source_id": "preview-3",
+            "quote": "가독성 검증용 가상 일정: 고객사 투자 설명회가 2026-09-22 09:30 America/New_York에 예정되어 있다. 반도체 주문 규모와 집행 시기가 확인 대상이다. 현재는 투자 계획이며 실제 주문의 확정 여부는 미정이다."
+          }
+        ],
+        "title": "고객사 투자 설명회",
+        "at": "2026-09-22T09:30:00-04:00",
+        "source_timezone": "America/New_York",
+        "status": "scheduled",
+        "note": ""
+      }
+    ],
+    "limitations": []
+  },
+  "parts": [
+    "*09/22 저녁 브리핑 · 한국장과 오늘 밤*\n자료 기준 09/22 19:40 KST\n\n*오늘의 핵심*\n• 반도체가 코스피를 끌어올렸지만, 코스닥까지 온기가 퍼지지는 않았습니다. <https://example.org/briefing-sample/1|[2]>\n\n*주요 숫자* · 2026-09-22 정규장\n• 코스피 3,000 pt · +1.69% <https://example.org/briefing-sample/data|[1]>\n• 코스닥 900 pt · -0.11% <https://example.org/briefing-sample/data|[1]>\n• 달러/원 1,300 KRW/USD · 관측값 09/22 19:00 KST · 서울 외환시장 <https://example.org/briefing-sample/2|[3]>\n\n*흐름을 만든 이야기*\n*반도체 투자 기대가 지수를 밀어 올렸습니다*\n해외 고객사의 투자 확대 계획에 대형 반도체주가 올랐습니다. <https://example.org/briefing-sample/1|[2]>\n해석 · 반도체 수요에는 긍정적인 신호입니다. 다만 하락 종목이 더 많아 시장 전체의 강세로 보기는 이릅니다. <https://example.org/briefing-sample/1|[2]>\n\n아침 관찰 ‘반도체 강세가 다른 업종으로 이어지는지’ → 엇갈림: 반도체는 강했지만 다른 업종으로의 확산은 확인되지 않았습니다. <https://example.org/briefing-sample/1|[2]>\n\n*다음 확인할 것*\n• 오늘 밤 고객사 설명회에서 실제 주문 규모와 집행 시기를 확인합니다. <https://example.org/briefing-sample/3|[4]>\n• 09/22 22:30 KST · 고객사 투자 설명회 [예정]  <https://example.org/briefing-sample/3|[4]>\n\nMarket Briefer · AI 브리핑 · 근거와 추가 설명은 스레드",
+    "*상세 근거·추가 지표*\n• 코스피 3,000 pt · +1.69% · 정규장 종가 09/22 15:30 KST · KRX <https://example.org/briefing-sample/data|[1]>\n• 코스닥 900 pt · -0.11% · 정규장 종가 09/22 15:30 KST · KRX <https://example.org/briefing-sample/data|[1]>\n• 달러/원 1,300 KRW/USD · 관측값 09/22 19:00 KST · 서울 외환시장 <https://example.org/briefing-sample/2|[3]>\n*반도체 투자 기대가 지수를 밀어 올렸습니다*\n확인 조건 · 오늘 밤 고객사 설명회에서 실제 주문 규모와 집행 시기를 확인합니다. <https://example.org/briefing-sample/3|[4]>\n다른 관점 · 현재 확인된 것은 투자 계획이며 실제 주문의 확정 여부는 미정입니다. <https://example.org/briefing-sample/3|[4]>\nKOSPI · 2026-09-22 기준 · 종가 3000 pt · 1거래일 +1.69% / 5거래일 +0.17% / 20거래일 +0.67% <https://example.org/briefing-sample/data|[1]>\nKOSPI 거래대금 · 2026-09-22 · 100.00억원 <https://example.org/briefing-sample/data|[1]>\nKOSDAQ · 2026-09-22 기준 · 종가 900 pt · 1거래일 -0.11% / 5거래일 +0.56% / 20거래일 +2.27% <https://example.org/briefing-sample/data|[1]>\nKOSDAQ 거래대금 · 2026-09-22 · 100.00억원 <https://example.org/briefing-sample/data|[1]>\n[1] <https://example.org/briefing-sample/data|수집 데이터 · krx_index> · 발행 미확인 · 조회 09/22 19:30 KST\n[2] <https://example.org/briefing-sample/1|가상 출처 1> · 발행 09/22 19:25 KST · 조회 09/22 19:30 KST\n[3] <https://example.org/briefing-sample/2|가상 출처 2> · 발행 09/22 19:25 KST · 조회 09/22 19:30 KST\n[4] <https://example.org/briefing-sample/3|가상 출처 3> · 발행 09/22 19:25 KST · 조회 09/22 19:30 KST\n수집 데이터는 원천기관 안내 링크입니다. 실제 객체 식별자와 계산에 쓴 행은 발간 기록에 보존합니다."
+  ],
+  "quality": {
+    "format_version": 2,
+    "reduced": false,
+    "missing_core": [],
+    "rejected": {},
+    "source_count": 4,
+    "fallback": null,
+    "assurance": {
+      "kosdaq": "collected",
+      "kospi": "collected",
+      "usdkrw": "single_source"
+    },
+    "quote_conflicts": [],
+    "data_diagnostics": [],
+    "calendar_items": 1
+  },
+  "part_lengths": [
+    968,
+    1370
+  ]
+}

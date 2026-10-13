@@ -1,0 +1,15 @@
+{
+  "checked_at": "2026-09-30T06:35:46.577942+00:00",
+  "scope": "Actual local test result from this continuation; not live Slack/cloud qualification",
+  "command": ".venv/bin/pytest -q -x --tb=short",
+  "passed": 1375,
+  "skipped": 38,
+  "warnings": 12,
+  "failed": 0,
+  "elapsed_seconds": 357.98,
+  "format_version": 13,
+  "validation_version": 31,
+  "targeted_passed": 120,
+  "lint": "passed",
+  "note": "38 skips are not counted as successful real integrations. Semantic model qualification is separate."
+}

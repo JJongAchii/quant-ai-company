@@ -1,0 +1,66 @@
+{
+  "recorded_at": "2026-10-07T10:41:28.457972+00:00",
+  "request": "응 보완해줘 ㅎㅎ",
+  "format_version": 18,
+  "validation_version": 61,
+  "coverage_version": 6,
+  "scope": [
+    "Broaden macro and non-chip sector candidate discovery",
+    "Survey five market/economic areas and prioritize distinct material developments",
+    "Remove two-issue bias in source selection, inventory, ordinary and inventory-backed writing",
+    "Review thematic crowding and passing mentions against all originals",
+    "Use equal main-post issue headings for up to six material developments; no topic-count quota"
+  ],
+  "tests_passed": 336,
+  "test_runs": [
+    {
+      "tests": 205,
+      "seconds": "16.142",
+      "sha256": "6b253bfda6f85f6f4c828f90c9a29dbbb28a2bddfd53071509fd94c961690777"
+    },
+    {
+      "tests": 131,
+      "seconds": "56.958",
+      "sha256": "8c6ab5f888bb19c706a505cd1890bdaeb386753dd6c9c64353e120aef68b1f51"
+    }
+  ],
+  "postgres": "Real disposable PostgreSQL databases",
+  "model_and_slack": "Simulated in regressions",
+  "ruff": "passed",
+  "transport": {
+    "scope": "Transport stress only: previous failed saved draft plus synthetic phrase qualifiers; no model inference or content regrading.",
+    "originals": 20,
+    "full_original_chars": 50029,
+    "synthetic_qualifier_count": 178,
+    "repair_mode": "editorial_patch",
+    "model_calls": 0,
+    "slack_calls": 0,
+    "checks": {
+      "inventory": {
+        "chars": 69061,
+        "fits": true
+      },
+      "composition": {
+        "chars": 86898,
+        "fits": true
+      },
+      "review": {
+        "chars": 87232,
+        "fits": true
+      },
+      "repair": {
+        "chars": 87688,
+        "fits": true
+      }
+    }
+  },
+  "deployment": "pending",
+  "actual_model_content_evaluated": false,
+  "quality_certified": false,
+  "publication_enabled_before_change": true,
+  "known_separate_execution_failures": [
+    "Inventory 480-second timeout",
+    "Combined quote aliases rejected by single-quote inventory contract"
+  ],
+  "no_reclassification_of_previous_failed_editions": true
+}

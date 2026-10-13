@@ -1,0 +1,17 @@
+{
+  "approved_input_and_engine_unchanged": true,
+  "archive_local_path": ".local/ops-access/etf-raw-lineage-f8a0595989be.tar",
+  "archive_sha256": "c5296875eed56375e820c144d4bbb24ab6425f5db50511fd58daeadfde87f108",
+  "blocking_gaps_unchanged": true,
+  "expected_release_commit": "5defb8cb9dd7c655214663b05670cd2896006b30",
+  "installer_sha256": "5f28d4a0f68efa023e9a006c3f8dce0731bc88bce653d694c4b6a3064c4043b2",
+  "old_registry_sha256": "d3822b1df7d1e03824ed4d39cf10883d85764d2115b0f8cd4473f0194b09fc33",
+  "program_digest": "53392822414ca32e89fab0f3a9a1093a350196345bd13084654a45510297159b",
+  "registry_sha256": "bdef77801a3b65f7588bf00a3916a1a67f7b7e59657db0f1587c8999842646a3",
+  "report_bytes": 14490,
+  "report_name": "raw-lineage-f8a0595989be.json",
+  "report_sha256": "f8a0595989be3f371938737c057a1ec29031e7a5615917e2172c5f944c398e3a",
+  "schema_version": 1,
+  "state": "packaged_not_attached",
+  "worker_image_at_readback": "quant-company-autonomous:0286ba3e7426ff6546b90e6926124ae65e71ba79"
+}

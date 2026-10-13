@@ -1,0 +1,16 @@
+{
+  "format_version": 21,
+  "validation_version": 69,
+  "full_originals": 27,
+  "facts": 61,
+  "writer_input_chars": 86795,
+  "writer_input_sha256": "1ceea65749acda4ff7e49e46e5ecae834a5eef61fad02827ee6f7a7229cef920",
+  "lossless_round_trip": true,
+  "fresh_model_quality_evaluated": false,
+  "installed_app_image": "sha256:2f647b1e7efc86f8eaa24f6f9d0646a204a4fd00fe63b4c530484af1d105d38d",
+  "installed_sdk_image": "sha256:b5cdece3fcd2d6cf215fccbb3952bd69c0021c1edca5ca3133d7cc0fbeaffa94",
+  "sdk_consumer_schema_aligned": true,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "database_mutations": 0
+}
