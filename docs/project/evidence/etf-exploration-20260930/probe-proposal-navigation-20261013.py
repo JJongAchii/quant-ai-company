@@ -39,7 +39,9 @@ with company.db.transaction() as conn:
         # next attempt using its actual scheduler, then roll back every write.
         snapshot=MissionStore(company).snapshot(conn,manifest['mission_id'],public=False)
         assert snapshot['stage']['stage']=='proposal'
-        extra={key:value for key,value in row['context'].items() if key!='mission'}
+        # Keep the backend's bounded mission/file projection. The complete
+        # snapshot still owns the stable stage key and lifecycle checks.
+        extra=dict(row['context'])
         project=company._project(conn,manifest['project_id'])
         conn.execute("UPDATE research_mission_stages SET state='waiting',retry_at=NULL WHERE id=%s",(row['id'],))
         MissionController(company)._schedule(conn,project,snapshot,extra)
