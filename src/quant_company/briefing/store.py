@@ -86,6 +86,10 @@ TERMINAL = {"committed", "previewed", "missed", "stale"}
 # attempt is a new request. The runtime accepts -r1..-r9, so a phase has at most ten attempts.
 RETRYABLE_FAULTS = {"invalid_brief_response", "invalid_output", "uncertain", "timeout"}
 MAX_PHASE_ATTEMPTS = 10
+# The supplementary search only adds candidates to collection. A failed search is asked once more while the cutoff is
+# at least this far away, and never blocks the edition: the writer goes on with the collected originals (2026-10-13 AM
+# shipped a salvage because one invalid search output blocked the whole edition before planning).
+SEARCH_RETRY_MARGIN = timedelta(minutes=5)
 
 
 class BriefStore:
@@ -349,7 +353,8 @@ class BriefStore:
                     return {'state': 'idle'}  # Bounded evaluations use plan/write/review on sealed inputs.
                 if not (s.briefing_search_enabled and s.company_web_enabled and row["collected_at"]):
                     return {"state": "idle"}
-                if conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='search'", (row["id"],)).fetchone():
+                if conn.execute("SELECT 1 FROM brief_calls WHERE edition_id=%s AND phase='search' AND state<>'retry'",
+                                (row["id"],)).fetchone():
                     return {"state": "idle"}
                 docs = (row["bundle"] or {}).get("documents", [])
                 origins = {d.get("origin_group") or d["publisher"] for d in docs if d["kind"] == "media"}
@@ -635,7 +640,17 @@ class BriefStore:
             if code in {"busy", "quota", "unavailable"}:
                 conn.execute("UPDATE brief_calls SET next_at=%s,error=%s WHERE id=%s",
                              (at+timedelta(seconds=max(5, min(seconds or 60, 604800))), code, identity))
-            elif (code in RETRYABLE_FAULTS and row["attempt"]+1 < MAX_PHASE_ATTEMPTS and row["phase"] != "search"
+            elif row["phase"] == "search":
+                retry = (code in RETRYABLE_FAULTS and row["attempt"] == 0 and edition["state"] == "collecting"
+                         and not edition["committed_at"] and at+SEARCH_RETRY_MARGIN < edition["cutoff"])
+                conn.execute("UPDATE brief_calls SET state=%s,error=%s,completed_at=%s WHERE id=%s",
+                             ("retry" if retry else "blocked", code, at, identity))
+                conn.execute("UPDATE brief_editions SET next_collection=%s WHERE id=%s AND state='collecting'",
+                             (at, row["edition_id"]))
+                self.company._event(conn, "briefing_search_failed", {"edition_id": str(row["edition_id"]),
+                                                                     "attempt": row["attempt"], "error": code,
+                                                                     "retry": retry})
+            elif (code in RETRYABLE_FAULTS and row["attempt"]+1 < MAX_PHASE_ATTEMPTS
                   and not edition["committed_at"] and edition["state"] not in TERMINAL | {"blocked", "ready"}
                   and has_runway(row["phase"], edition["bundle"] or {}, at, edition["due_at"])):
                 # The edition keeps its phase state; the next prepare issues the same phase as attempt+1. The fixed

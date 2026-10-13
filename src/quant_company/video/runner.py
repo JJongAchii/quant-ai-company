@@ -343,7 +343,7 @@ class VideoRunner:
             prompt, contract = production_prompt(job['source'], feedback), None
         try:
             plan = await self.model(job, key, prompt, plan_class(job), contract)
-            findings = plan_findings(job, plan, library)
+            findings = plan_findings(job, plan, library, photos=qa.get('illustrations_offered', False))
             attempts.append({'key': key, 'outcome': 'check_failed' if findings else 'passed', 'findings': findings[:30]})
         except ModelRejected as rejected:
             plan, findings = None, [f'Output contract: {rejected.detail}' if rejected.detail else f'Model {rejected.code}']

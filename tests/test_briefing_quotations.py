@@ -202,6 +202,25 @@ def test_indexed_review_preserves_full_originals_visible_text_and_output_item_id
     assert b == frozen
 
 
+def test_an_over_limit_final_review_drops_context_bookkeeping_and_keeps_every_original():
+    # 2026-10-13 AM: the revised draft's final review was over the limit by 4,188 characters and never ran.
+    b, p = large_review_case()
+    for document in b['documents']:
+        document['content'] = CONTENT * 8
+    for i, issue in enumerate(p['issues']):
+        for key in ('fact', 'interpretation'):
+            issue[key]['text'] = (f'관찰 {i} '+issue[key]['text']*4)[:350]
+    b['previous_briefs_context_only'] = [{'day': '2026-10-12', 'kind': 'pm', 'summary': [{'text': '이전 요약 '*900}]}]
+    b['search_arguments'] = {'query': 'closing market reports '*20, 'limit': 6}
+    b['fact_inventory_dropped'] = [{'source_id': 'source-1', 'reason': 'not material '*40}]
+    text = prompt(b, 'final_review', p, direct_output=True)
+    data = json.loads(text.split('BRIEF DATA JSON:\n')[1])
+    assert len(text) <= 88000 and data['original_quote_layout'] == 'implicit_grouped_documents'
+    assert not {'previous_briefs_context_only', 'search_arguments', 'fact_inventory_dropped'} & data.keys()
+    for index, original in enumerate(b['documents']):
+        assert original_body(data, index) == original['content']
+
+
 def test_large_final_review_retains_complete_originals_and_entire_unselected_catalog():
     b, p = large_review_case()
     b['source_notes_repair'] = {'before_independent_review': True,

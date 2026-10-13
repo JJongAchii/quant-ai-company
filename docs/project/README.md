@@ -10,6 +10,7 @@
 - [오후판 브리핑 멈춤 원인과 Codex 실행기 재시도 번호 수정 (2026-10-12)](BRIEFING-RETRY-BLOCK-20261012.md)
 - [10월 12일 오후판 재발행 · 만료 시각까지 수정 재시도 정책 · 영상 렌더 복구 (2026-10-12)](BRIEFING-PM-REISSUE-20261012.md)
 - [10월 13일 새벽 개선 — 브리핑 수정 단계 · 영상 이슈 중심 · 회차별 실제 사진 · qdata 정규장 확정치 (2026-10-13)](OVERNIGHT-IMPROVEMENTS-20261013.md)
+- [10월 13일 아침판 — 보충 검색 실패로 막힌 발간본 · 재발행 · 검토 한도 · 회차 사진 우선 (2026-10-13)](BRIEFING-AM-REISSUE-20261013.md)
 - [Analyst 자료 선정·원문 전달·사실별 검토 경로 진단과 보완](ANALYST-PIPELINE-20260929.md)
 - [Analyst 앱 설치·새 아침판 평가·서버 미리보기 릴리스 차단](ANALYST-PREVIEW-20260928.md)
 - [data-watch 운영 게시와 메시지 해석](DATA-WATCH-PRODUCTION-20260928.md)

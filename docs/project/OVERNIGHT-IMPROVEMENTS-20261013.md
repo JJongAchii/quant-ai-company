@@ -39,6 +39,9 @@
   "Donald Trump official portrait"·"crude oil tanker"·"Samsung Electronics semiconductor" 검색과 내려받기·16:9 처리 확인.
 - 예비용으로 검수한 실제 사진 28장(인물·기관·기업·에너지)을 라이브러리에 추가(31장, manifest 백업 보관).
 - 통신사·언론사 기사 사진은 저작권 때문에 쓰지 않는다.
+- 정정(10/13 아침): 대본 지시문이 등록 사진을 먼저 쓰게 되어 있어 첫 아침 영상은 회차별 검색 없이 예비 사진만 썼다.
+  fargate10에서 회차별 PHOTO 요청을 먼저, 썸네일도 그 사진으로 바꿨다 —
+  [BRIEFING-AM-REISSUE-20261013.md](BRIEFING-AM-REISSUE-20261013.md) §4.
 
 ## 4. qdata 정규장 확정치 (quant-data PR #49 — 병합 대기)
 

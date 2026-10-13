@@ -737,7 +737,10 @@ Explain unfamiliar acronyms; compress duplicated interpretation and repeated cav
         # Intern repeated item IDs and encode contiguous quote IDs implicitly.
         identities = [row[0] for row in payload['review_items']]
         for key in ('source_notes_required', 'fact_inventory_required', 'fact_inventory_version',
-                    'quote_reference_version', 'execution_model', 'combined_editorial_repair', 'editorial_patch_version'):
+                    'quote_reference_version', 'execution_model', 'combined_editorial_repair', 'editorial_patch_version',
+                    # Context and collection bookkeeping, not original evidence: the 2026-10-13 AM final review of a
+                    # revised draft was 4,188 characters over the limit with them and never ran.
+                    'previous_briefs_context_only', 'search_arguments', 'fact_inventory_dropped'):
             payload.pop(key, None)  # Execution bookkeeping, not original evidence.
         positions = {identity: i for i, identity in enumerate(identities)}
         payload['review_item_ids'] = identities

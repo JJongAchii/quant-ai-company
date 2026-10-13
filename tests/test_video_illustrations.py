@@ -65,6 +65,29 @@ def test_pictures_are_offered_only_when_the_image_runtime_is_configured():
     assert 'Story pictures' in episode_prompt(body_source(), '', SHELF, illustrations=True)
 
 
+def test_offered_pictures_must_ask_for_a_fresh_photo_of_the_main_subject_as_the_thumbnail():
+    # Owner (2026-10-12): photos are found for each episode's content, not rotated from pre-registered ones. The
+    # 2026-10-13 AM plan used only reserve library photos because the prompt preferred them.
+    def photo_findings(plan, photos=True):
+        return [f for f in episode_violations(plan, body_source(), SHELF, photos=photos)
+                if f.startswith(('Story photo', 'Thumbnail is not'))]
+
+    assert [f[:19] for f in photo_findings(illustrated())] == ['Story photo missing']
+    photo = illustrated(brief='PHOTO: Korea Exchange headquarters Seoul || SCENE: ' + BRIEF)
+    assert [f[:30] for f in photo_findings(photo)] == ['Thumbnail is not a story photo']
+    raw = photo.model_dump(mode='json')
+    raw['thumbnail_image'] = 'gen-1'
+    assert photo_findings(EpisodePlan.model_validate(raw)) == []
+    assert photo_findings(illustrated(), photos=False) == []
+
+
+def test_the_prompt_asks_for_fresh_photos_first_and_keeps_listed_photos_in_reserve():
+    offered = episode_prompt(body_source(), '', SHELF, illustrations=True)
+    assert 'found fresh for each episode' in offered and 'only a reserve' in offered
+    assert 'use an illustration only when no listed photo fits' not in offered
+    assert 'found fresh for each episode' not in episode_prompt(body_source(), '', SHELF)
+
+
 async def test_pictures_are_kept_checked_and_unmade_slots_fall_back(tmp_path):
     from quant_company.config import Settings
 

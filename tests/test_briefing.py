@@ -279,6 +279,53 @@ def test_collection_finishing_during_search_preserves_the_frozen_search_argument
     assert store.claim_collection()["candidates"][0]["url"] == candidate["url"]
 
 
+def search_edition(brief, at):
+    store, clock = brief
+    store.company.settings.briefing_search_enabled = True
+    store.company.settings.company_web_enabled = True
+    e = definition()
+    clock["at"] = at(e)
+    store.save_collection(store.claim_collection(), bundle(e))
+    request = store.prepare()["request"]
+    assert request["web_search"] and request["request_id"].endswith("-search")
+    return e, request
+
+
+def calls_and_state(store, e):
+    with store.db.transaction() as conn:
+        calls = conn.execute("SELECT attempt,state,error FROM brief_calls WHERE edition_id=%s ORDER BY attempt",
+                             (e.id,)).fetchall()
+        state = conn.execute("SELECT state FROM brief_editions WHERE id=%s", (e.id,)).fetchone()["state"]
+    return [(c["attempt"], c["state"], c["error"]) for c in calls], state
+
+
+def test_failed_search_is_asked_once_more_and_never_blocks_the_edition(brief):
+    # 2026-10-13 AM: one invalid search output blocked the edition before planning and a salvage shipped.
+    store, clock = brief
+    e, first = search_edition(brief, lambda e: e.starts_at+timedelta(minutes=1))
+    store.fault(first["request_id"], "invalid_output")
+    retry = store.prepare()["request"]
+    assert retry["request_id"] == first["request_id"]+"-r1" and retry["web_search"]
+    store.fault(retry["request_id"], "invalid_output")
+    assert store.prepare()["state"] == "idle"
+    assert calls_and_state(store, e) == ([(0, "retry", "invalid_output"), (1, "blocked", "invalid_output")], "collecting")
+    # Collection continues and, at the cutoff, the writer runs on the collected originals.
+    assert store.claim_collection()["candidates"] == []
+    clock["at"] = e.cutoff
+    following = store.prepare()
+    assert following["state"] == "ready" and following["request"]["request_id"].endswith("-write")
+
+
+def test_failed_search_near_the_cutoff_is_not_repeated_and_the_edition_continues(brief):
+    store, clock = brief
+    e, first = search_edition(brief, lambda e: e.cutoff-timedelta(minutes=4))
+    store.fault(first["request_id"], "uncertain")
+    assert store.prepare()["state"] == "idle"
+    assert calls_and_state(store, e) == ([(0, "blocked", "uncertain")], "collecting")
+    clock["at"] = e.cutoff
+    assert store.prepare()["request"]["request_id"].endswith("-write")
+
+
 def test_reviewer_rejection_reduces_coverage(brief):
     store, clock = brief
     e = seed(brief)

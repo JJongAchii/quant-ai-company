@@ -12,6 +12,7 @@ from pydantic import Field, model_validator
 from ..contracts import StrictModel
 from . import body
 from .contracts import claim_catalog, prompt_claims
+from .photos import query as photo_query
 from .upload import INSTRUCTION, TOOL_WORDING, UploadCopy
 
 CARD_TYPES = ('cold_open', 'summary3', 'market_board', 'headline', 'flow', 'compare', 'bars', 'map', 'calendar',
@@ -281,9 +282,11 @@ def validate_episode(plan, source, library=None, *, structure=True):
         raise ValueError(found[0])
 
 
-def episode_violations(plan, source, library=None, *, structure=True):
+def episode_violations(plan, source, library=None, *, structure=True, photos=False):
     """Every check finding, in validation order (the first is what validate_episode raises). Messages keep the rule
-    text and add the scene/field and offending values, so a revision request can fix all of them at once."""
+    text and add the scene/field and offending values, so a revision request can fix all of them at once.
+    photos: story pictures were offered, so the day's main subject must be asked for as a real photo found for this
+    episode (owner, 2026-10-12: not a rotation of pre-registered photos) and the thumbnail must be one of them."""
     found = []
 
     def attempt(check):
@@ -338,6 +341,15 @@ def episode_violations(plan, source, library=None, *, structure=True):
             found.append(f'Illustration {item.id} is defined but not used in a card image or the thumbnail')
         if library is not None and item.fallback not in library:
             found.append(f'Illustration {item.id} fallback is not a listed asset ID: {item.fallback}')
+    if photos:
+        story = [item.id for item in plan.illustrations if photo_query(item)]
+        if not story:
+            found.append("Story photo missing: define a story picture for the day's main named subject with brief "
+                         "'PHOTO: <English search words> || SCENE: <generic scene>' (a real photo is found for this "
+                         "episode), show it in that issue's card and use it as thumbnail_image")
+        elif plan.thumbnail_image not in story:
+            found.append(f"Thumbnail is not a story photo of the day's main subject ({plan.thumbnail_image}); "
+                         f"use one of {story}")
     ticker = nums(' '.join(claims[c]['text'] for c in plan.ticker.claim_ids if c in claims))
     if any(CLOCK.search(i.name + i.value + i.change) for i in plan.ticker.items):
         found.append('Clock time on screen in ticker')
@@ -410,9 +422,9 @@ def plan_class(job):
     return EpisodePlan if template(job) == 'motion-v2' else VideoPlan
 
 
-def plan_findings(job, plan, library=None):
+def plan_findings(job, plan, library=None, photos=False):
     if template(job) == 'motion-v2':
-        return episode_violations(plan, job['source'], library)
+        return episode_violations(plan, job['source'], library, photos=photos)
     from .contracts import validate_plan
 
     try:
@@ -467,8 +479,8 @@ For a named person, company, institution, place or object in today's story, writ
 Icheon, Federal Reserve Eccles Building, crude oil tanker> || SCENE: <one English sentence of a generic realistic
 scene to generate if no photo fits>'. The service finds a free-licensed real photo of it (credited on screen and in
 the description) and has it checked; otherwise it generates the SCENE (never a real person, a logo, text or a specific
-company's building) or uses the fallback. Without a nameable subject, brief is just the scene sentence. Use a real photo
-of the day's main subject as thumbnail_image when one is asked for; reuse each id where it fits."""
+company's building) or uses the fallback. Without a nameable subject, brief is just the scene sentence. Ask for at
+least one PHOTO: the day's main subject, shown in its issue card and used as thumbnail_image; reuse each id where it fits."""
 
 
 def episode_prompt(source, feedback='', library=None, illustrations=False):
@@ -493,10 +505,15 @@ def episode_prompt(source, feedback='', library=None, illustrations=False):
             "in that scene's narration. Regular-session closes carry "
             f"'{CLOSE_LABEL}' on screen and investor flows (순매수/순매도) carry '{FLOW_LABEL}' on screen. "
             "Never mention AI, models, tools, voices or how the video was produced, on screen or in the copy. "
-            "Images may only use the asset IDs listed (recently used images are already removed). Real photos "
-            "(kind 자료사진) build trust: for a named person, company, institution or place use a listed photo whose "
-            "subject or tags match, and choose such a photo of the day's main subject as thumbnail_image; use an "
-            "illustration only when no listed photo fits. "
+            + ("Images may only use the asset IDs listed (recently used images are already removed) or the story pictures "
+               "you define. Real photos build trust and are found fresh for each episode: ask for the day's main named "
+               "subjects as story pictures (PHOTO, see below), show them in their issue cards and use the main one as "
+               "thumbnail_image. Listed photos (kind 자료사진) are only a reserve: a story picture's fallback, or a card "
+               "image once the three story pictures are used. "
+               if illustrations else
+               "Images may only use the asset IDs listed (recently used images are already removed). Real photos "
+               "(kind 자료사진) build trust: for a named person, company, institution or place use a listed photo whose "
+               "subject or tags match, and choose such a photo of the day's main subject as thumbnail_image. ") +
             "Title, thumbnail and opening promise the same question. "
             "upload: title (without the channel prefix, hook first), lead (one sentence on today's core), intro (1-2 sentences), "
             "market (국내/미국/글로벌), stories (the three summary points), hashtags (1-2 topic tags), tags (episode keywords first, "
