@@ -111,25 +111,27 @@ class RemoteRender:
         # Story pictures made for this episode travel with the inputs and land at the same job path in the task.
         made = (job.get('qa') or {}).get('illustrations') or {}
         folder = Path(self.settings.video_artifact_dir) / str(job['id']) / 'illustrations'
-        # Real photos found for this episode (video/photos.py) travel as library photos instead: a render image older
-        # than the photo lookup labels every episode file as generated. Each becomes an asset of this upload's library
-        # copy and its picture's fallback, so the task credits it like any library photo (2026-10-12).
-        photos = {k: v for k, v in made.items() if v.get('kind') == '자료사진' and v.get('file')}
-        generated = {k: v for k, v in made.items() if k not in photos}
-        frozen = {'id': str(job['id']), 'source': job['source'], 'policy': job['policy'], 'illustrations': generated}
-        for entry in generated.values():
-            if entry.get('file'):
-                storage.put(base + 'illustrations/' + entry['file'], (folder / entry['file']).read_bytes())
+        # Every picture made for this episode travels as an asset of this upload's library copy and becomes its
+        # picture's fallback: real photos (video/photos.py) as credited library photos (2026-10-12), generated pictures
+        # as unlabelled pictures (owner, 2026-10-13: no 'AI 생성 이미지' text on screen). The render image labels any
+        # episode file it is given directly as generated, so none is given that way.
+        pictures = {k: v for k, v in made.items() if v.get('file')}
+        frozen = {'id': str(job['id']), 'source': job['source'], 'policy': job['policy'],
+                  'illustrations': {k: v for k, v in made.items() if k not in pictures}}
         raw_plan = plan.model_dump(mode='json')
         extra = {}
         for item in raw_plan.get('illustrations', []):
-            entry = photos.get(item['id'])
+            entry = pictures.get(item['id'])
             if entry:
                 asset = f"episode-{item['id']}"
-                extra[asset] = ({'file': f"photos/episode/{job['id']}/{entry['file']}", 'kind': '자료사진',
-                                 'tags': [item['subject']]}
-                                | {k: entry.get(k, '') for k in ('subject', 'author', 'license', 'license_url', 'source')},
-                                folder / entry['file'])
+                if entry.get('kind') == '자료사진':
+                    meta = ({'file': f"photos/episode/{job['id']}/{entry['file']}", 'kind': '자료사진',
+                             'tags': [item['subject']]}
+                            | {k: entry.get(k, '') for k in ('subject', 'author', 'license', 'license_url', 'source')})
+                else:
+                    meta = {'file': f"pictures/episode/{job['id']}/{entry['file']}", 'kind': '일러스트',
+                            'tags': [item['subject']]}
+                extra[asset] = (meta, folder / entry['file'])
                 item['fallback'] = asset
         storage.put(base + 'job.json', json.dumps(frozen, ensure_ascii=False, default=str).encode())
         storage.put(base + 'plan.json', json.dumps(raw_plan, ensure_ascii=False).encode())

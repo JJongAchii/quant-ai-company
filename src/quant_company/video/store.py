@@ -84,9 +84,11 @@ def delivery_text(job, artifacts, at=None):
     attempts = len(qa.get("plan_attempts", [])) or 1
     check = "자동 검사 통과" if not findings else f"자동 검사 지적 {len(findings)}건(아래, 제작은 계속함)"
     notes = "".join(f"• {f[:180]}\n" for f in findings[:8]) + (f"• 외 {len(findings) - 8}건\n" if len(findings) > 8 else "")
-    generated = artifacts.get("generated_images") or []
-    # Realistic generated pictures: YouTube asks creators to mark altered or synthetic content at upload.
-    images = (f"AI 생성 이미지 {len(generated)}장 포함(화면에 'AI 생성 이미지' 표시) · 업로드 때 YouTube의 "
+    # Generated pictures carry no on-screen label (owner, 2026-10-13); remote renders receive them as library pictures,
+    # so the count comes from the job's own pictures. YouTube asks creators to mark realistic synthetic content at upload.
+    generated = artifacts.get("generated_images") or [k for k, v in sorted((qa.get("illustrations") or {}).items())
+                                                      if v.get("file") and v.get("kind") != "자료사진"]
+    images = (f"생성 그림 {len(generated)}장 포함(화면 표기 없음) · 업로드 때 YouTube의 "
               "'변경되었거나 합성된 콘텐츠' 항목을 '예'로 선택해 주세요\n") if generated else ""
     return (f"영상 준비 완료 · {EDITION_NAMES.get(job['source'].get('edition_kind'), '브리핑')}\n"
             f"{artifacts.get('title', '')}\n길이 {minutes}분 {seconds:02}초 · 대본 {attempts}회 작성 · {check}\n" + notes + images + timing +

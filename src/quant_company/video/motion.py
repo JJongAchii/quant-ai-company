@@ -266,9 +266,9 @@ class MotionRenderer:
                 name = Path(asset['file']).name
                 shutil.copy2(Path(self.settings.video_asset_dir) / asset['file'], page / 'img' / name)
                 holder['file'] = 'img/' + name
-                # Real photos keep their credit chip, generated pictures say so; illustrations carry no chip (spec §14).
-                holder['credit'] = (f"자료사진 · {asset['author']} · {asset['license']}" if asset['kind'] == '자료사진'
-                                    else GENERATED if asset['kind'] == GENERATED else '')
+                # Real photos keep their credit chip; generated pictures and illustrations carry none (spec §14; owner,
+                # 2026-10-13: no 'AI 생성 이미지' text on screen).
+                holder['credit'] = f"자료사진 · {asset['author']} · {asset['license']}" if asset['kind'] == '자료사진' else ''
                 used[name] = asset
             data['id'] = scene.id
             self.sign_conflicts += single_arrows(scene.type, data)

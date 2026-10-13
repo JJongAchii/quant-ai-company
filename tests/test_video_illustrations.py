@@ -166,20 +166,28 @@ def test_fargate_inputs_carry_the_pictures_to_the_same_job_path(tmp_path):
         audio.append(tmp_path / f'speech-{n:02}.mp3')
         audio[-1].write_bytes(b'speech')
     RemoteRender(settings, s3=s3, ecs=object()).upload_inputs(job, plan, audio, None, 'render-x')
+    # Owner (2026-10-13): no 'AI 생성 이미지' text on screen. The render image labels any episode file it is given
+    # directly as generated, so a generated picture travels as an unlabelled picture of the upload's library copy.
     frozen = json.loads(Storage(s3, 'render-bucket').get(f'render/{job_id}/render-x/in/job.json'))
-    assert frozen['illustrations'] == made
+    assert frozen['illustrations'] == {}
+    uploaded = json.loads(Storage(s3, 'render-bucket').get(f'render/{job_id}/render-x/in/plan.json'))
+    assert uploaded['illustrations'][0]['fallback'] == 'episode-gen-1'
     task = Settings(_env_file=None, video_artifact_dir=tmp_path / 'task', video_asset_dir=tmp_path / 'task-assets')
     seen = {}
 
     class Renderer:
         def render(self, job, plan, directory, audio, texts):
-            seen['entries'] = library_entries(job, plan, task, {'fixture-illustration': {}})
+            library = json.loads((tmp_path / 'task-assets' / 'manifest.json').read_text())
+            seen['entries'] = library_entries(job, plan, task, library)
             (directory / 'video.mp4').write_bytes(b'video')
             return {'directory': str(directory), 'files': {}, 'duration': 1.0}
 
     render_task(task, f's3://render-bucket/render/{job_id}/render-x', s3=s3, renderer=Renderer())
-    assert seen['entries']['gen-1']['kind'] == GENERATED
-    assert (tmp_path / 'task' / job_id / 'illustrations' / 'gen-1-abc.png').read_bytes() == png()
+    library = json.loads((tmp_path / 'task-assets' / 'manifest.json').read_text())
+    assert library['episode-gen-1'] == {'file': f'pictures/episode/{job_id}/gen-1-abc.png', 'kind': '일러스트',
+                                        'tags': ['반도체 공장']}
+    assert (tmp_path / 'task-assets' / library['episode-gen-1']['file']).read_bytes() == png()
+    assert seen['entries']['gen-1']['kind'] == '일러스트'
     assert tarfile.open(fileobj=io.BytesIO(Storage(s3, 'render-bucket').get(
         f'render/{job_id}/render-x/in/assets.tar.gz')), mode='r:gz')
 
@@ -190,10 +198,15 @@ def test_delivery_names_generated_pictures_and_the_youtube_disclosure():
     job = {'policy': {}, 'source': {'edition_kind': 'close'}, 'qa': {}}
     plain = delivery_text(job, {'title': 't', 'duration': 290})
     marked = delivery_text(job, {'title': 't', 'duration': 290, 'generated_images': ['gen-1', 'gen-2']})
-    assert 'AI 생성 이미지' not in plain and 'AI 생성 이미지 2장 포함' in marked and '합성된 콘텐츠' in marked
+    assert '생성 그림' not in plain and '생성 그림 2장 포함(화면 표기 없음)' in marked and '합성된 콘텐츠' in marked
+    # Remote renders receive generated pictures as library pictures; the job's own pictures give the count.
+    job['qa'] = {'illustrations': {'gen-1': {'file': 'gen-1.png'}, 'gen-2': {'file': 'p.jpg', 'kind': '자료사진'},
+                                   'gen-3': {'failed': 'quota'}}}
+    remote = delivery_text(job, {'title': 't', 'duration': 290})
+    assert '생성 그림 1장 포함' in remote and 'AI 생성 이미지' not in remote + marked
 
 
-def test_the_page_shows_a_generated_picture_with_its_chip_and_the_fallback_without(tmp_path):
+def test_the_page_shows_a_generated_picture_without_any_label(tmp_path):
     from quant_company.config import Settings
     from quant_company.video.motion import MotionRenderer
 
@@ -214,7 +227,8 @@ def test_the_page_shows_a_generated_picture_with_its_chip_and_the_fallback_witho
     renderer.episode_assets = library_entries(job, plan, settings, shelf)
     page, scenes, used = renderer._page(job, plan, tmp_path / 'render')
     head = next(s for s in scenes if s['id'] == 'head')['data']['image']
-    assert head == {'file': 'img/gen-1-abc.png', 'credit': GENERATED} and (page / 'img' / 'gen-1-abc.png').is_file()
+    # Owner (2026-10-13): no 'AI 생성 이미지' text on screen.
+    assert head == {'file': 'img/gen-1-abc.png', 'credit': ''} and (page / 'img' / 'gen-1-abc.png').is_file()
     assert renderer.generated_used == {'gen-1'}
     photo = next(s for s in scenes if s['id'] == 'photo')['data']['image']
     assert photo['credit'] == '자료사진 · A · CC BY 4.0'

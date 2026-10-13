@@ -122,7 +122,7 @@ async def make_next(job, plan, client, settings, folder):
 
 
 def library_entries(job, plan, settings, library):
-    """gen-* IDs for the renderer: the checked picture (shown with an 'AI 생성 이미지' chip) or its library fallback."""
+    """gen-* IDs for the renderer: the checked picture (shown without a label) or its library fallback."""
     from .render import checksum
 
     made = job.get('illustrations') or (job.get('qa') or {}).get('illustrations') or {}
