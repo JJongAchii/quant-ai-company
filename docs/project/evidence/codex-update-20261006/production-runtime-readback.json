@@ -1,0 +1,80 @@
+{
+  "at": "2026-10-06T10:46:40.981089+00:00",
+  "runtimes": [
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "image": "sha256:13caa3f9f7936529335af8b92d9ddbb78f28ef6a45eed0b2e2054b43acb33938",
+      "version": "codex-cli 0.154.0",
+      "model_assignment_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "running": true,
+      "oom": false,
+      "restarts": 0
+    },
+    {
+      "name": "/quant-company-quant-codex-runtime-1",
+      "image": "sha256:9d215e4309aca0f0e448f6595a9d53af268f80f7e8bc3a7880337f631a777233",
+      "version": "codex-cli 0.154.0",
+      "model_assignment_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "running": true,
+      "oom": false,
+      "restarts": 0
+    }
+  ],
+  "owner_catalog_command": [
+    {
+      "id": "6b4f1209-6801-5130-a59f-511fc0a23596",
+      "action": "catalog",
+      "state": "completed",
+      "created_at": "2026-10-06T10:40:33.19111+00:00",
+      "completed_at": "2026-10-06T10:40:34.40165+00:00",
+      "profile": "primary",
+      "account_revision": 2,
+      "models": [
+        {
+          "model": "gpt-6-astra",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "ultra"
+          ]
+        },
+        {
+          "model": "gpt-5.6-sol",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "ultra"
+          ]
+        },
+        {
+          "model": "gpt-5.6-terra",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "ultra"
+          ]
+        },
+        {
+          "model": "gpt-5.6-luna",
+          "reasoning_efforts": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
+        }
+      ]
+    }
+  ],
+  "scope": "read-only production metadata; no auth files exported, messages sent or model turns started"
+}

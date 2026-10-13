@@ -1,0 +1,353 @@
+{
+  "request_id": "49144860-7e42-5a72-8311-d47871ccf315",
+  "investigated_paths": [
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:AGENTS.md",
+      "path": "AGENTS.md",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 2273
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/company.py",
+      "path": "src/quant_company/company.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 14000
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/finance_sources.py",
+      "path": "src/quant_company/finance_sources.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 4787
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/housing_feed/runner.py",
+      "path": "src/quant_company/housing_feed/runner.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 1458
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:AGENTS.md",
+      "path": "AGENTS.md",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 1810
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/accounts.py",
+      "path": "src/quant_company/accounts.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 13806
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/housing_feed/panel.py",
+      "path": "src/quant_company/housing_feed/panel.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 3926
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/maintenance/cases.py",
+      "path": "src/quant_company/maintenance/cases.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 3934
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:README.md",
+      "path": "README.md",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 2262
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/api.py",
+      "path": "src/quant_company/api.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 7053
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/company.py",
+      "path": "src/quant_company/company.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 13607
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/maintenance/applications.py",
+      "path": "src/quant_company/maintenance/applications.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 4313
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/system_state.py",
+      "path": "src/quant_company/system_state.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 8072
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/company.py",
+      "path": "src/quant_company/company.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 14000
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/staff/cases.py",
+      "path": "src/quant_company/staff/cases.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 839
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/staff/independent_review.py",
+      "path": "src/quant_company/staff/independent_review.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 3127
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/staff/progress.py",
+      "path": "src/quant_company/staff/progress.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 2076
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:AGENTS.md",
+      "path": "AGENTS.md",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 1810
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/accounts.py",
+      "path": "src/quant_company/accounts.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 13806
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/housing_feed/panel.py",
+      "path": "src/quant_company/housing_feed/panel.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 3926
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/maintenance/cases.py",
+      "path": "src/quant_company/maintenance/cases.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 3934
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:README.md",
+      "path": "README.md",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 2262
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/api.py",
+      "path": "src/quant_company/api.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 7053
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/company.py",
+      "path": "src/quant_company/company.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 13607
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/maintenance/applications.py",
+      "path": "src/quant_company/maintenance/applications.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 4313
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/maintenance/store.py",
+      "path": "src/quant_company/maintenance/store.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 12206
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:AGENTS.md",
+      "path": "AGENTS.md",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 1810
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/accounts.py",
+      "path": "src/quant_company/accounts.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 13806
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/housing_feed/panel.py",
+      "path": "src/quant_company/housing_feed/panel.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 3926
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/maintenance/cases.py",
+      "path": "src/quant_company/maintenance/cases.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 3934
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/maintenance/runner.py",
+      "path": "src/quant_company/maintenance/runner.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 12574
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/system_state.py",
+      "path": "src/quant_company/system_state.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 6654
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/maintenance/runner.py",
+      "path": "src/quant_company/maintenance/runner.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 12422
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/maintenance/store.py",
+      "path": "src/quant_company/maintenance/store.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 12279
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/company.py",
+      "path": "src/quant_company/company.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 14000
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/contracts.py",
+      "path": "src/quant_company/contracts.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 5615
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/maintenance/identity.py",
+      "path": "src/quant_company/maintenance/identity.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 2114
+    },
+    {
+      "key": "code:388f44d5897129314232d86ba9230a863bf658a4:src/quant_company/maintenance/requests.py",
+      "path": "src/quant_company/maintenance/requests.py",
+      "reason": null,
+      "omitted": null,
+      "available": null,
+      "excerpt_characters": 4713
+    }
+  ],
+  "investigation_requests": [
+    {
+      "paths": [
+        null,
+        null,
+        null,
+        "src/quant_company/system_state.py"
+      ],
+      "evidence_count": 13,
+      "external_count": 0
+    },
+    {
+      "paths": [
+        null,
+        null,
+        null,
+        "src/quant_company/maintenance/store.py"
+      ],
+      "evidence_count": 13,
+      "external_count": 0
+    },
+    {
+      "paths": [
+        null,
+        null,
+        "src/quant_company/maintenance/runner.py",
+        "src/quant_company/system_state.py"
+      ],
+      "evidence_count": 6,
+      "external_count": 0
+    },
+    {
+      "paths": [
+        "src/quant_company/maintenance/runner.py",
+        "src/quant_company/maintenance/store.py",
+        null,
+        null
+      ],
+      "evidence_count": 6,
+      "external_count": 0
+    }
+  ],
+  "investigation_request_count": 4,
+  "investigation_evidence_count": 38
+}

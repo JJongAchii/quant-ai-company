@@ -32,7 +32,8 @@ from quant_company.contracts import (
     ToolRequest,
 )
 
-SUPPORTED_CLI_VERSION = "0.154.0"
+from .codex_release import SUPPORTED_CLI_VERSION
+
 MAX_STDOUT_BYTES = 1024 * 1024
 MAX_STDERR_BYTES = 64 * 1024
 MAX_RECEIPT_BYTES = 2 * 1024 * 1024
@@ -58,6 +59,10 @@ CLI_OUTPUT_SCHEMA = {
 
 def quant_output_model(contract):
     # Fixed, service-owned contracts only; callers cannot supply arbitrary schemas.
+    if contract.startswith("brief_"):
+        from quant_company.briefing.execution import OUTPUT_MODELS
+
+        return OUTPUT_MODELS[contract]
     from quant_company.quant_feed.contracts import (
         EditorialCritique,
         EvidenceCritique,
@@ -81,12 +86,32 @@ def output_schema(request):
                     else quant_output_model(request.output_contract))
     schema = output_model.model_json_schema()
 
+    def allow_quote_references(node):
+        if isinstance(node, dict):
+            if node.get("type") == "string":
+                node["minLength"] = 1
+            for child in node.values():
+                allow_quote_references(child)
+        elif isinstance(node, list):
+            for child in node:
+                allow_quote_references(child)
+
     def strict(node):
         if isinstance(node, dict):
             node.pop("default", None)
+            # Pydantic's Decimal string pattern uses a negative lookahead.
+            # Codex rejects lookaround before inference. Keep the same finite
+            # decimal syntax on the Analyst wire; domain validation is unchanged.
+            if (request.output_contract.startswith("brief_")
+                    and node.get("pattern") == r"^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$"):
+                node["pattern"] = r"^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$"
             if node.get("type") == "object":
                 node["required"] = list(node["properties"])
                 node["additionalProperties"] = False
+                # Exact, source-bound references are resolved by BriefStore before
+                # domain validation. Short @q references are valid on the wire.
+                if request.output_contract.startswith("brief_") and "quote" in node["properties"]:
+                    allow_quote_references(node["properties"]["quote"])
             for child in node.values():
                 strict(child)
         elif isinstance(node, list):
@@ -94,6 +119,18 @@ def output_schema(request):
                 strict(child)
 
     strict(schema)
+    if request.output_contract.startswith("brief_") and "CalendarEvent" in schema.get("$defs", {}):
+        event = schema["$defs"]["CalendarEvent"]
+        branches = []
+        for timed in (True, False):
+            branch = json.loads(json.dumps(event))
+            branch["properties"]["at"] = ({"type": "string", "format": "date-time"} if timed else {"type": "null"})
+            branch["properties"]["status"] = {"type": "string", "enum":
+                ["scheduled", "changed", "cancelled"] if timed else ["time_unconfirmed"]}
+            branches.append(branch)
+        # Express the existing domain constraint before generation as well:
+        # an event with an unknown time cannot expose midnight as its time.
+        schema["$defs"]["CalendarEvent"] = {"title": event["title"], "anyOf": branches}
     return schema
 
 
@@ -136,6 +173,10 @@ def request_digest(request: ProviderRequest) -> str:
         material.pop("output_contract", None)
     if request.session is None:
         material.pop("session", None)
+    if not request.attachments:
+        material.pop("attachments", None)
+    if request.brief_deadline_unix is None:
+        material.pop('brief_deadline_unix', None)
     canonical = json.dumps(material, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(canonical.encode()).hexdigest()
 
@@ -421,10 +462,24 @@ def parse_result(request: ProviderRequest, process: ProcessResult, quota_retry_s
                     title="research_stage_v1", content=value.artifact_json)])
         else:
             phase = "quant_contract"
-            value = quant_output_model(request.output_contract).model_validate(strict_json(messages[-1]))
+            model = quant_output_model(request.output_contract)
+            raw_value = strict_json(messages[-1])
+            if request.output_contract.startswith("brief_"):
+                phase = "brief_contract"
+                # As with the legacy artifact transport, source references and
+                # all domain constraints are validated by the service that owns
+                # the frozen originals. No model action can escape this artifact.
+                required = {key for key, field in model.model_fields.items() if field.is_required()}
+                if (not isinstance(raw_value, dict) or not required <= raw_value.keys()
+                        or not raw_value.keys() <= model.model_fields.keys()):
+                    raise ValueError("Invalid brief transport")
+                content = json.dumps(raw_value, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+            else:
+                value = model.model_validate(raw_value)
+                content = value.model_dump_json()
             # Privileged company actions are constructed by the service, never by the curator.
             decision = AgentDecision(say="", status="complete", artifacts=[ArtifactDraft(
-                title=request.output_contract, content=value.model_dump_json())])
+                title=request.output_contract, content=content)])
         phase = "usage"
         usage = completed[0].get("usage", {})
         if not isinstance(usage, dict):
@@ -476,6 +531,11 @@ class CodexRunner:
         self.process = process_runner or ProcessRunner()
         self.environment = dict(os.environ if environment is None else environment)
         self._active: dict[str, asyncio.Task] = {}
+
+    def _timeout_seconds(self, request):
+        from quant_company.briefing.execution import timeout_seconds
+
+        return timeout_seconds(request) or self.config.timeout_seconds
 
     def _read_receipt(self, path: Path, digest: str, request_id: str, *, locked: bool = False,
                       profile: str = "primary", revision: int = 0) -> ProviderResponse | None:
@@ -649,6 +709,9 @@ class CodexRunner:
                            "execution_lane": lane,
                            "requested_execution": {"model": request.model,
                                                    "reasoning_effort": request.reasoning_effort}}
+                if request.output_contract.startswith("brief_"):
+                    receipt["brief_execution"] = {"version": 1, "output_contract": request.output_contract,
+                                                  "timeout_seconds": self._timeout_seconds(request)}
                 if session is not None:
                     receipt["session"] = request.session.model_dump()
                     atomic_json(session_path, {**session, "inflight": request.request_id})
@@ -665,7 +728,7 @@ class CodexRunner:
                 try:
                     output = await self.process.run(
                         cli_command(self.config, request, work_dir, schema, resume_thread), cwd=work_dir, env=env,
-                        stdin=cli_prompt(request), timeout_seconds=self.config.timeout_seconds,
+                        stdin=cli_prompt(request), timeout_seconds=self._timeout_seconds(request),
                         max_stdout_bytes=self.config.max_stdout_bytes,
                         max_stderr_bytes=self.config.max_stderr_bytes,
                     )

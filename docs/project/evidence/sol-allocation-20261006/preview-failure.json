@@ -1,0 +1,17 @@
+{
+  "operator_preview_exit_code": 137,
+  "writes": 0,
+  "oom_events": [
+    {
+      "action": "oom",
+      "time": 1791292115,
+      "actor_id": "8c1fb4c66f6a1d1f23f9e798cbcaaa18128ba051f22ddb319d6f553c91359b48"
+    }
+  ],
+  "api_health": {
+    "ok": true
+  },
+  "policy_revision": 0,
+  "api_restart_count": 1,
+  "recovery": "256 MiB read-only ephemeral operator container; no Slack credentials; production service limits unchanged"
+}

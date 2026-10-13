@@ -1,0 +1,10 @@
+{
+  "state": "applied",
+  "started_at": "2026-10-08T02:23:19.040313+00:00",
+  "scope": "Temporary admission deferral; existing requests are not cancelled or replayed",
+  "previous_control_sha256": "67b7c90f02d40017bfbf0e342c629dbe1542104b58c8c6772a744d7551cb811d",
+  "lease_seconds": 120,
+  "database_writes": 2,
+  "previous_admission_restored": true,
+  "completed_at": "2026-10-08T02:23:36.439532+00:00"
+}

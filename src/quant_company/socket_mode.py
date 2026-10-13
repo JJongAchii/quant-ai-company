@@ -50,6 +50,12 @@ async def socket_main(settings, *, company=None, credentials=None, client_factor
     company = company or Company(settings)
     ingress = SlackIngress(settings, company, credentials)
     active = [role.id for role in company.roles.values() if role.active]
+    if settings.trend_feed_on_demand_enabled:
+        from .trend_feed.store import TrendFeedStore
+
+        if TrendFeedStore(company).authorized() and settings.trend_feed_publish_enabled:
+            # Deterministic commands use this identity without granting model or tool permissions.
+            active.append("trend_scout")
     if not settings.slack_team_id or not settings.slack_allowed_users:
         raise ValueError("Socket Mode requires a workspace ID and allowed user IDs")
     for role in active:

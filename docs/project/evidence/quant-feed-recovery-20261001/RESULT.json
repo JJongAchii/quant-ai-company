@@ -1,0 +1,78 @@
+{
+  "checked_at": "2026-10-01T22:55:09.822444+00:00",
+  "state": "deployed_queue_recovery_verified",
+  "installed_commit": "ea092f419b4b679df4c25e479a8cb361b4d046ff",
+  "previous_release": "3c848af95dc33b7da444a55018fd41d374c10025",
+  "policy_version": 21,
+  "live_policy": "0c3a76a09091720ad899d2b9c4d1aefe4aa6f36d58d0d47528076f034c38f5f6",
+  "archive_sha256": "27269dff56fe46636c0706743b4be3994c5d9855f41f95fa2474f5c810fbc3c3",
+  "unchanged_qdata_tree_sha256": "528251801f09b120d9c33baeb6956a6a84e49b2c09aeb15420e5994fa170e396",
+  "ci": {
+    "run": 36877479231,
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/36877479231",
+    "head": "ea092f419b4b679df4c25e479a8cb361b4d046ff",
+    "conclusion": "success",
+    "passed": 1464,
+    "skipped": 45,
+    "deselected": 1,
+    "model_and_slack": "simulated in regressions; live qualification separate"
+  },
+  "local_validation": {"full_suite_passed": 1426, "full_suite_skipped": 47, "final_targeted_passed": 234, "final_targeted_skipped": 1, "ruff": "passed"},
+  "subscription_qualification": {
+    "native_search": {"passed": true, "native_events": 1, "candidates": 8, "candidate_evidence_verified": false},
+    "generic_ai_governance": {"passed": true, "critic_disposition": "hold"},
+    "existing_positive_with_prior": {"source_checks": "all true", "disposition": "revise", "material_change_verified": false, "reason": "identical prior publication; correctly blocked republication"},
+    "historical_positive_accuracy_control": {"passed": true, "disposition": "pass", "issues": [], "prior_removed_in_private_control_only": true},
+    "new_subscription_calls": 4,
+    "completed_discovery_and_negative_calls_reissued": false,
+    "document_writes": false,
+    "slack_writes": false,
+    "account_ledger_writes": true,
+    "initial_private_receipt_sha256": "9e2f4820ae00c1910a1a70c167431d8a1affc857364562555a690332a3e0616b",
+    "prior_control_receipt_sha256": "72a22f9a0676dbd224cee15e43b97b5b55040382bb1d7831da196d279724b76b",
+    "receipt_flag_correction": "Initial private receipt incorrectly said database_writes=false. Existing AccountProvider records account selection/completion; document/Slack writes were absent. Corrected source separates these fields in 0b415f3; original receipts retained."
+  },
+  "release": {
+    "phase": "live_active",
+    "publication_enabled": true,
+    "authorized": true,
+    "replaced": ["api", "dispatch", "quant-feed-worker", "quant-codex-runtime"],
+    "app_image": "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79",
+    "runtime_image": "sha256:c983c63235365a43ae1afa8eaba37bd7708e49b43afc2089aa824bad242f02e7",
+    "installed_source_matches_commit": true,
+    "independent_services_preserved": true,
+    "other_workers_replaced": false,
+    "quant_restarts": 0,
+    "quant_oom": false,
+    "memory_available_kib": 2063924,
+    "disk_available_bytes": 4770390016,
+    "producer_consumer_schemas": {
+      "quant_brief_v4": "15b0ed5d5245d7d7b54efaec31aa9637a0412c29874e3f7f6dd241d87334c9db",
+      "quant_critique_v2": "bc8dc1d3ab4568d963f767ae04f0a9e825f9894391c67203d7a713e8363b2c81",
+      "quant_search_v1": "c6d92472206f2d90e8a0d94fce94b3c4cb12f4d7c45690bfa1185544efec5981"
+    }
+  },
+  "live_queue_recovery": {
+    "stalled_document": "c3f27c35c3ff8f16ef7bbfbc60593649bd2b3ca4cd4d5367d83487123f7b9b60",
+    "original_sha256_unchanged": "660444d311e850f8f96bb2bbc653d609c0d9cb26df7b9da4740c161f8243591f",
+    "repair": {"request_id": "quant-feed-6cd5596e-6fc0-438d-8baf-085a5555fff4", "state": "completed", "prompt_characters": 88148, "completed_at": "2026-10-01T22:50:08.578416+00:00"},
+    "critique": {"request_id": "quant-feed-9cefccd5-1512-4d91-82e4-ab5b00144f3e", "state": "completed", "prompt_characters": 88202},
+    "revision_preparation": {"state": "held", "reason": "quant_context_limit", "at": "2026-10-01T22:53:18.004633+00:00", "model_call_issued": false},
+    "next_document": "2f937324d76fee34ae4b542a14aab3b86ffbf08901450afb7ec4aba9e0da19ca",
+    "next_review": {"request_id": "quant-feed-05540677-bd10-4928-a492-fde793e0838a", "state": "completed", "started_at": "2026-10-01T22:53:38.176903+00:00", "completed_at": "2026-10-01T22:54:45.479847+00:00", "prompt_characters": 69285},
+    "next_critique": {"request_id": "quant-feed-d15e4fe5-ed9b-46a1-9d7b-8245e70e72a9", "state_at_readback": "running", "prompt_characters": 72929},
+    "collection_workflow": "RUNNING",
+    "editorial_workflow": "RUNNING",
+    "enabled_sources": 16,
+    "source_failures": 0,
+    "previous_previews_unchanged": 11,
+    "historic_post_retained": true,
+    "new_v21_slack_delivery_verified_at_readback": false
+  },
+  "waived_observation_timer": {"enabled": "disabled", "active": "inactive"},
+  "limitations": [
+    "The 323-excerpt document still exceeds the guard in its later revision and is held; no claim that every large input is accepted.",
+    "Queue recovery, live source accuracy/native search, deployment and active publication gate are verified. No new v21 delivery or long-run precision/coverage measurement is claimed by this snapshot.",
+    "First flat archive stage failed before any image build or service mutation; empty target and failure journal were moved to a private preservation path before a prefixed archive succeeded. Failed private controls and corrected diagnostic errors remain in their original receipts."
+  ]
+}

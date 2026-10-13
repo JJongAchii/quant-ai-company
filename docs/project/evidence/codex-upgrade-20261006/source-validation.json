@@ -1,0 +1,28 @@
+{
+  "implementation_commit": "b77dc9511fb6aae2beff68df1c0ba7852bac6bd4",
+  "local_core": {
+    "passed": 1531,
+    "skipped": 48,
+    "deselected": 1,
+    "scope": "real PostgreSQL/Temporal, simulated Slack/model responses"
+  },
+  "actual_runtime_cohorts": {
+    "each_passed": 97,
+    "each_skipped": 1,
+    "each_deselected": 1,
+    "deselection": "Company RuntimeClient.models is not part of the isolated installed runtime"
+  },
+  "local_cli": {
+    "passed": 18,
+    "scope": "real macOS CLI, empty authentication and simulated login gate; no inference"
+  },
+  "lint": "passed",
+  "native_linux_sha256": "f34a4d2301892ae96c90097786bfe5dc269f187b6f69faf42a7b357b8c081e35",
+  "linux_ci": {
+    "commit": "90fc51d",
+    "run": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37456388313",
+    "core": "1532 passed, 47 skipped, 1 deselected, 2 warnings",
+    "actual_cli_empty_auth_protocol": "9 passed",
+    "temporary_auth_directory": "Outside /tmp for Linux helper alias policy; strict runtime gate unchanged"
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "job": {
+    "error": "company_work_has_priority",
+    "state": "triage",
+    "receipt_reason": null,
+    "diagnostic_revision": 3,
+    "inspection_requests": 0,
+    "investigation_round": null
+  },
+  "responses": [
+    {
+      "id": "maint-6f3c54a0-e0ae-5911-91d6-5e83ce68b35e-r1-triage",
+      "usage": {
+        "input_tokens": 36327,
+        "output_tokens": 4776,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 4142
+      },
+      "inspect": [
+        {
+          "path": "src/quant_company/maintenance/requests.py",
+          "query": "def status",
+          "line_count": 250,
+          "start_line": 1
+        },
+        {
+          "path": "src/quant_company/company.py",
+          "query": "maintenance_status",
+          "line_count": 250,
+          "start_line": 1
+        },
+        {
+          "path": null,
+          "query": "company_work_has_priority",
+          "line_count": 250,
+          "start_line": 1
+        },
+        {
+          "path": null,
+          "query": "단계:",
+          "line_count": 250,
+          "start_line": 1
+        }
+      ],
+      "created_at": "2026-10-06T09:14:49.489412+00:00",
+      "has_finding": false
+    },
+    {
+      "id": "maint-6f3c54a0-e0ae-5911-91d6-5e83ce68b35e-r1-triage-i1",
+      "usage": {
+        "input_tokens": 37181,
+        "output_tokens": 8289,
+        "cached_input_tokens": 4992,
+        "reasoning_output_tokens": 7593
+      },
+      "inspect": [
+        {
+          "path": "src/quant_company/maintenance/requests.py",
+          "query": "def progress_text",
+          "line_count": 65,
+          "start_line": 180
+        },
+        {
+          "path": "src/quant_company/maintenance/cases.py",
+          "query": "progress_text",
+          "line_count": 210,
+          "start_line": 1
+        },
+        {
+          "path": null,
+          "query": "대화 기록과 실제 모델 입력을 확인하는 작업이 접수됐습니다",
+          "line_count": 200,
+          "start_line": 1
+        },
+        {
+          "path": null,
+          "query": "company_work_has_priority",
+          "line_count": 200,
+          "start_line": 1
+        }
+      ],
+      "created_at": "2026-10-06T09:36:46.689448+00:00",
+      "has_finding": false
+    },
+    {
+      "id": "maint-6f3c54a0-e0ae-5911-91d6-5e83ce68b35e-r1-triage-i2",
+      "usage": {
+        "input_tokens": 36277,
+        "output_tokens": 2592,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1808
+      },
+      "inspect": [
+        {
+          "path": "src/quant_company/maintenance/cases.py",
+          "query": "def current",
+          "line_count": 154,
+          "start_line": 58
+        },
+        {
+          "path": "src/quant_company/maintenance/requests.py",
+          "query": "def report",
+          "line_count": 125,
+          "start_line": 120
+        },
+        {
+          "path": null,
+          "query": "company_work_has_priority",
+          "line_count": 250,
+          "start_line": 1
+        },
+        {
+          "path": null,
+          "query": "progress_text",
+          "line_count": 250,
+          "start_line": 1
+        }
+      ],
+      "created_at": "2026-10-06T09:59:13.199762+00:00",
+      "has_finding": false
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "scope": "Current main plus director prompt preparation repair and its regression cases",
+  "integration_base": "a9ef0b5fec77e9135c82bc75213226183d57b660",
+  "command": "uv run --frozen pytest -q --tb=short --junitxml=.local/director-final-integrated.xml",
+  "result": {
+    "passed": 1520,
+    "skipped": 49,
+    "failures": 0,
+    "errors": 0,
+    "warnings": 2,
+    "console_seconds": 372
+  },
+  "pytest_xml": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "49",
+    "tests": "1569",
+    "time": "371.933",
+    "timestamp": "2026-10-07T08:27:55.748376+09:00",
+    "hostname": "MacBook-Pro.local"
+  },
+  "source_sha256": {
+    "src/quant_company/company.py": "0fab9eb58c47502594267b604f2e4e852ebcd0215b4764dbb1c1f1d43470300a",
+    "src/quant_company/execution.py": "601380a962b1e6e0439cae86161521797c0f34e74198169bcbe3f069b3680ed8",
+    "tests/test_director_prompt_budget.py": "3b458c9c8971d4e11b8d3e15b7a7400364a8d5744d8558dc5e348b3835b8fb4c",
+    "uv.lock": "b8757aa1ed833a5a8a0e7849c89ff1ba7ab7987d73c3d0ce679ab0a40cef5f3f"
+  },
+  "lint": {
+    "command": "uv run --frozen ruff check .",
+    "exit_code": 0
+  },
+  "diff_check": {
+    "command": "git diff --check",
+    "exit_code": 0
+  },
+  "services": "Real local PostgreSQL and Temporal where test fixtures select them; simulated model, Slack and GitHub responses are not production integration claims.",
+  "production_evidence": "qualification.json, cutover.json, live-20261006T2304.json, maintenance-terminal.json"
+}

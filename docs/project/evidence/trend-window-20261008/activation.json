@@ -1,0 +1,47 @@
+{
+  "state": "activated",
+  "started_at": "2026-10-08T05:44:40.409214+00:00",
+  "source_commit": "a55478f",
+  "scope": [
+    "news-worker",
+    "api",
+    "slack-socket",
+    "dispatch"
+  ],
+  "replaced": [
+    "news-worker",
+    "api",
+    "slack-socket",
+    "dispatch"
+  ],
+  "preflight_environment_mounts_networks_preserved": true,
+  "pause_before": {
+    "paused_until": null,
+    "reason": null
+  },
+  "in_flight_model_and_slack_writes": 0,
+  "completed_at": "2026-10-08T05:45:29.095241+00:00",
+  "runtime_configuration_preserved": true,
+  "other_containers_preserved": true,
+  "existing_delivered_receipts_preserved": true,
+  "existing_frozen_requests_preserved": true,
+  "containers": {
+    "news-worker": {
+      "id": "98bd6685c9d300b8d4f9d474657f03e06986b1c2dce074ce59aa376612eb695f",
+      "image": "sha256:d5b2078f13d7c029f8b965f909ccc88cace4478d783665c742621f58c2c11d51"
+    },
+    "api": {
+      "id": "5fc30c8a5cd10409a797ae169ca7da8720ee3807dd04a37298305a88b273ba82",
+      "image": "sha256:9445114a6e094bca9df2cd7e6bfe1475f8dc8103fb081b32511257d10586bc08"
+    },
+    "slack-socket": {
+      "id": "c525852039debaceea4c952d8fb33ec22396c9f00b24b3034e0468decd0ed041",
+      "image": "sha256:98f271ded39ab7b24ec1b301555d6e181e14ac2cb44ca41c66976f7a3abd3ada"
+    },
+    "dispatch": {
+      "id": "357ead87327bab6bc5d33f92ce6ea30baa525f77423cc29955baf3c06939c222",
+      "image": "sha256:6608408e7353c79443a456b304f2a2221bdffe8a4cba9666f255e2a7028fab19"
+    }
+  },
+  "operator_pause_removed": true
+}

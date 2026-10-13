@@ -1,0 +1,20 @@
+# Runtime-only overlay: preserve each actual source cohort and execution boundary.
+ARG BASE_IMAGE
+FROM node:22-bookworm-slim@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5 AS codex-dist
+COPY codex_release.json /tmp/codex_release.json
+COPY install-codex.cjs /tmp/install-codex.cjs
+RUN node /tmp/install-codex.cjs /tmp/codex_release.json
+
+FROM ${BASE_IMAGE}
+ARG PACKAGE_ROOT
+ARG UPGRADE_COMMIT
+ARG BASE_IMAGE_ID
+USER root
+COPY --from=codex-dist /usr/local/bin/node /usr/local/bin/node
+COPY --from=codex-dist /usr/local/lib/node_modules/@openai /usr/local/lib/node_modules/@openai
+COPY overlay/quant_company /tmp/codex-upgrade-overlay
+RUN python -c 'import pathlib,shutil,sys; root=pathlib.Path(sys.argv[1]); assert root.is_dir() and (root/"__init__.py").is_file(); incoming=pathlib.Path("/tmp/codex-upgrade-overlay"); files=[p for p in incoming.rglob("*") if p.is_file()]; [(root/p.relative_to(incoming)).parent.mkdir(parents=True,exist_ok=True) for p in files]; [shutil.copyfile(p,root/p.relative_to(incoming)) for p in files]; [(root/p.relative_to(incoming)).chmod(0o644) for p in files]; [c.unlink() for p in files if p.suffix==".py" for c in (root/p.relative_to(incoming)).parent.glob("__pycache__/"+p.stem+".*.pyc")]; shutil.rmtree(incoming)' "$PACKAGE_ROOT"
+RUN python -c 'import subprocess; from quant_company.providers.codex_release import SUPPORTED_CLI_VERSION; assert subprocess.check_output(["codex", "--version"], text=True).strip() == "codex-cli " + SUPPORTED_CLI_VERSION'
+USER 10001:10001
+LABEL io.quant-company.codex-upgrade=$UPGRADE_COMMIT
+LABEL io.quant-company.codex-upgrade.base-id=$BASE_IMAGE_ID

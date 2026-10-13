@@ -1,8 +1,8 @@
 from datetime import date
 from decimal import Decimal
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import AwareDatetime, Field, field_validator, model_validator
+from pydantic import AwareDatetime, Field, field_validator, model_serializer, model_validator
 from typing_extensions import TypedDict
 
 from ..contracts import StrictModel
@@ -58,7 +58,7 @@ class SourceChoice(StrictModel):
 
 
 class SourcePlan(StrictModel):
-    selections: list[SourceChoice] = Field(min_length=1, max_length=16)
+    selections: list[SourceChoice] = Field(min_length=1, max_length=20)
     # Editorial priorities are questions for the writer, never additional evidence.
     priorities: list[str] = Field(min_length=1, max_length=6)
 
@@ -94,7 +94,9 @@ class ClaimEdit(StrictModel):
 
 
 class StoryContext(Claim):
-    text: str = Field(min_length=1, max_length=300)
+    # The same paragraph may be replaced by ClaimEdit. Keep producer/consumer
+    # limits aligned; the independent readability check judges actual verbosity.
+    text: str = Field(min_length=1, max_length=500)
     kind: Literal["fact", "interpretation"] = "fact"
 
 
@@ -113,6 +115,14 @@ class EditorialPatch(StrictModel):
         if not self.edits and not self.context_additions:
             raise ValueError("editorial_patch_requires_change")
         return self
+
+
+class SourceNotesPatch(StrictModel):
+    # Only the failed originals' inventory and related prose can be repaired.
+    # Unaffected notes, quotes, prices and sections remain server-owned.
+    source_notes: list["SourceAssessment"] = Field(min_length=1, max_length=24)
+    edits: list[ClaimEdit] = Field(default_factory=list, max_length=8)
+    context_additions: list[StoryContextAddition] = Field(default_factory=list, max_length=2)
 
 
 class MarketObservation(Supported):
@@ -199,11 +209,11 @@ class BriefProposal(StrictModel):
     calendar: list[CalendarEvent] = Field(max_length=6)
     limitations: list[str] = Field(default_factory=list, max_length=8)
 
-    @model_validator(mode="after")
-    def bounded_story_context(self):
-        if sum(len(issue.context) for issue in self.issues) > 4:
-            raise ValueError("brief_story_context_limit")
-        return self
+    def context_slots(self):
+        # Match the producer's JSON schema: two bounded paragraphs per issue.
+        # A hidden cross-issue cap rejected schema-valid completed responses.
+        # Readability remains an independent content check, not a paragraph count.
+        return sum(2-len(issue.context) for issue in self.issues)
 
 
 REVIEW_CHECKS = {"numbers", "sources", "timing", "causality", "materiality", "counterevidence",
@@ -225,9 +235,13 @@ class ReviewChecks(TypedDict):
     readability: bool
 
 
+FactQuote = Annotated[str, Field(min_length=10, max_length=400)]
+FactQuotes = Annotated[list[FactQuote], Field(min_length=1, max_length=4)]
+
+
 class FactAssessment(StrictModel):
     fact: str = Field(min_length=5, max_length=240)
-    quote: str = Field(min_length=10, max_length=400)
+    quote: FactQuote | FactQuotes
     main_item_ids: list[str] = Field(max_length=6)
 
 
@@ -238,6 +252,56 @@ class SourceAssessment(StrictModel):
     item_ids: list[str] = Field(default_factory=list, max_length=12)
     # An empty list is appropriate only when no distinct material fact needs coverage.
     material_facts: list[FactAssessment] = Field(max_length=6)
+
+
+class FactQualifier(StrictModel):
+    kind: Literal["comparison", "basis", "status", "scope", "driver", "counterevidence"]
+    text: str = Field(min_length=2, max_length=80)
+
+
+class InventoryFact(StrictModel):
+    fact: str = Field(min_length=5, max_length=240)
+    quote: str = Field(min_length=10, max_length=400)
+    qualifiers: list[FactQualifier] = Field(default_factory=list, max_length=6)
+
+
+class InventorySource(StrictModel):
+    source_id: str
+    treatment: Literal["covered", "background", "not_material"]
+    reason: str = Field(min_length=10, max_length=300)
+    material_facts: list[InventoryFact] = Field(max_length=6)
+
+
+class FactInventory(StrictModel):
+    sources: list[InventorySource] = Field(min_length=1, max_length=24)
+
+
+class FragmentInventoryFact(StrictModel):
+    fact: str = Field(min_length=5, max_length=240)
+    # Keep disjoint evidence as separate spans, never manufacture a merged quote.
+    quote: FactQuotes
+    qualifiers: list[Annotated[str, Field(min_length=2, max_length=80)]] = Field(default_factory=list, max_length=6)
+
+
+class FragmentInventorySource(InventorySource):
+    material_facts: list[FragmentInventoryFact] = Field(max_length=6)
+
+
+class FragmentFactInventory(StrictModel):
+    sources: list[FragmentInventorySource] = Field(min_length=1, max_length=24)
+
+
+class FactPlacement(StrictModel):
+    fact_id: str = Field(pattern=r"^f[1-9][0-9]*$")
+    main_item_ids: list[str] = Field(min_length=1, max_length=6)
+
+
+class BriefComposition(BriefProposal):
+    # The service restores the previously committed inventory; the writer only
+    # supplies placements, never another copy that can quietly omit a fact.
+    source_notes: list[SourceAssessment] = Field(default_factory=list, max_length=0)
+    fact_placements: list[FactPlacement] = Field(max_length=144)
+    supplemental_source_notes: list[SourceAssessment] = Field(default_factory=list, max_length=4)
 
 
 class BriefReview(StrictModel):
@@ -273,6 +337,18 @@ class BriefEdition(StrictModel):
     previous_us_session: date | None
     previous_kr_session: date | None
     weekly: Literal["outlook", "review"] | None = None
+    # Set once by the service when no US close report existed at the first cutoff.
+    cutoff_extended: bool = False
+    cutoff_extension: dict | None = None
+
+    @model_serializer(mode="wrap")
+    def omit_unused_extension(self, handler):
+        # An unextended edition keeps its previous stored shape and prompt size.
+        data = handler(self)
+        if not self.cutoff_extended and self.cutoff_extension is None:
+            data.pop("cutoff_extended", None)
+            data.pop("cutoff_extension", None)
+        return data
 
 
 class CalendarOverride(StrictModel):

@@ -1,0 +1,12 @@
+[Unit]
+Description=Validate actual Trend Scout previews and apply authorized publication gate
+After=docker.service network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/quant-company/operator-releases/trend-feed-20261006
+ExecStart=/usr/bin/python3 /opt/quant-company/operator-releases/trend-feed-20261006/preview-observer.py
+TimeoutStartSec=10min
+UMask=0077
+NoNewPrivileges=true

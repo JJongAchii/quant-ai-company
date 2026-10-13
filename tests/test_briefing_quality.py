@@ -17,7 +17,7 @@ from .test_briefing import brief, bundle, complete, definition, proposal, respon
 
 
 def snapshot(edition=None):
-    edition = edition or definition("pm")
+    edition = edition or collected_pm()
     day = edition.day
     dates = [day]
     for _ in range(21):
@@ -32,12 +32,26 @@ def snapshot(edition=None):
 
 
 def data_bundle(edition=None):
-    edition = edition or definition("pm")
+    edition = edition or collected_pm()
     derived = summarize(snapshot(edition), edition)
     data = bundle(edition)
     data.update(documents=derived["documents"], locked_observations=derived["observations"],
                 market_context=derived["contexts"], data_diagnostics=derived["diagnostics"])
     return data
+
+
+def collected_pm():
+    # Collected same-day lake closes require their conservative availability time;
+    # the earlier normal PM edition relies on independent closing reports instead.
+    edition = definition("pm")
+    return edition.model_copy(update={"cutoff": edition.cutoff.replace(hour=18, minute=30)})
+
+
+def test_early_pm_lake_keeps_only_dated_previous_session_context():
+    data = data_bundle(definition("pm"))
+    assert data['locked_observations'] == []
+    assert any(d['error'] == 'stale_session' for d in data['data_diagnostics'])
+    assert all(str(definition("pm").day) not in c['text'] for c in data['market_context'])
 
 
 def empty_proposal():
@@ -57,8 +71,9 @@ def test_index_levels_and_comparisons_are_computed_from_same_frozen_data():
     assert validate(p, data)[kospi.id] == "collected_observation_modified"
 
 
-def test_morning_locks_prior_kr_close_and_renders_its_actual_session():
-    edition = definition()
+@pytest.mark.parametrize('day', [date(2026, 9, 22), date(2026, 10, 9), date(2026, 10, 10)])
+def test_morning_locks_prior_kr_close_and_renders_its_actual_session(day):
+    edition = definition(day=day)
     data = data_bundle(edition)
     assert len(data["locked_observations"]) == 2
     assert {v['session_date'] for v in data['locked_observations']} == {str(edition.previous_kr_session)}
@@ -151,7 +166,42 @@ def test_mobile_render_keeps_summary_numbers_and_next_steps_in_main_post():
     assert all(label in parts[0] for label in ("오늘의 핵심", "주요 숫자", "다음 확인할 것"))
     assert "[1]" in parts[0] and "Synthetic fixture" not in parts[0]
     assert len(parts[0]) < 1800 and len(parts) <= 3
-    assert quality["format_version"] == 15
+    assert quality["format_version"] == 22
+
+
+def test_first_visible_citation_links_from_main_even_when_watchpoints_are_built_first():
+    p, data = proposal(), bundle()
+    parts, _ = render(p, data)
+    summary = parts[0].split("*주요 숫자*", 1)[0]
+    assert f"<{data['documents'][0]['url']}|[1]>" in summary
+    assert parts[0].count(f"<{data['documents'][0]['url']}|[1]>") == 1
+    assert parts[0].index("*주요 숫자*") < parts[0].index("*시장 전체 흐름*")
+
+
+def test_source_directory_follows_citation_numbers_instead_of_opaque_ids():
+    p, data = proposal(), bundle()
+    other = {**data['documents'][0], 'id': 'alphabetically-first',
+             'url': 'https://example.org/synthetic-second-source'}
+    data['documents'].append(other)
+    p.observations[1].evidence = [p.observations[1].evidence[0].model_copy(
+        update={'source_id': other['id']})]
+    parts, _ = render(p, data)
+    directory = '\n'.join(parts[1:]).split('*출처*', 1)[1]
+    assert directory.index('[1] <') < directory.index('[2] <')
+
+
+def test_issue_layout_separates_analysis_counterevidence_and_confirmation_without_losing_text():
+    p = proposal()
+    issue = p.issues[0]
+    issue.counterpoint = p.summary[0].model_copy(update={
+        'id': 'counter', 'text': '이미 확인된 반대 방향의 흐름입니다.'})
+    main = render(p, bundle())[0][0]
+    assert f'*1. {issue.headline}* · 당일' in main
+    assert f'\n\n{issue.analysis.mechanism.text}' in main
+    assert f'\n\n*다르게 볼 점* · {issue.counterpoint.text}' in main
+    assert f'\n\n{issue.analysis.alternative.text}' in main
+    assert f'*확인할 신호* · {issue.next_check.text}' in main
+    assert main.count(issue.analysis.alternative.text) == 1
 
 
 def test_data_reader_receives_no_company_or_model_credentials(monkeypatch):
@@ -272,7 +322,7 @@ def test_model_prompt_uses_verified_data_summary_without_raw_table_duplication()
 
 def test_data_freezes_with_edition_and_late_collection_cannot_replace_it(brief):  # noqa: F811
     store, clock = brief
-    edition = definition("pm")
+    edition = definition("am")
     clock["at"] = edition.cutoff-timedelta(minutes=10)
     claim = store.claim_data()
     data = summarize(snapshot(edition), edition)
@@ -315,13 +365,87 @@ def test_saved_input_replay_and_five_day_qualification_do_not_fake_live_acceptan
     assert "late_brief" in late_check["reasons"] and late_check["observed"]["delay_seconds"] == 660
 
 
-def test_withheld_editorial_review_cannot_publish_the_draft(brief):  # noqa: F811
+def test_withheld_editorial_review_is_corrected_and_ships_a_reduced_body(brief):  # noqa: F811
     store, clock = brief
     edition = seed(brief)
     store.commit(response(store.prepare()["request"]))
     verdict = review().model_copy(update={"verdict": "withhold", "concerns": ["중심 주장의 근거 부족"]})
     store.commit(response(store.prepare()["request"], verdict))
+    # The finding goes to the one correction instead of replacing the edition with a notice.
+    revise = store.prepare()["request"]
+    assert revise["request_id"].endswith("-revise")
+    store.commit(response(revise))
+    final = store.prepare()["request"]
+    assert final["request_id"].endswith("-final_review")
+    store.commit(response(final, verdict))  # The critic still withholds after the correction.
     clock["at"] = edition.due_at
     store.flush()
-    row = next(r for r in store.status()["editions"] if r["id"] == edition.id)
-    assert row["quality"]["fallback"] == "editorial_review_withheld"
+    row = next(r for r in store.status(include_rendered=True)["editions"] if r["id"] == edition.id)
+    assert row["state"] == "committed" and row["quality"]["fallback"] is None
+    assert row["quality"]["review_withheld"] and row["quality"]["reduced"]
+    assert "미국 증시는 반도체가 주도했으며" in row["rendered"][0] and "일부 확인 중" in row["rendered"][0]
+
+
+def test_reduce_without_ids_and_failed_checks_ships_body_when_correction_cannot_fit(brief, monkeypatch):  # noqa: F811
+    """2026-10-10 AM: reduce with no rejected IDs and failed validity checks nulled the body, and the
+    correction was skipped because its context did not fit; only the deadline notice went out."""
+    from quant_company.briefing import store as store_module
+
+    store, clock = brief
+    edition = seed(brief)
+    store.commit(response(store.prepare()["request"]))
+    verdict = review().model_dump()
+    verdict.update(verdict="reduce", rejected_ids=[], concerns=["시점과 반대 근거 확인이 부족합니다."])
+    for check in ("timing", "sources", "alternatives", "counterevidence"):
+        verdict["checks"][check] = False
+    original = store_module.prompt
+
+    def limited(bundle, phase, *args, **kwargs):
+        if phase == "revise":
+            raise ValueError("brief_context_limit")
+        return original(bundle, phase, *args, **kwargs)
+
+    monkeypatch.setattr(store_module, "prompt", limited)
+    store.commit(response(store.prepare()["request"], BriefReview.model_validate(verdict)))
+    clock["at"] = edition.due_at
+    store.flush()
+    row = next(r for r in store.status(include_rendered=True)["editions"] if r["id"] == edition.id)
+    assert row["state"] == "committed" and row["quality"]["fallback"] is None
+    assert row["quality"]["review_withheld"] and row["quality"]["repair_skipped"] == "brief_context_limit"
+    assert "미국 증시는 반도체가 주도했으며" in row["rendered"][0]
+    # A body the critic did not pass is never the next edition's evidence.
+    with store.db.transaction() as conn:
+        conn.execute("UPDATE outbox SET status='delivered',sent_ts='1.0'")  # The AM main post reached Slack.
+        saved = conn.execute("SELECT * FROM brief_editions WHERE id=%s", (edition.id,)).fetchone()
+        later = {**saved, "kind": "pm", "bundle": None, "market_data": None,
+                 "due_at": saved["due_at"]+timedelta(hours=12)}
+        assert store._freeze(conn, later)["morning_watchpoints"] == []
+        assert store._freeze(conn, later)["previous_briefs_context_only"] == []
+        conn.execute("""UPDATE brief_editions SET quality=quality||'{"review_withheld": false}' WHERE id=%s""",
+                     (edition.id,))
+        assert store._freeze(conn, later)["morning_watchpoints"] and store._freeze(conn, later)["previous_briefs_context_only"]
+
+
+def test_thread_detail_overflow_is_truncated_instead_of_failing_the_edition():
+    b = bundle()
+    b["market_context"] = [{"source_id": "source-1", "text": f"비교 {i} " + "가"*1600} for i in range(10)]
+    parts, quality = render(proposal(), b)
+    assert len(parts) == 5 and all(len(part) <= 3500 for part in parts[1:])
+    assert parts[-1].endswith("일부 상세 항목은 길이 제한으로 생략했습니다. 발간 기록에 보존합니다.")
+    assert quality["details_truncated"]
+
+
+def test_publishable_drops_trailing_issues_instead_of_failing_on_size(monkeypatch):
+    from quant_company.briefing import editor
+
+    real = editor.render
+
+    def sized(value, b, **kwargs):
+        if value and value.issues:
+            raise ValueError("brief_message_size_limit")
+        return real(value, b, **kwargs)
+
+    monkeypatch.setattr(editor, "render", sized)
+    parts, quality, shipped = editor.publishable(proposal(), bundle())
+    assert shipped.issues == [] and quality["size_dropped_issues"] == ["fact"] and quality["reduced"]
+    assert "미국 증시는 반도체가 주도했으며" in parts[0]

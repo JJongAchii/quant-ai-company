@@ -1,0 +1,224 @@
+{
+  "valid": true,
+  "content_sha256": "57d68bc537ce1cb068608c7347c77519d8c10072e2b631d83ac97220045e1964",
+  "text": "*한국 검색 트렌드 · 10/06 21:24 운영 검증 브리핑*\n지난 24시간에 관측한 급상승 주제 · Google 한국 기준\n\n*1. 한국 대 우즈베키스탄 · 스포츠*\n관측 이력 부족 · Google 규모 표시 100000+ (구간 내 최대 표시)\n네이버 비교 기준 부족 · 2026-10-05 기준\n관련 배경: SBS 뉴스는 우즈베키스탄과의 평가전을 앞두고 공개된 한국 축구대표팀 선발 명단에 손흥민이 포함됐다고 보도했다.\n<https://news.sbs.co.kr/news/endPage.do?news_id=N1008785577|SBS 뉴스 원문>\n\n*2. 삼성 대 kia · 스포츠*\n관측 이력 부족 · Google 규모 표시 20000+ (구간 내 최대 표시)\n네이버 추이 확인 불가\n배경 확인 제한 · 검증된 관련 원문 없음\n<https://search.naver.com/search.naver?where=news&query=%EC%82%BC%EC%84%B1+%EB%8C%80+kia|삼성 대 kia 뉴스 검색>\n\n*3. ssg 대 한화 · 스포츠*\n관측 이력 부족 · Google 규모 표시 10000+ (구간 내 최대 표시)\n네이버 비교 기준 부족 · 2026-09-10 기준\n배경 확인 제한 · 검증된 관련 원문 없음\n<https://search.naver.com/search.naver?where=news&query=ssg+%EB%8C%80+%ED%95%9C%ED%99%94|ssg 대 한화 뉴스 검색>\n\n*4. 유해진 · 연예*\n관측 이력 부족 · Google 규모 표시 5000+ (구간 내 최대 표시)\n네이버 최근 7일 평균 / 이전 7일 평균: +270% · 2026-10-05 기준\n관련 배경: SBS 뉴스는 유해진 등 영화 제작진의 부산국제영화제 개막식 참석과 무대 인사가 취소됐다고 보도했다.\n<https://news.sbs.co.kr/news/endPage.do?news_id=N1008785532|SBS 뉴스 원문>\n\n*5. 흑 상어 · 사회*\n관측 이력 부족 · Google 규모 표시 5000+ (구간 내 최대 표시)\n네이버 최근 7일 평균 / 이전 7일 평균: -70% · 2026-10-05 기준\n관련 배경: 연합뉴스는 부산 북항 친수공원 인공 수로에 머무는 상어 '부캉이'가 흑상어로 확인됐다고 보도했다.\n<https://www.yna.co.kr/view/AKR20261006141700051|연합뉴스 원문>\n\n*6. 두산 대 롯데 · 스포츠*\n관측 이력 부족 · Google 규모 표시 5000+ (구간 내 최대 표시)\n네이버 비교 기준 부족 · 2026-10-04 기준\n배경 확인 제한 · 검증된 관련 원문 없음\n<https://search.naver.com/search.naver?where=news&query=%EB%91%90%EC%82%B0+%EB%8C%80+%EB%A1%AF%EB%8D%B0|두산 대 롯데 뉴스 검색>\n\n*7. 자녀 · 사회*\n관측 이력 부족 · Google 규모 표시 2000+ (구간 내 최대 표시)\n네이버 최근 7일 평균 / 이전 7일 평균: +17% · 2026-10-05 기준\n배경 확인 제한 · 검증된 관련 원문 없음\n<https://search.naver.com/search.naver?where=news&query=%EC%9E%90%EB%85%80|자녀 뉴스 검색>\n\n*8. 카를로스 알카라스 · 스포츠*\n관측 이력 부족 · Google 규모 표시 2000+ (구간 내 최대 표시)\n네이버 최근 7일 평균 / 이전 7일 평균: -48% · 2026-10-05 기준\n관련 배경: 이투데이는 일본오픈 단식 결승에서 알카라스의 상대가 이르지 레헤츠카라고 보도했다.\n<https://www.etoday.co.kr/news/view/2632797|이투데이 원문>\n\n자료 마감 10/06 21:24 KST · 수집 시작 10/06 20:31 KST\n검색 규모는 Google 제공 표시이며 전체 검색량 순위가 아닙니다. 네이버 지수와 합산하지 않습니다.",
+  "cards": 8,
+  "partial_history": true,
+  "collection_gap": false,
+  "model_requests_today": 1,
+  "naver_requests_today": 19,
+  "calls": [
+    {
+      "id": "news-trends-b74bfa6e-ed85-4e4c-914a-377f7837ba44",
+      "state": "completed",
+      "error": null,
+      "created_at": "2026-10-06 12:24:17.880836+00:00",
+      "completed_at": "2026-10-06 12:25:03.272936+00:00",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "provider": "codex"
+    }
+  ],
+  "original_articles": [
+    {
+      "id": "de0fadffc2e45c0f721bc1472ab1c9d2",
+      "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008785577",
+      "publisher": "SBS 뉴스",
+      "sha256": "af478f103079aae4883bcbcf3785dcb61db4048cb5a99249b98e807bf96aa82b",
+      "published_at": "2026-10-06 10:23:21+00:00",
+      "retrieved_at": "2026-10-06 12:24:17.055613+00:00",
+      "extraction": "articleBody",
+      "excerpt_truncated": false
+    },
+    {
+      "id": "603f3caa38b21404eb163372e012864f",
+      "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008785532",
+      "publisher": "SBS 뉴스",
+      "sha256": "eb710775b5c840a4b35517c7ba60f44c05950068f49e50727553cd1e08b15830",
+      "published_at": "2026-10-06 12:05:42+00:00",
+      "retrieved_at": "2026-10-06 12:24:17.068916+00:00",
+      "extraction": "articleBody",
+      "excerpt_truncated": false
+    },
+    {
+      "id": "6c526165c9e8e83d3e80d0b73eac2731",
+      "url": "https://www.yna.co.kr/view/AKR20261006141700051",
+      "publisher": "연합뉴스",
+      "sha256": "be9e96918111cde67a0c467c4d79642f489b6dc3069f5a73301c673e0b0d105a",
+      "published_at": "2026-10-06 06:54:27+00:00",
+      "retrieved_at": "2026-10-06 12:24:17.069109+00:00",
+      "extraction": "article",
+      "excerpt_truncated": true
+    },
+    {
+      "id": "a35e2ed4ae5061bc156026aa0a9df8c3",
+      "url": "https://www.etoday.co.kr/news/view/2632797",
+      "publisher": "이투데이",
+      "sha256": "a6ade9102862c0ea855d7e1feda80ca8b7e7c0c14566bf104db0663e8b4ecc6b",
+      "published_at": "2026-10-06 04:27:00+00:00",
+      "retrieved_at": "2026-10-06 12:24:17.069247+00:00",
+      "extraction": "articleBody",
+      "excerpt_truncated": false
+    },
+    {
+      "id": "14a85db37b0419de5314c5b664f332b3",
+      "url": "https://www.yna.co.kr/view/AKR20261006093100007",
+      "publisher": "연합뉴스",
+      "sha256": "d82bbf71d0034cd9c4d91d4cf3353cca6d89d7b6e5ad0302c6223a71015389f0",
+      "published_at": "2026-10-06 03:04:05+00:00",
+      "retrieved_at": "2026-10-06 12:24:17.782544+00:00",
+      "extraction": "article",
+      "excerpt_truncated": false
+    },
+    {
+      "id": "b08e371ed22557bd026ad4940381e699",
+      "url": "https://www.yna.co.kr/view/AKR20261006077000504",
+      "publisher": "연합뉴스",
+      "sha256": "6bcdd0e99ad270b552cb57037d9183b3573ffb621cc1724ed18bfe1e61f0352c",
+      "published_at": "2026-10-06 02:13:34+00:00",
+      "retrieved_at": "2026-10-06 12:24:17.759272+00:00",
+      "extraction": "article",
+      "excerpt_truncated": true
+    }
+  ],
+  "backgrounds": [
+    {
+      "member_ids": [
+        "e239d62808f9349eaee1e6f4"
+      ],
+      "category": "스포츠",
+      "background": "SBS 뉴스는 우즈베키스탄과의 평가전을 앞두고 공개된 한국 축구대표팀 선발 명단에 손흥민이 포함됐다고 보도했다.",
+      "evidence": [
+        {
+          "quote": "경기를 한 시간여 앞두고 공개된 한국 선발 명단에 손흥민의 이름이 포함됐습니다.",
+          "article_id": "de0fadffc2e45c0f721bc1472ab1c9d2"
+        }
+      ]
+    },
+    {
+      "member_ids": [
+        "3380521e019a230861ce9623"
+      ],
+      "category": "스포츠",
+      "background": "",
+      "evidence": []
+    },
+    {
+      "member_ids": [
+        "90c70db5bbf3062ac4ab2905"
+      ],
+      "category": "스포츠",
+      "background": "",
+      "evidence": []
+    },
+    {
+      "member_ids": [
+        "7ee512d1af21cc1d60fc2a7b"
+      ],
+      "category": "연예",
+      "background": "SBS 뉴스는 유해진 등 영화 제작진의 부산국제영화제 개막식 참석과 무대 인사가 취소됐다고 보도했다.",
+      "evidence": [
+        {
+          "quote": "허진호 감독과 유해진 배우 등 이 영화 제작진의 개막식 참석과 무대 인사 등이 취소됐습니다.",
+          "article_id": "603f3caa38b21404eb163372e012864f"
+        }
+      ]
+    },
+    {
+      "member_ids": [
+        "44c13813831ee6786ef6aed7"
+      ],
+      "category": "사회",
+      "background": "연합뉴스는 부산 북항 친수공원 인공 수로에 머무는 상어 '부캉이'가 흑상어로 확인됐다고 보도했다.",
+      "evidence": [
+        {
+          "quote": "상어 '부캉이'가 흑상어로 최종 확인됐다.",
+          "article_id": "6c526165c9e8e83d3e80d0b73eac2731"
+        }
+      ]
+    },
+    {
+      "member_ids": [
+        "b6037b581294f21d1e30383d"
+      ],
+      "category": "스포츠",
+      "background": "",
+      "evidence": []
+    },
+    {
+      "member_ids": [
+        "7a49c18f367543e05a77d3c0"
+      ],
+      "category": "사회",
+      "background": "",
+      "evidence": []
+    },
+    {
+      "member_ids": [
+        "fb73b1e3792f1ebccebf3e69"
+      ],
+      "category": "스포츠",
+      "background": "이투데이는 일본오픈 단식 결승에서 알카라스의 상대가 이르지 레헤츠카라고 보도했다.",
+      "evidence": [
+        {
+          "quote": "결승 상대는 강력한 서브를 앞세워 상승세를 타고 있는 이르지 레헤츠카(체코)다.",
+          "article_id": "a35e2ed4ae5061bc156026aa0a9df8c3"
+        }
+      ]
+    }
+  ],
+  "policy_matches": true,
+  "id": "012716d1-68d5-52fe-839e-047a2c9b99ef",
+  "checked_at": "2026-10-06 12:43:02.985788+00:00",
+  "real_cutoff": "2026-10-06 12:24:10.854371+00:00",
+  "daily_slot_untouched": true,
+  "receipt": {
+    "id": "012716d1-68d5-52fe-839e-047a2c9b99ef",
+    "status": "delivered",
+    "channel": "C0C6WTA9ECV",
+    "sent_ts": "1791289915.099149",
+    "error": null,
+    "attempts": 1
+  },
+  "publish_enabled": false,
+  "model_provider": "codex",
+  "automatic_uncertain_replay": false,
+  "approval": "chat-user-immediate-brief-inspect-activate-20261006",
+  "intent_digest": "5473004989f2",
+  "direct_inspection_passed": true,
+  "reviewer": "root assistant: direct original/context comparison and actual Slack DOM/screenshots",
+  "channel_ui": {
+    "channel_matches": true,
+    "sent_ts": "1791289915.099149",
+    "body_matches": true,
+    "links_match": true,
+    "same_ts_visible_messages": 1,
+    "visual_inspection_passed": true,
+    "visible_briefing_and_footer_checked": true,
+    "screenshots_kept_git_external": true,
+    "screenshot_sha256": {
+      "trend-immediate-slack-visible.png": "f87cbb6f05961a75f3a4b64330c435853096684709e84cdfbed2b5f6684c5934",
+      "trend-immediate-slack-bottom.png": "75e83d427bddabaa6179cdaf1215ec7644a83192c2dcd0cd70c2dc111814cb2f"
+    }
+  },
+  "renderer_image": {
+    "checked_at": "2026-10-06T12:41:42.956532+00:00",
+    "commit": "34de597143fcd3f80939ae36b529db4db5cd79cf",
+    "base_image": "sha256:1287734fa77f8d6bd9a3076e1de632a007a8574fbb01fb4acccf0dca0aa63a36",
+    "image": "sha256:87d3b67552393e3e727f1344edb2b8805fde3c60da5abc3bbbc6d8eaa95f2b98",
+    "image_tag": "quant-company-trend:34de597143fcd3f80939ae36b529db4db5cd79cf-immediate",
+    "base_config_preserved": true,
+    "changed_files": [
+      "trend_feed/editor.py"
+    ],
+    "source_file_count": 220,
+    "renderer_sha256": "6906ad67b0558a525e3c54a8ac4300fc781f55d80899cf818ab3f49bc086aed6",
+    "before_renderer_sha256": "e5bf334e02b9f91e1faaa842a083207ed3ccd8802cff10c7e5fbe1c6e1de198b",
+    "running_services_changed": false
+  },
+  "three_day_wait_replaced_by_user": true,
+  "three_day_observation_completed": false,
+  "text_md5": "d26e2b6e98d4b9a00bb6687c7ae5e517",
+  "backgrounds_reviewed": 4,
+  "unverified_article_links_replaced_with_keyword_search": true
+}

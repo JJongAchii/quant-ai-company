@@ -1,0 +1,199 @@
+{
+  "state": "staged",
+  "checked_at": 1791284541.343384,
+  "commit": "b8c3f8867ff7df793f70f70d2f929c9fe84b2332",
+  "archive_sha256": "f7dd1c76144dcfd786289a5f49b80d53f5d4ff322d66b240d811e8042f2342cf",
+  "current": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264",
+  "runtime_env_sha256": "2520e730159b3857972287ae370ba18fca54cb695305ccc1935760c237d45bd0",
+  "targets": {
+    "/quant-company-news-worker-1": {
+      "name": "/quant-company-news-worker-1",
+      "id": "12340820e939e74477e26273af50314e2f0417a9603517333190744d899bac1b",
+      "image_id": "sha256:5659edbbd0b86c7be97ec1753631653a2559e28e1723fb81a21af7656bf271e2",
+      "image_tag": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-cd08cf471a58",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "revision": "971f872a23f4989ddd1628bc28c59868a1c29264",
+      "compose_files": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/research.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/model-assignments-20261006-news-worker.compose.json",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/config/data-watch-contracts.json",
+          "destination": "/etc/quant-company/data-watch-contracts.json",
+          "writable": false
+        },
+        {
+          "source": "/var/lib/quant-company/config/roles.json",
+          "destination": "/etc/quant-company/roles.json",
+          "writable": false
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/database_password",
+          "destination": "/run/secrets/database_password",
+          "writable": false
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/model_runtime_token",
+          "destination": "/run/secrets/model_runtime_token",
+          "writable": false
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/temporal_api_key",
+          "destination": "/run/secrets/temporal_api_key",
+          "writable": false
+        }
+      ]
+    },
+    "/quant-company-dispatch-1": {
+      "name": "/quant-company-dispatch-1",
+      "id": "5e45af42e03aeffcaa47811de8b87553e5f5a79f07d0f56523318fb3ce4e670c",
+      "image_id": "sha256:5659edbbd0b86c7be97ec1753631653a2559e28e1723fb81a21af7656bf271e2",
+      "image_tag": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-cd08cf471a58",
+      "running": true,
+      "oom_killed": false,
+      "health": null,
+      "revision": "971f872a23f4989ddd1628bc28c59868a1c29264",
+      "compose_files": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/research.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264/deploy/data-watch.compose.yaml,/var/lib/quant-company/config/model-assignments-20261006-dispatch.compose.json",
+      "mounts": [
+        {
+          "source": "/var/lib/quant-company/config/data-watch-contracts.json",
+          "destination": "/etc/quant-company/data-watch-contracts.json",
+          "writable": false
+        },
+        {
+          "source": "/var/lib/quant-company/config/roles.json",
+          "destination": "/etc/quant-company/roles.json",
+          "writable": false
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/database_password",
+          "destination": "/run/secrets/database_password",
+          "writable": false
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/slack-credentials.json",
+          "destination": "/run/secrets/slack_credentials",
+          "writable": false
+        },
+        {
+          "source": "/var/lib/quant-company/secrets/temporal_api_key",
+          "destination": "/run/secrets/temporal_api_key",
+          "writable": false
+        }
+      ]
+    }
+  },
+  "images": {
+    "sha256:5659edbbd0b86c7be97ec1753631653a2559e28e1723fb81a21af7656bf271e2": {
+      "id": "sha256:0dc4f13cb968e2706a105e2d52a054a736003f6aaa361e4278b58ccf9cf5307e",
+      "tag": "quant-company-trend:b8c3f8867ff7df793f70f70d2f929c9fe84b2332-5659edbbd0b8",
+      "services": [
+        "/quant-company-news-worker-1",
+        "/quant-company-dispatch-1"
+      ],
+      "package_root": "/opt/company/src/quant_company",
+      "changed": [
+        {
+          "file": "accounts.py",
+          "before": "d2e83581778717544052aa7e420ccba1d516703b76762c7138d3aead7fdd18b2",
+          "after": "7e7eaf4e86b908fda4aa979abc16b7ee71d047d0b5dde47c54968ec43f0d6fae"
+        },
+        {
+          "file": "cli.py",
+          "before": "562eb0402deabbcad3ba5cd89e870060bb3ea08a68ab2b4592e1ed64ec72d76c",
+          "after": "8b88986292b90ac412c1e2661170ba5d39851a875736c54ac91b4d297fc90fa5"
+        },
+        {
+          "file": "company.py",
+          "before": "bb7f9592ab8d5845c0d3f74f4ffd24c31e078b3410beb742a00d37c6f1d359d9",
+          "after": "8dccccb462e61b2aa3d1609b583c8502ba6e7eb6789862cdf8cdc25266fe5d19"
+        },
+        {
+          "file": "config.py",
+          "before": "efafcd755ea18180cdc24f984bf9382ac7b65b91bb0a9867a4ce84c232d6e592",
+          "after": "f43394ca944fd9a3ebe928096ab88e176c3d5789600ef2961e98f20a2b8770be"
+        },
+        {
+          "file": "db.py",
+          "before": "c5df2272ce91acff5bc073e06c733e417268de60c013a88f190e46928425d509",
+          "after": "d9d2bf0033bb3a98f46344e5d100aa5055cfd3fce0d735a669d45be65969622e"
+        },
+        {
+          "file": "model_policy.py",
+          "before": "173de699cc1cc1b167041d45cd9c8d6ed8d1caeb6917c19d51409400c447bd1d",
+          "after": "ab1a4ba1a0ac67c2b118f50f9b2f839d762da3a6e477c8863b344f66eee75a7a"
+        },
+        {
+          "file": "roles.json",
+          "before": "2d4271d129efbb990542ce2dd72549b3182a0304a9da6e5834ed62e62be119b5",
+          "after": "bb3bb98fa54a6149c6bb6620817da63967282c7cd8a3e82a7cbdd9e8978324b1"
+        },
+        {
+          "file": "runtime.py",
+          "before": "a5a377c9fd8426e799e0c242a9bb7b467d93063af123aaa7e5a393c43da67199",
+          "after": "3589f0a4390d1698501ee5441f2633bfb785e64a423a9054527105f276ab4756"
+        },
+        {
+          "file": "slack.py",
+          "before": "a938d4b824868491d402c312e4f2f44504756393a32ca030083e8f29d8b77ef0",
+          "after": "908d66a6d6b04261f2be2d76c390ddbd1fa3f0366f930513f461678ce28fc8e9"
+        },
+        {
+          "file": "trend_feed/__init__.py",
+          "before": null,
+          "after": "c8f2af3cba1b234ba253454f09dd97ae067ecb8c1658da38d7e1dc5125376c2a"
+        },
+        {
+          "file": "trend_feed/commands.py",
+          "before": null,
+          "after": "a67dcbd2dae4262494cbc61868d64c600946fa1677174f7ecf2cbd6a1182e88e"
+        },
+        {
+          "file": "trend_feed/contracts.py",
+          "before": null,
+          "after": "fb4f5fa2862f539d1e72417ca46052cf684d44cf68d6eeed7abaae052359e5d8"
+        },
+        {
+          "file": "trend_feed/editor.py",
+          "before": null,
+          "after": "e5bf334e02b9f91e1faaa842a083207ed3ccd8802cff10c7e5fbe1c6e1de198b"
+        },
+        {
+          "file": "trend_feed/runner.py",
+          "before": null,
+          "after": "7dbde67a9eed601e606e8287b78d3efa2854883b605ae7042a5b58260e7a0226"
+        },
+        {
+          "file": "trend_feed/schedule.py",
+          "before": null,
+          "after": "c2348d7452aa974dd90997bba7d9ec5a863af32cd68ee25491b73ebacec7ce8e"
+        },
+        {
+          "file": "trend_feed/schema.sql",
+          "before": null,
+          "after": "b3c4aa1012cf78806b486604711fec8b43b92537c78474d544a89e9bdd005965"
+        },
+        {
+          "file": "trend_feed/sources.py",
+          "before": null,
+          "after": "327affb0259a173cbf9db3cc31692488c278854df883c5b171941d2cb8ea175f"
+        },
+        {
+          "file": "trend_feed/store.py",
+          "before": null,
+          "after": "599f3ceb0abbe64ef48b80d66228fd031b384f1c0870771154cfd46107037ddc"
+        },
+        {
+          "file": "trend_feed/workflow.py",
+          "before": null,
+          "after": "603bcefe9c6ba3e24ba3c340429b07ad7940cf857a2fb7368122a20c5047d023"
+        }
+      ],
+      "inventory_verified": true,
+      "runtime_config_preserved": true
+    }
+  },
+  "running_services_changed": false,
+  "credentials_installed": false,
+  "messages_sent": 0
+}

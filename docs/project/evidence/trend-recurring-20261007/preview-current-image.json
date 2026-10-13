@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-10-07 01:59:22.112020+00:00",
+  "state": "passed",
+  "current_native_image_verified": true,
+  "committed_subscription_response_revalidated": true,
+  "frozen_prompt_preserved": true,
+  "new_model_requests": 0,
+  "new_slack_writes": 0,
+  "digest_id": "b6f95c0f-57c5-4c0d-bc31-c03b40fde85a",
+  "model_request_id": "news-trends-de9a61d9-662a-4931-aaff-ee5f0053fea5",
+  "image_id": "sha256:6fd26d620b4bef4b60e1897c041942c6ad95843905a05975ea038e4d7ed836a7"
+}

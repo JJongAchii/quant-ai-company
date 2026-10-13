@@ -72,6 +72,10 @@ class SlackIngress:
             return {"ok": True, "ignored": True, "reason": "tech_feed_delivery_identity_is_not_interactive"}
         if role == QUANT_FEED_AGENT:
             return {"ok": True, "ignored": True, "reason": "quant_feed_delivery_identity_is_not_interactive"}
+        if role == "trend_scout":
+            from .trend_feed.inbox import accept
+
+            return accept(self.company, payload, event, credential)
         event = event if isinstance(event, dict) else {}
         if (event.get("type") not in {"app_mention", "message"}
                 or event.get("bot_id") or event.get("subtype") or not event.get("user")):
@@ -88,14 +92,20 @@ class SlackIngress:
         if not text.strip() or not timestamp:
             return {"ok": True, "ignored": True}
         from .accounts import parse_command as parse_account_command
+        from .command_help import HELP_COMMANDS
+        from .model_policy import authorized as model_authorized
+        from .model_policy import parse_command as parse_model_command
 
         account_text = re.sub(r"<@[A-Z0-9]+>", "", text).strip()
         account_command = parse_account_command(account_text)
+        model_command = parse_model_command(account_text)
+        if model_command and not model_authorized(self.company, user, channel, role, model_command):
+            return {"ok": True, "ignored": True, "reason": "model_assignment_scope"}
         account_channel = channel == self.settings.model_accounts_channel_id
         if account_channel:
             if role != "director" or user != self.settings.model_accounts_owner_user:
                 return {"ok": True, "ignored": True, "reason": "account_channel_scope"}
-        elif account_command is not None:
+        elif account_command is not None or account_text.casefold() in HELP_COMMANDS:
             return {"ok": True, "ignored": True, "reason": "account_channel_required"}
         mentions = set(re.findall(r"<@([A-Z0-9]+)>", text))
         known = {item["bot_user_id"]: name for name, item in self.credentials.items()}
@@ -154,6 +164,11 @@ class SlackIngress:
                             "app_id": payload["api_app_id"], "owner": user, "channel": channel,
                             "thread_ts": thread_ts, "event_ts": timestamp,
                             "provider_event_id": payload.get("event_id"), "original_text": original_text}
+        if model_command:
+            result = self.company.ingest(
+                event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", text=text,
+                owner=user, agent=target, channel=channel, thread_ts=thread_ts, model_command=model_command)
+            return {"ok": True, "owner_control": True, **result}
         if target == "maintainer":
             from .maintenance.applications import accept_approval
 
@@ -206,6 +221,10 @@ class SlackIngress:
         return {"ok": True, **result}
 
     def accept_interaction(self, role, payload, credential):
+        if role == BRIEFER:
+            from .video.slack_ui import accept
+
+            return accept(self, role, payload, credential)
         from .research.approvals import ACTIONS, ApprovalEvent
 
         try:
@@ -303,6 +322,18 @@ class SlackOutbox:
                 from .briefing.store import BriefStore
 
                 return BriefStore(self.company).gate(conn, row, claimed=True)
+            if row["message_kind"] == "trend_feed":
+                from .trend_feed.store import TrendFeedStore
+
+                return TrendFeedStore(self.company).gate(conn, row, claimed=True)
+            if row['message_kind'] == 'video_review':
+                from .video.store import VideoStore
+
+                return VideoStore(self.company).gate(conn, row)
+            if row['message_kind'] == 'video_files':
+                from .video.store import VideoStore
+
+                return VideoStore(self.company).delivery_gate(conn, row)
             if row["message_kind"] == "housing_feed":
                 from .housing_feed.store import HousingFeedStore
 
@@ -319,6 +350,15 @@ class SlackOutbox:
             return not self.defer_news(conn, row, claimed=True)
 
     def claim(self):
+        # Deferring an older, paced feed must not consume the entire dispatch tick.
+        # Bound the work and commit each deferral before looking for another row.
+        for _ in range(32):
+            row = self._claim_one()
+            if row is not False:
+                return row
+        return None
+
+    def _claim_one(self):
         with self.company.db.transaction() as conn:
             row = conn.execute("""SELECT o.*,m.kind AS message_kind FROM outbox o JOIN messages m ON m.id=o.id
                 LEFT JOIN tasks k ON k.id=m.task_id JOIN projects p ON p.id=o.project_id
@@ -328,37 +368,53 @@ class SlackOutbox:
                   (SELECT 1 FROM tasks r WHERE r.project_id=o.project_id AND r.kind='routing'
                    AND r.status NOT IN ('completed','superseded'))))
                 ORDER BY (EXISTS(SELECT 1 FROM quant_feed_publications q WHERE q.id=o.id AND q.correction)) DESC,
+                (EXISTS(SELECT 1 FROM trend_feed_digests d WHERE d.id=o.id AND d.kind='on_demand')) DESC,
                 o.created_at FOR UPDATE OF o SKIP LOCKED LIMIT 1""").fetchone()
             if not row:
                 return None
             if self.defer_news(conn, row):
-                return None
+                return False
+            if row['message_kind'] == 'video_review':
+                from .video.store import VideoStore
+
+                if not VideoStore(self.company).gate(conn, row):
+                    return False
+            if row['message_kind'] == 'video_files':
+                from .video.store import VideoStore
+
+                if not VideoStore(self.company).delivery_gate(conn, row):
+                    return False
             if row["message_kind"] == "briefing":
                 from .briefing.store import BriefStore
 
                 if not BriefStore(self.company).gate(conn, row):
-                    return None
+                    return False
             if row["message_kind"] == "data_watch":
                 from .data_watch.reporting import gate
                 from .data_watch.store import DataWatchStore
 
                 if not gate(conn, DataWatchStore(self.company), row):
-                    return None
+                    return False
             if row["message_kind"] == "tech_feed":
                 from .tech_feed.store import TechFeedStore
 
                 if not TechFeedStore(self.company).gate(conn, row):
-                    return None
+                    return False
+            if row["message_kind"] == "trend_feed":
+                from .trend_feed.store import TrendFeedStore
+
+                if not TrendFeedStore(self.company).gate(conn, row):
+                    return False
             if row["message_kind"] == "housing_feed":
                 from .housing_feed.store import HousingFeedStore
 
                 if not HousingFeedStore(self.company).gate(conn, row):
-                    return None
+                    return False
             if row["message_kind"] == "quant_feed":
                 from .quant_feed.store import QuantFeedStore
 
                 if not QuantFeedStore(self.company).gate(conn, row):
-                    return None
+                    return False
             if row["message_kind"] in {"news", "news_digest"}:
                 from .news.digest import NewsDigestStore
                 from .news.store import NewsStore
@@ -369,7 +425,7 @@ class SlackOutbox:
                     conn.execute("UPDATE outbox SET status='stale',error='news_policy_or_freshness_changed' WHERE id=%s",
                                  (row["id"],))
                     NewsDigestStore.settle_members(conn, row, "stale", error="news_policy_or_freshness_changed")
-                    return None
+                    return False
                 if row["message_kind"] == "news":
                     row["news_broadcast"] = conn.execute("SELECT broadcast FROM news_publications WHERE id=%s",
                                                         (row["id"],)).fetchone()["broadcast"]
@@ -378,13 +434,13 @@ class SlackOutbox:
                 conn.execute("UPDATE outbox SET status='stale' WHERE id=%s", (row["id"],))
                 if row["message_kind"] == "news_digest":
                     NewsDigestStore.settle_members(conn, row, "stale", error="project_revision_changed")
-                return None
+                return False
             if row["agent"] not in self.credentials:
                 conn.execute("UPDATE outbox SET status='blocked',error='missing_slack_identity' WHERE id=%s",
                              (row["id"],))
                 if row["message_kind"] == "news_digest":
                     NewsDigestStore.settle_members(conn, row, "blocked", error="missing_slack_identity")
-                return None
+                return False
             conn.execute("UPDATE outbox SET status='sending',attempts=attempts+1,started_at=now() WHERE id=%s",
                          (row["id"],))
             return as_json(row)
@@ -417,9 +473,14 @@ class SlackOutbox:
         if not row:
             return False
         token = self.credentials[row["agent"]]["bot_token"]
+        if row.get("message_kind") == "video_files":
+            # Episode files go through Slack's external upload API into the brief's thread (video/slack_files.py).
+            from .video.slack_files import deliver
+
+            return await deliver(self, row, token)
         # The stable client_msg_id helps correlation; it is not an exactly-once guarantee.
         body = {"channel": row["channel"], "thread_ts": row["thread_ts"],
-                "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT, QUANT_FEED_AGENT, BRIEFER, "maintainer"}
+                "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT, QUANT_FEED_AGENT, BRIEFER, "trend_scout", "maintainer"}
                 or row["message_kind"] == "data_watch"
                 else f"[지시 v{row['revision']}] {row['text']}",
                 "client_msg_id": row["id"],
@@ -430,6 +491,22 @@ class SlackOutbox:
         blocks = await asyncio.to_thread(blocks_for_outbox, self.company, row, self.credentials[row["agent"]])
         if blocks:
             body["blocks"] = blocks
+        if row.get("message_kind") == "video_review":
+            from .video.slack_ui import blocks as video_blocks
+
+            blocks = await asyncio.to_thread(video_blocks, self.company, row)
+            if blocks:
+                body['blocks'] = blocks
+        if row.get("message_kind") == "briefing":
+            from .briefing.slack_blocks import blocks as briefing_blocks
+
+            try:
+                body["blocks"] = briefing_blocks(row["text"])
+            except ValueError as error:
+                await asyncio.to_thread(self.settle, row, "blocked", error=str(error))
+                return True
+            # Slack builds accessible fallback text from these complete sections.
+            body.pop("text")
         if row.get("message_kind") == "housing_feed" and self.company.settings.housing_map_panel_enabled:
             from .housing_feed.maps import work_object
             from .housing_feed.store import HousingFeedStore
@@ -444,7 +521,8 @@ class SlackOutbox:
         method = "chat.postMessage"
         if row.get("update_ts"):
             method = "chat.update"
-            body = {key: body[key] for key in ("channel", "text")}
+            keys = ("channel", "blocks") if row.get("message_kind") == "briefing" else ("channel", "text")
+            body = {key: body[key] for key in keys}
             body["ts"] = row["update_ts"]
         try:
             async with httpx.AsyncClient(timeout=12, transport=self.transport) as client:
@@ -464,13 +542,13 @@ class SlackOutbox:
                 return True
             result = response.json()
             requires_receipt = (row.get("message_kind") in {"news", "news_digest", "tech_feed", "quant_feed",
-                                                            "data_watch", "briefing", "housing_feed"}
+                                                            "data_watch", "briefing", "housing_feed", "trend_feed", "video_review"}
                                 or row["agent"] == "maintainer")
             if row.get("update_ts") and result.get("ts") != row["update_ts"] and result.get("ok"):
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_update_receipt_mismatch")
-            elif row.get("message_kind") in {"data_watch", "housing_feed"} and result.get("ok") and (
+            elif row.get("message_kind") in {"data_watch", "housing_feed", "trend_feed", "video_review"} and result.get("ok") and (
                 not isinstance(result.get("ts"), str) or not re.fullmatch(r"\d+\.\d+", result["ts"])
-                or result.get("channel", None if row["message_kind"] == "housing_feed" else row["channel"]) != row["channel"]
+                or result.get("channel", None if row["message_kind"] in {"housing_feed", "trend_feed", "video_review"} else row["channel"]) != row["channel"]
             ):
                 await asyncio.to_thread(self.settle, row, "uncertain", error=f"{row['message_kind']}_delivery_receipt_mismatch")
             elif result.get("ok") and (not requires_receipt or result.get("ts")):

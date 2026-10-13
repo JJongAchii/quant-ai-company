@@ -1,0 +1,19 @@
+{
+  "archive": "/var/lib/quant-company/backups/company-20261006T101422Z-180ab357.tar.gz",
+  "sha256": "79d0a96fcd864d9b43d4f79f3d14a56e102f54e51c050e37e48cf06077a95f2c",
+  "s3_uri": "s3://quant-company-061039802347-backups/company/company-20261006T101422Z-180ab357.tar.gz",
+  "objects": [
+    {
+      "bytes": 496541447,
+      "encryption": "AES256",
+      "modified": "2026-10-06T10:17:07+00:00"
+    },
+    {
+      "bytes": 107,
+      "encryption": "AES256",
+      "modified": "2026-10-06T10:17:10+00:00"
+    }
+  ],
+  "local_hash_verified": true,
+  "no_credentials_exported": true
+}

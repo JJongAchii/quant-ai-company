@@ -1,0 +1,11 @@
+# Optional NAVER API HUB credentials are mounted only in the source-reading process.
+services:
+  news-worker:
+    environment:
+      TREND_FEED_NAVER_CREDENTIALS_FILE: /run/secrets/trend_naver_credentials
+    secrets:
+      - trend_naver_credentials
+
+secrets:
+  trend_naver_credentials:
+    file: ${STATE_DIR:-/var/lib/quant-company}/secrets/trend-naver-credentials.json

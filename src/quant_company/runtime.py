@@ -29,6 +29,13 @@ from .staff.runner import StaffRunner
 from .staff.workflow import StaffDevelopmentWorkflow
 from .tech_feed.runner import TechFeedCollector
 from .tech_feed.workflow import TechFeedCollectionWorkflow
+from .trend_feed.runner import TrendFeedCollector, TrendFeedEditor
+from .trend_feed.workflow import (
+    TrendFeedCollectionWorkflow,
+    TrendFeedDigestWorkflow,
+    TrendFeedEditorialWorkflow,
+    TrendFeedPublicationWorkflow,
+)
 from .workflow import CompanyTurnWorkflow
 
 
@@ -73,9 +80,10 @@ def make_news_model_worker(client, company, provider=None):
     editor = NewsEditor(company, provider)
     discovery = NewsDiscovery(company, editor.provider)
     brief = BriefEditor(company, editor.provider)
+    trends = TrendFeedEditor(company, editor.provider)
     return Worker(client, task_queue=company.settings.temporal_task_queue + "-news-model",
-                  workflows=[NewsEditorialWorkflow, NewsDiscoveryWorkflow, BriefEditorialWorkflow],
-                  activities=[editor.activity_tick, discovery.activity_tick, brief.activity_tick],
+                  workflows=[NewsEditorialWorkflow, NewsDiscoveryWorkflow, BriefEditorialWorkflow, TrendFeedEditorialWorkflow],
+                  activities=[editor.activity_tick, discovery.activity_tick, brief.activity_tick, trends.activity_tick],
                   max_concurrent_activities=1, max_cached_workflows=10,
                   graceful_shutdown_timeout=timedelta(seconds=10))
 
@@ -95,6 +103,15 @@ def make_brief_data_worker(client, company, collector=None):
     return Worker(client, task_queue=company.settings.temporal_task_queue+"-brief-data",
                   workflows=[BriefDataWorkflow], activities=[collector.activity_tick],
                   max_concurrent_activities=1, max_cached_workflows=2,
+                  graceful_shutdown_timeout=timedelta(seconds=10))
+
+
+def make_trend_collector(client, company, collector=None):
+    collector = collector or TrendFeedCollector(company)
+    return Worker(client, task_queue=company.settings.temporal_task_queue + "-trend-collection",
+                  workflows=[TrendFeedCollectionWorkflow, TrendFeedDigestWorkflow, TrendFeedPublicationWorkflow],
+                  activities=[collector.activity_tick, collector.activity_finalize],
+                  max_concurrent_activities=2, max_cached_workflows=10,
                   graceful_shutdown_timeout=timedelta(seconds=10))
 
 
@@ -131,6 +148,19 @@ def make_housing_feed_worker(client, company, collector=None):
 
 
 async def dispatch_once(client, company):
+    if getattr(company.settings, 'video_enabled', False) and not getattr(company, "_video_started", False):
+        from .video.workflow import VideoWorkflow
+
+        try:
+            await client.start_workflow(VideoWorkflow.run, id="company-video-v1",
+                task_queue=company.settings.temporal_task_queue+"-video",
+                id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+            company._video_started = True
+        except WorkflowAlreadyStartedError:
+            company._video_started = True
+        except Exception as exc:
+            # Retried next loop; the brief below must still be flushed and sent.
+            logging.getLogger(__name__).error("Video workflow start failed: %s", type(exc).__name__)
     if getattr(company.settings, "briefing_enabled", False):
         from .briefing.store import BriefStore
 
@@ -151,6 +181,22 @@ async def dispatch_once(client, company):
             await asyncio.to_thread(BriefStore(company).flush)
         except (ValueError, OSError) as exc:
             logging.getLogger(__name__).error("Briefing configuration unavailable: %s", type(exc).__name__)
+    if getattr(company.settings, "trend_feed_enabled", False) and not getattr(company, "_trend_feed_started", False):
+        recurring = (company.settings.trend_feed_publication_hours != [8]
+                     or company.settings.trend_feed_on_demand_enabled)
+        for definition, identity, suffix in (
+            (TrendFeedCollectionWorkflow, "company-trend-feed-collection-v1", "-trend-collection"),
+            (TrendFeedPublicationWorkflow if recurring else TrendFeedDigestWorkflow,
+             "company-trend-feed-publication-v2" if recurring else "company-trend-feed-digest-v1", "-trend-collection"),
+            (TrendFeedEditorialWorkflow, "company-trend-feed-editorial-v1", "-news-model"),
+        ):
+            try:
+                await client.start_workflow(definition.run, id=identity,
+                    task_queue=company.settings.temporal_task_queue + suffix,
+                    id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+            except WorkflowAlreadyStartedError:
+                pass
+        company._trend_feed_started = True
     if getattr(company.settings, "housing_feed_enabled", False) and not getattr(company, "_housing_feed_started", False):
         try:
             await client.start_workflow(HousingFeedWorkflow.run, id="company-housing-feed-v1",
@@ -188,8 +234,9 @@ async def dispatch_once(client, company):
         company._data_watch_started = True
     if company.settings.tech_feed_enabled and not getattr(company, "_tech_feed_started", False):
         try:
+            tech_queue = ("-tech-feed-dedicated" if company.settings.tech_feed_dedicated_worker else "-tech-feed")
             await client.start_workflow(TechFeedCollectionWorkflow.run, id="company-tech-feed-collection-v1",
-                                        task_queue=company.settings.temporal_task_queue + "-tech-feed",
+                                        task_queue=company.settings.temporal_task_queue + tech_queue,
                                         id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
         except WorkflowAlreadyStartedError:
             pass
@@ -281,7 +328,8 @@ async def news_worker_main(settings=None):
     company = Company(settings)
     client = await connect(settings)
     async with (make_news_model_worker(client, company), make_news_collector(client, company),
-                make_brief_collector(client, company)):
+                make_brief_collector(client, company),
+                make_trend_collector(client, company)):
         await asyncio.Event().wait()
 
 
@@ -322,3 +370,22 @@ async def dispatch_main(settings=None):
         await panel.send_one()
         await outbox.send_one()
         await asyncio.sleep(1.1)
+
+
+def make_video_worker(client, company, runner=None):
+    from .video.runner import VideoRunner
+    from .video.workflow import VideoWorkflow
+
+    runner = runner or VideoRunner(company)
+    return Worker(client, task_queue=company.settings.temporal_task_queue+"-video",
+                  workflows=[VideoWorkflow], activities=[runner.activity_tick],
+                  max_concurrent_activities=1, max_cached_workflows=2,
+                  graceful_shutdown_timeout=timedelta(seconds=30))
+
+
+async def video_worker_main(settings=None):
+    settings = settings or Settings()
+    company = Company(settings)
+    client = await connect(settings)
+    async with make_video_worker(client, company):
+        await asyncio.Event().wait()

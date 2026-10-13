@@ -1,0 +1,25 @@
+{
+  "recorded_at": "2026-10-06T12:12:49.140513+00:00",
+  "package": ".local/analyst-observation-04e60ba-package",
+  "base": "971f872a23f4989ddd1628bc28c59868a1c29264",
+  "commit": "04e60ba66509ebc552a5ea26520e2b919e034589",
+  "archive_sha256": "c2261e6748a818d9e36fc1c4b538dca7d235fee284b05f1705ac9a458c4084c7",
+  "manifest_sha256": "f3e77b3ab34a92e93f921ed0ad89ec0ca15b091c2e3146f0b26066a444e66378",
+  "evaluation_edition": "b72483f9-d52b-51d6-92ba-25625a9cb50e",
+  "allowed_editions": 12,
+  "max_completed_calls": 60,
+  "max_revisions": 1,
+  "kr_trading_days": [
+    "2026-10-07",
+    "2026-10-08",
+    "2026-10-12",
+    "2026-10-13",
+    "2026-10-14"
+  ],
+  "activation": "only after today case closed; not performed",
+  "preserve_api": true,
+  "preserve_codex_runtime": true,
+  "slack_calls": 0,
+  "model_calls": 0,
+  "installed_source_profiles": 2
+}

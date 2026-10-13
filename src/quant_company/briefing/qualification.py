@@ -4,8 +4,9 @@ from datetime import timedelta
 
 from ..company import as_json
 from . import schedule
-from .contracts import BriefProposal, BriefReview, SourcePlan
-from .editor import FORMAT_VERSION, render, validate, validate_review
+from .contracts import BriefEdition, BriefProposal, BriefReview, SourcePlan
+from .data_reader import CHART_PROVIDER, US_CLOSE_REGISTRATION
+from .editor import FORMAT_VERSION, render, validate, validate_review, validate_source_notes
 from .planning import apply_plan
 
 
@@ -20,6 +21,7 @@ def replay(row):
         proposal = BriefProposal.model_validate(row["proposal"]) if row["proposal"] else None
         review = BriefReview.model_validate(row["review"]) if row["review"] else None
         if proposal and review:
+            validate_source_notes(proposal, row['bundle'])
             validate_review(review, proposal, row["bundle"])
         rejected = validate(proposal, row["bundle"]) if proposal else {}
         parts, _ = render(proposal, row["bundle"], fallback=row["quality"].get("fallback"),
@@ -40,7 +42,9 @@ def qualify(company, *, at=None):
     days, expected = [], []
     for offset in range(40):
         day = at.astimezone(schedule.KST).date()-timedelta(days=offset)
-        definitions = schedule.editions(day, s.briefing_channel_id, s.briefing_owner_user, changes)
+        definitions = schedule.editions(day, s.briefing_channel_id, s.briefing_owner_user, changes,
+                                        us_close_anchor=s.briefing_us_close_enabled,
+                                        kr_close_anchor=schedule.kr_close_minutes(s))
         pm = next((e for e in definitions if e.kind == "pm"), None)
         if pm and pm.due_at+timedelta(minutes=10) <= at:
             days.append(day)
@@ -58,6 +62,9 @@ def qualify(company, *, at=None):
     checks = []
     for definition in expected:
         row = by_id.get(definition.id)
+        if row and row["definition"]:
+            # A recorded edition keeps its frozen times, including a one-time cutoff extension.
+            definition = BriefEdition.model_validate(row["definition"])
         reasons = []
         observed = {"due_at": as_json(definition.due_at), "committed_at": None,
                     "delay_seconds": None, "core_quote_assurance": {}, "missing_core": [],
@@ -85,10 +92,14 @@ def qualify(company, *, at=None):
             result = replay(row)
             if not result["ok"]:
                 reasons.append(result["reason"])
-            if quality.get("reduced") or quality.get("quote_conflicts"):
+            # A KRX close snapshot set aside for matching closing reports (v8) is a diagnostic, not a conflict.
+            if quality.get("reduced") or any(c.get("resolution") != "article_values_used"
+                                             for c in quality.get("quote_conflicts", [])):
                 reasons.append("reduced_or_conflicting_coverage")
-            if not quality.get("substantive") or not all((row["review"] or {}).get("checks", {}).get(k)
-                    for k in ("coverage", "depth", "readability")):
+            if (not quality.get('substantive') or quality.get('rejected')
+                    or (row['review'] or {}).get('verdict') != 'publish'
+                    or not all((row['review'] or {}).get('checks', {}).values())
+                    or len((row['review'] or {}).get('checks', {})) != 12):
                 reasons.append("content_quality_not_verified")
             core = ["sp500", "nasdaq"] if definition.kind == "am" and definition.us_session else (
                 ["kospi", "kosdaq"] if definition.kind == "pm" else [])
@@ -102,13 +113,24 @@ def qualify(company, *, at=None):
                 required_phases.add("plan")
                 if not (row["bundle"] or {}).get("source_plan"):
                     reasons.append("source_selection_not_reviewed")
+            if (row['bundle'] or {}).get('fact_inventory_required'):
+                required_phases.add('inventory')
+                if not (row['bundle'] or {}).get('fact_inventory_digest'):
+                    reasons.append('prewriting_inventory_not_committed')
             if quality.get("revision_used") or any(c["phase"] in {"revise", "final_review"} for c in edition_calls):
                 required_phases |= {"revise", "final_review"}
+                if (row['bundle'] or {}).get('source_notes_repair', {}).get('before_independent_review'):
+                    review_phase = row['bundle']['source_notes_repair'].get('review_phase', 'final_review')
+                    required_phases.discard('final_review' if review_phase == 'review' else 'review')
             if not required_phases <= real_phases:
                 reasons.append("real_codex_not_verified")
             if s.fixture_mode or any(d.get("receipt", {}).get("synthetic") for d in row["bundle"].get("documents", [])):
                 reasons.append("synthetic_input")
-            if any(d.get("kind") == "dataset" and len(d.get("receipt", {}).get("qdata_code_commit") or "") != 40
+            # A close snapshot is not a lake read; it needs its own recorded poll provenance instead.
+            if any(d.get("kind") == "dataset" and (
+                    not (d["receipt"].get("provider") == CHART_PROVIDER and len(d["receipt"].get("rows") or []) >= 2)
+                    if d.get("registration") == US_CLOSE_REGISTRATION
+                    else len(d.get("receipt", {}).get("qdata_code_commit") or "") != 40)
                    for d in row["bundle"].get("documents", [])):
                 reasons.append("unqualified_data_reader")
         checks.append({"day": definition.day, "kind": definition.kind, "id": definition.id,

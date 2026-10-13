@@ -8,6 +8,7 @@
 !deploy/Dockerfile.code-update
 !deploy/Dockerfile.quant-code-update
 !deploy/entrypoint.py
+!deploy/install-codex.cjs
 **/__pycache__/
 **/*.pyc
 **/.env*

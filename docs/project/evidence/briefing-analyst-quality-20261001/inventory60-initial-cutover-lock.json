@@ -1,0 +1,15 @@
+{
+  "recorded_at": "2026-10-07T05:50:20.653959+00:00",
+  "candidate_commit": "2b60bb81424eb08b6e5e0f99346d3ffd76b0bafa",
+  "base": "2a8df31ec8d77ae111437bad9d42221e6cf29374",
+  "stage": "passed_source_verified_three_profiles",
+  "cutover": "rolled_back",
+  "reason": "BlockingIOError: existing non-Analyst runtime/quant model slots are occupied",
+  "current_source_root": "2a8df31ec8d77ae111437bad9d42221e6cf29374",
+  "configuration_switched": false,
+  "database_schema_migrated": false,
+  "automatic_publication_enabled": false,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "remediation": "Wait for real runtime slot availability and create a new immutable installation receipt; preserve this failure."
+}

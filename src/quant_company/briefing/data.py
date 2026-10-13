@@ -12,11 +12,11 @@ from temporalio import activity
 from ..lake_tools import _query_lock
 from . import schedule
 from .contracts import BriefEdition
-from .data_reader import summarize
+from .data_reader import fetch_chart, read_us_close, summarize
 from .store import BriefStore
 
 
-def query(root, edition):
+def query(root, edition, *, krx_close=False):
     if not root:
         return {"ok": False, "error": "lake_not_connected"}
     env = {key: os.environ[key] for key in ("PATH", "LANG", "LC_ALL", "SSL_CERT_FILE",
@@ -28,7 +28,9 @@ def query(root, edition):
         return {"ok": False, "error": "lake_reader_busy"}
     try:
         result = subprocess.run([sys.executable, "-m", "quant_company.briefing.data_reader"],
-            input=json.dumps({"definition": edition.model_dump(mode="json")}), text=True,
+            # The KRX close request key exists only while BRIEFING_KR_CLOSE_ENABLED asks for it (PM editions).
+            input=json.dumps({"definition": edition.model_dump(mode="json"), **({"krx_close": True} if krx_close else {})}),
+            text=True,
             capture_output=True, timeout=45, env=env)
         if result.returncode or len(result.stdout.encode()) > 131072:
             return {"ok": False, "error": "lake_reader_failed"}
@@ -40,18 +42,32 @@ def query(root, edition):
 
 
 class BriefDataCollector:
-    def __init__(self, company, reader=query):
-        self.store, self.reader = BriefStore(company), reader
+    def __init__(self, company, reader=query, chart=fetch_chart):
+        self.store, self.reader, self.chart = BriefStore(company), reader, chart
+
+    def poll_us_close(self):
+        """One recorded close-poll slot per tick; a restart re-reads only a slot that was never saved."""
+        target = self.store.us_close_target()
+        if not target:
+            return None
+        poll = read_us_close(target["definition"], target["catalogue"], target["slot"], self.chart,
+                             clock=schedule.utcnow)
+        return self.store.save_us_close(target, poll)
 
     async def tick(self):
+        polled = await asyncio.to_thread(self.poll_us_close)
+        extra = {"us_close": polled} if polled else {}
         row = await asyncio.to_thread(self.store.claim_data)
         if not row:
-            return {"state": "idle"}
+            return {"state": "idle", **extra}
         edition = BriefEdition.model_validate(row["definition"])
-        snapshot = await asyncio.to_thread(self.reader, self.store.company.settings.company_lake_uri, edition)
+        settings = self.store.company.settings
+        # v8: the PM edition also reads the regular-session KRX close snapshot; otherwise the call is unchanged.
+        krx_close = {"krx_close": True} if settings.briefing_kr_close_enabled and edition.kind == "pm" else {}
+        snapshot = await asyncio.to_thread(self.reader, settings.company_lake_uri, edition, **krx_close)
         result = await asyncio.to_thread(summarize, snapshot, edition, schedule.overrides(self.store.company.settings))
         await asyncio.to_thread(self.store.save_data, row, result)
-        return {"state": "collected", "edition_id": str(row["id"]), "observations": len(result["observations"])}
+        return {"state": "collected", "edition_id": str(row["id"]), "observations": len(result["observations"]), **extra}
 
     @activity.defn(name="company_brief_data")
     async def activity_tick(self):

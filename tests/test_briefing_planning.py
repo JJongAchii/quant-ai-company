@@ -1,6 +1,7 @@
 """Source choice and main-post coverage at the real PostgreSQL editorial boundary."""
 
 import json
+import re
 from copy import deepcopy
 from datetime import timedelta
 from html import escape
@@ -18,7 +19,16 @@ from quant_company.briefing.contracts import (
 )
 from quant_company.briefing.editor import prompt, render, revision_bundle, validate, validate_review
 from quant_company.briefing.inputs import document
-from quant_company.briefing.planning import apply_plan, discovery_spans, plan_prompt, required_sources
+from quant_company.briefing.planning import (
+    INITIAL_SOURCE_CHAR_BUDGET,
+    SOURCE_CHAR_BUDGET,
+    SOURCE_REPAIR_RESERVE,
+    apply_plan,
+    discovery_spans,
+    plan_prompt,
+    required_sources,
+    supplement_sources,
+)
 from quant_company.briefing.qualification import replay
 from quant_company.briefing.runner import BriefEditor
 from quant_company.briefing.store import priority_pending
@@ -37,6 +47,22 @@ def planning_bundle():
 def plan(*ids):
     return SourcePlan(selections=[{"source_id": i, "reason": "시장 흐름을 바꾸는 별도 전개와 반대 근거를 확인"} for i in ids],
                       priorities=["협상 기대와 거절 보도가 어떤 시점에 해당하는가?"])
+
+
+def test_twenty_source_selection_keeps_distinct_evidence_and_complete_originals():
+    data = bundle()
+    data['quote_reference_version'] = 1
+    data['source_notes_required'] = True
+    data['candidate_documents'] = [{**deepcopy(data['documents'][0]), 'id': f'source-{i}'} for i in range(1, 21)]
+    selected = apply_plan(data, plan(*(d['id'] for d in data['candidate_documents'])))
+    assert len(selected['documents']) == 20
+    text = prompt(selected, 'write')
+    payload = json.loads(text.split('BRIEF DATA JSON:\n')[1])
+    assert len(text) <= 88000
+    for index, original in enumerate(selected['documents']):
+        assert ''.join(part for _, position, part in payload['original_quotes'] if position == index) == original['content']
+    with pytest.raises(ValueError):
+        plan(*(f'source-{i}' for i in range(1, 22)))
 
 
 def test_complete_original_tail_is_preserved_and_partial_original_is_rejected():
@@ -89,6 +115,27 @@ def test_plan_context_is_bounded_and_does_not_send_full_candidate_corpus():
     assert len(json.loads(request.split("CANDIDATES:\n")[1])["candidates"]) == 96
 
 
+def test_initial_selection_reserves_whole_originals_for_one_review_correction():
+    data = planning_bundle()
+    data['candidate_documents'] = [doc(f's{i}', f'Policy announcement {i}', content='x'*6000)
+                                   .model_dump(mode='json') for i in range(7)]
+    before = deepcopy(data)
+    selected = apply_plan(data, plan(*(f's{i}' for i in range(6))))
+    assert sum(len(d['content']) for d in selected['documents']) == INITIAL_SOURCE_CHAR_BUDGET
+    assert SOURCE_CHAR_BUDGET-INITIAL_SOURCE_CHAR_BUDGET == SOURCE_REPAIR_RESERVE == 6000
+    assert json.loads(plan_prompt(data).split('CANDIDATES:\n')[1])['source_char_budget'] == INITIAL_SOURCE_CHAR_BUDGET
+    supplemented = supplement_sources(selected, plan('s6').selections)
+    assert sum(len(d['content']) for d in supplemented['documents']) == SOURCE_CHAR_BUDGET
+    assert supplemented['documents'][-1] == data['candidate_documents'][-1]
+    assert data == before and len(selected['documents']) == 6
+    data['candidate_documents'][0]['content'] += 'x'
+    with pytest.raises(ValueError, match='brief_plan_source_budget'):
+        apply_plan(data, plan(*(f's{i}' for i in range(6))))
+    selected['candidate_documents'][-1]['content'] += 'x'
+    with pytest.raises(ValueError, match='brief_review_source_budget'):
+        supplement_sources(selected, plan('s6').selections)
+
+
 def test_source_discovery_exposes_middle_counterevidence_and_body_tail_before_footer():
     opposing = "However, existing inventory can absorb the disruption for two weeks."
     tail = "The policymaker's baseline assumes energy supply improves later, with considerable uncertainty."
@@ -139,15 +186,15 @@ def test_source_discovery_shrinks_only_samples_for_long_metadata_without_losing_
         assert "funding still requires approval" in "\n".join(part[2] for part in row["discovery_spans"])
 
 
-def test_material_fact_must_be_visible_not_only_in_thread_or_a_citation():
+def test_third_watchpoint_is_visible_with_calendar_but_absent_fact_cannot_pass():
     p, data = proposal(), bundle()
     p.calendar = [CalendarEvent(id="release", title="경제지표 발표", at=None,
         source_timezone="미국 현지", status="time_unconfirmed", evidence=p.watchpoints[0].evidence)]
     p.watchpoints += [p.watchpoints[0].model_copy(update={"id": identity}) for identity in ("watch2", "watch3")]
     original = review().model_dump()
     original["source_assessments"][0]["material_facts"][0]["main_item_ids"] = ["watch3"]
-    with pytest.raises(ValueError, match="not_in_main_post"):
-        validate_review(BriefReview.model_validate(original), p, data)
+    validate_review(BriefReview.model_validate(original), p, data)
+    assert p.watchpoints[2].text in render(p, data)[0][0]
     original["source_assessments"][0]["material_facts"][0]["main_item_ids"] = []
     with pytest.raises(ValueError, match="missing_fact_cannot_pass"):
         validate_review(BriefReview.model_validate(original), proposal(), bundle())
@@ -209,10 +256,99 @@ def test_review_compression_preserves_exact_quotes_and_raw_proposal():
     assert p == before
     schema = json.loads(request.split("SCHEMA:\n")[1].split("\nBRIEF DATA JSON:\n")[0])
     assert len(schema["$defs"]["ReviewChecks"]["required"]) == 12
-    assert schema["$defs"]["FactAssessment"]["properties"]["quote"]["minLength"] == 10
+    assert {q['type'] for q in schema["$defs"]["FactAssessment"]["properties"]["quote"]["anyOf"]} == {'string', 'array'}
+    assert BriefReview.model_json_schema()["$defs"]["FactAssessment"]["properties"]["quote"]["anyOf"][0]["minLength"] == 10
     procedure = json.loads(request.split("SPECIALIST PROCEDURE JSON:\n")[1].split("\nINSTRUMENTS:\n")[0])
     assert procedure["employee"] == "market_brief" and procedure["digest"]
     assert "procedure" not in procedure
+
+
+@pytest.mark.parametrize('microsecond', [0, 123456])
+def test_dense_twenty_source_review_preserves_bodies_dates_proposal_and_visible_main(microsecond):
+    data, draft = bundle(), proposal().model_dump(mode='json')
+    data.update(quote_reference_version=1, source_notes_required=True)
+    base = data['documents'][0]
+    docs = []
+    for index in range(27):
+        kind = 'media' if index < 20 else 'calendar' if index < 23 else 'dataset'
+        size = 1870 if kind == 'media' else 2400 if kind == 'calendar' else 390
+        docs.append({**deepcopy(base), 'id': 'source-1' if not index else f'{index:040x}',
+                     'kind': kind, 'title': f'Independent source {index}: '+('material development ' * 6),
+                     'content': (CONTENT+' Distinct source detail. ' * 100)[:size],
+                     'published_at': (definition().cutoff-timedelta(hours=index+1,
+                         microseconds=microsecond)).isoformat() if index % 5 else None})
+    data['documents'] = docs
+    data['candidate_documents'] = docs[:20]+[
+        {**deepcopy(base), 'id': f'{index+100:040x}',
+         'title': f'Unselected source {index}: '+('a potentially material distinct development ' * 3),
+         'published_at': (definition().cutoff-timedelta(minutes=index+1,
+             microseconds=microsecond)).isoformat()}
+        for index in range(76)]
+    first = draft['issues'][0]
+    draft['issues'] = []
+    for index in range(6):
+        issue = deepcopy(first)
+        issue['headline'] += f' {index}'
+        for claim in [issue['fact'], issue['interpretation'], issue['next_check'],
+                      issue['analysis']['mechanism'], issue['analysis']['alternative']]:
+            claim['id'] += f'_{index}'
+            claim['text'] = (claim['text']+' 시장에 영향을 주는 조건과 그 한계를 확인합니다.' * 8)[:180]
+        draft['issues'].append(issue)
+    original_data, original_draft = deepcopy(data), deepcopy(draft)
+    request = prompt(data, 'review', draft)
+    payload = json.loads(request.split('BRIEF DATA JSON:\n')[1])
+    assert len(request) <= 88000
+    assert 'document_columns' in payload and 'proposal_key_map' in payload
+    documents = [dict(zip(payload['document_columns'], row, strict=True)) for row in payload['documents']]
+    cutoff = definition().cutoff
+    unit = 'seconds' if payload['document_publication_offset_unit'].startswith('seconds') else 'microseconds'
+    for index, original in enumerate(docs):
+        if payload['original_quote_layout'] == 'grouped_documents':
+            exact = ''.join(text for _, text in payload['original_quotes'][index])
+        else:
+            exact = ''.join(text for _, position, text in payload['original_quotes'] if position == index)
+        assert exact == original['content']
+        document = documents[index]
+        encoded = document.pop('published_at')
+        assert ((cutoff-timedelta(**{unit: encoded})).isoformat() if encoded is not None else None) == original['published_at']
+        for key, value in document.items():
+            if key != 'receipt':
+                assert value == original[key]
+
+    def expand(value):
+        if isinstance(value, dict):
+            return {payload['proposal_key_map'][key]: expand(item) for key, item in value.items()}
+        return [expand(item) for item in value] if isinstance(value, list) else value
+
+    decoded = expand(payload['proposal'])
+    quotes = {}
+    if payload['original_quote_layout'] == 'grouped_documents':
+        quotes = {payload['original_quote_reference_prefix']+str(ref): text
+                  for group in payload['original_quotes'] for ref, text in group}
+    else:
+        quotes = {ref: text for ref, _, text in payload['original_quotes']}
+
+    def evidence(value):
+        if isinstance(value, dict):
+            return {key: [
+                {'source_id': docs[payload['evidence_quotes'][ref][0]]['id'],
+                 'quote': quotes.get(payload['evidence_quotes'][ref][1], payload['evidence_quotes'][ref][1])}
+                for ref in item] if key == 'evidence' else evidence(item) for key, item in value.items()}
+        return [evidence(item) for item in value] if isinstance(value, list) else value
+
+    assert evidence(decoded) == {key: value for key, value in draft.items() if key != 'source_notes'}
+    items = item_map(BriefProposal.model_validate(draft))
+    visible = ''.join(part if isinstance(part, str) else escape(items[part['item_text']].text, quote=False)
+                      for part in payload['main_post_preview'])
+    expected = render(BriefProposal.model_validate(draft), data)[0][0]
+    assert visible == re.sub(r'<[^<>|\n]+\|\[(\d+)\]>', r'[\1]', expected)
+    unit = 'seconds' if payload['unselected_publication_offset_unit'].startswith('seconds') else 'microseconds'
+    for row, original in zip(payload['unselected_source_index'], data['candidate_documents'][20:], strict=True):
+        assert payload.get('unselected_source_prefix', '')+str(row[0]) == '@candidate:'+str(
+            data['candidate_documents'].index(original))
+        assert row[1:3] == [original['title'][:180], len(original['content'])]
+        assert (cutoff-timedelta(**{unit: row[3]})).isoformat() == original['published_at']
+    assert data == original_data and draft == original_draft
 
 
 def test_repeated_visible_claims_compact_without_losing_text_or_actual_item_ids():

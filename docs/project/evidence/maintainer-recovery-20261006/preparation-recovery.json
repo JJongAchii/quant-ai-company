@@ -1,0 +1,19 @@
+{
+  "scope": "One-time recovery of newly blocked preparation jobs only; no model call or original uncertain-review retry",
+  "results": [
+    {
+      "job_id": "a4aabd4e-1263-4435-ae26-78820f18f5b0",
+      "state": "triage",
+      "previous_error": "invalid_maintenance_input",
+      "model_calls_before_recovery": 0,
+      "recorded_operator_receipt": true
+    },
+    {
+      "job_id": "6f3c54a0-e0ae-5911-91d6-5e83ce68b35e",
+      "state": "triage",
+      "previous_error": "invalid_maintenance_input",
+      "model_calls_before_recovery": 0,
+      "recorded_operator_receipt": true
+    }
+  ]
+}

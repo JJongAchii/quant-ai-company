@@ -1,0 +1,36 @@
+{
+  "recorded_at": "2026-10-06T05:30:33.849212+00:00",
+  "phase": "preview_active_actual_cloud",
+  "candidate_commit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
+  "base_commit": "0ff6657f98b175162609259394b1cec20382904a",
+  "source_changes": 1,
+  "app_image_id": "sha256:bb44bd14ae75adf6152eab18a1672d1804d81fb895fe54def9610c27749c489a",
+  "app_source_verified": true,
+  "preserve_api": true,
+  "preserve_codex_runtime": true,
+  "publication_enabled": false,
+  "evaluation_edition": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+  "same_case_budget_unchanged": true,
+  "deployment_model_calls": 0,
+  "deployment_slack_calls": 0,
+  "local_full_verification": "regression-v56-final-ci-equivalent.json",
+  "prior_cutover_attempt": "Host backup mutex remained busy for30seconds; stopped before operator cutover function, no changes.",
+  "activated_at": "2026-10-06T05:28:59.083642+00:00",
+  "selected_updates": [
+    "news-worker",
+    "dispatch",
+    "briefing-data-worker"
+  ],
+  "selected_all_running": true,
+  "selected_restarts": 0,
+  "selected_oom": false,
+  "unrelated_services_preserved": true,
+  "postgres_backup_bytes": 339808192,
+  "postinstall_verification": "verified_actual_cloud_lake_temporal",
+  "live_probe": "preview-installation-v56-reader-live-probe.json",
+  "api_and_codex_preserved": {
+    "api": true,
+    "codex-runtime": true
+  },
+  "stage_to_probe_counter_changes": []
+}

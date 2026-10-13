@@ -1,0 +1,30 @@
+{
+  "external_model_runtime_change": [
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "health": "healthy",
+      "image": "sha256:1da677f0627c690e3ecaadba4f368aad9271bfa581d71b20b1f07deb872ec8e6",
+      "labels": {
+        "io.quant-company.codex-upgrade": "b77dc9511fb6aae2beff68df1c0ba7852bac6bd4",
+        "io.quant-company.codex-upgrade.base-id": "sha256:13caa3f9f7936529335af8b92d9ddbb78f28ef6a45eed0b2e2054b43acb33938",
+        "io.quant-company.model-assignments": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+        "io.quant-company.model-assignments.base-id": "sha256:a4bc2f4e24fb143db994b8b201a538dc3acce4e651e9bfbdc46550ea6be5f239",
+        "org.opencontainers.image.revision": "ec1fbeb29a49420a367f06af596283e6ead4ab72"
+      },
+      "auth_kind_settings": {}
+    },
+    {
+      "name": "/quant-company-quant-codex-runtime-1",
+      "health": "healthy",
+      "image": "sha256:94d32ec482ea0ba9cfd7890ef9f13113403beec858380ab8e3205d7b400e8fa1",
+      "labels": {
+        "io.quant-company.codex-upgrade": "b77dc9511fb6aae2beff68df1c0ba7852bac6bd4",
+        "io.quant-company.codex-upgrade.base-id": "sha256:9d215e4309aca0f0e448f6595a9d53af268f80f7e8bc3a7880337f631a777233",
+        "io.quant-company.model-assignments": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+        "io.quant-company.model-assignments.base-id": "sha256:c983c63235365a43ae1afa8eaba37bd7708e49b43afc2089aa824bad242f02e7",
+        "org.opencontainers.image.revision": "ea092f419b4b679df4c25e479a8cb361b4d046ff"
+      },
+      "auth_kind_settings": {}
+    }
+  ]
+}

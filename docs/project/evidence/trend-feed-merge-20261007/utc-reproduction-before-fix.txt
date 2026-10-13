@@ -1,0 +1,31 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______ test_real_preview_validation_requires_receipts_and_immutable_body _______
+
+trend = <quant_company.trend_feed.store.TrendFeedStore object at 0x1111e1400>
+
+    async def test_real_preview_validation_requires_receipts_and_immutable_body(trend):
+        trend.company.settings.trend_feed_publish_enabled = False
+        ingest(trend)
+        morning(trend)
+        collector = TrendFeedCollector(trend.company, naver=FixtureNaver(), reader=lambda *args: {"ok": False})
+        await collector.enrich(trend.claim_enrichment())
+        call = trend.prepare_call()
+        trend.finish_call(call, response(call["id"], trend.freeze()["bundle"]))
+        trend.clock[0] = schedule.times(trend.clock[0])[1].astimezone(UTC)
+        assert trend.finalize()["state"] == "preview"
+        path = Path(__file__).parents[1] / "docs/project/evidence/trend-feed-20261006/preview-validator.py"
+        spec = importlib.util.spec_from_file_location("preview_validator", path)
+        validator = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(validator)
+        with trend.db.transaction() as conn:
+            row = conn.execute("SELECT * FROM trend_feed_digests").fetchone()
+            checked = validator.validate_day(trend, conn, row)
+>           assert checked["valid"], checked["reasons"]
+E           AssertionError: ['frozen_coverage_mismatch']
+E           assert False
+
+tests/test_trend_feed.py:423: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_trend_feed.py::test_real_preview_validation_requires_receipts_and_immutable_body
+1 failed in 0.58s

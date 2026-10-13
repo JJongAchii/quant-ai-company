@@ -1,0 +1,252 @@
+{
+  "captured_at": 1791275478.4411294,
+  "scope": "Read-only Codex receipts; no authentication files or model calls",
+  "recent_receipts": [
+    {
+      "request_id": "news-6f3112a6-c741-4ead-a09e-f134013e0e3b",
+      "state": "running",
+      "started_at": 1791275459.1679194,
+      "completed_at": null,
+      "elapsed_seconds": 19.3,
+      "execution_lane": "news",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": null
+    },
+    {
+      "request_id": "b25f16c9-11bb-5941-a2d8-da86bddebafc",
+      "state": "running",
+      "started_at": 1791275421.7880204,
+      "completed_at": null,
+      "elapsed_seconds": 56.6,
+      "execution_lane": "company",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": null
+    },
+    {
+      "request_id": "2e4de4d4-00b8-50d6-8dc4-1765a28e1807",
+      "state": "complete",
+      "started_at": 1791275365.4088094,
+      "completed_at": 1791275420.5916402,
+      "elapsed_seconds": 113,
+      "execution_lane": "company",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": {
+        "cached_input_tokens": 5888,
+        "input_tokens": 40025,
+        "output_tokens": 1600,
+        "reasoning_output_tokens": 1464
+      }
+    },
+    {
+      "request_id": "ffc34b0d-5504-5463-b6dc-2e954cbb408b",
+      "state": "complete",
+      "started_at": 1791275296.808374,
+      "completed_at": 1791275364.585317,
+      "elapsed_seconds": 181.6,
+      "execution_lane": "company",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 40631,
+        "output_tokens": 2238,
+        "reasoning_output_tokens": 2070
+      }
+    },
+    {
+      "request_id": "a1b0e2fc-951b-5fbd-a898-74f7e37dfb60",
+      "state": "complete",
+      "started_at": 1791275243.9874392,
+      "completed_at": 1791275294.2714822,
+      "elapsed_seconds": 234.4,
+      "execution_lane": "company",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": {
+        "cached_input_tokens": 5888,
+        "input_tokens": 28009,
+        "output_tokens": 1318,
+        "reasoning_output_tokens": 1239
+      }
+    },
+    {
+      "request_id": "b9fd96f9-d469-5144-a8db-0480deb91f54",
+      "state": "complete",
+      "started_at": 1791275212.1715713,
+      "completed_at": 1791275242.6411831,
+      "elapsed_seconds": 266.2,
+      "execution_lane": "company",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": {
+        "cached_input_tokens": 5888,
+        "input_tokens": 31217,
+        "output_tokens": 958,
+        "reasoning_output_tokens": 898
+      }
+    },
+    {
+      "request_id": "5b6c49c8-a595-5f86-ae9a-fd1d8d55c626",
+      "state": "complete",
+      "started_at": 1791275183.2362897,
+      "completed_at": 1791275210.5538573,
+      "elapsed_seconds": 295.2,
+      "execution_lane": "company",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": {
+        "cached_input_tokens": 5888,
+        "input_tokens": 28576,
+        "output_tokens": 762,
+        "reasoning_output_tokens": 681
+      }
+    },
+    {
+      "request_id": "ee7bb48a-ba03-54c8-8388-8e31067fe41a",
+      "state": "complete",
+      "started_at": 1791275144.000568,
+      "completed_at": 1791275181.6798792,
+      "elapsed_seconds": 334.4,
+      "execution_lane": "company",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": {
+        "cached_input_tokens": 5888,
+        "input_tokens": 28056,
+        "output_tokens": 1025,
+        "reasoning_output_tokens": 943
+      }
+    },
+    {
+      "request_id": "news-4d82591d-dfd6-43b3-89c2-f3f0fa35a6a9",
+      "state": "complete",
+      "started_at": 1791275051.2579293,
+      "completed_at": 1791275158.2579699,
+      "elapsed_seconds": 427.2,
+      "execution_lane": "news",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 22445,
+        "output_tokens": 4281,
+        "reasoning_output_tokens": 432
+      }
+    },
+    {
+      "request_id": "89b5820f-1ece-5ede-a7fb-eb49b2575c4f",
+      "state": "complete",
+      "started_at": 1791275119.2713835,
+      "completed_at": 1791275142.4228733,
+      "elapsed_seconds": 359.1,
+      "execution_lane": "company",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": {
+        "cached_input_tokens": 5888,
+        "input_tokens": 23068,
+        "output_tokens": 609,
+        "reasoning_output_tokens": 516
+      }
+    },
+    {
+      "request_id": "de50fe24-eec6-5c62-9038-dbb254d08c52",
+      "state": "complete",
+      "started_at": 1791275100.6199725,
+      "completed_at": 1791275117.0584588,
+      "elapsed_seconds": 377.8,
+      "execution_lane": "company",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": {
+        "cached_input_tokens": 5888,
+        "input_tokens": 27342,
+        "output_tokens": 420,
+        "reasoning_output_tokens": 358
+      }
+    },
+    {
+      "request_id": "ffbd4162-8bfb-53f0-9dc1-4f9f929701d9",
+      "state": "complete",
+      "started_at": 1791275081.1770828,
+      "completed_at": 1791275099.5176094,
+      "elapsed_seconds": 397.2,
+      "execution_lane": "company",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": {
+        "cached_input_tokens": 5888,
+        "input_tokens": 30170,
+        "output_tokens": 478,
+        "reasoning_output_tokens": 417
+      }
+    },
+    {
+      "request_id": "3a03fbf3-ee7a-5684-928b-ab100ff9e2d7",
+      "state": "complete",
+      "started_at": 1791275057.1999834,
+      "completed_at": 1791275080.0078008,
+      "elapsed_seconds": 421.2,
+      "execution_lane": "company",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": {
+        "cached_input_tokens": 5888,
+        "input_tokens": 36002,
+        "output_tokens": 550,
+        "reasoning_output_tokens": 489
+      }
+    },
+    {
+      "request_id": "f8f38f22-c900-566a-ae6b-a8f3ad7c7516",
+      "state": "complete",
+      "started_at": 1791275038.7929773,
+      "completed_at": 1791275055.6812427,
+      "elapsed_seconds": 439.6,
+      "execution_lane": "company",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 39553,
+        "output_tokens": 398,
+        "reasoning_output_tokens": 317
+      }
+    },
+    {
+      "request_id": "news-screen-556adde3-89e8-4b10-9b13-b78b40bd00f9",
+      "state": "complete",
+      "started_at": 1791274992.8166342,
+      "completed_at": 1791275048.4208348,
+      "elapsed_seconds": 485.6,
+      "execution_lane": "news",
+      "model": "gpt-5.6-luna",
+      "fault": null,
+      "usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 22510,
+        "output_tokens": 2905,
+        "reasoning_output_tokens": 348
+      }
+    },
+    {
+      "request_id": "1bb16d13-71c2-52d8-8f2e-06efcc97ce8f",
+      "state": "complete",
+      "started_at": 1791275019.793352,
+      "completed_at": 1791275036.925093,
+      "elapsed_seconds": 458.6,
+      "execution_lane": "company",
+      "model": "gpt-6-astra",
+      "fault": null,
+      "usage": {
+        "cached_input_tokens": 5888,
+        "input_tokens": 44934,
+        "output_tokens": 435,
+        "reasoning_output_tokens": 356
+      }
+    }
+  ]
+}

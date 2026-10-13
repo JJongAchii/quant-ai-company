@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-10-07T01:00:37.448061+00:00",
+  "intent_digest": "4b60aaea8bc6",
+  "request": "병합해",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/113",
+  "state": "MERGED",
+  "merged_at": "2026-10-07T00:59:44Z",
+  "qualified_head": "04a39030ca1ce0c96108509370cb568c4152946f",
+  "merge_commit": "b981ad7e282fb1ead9d6663172f83883478aa225",
+  "confirmed_main": "b981ad7e282fb1ead9d6663172f83883478aa225",
+  "integrated_main": "64d449ed29cee9197032b101502bdc8094520c66",
+  "merge_command": "gh pr merge 113 --merge --match-head-commit 04a39030ca1ce0c96108509370cb568c4152946f",
+  "ci": {
+    "run_id": 37554028899,
+    "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37554028899",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "service",
+        "conclusion": "success",
+        "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37554028899/job/112576153121",
+        "startedAt": "2026-10-07T00:50:54Z",
+        "completedAt": "2026-10-07T00:59:15Z"
+      },
+      {
+        "name": "codex-protocol",
+        "conclusion": "success",
+        "url": "https://github.com/JJongAchii/quant-ai-company/actions/runs/37554028899/job/112576153511",
+        "startedAt": "2026-10-07T00:50:54Z",
+        "completedAt": "2026-10-07T00:51:12Z"
+      }
+    ],
+    "pytest_summaries": [
+      "1604 passed, 47 skipped, 1 deselected, 2 warnings in 474.80s (0:07:54)",
+      "9 passed, 2 warnings in 2.13s"
+    ]
+  },
+  "local_validation": {
+    "command": "uv run --frozen pytest -q -m 'not live' tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py",
+    "postgresql": "real local PostgreSQL14, session timezone UTC",
+    "temporal": "real local Temporal development server",
+    "passed": 1603,
+    "skipped": 48,
+    "deselected": 1,
+    "warnings": 2,
+    "external_boundaries": "HTTP, model and Slack are simulated in service regressions; the separate CI protocol job uses the reviewed real Codex CLI with empty authentication and no inference.",
+    "lint": "All checks passed!"
+  },
+  "repairs": [
+    "Integrated the current main and its qualified Codex installer/protocol workflow.",
+    "Reproduced frozen_coverage_mismatch on UTC PostgreSQL; normalized the comparison cutoff to scheduled KST and tested UTC/Asia-Seoul sessions.",
+    "Aligned synthetic supplemental-news timestamps to the fixed trend clock, preserving real news commit validation."
+  ],
+  "production_effects_during_merge": {
+    "redeployments": 0,
+    "slack_messages_sent": 0,
+    "model_requests_made": 0,
+    "operation": "Previously activated daily feed preserved."
+  }
+}

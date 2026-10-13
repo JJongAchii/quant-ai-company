@@ -1,0 +1,141 @@
+{
+  "at": "2026-10-06T04:01:46.829718+00:00",
+  "scope": "Previously owner-approved Analyst private preview. App-only quality corrections and a single prospective PM evaluation; shared Codex runtime is preserved.",
+  "previous_commit": "86aea8cdf03b5543666813c97689acb1e8158a6d",
+  "candidate_commit": "0ff6657f98b175162609259394b1cec20382904a",
+  "runtime_changes": [
+    {
+      "path": "deploy/.env.example",
+      "kind": "modify",
+      "before_sha256": "e8f4882090b8c3d6c1134c884758fc3b02770ebdbe7c9f34952f0448f5dd65c8",
+      "after_sha256": "a01218106d586f6a90541f53de1e8bd76182760ba7f61e973ae50280c03fbdf6"
+    },
+    {
+      "path": "deploy/Dockerfile.analyst-code-preview",
+      "kind": "add",
+      "before_sha256": null,
+      "after_sha256": "4d1ad20f1a83e339d3f965e79cc143e251f45d98e02fcabe6c0fce69b04e1abc"
+    },
+    {
+      "path": "deploy/analyst_preview_release.py",
+      "kind": "modify",
+      "before_sha256": "0d6862fdcca0f3469536a806450137bb6665a0c2d4cb455ffcac51fe6c9830c2",
+      "after_sha256": "5205a045c7f788f2d3c4a1bff10f9eed8113e70871f55d6135374334268dbca8"
+    },
+    {
+      "path": "deploy/compose.yaml",
+      "kind": "modify",
+      "before_sha256": "0d48d43e62d308e3b98bc923c19fa7afb759d96e0c0da94824f8069d10912ac6",
+      "after_sha256": "b511a2e8da4dd0213c13a91fad4f435a3a732b17fbc895de5e392bcb6a7c9951"
+    },
+    {
+      "path": "src/quant_company/briefing/contracts.py",
+      "kind": "modify",
+      "before_sha256": "5811b3493bbe3a548ffe4178b242c900ca2f115994efb728c970190dd28f84c9",
+      "after_sha256": "b679d9b3c64a0ac6ccc66b9f21445485d9c7a935bb4bb990e9cd5c9ac09d749f"
+    },
+    {
+      "path": "src/quant_company/briefing/data_reader.py",
+      "kind": "modify",
+      "before_sha256": "d0c9e41719db033e1c9f7c77656d6a35bc07133ec644c121c2953428f4bccd69",
+      "after_sha256": "cd867f639d9fa5347cffc3212e304b8e63fad2df6a9578d03d272607997d843f"
+    },
+    {
+      "path": "src/quant_company/briefing/editor.py",
+      "kind": "modify",
+      "before_sha256": "265a2ce7536496da31c44c8aedd92aa7704fc5f3881573d1a76b77f5fafb013a",
+      "after_sha256": "7d4cb4ec2d2d3454907779e66b6ae49fdc9430eb0065c242f5a4e17ae439a720"
+    },
+    {
+      "path": "src/quant_company/briefing/numeric.py",
+      "kind": "modify",
+      "before_sha256": "e2928344d3edb8aa67b70c72d0677339dbd29e92d7aba2b04246e1a0e5ff56ab",
+      "after_sha256": "2cc1212a14fd759f3fd632da0aa4ccf03897c0d65da339513a578e5c793c5149"
+    },
+    {
+      "path": "src/quant_company/briefing/quotations.py",
+      "kind": "modify",
+      "before_sha256": "063014accee7c3fbe5529f511761a8d6fe6ff1282bdfba1004351530ea8e89b6",
+      "after_sha256": "bd626b5a4df89a0a2dceaaf647432a5b84ad8343509fa6306c68673e21ce8a86"
+    },
+    {
+      "path": "src/quant_company/briefing/store.py",
+      "kind": "modify",
+      "before_sha256": "c51a0632cfe5e3868b602179dc06aeac89afa0b9b9ae5d9a55e7d789398c7cb0",
+      "after_sha256": "0ca1a138664ae68d3e41399762ae9266cf74e864f55d658ed15f2f08ec809dd2"
+    },
+    {
+      "path": "src/quant_company/config.py",
+      "kind": "modify",
+      "before_sha256": "057544eec799d86c6e9e0303ee2898e7c22e56386740e57d03493cbf4e2388c6",
+      "after_sha256": "8c9d779390d392d66db0f90cc676158370315a4b4f9b56da3ffb46157e70e062"
+    },
+    {
+      "path": "src/quant_company/roles.json",
+      "kind": "modify",
+      "before_sha256": "ae7ba58e4bc018cc34707d137c7bf4a9ffe32b2002f8bd2e95fa94e765c90318",
+      "after_sha256": "2d4271d129efbb990542ce2dd72549b3182a0304a9da6e5834ed62e62be119b5"
+    }
+  ],
+  "runtime_changes_count": 12,
+  "deleted_paths": [],
+  "preserve_codex_runtime": true,
+  "preserve_api": true,
+  "implementation_version": {
+    "format": 15,
+    "validation": 56,
+    "quote_reference": 1
+  },
+  "protected_preview_approval": {
+    "owner_approval_id": "chat-analyst-preview-approved-20261002",
+    "answer": "발송 없는 미리보기 설치 승인",
+    "scope": "Analyst/data-worker/brief-lane private preview; publication stays disabled; company/research/providers, credentials and existing receipts preserved.",
+    "autonomous_policy": "Unchanged; use the explicitly owner-authorized operator path."
+  },
+  "proposed_preview": {
+    "publication": false,
+    "channel": "C0C2E59B1AA",
+    "owner": "U0C250E23NW",
+    "source_notes": true,
+    "max_revisions": 0,
+    "evaluation_edition_id": "63d1c281-c4a1-5022-8e43-35a1aea0cd92",
+    "data_worker_memory_bytes": 402653184,
+    "selected_updates": [
+      "news-worker",
+      "dispatch",
+      "briefing-data-worker"
+    ],
+    "all_other_services": "Preserve exact containers and images, including the actual API hotfix and busy Codex runtime; preserve credentials, mounts and receipts."
+  },
+  "build": {
+    "mode": "code_only_identical_lock",
+    "base_inputs_byte_identical": true,
+    "source_and_qdata_verification": "Required; build app image only, preserve existing pinned Codex image."
+  },
+  "source_archive_scope": [
+    "src",
+    "deploy",
+    "pyproject.toml",
+    "uv.lock",
+    "README.md"
+  ],
+  "source_archive_prefix": "quant-company/",
+  "installed_company_and_research_source_preserved_exactly": true,
+  "existing_non_analyst_roles_preserved_exactly": true,
+  "qdata_code_archive_identity_preserved": true,
+  "analysis_source_preserved_exactly": false,
+  "frozen_content_policy": "prospective-pm-20261006-v56-integrated-policy.json",
+  "frozen_content_policy_sha256": "fc34451b29fa2c92ee499850ea5e0704eae7256d4ffcc5d00d73eb37e17d5b74",
+  "runtime_archive_receipt": "release-gate-and-artifact-v56-integrated.json",
+  "automatic_model_calls_for_other_editions": 0,
+  "operating_corrections": [
+    "Independent-original coverage gate before planner and zero native model searches for pinned evaluation.",
+    "Deterministic compact quote/candidate references and original-text ranges; retain complete originals and main text under the 88000-character limit.",
+    "Calendar dates and signed decreases validate without false positives; operative forecast dates must remain in their own visible paragraph.",
+    "Canonical KRX observations carry exact previous-session rows for AM; no model reconstruction of locked prices.",
+    "Guard failures retain an explicitly failed readable private preview and stop before critic; no failed proposal becomes next-edition evidence.",
+    "Worker-only deployment drains brief lane; actual API hotfix, shared Codex runtime and other account work remain running."
+  ],
+  "deployment": "not_performed",
+  "slack": "not_called"
+}

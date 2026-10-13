@@ -4,7 +4,7 @@ from uuid import NAMESPACE_URL, uuid4, uuid5
 
 from psycopg.types.json import Jsonb
 
-from ..company import as_json
+from ..company import as_json, fingerprint
 from ..contracts import ProviderRequest
 from .evaluation import validate_replay_plan
 from .observation import review_snapshot, safe_rows
@@ -106,6 +106,8 @@ class Store:
 
             owners = self.config.allowed_owners
             if self.company.settings.company_improvements_enabled:
+                from .problems import failure_observations
+
                 # Ordinary conversations/ideas do not trigger automatic model work. One owner per case.
                 rows = []
                 owners = [events[0]["owner_user"]] if events else []
@@ -116,8 +118,10 @@ class Store:
                                 if row.get("grade", {}).get("objective_passed") is False
                                 and datetime.fromisoformat(row["created_at"]) >= datetime.fromisoformat(
                                     control["runtime"]["improvements_started_at"])]
-                    if failures:
-                        owners, staff = [owner], failures
+                    problems = failure_observations(conn, self.company, owner,
+                                                    control["runtime"]["improvements_started_at"])
+                    if failures or problems:
+                        owners, staff = [owner], failures + problems
                         break
                 rows = safe_rows(events + staff)
             else:
@@ -182,12 +186,61 @@ class Store:
                          (state, Jsonb(payload) if payload is not None else None,
                           Jsonb(receipt) if receipt is not None else None, error, job_id))
 
+    def hold_for_reconciliation(self, job):
+        """Route unconfirmed review outcomes to operator evidence; never replay or change grades."""
+        observations = job["payload"].get("observations", [])
+        if (not self.company.settings.company_improvements_enabled or job["kind"] != "triage"
+                or job["state"] != "triage" or job["payload"].get("request_project_id") or not observations
+                or any(row.get("kind") != "staff_independent_review_failure"
+                       or row.get("detail", {}).get("error") != "uncertain"
+                       or row.get("detail", {}).get("operator_reconciliation_required") is not True
+                       for row in observations)):
+            return False
+        owners = set(job["payload"].get("owners", []))
+        reviews = []
+        with self.db.transaction() as conn:
+            if conn.execute("SELECT 1 FROM maintenance_calls WHERE job_id=%s LIMIT 1", (job["id"],)).fetchone():
+                return False
+            for row in observations:
+                review = conn.execute("""SELECT v.id,v.state,v.error,v.request,v.input_digest,v.response,
+                    r.id AS run_id,r.state AS source_state,r.owner_user,r.employee
+                    FROM staff_independent_reviews v JOIN staff_runs r ON r.id=v.run_id WHERE v.id=%s""",
+                    (row["detail"].get("review_id"),)).fetchone()
+                if (not review or review["state"] != "blocked" or review["error"] != "uncertain"
+                        or review["response"] is not None or review["source_state"] != "completed"
+                        or review["owner_user"] not in owners or review["employee"] != row.get("author")
+                        or str(review["run_id"]) != row["detail"].get("run_id")
+                        or fingerprint(review["request"]) != review["input_digest"]):
+                    return False
+                reviews.append(review)
+            receipt = {**job["receipt"], "outcome": "operator_action_required",
+                       "review_ids": sorted({review["id"] for review in reviews}),
+                       "input_digests": {review["id"]: review["input_digest"] for review in reviews},
+                       "required_evidence": ["Original provider receipt and retained CLI output, if available",
+                                             "Reconcile completion under the original request ID without replay"],
+                       "reason": "Original review outcomes are unknown. Code reading alone cannot establish "
+                                 "a reproducible defect; preserve the original receipts and objective grades."}
+            conn.execute("""UPDATE maintenance_jobs SET state='blocked',error='review_reconciliation_required',
+                receipt=%s,updated_at=now() WHERE id=%s""", (Jsonb(receipt), job["id"]))
+        return True
+
     def bind_diagnosis(self, job, snapshot, diagnosis):
         """Freeze each diagnostic revision; never overwrite a reserved request or replay input."""
         payload = job["payload"]
         previous = payload.get("diagnosis")
         if previous and previous["scope_digest"] == diagnosis["scope_digest"]:
             return True
+        if (job["state"] == "triage" and previous and previous.get("scope_version") == 1
+                and diagnosis.get("scope_version") == 1
+                and previous["implementation_digest"] == diagnosis["implementation_digest"]
+                and previous["runtime_scope_digest"] == diagnosis["runtime_scope_digest"]):
+            old_entries = payload["snapshot"]["entries"]
+            current_entries = snapshot["entries"]
+            dependencies = previous["source_files"] + payload.get("investigation_evidence", [])
+            if all(old_entries.get(row["path"]) == current_entries.get(row["path"]) for row in dependencies):
+                # Continue the original exact-commit investigation. Patch/publication still
+                # requires the exact current base; permissions are checked before binding.
+                return True
         with self.db.transaction() as conn:
             revision = payload.get("diagnostic_revision", 0)
             reserved = conn.execute("SELECT 1 FROM maintenance_calls WHERE job_id=%s LIMIT 1", (job["id"],)).fetchone()
@@ -309,7 +362,7 @@ class Store:
                 receipt = {"case_id": case_id, "reason": result.reason,
                            "evidence_keys": finding.evidence_keys}
             else:
-                receipt = {"reason": result.reason}
+                receipt = {"reason": result.reason, "outcome": "no_candidate"}
             conn.execute("UPDATE maintenance_jobs SET state='done',error=NULL,receipt=%s,updated_at=now() WHERE id=%s",
                          (Jsonb(receipt), job["id"]))
 
@@ -342,12 +395,19 @@ class Store:
             if ((limits["company"] is not None and usage["reserved"] >= limits["company"])
                     or (limits["maintenance"] is not None and count["n"] >= limits["maintenance"])):
                 raise Deferred("daily_model_budget")
-            if model is None:
-                role = self.company.roles["engineer"]
+            replay = model is not None
+            if not replay:
+                from ..model_policy import effective_role
+
+                role = effective_role(self.company, conn, "maintainer")
                 model, reasoning_effort = role.model, role.reasoning_effort
             # An explicit replay model retains the frozen effort, including legacy None.
             request = ProviderRequest(request_id=call_id, model=model, reasoning_effort=reasoning_effort,
                                       prompt=prompt, web_search=web_search)
+            from ..model_policy import bind
+
+            request = bind(self.company, conn, request, "maintainer", inherited=(
+                {"model": model, "reasoning_effort": reasoning_effort, "source": "frozen_replay"} if replay else None))
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             return conn.execute("""INSERT INTO maintenance_calls(id,job_id,request) VALUES (%s,%s,%s)
                 RETURNING *""", (call_id, job["id"], Jsonb(request.model_dump()))).fetchone()

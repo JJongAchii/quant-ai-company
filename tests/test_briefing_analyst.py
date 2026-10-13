@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 from html import escape
 from pathlib import Path
 
@@ -6,6 +7,7 @@ import pytest
 
 from quant_company.briefing.contracts import BRIEFER, REVIEW_CHECKS, BriefProposal, BriefReview, item_map
 from quant_company.briefing.editor import prompt, prune, render, validate
+from quant_company.briefing.execution import final_at
 from quant_company.company import load_roles
 from quant_company.config import Settings
 from quant_company.staff.cases import FAMILIES, grade, make_case
@@ -81,20 +83,50 @@ def test_professional_review_cannot_omit_transmission_alternatives_or_falsifiabi
 def test_main_post_keeps_assessment_effect_and_alternative_visible_without_thread_duplication():
     p = analytical_proposal()
     parts, quality = render(p, bundle())
-    assert "Analyst · AI 시장분석" in parts[0] and "해석·가설" in parts[0]
+    assert "Analyst · AI 시장분석" in parts[0] and "Analyst 해석" in parts[0]
     assert p.issues[0].next_check.text in parts[0]
     assert p.issues[0].analysis.mechanism.text in parts[0]
     assert p.issues[0].interpretation.text in parts[0]
     assert p.issues[0].interpretation.text not in "\n".join(parts[1:])
     assert p.issues[0].analysis.alternative.text in parts[0]
     assert p.issues[0].analysis.alternative.text not in "\n".join(parts[1:])
-    assert "수일~수주" in parts[1]
-    assert len(parts[0]) < 2000 and quality["format_version"] == 15
+    assert "수일~수주" in parts[0]
+    assert p.issues[0].headline not in "\n".join(parts[1:])
+    assert len(parts[0]) < 2000 and quality["format_version"] == 22
     payload = json.loads(prompt(bundle(), "review", p.model_dump(mode="json")).split("BRIEF DATA JSON:\n")[1])
     items = item_map(p)
     preview = "".join(part if isinstance(part, str) else escape(items[part["item_text"]].text, quote=False)
                       for part in payload["main_post_preview"])
     assert preview == parts[0]
+
+
+def test_market_brief_keeps_later_material_issues_at_the_same_heading_level():
+    value = analytical_proposal().model_dump(mode="json")
+    first = value["issues"][0]
+    value["issues"] = []
+    headlines = ("반도체 실적", "유가와 공급", "금리와 환율의 차이", "무역지표와 통상",
+                 "금융·자동차 업종", "해외 중앙은행 결정")
+    for index, headline in enumerate(headlines):
+        issue = json.loads(json.dumps(first))
+        issue["headline"] = headline
+        for claim in (issue["fact"], issue["interpretation"], issue["next_check"],
+                      issue["analysis"]["mechanism"], issue["analysis"]["alternative"]):
+            claim["id"] += f"-{index}"
+        value["issues"].append(issue)
+    p = BriefProposal.model_validate(value)
+    main = render(p, bundle())[0][0]
+    assert main.count("*주요 이슈*") == 1 and "함께 볼 이슈" not in main
+    assert main.index("주요 이슈") < main.index(p.issues[0].headline)
+    assert [main.index(headline) for headline in headlines] == sorted(main.index(headline) for headline in headlines)
+    for index, issue in enumerate(p.issues, 1):
+        assert f"*{index}. {issue.headline}*" in main
+        assert issue.interpretation.text in main and issue.analysis.alternative.text in main
+        assert issue.next_check.text in main
+    payload = json.loads(prompt(bundle(), "review", p.model_dump(mode="json")).split("BRIEF DATA JSON:\n")[1])
+    items = item_map(p)
+    preview = "".join(part if isinstance(part, str) else escape(items[part["item_text"]].text, quote=False)
+                      for part in payload["main_post_preview"])
+    assert preview == main
 
 
 def test_frozen_procedure_is_used_by_writer_and_reviewer(brief, monkeypatch):  # noqa: F811
@@ -114,11 +146,12 @@ def test_reviewer_can_remove_unsupported_analysis_without_leaking_it_to_slack(br
     store, clock = brief
     edition = seed(brief)
     store.commit(response(store.prepare()["request"], analytical_proposal()))
-    clock["at"] = edition.due_at
+    critic = store.prepare()["request"]
+    clock["at"] = final_at(edition.due_at)-timedelta(minutes=5)  # no time left for a repair
     verdict = review().model_dump()
     verdict.update(verdict="reduce", rejected_ids=["driver-alternative"], concerns=["대안 설명의 근거가 부족함"])
     verdict["checks"]["alternatives"] = False
-    store.commit(response(store.prepare()["request"], BriefReview.model_validate(verdict)))
+    store.commit(response(critic, BriefReview.model_validate(verdict)))
     with store.db.transaction() as conn:
         row = conn.execute("SELECT * FROM brief_editions WHERE state='ready'").fetchone()
     assert row["proposal"]["issues"] == [] and row["quality"]["reduced"]

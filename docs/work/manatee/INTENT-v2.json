@@ -1,0 +1,61 @@
+{
+  "constraints": [
+    "Official ChatGPT authentication in isolated runtime only",
+    "PostgreSQL owns policy and receipts; Temporal owns command processing",
+    "No silent model/account/API fallback; existing frozen requests are immutable",
+    "Company repository only; no research repository writes"
+  ],
+  "createdAt": "2026-10-06T07:53:20.179717+00:00",
+  "decisionGates": [
+    "Implementation authorized by user: 그래 진행해줘.",
+    "Production deployment and activation authorized by user after deployment next steps: 그래 이어서 진행해줘"
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "Authenticated model-free Slack commands for catalog, assignments, pin/reset, history and rollback",
+        "Explicit per-task model and effort override persists through subsequent turns and web calls",
+        "New requests use shared PostgreSQL policy; frozen requests and session continuations retain original settings"
+      ],
+      "description": "Owner-controlled Codex model assignment and task override",
+      "id": "IMPLEMENTATION"
+    },
+    {
+      "acceptance": [
+        "Real disposable PostgreSQL and Temporal integration checks; simulated Slack and model output labeled",
+        "Catalog validation rejects unavailable models, invalid efforts and stale account selection",
+        "Runbook, ADR, evidence and qws status in company repository"
+      ],
+      "description": "Integration and operational documentation",
+      "id": "VALIDATION"
+    },
+    {
+      "acceptance": [
+        "Identify live service and pinned worker sources and preserve unrelated policies and research execution artifacts",
+        "Record backup and deployment receipts; update all model request producers before enabling assignments",
+        "Verify real operator status, selected-account model catalog, authenticated control path and stable fleet; label any pending owner Slack interaction"
+      ],
+      "description": "Deploy and activate owner-controlled model assignments in the existing production company runtime",
+      "id": "PRODUCTION"
+    }
+  ],
+  "nonGoals": [
+    "Automatic model ranking and recurring upgrade evaluation in this first slice",
+    "Training, backtests, trades and unsolicited Slack messages",
+    "Changing the independent Claude review runtime"
+  ],
+  "outcome": "직원별 모델 배정과 이번 작업 모델 지정 기능을 검증된 코드로 운영 배포하고 활성화한다. 기존 직원 배정, 고정된 연구 실행물, 진행 중인 요청과 외부 효과 영수증을 보존한다. 사용자가 특정 모델을 명령하면 검증 후 배정을 변경한다. 배포 승인: 그래 이어서 진행해줘.",
+  "revision": 2,
+  "revisionReason": "사용자가 운영 배포·기능 활성화·확인을 안내받은 뒤 그래 이어서 진행해줘라고 승인했다. 기존 직원 배정과 진행 중인 요청을 보존하며 실제 운영 기능을 활성화한다.",
+  "schemaVersion": 1,
+  "slug": "manatee",
+  "sourceRequest": "직원별 모델 배정을 중앙에서 관리하고 사용자 요청으로 변경한다. 특정 모델과 추론 강도의 직원별 고정, 이번 작업 한정 지정, 현황·변경 이력·복원을 구현한다. 직접 지정이 기본 배정보다 우선하며 사용할 수 없는 모델은 임의 대체하지 않는다. 사용자 승인: 그래 진행해줘.",
+  "stopConditions": [
+    "Do not claim live activation without actual deployment evidence",
+    "Reject unsupported model or effort without model inference"
+  ],
+  "supersedes": {
+    "intentDigest": "379217e41c86",
+    "intentFile": "INTENT-v1.json"
+  }
+}

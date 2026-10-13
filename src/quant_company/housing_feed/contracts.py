@@ -10,7 +10,9 @@ SOURCES = {
     "applyhome-apt": "청약홈 · 아파트",
     "applyhome-remndr": "청약홈 · 무순위·잔여세대",
     "lh-sale": "LH · 공공분양",
+    "lh-rental": "LH · 신혼·신생아 임대",
     "sh-sale": "SH · 주택분양",
+    "sh-rental": "SH · 신혼·신생아 임대",
 }
 REGIONS = {"서울", "경기"}
 HOSTS = {"www.applyhome.co.kr", "static.applyhome.co.kr", "apply.lh.or.kr", "www.i-sh.co.kr"}
@@ -45,7 +47,7 @@ class MapLocation(StrictModel):
 
 class HousingNotice(StrictModel):
     id: str = Field(min_length=1, max_length=120)
-    source: Literal["applyhome-apt", "applyhome-remndr", "lh-sale", "sh-sale"]
+    source: Literal["applyhome-apt", "applyhome-remndr", "lh-sale", "lh-rental", "sh-sale", "sh-rental"]
     title: str = Field(min_length=1, max_length=300)
     region: Literal["서울", "경기"]
     category: str = Field(max_length=100)

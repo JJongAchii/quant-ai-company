@@ -1,0 +1,47 @@
+{
+  "record": "briefing-retry-identity-20261012",
+  "incident": {
+    "edition": "9473536f-12b8-552b-ba48-6beb1d198577 (PM / close, 2026-10-12)",
+    "timeline_kst": [
+      "15:50 edition created; plan (16:10-16:15) and inventory (16:15-16:26) completed on codex-runtime (gpt-6-astra, xhigh)",
+      "16:26-16:35 write (brief_compose_v1) completed; server rejected the draft: ValueError inventory_placement_accounting -> briefing_phase_retry (invalid_brief_response)",
+      "16:35:40 retry request news-brief-<edition>-write-r1 -> codex-runtime HTTP 422 'Request does not match ProviderRequest' (no receipt, nothing executed)",
+      "client maps an unknown error code to 'uncertain' -> brief_calls write attempt 1 blocked, edition blocked (error uncertain)",
+      "17:25 due: flush ships a blocked edition with _salvage (no draft: original-bound facts and collected numbers, review_incomplete)"
+    ],
+    "first_draft_cause": "read-only replay of the receipt's result against the edition bundle with the deployed briefing code (quant-company:7b37ac4-video-phase2-0): BriefComposition parsed, compose() raised inventory_placement_accounting because the draft had 0 fact_placements for 53 inventory facts",
+    "block_cause": "version skew: news-worker runs 7b37ac4 (combined73), whose briefing store names retries -r<attempt> and whose IDENTITY accepts them; codex-runtime ran quant-company-codex:5e885d0a...-combined71-3, whose IDENTITY (briefing/execution.py) does not, so ProviderRequest validation failed with 422. Every Analyst retry since the combined73 cutover would block; earlier editions never needed one.",
+    "not_caused_by": "the video work: the -r<attempt> naming is 7b37ac4 briefing/store.py code, not part of the video overlays"
+  },
+  "fix": {
+    "runtime_code_diff_combined71_to_7b37ac4": "briefing/execution.py IDENTITY (+ comment) is the only difference on the Codex request path; contracts.py adds video contracts Codex never receives; codex_runtime.py adds GET /v1/models/{profile} (not called by current clients)",
+    "image": "quant-company-codex:5e885d0a-combined71-3-retryid (sha256:c75b71141deb0287eb78f9fc3be7d877d5ca6eb17ff65d4c836a7ec5be7c740c) = combined71-3 + 7b37ac4 briefing/execution.py (the running file matched combined71's sha256 fbcf8d6d...; the replacement differs only by the regex and its comment)",
+    "build_checks": "valid_request accepts -write and -write-r1, rejects -r0 and other suffixes; ProviderRequest validates both request ids for brief_compose_v1",
+    "release_dir": "/var/lib/quant-company/releases/codex-retry-identity-20261012 (Dockerfile 56a56dcd..., execution.py ec8132d7..., overlay 5c407626..., swap script)",
+    "deployment": {
+      "at": "2026-10-12T08:15:29Z (17:15:29 KST)",
+      "method": "codex-runtime recreated with its own compose label file set + image overlay, --no-deps --no-build; merged config diff = image line only",
+      "pre_check": "17:12 KST: no codex exec process in the runtime (docker top), 0 receipts in running state in the last hour; stop_timeout 360 s (graceful)",
+      "script_defect": "the swap script's quiet-window check used 'docker top -eo args' (docker top requires a PID column), so every check errored and counted as quiet: the 20-second quiet window was not actually verified. Corrected to '-eo pid,args' afterwards.",
+      "post_check": "all 27 receipts written since 17:05 KST are complete (none left running), the old container stopped within 4 s, the new runtime is healthy with 0 restarts"
+    },
+    "today_edition": "not resumed: its write phase deadline (16:54 KST) had passed and the blocked edition ships through the designed salvage at 17:25 KST"
+  },
+  "retry_note_20261012": {
+    "owner": "안전장치로 발송하는 것 필요없고 제대로 작성해서 발송하도록 해야지 / 그냥 해",
+    "problem": "a retried Analyst phase repeated the identical prompt (PM write attempt 0 and -r1 had the same prompt digest), so the writer was never told what the server rejected",
+    "change": "briefing/runner.py passes a fixed server-check label (regex [a-z][a-z0-9_]{2,63}, never model text or pydantic messages) to BriefStore.fault, which keeps it in brief_calls.result; BriefStore.prepare appends retry_note(label) to the retried phase's prompt when it fits the 90,000-character ProviderRequest limit. Without a label the retry is unchanged (existing identical-retry test still passes).",
+    "known_rules": {
+      "inventory_placement_accounting": "fact_placements must hold exactly one entry for every inventory fact ID"
+    },
+    "tests": "tests/test_briefing.py::test_a_retry_is_told_which_server_check_rejected_the_draft; tests/test_briefing.py and tests/test_briefing_execution.py 82 passed",
+    "deployment": {
+      "at": "2026-10-12T11:02:41Z (20:02:41 KST)",
+      "service": "news-worker only (the briefing runner); dispatch and briefing-data-worker unchanged",
+      "image": "quant-company:7b37ac4-briefing-retry-0 = quant-company:7b37ac4-video-phase2-0 + briefing/store.py + briefing/runner.py (the image's originals matched 7b37ac4 by sha256)",
+      "compose": "news-worker label file set with video-phase2-20261012/briefing-overlay.compose.yaml replaced by briefing-retry-note-20261012/briefing-overlay.compose.yaml; merged config diff = image line only",
+      "checks": "no apply- scripts, no open brief edition, codex-runtime quiet window (4 consecutive checks without a codex exec); after: running, 0 restarts, codex-runtime requests 200, no news-worker errors"
+    },
+    "not_changed": "MAX_PHASE_ATTEMPTS (2), the phase deadline runway and the salvage at due are the briefing design's immutable-deadline rules; changing them is a separate owner decision"
+  }
+}

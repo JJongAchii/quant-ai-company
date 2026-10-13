@@ -33,19 +33,35 @@ Codex 인증은 AWS에 있어 맥북 전원과 무관하게 동작합니다. 장
 [설정·데모와 소스별 확인 상태](docs/news.md), [범위 복원과 실제 검증](docs/project/HOT-NEWS-SCOPE-RESTORATION.md),
 [최초 운영 인수·보안 정리](docs/project/HOT-NEWS-ACTIVATION.md)를 참고하세요.
 토큰 절약과 KST 06:00~24:00 발송·야간 모음의 설정 및 검증 상태는 [최적화 인수 기록](docs/project/HOT-NEWS-EFFICIENCY.md)에 남깁니다.
-**Analyst**의 `daily_brief` 정기 브리핑 구현을 추가했습니다. 한국 시간 07:45와 한국
-거래일 20:15에 자료를 종합합니다. 수집 데이터로 계산한 숫자와 뉴스 원문을 연결하며,
+**Analyst**의 `daily-brief` 정기 브리핑 구현을 추가했습니다. 한국 시간 07:45와 한국
+거래일 17:45에 자료를 종합합니다. 수집 데이터로 계산한 숫자와 뉴스 원문을 연결하며,
 핵심 요약·시장 전체 흐름·주요 숫자·최대 여섯 핵심 이슈·다음 확인 사항을 본문에, 상세 근거를 스레드에 제공합니다.
 원문별 누락 점검과 내용 깊이 검토를 추가했으며 [실제 출력 평가 기준](docs/project/BRIEFING-CONTENT-EVALUATION.md)을 따릅니다.
+새 서버에는 발송 없는 미리보기를 적용했고, 10월 7일부터 새 원문으로 작성·검토와 5거래일 운영 검증을 진행합니다.
+자동 발송과 전문가 품질 통과는 [현재 상태](docs/work/amberjack/ANALYST-FINALIZATION-STATUS.json)에서 별도로 확인합니다.
 기존 원문을 실제 구독 모델로 작성·검토한 [내용 평가와 읽을 수 있는 결과](docs/project/BRIEFING-CONTENT-RESULTS.md)를 보존합니다.
 기본값은 비활성이고 실제 운영 발송과 5거래일 관찰은 아직 검증하지 않았습니다.
 [브리핑 설정·복구·데모](docs/briefing.md)를 참고하세요.
+
+AM 최종 발송본을 글 중심 영상으로 제작하고 YouTube에 비공개 업로드한 뒤 Slack에서
+공개·수정·보류를 선택하는 선택 경로를 구현했습니다. 기존 Claude 구독 실행기(대본·검토), Runway 웹 계정 음성(Vincent)과
+로컬 렌더링을 사용합니다. 기본값은 비활성이고 서버 계정 연결·실제 업로드는 별도로 확인해야 합니다.
+[daily video 설정·데모·복구](docs/daily-video.md)를 참고하세요.
 
 `tech-feed`에는 **AI 호출 없이** 국내외 기술 RSS·Atom의 원문 제목·링크·짧은 발췌를 전달하는
 별도 구독 기능을 추가했습니다. 12개 소스를 10분 대기 간격으로 수집하고 KST 06~24시에 한 건씩
 발송하며, 발송 전용 **Tech Scout** Slack 앱과 기존 DB·Temporal을 사용합니다. Tech Scout는
 대화형 직원이나 AI 봇이 아니며 `chat:write`만 갖습니다. 초기 활성화 기본값은 꺼짐입니다.
 [설정·데모·복구](docs/tech-feed.md), [검증 및 운영 상태](docs/project/TECH-FEED-VALIDATION.md)를 참고하세요.
+
+`trend-feed`는 Google 한국 검색 트렌드·네이버 추이·허용 언론 원문을 모아 **08:00·14:00·20:00 KST에 비스포츠 10개 목표**를
+전용 **Trend Scout** 앱으로 전달합니다. 정기는 최근 6시간, 요청은 최근 1시간 관측을 우선하고
+6시간 이력으로 보충합니다. 신규 포착·규모 표시 변화·최근 관측을 반영하며 절대 검색량으로 환산하지 않습니다.
+기존 구독 모델을 운영 설정에서 하루 최대 12회 사용하며, 설치 기본값은 2회입니다.
+급상승 주제가 부족하면 검증된 주요 이슈를 순위 밖에 별도로 보충합니다. 분류가 늦으면
+미분류 주제를 보류합니다. 수집·발송 기본값은 꺼짐입니다.
+`#search-trends`의 `실시간 검색어` 요청에도 스레드로 응답할 수 있습니다.
+[설정·미리보기·복구](docs/trend-feed.md), [검증 및 연결 상태](docs/project/TREND-FEED-VALIDATION.md)를 참고하세요.
 
 `housing-feed`는 서울·경기 청약홈·LH·SH의 공식 분양 공고를 1시간마다 확인하고,
 신규·변경 공고와 접수 전날·당일 알림을 Reporter 앱으로 전달합니다.
@@ -57,6 +73,14 @@ API 키나 모델 호출은 필요하지 않습니다. [범위·일정·운영](
 기본값은 비활성화이며 별도 로그인과 운영 활성화가 필요합니다.
 [명령·설정·복구](docs/runbooks/model-accounts.md),
 [검증 및 운영 반영 상태](docs/project/MODEL-ACCOUNTS-VALIDATION.md)를 참고하세요.
+
+직원 모델을 직접 고정하거나 이번 업무에만 지정하는 기능은 2026-10-06 운영에서 활성화했습니다.
+소유자가 #ai-account-switch에서 `모델 목록`, `모델 지정 개발 gpt-6-astra max`,
+`모델 배정 이력`, `모델 배정 복원 2`를 사용합니다.
+업무 메시지는 첫 줄에 `이번 작업 모델 gpt-6-astra high`, 다음 줄에 업무를 적습니다.
+사용 가능 여부를 확인한 뒤 새 요청부터 적용하며 기존 요청·재시도는 원래 설정을 보존합니다.
+새 환경의 기본값은 비활성화입니다. [명령·활성화·제약](docs/runbooks/model-assignments.md),
+[운영 증거와 실제 Slack 확인 범위](docs/project/MODEL-ASSIGNMENTS-PRODUCTION-20261006.md)를 확인하세요.
 
 ```mermaid
 flowchart LR

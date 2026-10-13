@@ -1,0 +1,70 @@
+{
+  "installed_at": "2026-10-07T13:57:59.674093+00:00",
+  "source_commit": "adc6474a114a3a6d8438cc3d57cb5df8a0b2ca38",
+  "runtime_commit": "25b91bbdbe341bc1699c355b6255b09596bbdbf8",
+  "files": {
+    "monitor.py": "03c9289f2bfcaea50dc964552a6ebe659540ae50a398e1f7e9df3e167a63e270",
+    "monitor.timer": "23d3f29eb7b435b86f2e0dddb69267a729d5aedab5747b8592835dab84d903ec"
+  },
+  "policy_unchanged": true,
+  "timer": "NextElapseUSecRealtime=Wed 2026-10-07 22:58:00 UTC\nActiveState=active",
+  "calendar_kst": [
+    "07:58",
+    "17:58",
+    "18:58"
+  ],
+  "service": "Result=success\nExecMainStatus=0",
+  "model_calls": 0,
+  "slack_calls": 0,
+  "database_mutations": 0,
+  "publication_enabled": true,
+  "editions": [
+    {
+      "id": "3042a447-de8b-55fe-9a56-72014df5c2b9",
+      "kind": "pm",
+      "day": "2026-10-07",
+      "cutoff": "2026-10-07T17:00:00+09:00",
+      "due_at": "2026-10-07T17:45:00+09:00",
+      "state": "committed",
+      "content_passed": false,
+      "delivery": "confirmed",
+      "delay_seconds": 600.36,
+      "delivered_at": "2026-10-07T08:55:03.230199+00:00",
+      "delivery_delay_seconds": 603.23,
+      "problems": [
+        "execution_failed",
+        "late_brief",
+        "full_content_not_qualified",
+        "late_slack_delivery"
+      ]
+    },
+    {
+      "id": "f8004fe8-789b-5df2-8dfa-a06f11903d91",
+      "kind": "am",
+      "day": "2026-10-08",
+      "cutoff": "2026-10-08T06:30:00+09:00",
+      "due_at": "2026-10-08T07:45:00+09:00",
+      "state": "waiting",
+      "content_passed": false,
+      "delivery": "not_requested",
+      "delay_seconds": null,
+      "delivered_at": null,
+      "delivery_delay_seconds": null,
+      "problems": []
+    },
+    {
+      "id": "91dd3647-e807-5370-8a2c-14226429dd3f",
+      "kind": "pm",
+      "day": "2026-10-08",
+      "cutoff": "2026-10-08T16:30:00+09:00",
+      "due_at": "2026-10-08T17:45:00+09:00",
+      "state": "waiting",
+      "content_passed": false,
+      "delivery": "not_requested",
+      "delay_seconds": null,
+      "delivered_at": null,
+      "delivery_delay_seconds": null,
+      "problems": []
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+# Two-file presentation overlay. Keep the base runtime's dependencies, entrypoint,
+# COMPANY_CODE_COMMIT and source revision; receipts record the overlay separately.
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+ARG BASE_IMAGE
+ARG PRESENTATION_COMMIT
+USER root
+COPY src/quant_company/data_watch/coverage.py src/quant_company/data_watch/reporting.py /tmp/data-watch-presentation/
+RUN python -c 'import importlib.util,pathlib,shutil; root=pathlib.Path(importlib.util.find_spec("quant_company").origin).parent/"data_watch"; incoming=pathlib.Path("/tmp/data-watch-presentation"); [shutil.copy2(p,root/p.name) for p in incoming.glob("*.py")]; [p.unlink() for name in ("coverage","reporting") for p in (root/"__pycache__").glob(name+".*.pyc")]; shutil.rmtree(incoming)'
+USER 10001:10001
+LABEL io.quant-company.data-watch.presentation=$PRESENTATION_COMMIT
+LABEL io.quant-company.data-watch.base-image=$BASE_IMAGE

@@ -1,0 +1,86 @@
+{
+  "constraints": [
+    "회사 저장소 안에서만 구현·기록",
+    "기존 구독 인증과 실행 경로 사용; 유료 AI API 자동 전환 금지",
+    "모델 요청 KST 하루 최대 2개, 네이버 HTTP 하루 100회 이하",
+    "영속 DB·Temporal·발송 영수증 사용",
+    "비밀 출력·Git 저장 금지"
+  ],
+  "createdAt": "2026-10-07T00:36:29.212256+00:00",
+  "decisionGates": [
+    "설계 구현·검증과 실제 운영 연결은 기존 사용자 승인 범위",
+    "사용자가 3일 대기를 즉시 실제 브리핑 발송·직접 확인으로 변경함; 현재 본문·실제 구독 모델·Slack 발송 영수증·채널 화면이 정상이면 정기 운영 활성화",
+    "현재 사용자 스포츠 제외 요청을 승인으로 적용; 추가 Slack 메시지나 모델 요청 없이 기존 실제 자료로 검증하고 정기 운영에 반영",
+    "사용자의 현재 요청으로 검증된 스포츠 제외 브리핑 1건의 즉시 추가 발송 승인",
+    "현재 사용자의 10개 꾸준한 수신 요청을 구현·실제 자료 검증·기존 정기 운영 반영 승인으로 적용; 추가 즉시 Slack 발송은 하지 않음",
+    "사용자의 현재 병합 요청으로 최신 main 통합·검증 수리·원격 PR113 병합 승인; 운영 프로세스 재배포 없이 현재 정기 발송 보존"
+  ],
+  "deliverables": [
+    {
+      "acceptance": [
+        "Google KR 급상승 후보 확대와 검증된 주요 이슈 보충 풀, 스포츠 제외 후 최대 10개",
+        "급상승 우선·주요 이슈 별도 표시; 검색량·네이버 지수 없는 보충에 가상 지표를 붙이지 않음",
+        "07:30 동결·08:00 확정·09:00 만료, 구독 하루 2요청·네이버 하루 100회 유지",
+        "검증된 뉴스 출처·날짜·정책·원문 인용과 사건 중복 확인; 분류 실패·자료 부족 사유 표시"
+      ],
+      "description": "한국 종합 검색 트렌드 수집·동결·편집·아침 브리핑과 CLI·설정",
+      "id": "IMPLEMENTATION"
+    },
+    {
+      "acceptance": [
+        "실제 PostgreSQL·Temporal 회귀로 스포츠 필터·10개 선택·보충 표시·출처 권한·마감·중복·정책 변경 검사",
+        "실제 저장 자료와 기존 구독 편집 경로로 10개 미리보기 확인, 모의 외부 검사와 구분",
+        "비밀 없는 구현·검증·운영 증거 보존"
+      ],
+      "description": "실제 PostgreSQL·Temporal 회귀와 공개 소스·구독 실행 자격검사",
+      "id": "VALIDATION"
+    },
+    {
+      "acceptance": [
+        "실제 활성 부모 이미지에 검토한 소스 변경만 적용하고 다른 기능·환경 보존",
+        "정기 발송 활성 상태·다음 08:00 KST 예약·수집·네이버 연결 유지",
+        "이미 전달한 본문과 기존 호출 보존; 불명 호출·발송 자동 반복 금지"
+      ],
+      "description": "전용 앱·키 연결, 즉시 실제 브리핑 발송·직접 확인 후 정기 운영 활성화",
+      "id": "ACTIVATION"
+    },
+    {
+      "acceptance": [
+        "실제 기존 자료 마감 시각을 본문에 표시하고 스포츠 0개 확인",
+        "새 stable ID·본문·승인 event를 DB에 먼저 기록하고 실제 Slack 채널·ts·delivered 영수증 확인",
+        "기존 전달 본문·다음 정기 08:00 예약 보존, 불명 전송 자동 재발송 금지"
+      ],
+      "description": "검증한 스포츠 제외 브리핑을 전용 채널에 즉시 1건 발송",
+      "id": "IMMEDIATE_DELIVERY"
+    },
+    {
+      "id": "MERGE",
+      "description": "최신 main 통합·CI 검증·PR113 원격 병합",
+      "acceptance": [
+        "최신 main의 다른 기능·변경 보존과 CI 실패 원인 수리",
+        "필요한 PostgreSQL·Temporal 회귀·lint·원격 CI 통과",
+        "PR113 merged 상태와 main의 실제 통합 커밋 확인; 운영 설정·기존 발송은 변경하지 않음"
+      ]
+    }
+  ],
+  "nonGoals": [
+    "전체 플랫폼 검색량 순위",
+    "자동 유료 API 전환",
+    "연구·백테스트·실거래",
+    "기존 뉴스 피드의 편집 정책 변경"
+  ],
+  "outcome": "매일 08:00 KST에 스포츠를 제외한 10개 주제를 목표로 검색 트렌드 브리핑을 운영한다. Google KR 급상승 후보를 우선하고 부족하면 이미 검증된 허용 원문 기반 주요 이슈를 명확히 구분해 보충한다. 기존 PostgreSQL·Temporal·구독 인증·발송 영수증과 시간·비용 한도를 유지한다. 최종 PR113을 최신 main과 통합하고 필요한 CI를 통과시킨 후 GitHub main에 병합한다.",
+  "revision": 6,
+  "revisionReason": "User explicitly authorizes merging PR113. Integrate current main, fix failing required CI checks without bypassing them, validate and merge the authorized final change.",
+  "schemaVersion": 1,
+  "slug": "batfish",
+  "sourceRequest": "병합해",
+  "stopConditions": [
+    "실제 즉시 검증에 결함이 있으면 수리·재검증하고 정상 확인 전 활성화하지 않음",
+    "불명 모델 호출·Slack 전송을 새 요청으로 자동 반복하지 않음"
+  ],
+  "supersedes": {
+    "intentDigest": "b958dbc59fad",
+    "intentFile": "INTENT-v5.json"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "captured_at": "2026-10-06T07:16:26.652420+00:00",
+  "phase": "image_qualified_not_activated",
+  "commit": "46d853cbefd4ce808fc247a0ebba1f5df33f0cd8",
+  "archive_sha256": "d126acb95b1b24950bab09a9c8117a25f571af99c2dfec7a80f8e1f72db282c3",
+  "base_image": "quant-company-maintenance:fadc0e54be0c470068bb18011cc6a1a9ec8ee971",
+  "base_image_id": "sha256:b13f2bc9ad2258acc53b679258f4a6bb5d0ad81019cd4605bc1aaeed63df868c",
+  "target_image": "quant-company-maintenance:46d853cbefd4ce808fc247a0ebba1f5df33f0cd8",
+  "target_image_id": "sha256:955bcafa236a5baf9631447651c9ceb57f2cbdb2f0b51c43230627dcdf166f82",
+  "fixed_inputs_sha256": {
+    "pyproject.toml": "a0743962fc1e9252a23b5224d021d26ee18b4ff27119df937ac8429c8f20458d",
+    "uv.lock": "b8757aa1ed833a5a8a0e7849c89ff1ba7ab7987d73c3d0ce679ab0a40cef5f3f",
+    "deploy/entrypoint.py": "616b9b8198f0957e2d5c87b6f6b6a0f84aa50b7531a55939b2e59592e1635377",
+    "deploy/qdata-source.json": "ea151b1f0a092c61e2ca766215d7e6422ecf3e23a25e4d630fcf896f6da220e2"
+  },
+  "reviewed_build_recipe_sha256": "aa595c7d70efff688b0f78024f2fb2bcc2b9222b34c51ca7ce690194625bdd4c",
+  "existing_runtime_environment_equal_after_overlay": true,
+  "preserved_environment_keys": [],
+  "override": "/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8.compose.json",
+  "compose_files": [
+    "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml",
+    "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml",
+    "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml",
+    "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml",
+    "/var/lib/quant-company/config/maintainer-recovery-fadc0e54be0c470068bb18011cc6a1a9ec8ee971.compose.json"
+  ],
+  "envfile": "/var/lib/quant-company/config/runtime.env",
+  "project": "quant-company",
+  "previous_container_id": "c1469d4fc3511d07c2a3b5b70eb06f2d663c4e5fbb7056a89c69771b023dc489",
+  "smoke": {
+    "delivery_catalog_validated": true,
+    "commit": "46d853cbefd4ce808fc247a0ebba1f5df33f0cd8",
+    "provider_request_validated": true,
+    "prompt_characters": 64013,
+    "problems_module_sha256": "ed6f1b8016ee8ed5dd7bacdac70484a4a3bbbe8a35dd78f05896e2a357636357",
+    "model_calls": 0,
+    "network": "none"
+  },
+  "source": "/opt/quant-company/operator-releases/maintainer-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8"
+}

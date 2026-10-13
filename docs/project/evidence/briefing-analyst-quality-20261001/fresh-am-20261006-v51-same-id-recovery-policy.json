@@ -1,0 +1,29 @@
+{
+  "frozen_at": "2026-10-06T00:32:14.412421+00:00",
+  "case": "on-demand-am-20261006-v51",
+  "original_policy": "fresh-am-20261006-v51-policy.json",
+  "original_policy_sha256": "d0f71ee23e35e771f5cee2b4923b1a1c7680d40286bffa5342117acdf49cffa9",
+  "reason": "Verified empty root-owned lane lock prevented the non-root runtime from opening it before preflight or model execution. Host correction preserves inode and content; no prior runtime receipt exists for this request.",
+  "allowed_same_request_id": "news-brief-eval-ae17df89c97136513c1690cc38490757",
+  "request_sha256": "d159c1ed30ef3bb0b98fc4d30c073c67bc6ee879aa41bf2f67f88e1733672467",
+  "frozen_source_bundle_sha256": "bce396403ae85fa9d986e25523088eeeb08571418f56938d8cf7820d932f48a8",
+  "max_total_HTTP_submissions": 4,
+  "known_prior_pre_model_HTTP_faults": 1,
+  "max_additional_submissions": 3,
+  "max_actual_completed_model_calls": 3,
+  "max_unique_model_request_ids": 3,
+  "phases": [
+    "plan",
+    "write",
+    "review"
+  ],
+  "max_repairs": 0,
+  "original_policy_and_fault_preserved": true,
+  "same_frozen_input_not_new_case": true,
+  "all_twelve_checks_and_main_original_audit_unchanged": true,
+  "analysis_source_unchanged": true,
+  "operating_source": "0308d89292fd29bde636d31e8089d1152bd3cd86",
+  "automatic_retry": false,
+  "slack_publication": false,
+  "failure_action": "No more submissions after this manual same-ID execution; preserve any provider fault or content failure. No new ID, source collection, repair or second critic."
+}

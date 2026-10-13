@@ -22,7 +22,8 @@
         "channels:history",
         "groups:history",
         "im:history",
-        "im:write"
+        "im:write",
+        "files:write"
       ]
     }
   },

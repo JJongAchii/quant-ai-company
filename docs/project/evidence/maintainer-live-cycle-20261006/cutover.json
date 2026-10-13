@@ -1,0 +1,259 @@
+{
+  "state": "active",
+  "started_at": "2026-10-06T08:27:29.178771+00:00",
+  "patch_commit": "87e774fbb5caafb6cf56bc14af678699ccacea10",
+  "base_image": "quant-company-autonomous:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+  "base_image_id": "sha256:6edd5c056625e66cd6a26da6b33a5451372b301f2c9a71894e5d20506de8aba5",
+  "target_image": "quant-company-autonomous:director-context-87e774fbb5caafb6cf56bc14af678699ccacea10",
+  "target_image_id": "sha256:edb93937acda68bfe7ef17307eef3832b7f775665fddd69e98658048741848fb",
+  "global_release": "/opt/quant-company/releases/971f872a23f4989ddd1628bc28c59868a1c29264",
+  "before": {
+    "quant-company-maintenance-1": {
+      "id": "ff999c06352a6f374822d15db9d49884af0cb49d5b4f02e24fa6b53d978c7848",
+      "image_id": "sha256:955bcafa236a5baf9631447651c9ceb57f2cbdb2f0b51c43230627dcdf166f82",
+      "running": true
+    },
+    "quant-company-news-worker-1": {
+      "id": "910813dca9d500ea086541dc87a1fff61d5204ac596d63e7f773490c91ebd356",
+      "image_id": "sha256:cd08cf471a5854c927bdb3d9e383ad61d07d9edb8b81adf282f6c371d2ab64ea",
+      "running": true
+    },
+    "quant-company-dispatch-1": {
+      "id": "11d219b2492091f1c215d057dca252868068e03b3861f63d788fc9f055a4c154",
+      "image_id": "sha256:cd08cf471a5854c927bdb3d9e383ad61d07d9edb8b81adf282f6c371d2ab64ea",
+      "running": true
+    },
+    "quant-company-briefing-data-worker-1": {
+      "id": "e26078301296e69b5251e1cacd0d7e88facba0e4fdc9c9d9cd62c0cbcf7304b9",
+      "image_id": "sha256:cd08cf471a5854c927bdb3d9e383ad61d07d9edb8b81adf282f6c371d2ab64ea",
+      "running": true
+    },
+    "quant-company-worker-1": {
+      "id": "9318351fe35099796fd0324295b4038f327844cf9b516204d4bee7a79727f75f",
+      "image_id": "sha256:6edd5c056625e66cd6a26da6b33a5451372b301f2c9a71894e5d20506de8aba5",
+      "running": true
+    },
+    "quant-company-account-gateway-1": {
+      "id": "95328322c7036fe29d944a833d9e67dbaa4adfcfbf6ab1794b993fe26edc34a6",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "running": true
+    },
+    "quant-company-api-1": {
+      "id": "933117a07749bb6cb8bc4309b9d068bf5665b5e0eb4e42976af59181aad8e544",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "running": true
+    },
+    "quant-company-slack-socket-1": {
+      "id": "9ea8cbab7c58ca3a91e5172f57adf9bcd5202607271d45beb5e610a042b41dbd",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "running": true
+    },
+    "quant-company-codex-runtime-1": {
+      "id": "aaefe41a0b06f10d92363fc94b850ad8bc5fb4e2ce259c79ffcd3a89528b76f0",
+      "image_id": "sha256:a4bc2f4e24fb143db994b8b201a538dc3acce4e651e9bfbdc46550ea6be5f239",
+      "running": true
+    },
+    "quant-company-data-watch-worker-1": {
+      "id": "b8ee09473da6f0343942a4b993d3b9586870faa511d2bb58377e4f77a6cad24a",
+      "image_id": "sha256:2a2aff76ac41d84fa53f0b323565303f967806e6cb797387f7384f4666ae3e9e",
+      "running": true
+    },
+    "quant-company-quant-feed-worker-1": {
+      "id": "eeb6a2568820a5c4c10abc8ed668d7e4a14532fa141536f5b686de0c34a6ac6c",
+      "image_id": "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79",
+      "running": true
+    },
+    "quant-company-quant-codex-runtime-1": {
+      "id": "ce8b1dfdab1bd595aeb7e7446e0d1e1a38f5f8457b14969620d93edb11841190",
+      "image_id": "sha256:c983c63235365a43ae1afa8eaba37bd7708e49b43afc2089aa824bad242f02e7",
+      "running": true
+    },
+    "quant-company-housing-feed-worker-1": {
+      "id": "7df307ee748d54371c6c9bb2fee6a5ac17e7f5b341d1f137db7af89eb69e74ab",
+      "image_id": "sha256:db3c79878edf68a0115c8f0b893d41a92fa78e91f1a59bf76f92b60c8a69a589",
+      "running": true
+    },
+    "quant-company-claude-runtime-1": {
+      "id": "02252b5adc5fd98c07c28267b02e67b32211d7009ec570b1fd79fbdacb6c111a",
+      "image_id": "sha256:45940026acb7da9ce471fcda23287f3f6d69c6ac790609e6f81f0b9ae28017ea",
+      "running": true
+    },
+    "quant-company-postgres-1": {
+      "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+      "image_id": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "running": true
+    }
+  },
+  "compose_files": [
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/research.compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/autonomous-research.compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/model-accounts.compose.yaml",
+    "/opt/quant-company/releases/289dc70c6858ea229476216d7ea4c1c10ece68ff/deploy/data-watch.compose.yaml",
+    "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-01.compose.json",
+    "/var/lib/quant-company/config/conditional-231d6ba0755f658f167636a8ea2c3ef65b6af562-03.compose.json",
+    "/var/lib/quant-company/config/native-output-5c44ad07273adc780a56a47d7d35114fd0dc32c8-02.compose.json",
+    "/var/lib/quant-company/config/data-watch-readable-v6-8508954320877144e8f24cb52c8353c0e18f514a-api.compose.json",
+    "/var/lib/quant-company/config/scoped-data-86aea8cdf03b5543666813c97689acb1e8158a6d.compose.json",
+    "/var/lib/quant-company/config/held-audit-ec1fbeb29a49420a367f06af596283e6ead4ab72.compose.json",
+    "/var/lib/quant-company/config/director-context-87e774fbb5caafb6cf56bc14af678699ccacea10.compose.json"
+  ],
+  "envfile": "/var/lib/quant-company/config/runtime.env",
+  "override": "/var/lib/quant-company/config/director-context-87e774fbb5caafb6cf56bc14af678699ccacea10.compose.json",
+  "uncertain_review_sha256": {
+    "review-36ce55f1-d1c2-4c8a-bae7-adc46e1a12b6": "078d0b3b198ac8274f8c42b1f0eec55cf0ced1b73424c3384b556ae4aefc2c27",
+    "review-240cb2cc-402a-4c79-9de1-e36d327b3084": "e7ea8b48736618778661d8e633198ed4ea55a6f751cd12076909f50a3a7207bd",
+    "review-eae1a937-fbef-439e-af13-0a7f7409f25d": "c67c84ebe7f1ef3ac0872f6e769df280e983daba8f22fbc4b0a3e9bef20f659f",
+    "review-39395d18-968d-4784-b2b2-a5e15f952510": "21b25e5048791d40a7b6a5f1f1cac1df85e8a154e990410289629bc86b9d2d4b",
+    "review-63abd47f-89e7-44c5-b17a-f3e024a8de6e": "caef76b06b8461f354ff735e76947cffe74859daf9255938138cd270787410a3",
+    "review-cdbbed6d-acc5-40ee-9793-4d86905a4db5": "7f4df79e6cba8f02e0116e508b926c23335715b14a4ae542cfcbedbfde10843f",
+    "review-08a21b09-58c2-4dc9-816b-aceeb301b6c9": "8483279ddc1c14f68620e1114dd5dc0ec11b7d72b05384329f2239fc076b65e6",
+    "review-2ba7a04c-9e2a-4273-b757-99892b040b88": "578f2aedf1bf4c485fa98c7cdb7d122ebdfd80baf2a643b0814a9b300311c1e3",
+    "review-cbcd0453-4c6e-45d4-89e9-9cdb23a8ac84": "e13b5b50a2e1f5f26235f062914673c4dcd6408445361880bf7a13ba736aaa0a",
+    "review-61b91f4c-e518-4c6e-b968-98f7acd080c3": "d78f24e99265a69fd46395e5fb76a00b9de2ca7fdbfa7c15df897fcf19a08209"
+  },
+  "historical_maintenance_call_sha256": {
+    "maint-281fa59e-c759-4d07-a66a-df8103a2c42a-triage": "7b614f2a90dad2ef0edd833d1839187d0616852fac042fde53a327aa0d6a3c83",
+    "maint-d9814fcf-5a57-4884-ab92-c1413c3afa70-triage": "7d7a1f4008fb440cb9b7e1632c66af3ff4f4c8c7aee4fae5db5327696128e987",
+    "maint-168c2f7f-e272-5c3b-9453-4dab63680b81-patch": "facc14361bb8e09771badc1663a3d21b21f6fe9d0d38f8c87da61fc252ff2df7",
+    "maint-707109fc-e35a-4975-bf5f-57f51c827795-triage": "bbe33a4bbc0be0a4b244b082d3027036c2f6d0f82fb4c77f5308b8077c2a14ef",
+    "maint-1d928dce-dfad-4321-9235-b544324eec7b-triage": "f843486d78d8b2d428982c283f6e5bca5f124b7d436029441ab1f7bc9ee77c45",
+    "maint-8b5b2a2f-4821-4a7b-aa2e-1854e62a5f72-triage": "24d009f760f3ac973cc5603fe12a56612fb7b268dcb9b73d89533ad7de046dd9",
+    "maint-f848096f-4003-58a1-8b59-3e47a62e78e0-patch": "0cfefa279be1f6d8ff2c645c9de430a846ee43eb4b96015466f21a4f56dd8410",
+    "maint-3c4edb60-08ce-4bbc-9c0c-bba8a333ffdb-triage": "d23fb285f6696dd469e3fa41ea3954af6a14b155423ce5c4d2020a6a6287f7e5",
+    "maint-6f807a00-d68e-5f94-98b9-40d18aa2ec77-patch": "fd3e58e8ecc2d491a99d9723526e1e81afddc2ae409d583cb5f62e494bfe60bb",
+    "maint-82bc171b-b429-5cef-854c-b9df58c0a853-r2-triage": "0604cf173d5f1d5cffec96c31befb475212dd10fd322e51cc55ab10d081ca9d6",
+    "maint-f9e1ca16-4a04-57c7-925a-33e347d82b10-r2-triage": "d8bb91fc098c65b177a9a83137c574ad514be91d35eb11f1b077b6b96b5be9a9",
+    "maint-8eb2bad7-95b0-4b17-8e69-c24a8bbd8ae1-triage": "3c4a2fea430d718287062091ec03ca692bf4485d25f416444894015ab5193600",
+    "maint-f9e1ca16-4a04-57c7-925a-33e347d82b10-r3-triage": "217c79b1aed23c2ec2b02d9c67f1fecea5b3ddc61bda10130f877aee8bd66d2e",
+    "maint-1e9d1731-8684-4849-b4dc-115be779a1fc-r1-triage": "b9245e3d2fa30c3a8d64eceee6faeeddb522a2fdc9402ede5f5e73e2b3e1fc7e",
+    "maint-2e5db328-c3b8-526d-838a-9405b99c154e-triage": "96c5b0b6734e43c7b28bd9bb0ebd096a4ebcd92d89c481f238cc2dd46c8f2ccf",
+    "maint-8e98cb1f-bc39-57be-99c0-7b4426e5c609-triage": "1e236b3ef7cdbad61ecaa93c46be8527ad6c3ecb6df76412beb8ab31e8c397f4",
+    "maint-4234b4ed-1637-4876-827a-6a3587bc60ef-triage": "7a418ad405fd08c2c1488761ee5989e89abb490b2aee8b22c4e48ac209bf8769",
+    "maint-779c23bf-f040-4775-bc81-3c13602bac4b-triage": "b6db6702ae709beb43257753ed5155f60b3d3117e65b00182159fe48bbcb666c",
+    "maint-a1f896b4-7a43-489d-9d20-08a41cfdbc74-triage": "b63be1dae7797b0fb405e4e95a89ae298a5f414d8a69b4aa4c5449c30980475d",
+    "maint-564cfad0-afc6-414e-9c3d-fbd39510849b-triage": "92280925c3d67d72978b4c614fa29f80a1d2a59c23508fdf51bedc60f7a5bd1b",
+    "maint-5e0f73f0-4780-495b-b6e0-92ecaae7f3e1-r1-triage": "1cbfd75b13ba62f3a4d6188a918e0eb8f580c3c2888cbc322f1f6e2452078abe",
+    "maint-e6a5a74b-511e-4f4e-9811-7016670f18f6-triage": "37f264675b26b09410a0f3aed3f67ff233c1d70090244e3d241dc9988306e367",
+    "maint-e6a5a74b-511e-4f4e-9811-7016670f18f6-triage-i1": "1474b9430f413b45f6aa8dfc6ec42168b472278b276036e40da68f3e59533b7c",
+    "maint-7089016e-1b54-46d5-8459-d6fdbf7c4e7e-triage": "143b2eca5f5971ff6dfdb47735338af9565b5b8b5d02dd1e99753ad33be06e13",
+    "maint-7089016e-1b54-46d5-8459-d6fdbf7c4e7e-triage-i1": "b024a6f0a87c3a69a528692f160e6d33cb35cf7990e8b914b2b7514693619b0b",
+    "maint-7089016e-1b54-46d5-8459-d6fdbf7c4e7e-r1-triage": "bc6c666c70f14e7df9a6438b2f484b7f4ac92c063efb3c520f96869234c141dc",
+    "maint-7089016e-1b54-46d5-8459-d6fdbf7c4e7e-r1-triage-i1": "fa681814bd90834594638a92fed2acdfe72e7dc16df086690469b11c43e66fdc",
+    "maint-7089016e-1b54-46d5-8459-d6fdbf7c4e7e-r1-triage-i2": "9e333a4f2eb6852a9ba6001a2f5517913e0264d54066f24ff0deb55b6948e9aa",
+    "maint-7089016e-1b54-46d5-8459-d6fdbf7c4e7e-r1-triage-i3": "2e3b2665482f5c725371de456e2138a86fdb7cb3bf353056d6be4a92d0e01243",
+    "maint-7089016e-1b54-46d5-8459-d6fdbf7c4e7e-r1-triage-i4": "37fe7826b1e7f3931a68852adc90bd8d42de939efcc34b1fdec2e0c775e72131",
+    "maint-b9453c4e-b366-4fbe-ad45-e6783cb1b17c-triage": "247566f867e870a72615ac8b370c7309f8dcc5113ee236ff77ae3c8fd55982f8",
+    "maint-3f97dda0-8fed-470a-a81d-ecac60d92cff-triage": "892af2ff4f6f200d46f0a98d212e9568c5c786342c2e3e971ed24e4d6bf414d6",
+    "maint-3f97dda0-8fed-470a-a81d-ecac60d92cff-triage-i1": "752d41354d6a8313d9d134ac2597fbe77556a4178180bbf9b4f99746e11bad19",
+    "maint-3f97dda0-8fed-470a-a81d-ecac60d92cff-r1-triage": "5f8d8d3946677c30115a8653bf437fc5fd43499d97cda5670d1051ce2a03cc82",
+    "maint-3f97dda0-8fed-470a-a81d-ecac60d92cff-r1-triage-i1": "43317cd196af94b1095fd3103d97a73214e01061b6f48fc7289f4f5b1436794e",
+    "maint-3f97dda0-8fed-470a-a81d-ecac60d92cff-r3-triage": "b722a6371e0da00a05d980c8ef6c05c9850e4790277320a26a84c0405a8662da",
+    "maint-b9453c4e-b366-4fbe-ad45-e6783cb1b17c-r3-triage": "554a9e062bdcd223efc480008ca28032306ac4b9908caf73699040319764cc7b",
+    "maint-b9453c4e-b366-4fbe-ad45-e6783cb1b17c-r3-triage-i1": "43064b030f451b9597e1219fe934dab869b2e5ac420e29394a020112237c42c3",
+    "maint-ea356e41-534e-4a22-9c6a-5b8ffc9d0428-r1-triage": "79d70314aa4a9579da30efbdb62c25c02221c577d767f8754b128cb13877fccc",
+    "maint-7eaa53e3-6f65-4afa-9415-889f4d02cd9a-triage": "f82858f01ded007f3052b38a7b7075b11b3c814074c58da0e8292831d20c9f5c",
+    "maint-d25001d9-b75f-4518-b26b-e045844522a4-r2-triage": "40aa288082cf5e14a9b0f5c2dcc7b18f07fe3fb7678f2e4bd2a84b026bb24f94",
+    "maint-d25001d9-b75f-4518-b26b-e045844522a4-r2-triage-i1": "141688ccb3d63311569c3ae7253b5ebf5059006feba028f7ebfc3881a96f03a6",
+    "maint-d25001d9-b75f-4518-b26b-e045844522a4-r2-triage-i2": "c694fb481827885f0850bf12884182b11582c83af57c1f073e98a5d3cbd1940b",
+    "maint-d25001d9-b75f-4518-b26b-e045844522a4-r3-triage": "080e6d258d49db8cf33488f4bf7c804ad544563269ff746e0dbdc0a11ff13af7",
+    "maint-0e6bc957-eba7-454f-b585-7dbdcd960cb6-triage": "81e6426ba04abedb86a3c277ff20bc035401ebbf8f23f030c57b44a8ad55de92",
+    "maint-0e6bc957-eba7-454f-b585-7dbdcd960cb6-triage-i1": "06f8de4b3804fafcd230b315418be80c12619a9ed9cec4a3c1b13ce1080a1664",
+    "maint-0e6bc957-eba7-454f-b585-7dbdcd960cb6-triage-i2": "a58b9dbada41fb2a4e32d624ce9d53508a7a379a2d30705b3e15db95fca4d51b",
+    "maint-0e6bc957-eba7-454f-b585-7dbdcd960cb6-r1-triage": "cc6f978dd683fb90f2cd8e3c9f9a8cd2acec7a972c3d6ce8d4b8567ff024ecde",
+    "maint-5693ebd8-149f-4c17-8b2f-ff7cbc8a311d-r2-triage": "1ab7fbddc8bba1c77e9066b7d54ca2127f3d991fb9658b1b4c27bc42b84862a4",
+    "maint-8ba1071d-21e0-49a8-ac94-baa3a5549475-triage": "9f60bf3ac362f02b8dd20e24cc8231b4f1d39a39731ab8ccc7cfa5b2478197e7",
+    "maint-8ba1071d-21e0-49a8-ac94-baa3a5549475-r3-triage": "b2a50647d19fdcd7c660b9ea69426a0c20b5b57f0d31176df955734dc5c82fca",
+    "maint-38795dd1-0c20-4fd9-8dbb-d3f9732a84d6-triage": "24afa635a42fef56bb08bf1b701c304f33be601ba2263d9d7e5cec8aee0f0136",
+    "maint-38795dd1-0c20-4fd9-8dbb-d3f9732a84d6-triage-i1": "a3c09a90a1213e76a2e717e6dfe79fd84d3e84cad084fdafb2988855271cd875",
+    "maint-38795dd1-0c20-4fd9-8dbb-d3f9732a84d6-triage-i2": "3937bed8753be7b3130a6b97b56875e8fb77e982d51dcb5e3e9541c0933eae3b",
+    "maint-38795dd1-0c20-4fd9-8dbb-d3f9732a84d6-triage-i3": "d1352d86e82e38fb4cf056c602e139845b19f50a996833ac531014d363e04c40",
+    "maint-38795dd1-0c20-4fd9-8dbb-d3f9732a84d6-triage-i4": "9a9b91e9556e9284a9196b35f935564e71551a42e0e29be959188fcd8a15501d"
+  },
+  "rollback": {
+    "base_image": "quant-company-autonomous:ec1fbeb29a49420a367f06af596283e6ead4ab72-held-audit",
+    "instruction": "Retain this exact worker-only stack and installed environment. Set only worker.image to base_image. Reconcile any in-flight request before retry; keep stable request IDs."
+  },
+  "completed_at": "2026-10-06T08:27:34.505547+00:00",
+  "after": {
+    "quant-company-worker-1": {
+      "id": "e1f2312f0eba510998ecd8bc66f286326427352bf29578a0df799d86f3d9d144",
+      "image_id": "sha256:edb93937acda68bfe7ef17307eef3832b7f775665fddd69e98658048741848fb",
+      "running": true
+    },
+    "quant-company-maintenance-1": {
+      "id": "ff999c06352a6f374822d15db9d49884af0cb49d5b4f02e24fa6b53d978c7848",
+      "image_id": "sha256:955bcafa236a5baf9631447651c9ceb57f2cbdb2f0b51c43230627dcdf166f82",
+      "running": true
+    },
+    "quant-company-news-worker-1": {
+      "id": "910813dca9d500ea086541dc87a1fff61d5204ac596d63e7f773490c91ebd356",
+      "image_id": "sha256:cd08cf471a5854c927bdb3d9e383ad61d07d9edb8b81adf282f6c371d2ab64ea",
+      "running": true
+    },
+    "quant-company-dispatch-1": {
+      "id": "11d219b2492091f1c215d057dca252868068e03b3861f63d788fc9f055a4c154",
+      "image_id": "sha256:cd08cf471a5854c927bdb3d9e383ad61d07d9edb8b81adf282f6c371d2ab64ea",
+      "running": true
+    },
+    "quant-company-briefing-data-worker-1": {
+      "id": "e26078301296e69b5251e1cacd0d7e88facba0e4fdc9c9d9cd62c0cbcf7304b9",
+      "image_id": "sha256:cd08cf471a5854c927bdb3d9e383ad61d07d9edb8b81adf282f6c371d2ab64ea",
+      "running": true
+    },
+    "quant-company-account-gateway-1": {
+      "id": "95328322c7036fe29d944a833d9e67dbaa4adfcfbf6ab1794b993fe26edc34a6",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "running": true
+    },
+    "quant-company-api-1": {
+      "id": "933117a07749bb6cb8bc4309b9d068bf5665b5e0eb4e42976af59181aad8e544",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "running": true
+    },
+    "quant-company-slack-socket-1": {
+      "id": "9ea8cbab7c58ca3a91e5172f57adf9bcd5202607271d45beb5e610a042b41dbd",
+      "image_id": "sha256:0f7c767604bfed47d1788adc9769791e9ed72a5977b2c11ab95cc05a3c0a52d7",
+      "running": true
+    },
+    "quant-company-codex-runtime-1": {
+      "id": "aaefe41a0b06f10d92363fc94b850ad8bc5fb4e2ce259c79ffcd3a89528b76f0",
+      "image_id": "sha256:a4bc2f4e24fb143db994b8b201a538dc3acce4e651e9bfbdc46550ea6be5f239",
+      "running": true
+    },
+    "quant-company-data-watch-worker-1": {
+      "id": "b8ee09473da6f0343942a4b993d3b9586870faa511d2bb58377e4f77a6cad24a",
+      "image_id": "sha256:2a2aff76ac41d84fa53f0b323565303f967806e6cb797387f7384f4666ae3e9e",
+      "running": true
+    },
+    "quant-company-quant-feed-worker-1": {
+      "id": "eeb6a2568820a5c4c10abc8ed668d7e4a14532fa141536f5b686de0c34a6ac6c",
+      "image_id": "sha256:2110d56b77c35c89bfab28185f4924e4eec2db85878b4cab9ec92dbdaef73d79",
+      "running": true
+    },
+    "quant-company-quant-codex-runtime-1": {
+      "id": "ce8b1dfdab1bd595aeb7e7446e0d1e1a38f5f8457b14969620d93edb11841190",
+      "image_id": "sha256:c983c63235365a43ae1afa8eaba37bd7708e49b43afc2089aa824bad242f02e7",
+      "running": true
+    },
+    "quant-company-housing-feed-worker-1": {
+      "id": "7df307ee748d54371c6c9bb2fee6a5ac17e7f5b341d1f137db7af89eb69e74ab",
+      "image_id": "sha256:db3c79878edf68a0115c8f0b893d41a92fa78e91f1a59bf76f92b60c8a69a589",
+      "running": true
+    },
+    "quant-company-claude-runtime-1": {
+      "id": "02252b5adc5fd98c07c28267b02e67b32211d7009ec570b1fd79fbdacb6c111a",
+      "image_id": "sha256:45940026acb7da9ce471fcda23287f3f6d69c6ac790609e6f81f0b9ae28017ea",
+      "running": true
+    },
+    "quant-company-postgres-1": {
+      "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+      "image_id": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "running": true
+    }
+  },
+  "environment_unchanged": true,
+  "container_boundaries_unchanged": true,
+  "uncertain_reviews_unchanged": true,
+  "historical_maintenance_calls_unchanged": true
+}

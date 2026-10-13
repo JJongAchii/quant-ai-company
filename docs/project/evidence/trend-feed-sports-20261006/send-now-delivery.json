@@ -1,0 +1,52 @@
+{
+  "approval": "chat-user-send-sports-now-20261006",
+  "id": "1c6feec1-bcaa-5287-a6d8-30fddf0d7f8c",
+  "created_now": true,
+  "checked_at": "2026-10-06 13:52:58.096994+00:00",
+  "source_digest_id": "012716d1-68d5-52fe-839e-047a2c9b99ef",
+  "source_cutoff": "2026-10-06 21:24:10.854371+09:00",
+  "selected_topics": 4,
+  "sports_selected": 0,
+  "text": "*한국 검색 트렌드 · 스포츠 제외 브리핑*\n10/06 21:24 KST 마감 자료 · 앞서 검증한 자료의 스포츠 제외 적용 결과\n\n*1. 유해진 · 연예*\n관측 이력 부족 · Google 규모 표시 5000+ (구간 내 최대 표시)\n네이버 최근 7일 평균 / 이전 7일 평균: +270% · 2026-10-05 기준\n관련 배경: SBS 뉴스는 유해진 등 영화 제작진의 부산국제영화제 개막식 참석과 무대 인사가 취소됐다고 보도했다.\n<https://news.sbs.co.kr/news/endPage.do?news_id=N1008785532|SBS 뉴스 원문>\n\n*2. 흑 상어 · 사회*\n관측 이력 부족 · Google 규모 표시 5000+ (구간 내 최대 표시)\n네이버 최근 7일 평균 / 이전 7일 평균: -70% · 2026-10-05 기준\n관련 배경: 연합뉴스는 부산 북항 친수공원 인공 수로에 머무는 상어 '부캉이'가 흑상어로 확인됐다고 보도했다.\n<https://www.yna.co.kr/view/AKR20261006141700051|연합뉴스 원문>\n\n*3. 자녀 · 사회*\n관측 이력 부족 · Google 규모 표시 2000+ (구간 내 최대 표시)\n네이버 최근 7일 평균 / 이전 7일 평균: +17% · 2026-10-05 기준\n배경 확인 제한 · 검증된 관련 원문 없음\n<https://search.naver.com/search.naver?where=news&query=%EC%9E%90%EB%85%80|자녀 뉴스 검색>\n\n*4. 구축함 · 사회*\n관측 이력 부족 · Google 규모 표시 1000+ (구간 내 최대 표시)\n네이버 최근 7일 평균 / 이전 7일 평균: +4% · 2026-10-05 기준\n배경 확인 제한 · 검증된 관련 원문 없음\n<https://search.naver.com/search.naver?where=news&query=%EA%B5%AC%EC%B6%95%ED%95%A8|구축함 뉴스 검색>\n\n자료 마감 10/06 21:24 KST · 수집 시작 10/06 20:31 KST\n스포츠 주제 제외 · 분류한 후보 중 최대 8개\n검색 규모는 Google 제공 표시이며 전체 검색량 순위가 아닙니다. 네이버 지수와 합산하지 않습니다.",
+  "text_sha256": "9f9cf49b6a0c4b2491fe94f0ac753374c9dd9cf7a983bd117502f5e42aab318b",
+  "receipt": {
+    "id": "1c6feec1-bcaa-5287-a6d8-30fddf0d7f8c",
+    "status": "delivered",
+    "channel": "C0C6WTA9ECV",
+    "sent_ts": "1791294778.643269",
+    "attempts": 1,
+    "error": null,
+    "started_at": "2026-10-06T13:52:58.348328+00:00",
+    "kind": "status",
+    "author": "trend_scout",
+    "outbox_body_matches_message": true,
+    "text_sha256": "9f9cf49b6a0c4b2491fe94f0ac753374c9dd9cf7a983bd117502f5e42aab318b",
+    "checked_at": "2026-10-06T13:54:05.734480+00:00",
+    "automatic_uncertain_replay": false
+  },
+  "original_delivered_body_preserved": true,
+  "regular_publication_enabled": true,
+  "next_publication": "2026-10-07 08:00:00+09:00",
+  "model_calls_made": 0,
+  "naver_calls_made": 0,
+  "automatic_uncertain_replay": false,
+  "slack_messages_created": 1,
+  "permalink": "https://achiisquantresearch.slack.com/archives/C0C6WTA9ECV/p1791294778643269",
+  "channel_screen": {
+    "checked_at": "2026-10-06T13:54:05.734480+00:00",
+    "exact_message_timestamp_count": 1,
+    "body_matches": true,
+    "links_match": true,
+    "link_count": 4,
+    "page_url": "https://app.slack.com/client/T0C1YRDRPNF/C0C6WTA9ECV"
+  },
+  "operator_source_sha256": "0e48f17f1b627fb99174a5d4fa3266d7ae4f167d7725d5bf8def35e8d2df24ef",
+  "initial_preflight_rejection": {
+    "runtime": "news-worker",
+    "reason": "workspace ID belongs to dispatch environment; verification moved to dispatch, no configuration changed",
+    "queue_writes": 0,
+    "slack_calls": 0
+  },
+  "delivery_runtime": "dispatch",
+  "regular_schedule_preserved": true
+}

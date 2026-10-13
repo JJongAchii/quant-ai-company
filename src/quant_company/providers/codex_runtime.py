@@ -4,6 +4,7 @@ import asyncio
 import hmac
 import os
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -11,6 +12,7 @@ from pydantic import ValidationError
 from starlette.responses import JSONResponse
 
 from quant_company.contracts import ProviderFault, ProviderRequest
+from quant_company.providers.codex_release import SUPPORTED_CLI_VERSION
 from quant_company.providers.codex_runner import CodexRunner, RunnerConfig, strict_json
 
 MAX_REQUEST_BYTES = 512 * 1024
@@ -41,7 +43,7 @@ def runner_from_environment() -> CodexRunner:
 
 
 def create_app(*, runner: CodexRunner | None = None, token: str | None = None,
-               runner_factory=None) -> FastAPI:
+               runner_factory=None, max_request_bytes: int = MAX_REQUEST_BYTES) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         yield
@@ -79,7 +81,7 @@ def create_app(*, runner: CodexRunner | None = None, token: str | None = None,
             body = bytearray()
             async for part in request.stream():
                 body.extend(part)
-                if len(body) > MAX_REQUEST_BYTES:
+                if len(body) > max_request_bytes:
                     return JSONResponse({"code": "invalid_request", "message": "Request exceeds byte limit.",
                                          "retry_after_seconds": 0}, status_code=413)
             payload = ProviderRequest.model_validate(strict_json(body))
@@ -140,6 +142,23 @@ def create_app(*, runner: CodexRunner | None = None, token: str | None = None,
             return JSONResponse({"accounts": statuses})
         except ProviderFault as fault:
             return fault_response(fault)
+
+    @app.get("/v1/models/{profile}")
+    async def models(profile: str, request: Request) -> JSONResponse:
+        from .model_catalog import read_catalog
+
+        try:
+            authorize(request)
+            runtime = get_runner()
+            if not isinstance(runtime, CodexRunner) or profile not in {"primary", "backup"}:
+                raise ProviderFault("unavailable", "Unknown model catalog profile.")
+            rows = await read_catalog(runtime, profile)
+            return JSONResponse({"profile": profile, "models": rows, "cli_version": SUPPORTED_CLI_VERSION,
+                                 "checked_at": datetime.now(UTC).isoformat()})
+        except ProviderFault as fault:
+            return fault_response(fault)
+        except OSError:
+            return fault_response(ProviderFault("unavailable", "The model catalog is unavailable."))
 
     return app
 

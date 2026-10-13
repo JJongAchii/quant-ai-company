@@ -8,6 +8,7 @@ from ..execution import provider_for
 from . import schedule
 from .contracts import BriefEdition
 from .inputs import collect
+from .repair import failure
 from .store import BriefStore
 
 
@@ -40,6 +41,7 @@ class BriefEditor:
             return ready
         request = ProviderRequest.model_validate(ready["request"])
         task = asyncio.create_task(self.provider.run(request))
+        response = None
         try:
             while not task.done():
                 await asyncio.wait({task}, timeout=5)
@@ -52,8 +54,11 @@ class BriefEditor:
         except ProviderFault as exc:
             await asyncio.to_thread(self.store.fault, request.request_id, exc.code, exc.retry_after_seconds)
             return {"state": "defer" if exc.code in {"busy", "quota", "unavailable"} else "blocked", "reason": exc.code}
-        except ValueError:
-            await asyncio.to_thread(self.store.fault, request.request_id, "invalid_brief_response")
+        except ValueError as exc:
+            # A fixed server-check label (or schema locations) and the model's own draft go to the repair retry.
+            label, draft, detail = failure(exc, response)
+            await asyncio.to_thread(self.store.fault, request.request_id, "invalid_brief_response", 0, label, draft,
+                                    detail)
             return {"state": "blocked", "reason": "invalid_brief_response"}
         finally:
             if not task.done():

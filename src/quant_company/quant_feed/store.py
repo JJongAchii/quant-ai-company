@@ -342,6 +342,9 @@ class QuantFeedStore:
             request = ProviderRequest(request_id="quant-feed-" + str(uuid4()), model=role.model,
                                       reasoning_effort=role.reasoning_effort, web_search=searching,
                                       output_contract="quant_search_v1" if searching else output_contract(stage), prompt=text)
+            from ..model_policy import bind
+
+            request = bind(self.company, conn, request, "quant_scout")
             conn.execute("UPDATE daily_usage SET reserved=reserved+1 WHERE day=CURRENT_DATE")
             conn.execute("""INSERT INTO quant_feed_calls(id,document_id,stage,slot,request,bundle,policy_digest)
                 VALUES(%s,%s,%s,%s,%s,%s,%s)""", (request.request_id, document["id"] if document else None,

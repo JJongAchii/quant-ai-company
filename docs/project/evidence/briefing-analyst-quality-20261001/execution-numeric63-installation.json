@@ -1,0 +1,62 @@
+{
+  "started_at": "2026-10-07T11:57:33.811275+00:00",
+  "source_commit": "d2e849e18fc8f1860a98e550bf5dc0b3c89343f9",
+  "previous_source_root": "485d637a0a1866730924aac888711d96f876f2f9",
+  "authorization": "음 잔여해있는 오류도 해결하고 확실하게 해줬으면 좋을거 같은데",
+  "phase": "installed",
+  "publication_enabled": true,
+  "model_calls": 0,
+  "slack_calls": 0,
+  "actual_model_quality_evaluated": false,
+  "profiles": [
+    {
+      "base_image": "sha256:7e406c7a6ee0bfe5fb683cf699c5b21ab79a360066736a71179f74b5d3efe0ea",
+      "image": "quant-company:d2e849e18fc8f1860a98e550bf5dc0b3c89343f9-editorial0",
+      "services": [
+        "news-worker",
+        "dispatch"
+      ],
+      "changed": [
+        "quant_company/briefing/editor.py",
+        "quant_company/briefing/numeric.py"
+      ],
+      "complete_source_inventory_verified": true,
+      "source_inventory_sha256": "a8bc21dab9a93e6299e329fa18b9f43eda3ef66e559328d28c9a86be1ede4f1e"
+    },
+    {
+      "base_image": "sha256:66a0d8a64e8a9f5d41b3463303da43ce555e6ffd0dfd104c33fa629f1b84eceb",
+      "image": "quant-company:d2e849e18fc8f1860a98e550bf5dc0b3c89343f9-editorial1",
+      "services": [
+        "briefing-data-worker"
+      ],
+      "changed": [
+        "quant_company/briefing/editor.py",
+        "quant_company/briefing/numeric.py"
+      ],
+      "complete_source_inventory_verified": true,
+      "source_inventory_sha256": "be2e0265d61c4f20105602272e7292078464d9c6619bf6260cb0f197f90e43ec"
+    }
+  ],
+  "files": {
+    "quant_company/briefing/editor.py": {
+      "before": "c950a5c0a2fc45c866a91ae4153b658a78e46c11faab74726584da7f0f621514",
+      "after": "d3064c1087ae635a55578e9fdc47ffac36bdc84fdfb061d6e922474158785f6a"
+    },
+    "quant_company/briefing/numeric.py": {
+      "before": "44e015acc0421ba1e76af9b344b80b1692b7f10efcf15f7b112cbc2dc24df2fa",
+      "after": "5fd92cef3c0f796803cd7d4cab8879308cfcaede8e68cfe40311d5f313434daf"
+    }
+  },
+  "completed_at": "2026-10-07T11:57:47.483583+00:00",
+  "cutover_started_at": "2026-10-07T11:58:31.000065+00:00",
+  "installed_at": "2026-10-07T11:58:36.276471+00:00",
+  "runtime_bindings_preserved": true,
+  "unrelated_services_preserved": true,
+  "environment_changed_keys": [
+    "RELEASE_COMMIT"
+  ],
+  "database_mutations": 0,
+  "schema_model_schedule_limits_changed": false,
+  "source_root": "d2e849e18fc8f1860a98e550bf5dc0b3c89343f9",
+  "environment_after_sha256": "0085980215fb0e2b38b078394d6794b9d2a33a9de2c342ce68d2e187f04019cd"
+}

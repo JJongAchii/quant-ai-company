@@ -1,0 +1,48 @@
+{
+  "captured_at": "2026-10-06T10:41:31.070023+00:00",
+  "scope": "Two original recovered director turns and completed new Maintainer calls in this snapshot only",
+  "director": {
+    "calls_with_usage": 2,
+    "rows_without_usage": 0,
+    "totals": {
+      "input_tokens": 80656,
+      "cached_input_tokens": 5888,
+      "output_tokens": 3838,
+      "reasoning_output_tokens": 3534,
+      "uncached_input_tokens": 74768,
+      "cached_input_fraction": 0.07300138861337037
+    },
+    "missing_fields": {
+      "input_tokens": 0,
+      "cached_input_tokens": 0,
+      "output_tokens": 0,
+      "reasoning_output_tokens": 0
+    }
+  },
+  "maintainer": {
+    "calls_with_usage": 3,
+    "rows_without_usage": 0,
+    "totals": {
+      "input_tokens": 109785,
+      "cached_input_tokens": 4992,
+      "output_tokens": 15657,
+      "reasoning_output_tokens": 13543,
+      "uncached_input_tokens": 104793,
+      "cached_input_fraction": 0.04547069271758437
+    },
+    "missing_fields": {
+      "input_tokens": 0,
+      "cached_input_tokens": 0,
+      "output_tokens": 0,
+      "reasoning_output_tokens": 0
+    }
+  },
+  "source": "ProviderResponse.usage from official Codex CLI turn.completed events",
+  "reference": "https://learn.chatgpt.com/docs/non-interactive-mode",
+  "limits": [
+    "This is observed successful-call usage, not all server traffic or unresolved prior charges.",
+    "Cached input is part of input; reasoning output is not added again to output.",
+    "There are no baseline inference counts for the two originally rejected prompts. Character reduction is not measured token savings.",
+    "ChatGPT subscription allowance percentages and dollar costs cannot be derived from these counts alone."
+  ]
+}

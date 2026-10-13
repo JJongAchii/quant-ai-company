@@ -31,10 +31,10 @@ class TechFeedStore:
 
     def policy(self):
         settings = self.company.settings
-        return fingerprint({"version": 1, "enabled": settings.tech_feed_enabled,
+        return fingerprint({"version": 2, "enabled": settings.tech_feed_enabled,
                             "publish": settings.tech_feed_publish_enabled,
                             "channel": settings.tech_feed_channel_id, "owner": settings.tech_feed_owner_user,
-                            "users": settings.slack_allowed_users, "channels": settings.slack_allowed_channels,
+                            "authorized": self.authorized(),
                             "sources": [s.model_dump() for s in self.sources().values()]})
 
     def claim_sources(self):

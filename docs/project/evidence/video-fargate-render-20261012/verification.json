@@ -1,0 +1,257 @@
+{
+  "record": "video-fargate-render-20261012",
+  "summary": "Daily-brief video rendering moved from the 2-vCPU Lightsail host to an on-demand ECS Fargate task (16 vCPU/32 GB, Spot first). Verified on real AWS with the worker's own credentials; production video-worker switched to the remote backend at 2026-10-12 15:29:30 KST.",
+  "owner_decisions": [
+    {
+      "at": "2026-10-12",
+      "quote": "아니 뭐 계속 늘어나네 시간이;;; 서버 자원이 많이 부족한 상황인거 같은데, 가장 비용최적화했을 때 어떻게 하는게 나아? lightsail 이 아니더라도."
+    },
+    {
+      "at": "2026-10-12",
+      "quote": "비용 최적화 관점에서 최종적으로 어떻게 할 건지 설계해줘.",
+      "result": "plan approved: Lightsail keeps always-on services, rendering on ECS Fargate Spot with local fallback"
+    },
+    {
+      "at": "2026-10-12",
+      "quote": "응 확인했어. fargate 관련해서 이어서 진행해주고 최종적으로 완료해줘."
+    }
+  ],
+  "code": {
+    "repository_worktree": ".local/video-late-production",
+    "branch": "fix/video-late-production",
+    "base": "b238c97 (src and dependencies identical to 7b37ac4)",
+    "committed": false,
+    "new_files": [
+      "src/quant_company/video/remote.py",
+      "tests/test_video_remote.py",
+      "deploy/Dockerfile.render",
+      "deploy/render.json",
+      "deploy/video-render.compose.yaml"
+    ],
+    "behaviour": [
+      "Inputs frozen under s3://<bucket>/render/<job>/<render key>/in/ (ready.json last, idempotent per key)",
+      "Attempt record saved before RunTask; client token = job-key-attempt; unanswered calls re-asked with the same token; AWS refusals count as failed attempts",
+      "Attempts 1-2 FARGATE_SPOT, last attempt FARGATE; after video_render_attempts (3) the episode renders on the host (always produced)",
+      "Task syncs scene segments, alignment, layout and review frames to out/ every 15 s and on SIGTERM; next task resumes; manifest.json written last",
+      "Status errors wait (10 consecutive -> attempt abandoned); STOPPING/DEPROVISIONING wait for the exit code; exit 0 collects and verifies checksums",
+      "Task exits itself after VIDEO_RENDER_TIMEOUT_MINUTES (90); worker StopTasks after 100 minutes",
+      "Chromium gets --disable-dev-shm-usage in the render image (Fargate /dev/shm cannot be resized); alignment threads configurable (8 in the task, 2 on the host)"
+    ],
+    "tests": {
+      "full_suite": "2196 passed, 54 skipped, 0 failed (after the single-arrow fix; real local PostgreSQL)",
+      "remote_unit_tests": "tests/test_video_remote.py 7 passed (in-memory S3/ECS fakes: collect, Spot reclaim + FARGATE last attempt + local fallback, same-token re-ask, status errors, time limit, resume without re-upload, settings validation)",
+      "compose_contract": "tests/test_video_deployment.py: render overlay gives only video-worker the render settings and credentials; missing settings fail expansion",
+      "ruff": "All checks passed"
+    }
+  },
+  "aws": {
+    "account": "061039802347",
+    "region": "ap-northeast-2",
+    "stack": "quant-company-render (CloudFormation, deploy/render.json)",
+    "resources": {
+      "bucket": "quant-company-render-061039802347 (public access blocked, BucketOwnerEnforced, SSE-S3, TLS-only policy, render/ expires after 3 days)",
+      "ecr_repository": "quant-company-render (scan on push, immutable tags, keep 5 newest)",
+      "ecs_cluster": "quant-company-render (FARGATE, FARGATE_SPOT; Container Insights off)",
+      "log_group": "/quant-company-render/render (7 days)",
+      "security_group": "sg-02fd45142a054a3d6 (no ingress, TCP 443 egress only) in default VPC vpc-029f71489b1c484b9",
+      "subnets": [
+        "subnet-022d366aa0c9fec69",
+        "subnet-0134af62a7b7254b1",
+        "subnet-091b63f932f39d7d1",
+        "subnet-0d47f3f9cc2ed2d2f"
+      ],
+      "execution_role": "ECR pull from this repository + logs to this group",
+      "task_role": "s3 Get/Put render/*, Get models/*, ListBucket on the render bucket only",
+      "worker_user": "quant-company-render-worker: RunTask on task-definition/quant-company-render:* in this cluster, DescribeTasks/StopTask on its tasks, PassRole for the two roles to ecs-tasks, s3 Get/Put render/* and ListBucket",
+      "budget": "quant-company-render-monthly: USD 20/month on Amazon Elastic Container Service + ECR; alerts at 50% and 100% actual, 100% forecast (recipient copied from the existing account budget; NoEcho parameter)"
+    },
+    "quotas_checked": {
+      "fargate_on_demand_vcpu": 64,
+      "fargate_spot_vcpu": 64
+    },
+    "render_images": [
+      {
+        "tag": "b238c97-fargate1",
+        "digest": "sha256:f166282f584af7a34c2a7357f55e5109a079d57aa2df9f6c8901de7aa0ec4292",
+        "compressed_bytes": 949640692,
+        "task_definition": "quant-company-render:1"
+      },
+      {
+        "tag": "b238c97-fargate3",
+        "digest": "sha256:ea1c12bea0d8a5d8279edbab562447ef5c3145f410382dacb08333dd49913c9f",
+        "compressed_bytes": 949622863,
+        "task_definition": "quant-company-render:2"
+      },
+      {
+        "tag": "b238c97-fargate4",
+        "digest": "sha256:e75e7f8bea9373e6910ddef8da270d670c76c7edc51cbf01070147dcfc9ebf1c",
+        "compressed_bytes": 949623417,
+        "task_definition": "quant-company-render:3 (VIDEO_ALIGNMENT_THREADS=8; in use 15:29-16:27 KST)"
+      },
+      {
+        "tag": "b238c97-fargate5",
+        "digest": "sha256:9021a48270f505bfe9eeb1953acab98f75832e4e09d4d96ca83a647e8eefbfbc",
+        "task_definition": "quant-company-render:4 (in use from 16:27 KST; single on-screen arrows)"
+      }
+    ],
+    "task_definition_in_use": "quant-company-render:4 (16384 CPU units, 32768 MiB, 50 GiB ephemeral, X86_64, init process, stopTimeout 120 s, 8 alignment threads)",
+    "alignment_model_upload": [
+      {
+        "key": "models/small/config.json",
+        "bytes": 2370,
+        "md5_etag": "6b09a90a9be263e3c2d3df31587c5554"
+      },
+      {
+        "key": "models/small/tokenizer.json",
+        "bytes": 2203239,
+        "md5_etag": "10268c850d335f758d616c3465b8de48"
+      },
+      {
+        "key": "models/small/vocabulary.txt",
+        "bytes": 459861,
+        "md5_etag": "c1120a13c94a8cbb132489655cdd1854"
+      },
+      {
+        "key": "models/small/model.bin",
+        "bytes": 483546902,
+        "md5_etag": "4c1a36b9f6798403fedd8314e8bd074a"
+      }
+    ],
+    "alignment_model_source": "Systran/faster-whisper-small snapshot 536b0662742c02347bc0e980a01041f333bce120 from the host cache, uploaded from the host with single-object presigned PUTs (no AWS key on the host for models/)",
+    "worker_credentials": "access key created 2026-10-12T05:54:27Z and written directly into /var/lib/quant-company/secrets/render_aws_credentials (root:10001, 0440, 116 bytes); never printed",
+    "image_publishing": "built on the production host (Mac Docker Desktop failed: Docker.raw resize permission denied); pushed with a throwaway DOCKER_CONFIG login removed after each push (0 leftover login directories)"
+  },
+  "verification": {
+    "source": "morning episode 511d5f0d (delivered 14:12 KST): final plan and narration takes from render attempt 7a77ee3f, read-only; no Runway, Claude, database or Slack access",
+    "subset": "9 of 15 scenes (open, summary, market, flows, earnings, diesel, blockade, mortgage, closing; 1,977 characters) because the morning plan (3,535 characters) predates the 2,200-character contract limit; card types cold_open, summary3, market_board, photo, compare, flow, counter, bars, signals",
+    "client": "one-off container from quant-company-video:7b37ac4-fargate1 on the host with the worker credentials, separate test job ids and /var/lib/quant-company/video-fargate-test",
+    "refusal": {
+      "bogus_task_definition": "ClientException 'TaskDefinition not found.' -> ambiguous=false (counted as a failed attempt)",
+      "unreachable_endpoint": "EndpointConnectionError -> ambiguous=true (re-asked with the same client token)"
+    },
+    "full_render_rev1": {
+      "task": "8d9403dad1724a24925b57935a6f381a",
+      "capacity": "FARGATE_SPOT",
+      "az": "ap-northeast-2b",
+      "provision_s": 24.1,
+      "pull_s": 21.9,
+      "container_run_s": 214.4,
+      "billed_s": 279.5,
+      "wall_s_upload_to_exit": 299.7,
+      "input_upload_s": 2.1,
+      "video": {
+        "duration_s": 291.883,
+        "frames": 8756,
+        "fps": 30,
+        "size": "1920x1080",
+        "bytes": 46587562,
+        "video_sha256_prefix": "24d73da9a0feeec5"
+      },
+      "collected": "manifest checksums verified by verify_artifacts",
+      "findings": 2,
+      "review_frames": 10
+    },
+    "interrupt_resume_rev2": {
+      "task_1": {
+        "task": "cd74d5fe007c4ac289ee4d7dc33f9e13",
+        "stop": "StopTask after 16 segments in S3",
+        "exit": 143,
+        "stop_code": "UserInitiated",
+        "billed_s": 207.9
+      },
+      "task_2": {
+        "task": "1d2f4340f583415282085b14ae1b9399",
+        "exit": 0,
+        "resumed_segments": 16,
+        "rendered_segments": 19,
+        "container_run_s": 140.8,
+        "billed_s": 213.0
+      },
+      "video": {
+        "duration_s": 291.883,
+        "frames": 8756,
+        "video_sha256_prefix": "ee03d39775740555"
+      },
+      "difference_vs_uninterrupted": "5 of 35 segments differ: max channel difference 43-56/255 on at most 353 of 2,073,600 pixels per frame, confined to thin strips (top progress bar, bottom ticker/caption line); not visible"
+    },
+    "real_spot_interruption_rev3": {
+      "task_1": {
+        "task": "9eacdb828e1847c8982dc849b0701fc0",
+        "stop_code": "SpotInterruption",
+        "reason": "Your Spot Task was interrupted.",
+        "exit": 143,
+        "container_run_s": 172.4,
+        "billed_s": 236.7,
+        "saved_before_exit": "all 35 segments, 9 alignments, layout, review frames, video.mp4; no manifest"
+      },
+      "task_2": {
+        "task": "fe4fc5df19fc4abe9daef841f66f2ec4",
+        "capacity": "FARGATE_SPOT",
+        "exit": 0,
+        "resumed_segments": 35,
+        "rendered_segments": 0,
+        "container_run_s": 64.4,
+        "billed_s": 138.3
+      },
+      "video": {
+        "duration_s": 291.883,
+        "frames": 8756,
+        "video_sha256_prefix": "24d73da9a0feeec5"
+      },
+      "result": "byte-identical video.mp4 to the uninterrupted rev1 render (8 alignment threads vs 2 gave identical subtitles timing)"
+    },
+    "visual_check": "frames at 12 s, 95 s, 170 s, 262 s of the rev1 render inspected: fonts, photo asset, layout, ticker and subtitles render as on the host",
+    "cost": {
+      "rate_on_demand_usd_per_hour": 0.908,
+      "test_tasks_billed_s_total": 1075.4,
+      "test_cost_upper_bound_usd": 0.27,
+      "per_episode_estimate": "about 280 billed seconds for a five-minute episode: USD 0.07 on demand, less on Spot; about USD 2-5 per month for two episodes a day",
+      "note": "Spot price not measured per task; on-demand figures are an upper bound"
+    }
+  },
+  "deployment": {
+    "at": "2026-10-12T06:29:30Z (15:29:30 KST)",
+    "idle_checks": "no apply- scripts, no other sudo activity in 10 minutes, no active video job, latest job 511d5f0d delivered",
+    "service": "video-worker only (--no-deps --no-build)",
+    "compose": "combined73 stage files + /var/lib/quant-company/releases/video-fargate3-20261012/video-worker-overlay.compose.yaml (replaces the phase2 overlay; same model, effort, voice and memory settings)",
+    "overlay_sha256": "c1925768ca6f502e76689d55e1c188a06e9178ae29d22d75b2b642de348a8292",
+    "merged_config_diff_vs_phase2": "image tag, AWS_SHARED_CREDENTIALS_FILE, VIDEO_RENDER_* (backend remote, region, bucket, cluster, task definition :3, subnets, security group, attempts 3, timeout 90), render_aws_credentials secret",
+    "image": {
+      "tag": "quant-company-video:7b37ac4-fargate3",
+      "id": "sha256:f9f80cc14123a44abea3e91528234ccbc7a88bdb0eedc7e74b14e65d616eab11",
+      "same_source_as_render_image": "remote.py, runner.py, motion.py, render.py, config.py sha256 equal to quant-company-render:b238c97-fargate4"
+    },
+    "rollback": "recreate video-worker with the video-fargate3-20261012 overlay (remote, rev 3) or the video-phase2-20261012 overlay (local rendering)",
+    "post_deploy_checks": {
+      "settings": "backend remote, quant-company-render:3, attempts 3, timeout 90, claude-opus-5-5 xhigh/max, eleven_v4",
+      "s3": "HeadObject on a missing key -> 404 (False)",
+      "ecs": "DescribeTasks authorized (MISSING for a nonexistent task)",
+      "secret_mount": "read-only",
+      "container": "running, 0 restarts, no OOM"
+    }
+  },
+  "limitations": [
+    "Not yet exercised by a production episode: the first will be the 2026-10-12 PM edition video (worker fargate4, task definition :4)",
+    "One of five Spot tasks was interrupted (after 2 min 52 s); resume worked, but each reclaim adds about 2-3 minutes",
+    "Fargate Spot charges are not itemized per task; cost figures use the on-demand rate as an upper bound",
+    "Code is not committed (owner has not asked); production images are overlays built from the uncommitted worktree"
+  ],
+  "single_arrow_fix": {
+    "found": "morning episode screens showed two arrows ('▲ ▲0.59%'): the script wrote signed values while the template draws ▲/▼ from the direction field; 18 values in the 2026-10-12 morning plan (ticker 8, market board 8, cold_open 1, headline 1)",
+    "fix": [
+      "video/motion.py single_arrows(): drops a script-written sign only where the template draws one (cold_open value with big_dir, market_board change, headline change, compare value, flow rows, image labels, ticker change); sign colour-only fields (summary3 stats, calendar side, sub lines) are untouched; a sign contradicting the direction field becomes a finding",
+      "video/episode.py card guide: fields with a direction hold the bare number",
+      "normalisation happens before the page digest, so no segment rendered with doubled arrows is reused"
+    ],
+    "tests": "tests/test_video_motion.py::test_the_screen_shows_one_arrow_where_the_template_draws_it_from_the_direction; full suite 2196 passed, 54 skipped, 0 failed",
+    "deployment": {
+      "at": "2026-10-12T07:27:35Z (16:27:35 KST), before the PM edition's video job existed (edition in 'writing', 0 active video jobs, no apply- scripts)",
+      "worker_image": "quant-company-video:7b37ac4-fargate4 (sha256:a4fab831198e1ed52dc22f828f9beef47e0b307c7ac4a70f33f18646c20b4612)",
+      "overlay": "/var/lib/quant-company/releases/video-fargate4-20261012/video-worker-overlay.compose.yaml (sha256 36fb11ef77ccc7a48d6032f5d412fb2b609e24ee2bfcfc0ac8a6b8cfb1e204c4)",
+      "merged_config_diff_vs_fargate3": "image tag and VIDEO_RENDER_TASK_DEFINITION :3 -> :4 only",
+      "same_source": "motion.py, episode.py, remote.py, runner.py sha256 equal in worker fargate4 and render fargate5",
+      "post_deploy": "backend remote, quant-company-render:4, S3 404 check and ECS DescribeTasks authorized, 0 restarts"
+    },
+    "note": "the motion.py comment deployed in fargate4/fargate5 says '13 values'; the correct count is 18 (correct the comment when the code is committed)"
+  }
+}

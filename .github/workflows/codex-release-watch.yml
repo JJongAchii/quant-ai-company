@@ -1,0 +1,64 @@
+name: Codex stable release watch
+
+on:
+  schedule:
+    - cron: '17 0 * * *'  # Daily 09:17 Asia/Seoul.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: codex-stable-release-watch
+  cancel-in-progress: false
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Detect official stable version without inference
+        run: |
+          set -euo pipefail
+          python scripts/detect_codex_release.py | tee /tmp/codex-release-check.json
+      - name: Open one candidate PR per stable version
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate=$(python -c 'import json; print(json.load(open("/tmp/codex-release-check.json"))["candidate"] or "")')
+          if [ -z "$candidate" ]; then exit 0; fi
+          branch="updates/codex-cli-$candidate"
+          existing=$(gh pr list --head "$branch" --state all --json number --jq 'length')
+          if [ "$existing" != 0 ]; then exit 0; fi
+          gh auth setup-git
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+            git fetch origin "$branch"
+            git show FETCH_HEAD:deploy/codex-candidate.json > /tmp/remote-codex-candidate.json
+            python -c 'import json; a=json.load(open("deploy/codex-candidate.json")); b=json.load(open("/tmp/remote-codex-candidate.json")); assert a["candidate_version"] == b["candidate_version"] and a["npm_integrity"] == b["npm_integrity"]'
+          else
+            git switch -c "$branch"
+            git add deploy/codex-candidate.json
+            git commit -m "Record unqualified Codex CLI $candidate candidate"
+            git push origin "HEAD:refs/heads/$branch"
+          fi
+          cat > /tmp/codex-candidate-pr.md <<'BODY'
+          A newer stable official Codex CLI is available. This PR records candidate metadata only.
+
+          Qualification requires reviewed package and Linux executable digests, the CLI protocol/config checks,
+          actual ChatGPT account tests, typed/native Quant output, web usage, legacy sessions and receipts.
+          Follow `docs/runbooks/codex-upgrades.md` before changing the validated manifest or production images.
+
+          This workflow does not deploy, change employee models, use subscription inference or access production secrets.
+          A closed candidate PR is not automatically reopened; an existing candidate is not resubmitted.
+          BODY
+          gh pr create --base main --head "$branch" --title "Codex CLI $candidate 갱신 후보" --body-file /tmp/codex-candidate-pr.md

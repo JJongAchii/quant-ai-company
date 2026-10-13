@@ -1,0 +1,493 @@
+{
+ "trump": {
+  "file": "photos/trump.jpg",
+  "kind": "자료사진",
+  "subject": "Donald Trump, official portrait",
+  "author": "The White House / Daniel Torok",
+  "license": "Public domain",
+  "license_url": "",
+  "source": "https://commons.wikimedia.org/wiki/File:Official_Presidential_Portrait_of_President_Donald_J._Trump_(2025)_(3x4_close_cropped).jpg",
+  "commons_title": "File:Official Presidential Portrait of President Donald J. Trump (2025) (3x4 close cropped).jpg",
+  "changes": "원본 전체를 가운데 두고 양옆을 같은 사진의 흐린 배경으로 채움 (16:9)",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "트럼프",
+   "미국 대통령",
+   "백악관",
+   "관세",
+   "미국 정치"
+  ]
+ },
+ "warsh": {
+  "file": "photos/warsh.jpg",
+  "kind": "자료사진",
+  "subject": "Kevin Warsh, official portrait",
+  "author": "Federal Reserve",
+  "license": "Public domain",
+  "license_url": "",
+  "source": "https://commons.wikimedia.org/wiki/File:Official_portrait_of_Kevin_M._Warsh.jpg",
+  "commons_title": "File:Official portrait of Kevin M. Warsh.jpg",
+  "changes": "원본 전체를 가운데 두고 양옆을 같은 사진의 흐린 배경으로 채움 (16:9)",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "워시",
+   "연준",
+   "연준 의장",
+   "미국 금리",
+   "통화정책"
+  ]
+ },
+ "powell": {
+  "file": "photos/powell.jpg",
+  "kind": "자료사진",
+  "subject": "Jerome Powell, official portrait",
+  "author": "Federal Reserve",
+  "license": "Public domain",
+  "license_url": "",
+  "source": "https://commons.wikimedia.org/wiki/File:Jerome_H._Powell.jpg",
+  "commons_title": "File:Jerome H. Powell.jpg",
+  "changes": "원본 전체를 가운데 두고 양옆을 같은 사진의 흐린 배경으로 채움 (16:9)",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "파월",
+   "연준",
+   "미국 금리"
+  ]
+ },
+ "white-house": {
+  "file": "photos/white-house.jpg",
+  "kind": "자료사진",
+  "subject": "The White House, north facade",
+  "author": "Nishkid64",
+  "license": "Public domain",
+  "license_url": "",
+  "source": "https://commons.wikimedia.org/wiki/File:North_Fa%C3%A7ade_White_House.JPG",
+  "commons_title": "File:North Façade White House.JPG",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "백악관",
+   "미국 정부",
+   "미국 정치"
+  ]
+ },
+ "us-capitol": {
+  "file": "photos/us-capitol.jpg",
+  "kind": "자료사진",
+  "subject": "United States Capitol, west front",
+  "author": "Architect of the Capitol",
+  "license": "Public domain",
+  "license_url": "",
+  "source": "https://commons.wikimedia.org/wiki/File:United_States_Capitol_-_west_front.jpg",
+  "commons_title": "File:United States Capitol - west front.jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "미국 의회",
+   "의회",
+   "예산",
+   "미국 정치"
+  ]
+ },
+ "yeouido": {
+  "file": "photos/yeouido.jpg",
+  "kind": "자료사진",
+  "subject": "Yeouido financial district across the Han River",
+  "author": "USAGI_POST",
+  "license": "CC0",
+  "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+  "source": "https://commons.wikimedia.org/wiki/File:Han_River_Seoul_skyline_Pixabay_1214950.jpg",
+  "commons_title": "File:Han River Seoul skyline Pixabay 1214950.jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "여의도",
+   "국내 증시",
+   "한국 금융"
+  ]
+ },
+ "sk-hynix": {
+  "file": "photos/sk-hynix.jpg",
+  "kind": "자료사진",
+  "subject": "SK hynix memory chip on a circuit board",
+  "author": "Raimond Spekking",
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Ericsson_H5231_-_SK_Hynix_H9DA1GG25HAM-3169.jpg",
+  "commons_title": "File:Ericsson H5231 - SK Hynix H9DA1GG25HAM-3169.jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "SK하이닉스",
+   "메모리",
+   "HBM",
+   "반도체"
+  ]
+ },
+ "samsung-fab": {
+  "file": "photos/samsung-fab.jpg",
+  "kind": "자료사진",
+  "subject": "Samsung semiconductor line seen through a viewing window, Pyeongtaek",
+  "author": "The White House",
+  "license": "Public domain",
+  "license_url": "",
+  "source": "https://commons.wikimedia.org/wiki/File:P20220520AS-000033-2_(52196618699).jpg",
+  "commons_title": "File:P20220520AS-000033-2 (52196618699).jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "삼성전자",
+   "반도체 공장",
+   "평택",
+   "반도체"
+  ]
+ },
+ "silicon-wafer": {
+  "file": "photos/silicon-wafer.jpg",
+  "kind": "자료사진",
+  "subject": "Close-up of a processed silicon wafer",
+  "author": "Rob Bulmahn",
+  "license": "CC BY 2.0",
+  "license_url": "https://creativecommons.org/licenses/by/2.0",
+  "source": "https://commons.wikimedia.org/wiki/File:5C2A5953R_-_49913961083_%E2%80%93_Silicon_Wafer_20200519.jpg",
+  "commons_title": "File:5C2A5953R - 49913961083 – Silicon Wafer 20200519.jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "반도체",
+   "웨이퍼",
+   "파운드리"
+  ]
+ },
+ "tsmc": {
+  "file": "photos/tsmc.jpg",
+  "kind": "자료사진",
+  "subject": "TSMC fab building",
+  "author": "Peellden",
+  "license": "CC BY-SA 3.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:TSMC_Fab5.JPG",
+  "commons_title": "File:TSMC Fab5.JPG",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "TSMC",
+   "대만",
+   "파운드리",
+   "반도체"
+  ]
+ },
+ "nvidia": {
+  "file": "photos/nvidia.jpg",
+  "kind": "자료사진",
+  "subject": "Nvidia headquarters, Santa Clara",
+  "author": "Coolcaesar",
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:NVIDIA_Headquarters.jpg",
+  "commons_title": "File:NVIDIA Headquarters.jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "엔비디아",
+   "AI 반도체",
+   "미국 기술주"
+  ]
+ },
+ "putin": {
+  "file": "photos/putin.jpg",
+  "kind": "자료사진",
+  "subject": "Vladimir Putin",
+  "author": "Kremlin.ru",
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Vladimir_Putin_portrait_(2024-02-23).png",
+  "commons_title": "File:Vladimir Putin portrait (2024-02-23).png",
+  "changes": "원본 전체를 가운데 두고 양옆을 같은 사진의 흐린 배경으로 채움 (16:9)",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "푸틴",
+   "러시아",
+   "우크라이나 전쟁",
+   "에너지 휴전"
+  ]
+ },
+ "xi-jinping": {
+  "file": "photos/xi-jinping.jpg",
+  "kind": "자료사진",
+  "subject": "Xi Jinping",
+  "author": "Kremlin.ru",
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Xi_Jinping_at_a_meeting_with_Vladimir_Putin_(2024).jpg",
+  "commons_title": "File:Xi Jinping at a meeting with Vladimir Putin (2024).jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "시진핑",
+   "중국",
+   "미중 관계"
+  ]
+ },
+ "jpmorgan": {
+  "file": "photos/jpmorgan.jpg",
+  "kind": "자료사진",
+  "subject": "JPMorganChase headquarters entrance, New York",
+  "author": "ajay_suresh",
+  "license": "CC BY 4.0",
+  "license_url": "https://creativecommons.org/licenses/by/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:JPMorgan_Chase_-_270_Park_Avenue_(55283843744).jpg",
+  "commons_title": "File:JPMorgan Chase - 270 Park Avenue (55283843744).jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "JP모건",
+   "미국 은행",
+   "은행 실적",
+   "월가"
+  ]
+ },
+ "data-center": {
+  "file": "photos/data-center.jpg",
+  "kind": "자료사진",
+  "subject": "Server racks in a data center",
+  "author": "BalticServers.com",
+  "license": "CC BY-SA 3.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:BalticServers_data_center.jpg",
+  "commons_title": "File:BalticServers data center.jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "데이터센터",
+   "AI 인프라",
+   "서버"
+  ]
+ },
+ "f-35": {
+  "file": "photos/f-35.jpg",
+  "kind": "자료사진",
+  "subject": "F-35A Lightning II in flight",
+  "author": "U.S. Air Force",
+  "license": "Public domain",
+  "license_url": "",
+  "source": "https://commons.wikimedia.org/wiki/File:F-35A_flight_(cropped).jpg",
+  "commons_title": "File:F-35A flight (cropped).jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "F-35",
+   "전투기",
+   "방산",
+   "무기 판매"
+  ]
+ },
+ "gold-bars": {
+  "file": "photos/gold-bars.jpg",
+  "kind": "자료사진",
+  "subject": "Stack of gold bars",
+  "author": "Stevebidmead",
+  "license": "CC0",
+  "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+  "source": "https://commons.wikimedia.org/wiki/File:Gold_bullion_bars.jpg",
+  "commons_title": "File:Gold bullion bars.jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "금",
+   "금값",
+   "안전자산"
+  ]
+ },
+ "bank-of-korea": {
+  "file": "photos/bank-of-korea.jpg",
+  "kind": "자료사진",
+  "subject": "Bank of Korea, old main building and headquarters, Seoul",
+  "author": "ほっきー",
+  "license": "CC0",
+  "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+  "source": "https://commons.wikimedia.org/wiki/File:%E9%9F%93%E5%9B%BD%E9%8A%80%E8%A1%8C%E8%B2%A8%E5%B9%A4%E9%87%91%E8%9E%8D%E5%8D%9A%E7%89%A9%E9%A4%A8_2023.jpg",
+  "commons_title": "File:韓国銀行貨幤金融博物館 2023.jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "한국은행",
+   "기준금리",
+   "통화정책",
+   "한은 총재"
+  ]
+ },
+ "korea-exchange": {
+  "file": "photos/korea-exchange.jpg",
+  "kind": "자료사진",
+  "subject": "Korea Exchange (KRX) headquarters tower, Busan",
+  "author": "hyolee2",
+  "license": "CC BY-SA 3.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Korea_exchange.JPG",
+  "commons_title": "File:Korea exchange.JPG",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "한국거래소",
+   "KRX",
+   "국내 증시"
+  ]
+ },
+ "oil-tanker-photo": {
+  "file": "photos/oil-tanker-photo.jpg",
+  "kind": "자료사진",
+  "subject": "Crude oil tanker at sea",
+  "author": "ITookSomePhotos",
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Solomon_Sea_(oil_tanker),_in_the_Solent,_England.jpg",
+  "commons_title": "File:Solomon Sea (oil tanker), in the Solent, England.jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "유조선",
+   "원유",
+   "해운",
+   "중동"
+  ]
+ },
+ "cleanroom": {
+  "file": "photos/cleanroom.jpg",
+  "kind": "자료사진",
+  "subject": "Semiconductor fab clean room with workers in clean suits",
+  "author": "STMicroelectronics",
+  "license": "CC BY 3.0",
+  "license_url": "https://creativecommons.org/licenses/by/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:How_ST_designs_and_manufactures_semiconductor_devices_-_screenshot_1.png",
+  "commons_title": "File:How ST designs and manufactures semiconductor devices - screenshot 1.png",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "반도체 공장",
+   "클린룸",
+   "반도체 생산"
+  ]
+ },
+ "ev-battery": {
+  "file": "photos/ev-battery.jpg",
+  "kind": "자료사진",
+  "subject": "Electric vehicle battery pack with modules",
+  "author": "RudolfSimon",
+  "license": "CC BY-SA 3.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Lithium-Ion_Battery_for_BMW_i3_-_Battery_Pack.JPG",
+  "commons_title": "File:Lithium-Ion Battery for BMW i3 - Battery Pack.JPG",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "2차전지",
+   "배터리",
+   "전기차"
+  ]
+ },
+ "oil-refinery": {
+  "file": "photos/oil-refinery.jpg",
+  "kind": "자료사진",
+  "subject": "Oil refinery",
+  "author": "Walter Siegmund",
+  "license": "CC BY 2.5",
+  "license_url": "https://creativecommons.org/licenses/by/2.5",
+  "source": "https://commons.wikimedia.org/wiki/File:Anacortes_Refinery_31911.JPG",
+  "commons_title": "File:Anacortes Refinery 31911.JPG",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "정유",
+   "석유화학",
+   "유가",
+   "정제마진"
+  ]
+ },
+ "nuclear-plant": {
+  "file": "photos/nuclear-plant.jpg",
+  "kind": "자료사진",
+  "subject": "Kori Nuclear Power Plant, Busan",
+  "author": "IAEA Imagebank",
+  "license": "Public domain",
+  "license_url": "",
+  "source": "https://commons.wikimedia.org/wiki/File:Kori_Nuclear_Power_Plant_(8505820845).jpg",
+  "commons_title": "File:Kori Nuclear Power Plant (8505820845).jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "원전",
+   "원자력",
+   "에너지"
+  ]
+ },
+ "hyundai-motor": {
+  "file": "photos/hyundai-motor.jpg",
+  "kind": "자료사진",
+  "subject": "Hyundai Motor towers, Seoul",
+  "author": "HappyMidnight",
+  "license": "CC BY-SA 3.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:HyundaiMotorsCompany_KiaMotorsCompany.jpg",
+  "commons_title": "File:HyundaiMotorsCompany KiaMotorsCompany.jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "현대차",
+   "자동차",
+   "완성차"
+  ]
+ },
+ "auto-factory": {
+  "file": "photos/auto-factory.jpg",
+  "kind": "자료사진",
+  "subject": "Car body assembly line",
+  "author": "Anonyme",
+  "license": "CC BY 2.5",
+  "license_url": "https://creativecommons.org/licenses/by/2.5",
+  "source": "https://commons.wikimedia.org/wiki/File:Hyundai_car_assembly_line.jpg",
+  "commons_title": "File:Hyundai car assembly line.jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "자동차 공장",
+   "자동차 생산",
+   "관세"
+  ]
+ },
+ "pumpjack": {
+  "file": "photos/pumpjack.jpg",
+  "kind": "자료사진",
+  "subject": "Oil pumpjacks",
+  "author": "Hugo LUC",
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Chevalets_de_pompage_(pumpjack)_%C3%A0_Vialer.jpg",
+  "commons_title": "File:Chevalets de pompage (pumpjack) à Vialer.jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "원유",
+   "유가",
+   "석유 생산",
+   "OPEC"
+  ]
+ },
+ "seoul-night": {
+  "file": "photos/seoul-night.jpg",
+  "kind": "자료사진",
+  "subject": "Seoul skyline at night",
+  "author": "Joon Kyu Park",
+  "license": "CC BY-SA 3.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Seoul_(175734251)_(cropped).jpg",
+  "commons_title": "File:Seoul (175734251) (cropped).jpg",
+  "changes": "1920×1080으로 잘라 축소",
+  "reviewed": "2026-10-12",
+  "tags": [
+   "서울",
+   "한국 경제",
+   "국내 경기"
+  ]
+ }
+}

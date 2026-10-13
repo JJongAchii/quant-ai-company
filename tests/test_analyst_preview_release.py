@@ -2,6 +2,7 @@ import importlib.util
 import json
 import os
 import stat
+from copy import deepcopy
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -56,6 +57,111 @@ def test_owner_preview_preserves_live_roles_and_unrelated_configuration():
     values['BRIEFING_PUBLISH_ENABLED'] = 'true'
     with pytest.raises(ValueError, match='configuration_scope'):
         release.updated(raw, values)
+
+
+def execution_manifest():
+    return {'preserve_api': True, 'preserve_codex_runtime': False,
+            'runtime_changes': [{'path': 'src/quant_company/providers/codex_runner.py'}],
+            'execution_runtime_update': {
+                'owner_approval_id': 'chat-analyst-execution-approved-20261007', 'approved': True, 'cli_version': '0.160.1',
+                'scope': 'Analyst typed output and phase deadlines; preserve all other runtime behavior'}}
+
+
+def test_execution_preview_needs_additional_specific_owner_authorization():
+    manifest = execution_manifest()
+    release.validate_preserved_runtime(manifest)
+    assert release.selected_services(manifest) == ('news-worker', 'dispatch', 'codex-runtime')
+    pending = deepcopy(manifest)
+    pending['execution_runtime_update']['approved'] = False
+    with pytest.raises(ValueError, match='separate_owner_approval'):
+        release.validate_preserved_runtime(pending)
+    for approval in ['chat-analyst-preview-approved-20261002', 'pending', '']:
+        changed = deepcopy(manifest)
+        changed['execution_runtime_update']['owner_approval_id'] = approval
+        with pytest.raises(ValueError, match='separate_owner_approval'):
+            release.validate_preserved_runtime(changed)
+    for name in ['src/quant_company/company.py', 'src/quant_company/providers/codex_runtime.py',
+                 'pyproject.toml', 'deploy/Dockerfile']:
+        changed = deepcopy(manifest)
+        changed['runtime_changes'].append({'path': name})
+        with pytest.raises(ValueError, match='outside_scope|separate_owner_approval'):
+            release.validate_preserved_runtime(changed)
+
+
+def test_execution_stage_rejects_earlier_approval_before_host_effects(tmp_path, monkeypatch):
+    archive, manifest = tmp_path/'runtime.tar.gz', tmp_path/'manifest.json'
+    archive.write_bytes(b'candidate')
+    manifest.write_text(json.dumps(execution_manifest()))
+    args = SimpleNamespace(archive=archive, manifest=manifest,
+        sha256=release.digest(archive.read_bytes()), manifest_sha256=release.digest(manifest.read_bytes()),
+        approval='chat-analyst-preview-approved-20261002')
+    monkeypatch.setattr(release, 'available_memory', lambda: 2048)
+    with pytest.raises(ValueError, match='owner_approval_mismatch'):
+        release.stage(args, tmp_path/'previous', tmp_path/'not-created', None, tmp_path/'receipt.json')
+    assert not (tmp_path/'not-created').exists() and not (tmp_path/'receipt.json').exists()
+
+
+def test_execution_approval_can_replace_only_the_explicit_owned_preview(tmp_path, monkeypatch):
+    monkeypatch.setattr(release, 'STATE', tmp_path)
+    old_approval = 'chat-analyst-preview-approved-20261002'
+    new_approval = 'chat-analyst-execution-approved-20261007'
+    base = 'a' * 40
+    image = {'Id': 'installed', 'Config': {'Labels': {}}}
+    owned = {'phase': 'preview_active', 'owner_approval': old_approval, 'commit': base,
+             'images': [{'target': 'app', 'id': 'installed'}]}
+    manifest = {**execution_manifest(), 'previous_commit': base, 'previous_owner_approval_id': old_approval}
+    assert release.owned_data_worker(image, owned, manifest, new_approval, base) == (True, False)
+    for change in [{'owner_approval': 'unrelated'}, {'commit': 'b' * 40}, {'phase': 'rolled_back'},
+                   {'images': [{'target': 'app', 'id': 'different'}]}]:
+        assert release.owned_data_worker(image, {**owned, **change}, manifest, new_approval, base) == (False, False)
+    for change in [{'previous_commit': 'b' * 40}, {'previous_owner_approval_id': 'unrelated'}]:
+        assert release.owned_data_worker(image, owned, {**manifest, **change}, new_approval, base) == (False, False)
+    assert release.owned_data_worker(image, owned, execution_manifest(), new_approval, base) == (False, False)
+    assert release.owned_data_worker(image, owned, manifest, 'unrelated', base) == (False, False)
+    assert release.owned_data_worker(image, owned, {}, old_approval, base) == (True, False)
+
+
+def test_live_inventory_survives_staged_json_receipt_and_still_detects_drift(monkeypatch):
+    row = {'Name': '/quant-company-news-worker-1', 'Id': 'container', 'RestartCount': 0,
+           'State': {'Running': True, 'OOMKilled': False}, 'Config': {'Image': 'verified-image'},
+           'Mounts': [{'Source': '/state/roles', 'Destination': '/etc/roles', 'RW': False}]}
+
+    def run(command, **kwargs):
+        return (b'quant-company-news-worker-1\n' if command[1] == 'ps'
+                else json.dumps([row]).encode())
+
+    monkeypatch.setattr(release, 'run', run)
+    staged = json.loads(json.dumps(release.inventory()))
+    assert release.inventory() == staged
+    row['Mounts'][0]['RW'] = True
+    assert release.inventory() != staged
+
+
+def test_profile_schema_run_uses_an_already_verified_image_without_replacing_api():
+    receipt = {'source_profiles': [{'services': ['news-worker']}],
+               'images': [{'target': 'app', 'tag': 'verified-profile', 'source_verified': True,
+                           'services': ['news-worker', 'dispatch']}]}
+    assert release.schema_service_overlay(receipt) == {'services': {'api': {'image': 'verified-profile'}}}
+    receipt['images'][0]['source_verified'] = False
+    with pytest.raises(ValueError, match='schema_image_not_verified'):
+        release.schema_service_overlay(receipt)
+    assert release.schema_service_overlay({'source_profiles': []}) is None
+
+
+def test_effect_drain_reads_postgres_without_loading_another_live_api_runtime(monkeypatch):
+    commands = []
+
+    def run(command, **kwargs):
+        commands.append(command)
+        return b'{"sending":2}\n'
+
+    monkeypatch.setattr(release, 'run', run)
+    assert release.sending_effects({'DATABASE_NAME': 'company_records'}) == {'sending': 2}
+    command = commands[0]
+    assert command[:4] == ['docker', 'exec', 'quant-company-postgres-1', 'psql']
+    assert command[command.index('-d') + 1] == 'company_records'
+    assert command[-1].startswith('SELECT ') and "status='sending'" in command[-1]
+    assert 'quant-company-api-1' not in command
 
 
 def test_only_canonical_owned_analyst_can_receive_permission_correction():
@@ -130,6 +236,103 @@ def test_preserved_runtime_rejects_provider_or_dependency_changes_and_checks_its
     deepcopy_inventory['/quant-company-codex-runtime-1']['id'] = 'replaced'
     with pytest.raises(ValueError, match='unrelated_service_changed'):
         release.preserved(before, deepcopy_inventory, release.selected_services(manifest))
+
+
+def test_installed_source_profiles_preserve_other_features_and_reject_undeclared_changes(tmp_path, monkeypatch):
+    root = 'runtime-source/'+('a'*12)+'/src'
+    source = tmp_path/root
+    (source/'quant_company/briefing').mkdir(parents=True)
+    (source/'quant_company/company.py').write_text('preserved company')
+    (source/'quant_company/briefing/store.py').write_text('new analyst')
+    prior = {'quant_company/company.py':release.digest(b'preserved company'),
+             'quant_company/briefing/store.py':release.digest(b'old analyst')}
+    profile = {'base_image_id':'sha256:'+('a'*64), 'base_image_tag':'installed-overlay',
+               'source_root':root,'services':['news-worker','dispatch',release.NEW_SERVICE],
+               'before':prior,'after':release.source_inventory(source),
+               'changed':['quant_company/briefing/store.py']}
+    manifest = {'preserve_api':True,'preserve_codex_runtime':True,'source_profiles':[profile],
+                'runtime_changes':[{'path':'src/quant_company/briefing/store.py'}]}
+    before = {'/quant-company-'+name+'-1':{'image':'installed-overlay'} for name in profile['services']}
+    monkeypatch.setattr(release,'run',lambda *a,**kw: json.dumps([{'Id':profile['base_image_id']}]).encode())
+    monkeypatch.setattr(release,'image_sources',lambda image: prior)
+    assert release.validate_source_profiles(tmp_path,manifest,before) == [profile]
+    (source/'quant_company/company.py').write_text('unexpected replacement')
+    profile['after'] = release.source_inventory(source)
+    profile['changed'].append('quant_company/company.py')
+    with pytest.raises(ValueError,match='outside_analyst_scope'):
+        release.validate_source_profiles(tmp_path,manifest,before)
+    (source/'quant_company/company.py').write_text('preserved company')
+    profile['after'] = release.source_inventory(source)
+    profile['changed'].remove('quant_company/company.py')
+    profile['services'].append('news-worker')
+    with pytest.raises(ValueError,match='incomplete_or_duplicate'):
+        release.validate_source_profiles(tmp_path,manifest,before)
+    profile['services'].pop()
+    before['/quant-company-news-worker-1']['image'] = 'later-overlay'
+    with pytest.raises(ValueError,match='base_changed'):
+        release.validate_source_profiles(tmp_path,manifest,before)
+
+
+def test_inherited_model_overlay_needs_active_matching_root_receipts(tmp_path,monkeypatch):
+    (tmp_path/'releases').mkdir()
+    monkeypatch.setattr(release,'STATE',tmp_path)
+    owned = {'phase':'preview_active','owner_approval':'owner-preview',
+             'images':[{'target':'app','id':'base'}]}
+    image = {'Id':'derived','Config':{'Labels':{'io.quant-company.model-assignments.base-id':'base',
+                                              'io.quant-company.model-assignments':'commit'}}}
+    assert not release.owned_model_overlay(image,owned,'owner-preview')
+    stage = {'state':'staged','commit':'commit','images':{'base':{'id':'derived','services':[release.NEW_SERVICE]}}}
+    cutover = {'state':'active','commit':'commit'}
+    (tmp_path/'releases/model-assignments-20261006-stage.json').write_text(json.dumps(stage))
+    path = tmp_path/'releases/model-assignments-20261006-cutover.json'
+    path.write_text(json.dumps(cutover))
+    assert release.owned_model_overlay(image,owned,'owner-preview')
+    assert not release.owned_model_overlay(image,owned,'another-approval')
+    path.write_text(json.dumps({**cutover,'state':'reconciliation_required'}))
+    assert not release.owned_model_overlay(image,owned,'owner-preview')
+
+
+def test_runtime_overlay_keeps_existing_feature_environment_and_reversible_runtime():
+    row = {'Config':{'Env':['MODEL_ASSIGNMENTS_ENABLED=true','TREND_FEED_ENABLED=true',
+                           'BRIEFING_PUBLISH_ENABLED=false','COMPANY_CODE_COMMIT=old'],
+                     'Cmd':['quant-company','run-dispatch'],'Entrypoint':['python','/app/entrypoint.py'],
+                     'User':'10001:10001','WorkingDir':'/opt/company'},
+           'Mounts':[{'Type':'bind','Source':'/state/config','Destination':'/etc/company','RW':False}]}
+    rows = {'/quant-company-dispatch-1':row}
+    settings = {'RELEASE_COMMIT':'new','BRIEFING_PUBLISH_ENABLED':'false','BRIEFING_EVALUATION_EDITION_IDS':'["case"]'}
+    overlay = release.runtime_overlay(rows,{'dispatch':'new-image'},settings)['services']['dispatch']
+    assert overlay['environment'] == {'MODEL_ASSIGNMENTS_ENABLED':'true','TREND_FEED_ENABLED':'true',
+                                    'BRIEFING_PUBLISH_ENABLED':'false','COMPANY_CODE_COMMIT':'new',
+                                    'BRIEFING_EVALUATION_EDITION_IDS':'["case"]'}
+    assert overlay['command'] == row['Config']['Cmd'] and overlay['entrypoint'] == row['Config']['Entrypoint']
+    assert overlay['volumes'] == [{'type':'bind','source':'/state/config','target':'/etc/company','read_only':True}]
+    rollback = release.runtime_overlay(rows,{'dispatch':'old-image'}, {})['services']['dispatch']
+    assert rollback['environment'] == release.configuration(('\n'.join(row['Config']['Env'])+'\n').encode())
+    after = deepcopy(rows)
+    after['/quant-company-dispatch-1']['Config']['Env'] = [k+'='+v for k,v in overlay['environment'].items()]
+    release.verify_profile_runtime(rows,after,{'dispatch':'new-image'},settings)
+    after['/quant-company-dispatch-1']['Config']['Env'][0] = 'MODEL_ASSIGNMENTS_ENABLED=false'
+    with pytest.raises(ValueError,match='existing_runtime_binding_changed'):
+        release.verify_profile_runtime(rows,after,{'dispatch':'new-image'},settings)
+
+
+def test_runtime_overlay_preserves_added_read_only_secrets_in_install_and_rollback():
+    row = {'Config': {'Env': [], 'Cmd': ['worker'], 'Entrypoint': [], 'User': '10001', 'WorkingDir': '/app'},
+           'Mounts': [{'Type': 'bind', 'Source': '/state/secrets/database',
+                       'Destination': '/run/secrets/database_password', 'RW': False},
+                      {'Type': 'bind', 'Source': '/state/secrets/trend-provider.json',
+                       'Destination': '/run/secrets/trend_provider', 'RW': False}]}
+    rows = {'/quant-company-news-worker-1': row}
+    for settings in ({}, {'RELEASE_COMMIT': 'candidate'}):
+        overlay = release.runtime_overlay(rows, {'news-worker': 'image'}, settings)
+        secrets = overlay['services']['news-worker']['secrets']
+        assert {s['target']: overlay['secrets'][s['source']]['file'] for s in secrets} == {
+            '/run/secrets/database_password': '/state/secrets/database',
+            '/run/secrets/trend_provider': '/state/secrets/trend-provider.json'}
+        assert overlay['services']['news-worker']['volumes'] == []
+    row['Mounts'][1]['RW'] = True
+    with pytest.raises(ValueError, match='existing_secret_mount_unsupported'):
+        release.runtime_overlay(rows, {'news-worker': 'image'}, {})
 
 
 @pytest.mark.parametrize('preserve_api', [False, True])

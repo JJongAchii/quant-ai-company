@@ -1,0 +1,81 @@
+# PREPARED, NOT ACTIVE. Not referenced by any running service. Do not use until the briefing
+# release source conflict (see guard-evaluation.json) is resolved and the image below is built.
+# Use as an extra -f after the installed compose files and the active candidate overlay, with
+# --profile video --profile claude, and `up -d --no-deps video-worker` only after cutover approval.
+x-video-env: &video-env
+  VIDEO_ENABLED: 'true'
+  VIDEO_UPLOAD_ENABLED: 'false'
+  VIDEO_PUBLISH_ENABLED: 'false'
+  VIDEO_YOUTUBE_CHANNEL_ID: ''
+  VIDEO_RUNWAY_WORKSPACE_ID: '68440252'
+  VIDEO_MONTHLY_CREDIT_LIMIT: '1500'
+  VIDEO_EPISODE_CREDIT_LIMIT: '100'
+  VIDEO_VOICE: Vincent
+  VIDEO_MODEL: claude-opus-5
+  VIDEO_ARTIFACT_DIR: /state/video
+  VIDEO_CREDENTIALS_DIR: /state/media-auth
+  VIDEO_ALIGNMENT_MODEL: small
+  VIDEO_TEMPLATE: motion-v2
+  VIDEO_ASSET_DIR: /state/video-assets
+  VIDEO_RENDER_WORKERS: '2'
+  VIDEO_AM_PUBLISH_DST: '07:00'
+  VIDEO_AM_PUBLISH_STD: '07:50'
+  VIDEO_PM_PUBLISH: '18:00'
+  VIDEO_PUBLISH_LEAD_MINUTES: '10'
+  VIDEO_RETENTION_DAYS: '14'
+  VIDEO_MIN_FREE_GB: '10'
+services:
+  video-worker:
+    profiles: [video]
+    # NOT BUILT YET: build only from the final merged release commit (same RELEASE_COMMIT as the briefing images).
+    image: quant-company-video:7b37ac48824598a0c3c89b0bfd898574456bccf7
+    command: [quant-company, video-worker]
+    restart: unless-stopped
+    init: true
+    user: '10001:10001'
+    read_only: true
+    tmpfs: [/tmp:size=256m,mode=1777]
+    shm_size: 128m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 256
+    stop_grace_period: 120s
+    mem_limit: 2048m
+    cpus: 2
+    logging:
+      driver: local
+      options: {max-size: 10m, max-file: '3'}
+    environment:
+      <<: *video-env
+      DATABASE_PASSWORD_FILE: /run/secrets/database_password
+      DATABASE_USER: company
+      DATABASE_NAME: ${DATABASE_NAME:-quant_company}
+      TEMPORAL_ADDRESS: ${TEMPORAL_ADDRESS}
+      TEMPORAL_NAMESPACE: ${TEMPORAL_NAMESPACE}
+      TEMPORAL_TLS: 'true'
+      TEMPORAL_API_KEY_FILE: /run/secrets/temporal_api_key
+      TEMPORAL_TASK_QUEUE: ${TEMPORAL_TASK_QUEUE:-quant-company}
+      VIDEO_MODEL_RUNTIME_URL: http://claude-runtime:8080
+      MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
+      COMPANY_MAX_DAILY_TURNS: ${COMPANY_MAX_DAILY_TURNS:-0}
+      COMPANY_MODEL_TIMEOUT_SECONDS: ${COMPANY_MODEL_TIMEOUT_SECONDS:-960}
+      ROLES_FILE: /etc/quant-company/roles.json
+      SLACK_TEAM_ID: ${SLACK_TEAM_ID}
+      SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS}
+      SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS}
+      BRIEFING_ENABLED: ${BRIEFING_ENABLED}
+      BRIEFING_PUBLISH_ENABLED: ${BRIEFING_PUBLISH_ENABLED}
+      BRIEFING_OWNER_USER: ${BRIEFING_OWNER_USER}
+      BRIEFING_CHANNEL_ID: ${BRIEFING_CHANNEL_ID}
+    secrets: [database_password, temporal_api_key, model_runtime_token]
+    volumes:
+      - /var/lib/quant-company/config/roles.json:/etc/quant-company/roles.json:ro
+      - {type: bind, source: /var/lib/quant-company/video, target: /state/video, bind: {create_host_path: false}}
+      - {type: bind, source: /var/lib/quant-company/media-auth, target: /state/media-auth, bind: {create_host_path: false}}
+      - {type: bind, source: /var/lib/quant-company/video-assets, target: /state/video-assets, read_only: true, bind: {create_host_path: false}}
+      - {type: bind, source: /var/lib/quant-company/video-models, target: /state/models, bind: {create_host_path: false}}
+    ports: ['127.0.0.1:8766:8766', '127.0.0.1:8767:8767']
+    networks: [core, model, service_egress]
+    depends_on:
+      postgres: {condition: service_healthy}
+      claude-runtime: {condition: service_healthy}

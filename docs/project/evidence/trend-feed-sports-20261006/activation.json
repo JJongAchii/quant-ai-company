@@ -1,0 +1,45 @@
+{
+  "state": "publication_enabled",
+  "approval": "chat-user-exclude-sports-20261006",
+  "started_at": "2026-10-06T13:28:37.258590+00:00",
+  "commit": "cfdeae008f82e7787e1b7c6ae9ed03ceaa2b35fd",
+  "image": "sha256:e036d78baa61b0072e8ed0c541ce5900452346e8c72a2d1723419d956d52832f",
+  "base_image": "sha256:8fc94968656bceebe2242dc8ad8d646922be19aa4d5feb4db323201c4474e655",
+  "editorial_policy_version": 2,
+  "preview_sha256": "ca60d7a60da253b39d07b4b1494080459e9c13bf0f28a63a817972924ac48d8f",
+  "changed_files": [
+    "trend_feed/editor.py",
+    "trend_feed/store.py"
+  ],
+  "model_calls_made": 0,
+  "naver_calls_made": 0,
+  "slack_calls_made": 0,
+  "automatic_message_replay": false,
+  "completed_at": "2026-10-06T13:36:56.078552+00:00",
+  "publish_enabled": true,
+  "target_ids": {
+    "news-worker": "cbf4ad379330249b35be273ed8e190b8f9954d371a079d0148e2f8b66a6a73ab",
+    "dispatch": "f9798da226d145f2e5c817a16648ce22584ca87fbec33a6a85b78fac07118cf0"
+  },
+  "target_images": {
+    "news-worker": "sha256:e036d78baa61b0072e8ed0c541ce5900452346e8c72a2d1723419d956d52832f",
+    "dispatch": "sha256:e036d78baa61b0072e8ed0c541ce5900452346e8c72a2d1723419d956d52832f"
+  },
+  "target_pids": {
+    "news-worker": 256,
+    "dispatch": 128
+  },
+  "runtime_config_preserved_except_restored_naver_mount": true,
+  "previously_authorized_naver_mount_restored": true,
+  "unrelated_container_ids_preserved_during_reconciliation": true,
+  "existing_frozen_requests_preserved": true,
+  "existing_delivered_body_preserved": true,
+  "active_preview_sha256": "ca60d7a60da253b39d07b4b1494080459e9c13bf0f28a63a817972924ac48d8f",
+  "active_source_sha256": {
+    "trend_feed/editor.py": "62738b83711e9485852644984b0376dcfdb821b51dfbeb40f89b9277b73ad137",
+    "trend_feed/store.py": "300f7f4b3a44a57816007ada5ef51bf91417304a27f9ddde35df64065a256bc2"
+  },
+  "first_stage_failure_reconciled": true,
+  "first_stage_error": "RuntimeError:sports_policy_runtime_drift",
+  "runtime_pause_restored": true
+}

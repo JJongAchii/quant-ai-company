@@ -1,0 +1,44 @@
+{
+  "recorded_at": "2026-10-07T05:43:50.878071+00:00",
+  "source_commit": "2b60bb81424eb08b6e5e0f99346d3ffd76b0bafa",
+  "tests_passed": 350,
+  "failures": 0,
+  "skipped": 0,
+  "real_postgres": true,
+  "model_and_slack_regression": "simulated",
+  "actual_model_calls_this_change": 0,
+  "actual_content_quality": "not_yet_evaluated",
+  "previous_saved_input_quality": "6/12 unchanged; no regrading",
+  "test_receipt_sha256": "1eccccc4dd04276e39dc420a80079ba462a14411a7bfe914d0a666ac04d2e219",
+  "ruff": "passed",
+  "transport": {
+    "scope": "Transport stress only: previous failed saved draft plus synthetic phrase qualifiers; no model inference or content regrading.",
+    "originals": 20,
+    "full_original_chars": 50029,
+    "synthetic_qualifier_count": 178,
+    "repair_mode": "editorial_patch",
+    "model_calls": 0,
+    "slack_calls": 0,
+    "checks": {
+      "inventory": {
+        "chars": 68054,
+        "fits": true
+      },
+      "composition": {
+        "chars": 86739,
+        "fits": true
+      },
+      "review": {
+        "chars": 87139,
+        "fits": true
+      },
+      "repair": {
+        "chars": 87688,
+        "fits": true
+      }
+    }
+  },
+  "future_editions": 12,
+  "publication_enabled": false,
+  "monitor_companion_sha256": "ba352cc711addfde4c3a49fb0a931b8f1184f3e50c66a17dd784bb79811c431f"
+}

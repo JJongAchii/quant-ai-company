@@ -101,6 +101,13 @@ def compose_command(root):
         if not overlay.is_file():
             raise ValueError('release_account_overlay_missing')
         command += ['-f', str(overlay)]
+    naver = any(line.strip() == 'TREND_FEED_NAVER_ENABLED=true'
+                for line in envfile.read_text().splitlines()) if envfile.exists() else False
+    if naver:
+        overlay = root/'deploy/trend-feed.compose.yaml'
+        if not overlay.is_file():
+            raise ValueError('release_trend_overlay_missing')
+        command += ['-f', str(overlay)]
     return command
 
 

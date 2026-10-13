@@ -9,17 +9,46 @@ from psycopg.types.json import Jsonb
 from .policy import SECRET, CodeQuery, digest
 
 
-def inspect_code(conn, snapshot, queries):
-    cached = conn.execute("SELECT files FROM repository_evidence WHERE commit=%s", (snapshot["commit"],)).fetchone()
-    if not cached:
-        raise ValueError("exact_repository_evidence_unavailable")
-    files, evidence = cached["files"], []
+def inspect_code(conn, snapshot, queries, *, previous=()):
+    # Only complete positive query receipts from this exact commit can bypass a scan.
+    # Missing/protected/no-match results are retried when coverage becomes available.
+    reusable = {}
+    for receipt in previous:
+        grouped = {}
+        for row in receipt.get("evidence", []):
+            signature = row.get("inspection_query")
+            if (signature and row.get("content") and row.get("key", "").startswith(f"code:{snapshot['commit']}:")
+                    and row.get("inspection_complete")):
+                grouped.setdefault(signature, []).append(row)
+        reusable.update(grouped)
+    files, evidence, readable_digest = None, [], None
     for value in queries:
         query = CodeQuery.model_validate(value)
+        signature = digest([snapshot["commit"], query.model_dump()])
+        if signature in reusable and not query.path:
+            # Same-commit coverage may expand. A broad search must see newly readable paths.
+            if readable_digest is None:
+                row = conn.execute("SELECT ARRAY(SELECT jsonb_object_keys(files) ORDER BY 1) AS paths "
+                                   "FROM repository_evidence WHERE commit=%s", (snapshot["commit"],)).fetchone()
+                if not row:
+                    raise ValueError("exact_repository_evidence_unavailable")
+                readable_digest = digest(row["paths"])
+            if any(row.get("readable_paths_digest") != readable_digest for row in reusable[signature]):
+                reusable.pop(signature)
+        if signature in reusable:
+            evidence.extend({**row, "cache_hit": True} for row in reusable[signature])
+            continue
+        if files is None:
+            cached = conn.execute("SELECT files FROM repository_evidence WHERE commit=%s", (snapshot["commit"],)).fetchone()
+            if not cached:
+                raise ValueError("exact_repository_evidence_unavailable")
+            files = cached["files"]
+            readable_digest = digest(sorted(files))
+        result = []
         if query.path:
             paths = [query.path]
             if query.path not in files:
-                evidence.append({"key": "inspection:" + digest([snapshot["commit"], query.model_dump()])[:24],
+                evidence.append({"key": "inspection:" + signature[:24],
                                  "path": query.path, "status": "not_in_readable_snapshot",
                                  "exists_in_tree": query.path in snapshot["entries"],
                                  "instruction": "Omitted or protected content is unknown, not proof of absence."})
@@ -37,14 +66,103 @@ def inspect_code(conn, snapshot, queries):
                                 enumerate(lines[start:start + query.line_count], start))
             if SECRET.search(content):
                 continue
-            evidence.append({"key": f"code:{snapshot['commit']}:{path}", "path": path,
+            result.append({"key": f"code:{snapshot['commit']}:{path}", "path": path,
                              "start_line": start + 1, "total_lines": len(lines), "content": content[:14000],
-                             "excerpted": start > 0 or start + query.line_count < len(lines) or len(content) > 14000})
+                             "excerpted": start > 0 or start + query.line_count < len(lines) or len(content) > 14000,
+                             "inspection_query": signature, "inspection_complete": True})
+            if not query.path:
+                result[-1]["readable_paths_digest"] = readable_digest
             matches += 1
             if matches == 4:
                 break
+        if result:
+            reusable[signature] = result
+        evidence.extend(result)
     # Keep recent exact evidence in the next prompt; full requests and results remain in the job payload.
     return evidence
+
+
+def excerpt_identity(row):
+    """A citation key identifies a file; different ranges of that file remain distinct."""
+    return digest({key: row.get(key) for key in
+                   ("key", "path", "start_line", "total_lines", "content", "status", "exists_in_tree")})
+
+
+def append_inspections(payload, evidence):
+    """Preserve existing evidence and original query receipts; append only new exact excerpts."""
+    saved = payload.setdefault("investigation_evidence", [])
+    known = {excerpt_identity(row) for row in saved}
+    for row in evidence:
+        identity = excerpt_identity(row)
+        if identity not in known:
+            saved.append(row)
+            known.add(identity)
+
+
+def joined_inspections(rows):
+    """Join numbered exact-commit ranges; unread gaps remain separate and receipts stay immutable."""
+    groups, output = {}, []
+    for row in rows:
+        if not row.get("content"):
+            continue
+        matches = [re.fullmatch(r"(\d+): (.*)", line) for line in row["content"].splitlines()]
+        if not matches or not all(matches):
+            output.append(row)
+            continue
+        group = groups.setdefault((row["key"], row["path"]), {"rows": [], "lines": {}})
+        group["rows"].append(row)
+        for match in matches:
+            number, line = int(match[1]), match[2]
+            previous = group["lines"].get(number)
+            if previous is not None and previous != line:
+                # An original 14k-char receipt may end inside a line; prefer its complete overlap.
+                if line.startswith(previous):
+                    pass
+                elif previous.startswith(line):
+                    continue
+                else:
+                    raise ValueError("conflicting_exact_inspection_lines")
+            group["lines"][number] = line
+    for group in groups.values():
+        if len(group["rows"]) == 1:
+            output.append(group["rows"][0])
+            continue
+        template = group["rows"][0]
+        ranges = []
+        for number, line in sorted(group["lines"].items()):
+            if not ranges or ranges[-1][-1][0] + 1 != number:
+                ranges.append([])
+            ranges[-1].append((number, line))
+        for range_ in ranges:
+            output.append({**{key: template[key] for key in ("key", "path", "total_lines") if key in template},
+                           "start_line": range_[0][0],
+                           "content": "\n".join(f"{number}: {line}" for number, line in range_),
+                           "excerpted": range_[0][0] > 1 or range_[-1][0] < template.get("total_lines", 2**31),
+                           "joined_ranges": len(group["rows"])})
+    return output
+
+
+def inspection_context(payload):
+    """Carry all previously read code into each stateless call, joining overlapping ranges."""
+    unique = {excerpt_identity(row): row for row in payload.get("investigation_evidence", [])}
+    rounds = payload.get("investigation_requests", [])
+    recent = rounds[-1] if rounds else {}
+    explicit = {row.get("path") for row in recent.get("requests", []) if row.get("path")}
+    shown = sorted(joined_inspections(unique.values()), key=lambda row: (row.get("path") not in explicit,
+                   not row.get("path", "").startswith(("src/", "tests/")),
+                   row.get("path", ""), row.get("start_line", 0)))
+    catalog = [{**{key: row[key] for key in ("key", "path", "start_line", "total_lines", "status") if key in row},
+                "line_count": len(row.get("content", "").splitlines()),
+                "content_digest": digest(row.get("content", "")), "shown": bool(row.get("content"))}
+               for row in unique.values()]
+    return {"investigated_code": shown, "inspection_catalog": catalog,
+            "inspection_lookup": "This is an index of stored exact-commit ranges, not model memory. "
+                                 "Previously read code is carried into this request; overlapping ranges are joined. "
+                                 "Unread gaps remain separate. Only shown code is known; request indexed ranges "
+                                 "omitted by the shared context budget. Exact queries reuse saved positive receipts.",
+            "recent_inspection": {"requests": recent.get("requests", []),
+                                  "returned_excerpts": len(recent.get("evidence", [])),
+                                  "reused_excerpts": sum(bool(row.get("cache_hit")) for row in recent.get("evidence", []))}}
 
 
 def feedback_text(text):

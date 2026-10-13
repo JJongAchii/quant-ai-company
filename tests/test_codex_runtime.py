@@ -14,6 +14,7 @@ from pydantic import ValidationError
 
 from quant_company.contracts import ProviderFault, ProviderRequest
 from quant_company.providers.client import RuntimeClient
+from quant_company.providers.codex_release import SUPPORTED_CLI_VERSION
 from quant_company.providers.codex_runner import (
     CodexRunner,
     RunnerConfig,
@@ -30,11 +31,35 @@ from pathlib import Path
 base = Path(__file__).parent
 control = json.loads((base / 'control.json').read_text())
 if '--version' in sys.argv:
-    print('codex-cli ' + control.get('version', '0.154.0'))
+    print('codex-cli ' + control['version'])
     sys.exit(0)
 if 'login' in sys.argv:
     print(control.get('login', 'Logged in using ChatGPT'), file=sys.stderr)
     sys.exit(control.get('login_exit', 0))
+if 'app-server' in sys.argv:
+    for line in sys.stdin:
+        message = json.loads(line)
+        with (base / 'catalog-calls.jsonl').open('a') as stream:
+            stream.write(json.dumps({'rpc': message, 'args': sys.argv[1:], 'environment': dict(os.environ)}) + '\n')
+        if message['method'] == 'initialized':
+            continue
+        assert message['method'] in ('initialize', 'model/list'), 'Catalog must never start a thread or turn'
+        if message['method'] == 'initialize':
+            result = {}
+        else:
+            if control.get('catalog_error'):
+                print(json.dumps({'id': message['id'], 'error': {'message': 'SECRET-CATALOG-ERROR'}}), flush=True)
+                continue
+            models = control.get('catalog', [
+                {'model': 'gpt-5.6-luna', 'supportedReasoningEfforts': [{'reasoningEffort': 'high'}]},
+                {'model': 'candidate-a', 'supportedReasoningEfforts': [{'reasoningEffort': 'high'}, {'reasoningEffort': 'max'}]},
+                {'model': 'candidate-b', 'supportedReasoningEfforts': [{'reasoningEffort': 'high'}, {'reasoningEffort': 'max'}]}])
+            pages = control.get('catalog_pages')
+            page = int(message['params'].get('cursor', '0'))
+            result = {'data': pages[page] if pages else models,
+                      'nextCursor': str(page + 1) if pages and page < len(pages)-1 else None}
+        print(json.dumps({'id': message['id'], 'result': result}), flush=True)
+    sys.exit(0)
 schema = Path(sys.argv[sys.argv.index('--output-schema') + 1])
 if not schema.exists():
     assert sys.stdin.read() == ''
@@ -99,13 +124,13 @@ def fake_codex(tmp_path):
     binary.write_text(f"#!{sys.executable}\n{FAKE_CODEX}")
     binary.chmod(0o700)
     control_path = tmp_path / "control.json"
-    control_path.write_text("{}")
+    control_path.write_text(json.dumps({"version": SUPPORTED_CLI_VERSION}))
     auth = tmp_path / "auth"
     auth.mkdir()
     config = RunnerConfig(codex_home=auth, jobs_dir=tmp_path / "jobs", codex_bin=str(binary), timeout_seconds=5)
 
     def configure(**values):
-        control_path.write_text(json.dumps(values))
+        control_path.write_text(json.dumps({"version": SUPPORTED_CLI_VERSION, **values}))
 
     def calls():
         path = tmp_path / "calls.jsonl"
@@ -135,7 +160,8 @@ async def test_scoped_native_search_preserves_observed_events(fake_codex, reques
 def test_search_disabled_keeps_legacy_request_identity(request_model):
     import hashlib
 
-    old = request_model.model_dump(exclude={"web_search", "reasoning_effort", "output_contract", "session"})
+    old = request_model.model_dump(exclude={"web_search", "reasoning_effort", "output_contract", "session", "brief_deadline_unix",
+                                            "attachments"})
     legacy = hashlib.sha256(json.dumps(old, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
     assert request_digest(request_model) == legacy
     assert request_digest(request_model.model_copy(update={"web_search": True})) != legacy
@@ -554,6 +580,8 @@ async def test_api_credentials_are_rejected_before_process(fake_codex, request_m
     ({"login": "Logged in using API key: SECRET-API"}, "auth"),
     ({"login": "Not logged in", "login_exit": 1}, "auth"),
     ({"version": "0.100.0"}, "unavailable"),
+    ({"version": "0.154.0"}, "unavailable"),
+    ({"version": "0.160.2"}, "unavailable"),
 ])
 async def test_auth_or_cli_mismatch_prevents_inference(fake_codex, request_model, control, code):
     config, configure, calls = fake_codex

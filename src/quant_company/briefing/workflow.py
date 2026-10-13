@@ -40,7 +40,12 @@ class BriefEditorialWorkflow:
         for _ in range(100):
             result = {}
             try:
-                result = await workflow.execute_activity("company_brief_review", start_to_close_timeout=timedelta(minutes=18),
+                minutes = 26 if workflow.patched("analyst-phase-budget-v1") else 18
+                if workflow.patched('analyst-shared-deadline-v1'):
+                    # The request/runtime deadline owns the actual remaining
+                    # edition window; this outer timer must not truncate it.
+                    minutes = 87
+                result = await workflow.execute_activity("company_brief_review", start_to_close_timeout=timedelta(minutes=minutes),
                     heartbeat_timeout=timedelta(seconds=30),
                     retry_policy=RetryPolicy(maximum_attempts=3, initial_interval=timedelta(seconds=5)))
             except ActivityError:

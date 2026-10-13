@@ -1,0 +1,57 @@
+{
+  "checked_at": "2026-10-06T19:40:58.184009+09:00",
+  "network": "real-naver-api-hub",
+  "http_requests": 2,
+  "credential_values_recorded": false,
+  "database": "not-connected",
+  "model": "not-called",
+  "slack": "not-connected",
+  "google_candidates_available": 10,
+  "trend": {
+    "ok": true,
+    "sha256": "2f2f7aeb9c7834f6496c4e092f51914b620516ae3aedd7a9f2eab9c81b6632d6",
+    "http_status": 200,
+    "window": {
+      "startDate": "2026-09-08",
+      "endDate": "2026-10-05"
+    },
+    "series": [
+      {
+        "keyword": "카를로스 알카라스",
+        "matched": true,
+        "state": "available",
+        "reason": null,
+        "as_of": "2026-10-05",
+        "point_count": 28,
+        "change_percent": -47.87056346038562
+      },
+      {
+        "keyword": "리오넬 스칼로니",
+        "matched": true,
+        "state": "available",
+        "reason": null,
+        "as_of": "2026-10-05",
+        "point_count": 27,
+        "change_percent": -11.340139066121512
+      },
+      {
+        "keyword": "ssg 랜더스",
+        "matched": true,
+        "state": "available",
+        "reason": null,
+        "as_of": "2026-10-05",
+        "point_count": 28,
+        "change_percent": 22.639928830254163
+      }
+    ]
+  },
+  "news": {
+    "ok": true,
+    "sha256": "243abc1c47750ddbcc3cff85e9fb97cb6cf92a913b41043eb2b7ccec567ff470",
+    "http_status": 200,
+    "query": "카를로스 알카라스",
+    "items": 5,
+    "total": 10932
+  },
+  "passed": true
+}

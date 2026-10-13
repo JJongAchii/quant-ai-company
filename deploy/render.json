@@ -1,0 +1,372 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "On-demand video rendering for Quant Company: an ECS Fargate (Spot first) task that exists only while it renders. The task can read and write s3://<bucket>/render/* and read models/; it holds no database, Slack, speech or model credentials.",
+  "Parameters": {
+    "VpcId": {
+      "Type": "String",
+      "AllowedPattern": "^vpc-[0-9a-f]{8,17}$",
+      "Description": "VPC with public subnets (the default VPC). Tasks get a public IP for S3/ECR/logs; no NAT gateway."
+    },
+    "ImageUri": {
+      "Type": "String",
+      "Default": "",
+      "AllowedPattern": "^$|^[0-9]{12}\\.dkr\\.ecr\\.[a-z0-9-]+\\.amazonaws\\.com/[a-z0-9._/-]+@sha256:[0-9a-f]{64}$",
+      "Description": "Render image pinned by digest (deploy/Dockerfile.render). Empty on the first create: the task definition is registered once an image exists."
+    },
+    "TaskCpu": {
+      "Type": "String",
+      "Default": "16384",
+      "AllowedValues": ["4096", "8192", "16384"],
+      "Description": "Fargate CPU units (16384 = 16 vCPU)."
+    },
+    "TaskMemory": {
+      "Type": "String",
+      "Default": "32768",
+      "Description": "MiB; 16 vCPU requires 32768-122880 in 8192 steps."
+    },
+    "EphemeralStorageGiB": {
+      "Type": "Number",
+      "Default": 50,
+      "MinValue": 21,
+      "MaxValue": 200
+    },
+    "RenderWorkers": {
+      "Type": "String",
+      "Default": "16",
+      "Description": "Parallel Chromium capture workers in the task (VIDEO_RENDER_WORKERS)."
+    },
+    "AlignmentThreads": {
+      "Type": "String",
+      "Default": "8",
+      "Description": "Speech-to-text threads for subtitle alignment in the task (VIDEO_ALIGNMENT_THREADS)."
+    },
+    "TimeoutMinutes": {
+      "Type": "String",
+      "Default": "90",
+      "Description": "The task exits itself after this many minutes (VIDEO_RENDER_TIMEOUT_MINUTES)."
+    },
+    "MonthlyBudgetUsd": {
+      "Type": "Number",
+      "Default": 20,
+      "Description": "Monthly ECS (Fargate) + ECR cost budget."
+    },
+    "BudgetEmail": {
+      "Type": "String",
+      "Default": "",
+      "NoEcho": true,
+      "Description": "Budget alert recipient; the budget is created only when set."
+    }
+  },
+  "Conditions": {
+    "HasImage": {
+      "Fn::Not": [{"Fn::Equals": [{"Ref": "ImageUri"}, ""]}]
+    },
+    "HasBudgetEmail": {
+      "Fn::Not": [{"Fn::Equals": [{"Ref": "BudgetEmail"}, ""]}]
+    }
+  },
+  "Resources": {
+    "RenderBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "BucketName": {"Fn::Sub": "${AWS::StackName}-${AWS::AccountId}"},
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "OwnershipControls": {"Rules": [{"ObjectOwnership": "BucketOwnerEnforced"}]},
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [{"ServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Id": "RenderScratch",
+              "Status": "Enabled",
+              "Prefix": "render/",
+              "ExpirationInDays": 3,
+              "AbortIncompleteMultipartUpload": {"DaysAfterInitiation": 1}
+            }
+          ]
+        },
+        "Tags": [{"Key": "Application", "Value": "quant-company"}, {"Key": "Purpose", "Value": "video-render"}]
+      }
+    },
+    "RenderBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {"Ref": "RenderBucket"},
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "DenyPlainHttp",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Action": "s3:*",
+              "Resource": [{"Fn::GetAtt": ["RenderBucket", "Arn"]}, {"Fn::Sub": "${RenderBucket.Arn}/*"}],
+              "Condition": {"Bool": {"aws:SecureTransport": "false"}}
+            }
+          ]
+        }
+      }
+    },
+    "RenderRepository": {
+      "Type": "AWS::ECR::Repository",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "RepositoryName": {"Ref": "AWS::StackName"},
+        "ImageTagMutability": "IMMUTABLE",
+        "ImageScanningConfiguration": {"ScanOnPush": true},
+        "EncryptionConfiguration": {"EncryptionType": "AES256"},
+        "LifecyclePolicy": {
+          "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Keep the five newest render images\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
+        },
+        "Tags": [{"Key": "Application", "Value": "quant-company"}, {"Key": "Purpose", "Value": "video-render"}]
+      }
+    },
+    "RenderCluster": {
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "ClusterName": {"Ref": "AWS::StackName"},
+        "CapacityProviders": ["FARGATE", "FARGATE_SPOT"],
+        "DefaultCapacityProviderStrategy": [{"CapacityProvider": "FARGATE_SPOT", "Weight": 1}],
+        "ClusterSettings": [{"Name": "containerInsights", "Value": "disabled"}],
+        "Tags": [{"Key": "Application", "Value": "quant-company"}, {"Key": "Purpose", "Value": "video-render"}]
+      }
+    },
+    "RenderLogs": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": {"Fn::Sub": "/${AWS::StackName}/render"},
+        "RetentionInDays": 7
+      }
+    },
+    "RenderSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Quant Company render tasks: no ingress, HTTPS egress only (S3, ECR, CloudWatch Logs)",
+        "VpcId": {"Ref": "VpcId"},
+        "SecurityGroupEgress": [{"IpProtocol": "tcp", "FromPort": 443, "ToPort": 443, "CidrIp": "0.0.0.0/0"}],
+        "Tags": [{"Key": "Name", "Value": {"Fn::Sub": "${AWS::StackName}-task"}}, {"Key": "Application", "Value": "quant-company"}]
+      }
+    },
+    "ExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "Description": "Pulls the render image and writes task logs",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {"Service": "ecs-tasks.amazonaws.com"},
+              "Action": "sts:AssumeRole",
+              "Condition": {"StringEquals": {"aws:SourceAccount": {"Ref": "AWS::AccountId"}}}
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "pull-and-log",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {"Effect": "Allow", "Action": "ecr:GetAuthorizationToken", "Resource": "*"},
+                {
+                  "Effect": "Allow",
+                  "Action": ["ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage"],
+                  "Resource": {"Fn::GetAtt": ["RenderRepository", "Arn"]}
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
+                  "Resource": {"Fn::Sub": "${RenderLogs.Arn}"}
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "TaskRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "Description": "Render task: its own S3 render prefix and the alignment model, nothing else",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {"Service": "ecs-tasks.amazonaws.com"},
+              "Action": "sts:AssumeRole",
+              "Condition": {"StringEquals": {"aws:SourceAccount": {"Ref": "AWS::AccountId"}}}
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "render-prefix",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": ["s3:GetObject", "s3:PutObject"],
+                  "Resource": {"Fn::Sub": "${RenderBucket.Arn}/render/*"}
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetObject",
+                  "Resource": {"Fn::Sub": "${RenderBucket.Arn}/models/*"}
+                },
+                {
+                  "Sid": "ListForResumeAndMissingKeys404",
+                  "Effect": "Allow",
+                  "Action": "s3:ListBucket",
+                  "Resource": {"Fn::GetAtt": ["RenderBucket", "Arn"]}
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "RenderTaskDefinition": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Condition": "HasImage",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "Family": {"Ref": "AWS::StackName"},
+        "RequiresCompatibilities": ["FARGATE"],
+        "NetworkMode": "awsvpc",
+        "Cpu": {"Ref": "TaskCpu"},
+        "Memory": {"Ref": "TaskMemory"},
+        "EphemeralStorage": {"SizeInGiB": {"Ref": "EphemeralStorageGiB"}},
+        "RuntimePlatform": {"OperatingSystemFamily": "LINUX", "CpuArchitecture": "X86_64"},
+        "ExecutionRoleArn": {"Fn::GetAtt": ["ExecutionRole", "Arn"]},
+        "TaskRoleArn": {"Fn::GetAtt": ["TaskRole", "Arn"]},
+        "ContainerDefinitions": [
+          {
+            "Name": "render",
+            "Image": {"Ref": "ImageUri"},
+            "Essential": true,
+            "Command": ["quant-company", "video", "render-task", "--help"],
+            "StopTimeout": 120,
+            "LinuxParameters": {"InitProcessEnabled": true},
+            "Environment": [
+              {"Name": "VIDEO_ARTIFACT_DIR", "Value": "/state/video"},
+              {"Name": "VIDEO_ASSET_DIR", "Value": "/state/video-assets"},
+              {"Name": "VIDEO_ALIGNMENT_MODEL", "Value": "/models/small"},
+              {"Name": "VIDEO_TEMPLATE", "Value": "motion-v2"},
+              {"Name": "VIDEO_RENDER_WORKERS", "Value": {"Ref": "RenderWorkers"}},
+              {"Name": "VIDEO_ALIGNMENT_THREADS", "Value": {"Ref": "AlignmentThreads"}},
+              {"Name": "VIDEO_RENDER_TIMEOUT_MINUTES", "Value": {"Ref": "TimeoutMinutes"}},
+              {"Name": "VIDEO_RENDER_REGION", "Value": {"Ref": "AWS::Region"}},
+              {"Name": "AWS_REGION", "Value": {"Ref": "AWS::Region"}},
+              {"Name": "AWS_DEFAULT_REGION", "Value": {"Ref": "AWS::Region"}}
+            ],
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {"Ref": "RenderLogs"},
+                "awslogs-region": {"Ref": "AWS::Region"},
+                "awslogs-stream-prefix": "render"
+              }
+            }
+          }
+        ],
+        "Tags": [{"Key": "Application", "Value": "quant-company"}, {"Key": "Purpose", "Value": "video-render"}]
+      }
+    },
+    "WorkerUser": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "UserName": {"Fn::Sub": "${AWS::StackName}-worker"},
+        "Policies": [
+          {
+            "PolicyName": "launch-render-tasks",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "ecs:RunTask",
+                  "Resource": {"Fn::Sub": "arn:${AWS::Partition}:ecs:${AWS::Region}:${AWS::AccountId}:task-definition/${AWS::StackName}:*"},
+                  "Condition": {"ArnEquals": {"ecs:cluster": {"Fn::GetAtt": ["RenderCluster", "Arn"]}}}
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": ["ecs:DescribeTasks", "ecs:StopTask"],
+                  "Resource": {"Fn::Sub": "arn:${AWS::Partition}:ecs:${AWS::Region}:${AWS::AccountId}:task/${AWS::StackName}/*"},
+                  "Condition": {"ArnEquals": {"ecs:cluster": {"Fn::GetAtt": ["RenderCluster", "Arn"]}}}
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "iam:PassRole",
+                  "Resource": [{"Fn::GetAtt": ["ExecutionRole", "Arn"]}, {"Fn::GetAtt": ["TaskRole", "Arn"]}],
+                  "Condition": {"StringEquals": {"iam:PassedToService": "ecs-tasks.amazonaws.com"}}
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": ["s3:GetObject", "s3:PutObject"],
+                  "Resource": {"Fn::Sub": "${RenderBucket.Arn}/render/*"}
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:ListBucket",
+                  "Resource": {"Fn::GetAtt": ["RenderBucket", "Arn"]}
+                }
+              ]
+            }
+          }
+        ],
+        "Tags": [{"Key": "Application", "Value": "quant-company"}, {"Key": "Purpose", "Value": "video-render"}]
+      }
+    },
+    "RenderBudget": {
+      "Type": "AWS::Budgets::Budget",
+      "Condition": "HasBudgetEmail",
+      "Properties": {
+        "Budget": {
+          "BudgetName": {"Fn::Sub": "${AWS::StackName}-monthly"},
+          "BudgetType": "COST",
+          "TimeUnit": "MONTHLY",
+          "BudgetLimit": {"Amount": {"Ref": "MonthlyBudgetUsd"}, "Unit": "USD"},
+          "CostFilters": {
+            "Service": ["Amazon Elastic Container Service", "Amazon EC2 Container Registry (ECR)"]
+          }
+        },
+        "NotificationsWithSubscribers": [
+          {
+            "Notification": {"NotificationType": "ACTUAL", "ComparisonOperator": "GREATER_THAN", "Threshold": 50, "ThresholdType": "PERCENTAGE"},
+            "Subscribers": [{"SubscriptionType": "EMAIL", "Address": {"Ref": "BudgetEmail"}}]
+          },
+          {
+            "Notification": {"NotificationType": "ACTUAL", "ComparisonOperator": "GREATER_THAN", "Threshold": 100, "ThresholdType": "PERCENTAGE"},
+            "Subscribers": [{"SubscriptionType": "EMAIL", "Address": {"Ref": "BudgetEmail"}}]
+          },
+          {
+            "Notification": {"NotificationType": "FORECASTED", "ComparisonOperator": "GREATER_THAN", "Threshold": 100, "ThresholdType": "PERCENTAGE"},
+            "Subscribers": [{"SubscriptionType": "EMAIL", "Address": {"Ref": "BudgetEmail"}}]
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "BucketName": {"Value": {"Ref": "RenderBucket"}},
+    "RepositoryUri": {"Value": {"Fn::GetAtt": ["RenderRepository", "RepositoryUri"]}},
+    "ClusterName": {"Value": {"Ref": "RenderCluster"}},
+    "TaskDefinitionArn": {"Condition": "HasImage", "Value": {"Ref": "RenderTaskDefinition"}},
+    "SecurityGroupId": {"Value": {"Fn::GetAtt": ["RenderSecurityGroup", "GroupId"]}},
+    "WorkerUserName": {"Value": {"Ref": "WorkerUser"}},
+    "LogGroupName": {"Value": {"Ref": "RenderLogs"}}
+  }
+}

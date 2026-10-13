@@ -12,6 +12,18 @@ CARDINALS = "zero one two three four five six seven eight nine ten eleven twelve
 TENS = "twenty thirty forty fifty sixty seventy eighty ninety".split()
 
 
+def meeting_month_pattern(name):
+    # An explicitly named meeting establishes its month even in "its September
+    # meeting". A bare month name or modal "may" does not establish a date.
+    return (r"\b"+name+r"\s+(?:(?:FOMC|Fed|Federal Reserve|policy|monetary policy)\s+)?"
+            r"(?:meeting|meeting minutes|minutes)\b")
+
+
+def plan_month_pattern(name):
+    # A named plan has an explicit calendar month; modal "may plan" does not.
+    return (r"\b(?:the|its)\s+"+name+r"\s+(?:emergency\s+)?(?:action\s+)?plan\b")
+
+
 def written_fractions(text):
     values = {"half": Decimal("0.5"), "halves": Decimal("0.5"),
               "quarter": Decimal("0.25"), "quarters": Decimal("0.25"),
@@ -77,7 +89,7 @@ def decimal_points(text):
     return re.sub(r"(?<![A-Za-z0-9])(\d+)-point-(\d+)\b", r"\1.\2", text, flags=re.I)
 
 
-def months(text):
+def months(text, *, meetings=True):
     result = {Decimal(m[1]) for m in re.finditer(r"(?<![\d.])(0?[1-9]|1[0-2])월", text)}
     for match in re.finditer(r"(?<!\d)((?:19|20)\d{2})[./-](\d{1,2})[./-](\d{1,2})(?!\d)", text):
         try:
@@ -95,6 +107,8 @@ def months(text):
                             r"(?:report|data|figures|reading|release)\b")
         if (re.search(dated, text, re.I) or re.search(release_month, text, re.I)
                 or re.search(labelled_release, text, re.I)
+                or (meetings and (re.search(meeting_month_pattern(name), text, re.I)
+                                 or re.search(plan_month_pattern(name), text, re.I)))
                 or re.search(r"\b(?:in|of|from|during|as of|by|for|last|this|next|since|until|on)\s+"+names+r"\b", text, re.I)):
             result.add(Decimal(month))
     return result
@@ -122,6 +136,14 @@ def numbers(text):
     text = re.sub(r"\b(first|second|third|fourth)[-\s]+quarter\b",
                   lambda m: quarters[m[1].lower()]+" quarter", text, flags=re.I)
     text = written_fractions(written_counts(text))
+    # An explicit compact range shares its written scale with both endpoints.
+    # A spaced minus ("9 -10 million") remains a signed value, not a range.
+    unsigned = r"\d[\d,]*(?:\.\d+)?"
+    text = re.sub(
+        r"(?<![\w.+\-−])("+unsigned+r")(?:[-–~]|\s+to\s+)("+unsigned+
+        r")\s+(million|billion|trillion|bn|tn|kilobarrels)\b",
+        lambda m: m[1]+" "+m[3]+" to "+m[2]+" "+m[3], text, flags=re.I,
+    )
     # A same-sentence pre-war comparison inherits this explicit flow unit.
     # Do not propagate it to another sentence, a percent or a labelled unit.
     text = re.sub(
@@ -142,6 +164,9 @@ def numbers(text):
     # its upper bound. Keep a spaced "5% -3%" as a genuinely negative value.
     text = re.sub(r"(?<=%)-(?=\d[\d,]*(?:\.\d+)?%)", " to ", text)
     text = re.sub(r"\bS&P\)?\s*500(?!\d)", "S_AND_P_INDEX", text, flags=re.I)
+    # In a compound quantity, "6천여억원" carries the same stated magnitude
+    # as "약 6,000억원". Approximation remains a semantic review requirement.
+    text = re.sub(r"(?<=[십백천])여(?=\s*[만억조])", "", text)
     normalized = re.sub(NUMBER+r"(?:\s*[십백천만억조](?:\s*\d[\d,]*(?:\.\d+)?)?)+",
                         lambda m: " "+str(quantity(m[0]))+" ", text)
     # Finance articles use an attached m for millions of dollars. Require the
@@ -158,13 +183,14 @@ def numbers(text):
     # independent review still checks entity identity against the originals.
     result = {Decimal(n.replace(",", "").replace("−", "-"))
               for n in re.findall(r"(?<![A-Za-z0-9.,])"+NUMBER, normalized)}
-    return result | months(text)
+    # The named meeting can prove "9월", but not an unrelated quantity of 9.
+    return result | months(text, meetings=False)
 
 
 def reported_change_supported(value, unit, quotes):
     units = {"%": r"%(?!p|포인트)|percent(?!age|\s+points?)", "bp": r"bps?(?![A-Za-z])|basis points?", "pt": r"pt\b|points?|포인트"}
-    down = (r"하락|급락|감소|내린|내렸|떨어|낮아|줄었|밀린|밀렸|빠진|빠졌|"
-            r"fell|fall|down|lower\b|declin\w*|lost|slipped|shed|slump\w*|(?:was|were|is|are)\s+off")
+    down = (r"하락|급락|감소|내린|내렸|내려|떨어|낮아|줄었|밀린|밀렸|빠진|빠졌|"
+            r"fell|fall|down|lower\b|declin\w*|lost|slid|slipped|shed|slump\w*|(?:was|were|is|are)\s+off")
     up = r"상승|오른|올랐|높아|늘었|뛴|뛰었|뛰며|rose|ris\w*|up|higher\b|gain\w*|advanced|jumped|surged"
     for quote in quotes:
         quote = decimal_points(written_counts(quote))
@@ -182,6 +208,10 @@ def reported_change_supported(value, unit, quotes):
             direction = down if value < 0 else up
             before, after = quote[:match.start()], quote[match.end():]
             after = re.sub(r"^\s*\([^()]{0,40}\)", "", after)
+            if value < 0 and re.match(r"^\s*의?\s*낙폭(?:을|이|으로|\s|[.,]|$)", after):
+                return True
+            if value < 0 and re.search(r"(?:내림폭|하락폭|하향폭|낙폭)(?:은|이)?\s*$", before):
+                return True
             if (re.search("(?:"+direction+r")(?:\s+(?:by|about|roughly|nearly))?\s*$", before, re.I)
                     or re.match(r"^[\s)\]]*(?:(?:가|나|만큼)\s*)?(?:"+direction+")", after, re.I)):
                 return True
@@ -216,12 +246,15 @@ def prose_numbers_supported(text, quotes):
     for month, name in enumerate(month_names, 1):
         temporal = (rf'\b(?:(?:in|by|during|until|through|before|after)\s+'
                     rf'(?:(?:early|mid|late)[\s-]+)?|(?:early|mid|late)[\s-]+){name}\b'
-                    rf'|\b{name}\s+\d{{1,2}}\b')
-        if any(re.search(temporal, quote, re.I) for quote in quotes):
+                    rf'|\b{name}\s+\d{{1,2}}\b|\b{name}\s+quarter\b')
+        if any(re.search(temporal, quote, re.I)
+               or re.search(meeting_month_pattern(name), quote, re.I)
+               or re.search(plan_month_pattern(name), quote, re.I) for quote in quotes):
             text = re.sub(rf'(?<!\d){month}\s*월', name, text)
     rate = r"(?<![\d.,+\-−])\d[\d,]*(?:\.\d+)?\s*%(?!\s*(?:[pP]\b|포인트))"
     label = r"[가-힣A-Za-z·\s]{0,60}"
-    decline = r"\s*(?:하락(?:했습니다|했다|했고|한)|내렸(?:습니다|다)|내린)"
+    decline = (r"\s*(?:하락(?:했습니다|했다|했고|한)|내렸(?:습니다|다)|내린"
+               r"|하락(?=$|[\s,.;·]))")
     series = rate+r"(?:\s*,\s*"+label+rate+r")*"+decline
     valid = True
 
@@ -233,7 +266,16 @@ def prose_numbers_supported(text, quotes):
                 valid = False
         return re.sub(rate, " ", match[0])
 
-    remaining = re.sub(series, check, text)
+    magnitude = r"(?:내림폭|하락폭|하향폭|낙폭)(?:은|이)?\s*"+rate
+    remaining = re.sub(magnitude, check, re.sub(series, check, text))
+    # "First three quarters" establishes the cumulative Q1-Q3 period, not a
+    # standalone quantity of1. Normalize only that explicit Korean period.
+    def cumulative_quarters(match):
+        count = int(match[1])
+        pattern = rf"\bfirst\s+(?:{count}|{CARDINALS[count]})\s+quarters\b"
+        return "누적분기" if any(re.search(pattern, q, re.I) for q in quotes) else match[0]
+
+    remaining = re.sub(r"(?<![\d.,])1\s*[~∼–-]\s*([2-4])\s*분기", cumulative_quarters, remaining)
     # A ranking is not a price or quantity: English "second-largest" supports
     # Korean "2위", but never a bare 2, a 2% change or a second-tier label.
     ranks = {1: r"(?<![\w-])(?:the\s+)?(?:largest|biggest)\b",
@@ -253,7 +295,7 @@ def prose_numbers_supported(text, quotes):
     def check_rank(match):
         nonlocal valid
         value = int(match[1])
-        korean = re.escape(match[1])+r"\s*위(?=$|[\s,.]|[의인로를은가였다])"
+        korean = r"(?<![\d.,])"+re.escape(match[1])+r"\s*위(?=$|[\s,.（(]|[의인로를은가였다])"
         if any(re.search(korean, quote) or english_rank_supported(value, quote)
                for quote in quotes):
             return "위"

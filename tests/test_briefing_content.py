@@ -33,6 +33,7 @@ from quant_company.briefing.editor import (
     validate,
     validate_review,
 )
+from quant_company.briefing.execution import final_at
 from quant_company.briefing.inputs import document, market_report
 from quant_company.briefing.market_rules import expired_wti_contract
 from quant_company.briefing.numeric import numbers, prose_numbers_supported, reported_change_supported
@@ -43,6 +44,31 @@ from scripts import evaluate_briefing
 
 from .test_briefing import brief, bundle, definition, proposal, response, review, seed  # noqa: F401
 from .test_briefing_analyst import analytical_proposal
+
+
+def test_explicit_shared_scale_range_keeps_both_endpoints():
+    quote = "Oil flows are 9-10 million bpd, versus 14.5 million bpd before the war."
+    assert prose_numbers_supported("하루 900만~1,000만 배럴", [quote])
+    assert not prose_numbers_supported("하루 800만~1,000만 배럴", [quote])
+    assert Decimal(9000000) not in numbers("9 barrels. 10 million bpd.")
+    assert Decimal(9000000) not in numbers("9 -10 million bpd")
+    assert Decimal(-10000000) in numbers("9 -10 million bpd")
+
+
+def test_compound_approximate_korean_quantity_preserves_magnitude():
+    assert prose_numbers_supported("일평균 약 1조6,000억원", ["일평균 1조6천여억원씩 순매수"])
+    assert prose_numbers_supported("일평균 약 1조6,000억원", ["일평균 1조 6천여 억 원씩 순매수"])
+    assert not prose_numbers_supported("일평균 약 1조7,000억원", ["일평균 1조6천여억원씩 순매수"])
+    assert Decimal(1600000000000) not in numbers("1조원과 6천여개")
+
+
+def test_explicit_decline_magnitude_supports_negative_change_only():
+    quote = "운송지수는 0.45%의 낙폭을 기록했다."
+    assert prose_numbers_supported("운송지수는 0.45% 하락했다.", [quote])
+    assert reported_change_supported(Decimal("-.45"), "%", [quote])
+    assert not reported_change_supported(Decimal(".45"), "%", [quote])
+    assert not reported_change_supported(Decimal("-.45"), "%", ["운송지수는 0.45%의 상승폭을 기록했다."])
+    assert reported_change_supported(Decimal("-1.07"), "%", ["선물도 1.07% 내려 마감했다."])
 
 
 def doc(identity, title, **updates):
@@ -184,6 +210,28 @@ def test_bank_name_does_not_masquerade_as_central_bank_and_small_ipo_is_demoted(
     assert selected == [central_bank]
 
 
+@pytest.mark.parametrize("title,topic", [
+    ("미국 무역적자 확대…수입 증가", "macro_policy"),
+    ("미국 소매판매 예상 하회", "macro_policy"),
+    ("중국 산업생산 둔화", "macro_policy"),
+    ("GDP revised lower", "macro_policy"),
+    ("Trade deficit widens", "macro_policy"),
+    ("Retail sales contract", "macro_policy"),
+    ("자동차 판매 감소…해외 수요 약화", "corporate"),
+    ("금융주, 대출 손실 부담 확대", "corporate"),
+    ("제약 신약 승인…출시 준비", "corporate"),
+    ("Utilities lead the session", "corporate"),
+    ("Airlines cut capacity", "corporate"),
+])
+def test_material_macro_and_non_chip_sector_candidates_are_not_dropped_by_topic_filter(title, topic):
+    # These are synthetic collection candidates, not claims about an actual session.
+    candidate = doc("distinct-development", title)
+    docs = [doc("close-a", "Nasdaq market close"), doc("close-b", "S&P market close"),
+            doc("chips", "Nvidia earnings guidance changes"), doc("oil", "Oil supply falls"), candidate]
+    assert topic in topics(candidate)
+    assert candidate.id in {d.id for d in select_documents(docs, "am", limit=6)}
+
+
 def test_english_kospi_close_can_be_second_report_before_older_korean_recap():
     end = definition().cutoff
     full = doc("full", "코스피 마감·코스닥 종가와 투자자별 수급", content="코스피와 코스닥이 마감했다.",
@@ -294,7 +342,7 @@ def test_issue_specific_next_check_is_in_main_when_separate_watchpoint_exists():
     assert p.issues[0].next_check.text in parts[0]
     assert p.issues[0].next_check.id in main_post_item_ids(p, data)
     assert p.issues[0].next_check.text not in "\n".join(parts[1:])
-    assert quality["format_version"] == 15
+    assert quality["format_version"] == 22
 
 
 def test_supported_rate_baseline_in_issue_assessment_survives_to_reviewed_main():
@@ -677,9 +725,9 @@ def test_selected_calendar_events_remain_visible_and_unknown_time_is_labelled_on
     assert "행사 1" in main and "행사 2" in main
     assert "시장 조건 1" in main and "시장 조건 2" in main
     assert all(f"행사 {n}" in main for n in range(1, 5))
-    assert "시장 조건 3" not in main and "시장 조건 3" in detail
+    assert "시장 조건 3" in main and "시장 조건 3" not in detail
     assert "시각 미확인 · 행사" not in main and "[미확인]" not in main
-    assert "추가 확인 사항" in detail and "추가 확인 일정" not in detail
+    assert "추가 확인 사항" not in detail and "추가 확인 일정" not in detail
 
 
 def test_source_coverage_cannot_be_empty_duplicated_or_claim_uncited_items():
@@ -702,11 +750,12 @@ def test_missing_major_issue_preserves_useful_partial_but_cannot_pass(brief):  #
     store, clock = brief
     edition = seed(brief)
     store.commit(response(store.prepare()["request"], analytical_proposal()))
-    clock["at"] = edition.due_at
+    critic = store.prepare()["request"]
+    clock["at"] = final_at(edition.due_at)-timedelta(minutes=5)  # no time left for a repair and a second review
     verdict = review().model_dump()
     verdict.update(verdict="reduce", concerns=["원문에 있는 중요한 정책 변화의 설명이 빠졌습니다."])
     verdict["checks"]["coverage"] = False
-    store.commit(response(store.prepare()["request"], BriefReview.model_validate(verdict)))
+    store.commit(response(critic, BriefReview.model_validate(verdict)))
     with store.db.transaction() as conn:
         row = conn.execute("SELECT * FROM brief_editions WHERE state='ready'").fetchone()
     assert row["proposal"] and row["quality"]["reduced"]
@@ -873,6 +922,36 @@ def test_editorial_patch_preserves_prices_quotes_kind_and_all_unedited_fields():
         apply_editorial_patch(p, EditorialPatch.model_validate({"edits": [{"id": "condition", "text": "새 조건"}]}), {"condition": ["source-1"]})
 
 
+def test_editorial_evidence_merge_keeps_every_old_and_new_quote_in_exact_original_spans():
+    from quant_company.briefing.contracts import Evidence
+    from quant_company.briefing.editor import _merge_evidence
+
+    parts = [str(i)+' reported '+('market evidence '+str(i)+' ') * 10 for i in range(5)]
+    original = '\n'.join(parts)
+    proof = [Evidence(source_id='same-original', quote=p) for p in parts]
+    merged = _merge_evidence(proof[:4], proof[4:], {'documents': [{'id': 'same-original', 'content': original}]})
+    assert len(merged) == 4
+    assert all(e.quote in original and len(e.quote) <= 650 for e in merged)
+    assert all(any(e.source_id == old.source_id and old.quote in e.quote for e in merged) for old in proof)
+    separate = [e.model_copy(update={'source_id': str(i)}) for i, e in enumerate(proof)]
+    assert len(_merge_evidence(separate[:4], separate[4:], {'documents': []})) == 5
+
+
+def test_story_context_accepts_the_same_bounded_paragraph_as_editorial_patch():
+    from quant_company.briefing.contracts import StoryContext
+
+    p = proposal()
+    source = p.issues[0].fact.model_dump()
+    p.issues[0].context = [StoryContext.model_validate({**source, 'id': 'supporting'})]
+    text = source['text'] + ' 추가로 확인된 절차와 영향 범위를 함께 설명합니다.' * 10
+    assert 300 < len(text) <= 500
+    patch = EditorialPatch.model_validate({'edits': [{'id': 'supporting', 'text': text}]})
+    updated = apply_editorial_patch(p, patch, {'supporting': ['source-1']})
+    assert updated.issues[0].context[0].text == text
+    with pytest.raises(ValueError):
+        StoryContext.model_validate({**source, 'id': 'supporting', 'text': '가'*501})
+
+
 def test_readability_editorial_patch_round_trip_is_reviewed_in_postgres(brief):  # noqa: F811
     store, _ = brief
     edition = seed(brief)
@@ -949,7 +1028,9 @@ def test_editorial_story_context_is_anchored_bounded_and_has_its_own_numeric_pro
                               {"fact": ["source-2"]})
 
 
-def test_uncertain_revision_is_not_replaced_with_another_model_call(brief):  # noqa: F811
+def test_an_uncertain_revision_keeps_its_receipt_and_is_retried_as_a_new_request(brief):  # noqa: F811
+    """Owner rule (2026-10-12) replaced 'an uncertain revision ends the edition': that turn keeps its receipt and is
+    never replayed, the next attempt is a new request, and the reviewed body still ships at the final time."""
     store, clock = brief
     edition = seed(brief)
     store.commit(response(store.prepare()["request"]))
@@ -959,13 +1040,17 @@ def test_uncertain_revision_is_not_replaced_with_another_model_call(brief):  # n
     store.commit(response(store.prepare()["request"], BriefReview.model_validate(v)))
     request = store.prepare()["request"]
     store.fault(request["request_id"], "uncertain")
-    assert store.prepare()["state"] == "idle"
-    clock["at"] = edition.due_at+timedelta(minutes=11)
+    retry = store.prepare()["request"]
+    assert retry["request_id"] == request["request_id"]+"-r1"
+    clock["at"] = final_at(edition.due_at)
     store.flush()
     with store.db.transaction() as conn:
-        calls = conn.execute("SELECT phase,state FROM brief_calls WHERE edition_id=%s", (edition.id,)).fetchall()
-    assert len(calls) == 3
-    assert next(c for c in calls if c["phase"] == "revise")["state"] == "blocked"
+        calls = {c["id"]: c for c in conn.execute("SELECT id,state,error FROM brief_calls WHERE edition_id=%s",
+                                                  (edition.id,)).fetchall()}
+        state = conn.execute("SELECT state FROM brief_editions WHERE id=%s", (edition.id,)).fetchone()["state"]
+    assert len(calls) == 4 and calls[request["request_id"]]["state"] == "retry"
+    assert calls[request["request_id"]]["error"] == "uncertain"
+    assert calls[retry["request_id"]]["state"] == "unresolved" and state == "committed"
 
 
 def test_isolated_condition_repair_preserves_facts_and_still_requires_full_review(brief):  # noqa: F811
@@ -1156,6 +1241,26 @@ def test_english_ranking_only_supports_an_explicit_matching_korean_rank():
     assert not prose_numbers_supported("경유는 2% 올랐다.", [quote])
     assert not prose_numbers_supported("세계 2위였다.", ["It was a second-tier supplier with 2 factories."])
     assert prose_numbers_supported("세계 2위 공급원이었다.", ["세계 2위 경유 공급원이다."])
+
+
+def test_named_meeting_month_is_translatable_without_inventing_a_date_or_quantity():
+    quote = "The minutes from its September meeting will be released on Wednesday."
+    assert prose_numbers_supported("9월 회의 의사록은 수요일 공개 예정이다.", [quote])
+    assert not prose_numbers_supported("8월 회의 의사록은 수요일 공개 예정이다.", [quote])
+    assert not prose_numbers_supported("9월 7일 회의 의사록", [quote])
+    assert not prose_numbers_supported("회의에서 9% 인상을 결정했다.", [quote])
+    assert not prose_numbers_supported("5월 회의", ["The committee may meet on Wednesday."])
+
+
+def test_terse_decline_matches_a_signed_row_and_never_an_advance():
+    assert prose_numbers_supported("코스피 0.89% 하락, 코스닥 2.98% 상승",
+                                   ["코스피 -0.89%", "코스닥 +2.98%"])
+    assert not prose_numbers_supported("코스피 0.89% 하락",
+                                       ["코스피 +0.89%"])
+    assert prose_numbers_supported("코스피 0.89% 하락",
+                                   ["The index slid 62.35 points, or 0.89 percent."])
+    assert not prose_numbers_supported("코스피 0.89% 하락",
+                                       ["The index gained 62.35 points, or 0.89 percent."])
 
 
 def test_crypto_rolling_window_uses_korean_reporting_date_not_us_equity_session():

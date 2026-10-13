@@ -3,13 +3,13 @@
 import re
 from difflib import SequenceMatcher
 
-COVERAGE_VERSION = 5
+COVERAGE_VERSION = 6
 
 PATTERNS = {
     "market": r"stocks?|markets?|nasdaq|dow\b|s&p|kospi|kosdaq|증시|코스피|코스닥|장종료",
-    "macro_policy": r"inflation|payroll|fed\b|\brates?\b|central bank|tariffs?|금리|물가|(?<![가-힣])고용|연준|(?<![가-힣])한은|한국은행|정책|관세|부채",
+    "macro_policy": r"inflation|payroll|fed\b|\brates?\b|central bank|tariffs?|금리|물가|(?<![가-힣])고용|연준|(?<![가-힣])한은|한국은행|정책|관세|부채|\bgdp\b|\bpmi\b|retail sales|industrial production|trade (?:balance|deficit|surplus)|economic growth|경제성장|무역수지|무역적자|무역흑자|소매판매|산업생산|소비자심리|경상수지|수출입",
     "geopolitics": r"iran|war\b|ceasefire|sanction|strait|trump.*xi|이란|전쟁|휴전|제재|호르무즈|미중|미·중|중동|우크라",
-    "corporate": r"earnings|profit|nvidia|chips?|\bai\b|meta|merger|기업|실적|반도체|빅테크|인텔|삼성|하이닉스|엔비디아|전력기기",
+    "corporate": r"earnings|profit|nvidia|chips?|\bai\b|meta|merger|기업|실적|반도체|빅테크|인텔|삼성|하이닉스|엔비디아|전력기기|금융주|은행주|자동차|제약|바이오|조선|해운|항공|유통|철강|화학|통신|방산|건설|배터리|automakers?|pharma|biotech|shipbuild|airlines?|utilities|consumer (?:staples|discretionary)",
     "cross_asset": r"oil|crude|gold|treasur|yield|dollar|bitcoin|유가|원유|국채|채권|환율|달러|비트코인|금값",
 }
 NOISE = re.compile(r"^\[(?:인사|부고|게시판|표)\]|^\[특징주\].*상장 첫날|ETF 구성종목.*교체|"
@@ -20,7 +20,7 @@ NOISE = re.compile(r"^\[(?:인사|부고|게시판|표)\]|^\[특징주\].*상장
 def priority(title):
     # Prefer economy-wide/market developments over local publicity with incidental finance keywords.
     patterns = (r"증시|코스피|코스닥|kospi|kosdaq|nasdaq|s&p|stocks|markets",
-                r"연준|(?<![가-힣])한은|한국은행|물가|기준금리|(?<![가-힣])고용|inflation|payroll|federal reserve|central bank",
+                r"연준|(?<![가-힣])한은|한국은행|물가|기준금리|(?<![가-힣])고용|inflation|payroll|federal reserve|central bank|\bgdp\b|\bpmi\b|retail sales|industrial production|trade (?:balance|deficit|surplus)|경제성장|무역수지|무역적자|무역흑자|소매판매|산업생산|경상수지",
                 r"호르무즈|전쟁|이란|미중|미·중|관세|제재|iran|tariff|sanction|trump.*xi",
                 r"유가|국채|환율|oil|crude|treasury|yields",
                 r"실적|급등|급락|전력기기|수요|가이던스|earnings|profit|nvidia|meta|merger",

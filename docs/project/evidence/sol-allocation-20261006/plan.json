@@ -1,0 +1,76 @@
+{
+  "operation_id": "sol-allocation-20261006-owner-chat-v1",
+  "source_request": "아스트라 제외하고 6.1 sol 로 잘 배분해줘. 추론강도로 조절할수도 있을거 같고",
+  "owner_user": "U0C250E23NW",
+  "expected_revision": 0,
+  "expected_account": {
+    "profile": "primary",
+    "revision": 2
+  },
+  "assignments": {
+    "director": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "max"
+    },
+    "financial_strategist": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    "engineer": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    "validator": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    "risk": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    "researcher_kr": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "researcher_global": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "researcher_crypto": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "data": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "maintainer": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "market_brief": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    "reporter": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "operations": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "quant_scout": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    "news_screening": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low"
+    },
+    "news_search": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low"
+    }
+  }
+}

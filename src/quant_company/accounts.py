@@ -10,6 +10,8 @@ from psycopg.types.json import Jsonb
 from temporalio import activity
 from temporalio.service import RPCError, RPCStatusCode
 
+from .command_help import HELP_COMMANDS
+from .command_help import HELP_TEXT as COMMAND_HELP
 from .contracts import ProviderFault
 from .providers.client import RuntimeClient
 from .providers.codex_runner import request_digest
@@ -21,9 +23,11 @@ COMMANDS = {
     "모델 계정 예비로 전환": {"action": "switch", "target": "backup"},
 }
 HELP_TEXT = ("계정 명령을 인식하지 못했습니다. 아래 문장을 그대로 보내 주세요. 계정은 변경되지 않았습니다.\n"
-             "• `모델 계정 상태`\n"
-             "• `모델 계정 예비로 전환`\n"
-             "• `모델 계정 기본으로 전환`")
+             + COMMAND_HELP)
+
+
+def help_text(text):
+    return COMMAND_HELP if text.strip().casefold() in HELP_COMMANDS else HELP_TEXT
 
 
 def parse_command(text):
@@ -130,7 +134,7 @@ def resume_quota_waits(conn, command_id, revision):
     for row in rows:
         conn.execute("""INSERT INTO model_account_wakes(command_id,turn_id,revision) VALUES (%s,%s,%s)
             ON CONFLICT DO NOTHING""", (command_id, row["id"], revision))
-    for table in ("news_triages", "news_reviews", "news_searches", "staff_runs", "quant_feed_calls"):
+    for table in ("news_triages", "news_reviews", "news_searches", "staff_runs", "quant_feed_calls", "trend_feed_calls"):
         if not conn.execute("SELECT to_regclass(%s) AS name", ("public." + table,)).fetchone()["name"]:
             continue
         conn.execute(sql.SQL("UPDATE {} SET next_at=now() WHERE error='quota' AND state IN ('running','queued')")
@@ -231,7 +235,11 @@ class AccountControl:
                          (row["command_id"], row["turn_id"]))
 
     async def tick(self):
-        pending = await asyncio.to_thread(self.pending)
+        from .model_control import ModelControl
+
+        # Existing activity/queue keeps Temporal histories unchanged and works during inference quota waits.
+        processed = await ModelControl(self.company, self.client).tick()
+        pending = None if processed else await asyncio.to_thread(self.pending)
         if pending:
             if self.client is None:
                 self.client = RuntimeClient(self.company.settings.model_runtime_url,

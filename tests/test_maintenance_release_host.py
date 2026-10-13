@@ -141,6 +141,22 @@ def test_account_overlay_is_preserved_for_future_release_and_backup(tmp_path, mo
     assert 'account-gateway' in release.services(root)
 
 
+def test_naver_reader_secret_is_preserved_or_release_refuses_missing_overlay(tmp_path, monkeypatch):
+    monkeypatch.setattr(release, 'STATE', tmp_path/'state')
+    env = release.STATE/'config/runtime.env'
+    env.parent.mkdir(parents=True)
+    env.write_text('TREND_FEED_NAVER_ENABLED=true\n')
+    root = tmp_path/'release'
+    overlay = root/'deploy/trend-feed.compose.yaml'
+    with pytest.raises(ValueError, match='release_trend_overlay_missing'):
+        release.compose_command(root)
+    overlay.parent.mkdir(parents=True)
+    overlay.write_text('services: {}\n')
+    assert str(overlay) in release.compose_command(root)
+    env.write_text('TREND_FEED_NAVER_ENABLED=false\n')
+    assert str(overlay) not in release.compose_command(root)
+
+
 def test_enabled_data_watch_worker_is_updated_with_company_release(tmp_path, monkeypatch):
     monkeypatch.setattr(release, 'STATE', tmp_path/'state')
     env = release.STATE/'config/runtime.env'

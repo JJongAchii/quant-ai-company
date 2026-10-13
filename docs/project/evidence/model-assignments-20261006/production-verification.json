@@ -1,0 +1,538 @@
+{
+  "at": "2026-10-06T10:23:48.821123+00:00",
+  "state": "active",
+  "commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+  "archive_sha256": "2dfe9f5f5482df00e75598d27e5a1affe125a8a12449b987925af1aba3868377",
+  "services": {
+    "worker": {
+      "id": "10c0dddd3876fa6a3d00fd7cc96c63a89444cfacc1c6c0e3e43aa6f3536f4fcd",
+      "image": "sha256:b2ff111d761da5d0fd4bd3903522d3b23a6ab75396787e8ab2dcb5603c924a4f",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "memory_limit": 402653184,
+      "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+      "source_files_verified": 209,
+      "feature_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "changed_files": 22
+    },
+    "maintenance": {
+      "id": "501a599be10e74a4153cce17fa83109883f413bc2a7fd983f09319f25488b64c",
+      "image": "sha256:0b80b476471ba92bb1eb21f82704e26ba28fd88826add4110facc61158c25b9e",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "memory_limit": 268435456,
+      "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+      "source_files_verified": 188,
+      "feature_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "changed_files": 21
+    },
+    "news-worker": {
+      "id": "12340820e939e74477e26273af50314e2f0417a9603517333190744d899bac1b",
+      "image": "sha256:5659edbbd0b86c7be97ec1753631653a2559e28e1723fb81a21af7656bf271e2",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "memory_limit": 201326592,
+      "package_root": "/opt/company/src/quant_company",
+      "source_files_verified": 210,
+      "feature_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "changed_files": 22
+    },
+    "dispatch": {
+      "id": "5e45af42e03aeffcaa47811de8b87553e5f5a79f07d0f56523318fb3ce4e670c",
+      "image": "sha256:5659edbbd0b86c7be97ec1753631653a2559e28e1723fb81a21af7656bf271e2",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "memory_limit": 201326592,
+      "package_root": "/opt/company/src/quant_company",
+      "source_files_verified": 210,
+      "feature_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "changed_files": 22
+    },
+    "briefing-data-worker": {
+      "id": "c12dd0c4415c284a0101fb3d2053d79ad49de970c3f1ba1b863e0ae16689fe1d",
+      "image": "sha256:5659edbbd0b86c7be97ec1753631653a2559e28e1723fb81a21af7656bf271e2",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "memory_limit": 402653184,
+      "package_root": "/opt/company/src/quant_company",
+      "source_files_verified": 210,
+      "feature_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "changed_files": 22
+    },
+    "account-gateway": {
+      "id": "ac70b94c3626f82ca1fdd067761f77b9732beea5f8d7b940ca1d5830f128a72b",
+      "image": "sha256:758d04ea1f66cde8d45eaf43ee3b905c7b479a27352cd2ebb25ec1c11e6b7755",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": "healthy",
+      "memory_limit": 134217728,
+      "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+      "source_files_verified": 209,
+      "feature_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "changed_files": 22
+    },
+    "api": {
+      "id": "7fccb45c6b23b8a970735428f47784660f97584275fc79ae2ad60f6af288d4fe",
+      "image": "sha256:758d04ea1f66cde8d45eaf43ee3b905c7b479a27352cd2ebb25ec1c11e6b7755",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": "healthy",
+      "memory_limit": 134217728,
+      "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+      "source_files_verified": 209,
+      "feature_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "changed_files": 22
+    },
+    "slack-socket": {
+      "id": "52ffe59e1e616ae57d40017e7724c64701d63271565e52bfd753f70a6e0256ce",
+      "image": "sha256:758d04ea1f66cde8d45eaf43ee3b905c7b479a27352cd2ebb25ec1c11e6b7755",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "memory_limit": 201326592,
+      "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+      "source_files_verified": 209,
+      "feature_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "changed_files": 22
+    },
+    "codex-runtime": {
+      "id": "6ed1055de6e14099de81331a325749a2395d9d46ec1702bb811b4063c7e95827",
+      "image": "sha256:13caa3f9f7936529335af8b92d9ddbb78f28ef6a45eed0b2e2054b43acb33938",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": "healthy",
+      "memory_limit": 536870912,
+      "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+      "source_files_verified": 206,
+      "feature_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "changed_files": 2
+    },
+    "data-watch-worker": {
+      "id": "0035b399d40a6c0032e2f9d4bb5e15e180672676a08719af22265a50c00c9615",
+      "image": "sha256:9b2f758c58445594badac690c24de418282bfdbc8523c3c1e06b1613ba5440fc",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "memory_limit": 268435456,
+      "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+      "source_files_verified": 171,
+      "feature_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "changed_files": 4
+    },
+    "quant-feed-worker": {
+      "id": "383235319c4c89abff43184354eda9348f9144eb1c1b9ac709bae9ea33406177",
+      "image": "sha256:05a3dab71ce4a0177342c0ec82a10f6b20c25aa9429217085e040207ecc516a9",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "memory_limit": 268435456,
+      "package_root": "/opt/quant-code/src/quant_company",
+      "source_files_verified": 187,
+      "feature_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "changed_files": 21
+    },
+    "quant-codex-runtime": {
+      "id": "0bcc9bc870a6f00be424bb1f3abf862893e260de39b0cb98797ab7e378d165cf",
+      "image": "sha256:9d215e4309aca0f0e448f6595a9d53af268f80f7e8bc3a7880337f631a777233",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": "healthy",
+      "memory_limit": 1073741824,
+      "package_root": "/opt/quant-code/src/quant_company",
+      "source_files_verified": 184,
+      "feature_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "changed_files": 2
+    },
+    "housing-feed-worker": {
+      "id": "ea689da5606e2dff95314e59fe8eabbebdd5e0d01c075b66f7675bce58907f27",
+      "image": "sha256:0aa5d5887d8f1f24b29c6ab8d5bf52c8798987532528f60020f9c41e25c47f9c",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": null,
+      "memory_limit": 201326592,
+      "package_root": "/app/.venv/lib/python3.12/site-packages/quant_company",
+      "source_files_verified": 170,
+      "feature_commit": "bc123cad48f5dc9aabb8570c9b4c49cdfa38e968",
+      "changed_files": 4
+    },
+    "claude-runtime": {
+      "id": "02252b5adc5fd98c07c28267b02e67b32211d7009ec570b1fd79fbdacb6c111a",
+      "image": "sha256:45940026acb7da9ce471fcda23287f3f6d69c6ac790609e6f81f0b9ae28017ea",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": "healthy",
+      "memory_limit": 536870912
+    },
+    "postgres": {
+      "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+      "image": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "health": "healthy",
+      "memory_limit": 268435456
+    }
+  },
+  "operator": {
+    "status": {
+      "enabled": true,
+      "revision": 0,
+      "assignments": {
+        "data": {
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "high",
+          "source": "default",
+          "revision": 0
+        },
+        "director": {
+          "model": "gpt-6-astra",
+          "reasoning_effort": "max",
+          "source": "default",
+          "revision": 0
+        },
+        "engineer": {
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "source": "default",
+          "revision": 0
+        },
+        "financial_strategist": {
+          "model": "gpt-6-astra",
+          "reasoning_effort": "max",
+          "source": "default",
+          "revision": 0
+        },
+        "maintainer": {
+          "model": "gpt-5.6-sol",
+          "reasoning_effort": "max",
+          "source": "default",
+          "revision": 0
+        },
+        "market_brief": {
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "source": "default",
+          "revision": 0
+        },
+        "news_screening": {
+          "model": "gpt-5.6-luna",
+          "reasoning_effort": "low",
+          "source": "default",
+          "revision": 0
+        },
+        "news_search": {
+          "model": "gpt-5.6-luna",
+          "reasoning_effort": "low",
+          "source": "default",
+          "revision": 0
+        },
+        "operations": {
+          "model": "gpt-5.6-terra",
+          "reasoning_effort": "high",
+          "source": "default",
+          "revision": 0
+        },
+        "quant_scout": {
+          "model": "gpt-5.6-luna",
+          "reasoning_effort": "high",
+          "source": "default",
+          "revision": 0
+        },
+        "reporter": {
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high",
+          "source": "default",
+          "revision": 0
+        },
+        "researcher_crypto": {
+          "model": "gpt-6-astra",
+          "reasoning_effort": "max",
+          "source": "default",
+          "revision": 0
+        },
+        "researcher_global": {
+          "model": "gpt-6-astra",
+          "reasoning_effort": "max",
+          "source": "default",
+          "revision": 0
+        },
+        "researcher_kr": {
+          "model": "gpt-6-astra",
+          "reasoning_effort": "max",
+          "source": "default",
+          "revision": 0
+        },
+        "risk": {
+          "model": "gpt-6-astra",
+          "reasoning_effort": "max",
+          "source": "default",
+          "revision": 0
+        },
+        "validator": {
+          "model": "gpt-6-astra",
+          "reasoning_effort": "max",
+          "source": "default",
+          "revision": 0
+        }
+      },
+      "precedence": [
+        "task",
+        "pinned",
+        "default"
+      ],
+      "independent_reviewer": "Separate Claude runtime; not managed by Codex assignments"
+    },
+    "agents": [
+      {
+        "id": "director",
+        "name": "총괄",
+        "active": true,
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      },
+      {
+        "id": "financial_strategist",
+        "name": "금융전략",
+        "active": true,
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      },
+      {
+        "id": "researcher_kr",
+        "name": "국내시장 연구",
+        "active": true,
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      },
+      {
+        "id": "researcher_global",
+        "name": "글로벌시장 연구",
+        "active": false,
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      },
+      {
+        "id": "researcher_crypto",
+        "name": "가상자산 연구",
+        "active": false,
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      },
+      {
+        "id": "data",
+        "name": "데이터",
+        "active": true,
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "high"
+      },
+      {
+        "id": "engineer",
+        "name": "퀀트 개발",
+        "active": false,
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "max"
+      },
+      {
+        "id": "validator",
+        "name": "독립 검증",
+        "active": false,
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      },
+      {
+        "id": "risk",
+        "name": "포트폴리오·리스크",
+        "active": false,
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max"
+      },
+      {
+        "id": "operations",
+        "name": "플랫폼 운영",
+        "active": false,
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "high"
+      },
+      {
+        "id": "reporter",
+        "name": "리포터",
+        "active": true,
+        "model": "gpt-6-astra",
+        "reasoning_effort": "high"
+      },
+      {
+        "id": "tech_scout",
+        "name": "Tech Scout",
+        "active": false,
+        "model": "gpt-5.6-luna",
+        "reasoning_effort": "low"
+      },
+      {
+        "id": "quant_scout",
+        "name": "Quant Scout",
+        "active": false,
+        "model": "gpt-5.6-luna",
+        "reasoning_effort": "high"
+      },
+      {
+        "id": "market_brief",
+        "name": "애널리스트",
+        "active": true,
+        "model": "gpt-6-astra",
+        "reasoning_effort": "high"
+      },
+      {
+        "id": "maintainer",
+        "name": "개선 담당",
+        "active": true,
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "max"
+      }
+    ],
+    "unauthorized_rejected": true,
+    "health": {
+      "ok": true
+    }
+  },
+  "account_policy": {
+    "profile": "primary",
+    "revision": 2
+  },
+  "runtime_http_catalog": {
+    "profile": "primary",
+    "models": [
+      {
+        "model": "gpt-6-astra",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "ultra"
+        ]
+      },
+      {
+        "model": "gpt-5.6-sol",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "ultra"
+        ]
+      },
+      {
+        "model": "gpt-5.6-terra",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "ultra"
+        ]
+      },
+      {
+        "model": "gpt-5.6-luna",
+        "reasoning_efforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    ],
+    "unauthorized_rejected": true
+  },
+  "temporal": {
+    "workflow_id": "company-model-accounts-v1",
+    "status": "RUNNING",
+    "task_queue": "quant-company-accounts",
+    "activity_pollers": 2
+  },
+  "slack": {
+    "startup_log_employee_count": null,
+    "active_employees": [
+      "director",
+      "financial_strategist",
+      "researcher_kr",
+      "data",
+      "reporter",
+      "market_brief",
+      "maintainer"
+    ],
+    "bot_authentication": {
+      "director": true,
+      "financial_strategist": true,
+      "researcher_kr": true,
+      "data": true,
+      "reporter": true,
+      "market_brief": true,
+      "maintainer": true
+    },
+    "owned_established_tls_connections": 7,
+    "verification_scope": "running Socket Mode process, owned TLS sockets and real Slack auth.test; owner command pending",
+    "connection_failure_observed": false,
+    "actual_owner_model_command": "pending_owner_input",
+    "probe_messages_sent": 0
+  },
+  "frozen_request_counts": {
+    "turns": 7395,
+    "web_requests": 19,
+    "maintenance_calls": 59,
+    "staff_calls": 37,
+    "staff_independent_reviews": 28,
+    "news_reviews": 897,
+    "news_searches": 13,
+    "news_triages": 917,
+    "quant_feed_calls": 689,
+    "brief_calls": 4
+  },
+  "frozen_requests_preserved": true,
+  "model_execution_bindings": [
+    {
+      "target": "engineer",
+      "source": "default",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "max",
+      "count": 17
+    }
+  ],
+  "model_assignment_commands": [],
+  "backup": {
+    "backup": "/var/lib/quant-company/backups/company-20261006T101422Z-180ab357.tar.gz",
+    "sha256": "79d0a96fcd864d9b43d4f79f3d14a56e102f54e51c050e37e48cf06077a95f2c",
+    "s3_uri": "s3://quant-company-061039802347-backups/company/company-20261006T101422Z-180ab357.tar.gz",
+    "release_commit": "971f872a23f4989ddd1628bc28c59868a1c29264",
+    "secrets_included": false
+  },
+  "automatic_code_cutover_guarded": true,
+  "release_timer": "active",
+  "deliberate_model_turns_started": 0,
+  "disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/root        77G   63G   14G  82% /\n",
+  "memory": "               total        used        free      shared  buff/cache   available\nMem:            3832        2038         375          75        1798        1794\nSwap:              0           0           0\n",
+  "stage_receipt_sha256": "6e44f449ac395f8fd927737eba0648d2a60d8deda6b010b341de9299b2b5ec29",
+  "cutover_receipt_sha256": "5decb31630e50edb1f26796bc79358a6a984f2d55d5b6e72476df5d97276d1f8"
+}

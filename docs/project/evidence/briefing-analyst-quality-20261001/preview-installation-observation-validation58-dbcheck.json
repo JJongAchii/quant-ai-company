@@ -1,0 +1,167 @@
+{
+  "recorded_at": "2026-10-06T13:18:00.248407+00:00",
+  "source_commit": "0ea670b7b0637d91a46714b73ef8df96d979cc6f",
+  "actual_current_source_root": "0ea670b7b0637d91a46714b73ef8df96d979cc6f",
+  "phase": "preview_active",
+  "activated_at": 1791292630.9382753,
+  "canonical_host_receipt_sha256": "44c1b47920d55cc98a441482017e23702db042113f2d1a18ac1a0efe5a2b85df",
+  "archive_sha256": "0c462ab96b2240d06cc4c85206bff7c9c7f68a0c7e812b32f9384daf4d44ee48",
+  "manifest_sha256": "ae7e5ccf1a8861679fd684827c97373522da9cbc7c97b50847047476d2331766",
+  "database_backup": {
+    "file": "analyst-preview-0ea670b7b0637d91a46714b73ef8df96d979cc6f.postgres.dump",
+    "bytes": 365545388,
+    "sha256": "e7fb7af4ccc3540f02e8dffcb5fbb1e75e2862896adcb8fd0c11a30e87d6ea1c"
+  },
+  "source_profiles": 2,
+  "images": [
+    {
+      "target": "app",
+      "id": "sha256:8fc94968656bceebe2242dc8ad8d646922be19aa4d5feb4db323201c4474e655",
+      "tag": "quant-company:0ea670b7b0637d91a46714b73ef8df96d979cc6f-profile0",
+      "services": [
+        "news-worker",
+        "dispatch"
+      ],
+      "source_verified": true,
+      "locked_dependencies": {
+        "calendar": "4.13.2",
+        "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    },
+    {
+      "target": "app",
+      "id": "sha256:469330e56e50571b4dd534869b39bc6d167b9b5065d095db21673b306472ad67",
+      "tag": "quant-company:0ea670b7b0637d91a46714b73ef8df96d979cc6f-profile1",
+      "services": [
+        "briefing-data-worker"
+      ],
+      "source_verified": true,
+      "locked_dependencies": {
+        "calendar": "4.13.2",
+        "qdata_commit": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+      }
+    }
+  ],
+  "unrelated_services_preserved": true,
+  "existing_feature_environment_and_runtime_preserved": true,
+  "primary_runtime_preserved_since_stage": {
+    "/quant-company-api-1": true,
+    "/quant-company-codex-runtime-1": true
+  },
+  "publication_enabled": false,
+  "source_notes_enabled": true,
+  "max_revisions": "1",
+  "evaluation_edition_ids": [
+    "02cfddb9-e401-5634-af9c-b124a6f54cf8",
+    "05a23b7f-dfb9-51d9-bda0-9747f482e75c",
+    "3042a447-de8b-55fe-9a56-72014df5c2b9",
+    "4d933b4e-3814-54bf-943a-48029aa76124",
+    "56e7ca37-1579-559a-955a-0d76e38de330",
+    "7d6f4a1e-4611-5aa7-ac5d-0d1b4c1157eb",
+    "91dd3647-e807-5370-8a2c-14226429dd3f",
+    "9473536f-12b8-552b-ba48-6beb1d198577",
+    "b463d3df-94d9-5a93-be1d-4454dadbf098",
+    "b72483f9-d52b-51d6-92ba-25625a9cb50e",
+    "cfc0bd9a-c815-5ce0-a29f-4f411c5f9383",
+    "f8004fe8-789b-5df2-8dfa-a06f11903d91"
+  ],
+  "actual_channel": "C0C2E59B1AA",
+  "actual_owner": "U0C250E23NW",
+  "destination_in_allowed_channels": true,
+  "analyst_active": true,
+  "installed_versions": {
+    "news-worker": {
+      "FORMAT_VERSION": 17,
+      "VALIDATION_VERSION": 58,
+      "SCHEDULE_VERSION": 4
+    },
+    "dispatch": {
+      "FORMAT_VERSION": 17,
+      "VALIDATION_VERSION": 58,
+      "SCHEDULE_VERSION": 4
+    },
+    "briefing-data-worker": {
+      "FORMAT_VERSION": 17,
+      "VALIDATION_VERSION": 58,
+      "SCHEDULE_VERSION": 4
+    }
+  },
+  "containers": [
+    {
+      "name": "/quant-company-news-worker-1",
+      "id": "c9e3f29f75e89b4e460d14c3ff8f7e2d359dccf5af42574bf8c5b1ecc7b8e899",
+      "image_id": "sha256:8fc94968656bceebe2242dc8ad8d646922be19aa4d5feb4db323201c4474e655",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "memory": 201326592,
+      "features": {
+        "BRIEFING_ENABLED": "true",
+        "BRIEFING_MAX_REVISIONS": "1",
+        "MODEL_ASSIGNMENTS_ENABLED": "true",
+        "TREND_FEED_ENABLED": "true",
+        "BRIEFING_PUBLISH_ENABLED": "false"
+      }
+    },
+    {
+      "name": "/quant-company-dispatch-1",
+      "id": "3ef4e4838b1d4897b8415ba3645b2469072535a27f2d04e82cc1197b35f5806e",
+      "image_id": "sha256:8fc94968656bceebe2242dc8ad8d646922be19aa4d5feb4db323201c4474e655",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "memory": 201326592,
+      "features": {
+        "BRIEFING_PUBLISH_ENABLED": "false",
+        "BRIEFING_ENABLED": "true",
+        "MODEL_ASSIGNMENTS_ENABLED": "true",
+        "BRIEFING_MAX_REVISIONS": "1",
+        "TREND_FEED_ENABLED": "true"
+      }
+    },
+    {
+      "name": "/quant-company-briefing-data-worker-1",
+      "id": "b63c8187d065cf9ae44545d1f592938cc0706dd5db5961f22a80a385f8fc097a",
+      "image_id": "sha256:469330e56e50571b4dd534869b39bc6d167b9b5065d095db21673b306472ad67",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "memory": 402653184,
+      "features": {
+        "MODEL_ASSIGNMENTS_ENABLED": "true",
+        "BRIEFING_MAX_REVISIONS": "1",
+        "BRIEFING_PUBLISH_ENABLED": "false",
+        "BRIEFING_ENABLED": "true"
+      }
+    },
+    {
+      "name": "/quant-company-api-1",
+      "id": "8c1fb4c66f6a1d1f23f9e798cbcaaa18128ba051f22ddb319d6f553c91359b48",
+      "image_id": "sha256:d6b04a5bfc004bc1a24869ef61a0ec829895e823528b7fd9f24b786face0f650",
+      "running": true,
+      "oom": false,
+      "restarts": 1,
+      "memory": 134217728,
+      "features": {
+        "BRIEFING_ENABLED": "true",
+        "BRIEFING_PUBLISH_ENABLED": "false",
+        "MODEL_ASSIGNMENTS_ENABLED": "true"
+      }
+    },
+    {
+      "name": "/quant-company-codex-runtime-1",
+      "id": "ded8d21d8bec83c16693f1dc48863ce2f2a3accb889d7a0126d330e0f59145a9",
+      "image_id": "sha256:1da677f0627c690e3ecaadba4f368aad9271bfa581d71b20b1f07deb872ec8e6",
+      "running": true,
+      "oom": false,
+      "restarts": 0,
+      "memory": 536870912,
+      "features": {}
+    }
+  ],
+  "fresh_content_qualified": false,
+  "actual_new_slack_delivery_verified": false,
+  "model_calls_by_installation": 0,
+  "slack_writes_by_installation": 0,
+  "quality_status": "Installation and regression do not establish content qualification."
+}

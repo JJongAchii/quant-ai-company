@@ -55,6 +55,8 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     for role in roles:
         if role.id == "quant_scout" and (role.active or role.tools or role.can_delegate_to):
             raise ValueError("Quant Scout must remain an outbound-only identity")
+        if role.id == "trend_scout" and (role.active or role.tools or role.can_delegate_to):
+            raise ValueError("Trend Scout must remain an outbound-only identity")
         if not set(role.can_delegate_to) <= by_id.keys() or not set(role.tools) <= allowed_tools:
             raise ValueError(f"Invalid permissions in role {role.id}")
     if "reporter" in by_id and settings.company_news_enabled:
@@ -94,10 +96,20 @@ class Company:
 
     def runtime_context(self, conn=None) -> dict:
         """Allowlisted configuration facts, never a dump of settings or credentials."""
+        from .model_policy import effective_role
         from .owner_controls import effective_limits
-        from .staff.packs import pack
+        from .staff.packs import STAFF, pack
         from .staff.review_contract import REVIEW_EFFORT, REVIEW_MODEL
         from .staff.tools import TOOL_GUIDE
+
+        if self.settings.model_assignments_enabled and conn is None:
+            with self.db.transaction() as current_conn:
+                return self.runtime_context(current_conn)
+        roles = self.roles
+        if self.settings.model_assignments_enabled:
+            roles = {name: effective_role(self, conn, name) if name not in {TECH_FEED_AGENT, "trend_scout"} else role
+                     for name, role in self.roles.items()}
+        maintainer = effective_role(self, conn, "maintainer") if "engineer" in roles else None
 
         return {
             "snapshot_at": now().isoformat(),
@@ -107,15 +119,15 @@ class Company:
             "employees": [
                 {**{key: getattr(role, key) for key in
                     ["id", "name", "active", "model", "reasoning_effort", "version", "tools", "can_delegate_to"]},
-                 "specialist_pack_version": pack(role.id)["version"],
-                 "specialist_pack_digest": pack(role.id)["digest"]}
-                for role in self.roles.values() if role.id not in {TECH_FEED_AGENT, "quant_scout"}
+                 "specialist_pack_version": pack(role.id)["version"] if role.id in (*STAFF, "reporter") else None,
+                 "specialist_pack_digest": pack(role.id)["digest"] if role.id in (*STAFF, "reporter") else None}
+                for role in roles.values() if role.id not in {TECH_FEED_AGENT, "quant_scout", "trend_scout"}
             ],
             "background_model_requests": {
-                "maintainer": ({"model": self.roles["engineer"].model,
-                                "reasoning_effort": self.roles["engineer"].reasoning_effort,
-                                "configuration_source": "engineer role; new maintenance calls use these values"}
-                               if "engineer" in self.roles else None),
+                "maintainer": ({"model": maintainer.model,
+                                "reasoning_effort": maintainer.reasoning_effort,
+                                "configuration_source": "maintainer assignment, otherwise engineer role; new calls use these values"}
+                               if "engineer" in roles else None),
                 "independent_explanation_reviewer": {
                     "model": REVIEW_MODEL, "reasoning_effort": REVIEW_EFFORT,
                     "enabled": self.settings.company_staff_review_enabled,
@@ -155,10 +167,10 @@ class Company:
                              'follow-up is limited to the approved search scope. Version 2 supports provisioned domestic '
                              'strategy and scientific evaluation profiles; unavailable profiles cannot execute.',
                     "internal_staff": [
-                        {"role": name, "model": self.roles[name].model,
-                         "reasoning_effort": self.roles[name].reasoning_effort,
-                         "slack_identity_active": self.roles[name].active}
-                        for name in ("engineer", "validator") if name in self.roles
+                        {"role": name, "model": roles[name].model,
+                         "reasoning_effort": roles[name].reasoning_effort,
+                         "slack_identity_active": roles[name].active}
+                        for name in ("engineer", "validator") if name in roles
                     ],
                 },
                 "news_reporting": {"enabled": self.settings.company_news_enabled,
@@ -237,7 +249,7 @@ class Company:
                                "tool": "data_watch_status {} reads recorded checks without scanning the lake; "
                                        "available to data in its configured channel. Unknown freshness is not healthy."},
                 "external_web_search": self.settings.company_web_enabled and any(
-                    role.active and "web_search" in role.tools for role in self.roles.values()),
+                    role.active and "web_search" in role.tools for role in roles.values()),
                 "research_worker_submission": self.settings.company_research_enabled,
                 "strategy_code_execution": self.settings.company_autonomous_research_enabled,
                 "live_trading": False,
@@ -344,6 +356,7 @@ class Company:
                project_id: str | None = None, channel: str | None = None, thread_ts: str | None = None,
                revise: bool = False, status_only: bool = False, daily_limit_command: dict | None = None,
                account_command: dict | None = None, account_help: bool = False,
+               model_command: dict | None = None,
                interpret: bool = False, control_action: str | None = None,
                approval_context: dict | None = None) -> dict:
         self.role(agent)
@@ -371,6 +384,15 @@ class Company:
             status_only = True
         digest = fingerprint([text, owner, agent, project_id, channel, thread_ts, revise, status_only])
         prior_ingress_digest = digest
+        if model_command is not None:
+            from .model_policy import authorized, parse_command
+
+            if (model_command != parse_command(text) or not event_key.startswith("slack:")
+                    or not authorized(self, owner, channel, agent, model_command)
+                    or revise or interpret or control_action or daily_limit_command or account_command or account_help):
+                raise PolicyError("Model control requires an authenticated owner command in the permitted channel")
+            digest = fingerprint([digest, model_command])
+            status_only = True
         if account_command is not None or account_help:
             from .accounts import parse_command
 
@@ -456,15 +478,20 @@ class Company:
                           "새 질문은 새 스레드에서 요청해 주세요. 이 스레드의 현황은 '상태'로 확인할 수 있습니다.")
                 conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (notice, task["id"]))
                 self._message(conn, project, task["id"], agent, "status", notice)
+            elif model_command is not None:
+                from .model_policy import enqueue
+
+                enqueue(conn, self, project, task, event_key, model_command)
             elif account_command is not None:
                 from .accounts import enqueue
 
                 enqueue(conn, self, project, task, event_key, account_command)
             elif account_help:
-                from .accounts import HELP_TEXT
+                from .accounts import help_text
 
-                conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (HELP_TEXT, task["id"]))
-                self._message(conn, project, task["id"], agent, "status", HELP_TEXT)
+                guide = help_text(text)
+                conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (guide, task["id"]))
+                self._message(conn, project, task["id"], agent, "status", guide)
             elif research_command:
                 from .research.approvals import apply_owner_command
 
@@ -532,7 +559,7 @@ class Company:
                              (project_id,)).fetchall()]
             return as_json(result)
 
-    def _context(self, conn, task, project):
+    def _context(self, conn, task, project, *, max_characters=68000):
         from .staff.packs import coaching
 
         messages = conn.execute("""SELECT author,recipient,kind,text,revision FROM messages WHERE project_id=%s
@@ -567,9 +594,11 @@ class Company:
             conn.execute("SELECT agent FROM tasks WHERE id=%s", (task["parent_id"],)).fetchone()["agent"]
             if task["parent_id"] else None
         )
+        from .model_policy import effective_role
+
+        feedback_role = effective_role(self, conn, task["agent"], task=task)
         context["professional_feedback"] = as_json(coaching(
-            conn, project["owner_user"], task["agent"], self.roles[task["agent"]].model,
-            self.roles[task["agent"]].reasoning_effort))
+            conn, project["owner_user"], task["agent"], feedback_role.model, feedback_role.reasoning_effort))
         if task["agent"] == "director" and task["kind"] == "answer":
             from .research.programs import public_progress
 
@@ -598,7 +627,7 @@ class Company:
                     context["context_truncated"] = True
         # Reduce background state before removing any recent messages: even a short
         # multi-page read can otherwise lose a whole page, not just an excerpt.
-        if "system" in context and len(json.dumps(context, ensure_ascii=False)) > 68000:
+        if "system" in context and len(json.dumps(context, ensure_ascii=False)) > max_characters:
             system = context["system"]
             context["system"] = {
                 "source_id": system["source_id"], "excerpted": True,
@@ -610,7 +639,7 @@ class Company:
                                   "source_id for full evidence. Omitted evidence is unknown, not absent.",
             }
             context["context_truncated"] = True
-        while len(json.dumps(context, ensure_ascii=False)) > 68000:
+        while len(json.dumps(context, ensure_ascii=False)) > max_characters:
             for key, minimum, index in [("messages", 3, 0), ("recent_artifacts", 0, -1),
                                         ("verified_memories", 0, -1), ("approved_sources", 0, -1),
                                         ("child_results", 0, 0)]:
@@ -630,7 +659,7 @@ class Company:
                 for source in context["approved_sources"]:
                     source.pop("metadata", None)
                 context["context_truncated"] = True
-                if len(json.dumps(context, ensure_ascii=False)) > 68000:
+                if len(json.dumps(context, ensure_ascii=False)) > max_characters:
                     raise PolicyError("Required task context exceeds the bounded prompt budget")
                 break
         return context
@@ -704,7 +733,11 @@ class Company:
                     prompt = routing_prompt(conn, task, project)
                 else:
                     role = self.role(task["agent"])
-                    context = self._context(conn, task, project)
+                    runtime = self.runtime_context(conn)
+                    if self.settings.model_assignments_enabled:
+                        from .model_policy import selection
+
+                        runtime["current_task_model"] = selection(self, conn, task["agent"], task=task)
                     from .staff.packs import employee_pack
 
                     prompt = (
@@ -737,12 +770,22 @@ class Company:
                         f"Allowed tools: {role.tools}\n"
                         + employee_pack(role.id) +
                         f"Remaining task turns: {self.settings.company_max_task_turns - task['turn_count']}\n"
-                        "RUNTIME CONFIG JSON:\n" + json.dumps(self.runtime_context(conn), ensure_ascii=False) + "\n"
-                        "TASK DATA JSON:\n" + json.dumps(context, ensure_ascii=False)
+                        "RUNTIME CONFIG JSON:\n" + json.dumps(runtime, ensure_ascii=False) + "\n"
+                        "TASK DATA JSON:\n"
                     )
+                    # Role instructions and runtime facts consume the same provider budget
+                    # as task evidence. Preserve the existing evidence/read-source rules.
+                    context_budget = min(68000, 90000 - len(prompt))
+                    if context_budget <= 0:
+                        raise PolicyError("Required role instructions exceed the bounded prompt budget")
+                    context = self._context(conn, task, project, max_characters=context_budget)
+                    prompt += json.dumps(context, ensure_ascii=False)
                 request = ProviderRequest(request_id=turn_id, model=role.model,
                                           reasoning_effort=role.reasoning_effort, prompt=prompt, session=session,
                                           output_contract=output_contract)
+                from .model_policy import bind
+
+                request = bind(self, conn, request, task["agent"], task=task)
                 conn.execute("UPDATE turns SET request=%s WHERE id=%s", (Jsonb(request.model_dump()), turn_id))
             else:
                 request = ProviderRequest.model_validate(turn["request"])

@@ -1,0 +1,91 @@
+{
+  "checked_at": "2026-10-08T05:31:10.999662+00:00",
+  "targets": {
+    "news-worker": {
+      "id": "63ce348e44d6c8a79e6938aa6959d4e0d00735677f8473c8704a9bca01f0a7c7",
+      "image": "sha256:cfa78895a0c8624ba77ef95c775b01817c2267d1a262fe18eb620779b9544873",
+      "running": true,
+      "restart_count": 0,
+      "package": "/opt/company/src/quant_company",
+      "python": "/opt/company/.venv/bin/python",
+      "flags": {
+        "TREND_FEED_ENABLED": "true",
+        "TREND_FEED_PUBLISH_ENABLED": "true",
+        "TREND_FEED_ON_DEMAND_ENABLED": "true",
+        "TREND_FEED_PUBLICATION_HOURS": "[8,14,20]",
+        "TREND_FEED_MODEL_DAILY_LIMIT": "12"
+      }
+    },
+    "dispatch": {
+      "id": "0535f3a329ebfff47a7e01cdfdc6122839fc14a1554cb344efa9c3524c0a0e55",
+      "image": "sha256:cc26deae71b86db43ee013da5ea3cc5c23da49420a411eea8ceac173935937e8",
+      "running": true,
+      "restart_count": 0,
+      "package": "/opt/company/src/quant_company",
+      "python": "/opt/company/.venv/bin/python",
+      "flags": {
+        "TREND_FEED_ENABLED": "true",
+        "TREND_FEED_PUBLISH_ENABLED": "true",
+        "TREND_FEED_ON_DEMAND_ENABLED": "true",
+        "TREND_FEED_PUBLICATION_HOURS": "[8,14,20]",
+        "TREND_FEED_MODEL_DAILY_LIMIT": "12"
+      }
+    },
+    "api": {
+      "id": "19bdbe8f7d324bf8c29cc6a6d200e9085f91674ffc1e01489681844dd1b7dc8d",
+      "image": "sha256:5fcf9336492184bb8d085a18a462c3a83f3aa05ef5bd3d9ea5022e4319ad008c",
+      "running": true,
+      "restart_count": 0,
+      "package": "/opt/company/.venv/lib/python3.12/site-packages/quant_company",
+      "python": "/opt/company/.venv/bin/python",
+      "flags": {
+        "TREND_FEED_ENABLED": "true",
+        "TREND_FEED_PUBLISH_ENABLED": "true",
+        "TREND_FEED_ON_DEMAND_ENABLED": "true",
+        "TREND_FEED_PUBLICATION_HOURS": "[8,14,20]",
+        "TREND_FEED_MODEL_DAILY_LIMIT": "12"
+      }
+    },
+    "slack-socket": {
+      "id": "361b7c4e9f2ffe01763dda2d896be24034e4a88bbb067d3cd2f2fe5f9f603445",
+      "image": "sha256:7c7ebcda7e07fdb82ecced3a7a9eb24e6175ac25e18716a9aec5902a202b7247",
+      "running": true,
+      "restart_count": 0,
+      "package": "/opt/company/.venv/lib/python3.12/site-packages/quant_company",
+      "python": "/opt/company/.venv/bin/python",
+      "flags": {
+        "TREND_FEED_ENABLED": "true",
+        "TREND_FEED_PUBLISH_ENABLED": "true",
+        "TREND_FEED_ON_DEMAND_ENABLED": "true",
+        "TREND_FEED_PUBLICATION_HOURS": "[8,14,20]",
+        "TREND_FEED_MODEL_DAILY_LIMIT": "12"
+      }
+    }
+  },
+  "calls_today": [
+    {
+      "kind": "on_demand",
+      "state": "completed",
+      "n": 3
+    },
+    {
+      "kind": "on_demand",
+      "state": "invalid",
+      "n": 1
+    },
+    {
+      "kind": "scheduled",
+      "state": "completed",
+      "n": 2
+    }
+  ],
+  "pause": {
+    "paused_until": null,
+    "reason": null
+  },
+  "snapshot_coverage": {
+    "min": "2026-10-07T23:32:02.699158+00:00",
+    "max": "2026-10-08T05:26:55.07366+00:00",
+    "count": 38
+  }
+}
