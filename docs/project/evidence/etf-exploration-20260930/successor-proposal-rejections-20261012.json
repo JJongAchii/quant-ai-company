@@ -1,0 +1,249 @@
+{
+  "observed_at": "2026-10-12T07:21:01.564146+00:00",
+  "database_mutated": false,
+  "stage": {
+    "id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+    "state": "waiting",
+    "attempt": 9,
+    "task_id": "57efc8a2-badc-53c4-a501-f83341b9af19",
+    "error": "stage_contract_rejected: Predecessor must be an interpreted result in the same mission",
+    "retry_at": "2026-10-12T08:04:11.074876+00:00",
+    "updated_at": "2026-10-12T07:04:11.070975+00:00"
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "stage_contract_rejected: Superseded proposal must be rejected in this mission cycle",
+      "created_at": "2026-10-12T02:46:59.462943+00:00",
+      "completed_at": "2026-10-12T02:53:16.962073+00:00",
+      "submitted_artifacts": [
+        {
+          "content_sha256": "12a526afc4b490e7b4455a584e0391174025ecd977885f5387b9d326ac4ab803",
+          "id": "b027bb59-816a-4454-9bbb-72b608088e5f",
+          "author": "researcher_kr",
+          "predecessor_trial_ids": [
+            "de3597b0-e358-5a58-af5e-9f3c79df53e9"
+          ],
+          "supersedes_proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+          "source_ids": [
+            "mission-report:de3597b0-e358-5a58-af5e-9f3c79df53e9",
+            "research-contract:5868e1af-475c-5b7b-ad4a-da55fc3966e3:39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f",
+            "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+          ]
+        }
+      ]
+    },
+    {
+      "attempt": 2,
+      "error": "stage_contract_rejected: Predecessor must be an interpreted result in the same mission",
+      "created_at": "2026-10-12T02:55:53.581193+00:00",
+      "completed_at": "2026-10-12T03:02:47.734616+00:00",
+      "submitted_artifacts": [
+        {
+          "content_sha256": "152b20f99a545378a99894bc360f122d6a5f50e89780592316f831324ea3e99e",
+          "id": "7c6b8e23-4629-4cbe-92fc-dcd3e59bf42a",
+          "author": "researcher_kr",
+          "predecessor_trial_ids": [
+            "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+            "5868e1af-475c-5b7b-ad4a-da55fc3966e3"
+          ],
+          "supersedes_proposal_id": null,
+          "source_ids": [
+            "mission-report:de3597b0-e358-5a58-af5e-9f3c79df53e9",
+            "research-contract:5868e1af-475c-5b7b-ad4a-da55fc3966e3:39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f",
+            "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+          ]
+        }
+      ]
+    },
+    {
+      "attempt": 3,
+      "error": "stage_contract_rejected: Superseded proposal must be rejected in this mission cycle",
+      "created_at": "2026-10-12T03:07:07.37048+00:00",
+      "completed_at": "2026-10-12T03:14:17.363675+00:00",
+      "submitted_artifacts": [
+        {
+          "content_sha256": "6ae752943079dbab0d9e5baa7583bef9dceef87898ac23a6aac8cf0e0f24704e",
+          "id": "d76b3c9a-90ea-4f27-a851-72cbe3f49d06",
+          "author": "researcher_kr",
+          "predecessor_trial_ids": [
+            "de3597b0-e358-5a58-af5e-9f3c79df53e9"
+          ],
+          "supersedes_proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+          "source_ids": [
+            "mission-report:de3597b0-e358-5a58-af5e-9f3c79df53e9",
+            "research-contract:5868e1af-475c-5b7b-ad4a-da55fc3966e3:39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f",
+            "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+          ]
+        }
+      ]
+    },
+    {
+      "attempt": 4,
+      "error": "stage_contract_rejected: Superseded proposal must be rejected in this mission cycle",
+      "created_at": "2026-10-12T03:23:02.057496+00:00",
+      "completed_at": "2026-10-12T03:31:31.284683+00:00",
+      "submitted_artifacts": [
+        {
+          "content_sha256": "38c1d3f74729b2efa9ce4781fc7d852b0a3ce45cde6dd1b2fcb26f01891fdc1b",
+          "id": "47391257-bef8-49b4-a981-732b81608325",
+          "author": "researcher_kr",
+          "predecessor_trial_ids": [
+            "de3597b0-e358-5a58-af5e-9f3c79df53e9"
+          ],
+          "supersedes_proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+          "source_ids": [
+            "mission-report:de3597b0-e358-5a58-af5e-9f3c79df53e9",
+            "research-contract:5868e1af-475c-5b7b-ad4a-da55fc3966e3:39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f",
+            "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+          ]
+        }
+      ]
+    },
+    {
+      "attempt": 5,
+      "error": "stage_contract_rejected: 1 validation error for HypothesisProposal\nid\n  Input should be a valid UUID, invalid group length in group 2: expected 4, found 5 [type=uuid_parsing, input_value='7630cc46-e813-49e39-9488-a29073174e91', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/uuid_parsing",
+      "created_at": "2026-10-12T03:47:56.40226+00:00",
+      "completed_at": "2026-10-12T03:55:05.545644+00:00",
+      "submitted_artifacts": [
+        {
+          "content_sha256": "00763946fa3ab85350ba30d75013714abf0a8c8c2c774456017bf1a2c989a434",
+          "id": "7630cc46-e813-49e39-9488-a29073174e91",
+          "author": "researcher_kr",
+          "predecessor_trial_ids": [
+            "de3597b0-e358-5a58-af5e-9f3c79df53e9"
+          ],
+          "supersedes_proposal_id": null,
+          "source_ids": [
+            "mission-report:de3597b0-e358-5a58-af5e-9f3c79df53e9",
+            "research-contract:5868e1af-475c-5b7b-ad4a-da55fc3966e3:39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f",
+            "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+          ]
+        }
+      ]
+    },
+    {
+      "attempt": 6,
+      "error": "stage_contract_rejected: Superseded proposal must be rejected in this mission cycle",
+      "created_at": "2026-10-12T04:27:36.281611+00:00",
+      "completed_at": "2026-10-12T04:35:35.613229+00:00",
+      "submitted_artifacts": [
+        {
+          "content_sha256": "1a4b565555e27d786b03db0aef8fa3c84aedc9c60d3daabf3241619f66939ae1",
+          "id": "a1c27648-9068-4e9c-a193-d8a552da60b7",
+          "author": "researcher_kr",
+          "predecessor_trial_ids": [
+            "de3597b0-e358-5a58-af5e-9f3c79df53e9"
+          ],
+          "supersedes_proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+          "source_ids": [
+            "mission-report:de3597b0-e358-5a58-af5e-9f3c79df53e9",
+            "research-contract:5868e1af-475c-5b7b-ad4a-da55fc3966e3:39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f",
+            "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+          ]
+        }
+      ]
+    },
+    {
+      "attempt": 7,
+      "error": "stage_contract_rejected: Superseded proposal must be rejected in this mission cycle",
+      "created_at": "2026-10-12T05:36:22.987786+00:00",
+      "completed_at": "2026-10-12T05:44:52.6464+00:00",
+      "submitted_artifacts": [
+        {
+          "content_sha256": "6dd7fffe02e91edac0d7d34272b2f74e9555b75d3172dff7c1860737b27884d4",
+          "id": "c924fc9d-b450-4f26-a10a-97399a3ad30c",
+          "author": "researcher_kr",
+          "predecessor_trial_ids": [
+            "de3597b0-e358-5a58-af5e-9f3c79df53e9"
+          ],
+          "supersedes_proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+          "source_ids": [
+            "mission-report:de3597b0-e358-5a58-af5e-9f3c79df53e9",
+            "research-contract:5868e1af-475c-5b7b-ad4a-da55fc3966e3:39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f",
+            "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+          ]
+        }
+      ]
+    },
+    {
+      "attempt": 8,
+      "error": "stage_response_rejected",
+      "created_at": "2026-10-12T06:45:32.999303+00:00",
+      "completed_at": null,
+      "submitted_artifacts": []
+    },
+    {
+      "attempt": 9,
+      "error": "stage_contract_rejected: Predecessor must be an interpreted result in the same mission",
+      "created_at": "2026-10-12T06:56:56.486147+00:00",
+      "completed_at": "2026-10-12T07:04:01.14423+00:00",
+      "submitted_artifacts": [
+        {
+          "content_sha256": "fa107b7dbc12662167f639ee431506b45b2123fc3202b73c32fd3567a468066a",
+          "id": "a5c6728e-f048-42b8-98c3-1850782b567b",
+          "author": "researcher_kr",
+          "predecessor_trial_ids": [
+            "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+            "5868e1af-475c-5b7b-ad4a-da55fc3966e3"
+          ],
+          "supersedes_proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+          "source_ids": [
+            "mission-report:de3597b0-e358-5a58-af5e-9f3c79df53e9",
+            "research-contract:5868e1af-475c-5b7b-ad4a-da55fc3966e3:39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f",
+            "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746"
+          ]
+        }
+      ]
+    }
+  ],
+  "interpreted_predecessors": [
+    {
+      "id": "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+      "ordinal": 1,
+      "result_id": "71453df0-cbe0-552f-8f89-73ef69473aa1"
+    }
+  ],
+  "eligible_superseded_proposals": [
+    "6d9a3c7b-52e4-4f81-b267-85d094eb6a30",
+    "a3e207ea-d615-4b40-96c0-1b92d1ae5124",
+    "c5db5803-e746-4c78-80c8-3f85fc94d37a",
+    "4a360f85-90f8-4e73-954a-87abbd711e21",
+    "a179bc31-60f5-4e94-866d-7e778c250df3",
+    "acbb6f09-e6db-4c46-9e69-f207c131ea57",
+    "42848f4e-1796-4d67-8b64-951c2f70da8e",
+    "9470c595-bad4-4b62-a84d-45fba2a124b0",
+    "649b387a-51ab-4b31-b6e8-fd47ca3aec27",
+    "9126cf21-ccf7-466c-9d93-60d2856e086d",
+    "90877c7a-f50e-4fcb-a74d-e13a3e9d8343",
+    "61dbb64f-85aa-4f12-9dd2-29d4c442e8a1",
+    "64d2e88f-1fab-43a8-b1d2-4db7c6273d8d",
+    "2cdd6023-1b40-4eb1-9a1b-0f45fa6c30f8",
+    "30a8b71e-378b-43e0-aad8-e6f899aaef18",
+    "d7b87629-4caf-48ae-a28e-7698f039edb1",
+    "59880c71-2c77-4a66-85e7-9840dbb07930",
+    "c84b1906-047f-48f9-a684-e81c7ffb8af2",
+    "861797aa-8f0e-41e0-a995-423712fe37cc",
+    "e286d244-56e1-49e6-a28b-f9f5f082b47d",
+    "36902772-eefa-4f18-9168-93cf58b4a746"
+  ],
+  "technical_closures": [
+    {
+      "id": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
+      "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+      "result_id": null,
+      "technical_closed_at": "2026-10-12T02:46:55.392922+00:00",
+      "disposition_digest": "c8f87cc946eb5c924daaf54c1f846d7869003d5311caeb49dbe83ead740c89d8"
+    }
+  ],
+  "latest_request": {
+    "id": "b664bf34-3068-51bd-be6f-a42f5fbb1246",
+    "status": "completed",
+    "created_at": "2026-10-12T07:01:46.436889+00:00",
+    "updated_at": "2026-10-12T07:04:01.14423+00:00",
+    "prompt_sha256": "ee235a17e55fd7a9f0896083205f282bd5e5888f3bf48babc0c59b77a6f47351",
+    "last_error": null,
+    "proposal_contract": null,
+    "previous_contract_error": null
+  }
+}

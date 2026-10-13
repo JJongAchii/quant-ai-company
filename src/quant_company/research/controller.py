@@ -382,6 +382,34 @@ def stage_prompt(company, conn, task, turn=None):
         conn, project["owner_user"], role.id, role.model, role.reasoning_effort))
     output_type = {"proposal": HypothesisProposal, "challenge": Challenge,
                    "interpretation": Interpretation}.get(row["stage"])
+    if row["stage"] == "proposal":
+        # Project the same identities accepted by MissionStore.add_proposal.
+        # Technical closures remain evidence, but have no interpreted result and
+        # do not turn a selected proposal into a director-rejected proposal.
+        predecessors = conn.execute("""SELECT t.id FROM research_mission_trials t
+            JOIN research_mission_interpretations i ON i.trial_id=t.id
+            WHERE t.mission_id=%s AND t.result_id IS NOT NULL ORDER BY t.ordinal DESC,t.id""",
+                                    (row["mission_id"],)).fetchall()
+        latest = conn.execute("""SELECT id FROM research_mission_trials WHERE mission_id=%s
+            AND result_id IS NOT NULL ORDER BY ordinal DESC LIMIT 1""", (row["mission_id"],)).fetchone()
+        rejected = conn.execute("""SELECT p.id FROM research_mission_proposals p
+            JOIN research_mission_rejections r ON r.proposal_id=p.id
+            JOIN research_missions m ON m.id=p.mission_id
+            WHERE p.mission_id=%s AND p.cycle=m.cycle ORDER BY p.created_at,p.id""",
+                               (row["mission_id"],)).fetchall()
+        context["proposal_contract"] = {
+            "allowed_predecessor_trial_ids": [str(item["id"]) for item in predecessors],
+            "required_latest_predecessor_trial_id": str(latest["id"]) if latest else None,
+            "allowed_supersedes_proposal_ids": [str(item["id"]) for item in rejected],
+            "identity_rule": (
+                "predecessor_trial_ids contains only interpreted measured trials from the allowed list, "
+                "including the required latest ID when present. supersedes_proposal_id is null unless "
+                "revising a director-rejected proposal from the current-cycle allowed list. Technical "
+                "retirement alone is neither a measured predecessor nor a proposal rejection. Address "
+                "technical failures and their dispositions in hypothesis, falsification and source_ids "
+                "without inserting their IDs into either relationship field."),
+        }
+        instructions["proposal"] += " Follow proposal_contract for relationship IDs and preserve its technical failure evidence."
     if row["stage"] == "technical_review":
         from .technical_review import TechnicalDisposition
 
@@ -450,6 +478,23 @@ def stage_prompt(company, conn, task, turn=None):
                 + scope_instruction)
     if output_type:
         context["output_schema"] = output_type.model_json_schema()
+        if row["stage"] == "proposal":
+            contract = context["proposal_contract"]
+            schema = context["output_schema"]["properties"]
+            allowed = contract["allowed_predecessor_trial_ids"]
+            schema["predecessor_trial_ids"]["uniqueItems"] = True
+            if allowed:
+                schema["predecessor_trial_ids"]["items"]["enum"] = allowed
+            else:
+                schema["predecessor_trial_ids"]["maxItems"] = 0
+            required = contract["required_latest_predecessor_trial_id"]
+            if required:
+                schema["predecessor_trial_ids"]["contains"] = {"const": required}
+            supersedes = contract["allowed_supersedes_proposal_ids"]
+            if supersedes:
+                schema["supersedes_proposal_id"]["anyOf"][0]["enum"] = supersedes
+            else:
+                schema["supersedes_proposal_id"] = {"type": "null", "default": None}
         if row["stage"] == "selection" and context.get("selection_contract"):
             current_ids = context["selection_contract"]["current_challenge_ids"]
             schema = context["output_schema"]
@@ -805,6 +850,8 @@ class MissionController:
         stage_role(self.company, actor)
         # One isolated context per role/stage; ordinary thread history cannot carry raw performance.
         context = {"mission": snapshot, **extra}
+        if row and stage == "proposal" and row["error"]:
+            context["previous_contract_error"] = row["error"]
         if not row:
             row = conn.execute("""INSERT INTO research_mission_stages(id,mission_id,stage_key,stage,actor,context)
                 VALUES (%s,%s,%s,%s,%s,%s) RETURNING *""",

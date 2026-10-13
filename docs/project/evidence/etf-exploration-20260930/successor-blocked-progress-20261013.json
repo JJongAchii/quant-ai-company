@@ -1,0 +1,1099 @@
+{
+  "observed_at": "2026-10-12T23:58:47.343617+00:00",
+  "database_mutated": false,
+  "cutover_state": "technical_review_patch_applied",
+  "cutover_completed_at": "2026-10-12T02:34:31.013374+00:00",
+  "paused": false,
+  "activity": {
+    "running_turns": 0,
+    "sending_outbox": 0,
+    "active_jobs": 0
+  },
+  "authority": {
+    "program_state": "active",
+    "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "mission_state": "active",
+    "mission_digest": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737",
+    "cycle": 1,
+    "cycle_trials": 1,
+    "cumulative_trials": 1
+  },
+  "stages": [
+    {
+      "id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "stage": "proposal",
+      "actor": "researcher_kr",
+      "state": "waiting",
+      "attempt": 25,
+      "task_id": "0e152df9-c6e3-5beb-90e3-ec64d32e8dff",
+      "error": "stage_contract_rejected: Superseded proposal must be rejected in this mission cycle",
+      "retry_at": "2026-10-13T00:19:22.630562+00:00",
+      "created_at": "2026-10-12T02:46:59.462943+00:00",
+      "updated_at": "2026-10-12T23:19:22.627024+00:00",
+      "decision": null,
+      "proposal_id": null,
+      "review_evidence": null,
+      "attached_review_evidence": null,
+      "required_technical_reads": null,
+      "independent_repair_held": false,
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 27,
+      "current_challenge_ids": []
+    },
+    {
+      "id": "a711339e-12ab-5aab-b91a-41cba6575beb",
+      "stage": "technical_review",
+      "actor": "director",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "4a081c41-b43b-5a8c-9172-03901c49c303",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-12T02:34:26.979483+00:00",
+      "updated_at": "2026-10-12T02:46:55.392922+00:00",
+      "decision": "retire_candidate",
+      "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+      "review_evidence": {
+        "source_ids": [
+          "research-contract:5868e1af-475c-5b7b-ad4a-da55fc3966e3:39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f"
+        ],
+        "content_sha256": {
+          "research-contract:5868e1af-475c-5b7b-ad4a-da55fc3966e3:39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f": "39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f"
+        },
+        "operation_commit": "68a53f1c699837256db5e8a4a6479bbd0fc82876"
+      },
+      "attached_review_evidence": null,
+      "required_technical_reads": [
+        "repair/independent-hold.json",
+        "repair/failed-build.json"
+      ],
+      "independent_repair_held": false,
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 18,
+      "current_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "id": "2d0ec857-8601-5cca-927d-f7f51877696d",
+      "stage": "repair",
+      "actor": "engineer",
+      "state": "waiting",
+      "attempt": 79,
+      "task_id": "663aacf2-97da-5079-a9f7-2fdd7e723007",
+      "error": "repair_requires_evidence",
+      "retry_at": null,
+      "created_at": "2026-10-08T04:11:51.490062+00:00",
+      "updated_at": "2026-10-12T02:34:18.12192+00:00",
+      "decision": null,
+      "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+      "review_evidence": null,
+      "attached_review_evidence": {
+        "source_ids": [
+          "research-contract:5868e1af-475c-5b7b-ad4a-da55fc3966e3:39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f"
+        ],
+        "content_sha256": {
+          "research-contract:5868e1af-475c-5b7b-ad4a-da55fc3966e3:39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f": "39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f"
+        },
+        "operation_commit": "68a53f1c699837256db5e8a4a6479bbd0fc82876"
+      },
+      "required_technical_reads": null,
+      "independent_repair_held": true,
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 42,
+      "current_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "id": "6fc83fad-30b2-5ece-8663-d90e31734a1c",
+      "stage": "implementation",
+      "actor": "engineer",
+      "state": "completed",
+      "attempt": 3,
+      "task_id": "2471982e-bcc5-580a-9500-d69cb71d550f",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T02:11:49.083564+00:00",
+      "updated_at": "2026-10-08T04:10:46.254556+00:00",
+      "decision": null,
+      "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+      "review_evidence": null,
+      "attached_review_evidence": null,
+      "required_technical_reads": null,
+      "independent_repair_held": false,
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 59,
+      "current_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "id": "1a4a3e7d-60c0-5957-bbfb-d8c93bb396a8",
+      "stage": "selection",
+      "actor": "director",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "68343ee0-eda9-54cd-8f3d-7b454079dcd7",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T01:32:02.945655+00:00",
+      "updated_at": "2026-10-08T02:11:45.451655+00:00",
+      "decision": "execute",
+      "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+      "review_evidence": null,
+      "attached_review_evidence": null,
+      "required_technical_reads": null,
+      "independent_repair_held": false,
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 23,
+      "current_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "id": "a7cc6fc4-968d-524d-9b51-25a53d6af1ff",
+      "stage": "challenge",
+      "actor": "financial_strategist",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "d983241b-cc9f-5d9c-9360-68d5da8b1040",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T01:14:05.795935+00:00",
+      "updated_at": "2026-10-08T01:31:59.69526+00:00",
+      "decision": null,
+      "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+      "review_evidence": null,
+      "attached_review_evidence": null,
+      "required_technical_reads": null,
+      "independent_repair_held": false,
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 56,
+      "current_challenge_ids": [
+        "b94521c8-2e7c-4a2c-90f4-672378aacf29"
+      ]
+    },
+    {
+      "id": "e31af7a5-8bcc-545b-864b-37e948c3d1dc",
+      "stage": "proposal",
+      "actor": "researcher_kr",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "52cff5ea-bb40-51c4-ba9e-065efb12b93b",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T01:06:23.299133+00:00",
+      "updated_at": "2026-10-08T01:14:02.510326+00:00",
+      "decision": null,
+      "proposal_id": null,
+      "review_evidence": null,
+      "attached_review_evidence": null,
+      "required_technical_reads": null,
+      "independent_repair_held": false,
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 26,
+      "current_challenge_ids": []
+    },
+    {
+      "id": "418ea58b-387b-5e74-ba5b-f96762bf9fc6",
+      "stage": "selection",
+      "actor": "director",
+      "state": "completed",
+      "attempt": 1,
+      "task_id": "0ccc769b-d0fa-58ab-a6e5-0b334cf09ae5",
+      "error": null,
+      "retry_at": null,
+      "created_at": "2026-10-08T00:47:25.412631+00:00",
+      "updated_at": "2026-10-08T01:06:19.787762+00:00",
+      "decision": "revise",
+      "proposal_id": "36902772-eefa-4f18-9168-93cf58b4a746",
+      "review_evidence": null,
+      "attached_review_evidence": null,
+      "required_technical_reads": null,
+      "independent_repair_held": false,
+      "task_priority": 100,
+      "task_status": "completed",
+      "read_chunks": 17,
+      "current_challenge_ids": [
+        "d81d7cf3-0730-40a4-b8dc-398d5696a084"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "id": "bb00682f-6f92-56fd-8bb3-0504c23f985d",
+      "task_id": "0e152df9-c6e3-5beb-90e3-ec64d32e8dff",
+      "sequence": 28,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T23:17:18.86669+00:00",
+      "updated_at": "2026-10-12T23:18:58.015814+00:00",
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "stage": "proposal",
+      "request_id": "bb00682f-6f92-56fd-8bb3-0504c23f985d",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 57474,
+      "stage_capabilities_present": true,
+      "technical_review_schema_present": false,
+      "review_evidence": null,
+      "required_technical_reads": [],
+      "repair_contract_present": false,
+      "failed_build": {
+        "job_id": null,
+        "code_commit": null,
+        "failure_source_ids": null
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791847039.5079713,
+        "completed_at": 1791847137.9503558,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "5f417cd0-e346-5610-a88f-432e11e0f799",
+      "task_id": "0e152df9-c6e3-5beb-90e3-ec64d32e8dff",
+      "sequence": 27,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T23:17:03.883564+00:00",
+      "updated_at": "2026-10-12T23:17:18.86669+00:00",
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "stage": "proposal",
+      "request_id": "5f417cd0-e346-5610-a88f-432e11e0f799",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 53058,
+      "stage_capabilities_present": true,
+      "technical_review_schema_present": false,
+      "review_evidence": null,
+      "required_technical_reads": [],
+      "repair_contract_present": false,
+      "failed_build": {
+        "job_id": null,
+        "code_commit": null,
+        "failure_source_ids": null
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791847025.7492123,
+        "completed_at": 1791847038.799676,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "f2631dfc-3893-5d46-a501-578348d52987",
+      "task_id": "0e152df9-c6e3-5beb-90e3-ec64d32e8dff",
+      "sequence": 26,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T23:16:49.012758+00:00",
+      "updated_at": "2026-10-12T23:17:03.883564+00:00",
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "stage": "proposal",
+      "request_id": "f2631dfc-3893-5d46-a501-578348d52987",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 40533,
+      "stage_capabilities_present": true,
+      "technical_review_schema_present": false,
+      "review_evidence": null,
+      "required_technical_reads": [],
+      "repair_contract_present": false,
+      "failed_build": {
+        "job_id": null,
+        "code_commit": null,
+        "failure_source_ids": null
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791847010.320638,
+        "completed_at": 1791847023.7983654,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "9a5bff1b-f374-5203-86de-f94758074ab3",
+      "task_id": "0e152df9-c6e3-5beb-90e3-ec64d32e8dff",
+      "sequence": 25,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T23:16:39.886841+00:00",
+      "updated_at": "2026-10-12T23:16:49.012758+00:00",
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "stage": "proposal",
+      "request_id": "9a5bff1b-f374-5203-86de-f94758074ab3",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 48596,
+      "stage_capabilities_present": true,
+      "technical_review_schema_present": false,
+      "review_evidence": null,
+      "required_technical_reads": [],
+      "repair_contract_present": false,
+      "failed_build": {
+        "job_id": null,
+        "code_commit": null,
+        "failure_source_ids": null
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791847001.5726137,
+        "completed_at": 1791847008.9306462,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "e2b12a67-9506-529c-9718-c58e588e10d7",
+      "task_id": "0e152df9-c6e3-5beb-90e3-ec64d32e8dff",
+      "sequence": 24,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T23:16:24.436693+00:00",
+      "updated_at": "2026-10-12T23:16:39.886841+00:00",
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "stage": "proposal",
+      "request_id": "e2b12a67-9506-529c-9718-c58e588e10d7",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 55639,
+      "stage_capabilities_present": true,
+      "technical_review_schema_present": false,
+      "review_evidence": null,
+      "required_technical_reads": [],
+      "repair_contract_present": false,
+      "failed_build": {
+        "job_id": null,
+        "code_commit": null,
+        "failure_source_ids": null
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791846985.0759645,
+        "completed_at": 1791846999.8253543,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "35b2c924-2912-590a-a4d3-492e860832c6",
+      "task_id": "0e152df9-c6e3-5beb-90e3-ec64d32e8dff",
+      "sequence": 23,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T23:16:15.074488+00:00",
+      "updated_at": "2026-10-12T23:16:24.436693+00:00",
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "stage": "proposal",
+      "request_id": "35b2c924-2912-590a-a4d3-492e860832c6",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 53129,
+      "stage_capabilities_present": true,
+      "technical_review_schema_present": false,
+      "review_evidence": null,
+      "required_technical_reads": [],
+      "repair_contract_present": false,
+      "failed_build": {
+        "job_id": null,
+        "code_commit": null,
+        "failure_source_ids": null
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791846976.5780258,
+        "completed_at": 1791846984.346758,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "7863f150-1506-5ed8-be56-9c5f40ecfc23",
+      "task_id": "0e152df9-c6e3-5beb-90e3-ec64d32e8dff",
+      "sequence": 22,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T23:16:06.498241+00:00",
+      "updated_at": "2026-10-12T23:16:15.074488+00:00",
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "stage": "proposal",
+      "request_id": "7863f150-1506-5ed8-be56-9c5f40ecfc23",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 49495,
+      "stage_capabilities_present": true,
+      "technical_review_schema_present": false,
+      "review_evidence": null,
+      "required_technical_reads": [],
+      "repair_contract_present": false,
+      "failed_build": {
+        "job_id": null,
+        "code_commit": null,
+        "failure_source_ids": null
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791846967.415403,
+        "completed_at": 1791846975.0112557,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    },
+    {
+      "id": "091ec18a-d5bb-591f-aef2-f30ef41e2e99",
+      "task_id": "0e152df9-c6e3-5beb-90e3-ec64d32e8dff",
+      "sequence": 21,
+      "status": "completed",
+      "error": null,
+      "created_at": "2026-10-12T23:15:57.624316+00:00",
+      "updated_at": "2026-10-12T23:16:06.498241+00:00",
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "stage": "proposal",
+      "request_id": "091ec18a-d5bb-591f-aef2-f30ef41e2e99",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "turn_created_after_cutover": true,
+      "prompt_characters": 47339,
+      "stage_capabilities_present": true,
+      "technical_review_schema_present": false,
+      "review_evidence": null,
+      "required_technical_reads": [],
+      "repair_contract_present": false,
+      "failed_build": {
+        "job_id": null,
+        "code_commit": null,
+        "failure_source_ids": null
+      },
+      "selection_contract": {},
+      "selection_schema": {
+        "minItems": null,
+        "maxItems": null,
+        "enum": null
+      },
+      "selection_scope_matches_db": null,
+      "runtime": {
+        "state": "complete",
+        "started_at": 1791846958.2455375,
+        "completed_at": 1791846966.3205936,
+        "cli_version": "0.160.1",
+        "fault_code": null,
+        "started_after_cutover": true
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "error": "stage_contract_rejected: Superseded proposal must be rejected in this mission cycle",
+      "created_at": "2026-10-12T23:13:09.601737+00:00",
+      "completed_at": "2026-10-12T23:18:58.015814+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": []
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 24,
+      "error": "stage_contract_rejected: Superseded proposal must be rejected in this mission cycle",
+      "created_at": "2026-10-12T22:07:01.780855+00:00",
+      "completed_at": "2026-10-12T22:12:33.94976+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": []
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 23,
+      "error": "stage_response_rejected",
+      "created_at": "2026-10-12T21:55:40.076225+00:00",
+      "completed_at": null,
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": []
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 22,
+      "error": "stage_contract_rejected: Predecessor must be an interpreted result in the same mission",
+      "created_at": "2026-10-12T20:49:38.709248+00:00",
+      "completed_at": "2026-10-12T20:54:49.894381+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": []
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 21,
+      "error": "stage_contract_rejected: Superseded proposal must be rejected in this mission cycle",
+      "created_at": "2026-10-12T19:43:06.895924+00:00",
+      "completed_at": "2026-10-12T19:48:59.328361+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": []
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 20,
+      "error": "stage_contract_rejected: Superseded proposal must be rejected in this mission cycle",
+      "created_at": "2026-10-12T18:36:33.75808+00:00",
+      "completed_at": "2026-10-12T18:42:15.44878+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": []
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 19,
+      "error": "stage_contract_rejected: Superseded proposal must be rejected in this mission cycle",
+      "created_at": "2026-10-12T17:27:56.284485+00:00",
+      "completed_at": "2026-10-12T17:36:05.82609+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": []
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 18,
+      "error": "stage_contract_rejected: Superseded proposal must be rejected in this mission cycle",
+      "created_at": "2026-10-12T16:18:46.477406+00:00",
+      "completed_at": "2026-10-12T16:27:18.268323+00:00",
+      "artifact_json_error_count": 0,
+      "selection_decisions": [],
+      "submitted_challenge_ids": [],
+      "duplicate_challenge_ids": 0,
+      "extra_challenge_ids": [],
+      "missing_challenge_ids": []
+    }
+  ],
+  "trials": [
+    {
+      "id": "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+      "proposal_id": "bed77124-564d-4ba9-a625-777308b11cdb",
+      "state": "reported",
+      "job_id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
+      "technical_closed_at": null,
+      "result_id": "71453df0-cbe0-552f-8f89-73ef69473aa1",
+      "ordinal": 1,
+      "feasible": true,
+      "created_at": "2026-10-06T10:19:29.882762+00:00",
+      "updated_at": "2026-10-07T06:54:42.637438+00:00"
+    },
+    {
+      "id": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
+      "proposal_id": "fa1c5f89-7341-47a6-905d-9ae1853c4397",
+      "state": "technical_waiting",
+      "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+      "technical_closed_at": "2026-10-12T02:46:55.392922+00:00",
+      "result_id": null,
+      "ordinal": null,
+      "feasible": null,
+      "created_at": "2026-10-08T02:11:45.451655+00:00",
+      "updated_at": "2026-10-12T02:46:55.392922+00:00"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "1ac851a9-f5d0-55a3-9bf8-7d98193e42c8",
+      "trial_id": "de3597b0-e358-5a58-af5e-9f3c79df53e9",
+      "state": "completed",
+      "company_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+      "claimed_at": "2026-10-06T10:31:58.059235+00:00",
+      "heartbeat_at": "2026-10-06T10:32:11.456793+00:00",
+      "error": null,
+      "created_at": "2026-10-06T10:31:56.478807+00:00",
+      "updated_at": "2026-10-07T06:54:42.637438+00:00",
+      "artifact_sha256": "9c5c2a8eb504556ce3c2d42996cd6e0cb4ba005af0d76ed0b33761ee537b28cb"
+    },
+    {
+      "id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+      "trial_id": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
+      "state": "failed",
+      "company_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+      "claimed_at": "2026-10-08T04:10:51.238196+00:00",
+      "heartbeat_at": "2026-10-08T04:10:59.672796+00:00",
+      "error": "worker_error",
+      "created_at": "2026-10-08T04:10:49.233871+00:00",
+      "updated_at": "2026-10-08T04:10:59.672796+00:00",
+      "artifact_sha256": null
+    }
+  ],
+  "technical_dispositions": [
+    {
+      "trial_id": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
+      "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+      "job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746",
+      "payload": {
+        "decision": "retire_candidate",
+        "trial_id": "5868e1af-475c-5b7b-ad4a-da55fc3966e3",
+        "rationale": "현재 선택된 미측정 후보를 기술적 종결 대상으로 판단한다. 원실패 영수증은 qualify가 ReadinessError: actual_decision_and_past_public_inputs_unverified로 종료됐고 경제평가는 시작되지 않았음을 확인한다. 실패 manifest와 새 운영 증거의 커밋·파일 해시도 일치한다. 새 증거에 따르면 보호된 평가기는 현재 재기준화된 history와 JSON 왕복한 정적 config만 전달하며, 선택 구현이 요구하는 decision_at과 prior_events는 전달하지 않는다. 최신 warmup 날짜에 하루를 더한 자격검사 탐침은 실제 개발구간의 09:00 KST 결정 사건을 인증하지 않는다. 따라서 엔지니어가 보류한 실제 사건·당시 입력 출처의 연결 문제는 동결 계약에서도 확인된다. 승인된 candidate.py·config.json만으로 이 후보의 필수 출처 정보를 정당하게 확보하는 수리는 입증되지 않았으며, 가드 삭제·날짜 추정·호출 횟수·전역 캐시·미래 달력·미리 계산한 목표를 사용하는 우회는 등록된 시험 의무와 충돌한다. 새 증거는 선행 보관 코드·설정·manifest·result·receipt·비용별 출력의 실재와 해시 검증을 제공하여 보류 사유 일부를 해소했다. 그러나 별도 호출별 사건·목표 추적은 보관되지 않았고, 선행 float/Decimal 구현과 새 정확 상태 구현의 전체 경로 동치도 인증되지 않았으며 대응 비교용 선행군 재사용도 승인되지 않았다. 보관 자료 검증을 이러한 미충족 의무의 대체물로 볼 수 없다. 이 판단은 현재 후보와 승인 계약의 불일치에 한정하며 모든 두 인자 콜백의 구현 불가능성을 주장하지 않는다. 기술적 종결은 경제적 실패 계상, 시험 면제, 선행 구현 동치 인증 또는 평가기 변경 승인이 아니다. 계보의 charged/completed=1/1, technical_failures=1과 과거 부정 결과·차감 예약을 보존해야 한다. 후속 가설은 이 실패 이력을 반영한 별개 가설이어야 하며 동결 인터페이스와 잔여 서명 예산에 맞고 기존 독립 반론 검증·선정 단계를 통과해야 한다. 명세의 frozen_vintage_retrospective 및 conditional_retrospective_development 범위는 유지되며 역사적 알파, 정확 재현, 분배금 재투자 수익, 실행 가능한 체결, 배포 준비 또는 2026년 미접촉 확증을 인증하지 않는다.",
+        "source_ids": [
+          "research-failure:69a52b87-3b37-56c1-9ac5-97c5819c4746",
+          "research-contract:5868e1af-475c-5b7b-ad4a-da55fc3966e3:39cf16a03c3321b83e2fe462a451db75affa02af8cfad623be4b29211df7e16f"
+        ],
+        "failed_job_id": "69a52b87-3b37-56c1-9ac5-97c5819c4746"
+      },
+      "digest": "c8f87cc946eb5c924daaf54c1f846d7869003d5311caeb49dbe83ead740c89d8",
+      "created_at": "2026-10-12T02:46:55.392922+00:00"
+    }
+  ],
+  "read_receipts": [
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "evidence/challenges/b94521c8-2e7c-4a2c-90f4-672378aacf29.json",
+      "sha256": "cc24034acf61459d21dff4bae6439763e0f6cb90dd9332b79a1317774b796ba5",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T23:17:18.86669+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "sources/04b7ba71ef858022281d8c56bdfdf5ae4d090022b73fd160278acfa8d2c1ea38.json",
+      "sha256": "07be13b0532753853d5d38b4b9c6b59e0099032669f711b7ae9f46bd25457c76",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T23:17:03.883564+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "code/labs/company-domestic-research/config.json",
+      "sha256": "85870a2d2e4a444369cee6ce1e8f0c027208746df337abdfcda9b2d0fd6aecad",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T23:16:49.012758+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "evidence/rejections/36902772-eefa-4f18-9168-93cf58b4a746.json",
+      "sha256": "cfbc1cb8e28ce0bd5b4e753aa820a9bef6c2bab304ce968f0ddef5f08f84d466",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T23:16:39.886841+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "evidence/challenge_responses/fa1c5f89-7341-47a6-905d-9ae1853c4397.json",
+      "sha256": "1d284d3b31c27f45a67ff44594fdcabc09baf22dce3b0d0de82f996de763cbf9",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T23:16:24.436693+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "evidence/interpretations/de3597b0-e358-5a58-af5e-9f3c79df53e9.json",
+      "sha256": "3b0325f73611a1c19d3d4200cb6b9dd17a2c34e7c2d943312f9e144ec81e4125",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T23:16:15.074488+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "evidence/technical_dispositions/5868e1af-475c-5b7b-ad4a-da55fc3966e3.json",
+      "sha256": "e275f01434dbf1501afe38a647807f000e5afb3951e5877584b4b60ba794622d",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T23:16:06.498241+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "evidence/proposals/fa1c5f89-7341-47a6-905d-9ae1853c4397.json",
+      "sha256": "0a80a023902128abfca20e3ede3ffa4a9a0b103c7ca8a2e60fe11be945966a9f",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T23:15:57.624316+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "sources/08414d9f89916fe724aa8a76c3e4a5858abb071aac7de0d6de245b389238c154.json",
+      "sha256": "e4ad73cfbfa3778b8d5ee7f612ab468747eb62e41b454992b0387f173d2b6a87",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T23:15:47.677511+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "sources/0cddd704514ba7a59b848e79c834729e014a231c6fd723510c964aa8397f9cda.json",
+      "sha256": "962e2c7c4301af57fd415412be47a9a65f5ddb250167f6df2394ef55d0060019",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T23:15:40.034979+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "code/labs/company-domestic-research/candidate.py",
+      "sha256": "78ed35e6a6d59df39e2c51d5fcfb24baeaa266667ccc651b3e305d4065a25aa5",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T23:15:30.460786+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "code/labs/company-domestic-research/engine.py",
+      "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+      "character_offset": 12000,
+      "next_offset": null,
+      "created_at": "2026-10-12T23:15:21.426845+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "code/labs/company-domestic-research/engine.py",
+      "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+      "character_offset": 0,
+      "next_offset": 12000,
+      "created_at": "2026-10-12T23:15:12.353227+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "mission/scientific-lineage.json",
+      "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4",
+      "character_offset": 144000,
+      "next_offset": null,
+      "created_at": "2026-10-12T23:15:05.679502+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "mission/scientific-lineage.json",
+      "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4",
+      "character_offset": 132000,
+      "next_offset": 144000,
+      "created_at": "2026-10-12T23:14:57.377475+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "mission/scientific-lineage.json",
+      "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4",
+      "character_offset": 120000,
+      "next_offset": 132000,
+      "created_at": "2026-10-12T23:14:46.86883+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "mission/scientific-lineage.json",
+      "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4",
+      "character_offset": 108000,
+      "next_offset": 120000,
+      "created_at": "2026-10-12T23:14:37.717363+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "mission/scientific-lineage.json",
+      "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4",
+      "character_offset": 96000,
+      "next_offset": 108000,
+      "created_at": "2026-10-12T23:14:30.584701+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "mission/scientific-lineage.json",
+      "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4",
+      "character_offset": 84000,
+      "next_offset": 96000,
+      "created_at": "2026-10-12T23:14:22.385475+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "mission/scientific-lineage.json",
+      "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4",
+      "character_offset": 72000,
+      "next_offset": 84000,
+      "created_at": "2026-10-12T23:14:13.594988+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "mission/scientific-lineage.json",
+      "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4",
+      "character_offset": 60000,
+      "next_offset": 72000,
+      "created_at": "2026-10-12T23:14:05.809366+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "mission/scientific-lineage.json",
+      "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4",
+      "character_offset": 48000,
+      "next_offset": 60000,
+      "created_at": "2026-10-12T23:13:59.150579+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "mission/scientific-lineage.json",
+      "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4",
+      "character_offset": 36000,
+      "next_offset": 48000,
+      "created_at": "2026-10-12T23:13:52.240644+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "mission/scientific-lineage.json",
+      "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4",
+      "character_offset": 24000,
+      "next_offset": 36000,
+      "created_at": "2026-10-12T23:13:41.046875+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "mission/scientific-lineage.json",
+      "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4",
+      "character_offset": 12000,
+      "next_offset": 24000,
+      "created_at": "2026-10-12T23:13:31.772325+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "mission/scientific-lineage.json",
+      "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4",
+      "character_offset": 0,
+      "next_offset": 12000,
+      "created_at": "2026-10-12T23:13:23.71762+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 25,
+      "path": "mission/spec.json",
+      "sha256": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T23:13:16.055475+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 24,
+      "path": "evidence/proposals/fa1c5f89-7341-47a6-905d-9ae1853c4397.json",
+      "sha256": "0a80a023902128abfca20e3ede3ffa4a9a0b103c7ca8a2e60fe11be945966a9f",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T22:10:59.837266+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 24,
+      "path": "sources/04b7ba71ef858022281d8c56bdfdf5ae4d090022b73fd160278acfa8d2c1ea38.json",
+      "sha256": "07be13b0532753853d5d38b4b9c6b59e0099032669f711b7ae9f46bd25457c76",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T22:10:46.221943+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 24,
+      "path": "sources/0cddd704514ba7a59b848e79c834729e014a231c6fd723510c964aa8397f9cda.json",
+      "sha256": "962e2c7c4301af57fd415412be47a9a65f5ddb250167f6df2394ef55d0060019",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T22:10:27.080321+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 24,
+      "path": "code/labs/company-domestic-research/config.json",
+      "sha256": "85870a2d2e4a444369cee6ce1e8f0c027208746df337abdfcda9b2d0fd6aecad",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T22:10:16.327595+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 24,
+      "path": "evidence/rejections/36902772-eefa-4f18-9168-93cf58b4a746.json",
+      "sha256": "cfbc1cb8e28ce0bd5b4e753aa820a9bef6c2bab304ce968f0ddef5f08f84d466",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T22:10:06.347171+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 24,
+      "path": "evidence/challenge_responses/fa1c5f89-7341-47a6-905d-9ae1853c4397.json",
+      "sha256": "1d284d3b31c27f45a67ff44594fdcabc09baf22dce3b0d0de82f996de763cbf9",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T22:09:57.362827+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 24,
+      "path": "evidence/interpretations/de3597b0-e358-5a58-af5e-9f3c79df53e9.json",
+      "sha256": "3b0325f73611a1c19d3d4200cb6b9dd17a2c34e7c2d943312f9e144ec81e4125",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T22:09:48.263656+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 24,
+      "path": "code/labs/company-domestic-research/engine.py",
+      "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+      "character_offset": 12000,
+      "next_offset": null,
+      "created_at": "2026-10-12T22:09:39.451111+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 24,
+      "path": "code/labs/company-domestic-research/engine.py",
+      "sha256": "1984bf6b7fa5997a8b7ba446061ff663bdf78c683776be945da9130a067480cc",
+      "character_offset": 0,
+      "next_offset": 12000,
+      "created_at": "2026-10-12T22:09:32.047458+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 24,
+      "path": "sources/08414d9f89916fe724aa8a76c3e4a5858abb071aac7de0d6de245b389238c154.json",
+      "sha256": "e4ad73cfbfa3778b8d5ee7f612ab468747eb62e41b454992b0387f173d2b6a87",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T22:09:24.336086+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 24,
+      "path": "evidence/technical_dispositions/5868e1af-475c-5b7b-ad4a-da55fc3966e3.json",
+      "sha256": "e275f01434dbf1501afe38a647807f000e5afb3951e5877584b4b60ba794622d",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T22:09:13.423419+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 24,
+      "path": "code/labs/company-domestic-research/candidate.py",
+      "sha256": "78ed35e6a6d59df39e2c51d5fcfb24baeaa266667ccc651b3e305d4065a25aa5",
+      "character_offset": 0,
+      "next_offset": null,
+      "created_at": "2026-10-12T22:09:01.321522+00:00"
+    },
+    {
+      "stage_id": "378b5f19-1a59-5021-85a9-eb8c131d2242",
+      "attempt": 24,
+      "path": "mission/scientific-lineage.json",
+      "sha256": "b2e23f9ecf7da1e2eed13fc4e470645f8902e9269001347fb2f39827c1da6ff4",
+      "character_offset": 144000,
+      "next_offset": null,
+      "created_at": "2026-10-12T22:08:51.35589+00:00"
+    }
+  ]
+}
