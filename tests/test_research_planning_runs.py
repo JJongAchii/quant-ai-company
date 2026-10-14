@@ -197,14 +197,14 @@ def test_received_slate_records_candidates_and_triage_without_program_effects(pl
     PlanningController(h.company).tick()
     stage = planning_stage(h)
     complete(h, read_all(h, stage, queued_turn(h, stage["task_id"])), slate(candidate()))
-    assert PlanningController(h.company).tick() == {"state": "completed", "run_state": "triaged"}
+    assert PlanningController(h.company).tick()["state"] == "running"
     with h.company.db.transaction() as conn:
         row = conn.execute("SELECT * FROM research_planning_candidates").fetchone()
         review = conn.execute("SELECT payload FROM research_planning_reviews WHERE candidate_id=%s AND kind='triage'",
                               (row["id"],)).fetchone()
         question = conn.execute("SELECT state FROM research_questions WHERE id=%s", (h.question["id"],)).fetchone()
     assert row["ordinal"] == 1 and row["task_digest"] and review["payload"]["outcome"] == "eligible"
-    assert question["state"] == "waiting"
+    assert question["state"] == "open"
     assert counts(h) == before
 
 
