@@ -357,3 +357,56 @@ def test_a_running_release_is_a_deploy_window_and_a_new_watch_waits_for_the_prob
     assert watch.tick()["findings"] == []
     snapshot(ops, containers=[container("postgres", "exited")], release=release("releasing", started_at=now().isoformat()))
     assert watch.tick()["findings"] == ["down:postgres"]
+
+
+def test_a_login_flag_from_before_a_successful_call_is_not_an_alert(ops):
+    snapshot(ops)
+    watch = OpsWatch(ops)
+
+    def accounts(**columns):
+        with ops.db.transaction() as conn:
+            conn.execute("""UPDATE model_accounts SET authentication='needs_login',checked_at=%(checked_at)s,
+                last_success_at=%(last_success_at)s,last_fault=%(last_fault)s WHERE profile='primary'""",
+                         {"checked_at": None, "last_success_at": None, "last_fault": None, **columns})
+            return status_text(live_status(conn, now=now()))
+
+    # 2026-10-15: a 09-28 login check said needs_login, and the account answered calls ever since
+    text = accounts(checked_at=now() - timedelta(days=17), last_success_at=now() - timedelta(minutes=1))
+    assert "account:primary" not in watch.tick()["findings"] and "🔑" not in text
+    text = accounts(checked_at=now() - timedelta(minutes=1), last_success_at=now() - timedelta(days=1))
+    assert "account:primary" in watch.tick()["findings"] and "🔑 모델 계정 primary: 로그인 필요" in text
+    # an auth fault does not stamp checked_at; a later success clears last_fault
+    accounts(checked_at=now() - timedelta(days=17), last_success_at=now() - timedelta(minutes=5), last_fault="auth")
+    assert "account:primary" in watch.tick()["findings"]
+    accounts(last_success_at=now() - timedelta(minutes=1))
+    assert "account:primary" not in watch.tick()["findings"]
+
+
+def test_a_report_from_before_the_running_release_was_activated_is_not_alerted(ops):
+    # 2026-10-15 08:40 KST: release by hand at 08:37; the timer's 08:33 report still said render_required for ed77918
+    report = release("render_required", render_files=1, operator_files=["deploy/x.timer"], active="a" * 40)
+    snapshot(ops, release=report)
+    watch = OpsWatch(ops)
+    assert watch.tick()["findings"] == []
+    with ops.db.transaction() as conn:
+        text = status_text(live_status(conn, now=now()))
+    assert "🚀 릴리스 aaaaaaa · 마지막 점검(" in text and "이전 ccccccc 기준, 다음 점검 대기" in text
+    snapshot(ops, release={**report, "checked_at": (now() - timedelta(minutes=50)).isoformat()})
+    assert watch.tick()["findings"] == ["release_stale"]  # a timer that stopped is still reported
+    snapshot(ops, release={**report, "active": "c" * 40})
+    assert watch.tick()["findings"] == [f"release:render_required:{'a' * 40}", f"release_files:{'a' * 40}"]
+
+
+def test_a_paused_release_is_quiet_until_it_has_been_paused_for_two_hours(ops):
+    # RELEASE_AUTO_ENABLED=paused while an operator releases by hand (#158): the report records the commit, no verdict
+    watch = OpsWatch(ops)
+    old_green = {"sha": "a" * 40, "completed_at": (now() - timedelta(hours=25)).isoformat()}
+    snapshot(ops, release=release("paused", target=None, mode="paused", latest_green=old_green, active="a" * 40))
+    assert watch.tick()["findings"] == [] and watch.tick()["paused_since"]
+    with ops.db.transaction() as conn:
+        conn.execute("UPDATE ops_watch_state SET summary=jsonb_set(summary,'{paused_since}',to_jsonb(%s::text))",
+                     ((now() - timedelta(hours=2, minutes=1)).isoformat(),))
+    assert watch.tick()["findings"] == ["release_paused"]
+    snapshot(ops, release=release("up_to_date", target=None))
+    summary = watch.tick()
+    assert summary["findings"] == [] and "paused_since" not in summary

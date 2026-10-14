@@ -36,12 +36,14 @@ Slack에서 서버 작업의 진행 상황을 물으면 봇이 실제 운영 상
 | 등급 | 조건 |
 |---|---|
 | 🔴 | 되돌리기가 끝나지 않은 릴리스 실패 · postgres·dispatch·slack-socket·worker 중지 · 컨테이너 4개 이상 동시 중지(한 건으로 묶음) · OOM 종료 · 30분 안에 자동 재시작 3회 이상 · 디스크 여유 10GB 미만 · 발송 대상 브리핑 `missed`/`blocked` · 마감 10분이 지난 진행 중 브리핑 · 영상 `blocked`/`uncertain`/`delivery_failed`/`delivery_uncertain` · 게시 마감이 지난 진행 중 영상 |
-| 🟠 | 그 밖의 컨테이너 중지·unhealthy · 30분 안에 자동 재시작 1~2회 · 2분 안에 Traceback 3건 이상 · 공용 환경값 불일치 · 디스크 여유 20GB 미만 · 메모리 여유 400MB 미만 · 스왑 1GB 초과 · 백업·정리·모니터 유닛 실패 · 호스트 수집기 5분 이상 멈춤 · Slack 발송 결과 불명·막힘 · 10분 넘게 밀린 발송 · quota·한도가 아닌 사유로 막힌 모델 작업 · 모델 작업 일시정지 · 연구 실행 failed/uncertain · 연구 워커 10분 이상 무응답 · 모델 계정 로그인 필요 · 개선봇 신호 끊김 · 자동 릴리스 보고(아래) |
+| 🟠 | 그 밖의 컨테이너 중지·unhealthy · 30분 안에 자동 재시작 1~2회 · 2분 안에 Traceback 3건 이상 · 공용 환경값 불일치 · 디스크 여유 20GB 미만 · 메모리 여유 400MB 미만 · 스왑 1GB 초과 · 백업·정리·모니터 유닛 실패 · 호스트 수집기 5분 이상 멈춤 · Slack 발송 결과 불명·막힘 · 10분 넘게 밀린 발송 · quota·한도가 아닌 사유로 막힌 모델 작업 · 모델 작업 일시정지 · 연구 실행 failed/uncertain · 연구 워커 10분 이상 무응답 · 모델 계정 로그인 필요(그 점검·인증 실패 뒤에 성공한 호출이 없을 때) · 개선봇 신호 끊김 · 자동 릴리스 보고(아래) |
 
 ### 자동 릴리스 보고
 
 수집기는 릴리스 도구가 15분마다 쓰는 `/var/lib/quant-company/release-status.json`(ADR 0045)을 읽는다.
 필요한 필드만 남기고, 사유 문구에 들어 있는 자격증명 형태의 문자열은 잘라낸다. 파일이 없으면 아무것도 알리지 않는다.
+지금 실행 중인 릴리스(`/opt/quant-company/current`)도 같이 기록한다. 보고의 `current`가 그것과 다르면 마지막 activate
+전에 쓴 보고(손으로 한 릴리스 등)이므로 다음 점검까지 아래 판단을 보류하고 45분 갱신 지연만 본다.
 
 - **동작과 커밋마다 한 번만 알림** (사건형, `failed`는 시도(`started_at`)마다):
   - `failed`, `error`, `render_required`, `operator_required`, `held_for_drift`, `drift`, `refused`, `no_green_main`
@@ -54,6 +56,8 @@ Slack에서 서버 작업의 진행 상황을 물으면 봇이 실제 운영 상
     `ahead_of_green`이면 세지 않는다.
   - 상태 파일이 45분 넘게 갱신되지 않음
 - `would_release`, `waiting_for_window`, `waiting_for_quiet`, `waiting_for_lock`, `up_to_date`는 정상 대기라서 알리지 않는다.
+- `paused`(`RELEASE_AUTO_ENABLED=paused`, 운영자가 손으로 릴리스하는 중)는 판단이 없으므로 알리지 않는다. 감시가 처음 본 뒤
+  2시간이 넘으면 `true`로 되돌리라고 한 번 상기한다(상태형).
   운영 채널의 `상태` 답에는 현재 릴리스와 판단이 한 줄로 나온다.
 
 release 유닛의 `exec-condition` 결과는 모델 배정 가드가 실행을 건너뛴 정상 상태라 경고하지 않는다.

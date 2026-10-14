@@ -36,6 +36,7 @@ EXCEPTION = re.compile(r'^(?:[A-Za-z_][\w]*\.)*([A-Z]\w*(?:Error|Exception|Detec
 WATCH_STALE = timedelta(minutes=10)
 SLACK_ID = re.compile(r'[CDGUW][A-Z0-9]{2,30}')
 RELEASE_STATUS = STATE / 'release-status.json'
+CURRENT_RELEASE = Path('/opt/quant-company/current')  # release.py activate points it at the running release
 SYNTHETIC = STATE / 'ops/synthetic-incident.json'
 SYNTHETIC_FOR = timedelta(minutes=3)  # longer than two watch ticks, so the minutely timer does not erase the test
 COMMIT = re.compile(r'[0-9a-f]{7,40}')
@@ -183,8 +184,19 @@ def moment(text):
     return value.isoformat() if value.tzinfo else None
 
 
-def release_status(path=RELEASE_STATUS):
-    """The release tool's last report (docs/adr/0045), reduced to what the ops watch alerts on; None until installed."""
+def active_release(link=CURRENT_RELEASE):
+    try:
+        name = link.resolve(strict=True).name
+    except OSError:
+        return None
+    return name if COMMIT.fullmatch(name) else None
+
+
+def release_status(path=RELEASE_STATUS, link=CURRENT_RELEASE):
+    """The release tool's last report (docs/adr/0045), reduced to what the ops watch alerts on; None until installed.
+
+    `active` is the release running now. A report written before the last activate (a release by hand, between the
+    timer's checks) names an older `current`, and its verdicts no longer describe production."""
     try:
         raw = json.loads(path.read_text())
     except FileNotFoundError:
@@ -202,6 +214,7 @@ def release_status(path=RELEASE_STATUS):
     restored = raw.get('restored') if isinstance(raw.get('restored'), dict) else None
     return {'checked_at': moment(raw.get('checked_at')), 'mode': word(raw.get('mode')), 'action': word(raw.get('action')),
             'detail': scrub(raw.get('detail')), 'current': commit(raw.get('current')), 'target': commit(raw.get('target')),
+            'active': active_release(link),
             'failed_commit': commit(raw.get('failed_commit')), 'started_at': moment(raw.get('started_at')),
             'step': {'name': scrub(raw['step'].get('name'), 120), 'at': moment(raw['step'].get('at'))}
             if isinstance(raw.get('step'), dict) else None,

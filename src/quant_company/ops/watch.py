@@ -8,7 +8,7 @@ from datetime import timedelta
 from psycopg.types.json import Jsonb
 
 from ..company import as_json, stable
-from .status import KST, VIDEO_LIVE, edition_name, kst, stamp, utcnow
+from .status import KST, LOGIN_NEEDED, VIDEO_LIVE, edition_name, kst, stamp, utcnow
 
 LOCK = 71350301
 TICK_SECONDS = 60
@@ -34,6 +34,7 @@ RELEASE_INCOMPLETE = timedelta(hours=1)
 RELEASE_RUNNING = timedelta(hours=2)
 RELEASE_STEP = timedelta(minutes=60)  # build ~10 min; each apply group waits at most 10 min for quiet
 RELEASE_BEHIND = timedelta(hours=24)
+RELEASE_PAUSED = timedelta(hours=2)  # RELEASE_AUTO_ENABLED=paused while an operator releases by hand
 log = logging.getLogger(__name__)
 
 
@@ -52,7 +53,7 @@ def in_window(snapshot, service, now):
     return bool(until and until > now and ("*" in window["services"] or service in window["services"]))
 
 
-def host_findings(row, now, since=None):
+def host_findings(row, now, since=None, paused=None):
     if not row:
         if since and now - since < INSTALL_GRACE:
             return []
@@ -120,11 +121,12 @@ def host_findings(row, now, since=None):
                                  f"마지막 종료 {unit.get('exited_at') or '미상'}"))
     for error in snapshot.get("probe_errors") or []:
         found.append(finding("probe:" + error.split(":")[0], "condition", "warning", "호스트 수집 일부 실패", error))
-    return found + release_findings(snapshot.get("release"), now)
+    return found + release_findings(snapshot.get("release"), now, paused)
 
 
-def release_findings(release, now):
-    """The release tool's report (/var/lib/quant-company/release-status.json, docs/adr/0045); nothing until installed."""
+def release_findings(release, now, paused=None):
+    """The release tool's report (/var/lib/quant-company/release-status.json, docs/adr/0045); nothing until installed.
+    `paused` is when the watch first saw the paused action; the report itself does not say."""
     if not release:
         return []
     found, action = [], release.get("action")
@@ -147,6 +149,18 @@ def release_findings(release, now):
         found.append(finding("release_stale", "condition", "warning", "자동 릴리스 점검 멈춤",
                              f"마지막 점검 {kst(checked, True) if checked else '기록 없음'} KST. "
                              "quant-company-release-auto.timer가 15분마다 갱신해야 합니다."))
+    if action == "paused":  # an operator is releasing by hand; the tool records the running commit and judges nothing
+        if paused and now - paused > RELEASE_PAUSED:
+            found.append(finding("release_paused", "condition", "warning",
+                                 f"자동 릴리스 {int((now - paused).total_seconds() // 3600)}시간째 일시정지",
+                                 f"처음 확인 {kst(paused, True)} KST · RELEASE_AUTO_ENABLED=paused. "
+                                 "손 릴리스가 끝났으면 true로 되돌려야 자동 반영과 점검이 이어집니다.", where))
+        return found
+    active = release.get("active")
+    if active and current and active != current and action != "releasing":
+        # Written before the running release was activated (2026-10-15 08:40 KST: a release by hand at 08:37 left the
+        # 08:33 render_required report for ed77918 in place). The next check replaces it; release_stale still applies.
+        return found
     if action in RELEASE_ALERTS:
         lines = [where, *([f"사유: {release['detail']}"] if release.get("detail") else []),
                  *([f"멈춘 단계: {step['name']}"] if step.get("name") else [])]
@@ -242,7 +256,7 @@ def database_findings(conn, now):
     if stale["n"]:
         found.append(finding("research_worker", "condition", "warning", "연구 워커 응답 없음",
                              f"진행 중 작업 {stale['n']}건의 마지막 신호 {kst(stale['oldest'], True)} KST"))
-    for row in conn.execute("SELECT profile FROM model_accounts WHERE authentication='needs_login'").fetchall():
+    for row in conn.execute(f"SELECT profile FROM model_accounts WHERE {LOGIN_NEEDED}").fetchall():
         found.append(finding("account:" + row["profile"], "condition", "warning", f"모델 계정 {row['profile']} 로그인 필요"))
     if conn.execute("SELECT to_regclass('maintenance_control') AS name").fetchone()["name"]:
         runtime = conn.execute("SELECT to_jsonb(c)->'runtime' AS runtime FROM maintenance_control c WHERE id=1").fetchone()
@@ -279,11 +293,15 @@ class OpsWatch:
             conn.execute("SELECT pg_advisory_xact_lock(%s)", (LOCK,))
             snapshot = conn.execute("SELECT collected_at,payload FROM ops_host_snapshots WHERE id=1").fetchone()
             state = conn.execute("SELECT summary FROM ops_watch_state WHERE id=1").fetchone()
-            since = stamp((state or {}).get("summary", {}).get("since")) or now  # the watch's first tick
+            previous = (state or {}).get("summary") or {}
+            since = stamp(previous.get("since")) or now  # the watch's first tick
+            release = (snapshot["payload"].get("release") if snapshot else None) or {}
+            paused = (stamp(previous.get("paused_since")) or now) if release.get("action") == "paused" else None
             current = {}
-            for item in host_findings(snapshot, now, since) + database_findings(conn, now):
+            for item in host_findings(snapshot, now, since, paused) + database_findings(conn, now):
                 current.setdefault(item["key"], item)
-            summary = {**self.reconcile(conn, current, now), "since": since.isoformat()}
+            summary = {**self.reconcile(conn, current, now), "since": since.isoformat(),
+                       **({"paused_since": paused.isoformat()} if paused else {})}
             conn.execute("""INSERT INTO ops_watch_state(id,ticked_at,summary) VALUES (1,%s,%s)
                 ON CONFLICT (id) DO UPDATE SET ticked_at=EXCLUDED.ticked_at,summary=EXCLUDED.summary""",
                          (now, Jsonb(summary)))
