@@ -1,0 +1,251 @@
+{
+  "state": "inactive_audit_note_bound_images_prepared",
+  "observed_at": "2026-10-14T00:13:47.353831+00:00",
+  "commit": "8651516fa6d1feaecdd5da7653751d5b3df52308",
+  "manifest_sha256": "0864fa2a741d7492255803c9a55f6a48163e61294732384612e81c40472e7d0d",
+  "images": {
+    "api": {
+      "tag": "quant-company-audit-note-bound-api:8651516fa6d1feaecdd5da7653751d5b3df52308",
+      "image_id": "sha256:0323efed90b055c700245ff2a7e631cc7965e114802a2b04f457c45683b31e6b",
+      "baseline_image_id": "sha256:84c5e9e21af0fc7c1ab8a1fa846298451220f4d2f996bd10c4e59d39e3b34500",
+      "source": {
+        "root": "/app/src",
+        "source_count": 169,
+        "file_count": 184,
+        "patch_files": {
+          "quant_company/research/audit_delivery.py": "54bdcf4ef8ee6b58bc3791fd65ef398ce17d5439abcd885572e26e9266c08bbd"
+        },
+        "other_sources_digest": "89b2649cac84f1030f2688c3afc8afc5358d476e0820abdc0d3b472d28df32c1"
+      },
+      "runtime": {
+        "root": "/app/.venv/lib/python3.12/site-packages",
+        "source_count": 185,
+        "file_count": 202,
+        "patch_files": {
+          "quant_company/research/audit_delivery.py": "54bdcf4ef8ee6b58bc3791fd65ef398ce17d5439abcd885572e26e9266c08bbd"
+        },
+        "other_sources_digest": "0b6636f3d26a8e224cf124cd35c909f604d63e542673a6b6021ad04183d6461f"
+      }
+    },
+    "worker": {
+      "tag": "quant-company-audit-note-bound-worker:8651516fa6d1feaecdd5da7653751d5b3df52308",
+      "image_id": "sha256:7c7e73d06ea8a6188e51aa9f3c39c25eb72997ed578af6f4692adbe91308e894",
+      "baseline_image_id": "sha256:5bc6367f994b18438c3b268a896e9e62e7ad7cc5ae1d5e8e323b09d85f307bda",
+      "source": {
+        "root": "/app/src",
+        "source_count": 169,
+        "file_count": 184,
+        "patch_files": {
+          "quant_company/research/audit_delivery.py": "54bdcf4ef8ee6b58bc3791fd65ef398ce17d5439abcd885572e26e9266c08bbd"
+        },
+        "other_sources_digest": "89b2649cac84f1030f2688c3afc8afc5358d476e0820abdc0d3b472d28df32c1"
+      },
+      "runtime": {
+        "root": "/app/.venv/lib/python3.12/site-packages",
+        "source_count": 173,
+        "file_count": 189,
+        "patch_files": {
+          "quant_company/research/audit_delivery.py": "54bdcf4ef8ee6b58bc3791fd65ef398ce17d5439abcd885572e26e9266c08bbd"
+        },
+        "other_sources_digest": "b6e3f40af86f14c0e72ea5c16d5d2673c36131b83b7f71693d03915d2f76c0f3"
+      }
+    }
+  },
+  "before": {
+    "quant-company-video-worker-1": {
+      "id": "3f2683ab3d39145f166c4c3db6e25569e393352d11c90d6de937a40a1b932883",
+      "image_id": "sha256:8923afdab45be56e20607dfea133283c7877b3bac4a6ae3563545494026f89ff",
+      "image": "quant-company-video:7b37ac4-fargate14",
+      "running": true,
+      "memory_limit": 3758096384,
+      "environment_sha256": "da9a492ec052aace801b76946cb8f7bd72d2f94f226161a781f44143bbf93e65"
+    },
+    "quant-company-maintenance-1": {
+      "id": "9ec0e4113532a3061124e1eaafdab9fc80cb974618bad06c5bce975baed40efc",
+      "image_id": "sha256:ef03b04fd8e3f69070513ef2268462a1aa863c051938700f85611daf9611772d",
+      "image": "quant-company-maintainer-query:3ed0bd9",
+      "running": true,
+      "memory_limit": 268435456,
+      "environment_sha256": "5cd55168ec95f15fd91b491e67ea42781e9aed053089d64a44a630742fdb2770"
+    },
+    "quant-company-worker-1": {
+      "id": "3612aac6e79258a8da2936552b9c95cba0662e3af216288861609bbc01562a7e",
+      "image_id": "sha256:5bc6367f994b18438c3b268a896e9e62e7ad7cc5ae1d5e8e323b09d85f307bda",
+      "image": "quant-company-maintainer-continuity-worker:94b46be",
+      "running": true,
+      "memory_limit": 402653184,
+      "environment_sha256": "27c6d2d880f3deb664603bc9a2065d6e622202bef550b896ce3fde55a5f38369"
+    },
+    "quant-company-claude-runtime-1": {
+      "id": "76b5a9711b0113bf3bc66f10d100f84d5507c8b3487c9bc96d78279da0bbd3a7",
+      "image_id": "sha256:2e28a4ee36a7e62985b12849e852725f5dc595f0ebc8c86be1c6e928bea5c8b2",
+      "image": "quant-company-repair-claude-runtime:68ffc8d1-video10",
+      "running": true,
+      "memory_limit": 536870912,
+      "environment_sha256": "2a6eb4a7623bacebd41acfdc302ae6e0a9ea93e76776308779c4ff63f4528fcc"
+    },
+    "quant-company-api-1": {
+      "id": "72c4d215ee308dc5657d9cf1d86640b287cb30fefbb79cfcc3f288115a4697a6",
+      "image_id": "sha256:84c5e9e21af0fc7c1ab8a1fa846298451220f4d2f996bd10c4e59d39e3b34500",
+      "image": "quant-company-proposal-navigation-api:5ec088b2854a2a94c6b514a25e2ae64e1a3dc6b0",
+      "running": true,
+      "memory_limit": 134217728,
+      "environment_sha256": "5d792368dcd8773eae1a8ce3947e867811b89deae2581ec7d6c6eb61128214d0"
+    },
+    "quant-company-dispatch-1": {
+      "id": "29741b12a4b99aa543e86b711452d10076803bf2ea889e4cd1f1279528eef26f",
+      "image_id": "sha256:fc08488844f7935a021da84115c43a031dfbdd07db5ebe6a0ee41d03813765e6",
+      "image": "quant-company-housing-rental:737b3dd66b82a348d22eaa9e26bfa8d3149ab548-dispatch-briefing-final-4",
+      "running": true,
+      "memory_limit": 201326592,
+      "environment_sha256": "2b70009d4763c0430e1d36495089ecc658479161bd1fc330b66ebf591f8ba404"
+    },
+    "quant-company-news-worker-1": {
+      "id": "7e0aaea506b3be060224fd9b56fcba0afc1e27d09cdd4da41771a2dca040a49d",
+      "image_id": "sha256:7d0b13f33db8351c5fa22d27607079cee8f332171e0e9d5ab36fe1d1b6d13295",
+      "image": "quant-company:7b37ac4-briefing-final-4",
+      "running": true,
+      "memory_limit": 335544320,
+      "environment_sha256": "9ce772d805fe711cbe6226347282cda40cd4087d7e0a27a9fd24430f0eec2dab"
+    },
+    "quant-company-video-image-runtime-1": {
+      "id": "553361fae52eabca6cbd651cfe6a93d6e742caf5859d0efe4cc6e116841e5c4c",
+      "image_id": "sha256:1e174044ba5068e8b24d1f3573bbcf0777c73e8da20aaa54fb78a9742345beaa",
+      "image": "quant-company-codex:5e885d0a-combined71-3-retryid-image2",
+      "running": true,
+      "memory_limit": 536870912,
+      "environment_sha256": "d329b65e1e518283c0c5b9def46e1b2d4e37d4e5e19cc79d5a4805e2cc085a0e"
+    },
+    "quant-company-housing-feed-worker-1": {
+      "id": "fdb3029d96a151ce308cd439b76bb1edbfce2974b1a3b971c526923921070585",
+      "image_id": "sha256:c7f587c23613f6fb0a9232e303282957ab88dec9b6c98f0ba6f36b5e2440e45b",
+      "image": "quant-company-housing-rental:737b3dd66b82a348d22eaa9e26bfa8d3149ab548-housing-feed-worker",
+      "running": true,
+      "memory_limit": 201326592,
+      "environment_sha256": "1d898f15595cdbf981884b873d627837613aca6d4e3aa0ae5213538557c81f4e"
+    },
+    "quant-company-codex-runtime-1": {
+      "id": "b955828df407fb671936bd53b1c4b98e51de3ddad5788ba8df4c99279dca9489",
+      "image_id": "sha256:c75b71141deb0287eb78f9fc3be7d877d5ca6eb17ff65d4c836a7ec5be7c740c",
+      "image": "quant-company-codex:5e885d0a-combined71-3-retryid",
+      "running": true,
+      "memory_limit": 536870912,
+      "environment_sha256": "b1cc163f85296329fa4eda900137d8000c72cd6737f372b42c72fbe20fe9474b"
+    },
+    "quant-company-briefing-data-worker-1": {
+      "id": "141f150c1604e42df8086da80ba471c39d637ef515e27b40c30f23b9cacaf833",
+      "image_id": "sha256:4b0632adfed5da7dceb7fdca255a9aaf4bef9cb04b48388827063d62d58c9728",
+      "image": "quant-company:7b37ac4-video-phase2-2",
+      "running": true,
+      "memory_limit": 402653184,
+      "environment_sha256": "5555feaeadc840b3b787911b4a5330e2c0c2834975631c3a6c34bec22eb5e5fb"
+    },
+    "quant-company-slack-socket-1": {
+      "id": "c525852039debaceea4c952d8fb33ec22396c9f00b24b3034e0468decd0ed041",
+      "image_id": "sha256:98f271ded39ab7b24ec1b301555d6e181e14ac2cb44ca41c66976f7a3abd3ada",
+      "image": "quant-company:trend-window-20261008-3",
+      "running": true,
+      "memory_limit": 201326592,
+      "environment_sha256": "afa7d87dd10e78a310eed65f4291146a0b7b428f7fbf343ab8fad2831424753f"
+    },
+    "quant-company-tech-feed-worker-1": {
+      "id": "098acc4256c15df7de223f79a016d02a21cf79cc6655b73b29beae22c2c17770",
+      "image_id": "sha256:b0127f74ec7c5414e8c200eac32518cc38880911c8a9e8291aaca82d8603b813",
+      "image": "sha256:b0127f74ec7c5414e8c200eac32518cc38880911c8a9e8291aaca82d8603b813",
+      "running": true,
+      "memory_limit": 268435456,
+      "environment_sha256": "d2ac0ce51655f4e767b6bb365d23339fd32cf75c05d045c3514a483951b9b4ee"
+    },
+    "quant-company-account-gateway-1": {
+      "id": "605ba7e80268de106868da025737696f0cf5797f1ff5f89e7e0cdee2aa2c5dda",
+      "image_id": "sha256:d6b04a5bfc004bc1a24869ef61a0ec829895e823528b7fd9f24b786face0f650",
+      "image": "quant-company-command-help:04a465865cf18dbc3cf2fb1aaa4191f6ca7e55ac",
+      "running": true,
+      "memory_limit": 134217728,
+      "environment_sha256": "d4cde2c8314844c1955a0217c1daa59804d0c8a666a607c63d821b65c0b899bd"
+    },
+    "quant-company-quant-codex-runtime-1": {
+      "id": "7cf1bc8f1ca30533a46d10e11454ecf1fe47bfe95d2e963302f4664c1aed9887",
+      "image_id": "sha256:94d32ec482ea0ba9cfd7890ef9f13113403beec858380ab8e3205d7b400e8fa1",
+      "image": "quant-company-codex-upgrade:b77dc9511fb6aae2beff68df1c0ba7852bac6bd4-9d215e4309ac",
+      "running": true,
+      "memory_limit": 1073741824,
+      "environment_sha256": "e0c70fcd03efffedd68d474fcd22293aa02700804005484639204eec4e25479d"
+    },
+    "quant-company-quant-feed-worker-1": {
+      "id": "383235319c4c89abff43184354eda9348f9144eb1c1b9ac709bae9ea33406177",
+      "image_id": "sha256:05a3dab71ce4a0177342c0ec82a10f6b20c25aa9429217085e040207ecc516a9",
+      "image": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-2110d56b77c3",
+      "running": true,
+      "memory_limit": 268435456,
+      "environment_sha256": "868a8f5d4d12a2f8d61a92ba871200ba92bfaa65d42df1932cfeb0b31e86c7dd"
+    },
+    "quant-company-data-watch-worker-1": {
+      "id": "0035b399d40a6c0032e2f9d4bb5e15e180672676a08719af22265a50c00c9615",
+      "image_id": "sha256:9b2f758c58445594badac690c24de418282bfdbc8523c3c1e06b1613ba5440fc",
+      "image": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-2a2aff76ac41",
+      "running": true,
+      "memory_limit": 268435456,
+      "environment_sha256": "177306936ce6b95956f88304d96577e6cb44f81216410a20cd099b7bb8762c52"
+    },
+    "quant-company-postgres-1": {
+      "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+      "image_id": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "image": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "running": true,
+      "memory_limit": 268435456,
+      "environment_sha256": "77ae5beb7cab37b8fecb571e6d2383350a66b3ba22cb042ce7c6672e5c0f86ff"
+    }
+  },
+  "authority": {
+    "program_state": "active",
+    "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "mission_state": "active",
+    "mission_digest": "4d67e615bfdd78e686389735a66d0644259b771081cc4707019e4c7d972da737",
+    "revision": 5,
+    "project_status": "active",
+    "max_trials": 4,
+    "max_compute_seconds": 7200
+  },
+  "production_changed": false,
+  "preflight": {
+    "applied": false,
+    "attempt": 1,
+    "audit_verdict_applied": false,
+    "authority": "Existing owner deploy/continue requests; fixed repair reviewed in PR105 before effect",
+    "following_turn_id": "b6daf176-db00-562f-af41-8aee6f25d3c8",
+    "frozen_history_sha256": "a971162988db439cf53a9e57fb57caca2de26400bb53e28edcf6791309abbb3d",
+    "input_digest": "464e2cf41a145e875ed0c995bd2f0694c740fca03c4664d848a18ba8612cfa2f",
+    "lineage_equal_to_frozen_history": true,
+    "lineage_review_route": "All canonical lineage bytes retained in required audit/scope/history.json packets",
+    "manual_publication": false,
+    "mission_id": "2ce40574-6368-5cef-b706-b4e67441b3de",
+    "new_provider_calls": 0,
+    "new_scientific_jobs": 0,
+    "notes_characters": 8020,
+    "observed_at": "2026-10-14T00:13:50.214626+00:00",
+    "operation_id": "second-result-packet5-note-reconciliation:d2ea3e11:20261014",
+    "original_context_digest": "df4d751645f74b21a6aa6982bc6722d7bc34f72b4ef7ce7f1f91e2d3f43de9d1",
+    "original_hold": {
+      "diagnostic": "proposal_rejected:audit_packet_review_invalid",
+      "reason": "audit_runtime_requires_reconciliation"
+    },
+    "packet_digest": "a3f0e44e7094fb4bf9168c80d889ae94a9f9b62137f2b40c220578abc31e3ecb",
+    "previous_service_note_bound": 8000,
+    "program_digest": "c3ba5268d71c87bd2c6226160bc720498137bd291396a054970a1f1e7ebcf2db",
+    "program_id": "f7deaf96-e677-5afe-93d4-18ac387043bb",
+    "provider_thread_id": "01a132ff-42c2-7af2-9b0e-bbf2189c19ab",
+    "registered_scientific_commit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
+    "request_id": "53937d8b-aba9-5c9a-8858-47945b66b24e",
+    "request_response_packet_scope_and_budget_preserved": true,
+    "reviewed_service_note_bound": 24000,
+    "runtime_receipt_sha256": "ab126d331502c6a6144560125353e442750a88beceb6dd6fe42550209b24f602",
+    "schema_version": 1,
+    "source_rollout": "reviewed_single_file_note_bound_patch",
+    "stage_id": "d2ea3e11-20b4-5ddb-8b08-12dd55c26879",
+    "standalone_lineage_sha256": "d0a7ff4a8c474d4f89c9318851d575d9ce519351b00dce477b31e4c9f381dcb2",
+    "state": "actual_original_audit_response_verified_rolled_back",
+    "task_id": "77c4b39e-fc7e-57bb-bcc5-69d0b8675e51",
+    "qualified_mode": "preflight"
+  }
+}
