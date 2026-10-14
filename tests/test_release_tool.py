@@ -104,7 +104,7 @@ class FakeDocker:
     """Containers keyed by service; config hashes keyed by who renders (release or recorded files)."""
 
     def __init__(self, root, revision=SHA, wanted="new-hash", package=None, busy_turns=0):
-        self.root, self.calls, self.busy_turns = root, [], busy_turns
+        self.root, self.calls, self.busy_turns, self.calls_running = root, [], busy_turns, []
         self.revision, self.wanted = revision, wanted
         self.package = package if package is not None else {p.removeprefix("src/quant_company/"): blob(c)
                                                             for p, c in FILES.items() if p.startswith("src/")}
@@ -123,6 +123,8 @@ class FakeDocker:
         if args[:2] == ["docker", "inspect"]:
             service = args[2].removeprefix("quant-company-").removesuffix("-1")
             return json.dumps([self.containers[service]]) if service in self.containers else "[]"
+        if args[:2] == ["docker", "top"]:
+            return "PID COMMAND\n1 python uvicorn\n" + "".join(f"{n} {call}\n" for n, call in enumerate(self.calls_running))
         if args[:2] == ["docker", "exec"] and "psql" in args:
             return str(self.busy_turns) if "turns" in args[-1] else "0"
         if args[:2] == ["docker", "exec"]:
@@ -204,3 +206,38 @@ def test_activation_rewrites_only_release_pins(host, monkeypatch):
     assert "PINNED_COMPANY_WORKER_IMAGE=quant-company-autonomous:" + SHA in text
     assert not any(line.startswith("PINNED_CODEX_RUNTIME_IMAGE") for line in text)
     assert (release.RELEASES.parent / "current").resolve() == root.resolve()
+
+
+def test_running_receipts_count_only_when_recent_and_in_the_lane(tmp_path):
+    import os
+    import subprocess
+    import sys
+    import time
+    jobs = tmp_path / "jobs"
+    jobs.mkdir()
+    for name, state, age in [("stale-crash.json", "running", 13 * 86400), ("turn-1.json", "running", 30),
+                             ("turn-2.json", "complete", 30), ("news-1.json", "running", 30)]:
+        path = jobs / name
+        path.write_text(json.dumps({"state": state}))
+        os.utime(path, (time.time() - age, time.time() - age))
+    out = subprocess.run([sys.executable, "-c", release.RUNNING_JOBS, str(jobs), "1200", "news"],
+                         capture_output=True, text=True, check=True).stdout
+    assert out.strip() == "1"
+
+
+def test_runtime_quietness_comes_from_its_own_live_cli_processes(host):
+    root = prepared(host)
+    docker = FakeDocker(root)
+    assert release.busy("codex-runtime", runner=docker) == []
+    docker.calls_running = ["node /usr/local/bin/codex exec --ignore-user-config --ignore-rules"]
+    assert release.busy("codex-runtime", runner=docker) == ["model call running"]
+    assert release.busy("claude-runtime", runner=docker) == []  # a codex call is not a Claude call
+    docker.calls_running = ["/claude -p --safe-mode --model claude-opus-5-5"]
+    assert release.busy("claude-runtime", runner=docker) == ["model call running"]
+
+
+def test_services_may_follow_the_options(host, monkeypatch):
+    seen = {}
+    monkeypatch.setattr(release, "plan", lambda sha, services: seen.update(sha=sha, services=services) or [])
+    assert release.main(["plan", "--sha", SHA, "api", "worker"]) == 0
+    assert seen == {"sha": SHA, "services": ["api", "worker"]}
