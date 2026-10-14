@@ -1097,7 +1097,7 @@ def test_migration_updates_existing_phase_constraint(company):
     with company.db.transaction() as conn:
         conn.execute("ALTER TABLE brief_calls DROP CONSTRAINT brief_calls_phase_check")
         conn.execute("ALTER TABLE brief_calls ADD CONSTRAINT brief_calls_phase_check CHECK(phase IN ('search','write','review'))")
-    company.db.migrate()
+    company.db.migrate(force=True)  # an upgraded database: its recorded schema digest predates the new phases
     with company.db.transaction() as conn:
         definition = conn.execute("SELECT pg_get_constraintdef(oid) AS value FROM pg_constraint WHERE conrelid='brief_calls'::regclass AND conname='brief_calls_phase_check'").fetchone()["value"]
     assert "final_review" in definition and "revise" in definition
