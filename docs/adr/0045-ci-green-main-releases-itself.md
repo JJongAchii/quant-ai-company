@@ -21,6 +21,7 @@
 3. **대상은 CI를 통과한 main의 최신 커밋 하나다.**
    - GitHub에서는 Maintainer 앱으로 읽기 전용 토큰(contents, actions read)만 만든다. 이 토큰으로 `Quant Company CI`의 main push 성공 실행을 찾는다.
    - 그 커밋이 운영 커밋의 후손(`ahead`)일 때만 대상으로 삼는다.
+   - 릴리스 파일(deploy, src, pyproject.toml, uv.lock, .dockerignore)이 하나도 바뀌지 않았으면 반영하지 않고 `up_to_date`로 보고한다. 문서, 테스트, CI만 바뀐 병합으로 이미지 전체를 다시 빌드하고 컨테이너 17개를 교체하지 않기 위해서다.
    - 코드는 GitHub tarball로 받는다. pax 헤더의 커밋을 확인하고 빌드 입력(deploy, src, pyproject.toml, uv.lock, .dockerignore)만 푼다.
    - codeload 리디렉트에는 설치 토큰을 보내지 않는다.
 4. **스스로 할 수 없는 변경이면 멈추고 알린다.**
