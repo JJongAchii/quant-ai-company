@@ -47,16 +47,24 @@ def service(conn, company, owner):
 
 def report(conn, job, owner):
     """Follow a diagnostic's recorded case, never infer completion from the triage state."""
+    def finish(value):
+        value.update(progress_text(value, {}, _details=True))
+        if SECRET.search(json.dumps(value, default=str)):
+            value = {'request_id': str(job['id']), 'state': 'blocked',
+                     'error': 'report_contains_possible_secret'}
+            value.update(progress_text(value, {}, _details=True))
+        return as_json(value)
+
     current = job
     visited = set()
     while (next_id := current["receipt"].get("recheck_id") or current["receipt"].get("case_id")):
         if next_id in visited or len(visited) >= 6:
-            return {"request_id": str(job["id"]), "state": "blocked", "error": "case_link_requires_review"}
+            return finish({'request_id': str(job['id']), 'state': 'blocked', 'error': 'case_link_requires_review'})
         visited.add(next_id)
         linked = conn.execute("SELECT * FROM maintenance_jobs WHERE id=%s AND payload->'owners'=%s",
                               (next_id, Jsonb([owner]))).fetchone()
         if not linked:
-            return {"request_id": str(job["id"]), "state": "blocked", "error": "case_owner_scope_mismatch"}
+            return finish({'request_id': str(job['id']), 'state': 'blocked', 'error': 'case_owner_scope_mismatch'})
         current = linked
     finding = current["payload"].get("finding", {})
     from ..system_state import assessment
@@ -80,9 +88,7 @@ def report(conn, job, owner):
               "finding_is_current_fact": truth["disposition"] == "reproduced"}
     if truth["disposition"] in {"invalidated", "resolved"}:
         result["historical_finding"] = {k: result.pop(k) for k in ("problem", "hypothesis")}
-    if SECRET.search(json.dumps(result, default=str)):
-        return {"request_id": str(job["id"]), "state": "blocked", "error": "report_contains_possible_secret"}
-    return as_json(result)
+    return finish(result)
 
 
 def status(conn, company, project):
@@ -224,9 +230,79 @@ def record_source(conn, project, name, result):
     return identity
 
 
-def progress_text(value, runtime):
-    state, error = value["state"], value.get("error")
-    prefix = f"진단 요청 {value['request_id'][:8]}: "
+def progress_text(value, runtime, *, _details=False):
+    '''Report and legacy callers share one recorded-progress classification.'''
+    state, error = value['state'], value.get('error')
+    keys = ('stage', 'responsible_party', 'next_action', 'automatic_retry_allowed')
+    if _details or not all(key in value for key in keys):
+        stage, party, retry = state, 'maintainer', True
+        if (state == 'blocked' or error == 'review_reconciliation_required'
+                or 'uncertain' in (error or '').split('_')
+                or value.get('outcome') == 'operator_action_required'):
+            stage, party, retry = 'operator_reconciliation', 'operator', False
+            action = '원 요청·원 출력·runtime 영수증과 실패 기록을 대사합니다. 자동 재호출은 금지합니다.'
+        elif error == 'daily_model_budget':
+            stage = 'budget_wait'
+            action = '저장된 요청과 한도·초기화 기록을 확인하고 예산이 허용되면 같은 작업을 자동 재개합니다.'
+        elif error:
+            stage = 'temporary_wait'
+            action = '저장된 같은 작업과 오류 기록을 확인하고 그 작업을 이어갑니다.'
+        elif state == 'done':
+            stage, retry = 'diagnosis_complete', False
+            if value.get('title') or value.get('pr') or value.get('head'):
+                action = '종료된 진단과 기록된 후보·PR을 확인합니다. 실제 applied 기록 없이 수리 완료로 처리하지 않습니다.'
+            else:
+                action = '진단 기록을 확인합니다. 수정 후보가 없어 수리 완료로 처리하지 않습니다.'
+        elif state == 'applied':
+            party, retry = 'operator', False
+            action = '연결 작업에 기록된 운영 반영 결과를 확인합니다.'
+        elif state == 'pr_open':
+            party, retry = 'owner', False
+            action = '소유자가 정확한 후보 PR을 검토·승인합니다. 운영 반영에는 별도 승인이 필요합니다.'
+            pr = value.get('pr')
+            url = pr.get('url') if isinstance(pr, dict) else None
+            if isinstance(url, str) and url:
+                action += ' 기록된 PR URL: ' + url
+            else:
+                action += ' 기록된 PR URL이 없어 위치 확인이 필요합니다.'
+        elif state == 'closed':
+            party, retry = 'owner', False
+            action = '닫힌 PR과 연결된 진단 기록을 확인합니다. 운영 반영 완료로 간주하지 않습니다.'
+        elif state in {'review', 'triage'}:
+            stage = 'investigation'
+            action = '현재 커밋·운영 설정과 근거·실제 모델 입력을 조사합니다.'
+        else:
+            action = {
+                'patch': '고정된 성공 기준에 따라 최소 코드 수정과 의미 있는 회귀 시험을 작성합니다.',
+                'ci': '후보 head에 연결된 실제 CI 결과·영수증을 확인하고 실패 피드백으로 후보를 수리합니다.',
+                'publish': '검증 대상 후보를 확인하고 실제 CI 결과를 확보합니다.',
+                'pr': '후보 head와 CI 영수증을 확인하고 검토할 PR을 준비합니다.',
+                'evaluate': '동결된 입력으로 이전 실패·정상 경로·새 사례의 검증 결과를 비교합니다.',
+                'design': '기록된 미결 운영 결정과 보호 경계를 확인합니다.',
+            }.get(state, '저장된 진행 기록과 연결 근거를 확인해 다음 단계를 이어갑니다.')
+        details = {'stage': stage, 'responsible_party': party,
+                   'next_action': action, 'automatic_retry_allowed': retry}
+    else:
+        details = {key: value[key] for key in keys}
+    if _details:
+        return details
+    labels = {'maintainer': '개선봇', 'owner': '소유자', 'operator': '운영자'}
+    stages = {'investigation': '근거 조사', 'patch': '패치 작성', 'ci': 'CI 검증',
+              'pr_open': '소유자 검토·승인 대기', 'operator_reconciliation': '운영자 대사 필요',
+              'diagnosis_complete': '진단 종료', 'applied': '운영 반영 완료', 'closed': 'PR 종료',
+              'budget_wait': '예산 대기', 'temporary_wait': '일시 대기',
+              'publish': 'CI 준비', 'pr': 'PR 준비', 'evaluate': '비교 검증', 'design': '설계 검토'}
+    prefix = '진단 요청 {}: '.format(value['request_id'][:8])
+    prefix += '단계: {}. 담당: {}. 다음 행동: {}'.format(
+        stages.get(details['stage'], details['stage']),
+        labels.get(details['responsible_party'], details['responsible_party']),
+        details['next_action']) + chr(10)
+    if not details['automatic_retry_allowed']:
+        prefix += '자동 재호출 금지.' + chr(10)
+    if (details['stage'] == 'operator_reconciliation'
+            and error != 'review_reconciliation_required'
+            and (state != 'blocked' or error == 'daily_model_budget')):
+        return prefix + '기록된 불확실 결과는 운영자 대사가 필요합니다. 수정안·검증·PR·운영 반영 완료를 의미하지 않습니다.'
     if error == "daily_model_budget":
         if runtime.get("daily_model_call_cap") is None and runtime.get("company_daily_model_call_cap") is None:
             return prefix + "일일 한도 해제가 적용됐습니다. 저장된 요청을 최신 근거로 재개할 차례를 기다립니다."
@@ -240,8 +316,10 @@ def progress_text(value, runtime):
         return prefix + f"검증에서 멈췄습니다 ({error}). 수정 완료가 아닙니다. 근거와 실패 기록을 보존했으며 운영자 확인이 필요합니다."
     if error:
         return prefix + f"일시 대기 중입니다 ({error}). 같은 작업을 이어가며 결과를 이 스레드에 보고합니다."
-    if state == "done":
-        return prefix + "점검을 마쳤습니다. 결과: 수정 후보 없음. 수리·PR·운영 반영 기록은 없습니다. " + (value.get("reason") or "확인된 수정 후보가 없습니다.")[:1800]
+    if state == 'done':
+        if value.get('title') or value.get('pr') or value.get('head'):
+            return prefix + '진단이 종료됐습니다. 기록된 후보·PR이 있어도 수리·운영 반영 완료를 뜻하지 않습니다. ' + (value.get('reason') or '연결된 기록을 확인합니다.')[:1800]
+        return prefix + '점검을 마쳤습니다. 결과: 수정 후보 없음. 수리·PR·운영 반영 기록은 없습니다. ' + (value.get('reason') or '확인된 수정 후보가 없습니다.')[:1800]
     if state in {"pr_open", "applied", "closed"}:
         return prefix + {"pr_open": "검토할 PR이 준비됐습니다. 운영 반영에는 별도 승인이 필요합니다.",
                          "applied": "연결된 개선안의 반영이 완료됐습니다.", "closed": "연결된 PR이 닫혀 있습니다."}[state]
