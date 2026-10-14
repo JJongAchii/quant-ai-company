@@ -1,0 +1,190 @@
+{
+ "snapshot": {
+  "taken_kst": "2026-10-14 10:51-10:54",
+  "main": "eed730e (after #140)",
+  "host": "Lightsail 2 vCPU / 8 GiB",
+  "method": "read-only docker inspect/exec; package files hashed as git blobs inside each container; secret values never left the host (per-run salted digests only)"
+ },
+ "running_workflows": [
+  {
+   "type": "AccountControlWorkflow",
+   "queue": "quant-company-accounts",
+   "running": 1,
+   "oldest_start": "2026-10-14T01:44:16.102294+00:00",
+   "sample_ids": [
+    "company-model-accounts-v1"
+   ]
+  },
+  {
+   "type": "BriefCollectionWorkflow",
+   "queue": "quant-company-brief-collection",
+   "running": 1,
+   "oldest_start": "2026-10-14T01:24:29.509481+00:00",
+   "sample_ids": [
+    "company-brief-collection-v1"
+   ]
+  },
+  {
+   "type": "BriefDataWorkflow",
+   "queue": "quant-company-brief-data",
+   "running": 1,
+   "oldest_start": "2026-10-14T01:13:02.693534+00:00",
+   "sample_ids": [
+    "company-brief-data-v1"
+   ]
+  },
+  {
+   "type": "BriefEditorialWorkflow",
+   "queue": "quant-company-news-model",
+   "running": 1,
+   "oldest_start": "2026-10-14T01:48:25.316036+00:00",
+   "sample_ids": [
+    "company-brief-editorial-v1"
+   ]
+  },
+  {
+   "type": "DataWatchWorkflow",
+   "queue": "quant-company-data-watch",
+   "running": 1,
+   "oldest_start": "2026-10-14T01:25:49.251976+00:00",
+   "sample_ids": [
+    "company-data-watch-v1"
+   ]
+  },
+  {
+   "type": "HousingFeedWorkflow",
+   "queue": "quant-company-housing-feed",
+   "running": 1,
+   "oldest_start": "2026-10-13T23:06:21.520877+00:00",
+   "sample_ids": [
+    "company-housing-feed-v1"
+   ]
+  },
+  {
+   "type": "MaintenanceReportingWorkflow",
+   "queue": "quant-company-maintenance-reporting",
+   "running": 1,
+   "oldest_start": "2026-10-14T00:45:23.201241+00:00",
+   "sample_ids": [
+    "company-maintenance-reporting-v1"
+   ]
+  },
+  {
+   "type": "MaintenanceWorkflow",
+   "queue": "quant-company-maintenance",
+   "running": 1,
+   "oldest_start": "2026-10-13T21:33:59.452704+00:00",
+   "sample_ids": [
+    "company-maintenance-v1"
+   ]
+  },
+  {
+   "type": "NewsCollectionWorkflow",
+   "queue": "quant-company-news-collection",
+   "running": 1,
+   "oldest_start": "2026-10-14T01:42:20.610694+00:00",
+   "sample_ids": [
+    "company-news-collection-v1"
+   ]
+  },
+  {
+   "type": "NewsDiscoveryWorkflow",
+   "queue": "quant-company-news-model",
+   "running": 1,
+   "oldest_start": "2026-10-13T19:10:38.869727+00:00",
+   "sample_ids": [
+    "company-news-discovery-v1"
+   ]
+  },
+  {
+   "type": "NewsEditorialWorkflow",
+   "queue": "quant-company-news-model",
+   "running": 1,
+   "oldest_start": "2026-10-13T23:54:35.943222+00:00",
+   "sample_ids": [
+    "company-news-editorial-v1"
+   ]
+  },
+  {
+   "type": "QuantFeedCollectionWorkflow",
+   "queue": "quant-company-quant-collection",
+   "running": 1,
+   "oldest_start": "2026-10-14T01:14:00.517334+00:00",
+   "sample_ids": [
+    "company-quant-feed-collection-v1"
+   ]
+  },
+  {
+   "type": "QuantFeedEditorialWorkflow",
+   "queue": "quant-company-quant-model",
+   "running": 1,
+   "oldest_start": "2026-10-13T15:48:57.529754+00:00",
+   "sample_ids": [
+    "company-quant-feed-editorial-v1"
+   ]
+  },
+  {
+   "type": "ResearchWorkflow",
+   "queue": "quant-company-research",
+   "running": 1,
+   "oldest_start": "2026-10-14T01:39:06.557119+00:00",
+   "sample_ids": [
+    "company-research-reconciliation-v1"
+   ]
+  },
+  {
+   "type": "StaffDevelopmentWorkflow",
+   "queue": "quant-company",
+   "running": 1,
+   "oldest_start": "2026-10-14T01:40:46.572628+00:00",
+   "sample_ids": [
+    "company-staff-development-v1"
+   ]
+  },
+  {
+   "type": "TechFeedCollectionWorkflow",
+   "queue": "quant-company-tech-feed-dedicated",
+   "running": 1,
+   "oldest_start": "2026-10-13T16:30:31.777594+00:00",
+   "sample_ids": [
+    "company-tech-feed-collection-v1"
+   ]
+  },
+  {
+   "type": "TrendFeedCollectionWorkflow",
+   "queue": "quant-company-trend-collection",
+   "running": 1,
+   "oldest_start": "2026-10-14T01:23:49.273980+00:00",
+   "sample_ids": [
+    "company-trend-feed-collection-v1"
+   ]
+  },
+  {
+   "type": "TrendFeedEditorialWorkflow",
+   "queue": "quant-company-news-model",
+   "running": 1,
+   "oldest_start": "2026-10-14T01:32:49.231646+00:00",
+   "sample_ids": [
+    "company-trend-feed-editorial-v1"
+   ]
+  },
+  {
+   "type": "TrendFeedPublicationWorkflow",
+   "queue": "quant-company-trend-collection",
+   "running": 1,
+   "oldest_start": "2026-10-14T01:53:19.557949+00:00",
+   "sample_ids": [
+    "company-trend-feed-publication-v2"
+   ]
+  },
+  {
+   "type": "VideoWorkflow",
+   "queue": "quant-company-video",
+   "running": 1,
+   "oldest_start": "2026-10-14T01:10:12.714863+00:00",
+   "sample_ids": [
+    "company-video-v1"
+   ]
+  }
+ ]
+}
