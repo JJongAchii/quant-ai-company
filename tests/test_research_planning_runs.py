@@ -13,6 +13,7 @@ from quant_company.research.planning_store import QuestionStore
 from quant_company.research.runner import ResearchRunner
 
 from .test_research_conditional import conditional  # noqa: F401
+from .test_research_missions import Harness
 from .test_research_planning_contracts import candidate
 from .test_research_planning_questions import approve, spec
 from .test_research_programs import program  # noqa: F401
@@ -299,3 +300,29 @@ def test_maintenance_intake_reports_planning_output_hold(planning):
         rows = failure_observations(conn, h.company, "UHUMAN", now() - timedelta(hours=1))
     found = [row for row in rows if row["detail"].get("planning_run_id") == str(stage["planning_run_id"])]
     assert found and found[0]["detail"]["error"] == "planning_output_contract"
+
+
+@pytest.fixture
+def empty_planning(research):
+    research.settings.research_planning_enabled = True
+    research.settings.research_planning_stages_enabled = True
+    h = Harness(research)
+    with research.db.transaction() as conn:
+        project = research._project(conn, h.project["project_id"])
+        h.question = QuestionStore(research).draft(conn, project, spec(), actor="director")
+    approve(h, h.question)
+    with research.db.transaction() as conn:
+        # Same as the program fixtures: owner turns would otherwise outrank the planning stage.
+        conn.execute("UPDATE turns SET status='stale'")
+        conn.execute("UPDATE tasks SET status='completed'")
+    return h
+
+
+def test_question_without_sources_runs_and_completes_empty(empty_planning):
+    # A project without literature or references is a likely first question.
+    h = empty_planning
+    assert PlanningController(h.company).tick()["state"] == "running"
+    stage = planning_stage(h)
+    assert stage["context"]["allowed_source_ids"] == [] and stage["context"]["evidence_sources"] == []
+    complete(h, read_all(h, stage, queued_turn(h, stage["task_id"])), slate(reason="The evidence set has no sources"))
+    assert PlanningController(h.company).tick()["run_state"] == "completed"
