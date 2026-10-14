@@ -325,6 +325,9 @@ def test_auto_holds_what_needs_a_new_render_image_or_an_operator(auto_host, chan
     assert status["action"] == action
     if action == "render_required":
         assert status["render_files"] == list(change)
+        configure(VIDEO_RENDER_ACCEPTED=SHA)  # the operator reviewed these files: they cannot change rendering
+        status = release.auto(FakeGitHub({**FILES, **RENDER, **change}), runner=no_docker, now=IN_WINDOW)
+        assert status["action"] == "would_release" and status["render"]["accepted"] == SHA
 
 
 def test_auto_waits_for_window_quiet_and_a_clean_production(auto_host, monkeypatch):

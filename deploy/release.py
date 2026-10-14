@@ -557,6 +557,8 @@ KST = timezone(timedelta(hours=9))
 # The Fargate render task (`video render-task`) runs its own image (deploy/Dockerfile.render). The modules it imports,
 # its design assets, that image, its template and the dependencies must match the render image's commit
 # (VIDEO_RENDER_COMMIT). A change needs a new image and task definition, which the operator makes with owner approval.
+# An operator who reviews the reported files and finds they cannot change rendering (a shared module the task imports
+# for other names) records that commit as VIDEO_RENDER_ACCEPTED; later commits are compared with it instead.
 RENDER_ENTRY = "quant_company.video.remote"
 RENDER_FILES = ("deploy/Dockerfile.render", "deploy/render.json", "pyproject.toml", "uv.lock")
 RENDER_ASSETS = "src/quant_company/video/design/"
@@ -885,7 +887,7 @@ def release_to(status, target, previous, values, runner=run):
             progress_file().unlink(missing_ok=True)
         return {**status, "action": "failed", "failed_commit": target, "detail": detail, "restored": restored}
     progress_file().unlink(missing_ok=True)
-    pruned = prune(protect={values.get("VIDEO_RENDER_COMMIT")}, runner=runner)
+    pruned = prune(protect={values.get("VIDEO_RENDER_COMMIT"), values.get("VIDEO_RENDER_ACCEPTED")}, runner=runner)
     return {**status, "action": "released", "current": target, "target": None, "failed_commit": None, "drift": [],
             "step": None, "released": {"commit": target, "services": released,
                                        "finished_at": datetime.now(UTC).isoformat(timespec="seconds")},
@@ -926,15 +928,17 @@ def decide(status, previous, values, now, github, runner=run):
             return {**status, "action": "refused",
                     "detail": f"{target[:12]} is {order['status']} of the running release"}
         render_commit = values.get("VIDEO_RENDER_COMMIT") or current
-        root = fetch(target, github, protect={render_commit}, runner=runner)
+        render_base = values.get("VIDEO_RENDER_ACCEPTED") or render_commit
+        root = fetch(target, github, protect={render_commit, render_base}, runner=runner)
         if not (difference := changed(root_of(current), root)):  # docs or tests only: production runs the same files
             return {**status, "action": "drift" if status["drift"] else "up_to_date", "target": None,
                     "detail": f"main {target[:12]} changes no file a release deploys"}
         status["operator_files"] = operator_changes(difference)
-        base = root_of(current) if render_commit == current else fetch(render_commit, github, {target}, runner)
+        base = root_of(current) if render_base == current else fetch(render_base, github, {target, render_commit}, runner)
         if render := render_changes(changed(base, root), [base, root]):
+            whose = "the render image's commit" if render_base == render_commit else "the commit accepted for the render image"
             return {**status, "action": "render_required", "render_files": render[:20],
-                    "detail": f"{len(render)} render files differ from the render image's commit {render_commit[:12]}"}
+                    "detail": f"{len(render)} render files differ from {whose} {render_base[:12]}"}
         check_release(root_of(current), root, target, runner=runner)
         if previous.get("failed_commit") == target:
             return {**status, "action": "held_after_failure",
@@ -966,7 +970,7 @@ def auto(github=None, runner=run, now=None, retry=False):
         status = {"checked_at": now.isoformat(timespec="seconds"),
                   "mode": "release" if values.get("RELEASE_AUTO_ENABLED") == "true" else "report",
                   "current": (RELEASES.parent / "current").resolve().name,
-                  "render": {"commit": values.get("VIDEO_RENDER_COMMIT"),
+                  "render": {"commit": values.get("VIDEO_RENDER_COMMIT"), "accepted": values.get("VIDEO_RENDER_ACCEPTED"),
                              "task_definition": values.get("VIDEO_RENDER_TASK_DEFINITION")},
                   "failed_commit": previous.get("failed_commit")}
         try:
