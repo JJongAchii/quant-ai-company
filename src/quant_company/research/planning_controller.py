@@ -13,6 +13,7 @@ from .missions import typed
 from .planning_contracts import PLANNING_LIMITS, GapRequest, PlanningSlate, engine_card, task_proposal
 from .planning_retrieval import POLICY_DIGEST, freeze
 from .planning_store import open_gap
+from .planning_triage import triage
 from .program_contracts import ResearchProgram
 
 SLATE_INSTRUCTION = (
@@ -264,4 +265,38 @@ class PlanningController:
         return {"state": "running", "stage_id": identity, "attempt": attempt}
 
     def _consume(self, conn, run, row):
-        raise PolicyError("Planning stage consumption is added in Task 5")
+        if row["stage"] != "planning_slate":
+            raise PolicyError("Unknown planning stage")
+        value = PlanningSlate.model_validate(row["result"])
+        evidence = conn.execute("SELECT * FROM research_evidence_sets WHERE id=%s", (run["evidence_set_id"],)).fetchone()
+        admission = {member["source_id"] for member in evidence["members"] if member["full_text"]}
+        for ordinal, candidate in enumerate(value.candidates, start=1):
+            payload = candidate.model_dump(mode="json")
+            bound = run["program_id"] is not None and candidate.envelope is not None
+            candidate_id = stable(f"planning-candidate:{run['id']}:{ordinal}")
+            conn.execute("""INSERT INTO research_planning_candidates(id,run_id,ordinal,payload,digest,task_digest,
+                stage_id,attempt) VALUES(%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING""",
+                (candidate_id, run["id"], ordinal, Jsonb(payload), fingerprint(payload),
+                 fingerprint(task_proposal(candidate).model_dump(mode="json")) if bound else None,
+                 row["id"], row["attempt"]))
+            result = triage(self.company, conn, payload, admission=admission,
+                            program_id=run["program_id"] if bound else None, evidence_set_digest=evidence["digest"])
+            review = result.model_dump(mode="json")
+            conn.execute("""INSERT INTO research_planning_reviews(id,run_id,candidate_id,kind,payload,digest,stage_id,
+                attempt) VALUES(%s,%s,%s,'triage',%s,%s,%s,%s) ON CONFLICT DO NOTHING""",
+                (stable(f"planning-triage:{candidate_id}"), run["id"], candidate_id, Jsonb(review),
+                 fingerprint(review), row["id"], row["attempt"]))
+            for check in result.checks:
+                if check.gap is not None:
+                    open_gap(conn, run["project_id"], check.gap, dependency_fingerprint=fingerprint(result.basis),
+                             question_id=run["question_id"], evidence_set_id=run["evidence_set_id"],
+                             run_id=run["id"], candidate_id=candidate_id)
+        state, outcome = ("completed", "no_candidate") if not value.candidates else ("triaged", None)
+        conn.execute("UPDATE research_mission_stages SET state='completed',updated_at=now() WHERE id=%s", (row["id"],))
+        conn.execute("UPDATE research_planning_runs SET state=%s,outcome=%s,updated_at=now() WHERE id=%s",
+                     (state, outcome, run["id"]))
+        conn.execute("UPDATE research_questions SET state='waiting',updated_at=now() WHERE id=%s AND state='open'",
+                     (run["question_id"],))
+        self.company._event(conn, "research_planning_slate_recorded", {"run_id": str(run["id"]),
+            "candidates": len(value.candidates), "run_state": state}, run["project_id"])
+        return {"state": "completed", "run_state": state}

@@ -180,3 +180,49 @@ def test_turn_cap_holds_the_stage_with_a_gap(planning, monkeypatch):
         gap = conn.execute("SELECT kind FROM research_gaps WHERE run_id=%s", (stage["planning_run_id"],)).fetchone()
     assert held["context"]["_planning_hold"]["reason"] == "planning_read_budget_exhausted"
     assert gap["kind"] == "read_budget"
+
+
+def counts(h):
+    with h.company.db.transaction() as conn:
+        return {table: conn.execute(f"SELECT count(*) AS n FROM {table}").fetchone()["n"]
+                for table in ("outbox", "research_program_tasks", "research_jobs")}
+
+
+def test_received_slate_records_candidates_and_triage_without_program_effects(planning):
+    h = planning
+    before = counts(h)
+    PlanningController(h.company).tick()
+    stage = planning_stage(h)
+    complete(h, read_all(h, stage, queued_turn(h, stage["task_id"])), slate(candidate()))
+    assert PlanningController(h.company).tick() == {"state": "completed", "run_state": "triaged"}
+    with h.company.db.transaction() as conn:
+        row = conn.execute("SELECT * FROM research_planning_candidates").fetchone()
+        review = conn.execute("SELECT payload FROM research_planning_reviews WHERE candidate_id=%s AND kind='triage'",
+                              (row["id"],)).fetchone()
+        question = conn.execute("SELECT state FROM research_questions WHERE id=%s", (h.question["id"],)).fetchone()
+    assert row["ordinal"] == 1 and row["task_digest"] and review["payload"]["outcome"] == "eligible"
+    assert question["state"] == "waiting"
+    assert counts(h) == before
+
+
+def test_empty_slate_completes_without_candidates(planning):
+    h = planning
+    PlanningController(h.company).tick()
+    stage = planning_stage(h)
+    complete(h, read_all(h, stage, queued_turn(h, stage["task_id"])), slate(reason="No candidate is justified"))
+    assert PlanningController(h.company).tick()["run_state"] == "completed"
+    with h.company.db.transaction() as conn:
+        run = conn.execute("SELECT state,outcome FROM research_planning_runs").fetchone()
+    assert (run["state"], run["outcome"]) == ("completed", "no_candidate")
+
+
+def test_failed_triage_opens_a_linked_gap(planning):
+    h = planning
+    PlanningController(h.company).tick()
+    stage = planning_stage(h)
+    complete(h, read_all(h, stage, queued_turn(h, stage["task_id"])),
+             slate(candidate(execution_timing="same_day_close_fill")))
+    PlanningController(h.company).tick()
+    with h.company.db.transaction() as conn:
+        gap = conn.execute("SELECT kind,resolver,candidate_id FROM research_gaps WHERE run_id IS NOT NULL").fetchone()
+    assert (gap["kind"], gap["resolver"]) == ("execution_timing", "owner") and gap["candidate_id"]
