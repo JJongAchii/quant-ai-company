@@ -1,13 +1,16 @@
 """Planning runs on the existing research_stage machinery. Shadow only; no program effects."""
 
 import hashlib
+from types import SimpleNamespace
 
 from psycopg.types.json import Jsonb
+from pydantic import ValidationError
 
 from ..company import PolicyError, fingerprint, stable
+from .library import verify_citations
 from .mission_backend import MissionBackend
 from .missions import typed
-from .planning_contracts import PLANNING_LIMITS, GapRequest, PlanningSlate, engine_card
+from .planning_contracts import PLANNING_LIMITS, GapRequest, PlanningSlate, engine_card, task_proposal
 from .planning_retrieval import POLICY_DIGEST, freeze
 from .planning_store import open_gap
 from .program_contracts import ResearchProgram
@@ -60,6 +63,68 @@ def hold_stage(company, conn, row, reason):
     company._event(conn, "research_planning_stage_held", {"stage_id": str(row["id"]), "run_id": str(run["id"]),
         "reason": reason, "attempt": row["attempt"], "scope": "Operational planning hold; no research judgment."},
         run["project_id"])
+
+
+def continue_stage(company, conn, row, task):
+    """Open the next turn of this attempt unless its per-attempt turn cap is reached."""
+    limit = STAGE_TURNS.get(row["stage"])
+    if row.get("planning_run_id") and limit is not None and task["turn_count"] >= limit:
+        hold_stage(company, conn, row, "planning_read_budget_exhausted")
+        return False
+    company._new_turn(conn, task)
+    return True
+
+
+def validate_slate(company, conn, row, value):
+    slate = PlanningSlate.model_validate(value)
+    context = row["context"]
+    allowed = set(context["allowed_source_ids"])
+    envelopes = {item["name"] for item in context.get("allowed_envelopes", [])}
+    predecessors = set(context.get("allowed_predecessor_mission_ids", []))
+    digests = set()
+    for candidate in slate.candidates:
+        digest = fingerprint(candidate.model_dump(mode="json"))
+        if digest in digests:
+            raise PolicyError("Slate repeats a candidate")
+        digests.add(digest)
+        refs = candidate.contradiction_search.refs
+        outside = sorted((set(candidate.source_ids) | {ref.source_id for ref in refs}) - allowed)
+        if outside:
+            raise PolicyError("Candidate cites sources outside this evidence set: " + ", ".join(outside[:5]))
+        if candidate.envelope is not None and candidate.envelope not in envelopes:
+            raise PolicyError("Candidate selects an envelope outside allowed_envelopes")
+        if {str(item) for item in candidate.predecessor_mission_ids} - predecessors:
+            raise PolicyError("Candidate cites a predecessor outside allowed_predecessor_mission_ids")
+        verify_citations(conn, candidate)
+        if refs:
+            verify_citations(conn, SimpleNamespace(source_ids=sorted({ref.source_id for ref in refs}), citations=refs))
+        if candidate.envelope is not None:
+            task_proposal(candidate)
+    return slate
+
+
+def review_output(company, conn, row, task, turn, response, value):
+    """Return a commit result when the planning output is rejected; None when it is valid."""
+    try:
+        validate_slate(company, conn, row, value)
+        return None
+    except (PolicyError, ValidationError) as exc:
+        detail = ("; ".join(f"{'.'.join(map(str, item['loc']))}: {item['msg']}"
+                            for item in exc.errors(include_input=False))
+                  if isinstance(exc, ValidationError) else str(exc))
+    count = row["context"].get("_output_rejections", 0) + 1
+    context = {**row["context"], "_output_rejections": count}
+    current = {**row, "context": context}
+    conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                 (Jsonb(response.model_dump(mode="json")), turn["id"]))
+    if count < PLANNING_LIMITS["attempts"]:
+        conn.execute("UPDATE research_mission_stages SET context=%s,error=%s,updated_at=now() WHERE id=%s",
+                     (Jsonb(context), "planning_output_rejected: " + detail[:600], row["id"]))
+        if not continue_stage(company, conn, current, task):
+            return {"state": "completed", "planning_held": True}
+        return {"state": "completed", "planning_output_rejected": True}
+    hold_stage(company, conn, current, "planning_output_contract")
+    return {"state": "completed", "planning_held": True}
 
 
 class PlanningController:

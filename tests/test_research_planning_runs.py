@@ -1,13 +1,17 @@
 """Planning runs on real PostgreSQL; synthetic employees through fixture responses, no model calls."""
 
+import json
+
 import psycopg
 import pytest
 
 from quant_company.config import Settings
+from quant_company.contracts import AgentDecision, ProviderResponse
 from quant_company.research.planning_controller import PlanningController
 from quant_company.research.planning_store import QuestionStore
 
 from .test_research_conditional import conditional  # noqa: F401
+from .test_research_planning_contracts import candidate
 from .test_research_planning_questions import approve, spec
 from .test_research_programs import program  # noqa: F401
 
@@ -81,3 +85,98 @@ def test_disabled_stages_start_nothing(planning):
     planning.company.settings.research_planning_stages_enabled = False
     assert PlanningController(planning.company).tick() == {"state": "disabled"}
     assert planning_stage(planning) is None
+
+
+def respond(h, turn_id, **decision):
+    h.company.prepare_turn(turn_id)
+    return h.company.commit_turn(turn_id, ProviderResponse(request_id=turn_id, provider="fixture",
+                                                           decision=AgentDecision(say="", **decision)))
+
+
+def read(h, turn_id, path, offset=0):
+    respond(h, turn_id, status="continue", tools=[{"name": "research_control", "arguments": {
+        "action": "read_stage_file", "path": path, "offset": offset}}])
+    with h.company.db.transaction() as conn:
+        task = conn.execute("SELECT task_id FROM turns WHERE id=%s", (turn_id,)).fetchone()["task_id"]
+    return queued_turn(h, task)
+
+
+def read_all(h, stage, turn_id):
+    paths = [*stage["context"]["required_planning_reads"], *[s["file"] for s in stage["context"]["evidence_sources"]]]
+    for path in paths:
+        offset = 0
+        while offset is not None:
+            turn_id = read(h, turn_id, path, offset)
+            with h.company.db.transaction() as conn:
+                offset = conn.execute("""SELECT next_offset FROM research_stage_reads WHERE stage_id=%s AND path=%s
+                    ORDER BY character_offset DESC LIMIT 1""", (stage["id"], path)).fetchone()["next_offset"]
+    return turn_id
+
+
+def slate(*candidates, reason=None):
+    return {"candidates": list(candidates), "no_candidate_reason": reason, "reading_notes": "Read question, cards, original"}
+
+
+def complete(h, turn_id, value):
+    return respond(h, turn_id, status="complete", artifacts=[{"title": "slate", "content": json.dumps(value)}])
+
+
+def test_slate_prompt_is_native_and_scoped(planning):
+    h = planning
+    PlanningController(h.company).tick()
+    stage = planning_stage(h)
+    prepared = h.company.prepare_turn(queued_turn(h, stage["task_id"]))
+    assert prepared["request"]["output_contract"] == "research_stage_v1"
+    prompt = prepared["request"]["prompt"]
+    assert "STAGE: planning_slate" in prompt and "action=read" in prompt
+    data = json.loads(prompt.split("MISSION DATA JSON:\n", 1)[1])
+    assert data["allowed_source_ids"] == ["fixture:baseline"] and "PlanningCandidate" in json.dumps(data["output_schema"])
+
+
+def test_slate_needs_planning_reads_and_complete_cited_originals(planning):
+    h = planning
+    PlanningController(h.company).tick()
+    stage = planning_stage(h)
+    turn = queued_turn(h, stage["task_id"])
+    assert complete(h, turn, slate(candidate()))["incomplete_planning_read"]
+    turn = read_all(h, stage, queued_turn(h, stage["task_id"]))
+    complete(h, turn, slate(candidate()))
+    assert planning_stage(h)["state"] == "received"
+
+
+def test_invalid_slate_corrects_in_attempt_then_holds(planning):
+    h = planning
+    PlanningController(h.company).tick()
+    stage = planning_stage(h)
+    turn = read_all(h, stage, queued_turn(h, stage["task_id"]))
+    outside = candidate(envelope="not-approved")
+    for _ in range(2):
+        assert complete(h, turn, slate(outside))["planning_output_rejected"]
+        turn = queued_turn(h, stage["task_id"])
+    assert complete(h, turn, slate(outside))["planning_held"]
+    with h.company.db.transaction() as conn:
+        held = conn.execute("SELECT state,context FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
+        gap = conn.execute("SELECT kind,resolver FROM research_gaps WHERE run_id=%s", (stage["planning_run_id"],)).fetchone()
+        run = conn.execute("SELECT state,hold_reason FROM research_planning_runs").fetchone()
+    assert held["state"] == "waiting" and held["context"]["_planning_hold"]["reason"] == "planning_output_contract"
+    assert (gap["kind"], gap["resolver"]) == ("output_contract", "operator")
+    assert (run["state"], run["hold_reason"]) == ("held", "planning_output_contract")
+
+
+def test_turn_cap_holds_the_stage_with_a_gap(planning, monkeypatch):
+    import quant_company.research.planning_controller as controller
+
+    h = planning
+    monkeypatch.setitem(controller.STAGE_TURNS, "planning_slate", 2)
+    PlanningController(h.company).tick()
+    stage = planning_stage(h)
+    turn = read(h, queued_turn(h, stage["task_id"]), "planning/question.json")
+    # The same chunk again is answered without a new read; the cap still counts the turn.
+    respond(h, turn, status="continue", tools=[{"name": "research_control", "arguments": {
+        "action": "read_stage_file", "path": "planning/question.json", "offset": 0}}])
+    assert queued_turn(h, stage["task_id"]) is None
+    with h.company.db.transaction() as conn:
+        held = conn.execute("SELECT context FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
+        gap = conn.execute("SELECT kind FROM research_gaps WHERE run_id=%s", (stage["planning_run_id"],)).fetchone()
+    assert held["context"]["_planning_hold"]["reason"] == "planning_read_budget_exhausted"
+    assert gap["kind"] == "read_budget"

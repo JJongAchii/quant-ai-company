@@ -732,7 +732,7 @@ class Company:
 
                     role, prompt = stage_prompt(self, conn, task, turn)
                     stage = _stage(conn, task["id"])
-                    if stage["stage"] == "program_data":
+                    if stage["stage"] == "program_data" or stage["planning_run_id"] is not None:
                         output_contract = "research_stage_v1"
                     if enabled(stage):
                         session = session_for(conn, stage, turn)

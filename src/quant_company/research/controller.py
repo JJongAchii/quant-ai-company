@@ -260,8 +260,11 @@ def stage_prompt(company, conn, task, turn=None):
     from ..model_policy import effective_role
     from ..staff.packs import coaching, employee_pack
 
+    from .planning_controller import PLANNING_STAGES, planning_role
+
     row = _stage(conn, task["id"])
-    role = stage_role(company, row["actor"])
+    role = (planning_role(company, row["actor"]) if row["stage"] in PLANNING_STAGES
+            else stage_role(company, row["actor"]))
     if company.settings.model_assignments_enabled:
         role = effective_role(company, conn, role.id, task=task)
         if turn and row["stage"] == "audit" and turn["sequence"] > 1:
@@ -343,6 +346,7 @@ def stage_prompt(company, conn, task, turn=None):
         "fills, deployment readiness or untouched 2026 confirmation. Never promote its scope in prose.")
     for stage in instructions:
         instructions[stage] += scope_instruction
+    instructions.update({key: value[2] for key, value in PLANNING_STAGES.items()})
     policy = row["context"].get("mission", {}).get("spec", {}).get("data", {}).get("policy")
     if policy:
         instructions[row["stage"]] += (
@@ -429,6 +433,8 @@ def stage_prompt(company, conn, task, turn=None):
         from .program_contracts import MeaningReview
 
         output_type = MeaningReview
+    if row["stage"] in PLANNING_STAGES:
+        output_type = PLANNING_STAGES[row["stage"]][1]
     if row["context"].get("mission", {}).get("program_id"):
         if row["stage"] in {"proposal", "challenge", "selection"}:
             context["stage_capabilities"] = {
@@ -586,7 +592,7 @@ def stage_prompt(company, conn, task, turn=None):
         "read_path=<exact available path>, read_offset=<0 or exact continuation>, artifact_json=null. "
         "For completion return action=complete, read_path=null, read_offset=null and artifact_json as a string "
         "encoding exactly one JSON object matching output_schema. Do not return AgentDecision or tools. "
-        if row["stage"] == "program_data" else
+        if row["stage"] == "program_data" or row["stage"] in PLANNING_STAGES else
         "Complete with exactly one artifact whose content is a JSON object and status=complete. "
         "If evidence is needed, request exactly one file chunk in that turn: use one research_control tool only, "
         "with no artifact or second tool, and status=continue. Never batch file reads. Use "
@@ -632,6 +638,12 @@ def stage_prompt(company, conn, task, turn=None):
 def commit_stage(company, conn, project, task, turn, response: ProviderResponse):
     row = _stage(conn, task["id"])
     from .audit_delivery import commit_review, enabled, packet_data
+    from .planning_controller import PLANNING_STAGES, continue_stage, review_output
+
+    def advance():
+        if continue_stage(company, conn, row, task):
+            return None
+        return {"state": "completed", "planning_held": True}
 
     decision = response.decision
     if (decision.say.strip() or decision.delegations or decision.messages or decision.memories or decision.follow_up):
@@ -685,7 +697,8 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
                          (error, row["id"]))
             conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
                          (Jsonb(response.model_dump(mode="json")), turn["id"]))
-            company._new_turn(conn, task)
+            if (held := advance()) is not None:
+                return held
             return {"state": "completed", "duplicate_read": True}
         conn.execute("""INSERT INTO research_stage_reads(id,stage_id,attempt,path,character_offset,content,next_offset,sha256)
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""", (stable("stage-read:" + str(turn["id"])), row["id"], row["attempt"],
@@ -693,7 +706,8 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         conn.execute("UPDATE research_mission_stages SET error=NULL,updated_at=now() WHERE id=%s", (row["id"],))
         conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
                      (Jsonb(response.model_dump(mode="json")), turn["id"]))
-        company._new_turn(conn, task)
+        if (held := advance()) is not None:
+            return held
         return {"state": "completed"}
     if decision.status != "complete" or len(decision.artifacts) != 1:
         raise PolicyError("Research stage requires exactly one complete structured artifact")
@@ -740,7 +754,19 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
         if not conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
             AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():
             raise PolicyError("Independent technical review requires the actual bound artifacts")
-    if row.get("program_id") or row["context"].get("mission", {}).get("program_id"):
+    for path in row["context"].get("required_planning_reads", []):
+        if conn.execute("""SELECT 1 FROM research_stage_reads WHERE stage_id=%s AND attempt=%s
+            AND path=%s AND next_offset IS NULL""", (row["id"], row["attempt"], path)).fetchone():
+            continue
+        hint = f"planning_read_required:{path};read_it_completely"
+        if row["error"] != hint:
+            conn.execute("UPDATE research_mission_stages SET error=%s,updated_at=now() WHERE id=%s", (hint, row["id"]))
+            conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
+                         (Jsonb(response.model_dump(mode="json")), turn["id"]))
+            return advance() or {"state": "completed", "incomplete_planning_read": True}
+        raise PolicyError("Planning stage requires complete reads of its required files")
+    if (row.get("program_id") or row.get("planning_run_id")
+            or row["context"].get("mission", {}).get("program_id")):
         # Each cited original must actually have reached this provider attempt. An index,
         # previous employee's summary or old attempt's receipt is not a read receipt.
         cited = value.get("source_ids", [])
@@ -750,6 +776,12 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
             cited = sorted({source for response in value.get("responses", []) for source in response.get("source_ids", [])})
         if row["stage"] == "program_selection":
             cited = row["context"]["task"]["proposal"]["source_ids"]
+        if row["stage"] == "planning_slate":
+            cited = sorted({source for item in value.get("candidates", []) if isinstance(item, dict)
+                            for source in [*item.get("source_ids", []),
+                                           *[ref.get("source_id") for ref in
+                                             (item.get("contradiction_search") or {}).get("refs", [])
+                                             if isinstance(ref, dict)]]})
         paths = {entry["source_id"]: entry["file"] for entry in row["context"].get("evidence_sources", [])}
         for source in cited:
             if not isinstance(source, str) or source not in paths:
@@ -779,9 +811,14 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
                              (hint, row["id"]))
                 conn.execute("UPDATE turns SET status='completed',response=%s,updated_at=now() WHERE id=%s",
                              (Jsonb(response.model_dump(mode="json")), turn["id"]))
-                company._new_turn(conn, task)
+                if (held := advance()) is not None:
+                    return held
                 return {"state": "completed", "incomplete_source": True}
             raise PolicyError("Cited source has not been read completely in this employee attempt")
+    if row["stage"] in PLANNING_STAGES:
+        rejected = review_output(company, conn, row, task, turn, response, value)
+        if rejected is not None:
+            return rejected
     if row["stage"] == "program_proposal":
         from .programs import ProgramStore
 
