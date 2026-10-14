@@ -105,7 +105,7 @@ class FakeDocker:
     """Containers keyed by service; config hashes keyed by who renders (release or recorded files)."""
 
     def __init__(self, root, revision=SHA, wanted="new-hash", package=None, busy_turns=0):
-        self.root, self.calls, self.busy_turns, self.calls_running = root, [], busy_turns, []
+        self.root, self.calls, self.busy_turns, self.calls_running, self.windows = root, [], busy_turns, [], []
         self.revision, self.wanted = revision, wanted
         self.package = package if package is not None else {p.removeprefix("src/quant_company/"): blob(c)
                                                             for p, c in FILES.items() if p.startswith("src/")}
@@ -135,6 +135,8 @@ class FakeDocker:
             return "".join(f"{s} {hashed}\n" for s in (list(self.containers) if args[-1] == "*" else [args[-1]]))
         if "up" in args:
             service = args[-1]
+            window = release.STATE / "ops/deploy-window.json"
+            self.windows.append(json.loads(window.read_text())["services"] if window.exists() else None)
             if str(self.root) in " ".join(args):
                 self.containers[service] = self.container(self.revision, self.wanted, "quant-company:" + SHA)
             else:
@@ -149,6 +151,7 @@ def test_apply_recreates_one_quiet_service_and_verifies_commit_config_and_packag
     record = release.apply(SHA, ["api"], runner=docker, sleep=lambda s: None)
     entry = record["services"][0]
     assert entry["result"] == "released" and entry["rollback_exact"]
+    assert docker.windows == [["api"]] and not (release.STATE / "ops/deploy-window.json").exists()
     up = next((args, env) for args, env in docker.calls if "up" in args)
     assert str(root) in " ".join(up[0]) and up[1]["RELEASE_COMMIT"] == SHA
     assert any(path.name.endswith(SHA[:12] + ".json") for path in (release.STATE / "release-journal").iterdir())
@@ -168,6 +171,7 @@ def test_apply_rolls_a_service_back_to_its_recorded_files_when_it_does_not_settl
     assert docker.containers["api"]["Config"]["Labels"]["com.docker.compose.config-hash"] == "old-hash"
     journal = next((release.STATE / "release-journal").iterdir())
     assert json.loads(journal.read_text())["services"][0]["rolled_back"] is True
+    assert docker.windows == [["api"], ["api"]] and not (release.STATE / "ops/deploy-window.json").exists()
 
 
 def test_apply_waits_for_a_running_turn_and_skips_an_unchanged_service(host):

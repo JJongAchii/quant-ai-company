@@ -422,6 +422,18 @@ def migrate(sha, runner=run):
         return compose(root, sha, "run", "--rm", "--no-deps", "-T", "api", "quant-company", "migrate", runner=runner)
 
 
+def deploy_window(sha, service, minutes=10):
+    """Marks a recreation in progress (STATE/ops/deploy-window.json), so the ops watch does not alert on the container
+    being replaced. It expires by itself if this process dies."""
+    path = STATE / "ops/deploy-window.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    now = datetime.now(UTC)
+    write_json(path, {"commit": sha, "services": [service], "pid": os.getpid(),
+                      "started_at": now.isoformat(timespec="seconds"),
+                      "expires_at": (now + timedelta(minutes=minutes)).isoformat(timespec="seconds")})
+    return path
+
+
 def journal(record):
     directory = STATE / "release-journal"
     directory.mkdir(mode=0o700, exist_ok=True)
@@ -458,16 +470,20 @@ def apply(sha, services, quiet_seconds=900, runner=run, sleep=time.sleep):
             wait_quiet(service, quiet_seconds, runner=runner, sleep=sleep)
             entry["recreated_at"] = datetime.now(UTC).isoformat(timespec="seconds")
             journal(record)
-            compose(root, sha, "up", "-d", "--no-deps", "--no-build", "--pull", "never", service, runner=runner)
-            ok, detail = settle(service, sha, root, wanted, runner=runner, sleep=sleep)
-            entry["result"], entry["detail"] = ("released" if ok else "failed"), detail
-            if not ok:
-                runner(old + ["up", "-d", "--no-deps", "--no-build", "--pull", "never", service])
-                back = inspect(service, runner=runner)
-                entry["rolled_back"] = label(back, "com.docker.compose.config-hash") == entry["old_config_hash"]
-                journal(record)
-                raise ReleaseError(f"{service}: {detail}; rolled back (exact={entry['rolled_back']})")
+            window = deploy_window(sha, service)
+            try:
+                compose(root, sha, "up", "-d", "--no-deps", "--no-build", "--pull", "never", service, runner=runner)
+                ok, detail = settle(service, sha, root, wanted, runner=runner, sleep=sleep)
+                entry["result"], entry["detail"] = ("released" if ok else "failed"), detail
+                if not ok:
+                    runner(old + ["up", "-d", "--no-deps", "--no-build", "--pull", "never", service])
+                    back = inspect(service, runner=runner)
+                    entry["rolled_back"] = label(back, "com.docker.compose.config-hash") == entry["old_config_hash"]
+            finally:
+                window.unlink(missing_ok=True)
             journal(record)
+            if not ok:
+                raise ReleaseError(f"{service}: {detail}; rolled back (exact={entry['rolled_back']})")
     return record
 
 
