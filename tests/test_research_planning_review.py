@@ -2,6 +2,9 @@
 
 import json
 
+import pytest
+
+from quant_company.company import PolicyError
 from quant_company.research.planning_controller import PlanningController
 
 from .test_research_conditional import conditional  # noqa: F401
@@ -155,3 +158,35 @@ def test_single_candidate_run_completes(planning):  # noqa: F811
     routes = [{"candidate_ordinal": 1, "route": "experiment", "rationale": "Only eligible candidate"}]
     decide(h, stage, decision_value(order=[1], routes=routes))
     assert PlanningController(h.company).tick()["outcome"] == "shadow_recorded"
+
+
+def test_run_report_traces_a_completed_run(planning):  # noqa: F811
+    from quant_company.research.planning_commands import command
+
+    h = planning
+    stage = to_decision(h)
+    decide(h, stage, decision_value())
+    PlanningController(h.company).tick()
+    report = command(h.company.settings, "run-report", run=str(stage["planning_run_id"]), company=h.company)
+    assert report["run"]["outcome"] == "shadow_recorded" and report["decision"]["service_order"] == [1, 2]
+    assert [c["ordinal"] for c in report["candidates"]] == [1, 2]
+    assert {r["kind"] for r in report["reviews"]} == {"triage", "critique"}
+    assert report["usage"]["requests"] > 0 and report["stages"][0]["stage"] == "planning_slate"
+    assert all(isinstance(value, int) for value in report["usage"].values())
+
+
+def test_run_report_for_a_run_in_progress(planning):  # noqa: F811
+    from quant_company.research.planning_commands import command
+
+    h = planning
+    stage = to_critique(h)
+    report = command(h.company.settings, "run-report", run=str(stage["planning_run_id"]), company=h.company)
+    assert report["decision"] is None and report["run"]["state"] == "critique"
+
+
+def test_run_report_rejects_a_malformed_or_unknown_run(company):
+    from quant_company.research.planning_commands import command
+
+    for run in ("not-a-run-id", "00000000-0000-0000-0000-000000000000"):
+        with pytest.raises(PolicyError, match="planning run"):
+            command(company.settings, "run-report", run=run, company=company)
