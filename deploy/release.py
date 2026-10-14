@@ -422,6 +422,18 @@ def migrate(sha, runner=run):
         return compose(root, sha, "run", "--rm", "--no-deps", "-T", "api", "quant-company", "migrate", runner=runner)
 
 
+def deploy_window(sha, service, minutes=10):
+    """Marks a recreation in progress (STATE/ops/deploy-window.json), so the ops watch does not alert on the container
+    being replaced. It expires by itself if this process dies."""
+    path = STATE / "ops/deploy-window.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    now = datetime.now(UTC)
+    write_json(path, {"commit": sha, "services": [service], "pid": os.getpid(),
+                      "started_at": now.isoformat(timespec="seconds"),
+                      "expires_at": (now + timedelta(minutes=minutes)).isoformat(timespec="seconds")})
+    return path
+
+
 def journal(record):
     directory = STATE / "release-journal"
     directory.mkdir(mode=0o700, exist_ok=True)
@@ -458,16 +470,20 @@ def apply(sha, services, quiet_seconds=900, runner=run, sleep=time.sleep):
             wait_quiet(service, quiet_seconds, runner=runner, sleep=sleep)
             entry["recreated_at"] = datetime.now(UTC).isoformat(timespec="seconds")
             journal(record)
-            compose(root, sha, "up", "-d", "--no-deps", "--no-build", "--pull", "never", service, runner=runner)
-            ok, detail = settle(service, sha, root, wanted, runner=runner, sleep=sleep)
-            entry["result"], entry["detail"] = ("released" if ok else "failed"), detail
-            if not ok:
-                runner(old + ["up", "-d", "--no-deps", "--no-build", "--pull", "never", service])
-                back = inspect(service, runner=runner)
-                entry["rolled_back"] = label(back, "com.docker.compose.config-hash") == entry["old_config_hash"]
-                journal(record)
-                raise ReleaseError(f"{service}: {detail}; rolled back (exact={entry['rolled_back']})")
+            window = deploy_window(sha, service)
+            try:
+                compose(root, sha, "up", "-d", "--no-deps", "--no-build", "--pull", "never", service, runner=runner)
+                ok, detail = settle(service, sha, root, wanted, runner=runner, sleep=sleep)
+                entry["result"], entry["detail"] = ("released" if ok else "failed"), detail
+                if not ok:
+                    runner(old + ["up", "-d", "--no-deps", "--no-build", "--pull", "never", service])
+                    back = inspect(service, runner=runner)
+                    entry["rolled_back"] = label(back, "com.docker.compose.config-hash") == entry["old_config_hash"]
+            finally:
+                window.unlink(missing_ok=True)
             journal(record)
+            if not ok:
+                raise ReleaseError(f"{service}: {detail}; rolled back (exact={entry['rolled_back']})")
     return record
 
 
@@ -903,12 +919,18 @@ def decide(status, previous, values, now, github, runner=run):
         target = status["target"] = latest["sha"]
         order = github.compare(current, target)
         status["behind_by"] = order["ahead_by"]
+        if order["status"] == "behind":  # production runs a newer main commit whose CI has not passed yet
+            return {**status, "target": None, "action": "drift" if status["drift"] else "ahead_of_green",
+                    "detail": f"the running release is newer than the latest CI-green main {target[:12]}"}
         if order["status"] != "ahead":
             return {**status, "action": "refused",
                     "detail": f"{target[:12]} is {order['status']} of the running release"}
         render_commit = values.get("VIDEO_RENDER_COMMIT") or current
         root = fetch(target, github, protect={render_commit}, runner=runner)
-        status["operator_files"] = operator_changes(changed(root_of(current), root))
+        if not (difference := changed(root_of(current), root)):  # docs or tests only: production runs the same files
+            return {**status, "action": "drift" if status["drift"] else "up_to_date", "target": None,
+                    "detail": f"main {target[:12]} changes no file a release deploys"}
+        status["operator_files"] = operator_changes(difference)
         base = root_of(current) if render_commit == current else fetch(render_commit, github, {target}, runner)
         if render := render_changes(changed(base, root), [base, root]):
             return {**status, "action": "render_required", "render_files": render[:20],
