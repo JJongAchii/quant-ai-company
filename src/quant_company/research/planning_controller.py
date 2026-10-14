@@ -128,6 +128,40 @@ def review_output(company, conn, row, task, turn, response, value):
     return {"state": "completed", "planning_held": True}
 
 
+def planning_budget_reason(company, conn, stage):
+    """Count dispatched requests, like the audit budget; repeated preparation never double counts."""
+    if stage["context"].get("_planning_hold"):
+        return "planning_requires_remediation"
+    run = conn.execute("SELECT owner_user FROM research_planning_runs WHERE id=%s",
+                       (stage["planning_run_id"],)).fetchone()
+    conn.execute("SELECT pg_advisory_xact_lock(hashtext(%s))", ("research-planning:" + run["owner_user"],))
+    used = conn.execute("""SELECT count(*) AS n FROM turns t JOIN research_stage_attempts a ON a.task_id=t.task_id
+        JOIN research_mission_stages s ON s.id=a.stage_id WHERE s.planning_run_id=%s AND t.request IS NOT NULL""",
+        (stage["planning_run_id"],)).fetchone()["n"]
+    if used >= PLANNING_LIMITS["run_requests"]:
+        return "planning_run_request_limit"
+    today = conn.execute("""SELECT count(*) AS n FROM turns t JOIN research_stage_attempts a ON a.task_id=t.task_id
+        JOIN research_mission_stages s ON s.id=a.stage_id JOIN research_planning_runs r ON r.id=s.planning_run_id
+        WHERE r.owner_user=%s AND t.request IS NOT NULL
+        AND (t.due_at AT TIME ZONE 'Asia/Seoul')::date=(now() AT TIME ZONE 'Asia/Seoul')::date""",
+        (run["owner_user"],)).fetchone()["n"]
+    if today >= PLANNING_LIMITS["owner_day_requests"]:
+        return "planning_daily_request_limit"
+    return None
+
+
+def output_failure(company, conn, stage, task):
+    """A rejected native response retries in a new attempt; the third holds for an operator."""
+    failures = stage["context"].get("_output_failures", 0) + 1
+    context = {**stage["context"], "_output_failures": failures}
+    conn.execute("UPDATE research_stage_attempts SET error='stage_response_rejected' WHERE task_id=%s", (task["id"],))
+    if failures >= PLANNING_LIMITS["attempts"]:
+        hold_stage(company, conn, {**stage, "context": context}, "planning_output_contract")
+        return
+    conn.execute("""UPDATE research_mission_stages SET state='waiting',context=%s,error='invalid_output',
+        retry_at=now()+interval '5 minutes',updated_at=now() WHERE id=%s""", (Jsonb(context), stage["id"]))
+
+
 class PlanningController:
     def __init__(self, company):
         self.company = company

@@ -5,10 +5,12 @@ import json
 import psycopg
 import pytest
 
+from quant_company.company import Company
 from quant_company.config import Settings
 from quant_company.contracts import AgentDecision, ProviderResponse
 from quant_company.research.planning_controller import PlanningController
 from quant_company.research.planning_store import QuestionStore
+from quant_company.research.runner import ResearchRunner
 
 from .test_research_conditional import conditional  # noqa: F401
 from .test_research_planning_contracts import candidate
@@ -226,3 +228,52 @@ def test_failed_triage_opens_a_linked_gap(planning):
     with h.company.db.transaction() as conn:
         gap = conn.execute("SELECT kind,resolver,candidate_id FROM research_gaps WHERE run_id IS NOT NULL").fetchone()
     assert (gap["kind"], gap["resolver"]) == ("execution_timing", "owner") and gap["candidate_id"]
+
+
+def test_run_and_daily_request_limits(planning, monkeypatch):
+    import quant_company.research.planning_controller as controller
+
+    h = planning
+    PlanningController(h.company).tick()
+    stage = planning_stage(h)
+    turn = read(h, queued_turn(h, stage["task_id"]), "planning/question.json")
+    monkeypatch.setitem(controller.PLANNING_LIMITS, "owner_day_requests", 1)
+    assert h.company.prepare_turn(turn) == {"state": "defer", "seconds": 3600, "reason": "planning_daily_request_limit"}
+    monkeypatch.setitem(controller.PLANNING_LIMITS, "owner_day_requests", 120)
+    monkeypatch.setitem(controller.PLANNING_LIMITS, "run_requests", 1)
+    assert h.company.prepare_turn(turn)["reason"] == "planning_run_request_limit"
+    assert planning_stage(h)["context"]["_planning_hold"]["reason"] == "planning_run_request_limit"
+
+
+def test_native_output_failures_retry_then_hold(planning):
+    h = planning
+    PlanningController(h.company).tick()
+    for _ in range(3):
+        stage = planning_stage(h)
+        turn = queued_turn(h, stage["task_id"])
+        h.company.prepare_turn(turn)
+        h.company.block_turn(turn, "invalid_output")
+        with h.company.db.transaction() as conn:
+            conn.execute("UPDATE research_mission_stages SET retry_at=now() WHERE id=%s AND retry_at IS NOT NULL",
+                         (stage["id"],))
+        PlanningController(h.company).tick()
+    stage = planning_stage(h)
+    assert stage["attempt"] == 3 and stage["context"]["_planning_hold"]["reason"] == "planning_output_contract"
+
+
+def test_restart_reuses_the_running_attempt(planning):
+    h = planning
+    PlanningController(h.company).tick()
+    first = planning_stage(h)
+    h.company = Company(h.company.settings, h.company.roles)
+    assert PlanningController(h.company).tick()["state"] == "waiting"
+    again = planning_stage(h)
+    assert (again["attempt"], again["task_id"]) == (first["attempt"], first["task_id"])
+
+
+def test_planning_runs_without_autonomous_research(planning):
+    h = planning
+    h.company.settings.company_autonomous_research_enabled = False
+    assert ResearchRunner(h.company).tick()["state"] == "running"
+    stage = planning_stage(h)
+    assert h.company.prepare_turn(queued_turn(h, stage["task_id"]))["state"] == "ready"
