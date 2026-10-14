@@ -57,6 +57,11 @@ def test_deploy_window_rejects_malformed_files(tmp_path):
     assert probe.deploy_window(NOW, path) is None
     path.write_text(json.dumps({"until": "2026-10-14T01:20:00+00:00", "services": ["api; rm -rf /"]}))
     assert probe.deploy_window(NOW, path) is None
+    # release.py apply (#152) marks each recreation this way
+    path.write_text(json.dumps({"commit": "f" * 40, "services": ["dispatch"], "pid": 4242,
+                                "started_at": "2026-10-14T00:59:00+00:00", "expires_at": "2026-10-14T01:09:00+00:00"}))
+    assert probe.deploy_window(NOW, path) == {"until": "2026-10-14T01:09:00+00:00", "services": ["dispatch"],
+                                              "reason": "release ffffffffffff"}
 
 
 def value(*services, window=None):

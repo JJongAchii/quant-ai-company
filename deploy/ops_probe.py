@@ -150,10 +150,11 @@ def unit_results():
 
 
 def deploy_window(now, path=STATE / 'ops/deploy-window.json'):
-    """An operator-declared change window; containers it names are reported as being deployed."""
+    """A change window; containers it names are reported as being deployed. An operator writes `until`; release.py
+    apply writes `expires_at` and a commit for each recreation and removes the file once the service settles."""
     try:
         value = json.loads(path.read_text())
-        until = datetime.fromisoformat(value['until'])
+        until = datetime.fromisoformat(value['until'] if 'until' in value else value['expires_at'])
         services = value['services']
         if (until.tzinfo is None or not isinstance(services, list)
                 or not all(isinstance(item, str) and re.fullmatch(r'[a-z0-9-]{1,64}|\*', item) for item in services)):
@@ -162,7 +163,8 @@ def deploy_window(now, path=STATE / 'ops/deploy-window.json'):
         return None
     if until < now - timedelta(days=1):
         return None
-    return {'until': until.isoformat(), 'services': services, 'reason': str(value.get('reason', ''))[:120]}
+    reason = value.get('reason') or (f"release {str(value['commit'])[:12]}" if value.get('commit') else '')
+    return {'until': until.isoformat(), 'services': services, 'reason': str(reason)[:120]}
 
 
 def scrub(text, limit=300):
