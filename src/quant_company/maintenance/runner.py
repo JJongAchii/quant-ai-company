@@ -443,6 +443,22 @@ class Maintainer:
         if self.store.hold_for_reconciliation(job):
             return
         payload, receipt, job_id = job["payload"], job["receipt"], str(job["id"])
+        if (job["state"] == 'pr' or job["state"] == 'blocked' and job["error"] == 'pr_ref_moved'):
+            if payload.get('finding', {}).get('evaluation', {}).get('mode') == 'regression':
+                snapshot = await asyncio.to_thread(self.github.snapshot)
+                if snapshot['commit'] != receipt['base']:
+                    await asyncio.to_thread(self.github.verify_base_retest, job)
+                    snapshot = await asyncio.to_thread(self.refresh_repository)
+                    from ..system_state import diagnosis_context
+
+                    with self.company.db.transaction() as conn:
+                        diagnosis = diagnosis_context(conn, self.company, payload['owners'], snapshot,
+                                                      payload.get('instruction', ''),
+                                                      observations=payload.get('observations', []))
+                    self.store.retest_base(job, snapshot, diagnosis)
+                    return
+                if job['state'] == 'blocked':
+                    raise ValueError('pr_ref_requires_reconciliation')
         if job["state"] in {"triage", "patch", "design", "evaluate", "publish"}:
             from ..system_state import diagnosis_context
 

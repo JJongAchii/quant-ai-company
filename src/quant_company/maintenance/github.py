@@ -298,6 +298,15 @@ class GitHub:
                 log = read_log(stream)
         return {"head": receipt["head"], "steps": steps, "log_excerpt": log}
 
+    def verify_base_retest(self, job):
+        """A changed base may be retested; a moved candidate or uncertain write must be reconciled."""
+        receipt = job["receipt"]
+        ref = self.request("GET", "/git/ref/heads/" + quote(receipt["branch"], safe=""))
+        if ref["object"]["sha"] != receipt["head"]:
+            raise ValueError("base_retest_candidate_ref_changed")
+        if self.ci(receipt)["state"] != "passed":
+            raise ValueError("base_retest_candidate_ci_not_passed")
+
     def pull_request(self, job):
         receipt, payload = job["receipt"], job["payload"]
         # Re-read both refs: earlier CI does not authorize a moved branch or a new base.

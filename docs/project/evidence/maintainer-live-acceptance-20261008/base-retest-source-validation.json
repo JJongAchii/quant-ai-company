@@ -1,0 +1,97 @@
+{
+  "captured_at": "2026-10-14 00:48:33 UTC",
+  "scope": "Operator repair for known PR base movement; not a Maintainer-generated repair success",
+  "actual_case4": {
+    "request_url": "https://achiisquantresearch.slack.com/archives/C0C3Q7BFQCE/p1791872527497039",
+    "parent_job_id": "56fb4e32-a869-5806-bcec-e1a842420e2b",
+    "base": "70c58848ed6bd00c8fdea6ec8602b0d12354c2a1",
+    "candidate": "c18ad37b993825593b72bcf071a6de5f355b9ee4",
+    "ci": {
+      "state": "reproduced_on_base",
+      "base": "70c58848ed6bd00c8fdea6ec8602b0d12354c2a1",
+      "head": "c18ad37b993825593b72bcf071a6de5f355b9ee4",
+      "test": "tests/test_maintenance_regression_56fb4e32a8695806bcece1a842420e2b.py",
+      "comparison": {
+        "cases": 34,
+        "base_failures": 33,
+        "candidate_failures": 0
+      },
+      "run_id": 38364837590,
+      "job_id": 115187362111,
+      "log_sha256": "53505e492450bb5c1ea4df6a04065787d52a3a500be67298835ad190786dec48",
+      "pytest_summaries": [
+        "1 passed in 16.42s",
+        "34 passed in 14.35s",
+        "2598 passed, 77 skipped, 1 deselected, 18 warnings in 919.77s (0:15:19)"
+      ]
+    },
+    "terminal_state": "blocked",
+    "error": "pr_ref_moved",
+    "pr_created": false,
+    "model_calls": 6,
+    "finding": {
+      "at": "2026-10-13T07:34:03.822264+00:00",
+      "error": null,
+      "state": "ci",
+      "case_id": "56fb4e32-a869-5806-bcec-e1a842420e2b",
+      "finding": {
+        "paths": [
+          "src/quant_company/maintenance/requests.py"
+        ],
+        "title": "개선 진행 단계·담당·다음 행동을 일관되게 전달",
+        "problem": "소유자가 요청한 범위의 기능 보강이다. report는 state/reason/outcome/required_evidence/pr 등 기존 사실을 반환하지만 담당 주체와 다음 행동을 구조화하지 않으며 status는 그 결과를 그대로 전달한다. progress_text는 조사·patch·CI에 공통 안내를 사용하고 pr_open 문장에는 담당 소유자와 실제 PR URL을 넣지 않는다. 일반 blocked 안내에는 운영자 확인은 있지만 기록·영수증 대사와 자동 재호출 금지가 함께 명시되지 않는다. 후보 없는 done과 독립 검토 대사 안내는 이미 구현되어 있으므로 신규 기능으로 제안하지 않는다. 직원의 입력 무시나 전사적 제품 결함으로 확대하지 않는다.",
+        "category": "feature_request",
+        "expected": "requests.py의 report/status/progress_text만 수정한다. report에 stage, responsible_party, next_action, automatic_retry_allowed를 추가하고 status가 전달하며 progress_text가 같은 분류 결과를 표현한다. 조사·patch·CI는 개선봇 담당으로 각각 근거 조사, 코드·회귀 작성, 실제 CI 결과 확인과 실패 피드백 수리를 안내한다. pr_open은 소유자의 정확한 후보 PR 검토·승인 대기로 표시하고 기록된 pr.url을 출력한다. blocked 또는 기록으로 확인되는 불확실 외부 효과는 운영자의 원 요청·원 출력·영수증 대사와 자동 재호출 금지를 표시한다. 후보 없는 done은 진단 종료이며 수리 완료가 아니다. 유효한 연결 작업에 실제 applied 상태가 기록된 경우에만 운영 반영 완료를 표시한다. PR 존재·승인·CI 성공·application 존재만으로 applied를 만들지 않는다. 기존 state/error/reason/outcome/required_evidence/PR URL과 평가 disposition 처리 및 보안 검사를 보존하며 없는 영수증·URL·성과를 생성하지 않는다. 직접 progress_text를 호출하는 기존 시험도 유지한다. 새 회귀 파일은 서비스가 실제 case_id로 지정하는 tests/test_maintenance_regression_<case_id에서 하이픈을 제거한 값>.py만 추가한다.",
+        "new_paths": [],
+        "evaluation": {
+          "mode": "regression",
+          "cases": [],
+          "staff_run_id": null,
+          "success_criterion": "패치 전에 이 기준을 고정한다. 새 회귀는 실제 DB 기록의 report → status.requests → progress_text 소비를 검사한다. 조사·patch·CI의 개선봇 담당과 단계별 다음 행동, pr_open의 소유자 검토·승인 대기와 기록된 URL, blocked 및 대사 필요 기록의 운영자 담당·영수증 대사·자동 재호출 금지, 후보 없는 done의 진단 종료, 실제 applied 기록에 한정된 운영 반영 완료를 검증한다. 각 경로에서 기존 state/reason/outcome/required_evidence/pr 값을 보존하고 기록 부재를 허위 완료로 바꾸지 않아야 한다. 정상 대조는 예산 대기의 기존 재개 안내, 후보 없는 종료, PR URL 부재, applied가 아닌 승인·application 기록을 포함한다. 조회 전후 원본 작업·호출 기록이 같아야 한다. 동결 기준에서는 기능 assertion 실패로 재현되고 동일 시험이 후보에서는 오류·skip 없이 통과해야 하며 기존 시험도 통과해야 한다. 실제 GitHub CI 영수증과 후보 head에 연결된 검토 가능한 PR URL을 확보한 뒤 결과를 보고한다. 실패 피드백으로 후보를 수리하되 재현된 시험과 기준을 약화하지 않는다. 사람의 정확한 후보 승인 전에는 병합·배포하지 않는다. CI는 이 소비 동작의 검증이며 운영 배포 증거가 아니다."
+        },
+        "hypothesis": "report의 구조화 결과와 progress_text의 문장 분기가 담당·다음 행동을 공유하지 않는 것이 요청된 정보 불일치의 원인이다. 기존 기록을 읽어 진행 분류를 한 번 결정하고 status와 progress_text가 이를 소비하면 사실을 보존하면서 일관된 안내를 제공할 수 있다. cases.current는 report를 사용하고 card는 application이 없을 때 progress_text를 사용한다. application이 있는 카드의 별도 문장 분기는 이번 수정 범위 밖이므로 그 분기까지 변경·검증했다고 주장하지 않는다. 자동 재호출 금지는 진행 정보와 안내로 표현하며 실행 권한이나 스케줄러 정책을 변경하지 않는다.",
+        "problem_key": "maintenance_progress_responsibility_next_action",
+        "reproduction": "미실행 재현 계획: 새 회귀 파일에서 실제 PostgreSQL fixture에 소유자와 프로젝트가 일치하는 review 및 연결된 repair 기록을 만들고 조사, patch, ci, pr_open, blocked, 후보 없는 done, applied 상태를 준비한다. 실제 report 결과와 status의 requests 항목을 비교하고 그 항목을 progress_text에 전달한다. 새 구조화 필드와 담당·다음 행동의 의미 일치, 실제 PR URL 표시를 검증하는 assertion이 동결 기준에서 실패해야 한다. 기존 test_maintenance_repair_path.py 160~164행은 후보 없는 종료 안내를, 124~157행 및 마지막 166~201행은 대사 인계와 원 기록 보존 조건을 이미 검사한다. test_maintenance_regression_gate.py의 마지막 시험은 여전히 실패하는 후보를 개선으로 인정하지 않는다. 이 코드 확인을 실제 시험 실행 결과로 보고하지 않는다.",
+        "evidence_keys": [
+          "message:75f50aab-0b14-446d-aade-fe7ea00b6780",
+          "system:1b88ed4b64c43d828b059833d2ef097acbcdb3e831caff5e56ce1f22c0634f25",
+          "code:70c58848ed6bd00c8fdea6ec8602b0d12354c2a1:src/quant_company/maintenance/requests.py",
+          "code:70c58848ed6bd00c8fdea6ec8602b0d12354c2a1:src/quant_company/maintenance/cases.py",
+          "code:70c58848ed6bd00c8fdea6ec8602b0d12354c2a1:src/quant_company/company.py",
+          "code:70c58848ed6bd00c8fdea6ec8602b0d12354c2a1:tests/test_maintenance_repair_path.py",
+          "code:70c58848ed6bd00c8fdea6ec8602b0d12354c2a1:tests/test_maintenance_regression_gate.py",
+          "code:70c58848ed6bd00c8fdea6ec8602b0d12354c2a1:src/quant_company/maintenance/runner.py"
+        ],
+        "blocking_decisions": []
+      },
+      "patch_attempt": 2,
+      "diagnostic_revision": 0
+    },
+    "input_tokens": 203505,
+    "cached_input_tokens": 68096,
+    "output_tokens": 33379,
+    "first_two_candidate_failures": "Ruff I001 in generated test; third attempt changes one blank line only"
+  },
+  "source_validation": {
+    "baseline_source": "fcbe7a04856ee82be24c06ce900acf666cc31e3e",
+    "baseline_command": ".venv/bin/pytest -q --tb=short -o pythonpath=/private/tmp/maintainer-base-retest-baseline/src tests/test_maintenance_base_retest.py::test_blocked_base_move_retests_frozen_patch_to_pr_without_model_or_reset",
+    "baseline_exit": 1,
+    "baseline_result": "1 failed in 0.87s: idle instead of advanced",
+    "candidate_result": "124 passed, 2 warnings in 45.66s",
+    "lint": "All checks passed",
+    "database": "Real disposable PostgreSQL 14",
+    "github_slack_model": "Simulated; no production writes or model calls"
+  },
+  "invariants": {
+    "candidate_source_and_test_content_unchanged": true,
+    "old_calls_and_payload_preserved": true,
+    "strict_current_pr_refs_unchanged": true,
+    "models_effort_caps_concurrency_unchanged": true,
+    "old_patch_attempts_retained": true,
+    "existing_diagnostic_revision_cap": 3,
+    "uncertain_writes_not_retried": true
+  },
+  "limitations": [
+    "Server qualification, exact source CI, installation and actual linked retest CI/PR are pending. No deployed or Maintainer completion claim."
+  ]
+}
