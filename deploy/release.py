@@ -841,11 +841,22 @@ def release_to(status, target, previous, values, runner=run):
     started = status.get("started_at") or status["checked_at"]
     write_json(progress_file(), {"phase": "releasing", "target": target, "previous": previous, "started_at": started})
     status = {**status, "action": "releasing", "detail": None, "started_at": started}
-    write_status(status, read_status())
+
+    def step(name):  # the status shows where a long release is; the timer starts no run while this one lasts
+        status["step"] = {"name": name, "at": datetime.now(UTC).isoformat(timespec="seconds")}
+        write_status(status, read_status())
+
     try:
+        step("build")
         build(target, runner=runner)
+        step("migrate")
         migrate(target, runner=runner)
-        record = apply(target, ordered_services(root_of(target)), quiet_seconds=600, runner=runner)
+        groups, released = manifest(root_of(target))["groups"], []
+        for index, group in enumerate(groups, 1):
+            step(f"apply {index}/{len(groups)}: {' '.join(group)}")
+            record = apply(target, group, quiet_seconds=600, runner=runner)
+            released += [e["service"] for e in record["services"] if e["result"] == "released"]
+        step("activate")
         activate(target, runner=runner)
     except Busy as exc:
         return {**status, "action": "incomplete", "detail": str(exc)[-600:]}
@@ -860,8 +871,8 @@ def release_to(status, target, previous, values, runner=run):
     progress_file().unlink(missing_ok=True)
     pruned = prune(protect={values.get("VIDEO_RENDER_COMMIT")}, runner=runner)
     return {**status, "action": "released", "current": target, "target": None, "failed_commit": None, "drift": [],
-            "released": {"commit": target, "finished_at": datetime.now(UTC).isoformat(timespec="seconds"),
-                         "services": [e["service"] for e in record["services"] if e["result"] == "released"]},
+            "step": None, "released": {"commit": target, "services": released,
+                                       "finished_at": datetime.now(UTC).isoformat(timespec="seconds")},
             "pruned": pruned}
 
 

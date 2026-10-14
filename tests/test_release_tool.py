@@ -345,7 +345,9 @@ def test_auto_release_runs_every_step_in_order(auto_host):
     configure(RELEASE_AUTO_ENABLED="true")
     status = release.auto(FakeGitHub({**FILES, **RENDER}), runner=no_docker, now=IN_WINDOW)
     assert status["action"] == "released" and status["current"] == SHA and status["target"] is None
-    assert auto_host == [("build", SHA), ("migrate", SHA), ("apply", SHA, ["api", "worker"]), ("activate", SHA)]
+    assert auto_host == [("build", SHA), ("migrate", SHA), ("apply", SHA, ["api"]), ("apply", SHA, ["worker"]),
+                         ("activate", SHA)]
+    assert status["released"]["services"] == ["api", "worker"] and status["step"] is None
     journal = (release.STATE / "release-journal/auto.jsonl").read_text().splitlines()
     assert [json.loads(line)["action"] for line in journal] == ["releasing", "released"]
 
