@@ -140,3 +140,25 @@ def test_print_previews_without_writing_and_refuses_write_flags(monkeypatch, cap
     assert json.loads(capsys.readouterr().out)["containers"] == []
     with pytest.raises(SystemExit):
         probe.main(["--print", "--publish"])
+
+
+def test_release_status_keeps_only_checked_fields_and_cuts_credentials(tmp_path):
+    path = tmp_path / "release-status.json"
+    assert probe.release_status(path) is None
+    path.write_text(json.dumps({
+        "checked_at": "2026-10-14T05:26:01+00:00", "mode": "report", "action": "failed", "current": "5454e3d" + "0" * 33,
+        "target": "not a commit; rm -rf /", "detail": "HTTPError: https://x-access-token:ghs_abcdefghijklmnopqrstuv@github.com",
+        "latest_green": {"sha": "17d7693", "completed_at": "2026-10-14T05:13:43Z", "run": "https://example"},
+        "drift": [{"service": "api", "ok": False, "problem": "config differs"}, {"service": "worker", "ok": True}],
+        "operator_files": ["deploy/quant-company-ops-probe.service", "../../etc/passwd`"], "render_files": ["a", "b"],
+        "restored": {"ok": True, "services": ["api", "$(id)"]}, "behind_by": True}))
+    value = probe.release_status(path)
+    assert value["target"] is None and value["current"].startswith("5454e3d") and value["behind_by"] is None
+    assert "ghs_" not in value["detail"] and "[redacted]" in value["detail"]
+    assert value["latest_green"] == {"sha": "17d7693", "completed_at": "2026-10-14T05:13:43+00:00"}
+    assert value["drift"] == [{"service": "api", "problem": "config differs"}]
+    assert value["operator_files"] == ["deploy/quant-company-ops-probe.service"] and value["render_files"] == 2
+    assert value["restored"] == {"ok": True, "services": ["api"]}
+    path.write_text("[]")
+    with pytest.raises(ValueError):
+        probe.release_status(path)

@@ -35,6 +35,13 @@ TRACEBACK = 'Traceback (most recent call last)'
 EXCEPTION = re.compile(r'^(?:[A-Za-z_][\w]*\.)*([A-Z]\w*(?:Error|Exception|Detected|Timeout|Exit|Interrupt))\b')
 WATCH_STALE = timedelta(minutes=10)
 SLACK_ID = re.compile(r'[CDGUW][A-Z0-9]{2,30}')
+RELEASE_STATUS = STATE / 'release-status.json'
+COMMIT = re.compile(r'[0-9a-f]{7,40}')
+WORD = re.compile(r'[a-z_][a-z0-9_-]{0,40}')
+HOST_PATH = re.compile(r'[\w./-]{1,200}')
+# Release reports quote exception text; anything credential-shaped is cut before it can reach Slack.
+SECRET = re.compile(r'gh[opsu]_\w{16,}|github_pat_\w{20,}|xox[abeprs]-[\w-]+|sk-[\w-]{16,}|AKIA[0-9A-Z]{16}'
+                    r'|-----BEGIN [A-Z ]*PRIVATE KEY-----|(?i:bearer|token|password|secret)[\s:=]+\S+|://[^\s/@]+@')
 
 
 def run(command, timeout=60, stdin=None):
@@ -158,6 +165,53 @@ def deploy_window(now, path=STATE / 'ops/deploy-window.json'):
     return {'until': until.isoformat(), 'services': services, 'reason': str(value.get('reason', ''))[:120]}
 
 
+def scrub(text, limit=300):
+    return SECRET.sub('[redacted]', str(text))[:limit] if text else None
+
+
+def moment(text):
+    if not isinstance(text, str):
+        return None
+    try:
+        value = datetime.fromisoformat(text.replace('Z', '+00:00'))
+    except ValueError:
+        return None
+    return value.isoformat() if value.tzinfo else None
+
+
+def release_status(path=RELEASE_STATUS):
+    """The release tool's last report (docs/adr/0045), reduced to what the ops watch alerts on; None until installed."""
+    try:
+        raw = json.loads(path.read_text())
+    except FileNotFoundError:
+        return None
+    if not isinstance(raw, dict):
+        raise ValueError('release status is not an object')
+
+    def commit(value):
+        return value if isinstance(value, str) and COMMIT.fullmatch(value) else None
+
+    def word(value):
+        return value if isinstance(value, str) and WORD.fullmatch(value) else None
+
+    green = raw.get('latest_green') if isinstance(raw.get('latest_green'), dict) else None
+    restored = raw.get('restored') if isinstance(raw.get('restored'), dict) else None
+    return {'checked_at': moment(raw.get('checked_at')), 'mode': word(raw.get('mode')), 'action': word(raw.get('action')),
+            'detail': scrub(raw.get('detail')), 'current': commit(raw.get('current')), 'target': commit(raw.get('target')),
+            'failed_commit': commit(raw.get('failed_commit')), 'started_at': moment(raw.get('started_at')),
+            'latest_green': {'sha': commit(green.get('sha')), 'completed_at': moment(green.get('completed_at'))}
+            if green else None,
+            'behind_by': raw['behind_by'] if type(raw.get('behind_by')) is int else None,
+            'drift': [{'service': word(row.get('service')), 'problem': scrub(row.get('problem'), 120)}
+                      for row in raw.get('drift') or [] if isinstance(row, dict) and not row.get('ok')][:20],
+            'operator_files': [name for name in raw.get('operator_files') or []
+                               if isinstance(name, str) and HOST_PATH.fullmatch(name)][:20],
+            'render_files': len(raw.get('render_files') or []),
+            'restored': {'ok': restored.get('ok') is True,
+                         'services': [name for name in restored.get('services') or [] if word(name)][:20]}
+            if restored else None}
+
+
 def snapshot(now=None, *, synthetic=False):
     now = now or utcnow()
     value = {'format': SNAPSHOT_FORMAT, 'collected_at': now.isoformat(), 'probe_errors': [],
@@ -184,6 +238,10 @@ def snapshot(now=None, *, synthetic=False):
         value['units'] = unit_results()
     except (OSError, subprocess.SubprocessError) as error:
         value['probe_errors'].append('systemd:' + type(error).__name__)
+    try:
+        value['release'] = release_status()
+    except (OSError, ValueError) as error:
+        value['probe_errors'].append('release:' + type(error).__name__)
     return value
 
 

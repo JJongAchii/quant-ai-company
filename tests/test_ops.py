@@ -274,3 +274,54 @@ def test_status_command_answers_from_live_state_without_a_model(ops):
     assert any("진행 현황" in text and "🎬 영상 v1: ⏳ 시작 대기" in text for text in texts)
     with ops.db.transaction() as conn:
         assert not conn.execute("SELECT 1 FROM turns").fetchone()
+
+
+def release(action, *, target="a" * 40, checked=None, **extra):
+    return {"checked_at": (checked or now()).isoformat(), "mode": "report", "action": action, "current": "c" * 40,
+            "target": target, "detail": None, "drift": [], "operator_files": [], "render_files": 0, **extra}
+
+
+async def test_release_report_alerts_once_per_action_and_target(ops, credentials):
+    watch, (box, calls) = OpsWatch(ops), sender(ops, credentials)
+    snapshot(ops, release=release("render_required", render_files=3, detail="3 render files differ"))
+    watch.tick()
+    assert watch.tick()["announced"] == 1
+    await drain(box)
+    assert calls[0]["text"].startswith("🟠 *렌더 이미지 교체 필요 · aaaaaaa*") and "렌더 입력 3개" in calls[0]["text"]
+    snapshot(ops, release=release("waiting_for_window"))
+    watch.tick()
+    assert watch.tick()["closed"] == 1
+    snapshot(ops, release=release("render_required", render_files=3))
+    watch.tick()
+    assert watch.tick()["announced"] == 0  # the same action and commit is not announced again
+    snapshot(ops, release=release("render_required", target="b" * 40, operator_files=["deploy/x.service"]))
+    watch.tick()
+    assert watch.tick()["announced"] == 2
+    await drain(box)
+    assert len(calls) == 3 and "deploy/x.service" in calls[2]["text"]
+    assert not any("해소" in call["text"] for call in calls)
+
+
+def test_release_waits_are_quiet_and_stalls_lag_and_failed_restores_are_findings(ops):
+    watch = OpsWatch(ops)
+    snapshot(ops, release=release("waiting_for_quiet", detail="worker turn", latest_green={
+        "sha": "a" * 40, "completed_at": (now() - timedelta(hours=2)).isoformat()}))
+    assert watch.tick()["findings"] == []
+    snapshot(ops, release=release("releasing", checked=now() - timedelta(hours=1),
+                                  started_at=(now() - timedelta(minutes=50)).isoformat()))
+    assert watch.tick()["findings"] == []  # a running release does not refresh the report
+    snapshot(ops, release=release("up_to_date", checked=now() - timedelta(minutes=50), latest_green={
+        "sha": "a" * 40, "completed_at": (now() - timedelta(hours=25)).isoformat()}))
+    assert watch.tick()["findings"] == ["release_behind", "release_stale"]
+    snapshot(ops, release=release("incomplete", started_at=(now() - timedelta(hours=2)).isoformat()))
+    assert watch.tick()["findings"] == ["release_incomplete"]
+    snapshot(ops, release=release("failed", restored={"ok": False, "services": ["api"]}))
+    summary = watch.tick()
+    assert summary["findings"] == ["release:failed:" + "a" * 40] and summary["announced"] == 1  # critical: at once
+
+
+def test_status_reply_names_the_running_release(ops):
+    snapshot(ops, release=release("would_release", behind_by=2))
+    with ops.db.transaction() as conn:
+        text = status_text(live_status(conn, now=now()))
+    assert "🚀 릴리스 ccccccc · main보다 2커밋 뒤 · 판단 would_release (report," in text

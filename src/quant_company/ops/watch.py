@@ -23,11 +23,22 @@ VIDEO_BAD = ("blocked", "uncertain", "delivery_failed", "delivery_uncertain")
 BRIEF_LIVE = ("collecting", "planning", "inventorying", "writing", "reviewing", "revising", "final_reviewing", "ready")
 EXPECTED_TURN_ERRORS = ("quota", "budget", "limit")
 PUBLICATION_HOURS = 6
+# docs/adr/0045 §8: release reports that need a person; waiting for a window, quiet or the lock is routine.
+RELEASE_ALERTS = {"failed": "릴리스 실패", "error": "릴리스 점검 오류", "render_required": "렌더 이미지 교체 필요",
+                  "operator_required": "운영자 조치 필요", "held_for_drift": "운영이 릴리스와 달라 반영 보류",
+                  "drift": "운영이 릴리스와 다름", "refused": "main이 운영 커밋의 후손이 아님",
+                  "no_green_main": "CI를 통과한 main을 찾지 못함"}
+RELEASE_STALE = timedelta(minutes=45)
+RELEASE_INCOMPLETE = timedelta(hours=1)
+RELEASE_RUNNING = timedelta(hours=2)
+RELEASE_BEHIND = timedelta(hours=24)
 log = logging.getLogger(__name__)
 
 
-def finding(key, kind, severity, title, *lines):
-    return {"key": key, "kind": kind, "severity": severity, "title": title[:200], "lines": [line[:300] for line in lines]}
+def finding(key, kind, severity, title, *lines, once=False):
+    """ONCE: announce the key at most once ever, not once per episode."""
+    item = {"key": key, "kind": kind, "severity": severity, "title": title[:200], "lines": [line[:300] for line in lines]}
+    return {**item, "once": True} if once else item
 
 
 def in_window(snapshot, service, now):
@@ -102,6 +113,59 @@ def host_findings(row, now):
                                  f"마지막 종료 {unit.get('exited_at') or '미상'}"))
     for error in snapshot.get("probe_errors") or []:
         found.append(finding("probe:" + error.split(":")[0], "condition", "warning", "호스트 수집 일부 실패", error))
+    return found + release_findings(snapshot.get("release"), now)
+
+
+def release_findings(release, now):
+    """The release tool's report (/var/lib/quant-company/release-status.json, docs/adr/0045); nothing until installed."""
+    if not release:
+        return []
+    found, action = [], release.get("action")
+    current, target = release.get("current"), release.get("target") or release.get("current")
+    checked, started = stamp(release.get("checked_at")), stamp(release.get("started_at"))
+    where = f"대상 {(target or '?')[:7]} · 운영 {(current or '?')[:7]} · 모드 {release.get('mode') or '?'}"
+    if action == "releasing":
+        # A running release does not refresh the report; other timer runs only find the lock taken.
+        if started and now - started > RELEASE_RUNNING:
+            found.append(finding("release_running", "condition", "warning",
+                                 f"릴리스 {(target or '?')[:7]} {int((now - started).total_seconds() // 3600)}시간째 진행 중",
+                                 f"시작 {kst(started, True)} KST", where))
+    elif not checked or now - checked > RELEASE_STALE:
+        found.append(finding("release_stale", "condition", "warning", "자동 릴리스 점검 멈춤",
+                             f"마지막 점검 {kst(checked, True) if checked else '기록 없음'} KST. "
+                             "quant-company-release-auto.timer가 15분마다 갱신해야 합니다."))
+    if action in RELEASE_ALERTS:
+        lines = [where, *([f"사유: {release['detail']}"] if release.get("detail") else [])]
+        restored = release.get("restored")
+        if action == "failed" and restored:
+            moved = ", ".join(restored.get("services") or []) or "옮긴 서비스 없음"
+            lines.append(("되돌리기 완료: " if restored.get("ok") else "되돌리기 미완료(다음 실행이 계속 시도): ") + moved)
+        if release.get("drift"):
+            lines.append("릴리스와 다른 서비스: " + ", ".join(f"{row['service']}({row['problem']})"
+                                                         for row in release["drift"][:8]))
+        if action == "render_required":
+            lines.append(f"렌더 입력 {release.get('render_files') or '?'}개가 렌더 이미지 커밋과 다릅니다. "
+                         "렌더 이미지와 작업 정의를 먼저 바꿔야 이어서 반영됩니다.")
+        severity = "critical" if action == "failed" and restored and not restored.get("ok") else "warning"
+        found.append(finding(f"release:{action}:{target}", "event", severity,
+                             f"{RELEASE_ALERTS[action]} · {(target or '?')[:7]}", *lines, once=True))
+    if action == "incomplete" and started and now - started > RELEASE_INCOMPLETE:
+        found.append(finding("release_incomplete", "condition", "warning",
+                             f"릴리스 {(target or '?')[:7]} 1시간 넘게 미완료",
+                             f"시작 {kst(started, True)} KST", where,
+                             *([f"사유: {release['detail']}"] if release.get("detail") else [])))
+    green = release.get("latest_green") or {}
+    passed = stamp(green.get("completed_at"))
+    if green.get("sha") and current and green["sha"] != current and passed and now - passed > RELEASE_BEHIND:
+        found.append(finding("release_behind", "condition", "warning",
+                             f"CI 통과 main {green['sha'][:7]} {int((now - passed).total_seconds() // 3600)}시간째 미반영",
+                             f"운영 {current[:7]} · main보다 {release.get('behind_by') or '?'}커밋 뒤 · "
+                             f"지금 판단 {action or '?'}"))
+    if release.get("operator_files"):
+        found.append(finding(f"release_files:{target}", "event", "warning",
+                             f"운영자가 설치할 호스트 파일 변경 · {(target or '?')[:7]}",
+                             "릴리스는 이 파일들을 설치하지 않습니다: " + ", ".join(release["operator_files"][:10]),
+                             once=True))
     return found
 
 
@@ -212,6 +276,8 @@ class OpsWatch:
         for key, item in current.items():
             row = rows.get(key)
             if not row:
+                if item.get("once") and conn.execute("SELECT 1 FROM ops_incidents WHERE key=%s", (key,)).fetchone():
+                    continue  # Already reported for this action and commit (docs/adr/0045 §8).
                 episode = conn.execute("SELECT COALESCE(max(episode),0)+1 AS n FROM ops_incidents WHERE key=%s",
                                        (key,)).fetchone()["n"]
                 row = conn.execute("""INSERT INTO ops_incidents(id,key,episode,kind,severity,title,detail,first_seen,last_seen)

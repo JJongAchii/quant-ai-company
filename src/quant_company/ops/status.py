@@ -92,6 +92,9 @@ def host(conn, now=None):
     }
     if window and stamp(window.get("until")) and stamp(window["until"]) > now:
         value["deploy_window"] = window
+    if release := payload.get("release"):
+        value["release"] = {key: release.get(key) for key in ("checked_at", "mode", "action", "current", "target",
+                                                               "behind_by", "detail")}
     return value
 
 
@@ -226,6 +229,10 @@ def status_text(value):
             lines.append(f"⚠️ {item['service']}: {item['why']}")
         for key, groups in facts["config_drift"].items():
             lines.append(f"⚠️ 환경값 불일치 {key}: " + " / ".join(",".join(group) for group in groups))
+        if release := facts.get("release"):
+            behind = f" · main보다 {release['behind_by']}커밋 뒤" if release.get("behind_by") else ""
+            lines.append(f"🚀 릴리스 {(release.get('current') or '?')[:7]}{behind} · 판단 {release.get('action') or '?'}"
+                         f" ({release.get('mode') or '?'}, {kst(release.get('checked_at'))} 점검)")
     for item in value["briefings"][:2]:
         label = BRIEF_STATES.get(item["state"], item["state"])
         done = f" {kst(item['committed_at'])}" if item["committed_at"] else f" · 마감 {kst(item['due_at'])}"
