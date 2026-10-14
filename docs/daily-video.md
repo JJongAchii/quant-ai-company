@@ -361,11 +361,13 @@ Claude 세션에서 편집자가 하듯 서버도 쓰고 → 검사하고 → �
 ## 성과 분석
 
 소유자가 올린 공개 영상의 성과를 읽어 진단하고, 소유자가 채택한 교훈만 다음 회차 대본 작성에 반영한다
-([ADR 0043](adr/0043-video-performance-analytics.md)). 기본값은 꺼짐이며, 운영 서버에 켠 증거는 아직 없다.
+([ADR 0043](adr/0043-video-performance-analytics.md)). 기본값은 꺼짐이다. 2026-10-14부터 운영 서버에 코드가
+있고 YouTube 로그인·dry-run·Studio 대조는 마쳤지만 아직 꺼져 있다
+([실연결 기록](project/evidence/video-analytics-20261014/verification.json)).
 
 ```mermaid
 flowchart LR
-    U[채널 공개 업로드] -->|제목 끝 회차·같은 제목·수동 link| P[video_publications]
+    U[채널 공개 업로드] -->|제목의 회차·같은 제목·수동 link| P[video_publications]
     R[Reporting API 노출·CTR 일보고서] --> D[video_reach_daily]
     A[Analytics API 조회·이탈 곡선·유입·검색어] --> S[D+3·D+7·D+28 스냅샷]
     D --> S
@@ -377,6 +379,10 @@ flowchart LR
 - 수집: video worker 프로세스 안의 별도 Temporal 큐 `${TEMPORAL_TASK_QUEUE}-video-analytics`가 30분마다 돈다.
   YouTube 토큰은 이 컨테이너(media-auth)에만 있다. 외부 쓰기는 Reporting API 작업 생성뿐이며, 보고서 종류마다
   한 번 만들고 영수증(`video_report_jobs`)을 남긴다. 나머지는 모두 읽기다.
+- 측정 대상: 제목에 `오늘의 증시story`가 들어간 업로드다. 채널의 다른 시리즈(`[역사story]` 등)는 업로드 목록에만
+  남고 측정·카드·리뷰에서 빠진다. 시리즈 이름을 지우고 올린 회차는 `link`로 작업에 연결하면 측정한다. 회차는 지금
+  형식(`… | 10월 13일 마감 · 오늘의 증시story`)과 10월 12일까지 쓰던 형식(`[오늘의 증시story] … | 10월 8일 마감 브리핑`)을
+  모두 읽는다.
 - 노출수·CTR은 Reporting API에만 있다. 작업을 만든 뒤 약 이틀 안에 과거 30일 보고서가 채워지고, 매일 약 2일
   늦게 새 보고서가 나온다. 같은 날짜의 더 새 보고서는 그날 값을 교체한다. CTR 단위는 공식 문서에 나오지 않아
   1보다 큰 값이 있는 보고서를 백분율로 읽는다. **첫 실연결에서 Studio 값과 대조해야 한다.**

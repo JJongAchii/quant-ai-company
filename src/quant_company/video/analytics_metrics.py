@@ -17,7 +17,10 @@ HOOK_SECONDS = 30
 MIN_BASELINE = 5
 VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
 # upload.compose: "<hook> | {M}월 {D}일 {아침|마감} · 오늘의 증시story" (series name last since 2026-10-10).
+SERIES = "오늘의 증시story"
 TITLE = re.compile(r"\|\s*(\d{1,2})월\s+(\d{1,2})일\s+(아침|마감)\s*·\s*오늘의 증시story\s*$")
+# Until 12 October 2026: "[오늘의 증시story] … | 10월 8일 마감 브리핑".
+LEGACY_TITLE = re.compile(r"^\s*\[오늘의 증시story\].*\|\s*(\d{1,2})월\s+(\d{1,2})일\s+(아침|마감)\s*브리핑\s*$")
 KINDS = {"아침": "am", "마감": "close"}
 # Reporting API traffic_source_type codes, grouped the way Studio names them.
 SOURCES = {0: "direct", 1: "advertising", 3: "browse", 4: "channel", 5: "search", 7: "suggested", 8: "other_youtube",
@@ -29,10 +32,16 @@ REACH_COLUMNS = {"channel_reach_basic_a1": ("date", "video_id", "video_thumbnail
                                                "video_thumbnail_impressions_ctr")}
 
 
+def in_series(title):
+    """The brief series is what is measured; other series of the channel ([역사story] …) are not."""
+    return SERIES in (title or "")
+
+
 def parse_title(title, published_at):
-    """(edition day, 'am'|'close') from the series suffix, or None for any other title. The year is the KST publish
-    year, one earlier when the title names a later month (a 31 December close published after midnight)."""
-    found = TITLE.search(title or "")
+    """(edition day, 'am'|'close') from the series suffix (or the older series-tag format), or None for any other
+    title. The year is the KST publish year, one earlier when the title names a later month (a 31 December close
+    published after midnight)."""
+    found = TITLE.search(title or "") or LEGACY_TITLE.search(title or "")
     if not found:
         return None
     published = published_at.astimezone(KST).date()

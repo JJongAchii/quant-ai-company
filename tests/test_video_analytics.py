@@ -7,6 +7,7 @@ import pytest
 from quant_company.video.analytics_metrics import (
     baseline,
     hook_retention,
+    in_series,
     parse_reach_csv,
     parse_title,
     pt_day,
@@ -25,6 +26,11 @@ from quant_company.video.analytics_metrics import (
      datetime(2026, 12, 31, 16, 30, tzinfo=UTC), (date(2026, 12, 31), "close")),
     ("연말 마감 정리 | 12월 31일 마감 · 오늘의 증시story",
      datetime(2027, 1, 1, 0, 30, tzinfo=UTC), (date(2026, 12, 31), "close")),
+    # The format used until 12 October: series tag first, "브리핑" after the edition.
+    ("[오늘의 증시story] 삼성전자 영업익 100조 첫 돌파에도 2%대 급락, 코스피 2.62% 하락 | 10월 8일 마감 브리핑",
+     datetime(2026, 10, 8, 8, 36, tzinfo=UTC), (date(2026, 10, 8), "close")),
+    ("[오늘의 증시story] 미국 10년물 금리 24년 만의 고점, 오늘 한국 증시는? | 10월 8일 아침 브리핑",
+     datetime(2026, 10, 7, 21, 41, tzinfo=UTC), (date(2026, 10, 8), "am")),
 ])
 def test_title_suffix_names_the_edition_day_and_kind(title, published, expected):
     assert parse_title(title, published) == expected
@@ -35,9 +41,22 @@ def test_title_suffix_names_the_edition_day_and_kind(title, published, expected)
     "엔비디아 4% 급등 | 13일 아침 · 오늘의 증시story",
     "Shorts: 오늘의 한 줄",
     "엔비디아 | 13월 40일 아침 · 오늘의 증시story",
+    "반도체 매수는 어디로 갔나? | 10월 7일 마감 브리핑",  # edition without the series tag
+    "[역사story] 한글날은 왜 10월 9일일까? | 10월 9일 아침 브리핑",
 ])
 def test_titles_without_the_series_suffix_are_not_matched(title):
     assert parse_title(title, datetime(2026, 10, 13, tzinfo=UTC)) is None
+
+
+@pytest.mark.parametrize("title,expected", [
+    ("코스피 5.46% 급락, 대체 뭐 때문에 빠졌을까? | 10월 13일 마감 · 오늘의 증시story", True),
+    ("[오늘의 증시story] 반도체 매수는 어디로 갔나? | 10월 7일 마감 브리핑", True),
+    ("[오늘의 증시story] 엔비디아 실적 발표 전 체크포인트", True),
+    ("[역사story] 한글날은 왜 10월 9일일까? 날짜를 바꾼 책 한 권", False),
+    ("Shorts: 오늘의 한 줄", False),
+])
+def test_only_the_brief_series_is_measured(title, expected):
+    assert in_series(title) is expected
 
 
 # Watch ratio falls from 1.0 at the start to 0.6 at a quarter of the video, then to 0.45 at the end.

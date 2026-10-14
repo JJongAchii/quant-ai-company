@@ -127,6 +127,20 @@ def test_a_snapshot_without_reach_data_is_taken_four_days_late(analytics):
     assert [(p["youtube_id"], h) for p, h in due] == [("aaaaaaaaaaa", "d3")]
 
 
+def test_other_series_uploads_are_kept_but_not_measured_until_linked(brief, video, analytics):  # noqa: F811
+    job = delivered_job(brief, video)
+    history = upload("hhhhhhhhhhh", "[역사story] 한글날은 왜 10월 9일일까? 날짜를 바꾼 책 한 권")
+    analytics.upsert_publications([upload(), history])
+    due = analytics.due_snapshots(datetime(2026, 9, 28, 12, tzinfo=UTC))
+    assert [(p["youtube_id"], h) for p, h in due] == [("aaaaaaaaaaa", "d3")]
+    status = analytics.status()["publications"]
+    assert (status["total"], status["other_series"], status["unlinked"]) == (2, 1, [])
+    # An operator link puts it back in (an episode uploaded under another title).
+    analytics.link("hhhhhhhhhhh", str(job["id"]))
+    due = analytics.due_snapshots(datetime(2026, 9, 28, 12, tzinfo=UTC))
+    assert {p["youtube_id"] for p, _ in due} == {"aaaaaaaaaaa", "hhhhhhhhhhh"}
+
+
 def test_baseline_uses_the_same_edition_kind_over_the_previous_28_days(analytics):
     rows = []
     for n in range(6):
