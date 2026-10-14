@@ -263,34 +263,43 @@ def sql(query, runner=run):
         return 0
 
 
+# A receipt left "running" by a crash never changes again, so only recently written ones count as live; runtimes
+# share one jobs directory across lanes, so a runtime's own calls are counted from its processes instead.
 RUNNING_JOBS = r"""
-import json, os, sys
-d, skip, n = sys.argv[1], tuple(sys.argv[2:]), 0
+import json, os, sys, time
+d, fresh, skip, n, now = sys.argv[1], float(sys.argv[2]), tuple(sys.argv[3:]), 0, time.time()
 for f in os.listdir(d) if os.path.isdir(d) else ():
-    if f.endswith('.json') and not f.startswith(skip):
+    path = os.path.join(d, f)
+    if f.endswith('.json') and not f.startswith(skip) and now - os.path.getmtime(path) <= fresh:
         try:
-            n += (json.load(open(os.path.join(d, f))).get('state') == 'running')
+            n += (json.load(open(path)).get('state') == 'running')
         except Exception:
             pass
 print(n)
 """
+LIVE_CALL = {"codex-runtime": "exec --ignore-user-config", "quant-codex-runtime": "exec --ignore-user-config",
+             "video-image-runtime": "exec --ignore-user-config", "claude-runtime": " -p --safe-mode"}
 
 
-def running_jobs(service, skip=(), runner=run):
-    out = runner(["docker", "exec", f"{PROJECT}-{service}-1", "python", "-c", RUNNING_JOBS, "/state/jobs", *skip],
-                 check=False)
+def running_jobs(service, skip=(), fresh=1200, runner=run):
+    out = runner(["docker", "exec", f"{PROJECT}-{service}-1", "python", "-c", RUNNING_JOBS, "/state/jobs", str(fresh),
+                  *skip], check=False)
     try:
         return int(out.strip() or 0)
     except ValueError:
         return 0
 
 
+def processes(service, needle, runner=run):
+    out = runner(["docker", "top", f"{PROJECT}-{service}-1", "-eo", "pid,args"], check=False)
+    return sum(needle in line for line in out.splitlines()[1:])
+
+
 def busy(service, runner=run):
     """Work a recreation would interrupt. Uncertain effects are never replayed, so wait instead."""
     reasons = []
-    if service in {"codex-runtime", "quant-codex-runtime", "video-image-runtime", "claude-runtime"}:
-        if running_jobs(service, runner=runner):
-            reasons.append("model call running")
+    if service in LIVE_CALL and processes(service, LIVE_CALL[service], runner=runner):
+        reasons.append("model call running")
     if service == "worker":
         if running_jobs("codex-runtime", skip=("news", "quant-feed", "video"), runner=runner):
             reasons.append("company model call running")
@@ -499,7 +508,7 @@ def main(argv=None):
     parser.add_argument("--sha")
     parser.add_argument("--archive")
     parser.add_argument("--quiet-seconds", type=int, default=900)
-    args = parser.parse_args(argv)
+    args = parser.parse_intermixed_args(argv)
     os.umask(0o022)
     if args.command == "prepare":
         result = prepare(args.sha, args.archive)
