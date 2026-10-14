@@ -2,7 +2,7 @@
 
 - 작성: 2026-10-14
 - 상태: P2b 코드 완료. 실제 모델 shadow run은 아래 2장의 소유자 결정 두 가지가 끝난 뒤에 한다.
-- 근거: [설계](RESEARCH-PLANNING-DESIGN-20261013.md) 5·12.7·14·16.2·18장, [P2a 계획](RESEARCH-PLANNING-P2A-PLAN-20261014.md), [P2b 계획](RESEARCH-PLANNING-P2B-PLAN-20261014.md)
+- 근거: [설계](RESEARCH-PLANNING-DESIGN-20261013.md) 5·12.7·14·16.2·18장, [P2a 계획](RESEARCH-PLANNING-P2A-PLAN-20261014.md), [P2b 계획](RESEARCH-PLANNING-P2B-PLAN-20261014.md), [ADR 0044](../adr/0044-production-runs-one-main-commit.md)
 
 이 문서는 운영자가 따라 할 순서만 정한다. 실행 기록과 결과는 7장의 결과 보고서에 쓴다.
 shadow run은 후보 비교와 결정 기록까지만 한다. 다음은 하지 않는다.
@@ -15,15 +15,16 @@ P2b 코드에는 handoff 경로가 없다.
 
 ## 1 전제
 
-- P2b가 main에 병합돼 있다. 배포할 commit은 원격에 푸시된 main의 정확한 SHA로 기록한다.
-  푸시되지 않은 파일로 배포하지 않는다.
-- **다른 운영 세션을 먼저 확인한다.**
-  - 배포 잠금과 apply 스크립트를 확인한다([research-programs 운영 절차](../runbooks/research-programs.md), 설계 18장).
-  - 운영 통합 조율(10-14 공지)을 따른다.
-    - 운영 배포, 이미지 교체, overlay·apply 스크립트 적용, 컨테이너 재생성, flag 변경 전에 운영 통합 세션(sargassum-cf)에 서비스 이름과 source commit SHA를 알린다.
-    - 공지된 cutover 시간대에는 배포와 flag 변경을 하지 않는다.
-- `COMPANY_RESEARCH_ENABLED=true`는 research overlay(`deploy/research.compose.yaml`)로 이미 켜져 있다.
-- 계획 테이블은 가산적 migration이다. 계획 flag 두 개는 기본값이 off다.
+- **운영은 main 커밋 하나로 돈다**([ADR 0044](../adr/0044-production-runs-one-main-commit.md)).
+  - main에 병합된 커밋만 `deploy/release.py`로 배포한다.
+  - 배포와 호스트 `runtime.env` 값 변경은 릴리스 담당(소유자, 또는 소유자가 릴리스를 맡긴 운영 세션)에게 요청한다. 요청에는 main SHA와 서비스 이름을 적는다.
+  - overlay, apply 스크립트, 컨테이너 재생성, 서버 설정 파일을 직접 바꾸지 않는다.
+- 운영 커밋에 P2b가 들어 있어야 한다. `release.py verify`가 서비스별 커밋을 보여 준다.
+  10-14 전환 릴리스(`5454e3d`)에는 P2b가 없다.
+- `COMPANY_RESEARCH_ENABLED=true`는 research overlay(`deploy/research.compose.yaml`)가 이미 켠다.
+- 계획 테이블은 가산적이다. release.py의 migrate 단계가 서비스 교체 전에 만든다.
+- 계획 flag 두 개(`RESEARCH_PLANNING_ENABLED`, `RESEARCH_PLANNING_STAGES_ENABLED`)는 research overlay가 연구 서비스 5곳에 넘긴다: api, slack-socket, worker, data-watch-worker, dispatch.
+  `runtime.env`에 값이 없으면 off다.
 - **금지**
   - 운영 DB를 테스트 대상으로 쓰지 않는다.
   - 운영 프로그램 `f7deaf96`의 명세나 상태를 바꾸지 않는다.
@@ -49,12 +50,13 @@ P2b 코드에는 handoff 경로가 없다.
 ## 3 켜는 순서
 
 1. **배포**
-   - 계획 flag를 모두 끈 상태로 P2b가 들어간 main commit을 배포한다.
-   - `quant-company migrate`를 실행한다.
+   - P2b가 들어간 main 커밋을 release.py로 배포한다. 계획 flag는 `runtime.env`에 넣지 않는다(off).
+   - release.py의 migrate 단계가 `research_planning_decisions`를 만든다. migrate를 따로 실행하지 않는다.
    - 기존 동작이 그대로인지 확인한다: 대화, 프로그램 단계, 피드.
 2. **`RESEARCH_PLANNING_ENABLED=true`**
-   - research overlay에서 `COMPANY_RESEARCH_ENABLED`를 가진 서비스 모두에 같은 값으로 넣는다: api, slack-socket, worker, data-watch-worker, dispatch.
-   - 계획 전용 overlay는 아직 없다. 승인된 overlay나 서버 env에 넣고, 바꾼 파일과 값을 배포 기록에 남긴다.
+   - 릴리스 담당이 호스트 `runtime.env`에 이 값을 넣는다. research overlay가 연구 서비스 5곳에 같은 값을 넘긴다.
+   - 같은 main 커밋으로 `release.py plan`을 돌린다. 바뀌는 서비스가 그 5곳뿐인지 확인하고, 그 5곳만 `apply`한다.
+     apply는 서비스가 조용할 때 하나씩 바꾼다.
    - 이 단계에서는 질문 초안, 상태 조회, 승인 버튼만 열린다. 모델 단계는 아직 돌지 않는다.
 3. **질문 초안**
    - 질문 전용 스레드를 새로 연다. 질문은 그 스레드(프로젝트)의 현재 revision에 묶인다.
@@ -69,7 +71,7 @@ P2b 코드에는 handoff 경로가 없다.
      - 모델 호출은 0회이고, DB 변경은 롤백된다.
      - `state`가 `oversize`이면 run이 시작되지 않는다. 질문 범위를 좁힌다.
 5. **`RESEARCH_PLANNING_STAGES_ENABLED=true`**
-   - 2번과 같은 서비스에 넣는다.
+   - 2번과 같은 방법으로 `runtime.env`에 넣고, 같은 5곳을 apply한다.
    - 다음 research tick에서 질문 하나에 shadow run 하나가 시작된다. 소유자당 동시 run은 1개다.
 
 ## 4 관찰
@@ -105,13 +107,15 @@ P2b 코드에는 handoff 경로가 없다.
 
 ## 6 끄기와 롤백
 
+- **값을 바꾸는 방법**: 켤 때와 같다. 릴리스 담당이 `runtime.env` 값을 바꾸고, 같은 main 커밋으로 연구 서비스 5곳을 apply한다.
 - **끄는 시점**: run이 `completed`나 `held`로 끝난 뒤가 가장 안전하다.
   진행 중에 끄면 대기 중인 계획 turn은 준비 단계에서 거부되고 run이 멈춘다. 다시 켜기 전에 운영자가 해당 run의 단계와 turn을 대사한다.
 - **새 run과 단계 생성 중지**: `RESEARCH_PLANNING_STAGES_ENABLED=false`.
   이미 보낸 provider 요청은 완료, 취소, uncertain 중 하나로 대사한다. uncertain 요청은 자동으로 다시 보내지 않는다.
 - **질문 초안과 승인 버튼까지 닫기**: `RESEARCH_PLANNING_ENABLED=false`도 끈다.
 - **기록**: 질문, evidence set, run, 후보, 검토, 결정, gap은 지우지 않는다. 테이블을 drop하지 않는다.
-- **이미지 롤백**: flag를 먼저 끈다. 그 뒤 이전 이미지로 앱 서비스만 되돌린다.
+- **코드 롤백**: flag를 먼저 끈다. 코드를 되돌려야 하면 릴리스 담당이 ADR 0044 절차로 main 커밋을 배포한다.
+  계획 테이블은 가산적이라 남겨 둬도 이전 코드가 그대로 돈다.
 
 ## 7 결과 보고
 

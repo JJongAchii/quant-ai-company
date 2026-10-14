@@ -782,7 +782,9 @@ RESEARCH_PLANNING_DISCOVERY_ENABLED=false # P4 목적 검색
 
 **준비**
 - #87·#105의 main 병합(10-13 #138)과 P0 재확인을 마친다.
-- 다른 운영 세션의 배포 잠금과 apply 스크립트를 먼저 확인한다(`docs/runbooks/research-programs.md`).
+- 배포는 main 커밋을 `deploy/release.py`로만 한다([ADR 0044](../adr/0044-production-runs-one-main-commit.md), 10-14부터).
+  flag 값은 호스트 `runtime.env`에 두고, research overlay가 연구 서비스에 넘긴다.
+  실행 순서는 [shadow 절차서](RESEARCH-PLANNING-SHADOW-RUNBOOK-20261014.md)를 따른다.
 
 **순서**
 1. flag를 모두 끈 상태로 가산적 migration을 배포한다.
