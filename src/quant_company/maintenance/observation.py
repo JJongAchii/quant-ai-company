@@ -68,13 +68,19 @@ def review_snapshot(conn, company, owners, at):
         ORDER BY m.created_at DESC,m.id DESC LIMIT 25
         """, (owners, company.settings.slack_allowed_channels, at - timedelta(days=30), at)).fetchall()
     # Only bounded, already-recorded requests can be replayed. Never manufacture project context.
+    # Filter scope and task kind before decoding large JSONB requests. A flat predicate can
+    # decode every research-stage request at the turns scan before joining/filtering its task.
     requests = conn.execute("""
-        SELECT 'turn:'||t.id::text AS key,k.project_id,k.agent,t.request,t.created_at
-        FROM turns t JOIN tasks k ON k.id=t.task_id JOIN projects p ON p.id=k.project_id
-        WHERE p.owner_user=ANY(%s) AND (p.channel=ANY(%s) OR p.channel LIKE 'D%%') AND t.created_at>=%s AND t.created_at<%s
-          AND k.kind<>'research_stage'
-          AND t.status='completed' AND t.request IS NOT NULL AND octet_length(t.request::text)<=%s
-        ORDER BY t.created_at DESC,t.id DESC LIMIT 7
+        WITH eligible AS MATERIALIZED (
+            SELECT t.id,k.project_id,k.agent,t.request,t.created_at
+            FROM turns t JOIN tasks k ON k.id=t.task_id JOIN projects p ON p.id=k.project_id
+            WHERE p.owner_user=ANY(%s) AND (p.channel=ANY(%s) OR p.channel LIKE 'D%%')
+              AND t.created_at>=%s AND t.created_at<%s AND k.kind<>'research_stage'
+              AND t.status='completed' AND t.request IS NOT NULL
+        )
+        SELECT 'turn:'||id::text AS key,project_id,agent,request,created_at
+        FROM eligible WHERE octet_length(request::text)<=%s
+        ORDER BY created_at DESC,id DESC LIMIT 7
         """, (owners, company.settings.slack_allowed_channels, at - timedelta(days=30), at,
               MAX_REPLAY_REQUEST_BYTES)).fetchall()
     replay_inputs = {}

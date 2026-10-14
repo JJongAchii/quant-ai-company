@@ -1,0 +1,13 @@
+{
+  "captured_at": "2026-10-13T05:24:41.135222+00:00",
+  "actual_case": "297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b",
+  "observed": "Path plus function-name queries were excluded from exact-range priority. Actual replies re-requested report/status/progress_text and current/card.",
+  "baseline": "assertion failure in producer-consumer PostgreSQL test with repeated source previews and later broad search",
+  "candidate": {
+    "related_real_PostgreSQL_tests_passed": 57,
+    "seconds": 10.94,
+    "GitHub_model_and_Slack": "fixtures or not invoked"
+  },
+  "installed": false,
+  "scope": "Use actual returned ranges from recorded explicit file/function queries; no cap, policy or original receipt changes"
+}

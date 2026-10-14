@@ -1,0 +1,397 @@
+{
+  "captured_at": "2026-10-13T04:33:44.699158+00:00",
+  "patch_commit": "94b46beef1d52287920533afb152c329cb2b444a",
+  "targets": {
+    "worker": {
+      "name": "quant-company-worker-1",
+      "id": "8e027b5fe7ae3766875cd95062f66fcedeb4cbdede702357e2a081882f39f2f6",
+      "base_image_id": "sha256:52cbe1af63fed83802bd1fbc103b253be04084dacba192ec194fb5ad4f101a79",
+      "image_tag": "quant-company-maintainer-admission-worker:98796b9",
+      "project": "quant-company",
+      "service": "worker",
+      "compose_files": "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/compose.yaml,/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/research.compose.yaml,/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/data-watch.compose.yaml,/var/lib/quant-company/releases/analyst-autopublish-20261007-exact-env/publication.compose.yaml,/var/lib/quant-company/config/revision-loop-cf497665ee478e75d306519cf772318094f868cb-rollback-worker.compose.json,/var/lib/quant-company/config/revision-loop-3c7cc9130fe5196027b2314aeb788a81a2d66179-worker.compose.json,/var/lib/quant-company/config/maintainer-repair-68ffc8d1c16aaace04b98c259e49055beeb857b9-worker.compose.json,/var/lib/quant-company/config/research-repair-3171e59a5c7f6a2332c33b3bc1249abddccba6ef-worker.compose.json,/var/lib/quant-company/config/technical-review-68a53f1c699837256db5e8a4a6479bbd0fc82876-worker.compose.json,/var/lib/quant-company/config/proposal-navigation-5ec088b2854a2a94c6b514a25e2ae64e1a3dc6b0-worker.compose.json,/var/lib/quant-company/config/maintainer-admission-98796b93f2bfce5f27f803dd36bf0a307d23bcf4-worker.compose.json",
+      "envfile": "/var/lib/quant-company/config/runtime.env"
+    },
+    "maintenance": {
+      "name": "quant-company-maintenance-1",
+      "id": "d2976ac61f6789bb5aec3804dcd639f1b76955c8fb5e20394935acab5617ed0c",
+      "base_image_id": "sha256:b40899b39e363eb93b368fb3a6fc0ea69586e3729b280dca3fed3c9a8c1fc063",
+      "image_tag": "quant-company-maintainer-admission-maintenance:98796b9",
+      "project": "quant-company",
+      "service": "maintenance",
+      "compose_files": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml,/var/lib/quant-company/config/maintainer-recovery-fadc0e54be0c470068bb18011cc6a1a9ec8ee971.compose.json,/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8.compose.json,/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8-memory.compose.json,/var/lib/quant-company/config/model-assignments-20261006-maintenance.compose.json,/var/lib/quant-company/config/maintainer-evidence-db94a2d026aeb10d26e68570089d495de50c3dcc.compose.json,/var/lib/quant-company/config/maintainer-inspection-055a63ca2bb35d4f3e4540456dd85fef30a066a6.compose.json,/var/lib/quant-company/config/maintainer-repair-68ffc8d1c16aaace04b98c259e49055beeb857b9-maintenance.compose.json,/var/lib/quant-company/config/maintainer-history-2427a485ed7e53a2dfda792694f78478b32a8e34.compose.json,/var/lib/quant-company/config/maintainer-selector-17619a29f12ab89f84c8d5cf942a230a9bc5983e.compose.json,/var/lib/quant-company/config/maintainer-admission-98796b93f2bfce5f27f803dd36bf0a307d23bcf4-maintenance.compose.json",
+      "envfile": "/var/lib/quant-company/config/runtime.env"
+    }
+  },
+  "images": {
+    "worker": {
+      "tag": "quant-company-maintainer-continuity-worker:94b46be",
+      "id": "sha256:5bc6367f994b18438c3b268a896e9e62e7ad7cc5ae1d5e8e323b09d85f307bda"
+    },
+    "maintenance": {
+      "tag": "quant-company-maintainer-continuity-maintenance:94b46be",
+      "id": "sha256:7b3ab100d3352904180aa4253ed649a6e973cf8600899598f42411bf763c9854"
+    }
+  },
+  "base_modules": {
+    "admission": "2f68824cf9eae5f7e6e0373983e391f2fa707b849dd2d2a145ec38fe2743c1e7",
+    "github": "4f38d954139cd767f31b506dc7722c9d38cfb32a93a0eb9f51064c0ee2fed6e0",
+    "runner": "f1dd7cc1ad7f17e7450aa7b7f3914498b5e7b82e5250ef14d636d657d136a7ce",
+    "investigation": "3cf6f246c96385e127442f01b0fbf025a997ef9ff8259028ecbf6e5ed91226bb"
+  },
+  "candidate_modules": {
+    "admission": "dddd2defb996cd6db06318b7a3eb117f04270b77a56977cb590fa629d44ee268",
+    "github": "e37c05a439e11327c3bb8f15c5116e015210eea0f67f295ee9ee79d618937a66",
+    "runner": "8d1913ea085ca221e88a14c0e90ab5378e3b676c6b9f6f408b6c273613fbe177",
+    "investigation": "4664c5d8c055a7ed4869adb493a06a356cdfefd1001ab87b6f4c3c7520fe851e"
+  },
+  "comparison": {
+    "baseline": {
+      "frozen_context": {
+        "ranges": [
+          {
+            "path": "src/quant_company/maintenance/requests.py",
+            "start": 40,
+            "stored_lines": 213,
+            "visible_lines": 105,
+            "complete": false
+          },
+          {
+            "path": "src/quant_company/maintenance/cases.py",
+            "start": 50,
+            "stored_lines": 162,
+            "visible_lines": 0,
+            "complete": false
+          },
+          {
+            "path": "src/quant_company/company.py",
+            "start": 870,
+            "stored_lines": 90,
+            "visible_lines": 0,
+            "complete": false
+          }
+        ],
+        "all_ranges_visible": false,
+        "prompt_characters": 82620,
+        "prompt_sha256": "8b9131a99652b46f20d7b79d5c0012e8526aca7148fc5d376881642968d71ff8",
+        "sections": {
+          "requested_diagnosis": 954,
+          "instructions": 4118,
+          "observations": 1218,
+          "history": 27145,
+          "current_implementation": 23771,
+          "active_diagnosis": 169,
+          "editable_paths": 1578,
+          "evidence_references": 1704,
+          "external_research": 2,
+          "inspection_catalog": 5384,
+          "inspection_lookup": 310,
+          "inspection_rounds_remaining": 1,
+          "investigated_code": 7704,
+          "prompt_excerpted": 4,
+          "prompt_path_catalog": 450,
+          "recent_inspection": 411,
+          "repository_paths": 1146,
+          "saved_inspection_requests": 1065,
+          "prompt_system_compaction": 1,
+          "prompt_history_compaction": 1,
+          "prompt_inspection_priority": 4
+        },
+        "diagnostic_sections": {
+          "coverage": 127,
+          "implementation_digest": 66,
+          "key": 73,
+          "runtime_scope_digest": 66,
+          "scope_digest": 66,
+          "scope_version": 1,
+          "source_files": 8418,
+          "system": 14811
+        },
+        "history_sections": {
+          "as_of": 34,
+          "evidence": 20759,
+          "interpretation": 178,
+          "periods": 1677,
+          "roster": 4275,
+          "sampling": 138
+        },
+        "history_related": 1,
+        "raw_code_characters": 90672,
+        "raw_exact_ranges": [
+          {
+            "path": "src/quant_company/company.py",
+            "start": 870,
+            "count": 90
+          },
+          {
+            "path": "tests/test_maintenance_repair_path.py",
+            "start": 1,
+            "count": 250
+          },
+          {
+            "path": "src/quant_company/maintenance/requests.py",
+            "start": 40,
+            "count": 213
+          },
+          {
+            "path": "src/quant_company/maintenance/cases.py",
+            "start": 50,
+            "count": 162
+          },
+          {
+            "path": "tests/test_maintenance_repair_path.py",
+            "start": 1,
+            "count": 200
+          }
+        ]
+      },
+      "original_job_unchanged": true,
+      "original_calls_unchanged": true,
+      "database_writes": 0,
+      "model_calls": 0
+    },
+    "candidate": {
+      "frozen_context": {
+        "ranges": [
+          {
+            "path": "src/quant_company/maintenance/requests.py",
+            "start": 40,
+            "stored_lines": 213,
+            "visible_lines": 213,
+            "complete": true
+          },
+          {
+            "path": "src/quant_company/maintenance/cases.py",
+            "start": 50,
+            "stored_lines": 162,
+            "visible_lines": 162,
+            "complete": true
+          },
+          {
+            "path": "src/quant_company/company.py",
+            "start": 870,
+            "stored_lines": 90,
+            "visible_lines": 90,
+            "complete": true
+          }
+        ],
+        "all_ranges_visible": true,
+        "prompt_characters": 83355,
+        "prompt_sha256": "601c141e49209911dcc426de635918d2f88d56494b7295a5560d0f6e8036f11e",
+        "sections": {
+          "requested_diagnosis": 954,
+          "instructions": 4118,
+          "observations": 1218,
+          "history": 3305,
+          "current_implementation": 12608,
+          "active_diagnosis": 169,
+          "editable_paths": 1578,
+          "evidence_references": 1192,
+          "external_research": 2,
+          "inspection_catalog": 3506,
+          "inspection_lookup": 310,
+          "inspection_rounds_remaining": 1,
+          "investigated_code": 44695,
+          "prompt_excerpted": 4,
+          "prompt_path_catalog": 450,
+          "recent_inspection": 411,
+          "repository_paths": 1146,
+          "saved_inspection_requests": 1065,
+          "prompt_system_compaction": 1,
+          "prompt_history_compaction": 1,
+          "prompt_context_indexed": 4,
+          "prompt_source_compaction": 1,
+          "prompt_inspection_priority": 4
+        },
+        "diagnostic_sections": {
+          "coverage": 127,
+          "implementation_digest": 66,
+          "key": 73,
+          "runtime_scope_digest": 66,
+          "scope_digest": 66,
+          "scope_version": 1,
+          "source_files": 2904,
+          "system": 9162
+        },
+        "history_sections": {
+          "as_of": 34,
+          "evidence": 1726,
+          "interpretation": 178,
+          "periods": 2,
+          "roster": 885,
+          "sampling": 138,
+          "prompt_index": 240
+        },
+        "history_related": 1,
+        "raw_code_characters": 90672,
+        "raw_exact_ranges": [
+          {
+            "path": "src/quant_company/company.py",
+            "start": 870,
+            "count": 90
+          },
+          {
+            "path": "tests/test_maintenance_repair_path.py",
+            "start": 1,
+            "count": 250
+          },
+          {
+            "path": "src/quant_company/maintenance/requests.py",
+            "start": 40,
+            "count": 213
+          },
+          {
+            "path": "src/quant_company/maintenance/cases.py",
+            "start": 50,
+            "count": 162
+          },
+          {
+            "path": "tests/test_maintenance_repair_path.py",
+            "start": 1,
+            "count": 200
+          }
+        ]
+      },
+      "requested_file": {
+        "path": "tests/test_maintenance_repair_path.py",
+        "blob_sha": "46c2e4527abae99544a3786221bc515354327574",
+        "same_commit": true,
+        "file_bytes": 13310,
+        "read_bytes": 1999830,
+        "fetched_files": 3,
+        "stored_cache_unchanged": true,
+        "inspection_consumer": "actual inspect_code with read-only in-memory exact-file adapter",
+        "context_with_requested_test": {
+          "ranges": [
+            {
+              "path": "src/quant_company/maintenance/requests.py",
+              "start": 40,
+              "stored_lines": 213,
+              "visible_lines": 213,
+              "complete": true
+            },
+            {
+              "path": "src/quant_company/maintenance/cases.py",
+              "start": 50,
+              "stored_lines": 162,
+              "visible_lines": 162,
+              "complete": true
+            },
+            {
+              "path": "src/quant_company/company.py",
+              "start": 870,
+              "stored_lines": 90,
+              "visible_lines": 90,
+              "complete": true
+            },
+            {
+              "path": "tests/test_maintenance_repair_path.py",
+              "start": 1,
+              "stored_lines": 200,
+              "visible_lines": 200,
+              "complete": true
+            }
+          ],
+          "all_ranges_visible": true,
+          "prompt_characters": 87640,
+          "prompt_sha256": "9a23f63a85d99a2f86cd8bb65194e6593d92fb331225a083af33b8321f9fc51e",
+          "sections": {
+            "requested_diagnosis": 954,
+            "instructions": 4118,
+            "observations": 1218,
+            "history": 3305,
+            "current_implementation": 12608,
+            "active_diagnosis": 169,
+            "editable_paths": 1578,
+            "evidence_references": 1192,
+            "external_research": 2,
+            "inspection_catalog": 3705,
+            "inspection_lookup": 310,
+            "inspection_rounds_remaining": 1,
+            "investigated_code": 48730,
+            "prompt_excerpted": 4,
+            "prompt_path_catalog": 450,
+            "recent_inspection": 411,
+            "repository_paths": 1147,
+            "saved_inspection_requests": 1065,
+            "prompt_system_compaction": 1,
+            "prompt_history_compaction": 1,
+            "prompt_context_indexed": 4,
+            "prompt_source_compaction": 1,
+            "prompt_inspection_priority": 4
+          },
+          "diagnostic_sections": {
+            "coverage": 127,
+            "implementation_digest": 66,
+            "key": 73,
+            "runtime_scope_digest": 66,
+            "scope_digest": 66,
+            "scope_version": 1,
+            "source_files": 2904,
+            "system": 9162
+          },
+          "history_sections": {
+            "as_of": 34,
+            "evidence": 1726,
+            "interpretation": 178,
+            "periods": 2,
+            "roster": 885,
+            "sampling": 138,
+            "prompt_index": 240
+          },
+          "history_related": 1,
+          "raw_code_characters": 104672,
+          "raw_exact_ranges": [
+            {
+              "path": "src/quant_company/company.py",
+              "start": 870,
+              "count": 90
+            },
+            {
+              "path": "tests/test_maintenance_repair_path.py",
+              "start": 1,
+              "count": 250
+            },
+            {
+              "path": "src/quant_company/maintenance/requests.py",
+              "start": 40,
+              "count": 213
+            },
+            {
+              "path": "src/quant_company/maintenance/cases.py",
+              "start": 50,
+              "count": 162
+            },
+            {
+              "path": "tests/test_maintenance_repair_path.py",
+              "start": 1,
+              "count": 200
+            }
+          ]
+        }
+      },
+      "filename_lookup_returns_requested_code": true,
+      "original_job_unchanged": true,
+      "original_calls_unchanged": true,
+      "database_writes": 0,
+      "model_calls": 0
+    }
+  },
+  "revision_guard": {
+    "baseline_stale_call_blocks": true,
+    "candidate_stale_call_releases": true,
+    "current_revision_still_reserves": true,
+    "original_call_unchanged": true,
+    "database": "real disposable PostgreSQL",
+    "slack": "fixture",
+    "models": "not invoked",
+    "model_calls": 0,
+    "production_database_writes": 0
+  },
+  "guard_store_sha256": "9cf9206a3d53d04d9eb1cd7bd5a56cafb14ce99c33f528f1df6be607e59ad5c0",
+  "temporary_database_and_network_removed": true,
+  "model_calls": 0,
+  "production_database_writes": 0,
+  "image_execution_configuration_unchanged": true,
+  "independent_source_changes_preserved": true
+}

@@ -1,0 +1,18 @@
+{
+  "patch_commit": "2427a485ed7e53a2dfda792694f78478b32a8e34",
+  "scope": "Runner-only operator repair for real repeated-inspection failure; no model, limits, workers or account changes.",
+  "target": {
+    "name": "quant-company-maintenance-1",
+    "id": "e0dda82109b10a2af595f647dacb3c6645cab2ac967cdd7d9045f29d5c6120ac",
+    "base_image_id": "sha256:3105d87449f83bd7dbc39df09f8996f66dd8fe596362380dc9141ad708374b0e",
+    "image_tag": "quant-company-repair-maintenance:68ffc8d1",
+    "running": true,
+    "project": "quant-company",
+    "service": "maintenance",
+    "compose_files": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml,/var/lib/quant-company/config/maintainer-recovery-fadc0e54be0c470068bb18011cc6a1a9ec8ee971.compose.json,/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8.compose.json,/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8-memory.compose.json,/var/lib/quant-company/config/model-assignments-20261006-maintenance.compose.json,/var/lib/quant-company/config/maintainer-evidence-db94a2d026aeb10d26e68570089d495de50c3dcc.compose.json,/var/lib/quant-company/config/maintainer-inspection-055a63ca2bb35d4f3e4540456dd85fef30a066a6.compose.json,/var/lib/quant-company/config/maintainer-repair-68ffc8d1c16aaace04b98c259e49055beeb857b9-maintenance.compose.json",
+    "envfile": "/var/lib/quant-company/config/runtime.env"
+  },
+  "base_runner_sha256": "01ae348bc20cbc52033f82500815f1ec4e80e3fcefd37f7ef2be328c9ec090ea",
+  "candidate_runner_sha256": "f1dd7cc1ad7f17e7450aa7b7f3914498b5e7b82e5250ef14d636d657d136a7ce",
+  "target_image": "quant-company-maintainer-history:2427a48"
+}

@@ -10,7 +10,7 @@ from ..contracts import ProviderSession
 from .builds import read_stage_file
 
 PACKET_CHARS = 48000
-MAX_NOTES = 8000
+MAX_NOTES = 24000
 MARKER = "\nAUDIT PACKET JSON:\n"
 
 

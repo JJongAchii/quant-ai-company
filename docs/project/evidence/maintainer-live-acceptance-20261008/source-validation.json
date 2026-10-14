@@ -1,0 +1,27 @@
+{
+  "captured_at": "2026-10-11T23:55:00Z",
+  "baseline": {
+    "source": "7f0f5e3c02c72300242543c1e32d21fdae1781b2 plus already approved PR123",
+    "assertion_failures": 1,
+    "passed": 1,
+    "defect": "History detail displaces a previously inspected status producer tail under shared context budget."
+  },
+  "candidate": {
+    "passed": 44,
+    "seconds": 10,
+    "scope": "Real disposable PostgreSQL; simulated model, GitHub and Slack; exact-code/history preservation unit regression."
+  },
+  "production": {
+    "first_request_id": "672a94ca-b8e9-51b7-8fb0-354b96c7f355",
+    "actual_calls": 8,
+    "state": "blocked",
+    "error": "investigation_budget_exhausted",
+    "bot_code_pr": null
+  },
+  "remaining": [
+    "Frozen actual-request image qualification",
+    "Source CI",
+    "Operator repair installation",
+    "New genuine follow-up using real subscription calls to code repair/CI/PR"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "patch_commit": "17619a29f12ab89f84c8d5cf942a230a9bc5983e",
+  "scope": "Observation selector only; same owner/channel/time/request-size bounds; resume durable case2 after verified runtime repair.",
+  "target": {
+    "name": "quant-company-maintenance-1",
+    "id": "2b9975f7b24bbe4c43384f07339da1ad6bfde829ace3c6431567c64e823d2611",
+    "base_image_id": "sha256:b645d6e7a629c25911f7193753f99a431f9d7906811d1e9825fe3b46e91e4627",
+    "image_tag": "quant-company-maintainer-history:2427a48",
+    "running": true,
+    "exit_code": 0,
+    "finished_at": "2026-10-13T00:26:14.280150037Z",
+    "project": "quant-company",
+    "service": "maintenance",
+    "compose_files": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml,/var/lib/quant-company/config/maintainer-recovery-fadc0e54be0c470068bb18011cc6a1a9ec8ee971.compose.json,/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8.compose.json,/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8-memory.compose.json,/var/lib/quant-company/config/model-assignments-20261006-maintenance.compose.json,/var/lib/quant-company/config/maintainer-evidence-db94a2d026aeb10d26e68570089d495de50c3dcc.compose.json,/var/lib/quant-company/config/maintainer-inspection-055a63ca2bb35d4f3e4540456dd85fef30a066a6.compose.json,/var/lib/quant-company/config/maintainer-repair-68ffc8d1c16aaace04b98c259e49055beeb857b9-maintenance.compose.json,/var/lib/quant-company/config/maintainer-history-2427a485ed7e53a2dfda792694f78478b32a8e34.compose.json",
+    "envfile": "/var/lib/quant-company/config/runtime.env"
+  },
+  "base_observation_sha256": "017af31aaf5607d9f594666d79eeabe19f24c50b76b1848c9d69fb6fa511b3c8",
+  "candidate_observation_sha256": "22260bfcdbebd5ee292b000c623e88249824513aa89076a995ffb5b4adedc06e",
+  "preserved_runner_sha256": "f1dd7cc1ad7f17e7450aa7b7f3914498b5e7b82e5250ef14d636d657d136a7ce",
+  "target_image": "quant-company-maintainer-selector:17619a2",
+  "case1_job": "672a94ca-b8e9-51b7-8fb0-354b96c7f355",
+  "case2_job": "c7d07401-ef8a-5d16-96f5-b6048b16dd1b"
+}

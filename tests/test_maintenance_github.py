@@ -146,6 +146,39 @@ def test_ci_recheck_blocks_new_failure_before_pr():
         github.pull_request(job())
 
 
+@pytest.mark.parametrize('fault,reason', [
+    (None, None), ('head', 'base_retest_candidate_ref_changed'),
+    ('ci', 'base_retest_candidate_ci_not_passed'),
+])
+def test_base_retest_verifies_candidate_and_ci_without_writing_or_opening_pr(fault, reason):
+    checked = []
+    def handler(request):
+        assert request.method == 'GET' and request.url.path.endswith('/heads/maintenance/fixture')
+        return httpx.Response(200, json={'object': {'sha': ('d' if fault == 'head' else 'c') * 40}})
+    github = client(handler)
+    def ci(receipt):
+        checked.append(receipt)
+        return {'state': 'failed' if fault == 'ci' else 'passed'}
+    github.ci = ci
+    case = job()
+    if reason:
+        with pytest.raises(ValueError, match=reason):
+            github.verify_base_retest(case)
+    else:
+        github.verify_base_retest(case)
+    assert checked == ([] if fault == 'head' else [case['receipt']])
+
+
+def test_changed_base_still_blocks_pr_before_any_post_even_with_passing_ci():
+    def handler(request):
+        assert request.method == 'GET' and '/git/ref/heads/' in request.url.path
+        return httpx.Response(200, json={'object': {'sha': ('d' if request.url.path.endswith('/main') else 'c') * 40}})
+    github = client(handler)
+    github.ci = lambda receipt: {'state': 'passed'}
+    with pytest.raises(ValueError, match='pr_ref_moved'):
+        github.pull_request(job())
+
+
 @pytest.mark.parametrize('problem', [None, 'moved_head', 'unsafe_redirect'])
 def test_ci_repair_feedback_uses_exact_attempt_and_redacts_log_credentials(problem):
     downloads = []

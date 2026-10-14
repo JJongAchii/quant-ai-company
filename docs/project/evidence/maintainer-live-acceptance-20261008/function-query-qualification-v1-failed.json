@@ -1,0 +1,254 @@
+{
+  "patch_commit": "84a0b2f54358977c2668d1451185c5be52dcadb6",
+  "installed": false,
+  "reason": "Required existing test body was truncated under the unchanged 88000-character context cap",
+  "comparison": {
+    "baseline": {
+      "first_function_queries": {
+        "ranges": [
+          {
+            "path": "src/quant_company/company.py",
+            "stored_lines": 160,
+            "visible_lines": 160,
+            "complete": true
+          },
+          {
+            "path": "src/quant_company/maintenance/cases.py",
+            "stored_lines": 162,
+            "visible_lines": 162,
+            "complete": true
+          },
+          {
+            "path": "src/quant_company/maintenance/requests.py",
+            "stored_lines": 213,
+            "visible_lines": 0,
+            "complete": false
+          },
+          {
+            "path": "tests/test_maintenance_repair_path.py",
+            "stored_lines": 200,
+            "visible_lines": 200,
+            "complete": true
+          }
+        ],
+        "all_ranges_visible": false,
+        "prompt_characters": 73960,
+        "sections": {
+          "requested_diagnosis": 827,
+          "instructions": 4118,
+          "observations": 1091,
+          "history": 3305,
+          "current_implementation": 12655,
+          "active_diagnosis": 169,
+          "editable_paths": 1585,
+          "evidence_references": 759,
+          "external_research": 2,
+          "inspection_catalog": 781,
+          "inspection_lookup": 310,
+          "inspection_rounds_remaining": 1,
+          "investigated_code": 38948,
+          "prompt_excerpted": 4,
+          "prompt_path_catalog": 450,
+          "recent_inspection": 483,
+          "repository_paths": 1153,
+          "saved_inspection_requests": 423,
+          "prompt_system_compaction": 1,
+          "prompt_history_compaction": 1,
+          "prompt_context_indexed": 4,
+          "prompt_source_compaction": 1,
+          "prompt_inspection_priority": 4
+        },
+        "source_preview_characters": 1120,
+        "permissions_limits_and_provider_unchanged": true
+      },
+      "current_read_ranges": {
+        "ranges": [
+          {
+            "path": "src/quant_company/company.py",
+            "stored_lines": 160,
+            "visible_lines": 160,
+            "complete": true
+          },
+          {
+            "path": "src/quant_company/maintenance/cases.py",
+            "stored_lines": 162,
+            "visible_lines": 162,
+            "complete": true
+          },
+          {
+            "path": "src/quant_company/maintenance/requests.py",
+            "stored_lines": 213,
+            "visible_lines": 213,
+            "complete": true
+          },
+          {
+            "path": "tests/test_maintenance_repair_path.py",
+            "stored_lines": 201,
+            "visible_lines": 105,
+            "complete": false
+          }
+        ],
+        "all_ranges_visible": false,
+        "prompt_characters": 82172,
+        "sections": {
+          "requested_diagnosis": 827,
+          "instructions": 4118,
+          "observations": 1091,
+          "history": 3305,
+          "current_implementation": 12655,
+          "active_diagnosis": 169,
+          "editable_paths": 1585,
+          "evidence_references": 759,
+          "external_research": 2,
+          "inspection_catalog": 1177,
+          "inspection_lookup": 310,
+          "inspection_rounds_remaining": 1,
+          "investigated_code": 46712,
+          "prompt_excerpted": 4,
+          "prompt_path_catalog": 450,
+          "recent_inspection": 164,
+          "repository_paths": 1153,
+          "saved_inspection_requests": 840,
+          "prompt_system_compaction": 1,
+          "prompt_history_compaction": 1,
+          "prompt_context_indexed": 4,
+          "prompt_source_compaction": 1,
+          "prompt_inspection_priority": 4
+        },
+        "source_preview_characters": 1120,
+        "permissions_limits_and_provider_unchanged": true
+      },
+      "original_call": "maint-297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b-r1-triage-i3",
+      "model_calls": 0,
+      "database_writes": 0,
+      "original_job_unchanged": true,
+      "original_calls_unchanged": true
+    },
+    "candidate": {
+      "first_function_queries": {
+        "ranges": [
+          {
+            "path": "src/quant_company/company.py",
+            "stored_lines": 160,
+            "visible_lines": 160,
+            "complete": true
+          },
+          {
+            "path": "src/quant_company/maintenance/cases.py",
+            "stored_lines": 162,
+            "visible_lines": 162,
+            "complete": true
+          },
+          {
+            "path": "src/quant_company/maintenance/requests.py",
+            "stored_lines": 213,
+            "visible_lines": 213,
+            "complete": true
+          },
+          {
+            "path": "tests/test_maintenance_repair_path.py",
+            "stored_lines": 200,
+            "visible_lines": 200,
+            "complete": true
+          }
+        ],
+        "all_ranges_visible": true,
+        "prompt_characters": 87536,
+        "sections": {
+          "requested_diagnosis": 827,
+          "instructions": 4118,
+          "observations": 1091,
+          "history": 3305,
+          "current_implementation": 10687,
+          "active_diagnosis": 169,
+          "editable_paths": 1585,
+          "evidence_references": 759,
+          "external_research": 2,
+          "inspection_catalog": 780,
+          "inspection_lookup": 310,
+          "inspection_rounds_remaining": 1,
+          "investigated_code": 54115,
+          "prompt_excerpted": 4,
+          "prompt_path_catalog": 450,
+          "recent_inspection": 483,
+          "repository_paths": 1153,
+          "saved_inspection_ranges": 181,
+          "saved_inspection_requests": 423,
+          "prompt_system_compaction": 1,
+          "prompt_history_compaction": 1,
+          "prompt_context_indexed": 4,
+          "prompt_source_compaction": 1,
+          "prompt_inspection_priority": 4,
+          "prompt_final_compaction": 176
+        },
+        "source_preview_characters": 0,
+        "permissions_limits_and_provider_unchanged": true
+      },
+      "current_read_ranges": {
+        "ranges": [
+          {
+            "path": "src/quant_company/company.py",
+            "stored_lines": 160,
+            "visible_lines": 160,
+            "complete": true
+          },
+          {
+            "path": "src/quant_company/maintenance/cases.py",
+            "stored_lines": 162,
+            "visible_lines": 162,
+            "complete": true
+          },
+          {
+            "path": "src/quant_company/maintenance/requests.py",
+            "stored_lines": 213,
+            "visible_lines": 213,
+            "complete": true
+          },
+          {
+            "path": "tests/test_maintenance_repair_path.py",
+            "stored_lines": 201,
+            "visible_lines": 105,
+            "complete": false
+          }
+        ],
+        "all_ranges_visible": false,
+        "prompt_characters": 80602,
+        "sections": {
+          "requested_diagnosis": 827,
+          "instructions": 4118,
+          "observations": 1091,
+          "history": 3305,
+          "current_implementation": 10687,
+          "active_diagnosis": 169,
+          "editable_paths": 1585,
+          "evidence_references": 759,
+          "external_research": 2,
+          "inspection_catalog": 1177,
+          "inspection_lookup": 310,
+          "inspection_rounds_remaining": 1,
+          "investigated_code": 46712,
+          "prompt_excerpted": 4,
+          "prompt_path_catalog": 450,
+          "recent_inspection": 164,
+          "repository_paths": 1153,
+          "saved_inspection_ranges": 181,
+          "saved_inspection_requests": 840,
+          "prompt_system_compaction": 1,
+          "prompt_history_compaction": 1,
+          "prompt_context_indexed": 4,
+          "prompt_source_compaction": 1,
+          "prompt_inspection_priority": 4,
+          "prompt_final_compaction": 176
+        },
+        "source_preview_characters": 0,
+        "permissions_limits_and_provider_unchanged": true
+      },
+      "original_call": "maint-297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b-r1-triage-i3",
+      "model_calls": 0,
+      "database_writes": 0,
+      "original_job_unchanged": true,
+      "original_calls_unchanged": true
+    }
+  }
+}
+
