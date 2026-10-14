@@ -28,6 +28,16 @@ def run_report(conn, run_id):
         coalesce(sum((t.response->'usage'->>'output_tokens')::bigint),0)::bigint AS output_tokens
         FROM turns t JOIN research_stage_attempts a ON a.task_id=t.task_id
         JOIN research_mission_stages s ON s.id=a.stage_id WHERE s.planning_run_id=%s""", (run_id,)).fetchone()
+    # Attributed to this run's stage tasks, so concurrent production activity cannot hide or fake an effect.
+    side_effects = conn.execute("""WITH stage_tasks AS (SELECT a.task_id FROM research_stage_attempts a
+            JOIN research_mission_stages s ON s.id=a.stage_id WHERE s.planning_run_id=%(run)s)
+        SELECT (SELECT count(*) FROM messages WHERE task_id IN (SELECT task_id FROM stage_tasks)) AS messages,
+        (SELECT count(*) FROM outbox o JOIN messages m ON m.id=o.id
+            WHERE m.task_id IN (SELECT task_id FROM stage_tasks)) AS outbox,
+        (SELECT count(*) FROM tasks WHERE parent_id IN (SELECT task_id FROM stage_tasks)) AS delegated_tasks,
+        (SELECT count(*) FROM research_program_tasks p JOIN research_planning_candidates c
+            ON c.task_digest=p.digest AND p.program_id=%(program)s WHERE c.run_id=%(run)s) AS registered_program_tasks""",
+        {"run": run_id, "program": run["program_id"]}).fetchone()
     return as_json({
         "run": {key: run[key] for key in ("id", "question_id", "question_revision", "program_id", "mode", "state",
                                           "outcome", "hold_reason", "created_at", "updated_at")},
@@ -50,6 +60,7 @@ def run_report(conn, run_id):
             WHERE parent_question_id=%s AND origin='follow_up' ORDER BY created_at,id""",
             (run["question_id"],)).fetchall(),
         "usage": usage,
+        "side_effects": side_effects,
         "scope": "Shadow planning record. A literature and plan review, not an experiment result."})
 
 

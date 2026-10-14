@@ -173,6 +173,8 @@ def test_run_report_traces_a_completed_run(planning):  # noqa: F811
     assert {r["kind"] for r in report["reviews"]} == {"triage", "critique"}
     assert report["usage"]["requests"] > 0 and report["stages"][0]["stage"] == "planning_slate"
     assert all(isinstance(value, int) for value in report["usage"].values())
+    assert report["side_effects"] == {"messages": 0, "outbox": 0, "delegated_tasks": 0,
+                                      "registered_program_tasks": 0}
 
 
 def test_run_report_for_a_run_in_progress(planning):  # noqa: F811
@@ -190,3 +192,32 @@ def test_run_report_rejects_a_malformed_or_unknown_run(company):
     for run in ("not-a-run-id", "00000000-0000-0000-0000-000000000000"):
         with pytest.raises(PolicyError, match="planning run"):
             command(company.settings, "run-report", run=run, company=company)
+
+
+def test_status_lists_the_runs_of_each_question(planning):  # noqa: F811
+    from quant_company.research.planning_commands import command
+
+    h = planning
+    PlanningController(h.company).tick()
+    stage = stage_named(h, "planning_slate")
+    status = command(h.company.settings, "status", company=h.company)
+    question = next(q for p in status["projects"] for q in p["questions"] if q["id"] == h.question["id"])
+    assert [(run["id"], run["state"]) for run in question["runs"]] == [(str(stage["planning_run_id"]), "slate")]
+
+
+def test_run_report_counts_only_this_runs_messages(planning):  # noqa: F811
+    from uuid import uuid4
+
+    from quant_company.research.planning_commands import command
+
+    h = planning
+    to_critique(h)
+    slate_stage = stage_named(h, "planning_slate")
+    with h.company.db.transaction() as conn:
+        task = conn.execute("SELECT * FROM tasks WHERE id=%s", (slate_stage["task_id"],)).fetchone()
+        for task_id in (task["id"], None):
+            conn.execute("""INSERT INTO messages(id,project_id,task_id,revision,author,kind,text)
+                VALUES(%s,%s,%s,%s,'researcher_kr','status','Synthetic message')""",
+                (uuid4(), task["project_id"], task_id, task["revision"]))
+    report = command(h.company.settings, "run-report", run=str(slate_stage["planning_run_id"]), company=h.company)
+    assert (report["side_effects"]["messages"], report["side_effects"]["outbox"]) == (1, 0)
