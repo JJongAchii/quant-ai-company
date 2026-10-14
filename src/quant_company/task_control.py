@@ -143,7 +143,15 @@ def apply(conn, company, project, task, control, *, routed=False):
     before = project['revision']
     notify_owner = False
     if action == 'status':
-        text = status_text(conn, project)
+        settings = company.settings
+        if (settings.ops_status_enabled and settings.ops_alert_channel_id
+                and project['channel'] == settings.ops_alert_channel_id):
+            from .ops.status import live_status
+            from .ops.status import status_text as ops_text
+
+            text = ops_text(live_status(conn, project))
+        else:
+            text = status_text(conn, project)
     elif action == 'clarify':
         notify_owner = True
         if not control.question.strip():

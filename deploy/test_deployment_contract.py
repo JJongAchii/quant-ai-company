@@ -490,6 +490,27 @@ def test_improvements_activation_reaches_all_company_processes_without_model_cre
     assert not any("slack" in str(item) for item in services["codex-runtime"].get("secrets", []))
 
 
+def test_ops_watch_configuration_reaches_company_processes_but_not_the_model_runtime(tmp_path):
+    from quant_company.config import Settings
+
+    env = tmp_path / "ops.env"
+    env.write_text('OPS_STATUS_ENABLED=true\nOPS_WATCH_ENABLED=true\nOPS_ALERT_CHANNEL_ID=COPS\nOPS_WATCH_OWNER_USER=UHUMAN\n'
+                   'SLACK_ALLOWED_CHANNELS=["COPS"]\nSLACK_ALLOWED_USERS=["UHUMAN"]\n')
+    services = compose_config("maintenance", extra_env=env)["services"]
+    for name in ("api", "worker", "dispatch", "slack-socket", "maintenance"):
+        values = services[name]["environment"]
+        settings = Settings(**{key.lower(): json.loads(value) if key in
+                                  {"SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS", "HOUSING_FEED_ALLOWED_CHANNELS", "TREND_FEED_PUBLICATION_HOURS",
+                                  "BRIEFING_EVALUATION_EDITION_IDS"} else value
+                              for key, value in values.items()})
+        assert settings.ops_status_enabled and settings.ops_watch_enabled
+        assert (settings.ops_alert_channel_id, settings.ops_watch_owner_user) == ("COPS", "UHUMAN")
+    assert not any(key.startswith("OPS_") for key in services["codex-runtime"]["environment"])
+    assert "OPS_FALLBACK_ENABLED" not in services["dispatch"]["environment"]  # read by the host probe only
+    unit = (DEPLOY / "quant-company-ops-probe.service").read_text()
+    assert "ExecStart=/usr/bin/python3 /opt/quant-company/current/deploy/ops_probe.py " in unit
+
+
 def test_data_watch_configuration_reaches_existing_processes_without_new_credentials(tmp_path):
     from quant_company.config import Settings
 

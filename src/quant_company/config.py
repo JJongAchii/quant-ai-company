@@ -31,6 +31,10 @@ class Settings(BaseSettings):
     data_watch_channel_id: str = ""
     data_watch_owner_user: str = ""
     data_watch_contracts_file: Path | None = None
+    ops_status_enabled: bool = False
+    ops_watch_enabled: bool = False
+    ops_alert_channel_id: str = ""
+    ops_watch_owner_user: str = ""
     temporal_address: str = "localhost:7233"
     temporal_namespace: str = "default"
     temporal_api_key: SecretStr = SecretStr("")
@@ -302,6 +306,15 @@ class Settings(BaseSettings):
             raise ValueError("Data watch requires a dedicated allowed Slack channel and owner")
         if self.data_watch_core_enabled and not self.data_watch_enabled:
             raise ValueError("Data watch core checks require data watch")
+        if self.ops_watch_enabled and (
+            not self.ops_alert_channel_id.startswith("C")
+            or self.ops_alert_channel_id not in self.slack_allowed_channels
+            or self.ops_watch_owner_user not in self.slack_allowed_users
+            or self.ops_alert_channel_id in {self.briefing_channel_id, self.improvements_channel_id,
+                                             self.data_watch_channel_id, self.news_channel_id,
+                                             self.model_accounts_channel_id, self.video_analytics_channel_id}
+        ):
+            raise ValueError("Ops watch requires a dedicated allowed Slack channel and owner")
         if self.briefing_evaluation_edition_ids and self.briefing_evaluation_edition_id:
             raise ValueError('Bounded briefing observation requires a single ID list')
         return self

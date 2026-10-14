@@ -25,6 +25,7 @@ CORE_SCHEMA = (
     ("quant_company.research", "program_schema.sql"),
     ("quant_company.research", "planning_schema.sql"),
     ("quant_company.data_watch", "schema.sql"),
+    ("quant_company.ops", "schema.sql"),
 )
 RETRYABLE = (psycopg.errors.LockNotAvailable, psycopg.errors.DeadlockDetected)
 
