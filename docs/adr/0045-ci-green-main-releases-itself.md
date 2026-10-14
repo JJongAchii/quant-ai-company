@@ -25,7 +25,7 @@
    - 코드는 GitHub tarball로 받는다. pax 헤더의 커밋을 확인하고 빌드 입력(deploy, src, pyproject.toml, uv.lock, .dockerignore)만 푼다.
    - codeload 리디렉트에는 설치 토큰을 보내지 않는다.
 4. **스스로 할 수 없는 변경이면 멈추고 알린다.**
-   - `render_required`: 렌더 이미지 커밋(`VIDEO_RENDER_COMMIT`)과 다른 렌더 입력이 있다. 렌더 입력은 렌더 작업이 import하는 모듈(`video.remote`부터 정적으로 추적), 디자인 자산, `Dockerfile.render`, `render.json`, 의존성이다. 운영자가 렌더 이미지와 작업 정의를 먼저 바꾸고 `VIDEO_RENDER_COMMIT`을 올리면 이어서 진행한다.
+   - `render_required`: 렌더 이미지 커밋(`VIDEO_RENDER_COMMIT`)과 다른 렌더 입력이 있다. 렌더 입력은 렌더 작업이 import하는 모듈(`video.remote`부터 정적으로 추적), 디자인 자산, `Dockerfile.render`, `render.json`, 의존성이다. 운영자가 렌더 이미지와 작업 정의를 먼저 바꾸고 `VIDEO_RENDER_COMMIT`을 올리면 이어서 진행한다. 보고된 파일을 검토해 렌더에 영향이 없다고 판단하면(렌더 작업이 다른 이름만 가져다 쓰는 공용 모듈 등) 그 커밋을 `VIDEO_RENDER_ACCEPTED`로 기록한다. 이후 커밋은 그 커밋과 비교한다. 렌더 이미지를 다시 만들면 `VIDEO_RENDER_COMMIT`을 올리고 `VIDEO_RENDER_ACCEPTED`는 지운다.
    - `operator_required`: 다음 중 하나다.
      - 서비스가 늘거나 줄었다.
      - quant-data 고정 커밋이 바뀌었다.
