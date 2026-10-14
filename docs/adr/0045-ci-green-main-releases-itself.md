@@ -48,7 +48,8 @@
 7. **켜고 끄는 것은 `runtime.env` 값 하나다.**
    - `RELEASE_AUTO_ENABLED=true`일 때만 반영한다.
    - 그 밖에는 같은 판단을 하되 보고만 한다(`would_release`, `would_resume`, `would_restore`).
-   - 손으로 릴리스하기 전에는 false로 둔다.
+   - 손으로 릴리스하는 동안에는 `paused`로 둔다. 이때는 운영 커밋만 기록하고 차이(drift)를 판단하지 않으므로, 진행 중인 교체가 경고로 나가지 않는다. 끝나면 `true`로 되돌린다.
+   - activate는 끝나자마자 점검을 한 번 실행해 상태 파일을 새 릴리스로 갱신한다. 감시가 릴리스 이전에 쓴 상태를 읽고 경고하지 않게 하기 위해서다(2026-10-15 08:40 실제로 있었던 일).
 8. **알림은 운영 상태 감시(#146)가 이 파일을 읽어 보낸다.** 알리는 경우는 다음과 같다.
    - 상태가 `failed`, `error`, `render_required`, `operator_required`, `held_for_drift`, `drift`, `refused`, `no_green_main` 중 하나일 때
    - `incomplete`가 1시간을 넘을 때

@@ -538,3 +538,37 @@ def test_a_video_waiting_for_approval_does_not_hold_a_release():
 
     assert release.busy("video-worker", runner=runner) == []
     assert "NOT IN (" in queries[0] and "'awaiting_approval'" in queries[0] and "'approved'" not in queries[0]
+
+
+def test_activation_refreshes_the_automatic_status_when_the_timer_is_installed(host, monkeypatch):
+    prepared(host)
+    monkeypatch.setattr(release, "verify", lambda sha, runner=None: [{"service": "api", "ok": True}])
+    unit = host / "quant-company-release-auto.service"
+    unit.write_text("[Service]\n")
+    monkeypatch.setattr(release, "AUTO_UNIT", unit)
+    calls = []
+    release.activate(SHA, runner=lambda args, **kwargs: calls.append(args) or "")
+    assert calls == [["systemctl", "start", "--no-block", "quant-company-release-auto.service"]]
+
+
+def test_a_paused_check_only_reports_while_an_operator_works(auto_host, monkeypatch):
+    configure(RELEASE_AUTO_ENABLED="paused")
+
+    class Untouched(FakeGitHub):
+        def latest_green(self):
+            raise AssertionError("a paused check asks nothing")
+
+    monkeypatch.setattr(release, "verify", lambda sha, runner=None: [{"service": "api", "ok": False, "problem": "x"}])
+    status = release.auto(Untouched(FILES), runner=no_docker, now=IN_WINDOW)
+    assert status["mode"] == "paused" and status["action"] == "paused" and auto_host == []
+
+
+def test_the_host_lock_waits_briefly_for_a_holder_that_lets_go(host):
+    import fcntl
+    holder = (release.STATE / ".backup.lock").open("a")
+    fcntl.flock(holder, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    with pytest.raises(release.Busy):
+        with release.host_lock(wait=0):
+            pass
+    with release.host_lock(wait=5, sleep=lambda s: holder.close()):  # lets go while we wait
+        pass
