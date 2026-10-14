@@ -57,6 +57,7 @@ P2b 코드에는 handoff 경로가 없다.
    - 계획 전용 overlay는 아직 없다. 승인된 overlay나 서버 env에 넣고, 바꾼 파일과 값을 배포 기록에 남긴다.
    - 이 단계에서는 질문 초안, 상태 조회, 승인 버튼만 열린다. 모델 단계는 아직 돌지 않는다.
 3. **질문 초안**
+   - 질문 전용 스레드를 새로 연다. 질문은 그 스레드(프로젝트)의 현재 revision에 묶인다.
    - Slack에서 총괄에게 질문을 설명한다.
    - 총괄이 `research_control`의 `planning_question_draft`로 초안을 만든다. 프로그램에 묶을 때는 `program_id`를 넣는다.
    - 총괄이 승인 요청을 올린다.
@@ -78,6 +79,11 @@ P2b 코드에는 handoff 경로가 없다.
 - **단계 흐름**
   - slate(연구원) → critique(금융전략) → decision(총괄) → `completed`
   - `held`이면 `hold_reason`과 open gap을 본다. held는 실패 판정이 아니라 운영자 대사가 필요한 보류다.
+  - `superseded`이면 run 중에 그 스레드에서 새 업무, 지시 변경, 중단, 재개가 있었다는 뜻이다.
+    - 이런 명령은 프로젝트 revision을 바꾼다. 서비스는 진행 중이던 run과 단계를 멈추고 기록은 남긴다.
+    - 같은 질문은 다시 돌지 않는다. status에 `open`으로 남아도 마찬가지다(질문 상태 정리는 P3).
+    - 계속하려면 질문 초안과 승인을 새로 받는다.
+    - shadow run 동안에는 질문 스레드에 새 지시를 보내지 않는다. 진행 상황을 묻는 일반 후속 질문은 revision을 바꾸지 않는다.
 - **보고서**: `quant-company research-planning run-report --run <run ID>`
   - 컨테이너 안에서 `--output`을 쓰면 파일이 컨테이너에 남는다. 표준 출력을 받아 이 저장소의 `docs/project/evidence/research-planning-YYYYMMDD/run-report.json`에 저장한다.
   - 커밋 전에 비밀값, 접속 정보, 민감한 원문 발췌가 없는지 검토한다.

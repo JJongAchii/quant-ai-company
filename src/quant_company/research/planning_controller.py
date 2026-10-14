@@ -239,6 +239,12 @@ class PlanningController:
         if not (settings.research_planning_enabled and settings.research_planning_stages_enabled):
             return {"state": "disabled"}
         with self.company.db.transaction() as conn:
+            moved = conn.execute("""SELECT r.* FROM research_planning_runs r
+                JOIN research_questions q ON q.id=r.question_id JOIN projects p ON p.id=r.project_id
+                WHERE r.state=ANY(%s) AND (p.revision<>q.project_revision OR p.status<>'active')
+                ORDER BY r.created_at,r.id LIMIT 1 FOR UPDATE OF r SKIP LOCKED""", (list(ACTIVE_RUN_STATES),)).fetchone()
+            if moved is not None:
+                return self._supersede(conn, moved)
             row = conn.execute("""SELECT * FROM research_mission_stages WHERE planning_run_id IS NOT NULL
                 AND (state='received' OR (state='waiting' AND retry_at IS NOT NULL AND retry_at<=now()))
                 ORDER BY updated_at,id LIMIT 1 FOR UPDATE SKIP LOCKED""").fetchone()
@@ -509,6 +515,19 @@ class PlanningController:
                     origin="follow_up", program_id=run["program_id"], parent_question_id=run["question_id"])
         conn.execute("UPDATE research_mission_stages SET state='completed',updated_at=now() WHERE id=%s", (row["id"],))
         return self._finish(conn, run, "shadow_recorded")
+
+    def _supersede(self, conn, run):
+        """The owner changed or paused the project: stop this run's turns and keep every record."""
+        tasks = [row["task_id"] for row in conn.execute("""UPDATE research_mission_stages SET state='superseded',
+            updated_at=now() WHERE planning_run_id=%s AND state IN ('running','waiting','received')
+            RETURNING task_id""", (run["id"],)) if row["task_id"]]
+        conn.execute("UPDATE tasks SET status='superseded' WHERE id=ANY(%s) AND status NOT IN ('completed','superseded')",
+                     (tasks,))
+        conn.execute("UPDATE research_planning_runs SET state='superseded',updated_at=now() WHERE id=%s", (run["id"],))
+        self.company._event(conn, "research_planning_run_superseded", {"run_id": str(run["id"]),
+            "reason": "project_changed", "scope": "The project revision or status changed; records are kept."},
+            run["project_id"])
+        return {"state": "completed", "run_state": "superseded"}
 
     def _finish(self, conn, run, outcome):
         conn.execute("UPDATE research_planning_runs SET state='completed',outcome=%s,updated_at=now() WHERE id=%s",
