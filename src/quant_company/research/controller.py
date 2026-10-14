@@ -259,7 +259,6 @@ def reconcile_audit_retry(company, conn, project, task, reconciliation_note):
 def stage_prompt(company, conn, task, turn=None):
     from ..model_policy import effective_role
     from ..staff.packs import coaching, employee_pack
-
     from .planning_controller import PLANNING_STAGES, planning_role
 
     row = _stage(conn, task["id"])
