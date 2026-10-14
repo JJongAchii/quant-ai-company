@@ -31,6 +31,8 @@ METRICS = {"totals": {"views": 820, "watch_minutes": 2200.5, "avg_view_s": 161, 
                        {"source": "YT_SEARCH", "views": 300, "share": 300 / 820}],
            "search_terms": [{"term": "엔비디아 실적", "views": 120}]}
 BASIC = "date,channel_id,video_id,video_thumbnail_impressions,video_thumbnail_impressions_ctr\n"
+COMBINED = ("date,channel_id,video_id,traffic_source_type,traffic_source_detail,operating_system,device_type,"
+            "video_thumbnail_impressions,video_thumbnail_impressions_ctr\n")
 
 
 class SimulatedClient:
@@ -99,6 +101,8 @@ def linked_upload(brief, video):  # noqa: F811
                                                "channel_reach_combined_a1": "job-channel_reach_combined_a1"})
     for day, rows in ((date(2026, 9, 21), "1000,0.05"), (date(2026, 9, 22), "400,0.025"), (date(2026, 9, 23), "100,0")):
         client.report(f"b{day.day}", day, BASIC + f"{day:%Y%m%d},UCfixture,aaaaaaaaaaa,{rows}\n")
+        client.report(f"c{day.day}", day, COMBINED + f"{day:%Y%m%d},UCfixture,aaaaaaaaaaa,3,,1,1,{rows}\n",
+                      "channel_reach_combined_a1")
     return job, client
 
 
@@ -376,9 +380,12 @@ async def test_one_unreadable_video_or_report_does_not_hold_up_the_rest(analytic
     client = Partly([upload(), upload("bbbbbbbbbbb")], jobs={"channel_reach_basic_a1": "job-channel_reach_basic_a1",
                                                              "channel_reach_combined_a1": "job-channel_reach_combined_a1"})
     client.report("broken", date(2026, 9, 22), "date,views\n20260922,3\n")
-    client.report("b23", date(2026, 9, 23), BASIC + "20260923,UCfixture,bbbbbbbbbbb,10,0.1\n")
+    for day in (21, 22, 23):
+        client.report(f"b{day}", date(2026, 9, day), BASIC + f"202609{day},UCfixture,bbbbbbbbbbb,10,0.1\n")
+        client.report(f"c{day}", date(2026, 9, day), COMBINED + f"202609{day},UCfixture,bbbbbbbbbbb,3,,1,1,10,0.1\n",
+                      "channel_reach_combined_a1")
     result = await AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider()).tick(AFTER_D3)
-    assert result["reports"] == 1 and result["snapshots"] == 1
+    assert result["reports"] == 6 and result["snapshots"] == 1
     assert analytics.snapshot("bbbbbbbbbbb", "d3") and not analytics.snapshot("aaaaaaaaaaa", "d3")
 
 

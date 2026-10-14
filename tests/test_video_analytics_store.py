@@ -79,6 +79,23 @@ def basic(day, impressions, ratio, youtube_id="aaaaaaaaaaa"):
     return BASIC.format(rows=f"{day:%Y%m%d},UCfixture,{youtube_id},{impressions},{ratio}\n")
 
 
+COMBINED = ("date,channel_id,video_id,traffic_source_type,traffic_source_detail,operating_system,device_type,"
+            "video_thumbnail_impressions,video_thumbnail_impressions_ctr\n{rows}")
+
+
+def combined(day, impressions, ratio, youtube_id="aaaaaaaaaaa"):
+    return COMBINED.format(rows=f"{day:%Y%m%d},UCfixture,{youtube_id},3,,1,1,{impressions},{ratio}\n")
+
+
+def reported(analytics, day, kinds=("basic", "combined"), youtube_id="zzzzzzzzzzz"):
+    created = datetime(2026, 9, 25, tzinfo=UTC)
+    if "basic" in kinds:
+        analytics.record_report("channel_reach_basic_a1", f"b{day.day}", day, created, basic(day, 10, 0.1, youtube_id))
+    if "combined" in kinds:
+        analytics.record_report("channel_reach_combined_a1", f"c{day.day}", day, created,
+                                combined(day, 10, 0.1, youtube_id))
+
+
 def test_a_newer_report_replaces_its_day_and_older_or_repeated_reports_change_nothing(analytics):
     analytics.upsert_publications([upload()])
     day, created = date(2026, 9, 21), datetime(2026, 9, 23, tzinfo=UTC)
@@ -109,15 +126,31 @@ def test_reach_adds_days_and_splits_sources(analytics):
                                  {"source": "search", "impressions": 200, "ctr": pytest.approx(0.05)}]
 
 
-def test_a_snapshot_waits_for_the_last_reach_day_of_its_window(analytics):
+def test_a_snapshot_waits_for_every_reach_day_of_its_window(analytics):
     analytics.upsert_publications([upload()])  # Pacific publish day 21 September: d3 window 21-23 September
-    assert analytics.due_snapshots(datetime(2026, 9, 25, 12, tzinfo=UTC)) == []
-    analytics.record_report("channel_reach_basic_a1", "b23", date(2026, 9, 23), datetime(2026, 9, 25, tzinfo=UTC),
-                            basic(date(2026, 9, 23), 10, 0.1, "zzzzzzzzzzz"))
-    due = analytics.due_snapshots(datetime(2026, 9, 25, 12, tzinfo=UTC))
+    at = datetime(2026, 9, 25, 12, tzinfo=UTC)
+    assert analytics.due_snapshots(at) == []
+    # A new reporting job backfills the past newest day first, so the window's last day alone is not enough. A day's
+    # report counts even without a row for this video (no impressions that day).
+    for day in (date(2026, 9, 23), date(2026, 9, 22)):
+        reported(analytics, day)
+        assert analytics.due_snapshots(at) == []
+    reported(analytics, date(2026, 9, 21))
+    due = analytics.due_snapshots(at)
     assert [(p["youtube_id"], h) for p, h in due] == [("aaaaaaaaaaa", "d3")]
     analytics.save_snapshot("aaaaaaaaaaa", "d3", date(2026, 9, 21), date(2026, 9, 23), {"views": 10})
-    assert analytics.due_snapshots(datetime(2026, 9, 25, 12, tzinfo=UTC)) == []
+    assert analytics.due_snapshots(at) == []
+
+
+def test_a_snapshot_also_waits_for_the_traffic_source_reports(analytics):
+    # The by-source report of the first backfill came later than the basic one; its CTR split goes to the diagnosis.
+    analytics.upsert_publications([upload()])
+    at = datetime(2026, 9, 25, 12, tzinfo=UTC)
+    for day in (21, 22, 23):
+        reported(analytics, date(2026, 9, day), kinds=("basic",) if day == 21 else ("basic", "combined"))
+    assert analytics.due_snapshots(at) == []
+    reported(analytics, date(2026, 9, 21), kinds=("combined",))
+    assert [(p["youtube_id"], h) for p, h in analytics.due_snapshots(at)] == [("aaaaaaaaaaa", "d3")]
 
 
 def test_a_snapshot_without_reach_data_is_taken_four_days_late(analytics):
