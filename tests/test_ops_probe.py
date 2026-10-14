@@ -80,7 +80,8 @@ def fallback_env(tmp_path, monkeypatch):
     credentials = tmp_path / "slack.json"
     credentials.write_text(json.dumps({"director": {"bot_token": "fake-director-token"}}))
     monkeypatch.setattr(probe, "watch_age", lambda: None)
-    config = {"OPS_WATCH_ENABLED": "true", "OPS_ALERT_CHANNEL_ID": "COPS", "OPS_WATCH_OWNER_USER": "UOWNER"}
+    config = {"OPS_WATCH_ENABLED": "true", "OPS_FALLBACK_ENABLED": "true", "OPS_ALERT_CHANNEL_ID": "COPS",
+              "OPS_WATCH_OWNER_USER": "UOWNER"}
     return {"config": config, "credentials_path": credentials, "state_path": tmp_path / "ops/fallback-state.json"}
 
 
@@ -124,6 +125,8 @@ def test_fallback_retries_a_rejected_opening_and_stays_off_until_configured(fall
     assert probe.fallback(down, NOW, sender=rejected, **fallback_env)["notices"][0]["outcome"] == "rejected:not_in_channel"
     probe.fallback(down, NOW, sender=rejected, **fallback_env)
     assert len(attempts) == 2
-    fallback_env["config"]["OPS_WATCH_ENABLED"] = "false"
+    fallback_env["config"]["OPS_FALLBACK_ENABLED"] = "false"
+    assert probe.fallback(down, NOW, sender=rejected, **fallback_env) == {"state": "disabled"}
+    fallback_env["config"].update(OPS_FALLBACK_ENABLED="true", OPS_WATCH_ENABLED="false")
     assert probe.fallback(down, NOW, sender=rejected, **fallback_env) == {"state": "disabled"}
     assert len(attempts) == 2

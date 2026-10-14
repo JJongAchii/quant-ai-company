@@ -250,7 +250,9 @@ def fallback(value, now, *, config, credentials_path, state_path, sender=post):
     """Announce each silencing failure once and its recovery once. An ambiguous send is recorded and
     never repeated automatically."""
     channel, owner = config.get('OPS_ALERT_CHANNEL_ID', ''), config.get('OPS_WATCH_OWNER_USER', '')
-    if config.get('OPS_WATCH_ENABLED') != 'true' or not SLACK_ID.fullmatch(channel) or not channel.startswith('C'):
+    # A second Slack sender besides dispatch: it needs its own owner decision, not just the watch being on.
+    if (config.get('OPS_WATCH_ENABLED') != 'true' or config.get('OPS_FALLBACK_ENABLED') != 'true'
+            or not SLACK_ID.fullmatch(channel) or not channel.startswith('C')):
         return {'state': 'disabled'}
     age = None
     database_up = any(item['service'] == 'postgres' and item['status'] == 'running' for item in value['containers'])

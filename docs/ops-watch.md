@@ -60,6 +60,7 @@ OPS_STATUS_ENABLED=true          # ops_status 도구와 '상태' 즉시 응답
 OPS_WATCH_ENABLED=true           # 운영 채널 경고(dispatch)와 비상 경로(호스트)
 OPS_ALERT_CHANNEL_ID=C...        # 전용 채널. SLACK_ALLOWED_CHANNELS에 포함, 다른 기능 채널과 달라야 함
 OPS_WATCH_OWNER_USER=U...        # SLACK_ALLOWED_USERS에 포함
+OPS_FALLBACK_ENABLED=true        # 호스트 비상 경로. 오너가 명시적으로 결정할 때만 켠다
 ```
 
 - 운영 채널을 만들고 Director 봇을 초대한다. 게시 신원은 Director이고, 새 Slack 앱이나 자격증명은 필요 없다.
@@ -68,6 +69,9 @@ OPS_WATCH_OWNER_USER=U...        # SLACK_ALLOWED_USERS에 포함
 - 스키마는 `migrate`가 만든다. 수집기는 테이블을 만들지 않는다.
 - 수집기를 `/opt/quant-company/operations/ops-probe/ops_probe.py`에 설치하고 service·timer를
   `/etc/systemd/system/`에 둔 뒤 timer를 활성화한다. 먼저 `--print`로 읽기 전용 출력을 확인한다.
+- 비상 경로는 dispatch 말고 두 번째로 Slack에 보내는 경로다. 그래서 `OPS_WATCH_ENABLED`와 별개로
+  `OPS_FALLBACK_ENABLED=true`가 있을 때만 동작한다. 켜기로 한 결정은 반영 기록에 남긴다. 꺼져 있으면
+  수집기는 스냅샷만 기록한다.
 - 비상 경로는 호스트 비밀 파일 `secrets/slack-credentials.json`의 Director 토큰을 메모리로만 읽고,
   `chat.postMessage` 한 번만 호출한다. 결과가 불명확한 전송은 다시 보내지 않는다. 상태는
   `/var/lib/quant-company/ops/fallback-state.json`에 남는다.
