@@ -768,8 +768,8 @@ def host_free():
 
 
 def fetch(sha, github, protect=(), runner=run):
-    """SHA's prepared release, downloaded from GitHub unless an earlier run prepared it. Preparing one prunes old ones,
-    so commits that were only reported on do not pile up."""
+    """SHA's prepared release, downloaded from GitHub unless an earlier run prepared it. Preparing one prunes old
+    releases that were never built, so commits that were only reported on do not pile up."""
     root = root_of(sha)
     if not (root / ".release.json").is_file():
         archives = STATE / "release-archives"
@@ -780,7 +780,7 @@ def fetch(sha, github, protect=(), runner=run):
             prepare(sha, archive)
         finally:
             archive.unlink(missing_ok=True)
-        prune(protect={sha, *protect}, runner=runner)
+        prune(protect={sha, *protect}, runner=runner, unbuilt_only=True)
     return root
 
 
@@ -811,9 +811,10 @@ def restore(previous, target, runner=run):
     return result
 
 
-def prune(keep=3, protect=(), runner=run):
+def prune(keep=3, protect=(), runner=run, unbuilt_only=False):
     """Releases this tool prepared beyond the newest KEEP, with their images (about 4.7 GB of layers each). Never the
-    current release, one a running container was created from, or a PROTECTed commit (the render image's)."""
+    current release, one a running container was created from, or a PROTECTed commit (the render image's).
+    UNBUILT_ONLY removes only releases that were never built, keeping every rollback point."""
     current = (RELEASES.parent / "current").resolve()
     used = set(runner(["docker", "ps", "--format", '{{.Label "com.docker.compose.project.working_dir"}}'],
                       check=False).split())
@@ -825,6 +826,8 @@ def prune(keep=3, protect=(), runner=run):
             continue
         tags = runner(["docker", "image", "ls", "--filter", f"reference=*:{directory.name}",
                        "--format", "{{.Repository}}:{{.Tag}}"], check=False).split()
+        if tags and unbuilt_only:
+            continue
         for tag in tags:
             runner(["docker", "image", "rm", tag], check=False)
         shutil.rmtree(directory)

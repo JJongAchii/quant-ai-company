@@ -280,7 +280,7 @@ def auto_host(host, monkeypatch):
     monkeypatch.setattr(release, "build", lambda sha, runner=None: steps.append(("build", sha)))
     monkeypatch.setattr(release, "migrate", lambda sha, runner=None: steps.append(("migrate", sha)))
     monkeypatch.setattr(release, "activate", lambda sha, runner=None: steps.append(("activate", sha)))
-    monkeypatch.setattr(release, "prune", lambda keep=5, protect=(), runner=None: [])
+    monkeypatch.setattr(release, "prune", lambda keep=3, protect=(), runner=None, unbuilt_only=False: [])
 
     def apply(sha, services, quiet_seconds=900, runner=None):
         steps.append(("apply", sha, list(services)))
@@ -499,6 +499,7 @@ def test_prune_keeps_recent_current_running_and_protected_releases(host):
             return f"quant-company:{tag}\nquant-company-video:{tag}\n"
         return ""
 
+    assert release.prune(keep=3, protect={names[2]}, runner=runner, unbuilt_only=True) == []  # all were built
     removed = release.prune(keep=3, protect={names[2]}, runner=runner)
     assert removed == [names[3]] and not (release.RELEASES / names[3]).exists()
     assert ["docker", "image", "rm", f"quant-company-video:{names[3]}"] in calls
