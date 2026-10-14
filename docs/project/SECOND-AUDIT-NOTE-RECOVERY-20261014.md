@@ -1,21 +1,25 @@
 # 두 번째 결과 검증 메모 복구 — 2026-10-14
 
-## 실제 중단
+## 실제 중단과 원인
 
-10월14일08:32 KST 실제 PostgreSQL/네이티브 영수증 확인에서 두 번째 trial의 계산·결과 수신·초기 해석은 완료됐지만, audit stage는 10월13일11:32:06 KST 이후 waiting/error=audit_runtime_requires_reconciliation였다. 진행 중 turn·연구 job은0이었다. 최종 보고서는 없다.
+10월14일08:32 KST 실제 PostgreSQL/네이티브 영수증 확인에서 두 번째 trial의 계산·결과 수신·초기 해석은 완료됐지만 audit는10월13일11:32:06 KST 이후 waiting이었다. 원인은 실제 메모8020자가 기존8000자 최대값을20자 넘은 것뿐이었다. 원문 receipt SHA256은 ab126d331502c6a6144560125353e442750a88beceb6dd6fe42550209b24f602이며 거절·원문·packet·실험 result를 보존했다. [거절 확인](evidence/etf-exploration-20260930/second-audit-note-stall-20261014.json).
 
-거절된 실제 Astra 응답5는 JSON 구조와 packet digest가 맞고, notes 길이8020자가 기존8000자 최대값을20자 넘었다. 원문 receipt SHA256은 ab126d331502c6a6144560125353e442750a88beceb6dd6fe42550209b24f602다. 원래 네이티브 응답·4개 완료 packet·미접수 packet5·실험 result는 보존돼 있다. [실제 거절 메타데이터](evidence/etf-exploration-20260930/second-audit-note-stall-20261014.json).
+## 변경과 검사
 
-## 수정과 자격검증
+source6a64d792333e0d5a871eb865f55d154656a06cb1의 제품 변경은 MAX_NOTES8000→24000 한 상수다. 6000자 작성 목표,90000자 전체 context 최대값,turn/token 예산,원문 전체 읽기,packet/session/provider thread와 최종 audit 검증은 유지했다. 직원 메모를 수정하거나 잘라내지 않았다.
 
-source commit6a64d792333e0d5a871eb865f55d154656a06cb1의 제품 코드는 audit_delivery.MAX_NOTES 한 상수만8000에서24000으로 바꾼다. 누적 관찰 기록의 허용 길이를 넓히며, 기존6000자 작성 목표·90000자 전체 prompt 최대값·turn/token 예산·필수 원문 전량 읽기·packet digest·provider thread/session·최종 audit 검증은 유지한다. notes를 자르거나 직원 판단을 수정하지 않는다.
+실제 PostgreSQL 대상13개 검사와 전체1859개 검사가 통과했고14개는 skip이다. actual Git·고정 qlab을 사용했으며 모델·Slack·시장 값은 합성 fixture다. repository lint도 통과했다. 8020/24000자 원문 보존,24001자·padding 거절,최종 resident context90000자 초과 거절,부분 읽기의 final 오인 방지와 audit budget hold를 검사했다. [검사 영수증](evidence/etf-exploration-20260930/audit-note-bound-regression-20261014.json).
 
-실제 테스트 PostgreSQL을 사용한13개 검사는 통과했다. 8020자와24000자 원문 보존,24001자 거절, padding 거절, 최종 resident context90000자 초과 거절, 부분 읽기의 final 오인 방지, audit turn/token budget hold를 검사했다. 모델·Slack·시장 결과는 합성 fixture다. 전체 회사 검사는 진행 중이며 repository lint는 통과했다.
+## 실제 운영 반영
 
-운영 부모 API/worker의 실제 식별자·환경·기타 source/module digest를 먼저 확인했다. 두 모드의 audit_delivery 바이트가 동일하고 원래8000자 정책이다. 최신 worker를 포함한 실제 부모 위에 이 모듈 한 개만 교체하는 비활성 이미지를 준비하고, 원래 frozen response를 unchanged packet/session/evidence consumer로 통과시키는 롤백 검사를 수행한다. [실제 부모 확인](evidence/etf-exploration-20260930/audit-note-runtime-baseline-20261014.json).
+**09:28:41 KST**, 운영 묶음8651516fa6d1feaecdd5da7653751d5b3df52308을 적용했다. PR105와 exact manifest/비활성 image를 기존 배포·진행 승인 범위에서 검토했다. 실제 현재 API/worker 부모 위에 audit_delivery 모듈만 교체했고, 나머지 실제 source·model 정책·서비스 ID·환경·메모리와 설정을 보존했다. 3070 release ec1fbeb29a49420a367f06af596283e6ead4ab72와 서명된 과학 명세·예산은 그대로다. 일관된 외부 백업 SHA256은443f2fad18f922bd56a994aa4ce6b871a62891738e72962a2bae925e98841d83이며 owned pause를 해제했다.
 
-## 운영 반영과 실제 계속 여부
+[실제 적용](evidence/etf-exploration-20260930/audit-note-bound-runtime-applied-20261014.json), [정확한 적용 검토](evidence/etf-exploration-20260930/audit-note-bound-exact-apply-review-20261014.json), [PR의 검토 기록](https://github.com/JJongAchii/quant-ai-company/pull/105#issuecomment-6157971019).
 
-현재 운영 적용 전이다. 기존 배포·진행 승인 범위에서 PR105와 exact image/manifest를 검토하고, 일관된 백업·drain·원래 환경과 동시 배포 보존을 거친 뒤 API/worker만 적용한다. 등록된3070 science release와 source/data/비용/리스크/서명 예산은 그대로다.
+## 원문 접수와 실제 계속
 
-적용 뒤 native cached response5를 원문 그대로 기존 stage consumer에 한 번 접수해 실제 다음 요청6까지 확인한다. 형식 오류 복구를 audit pass·새 경제평가·보고 완료로 계상하지 않는다. 현재 측정 result2건, 최종 보고1건이며 과학 프로그램은 계속 active다. 추가 owner 승인이 이번 중단 원인은 아니다.
+**09:31:01 KST**, 원래8020자 cached response5를 기존 stage consumer로 한 번 접수했다(event1047). 원래 request/response/packet/context digest·읽기 경로·job/reservation ledger를 유지했다. 접수 자체의 새로운 provider call·경제평가·audit verdict·publication은0이다. [원문 접수](evidence/etf-exploration-20260930/second-audit-packet5-reconciled-20261014.json).
+
+**09:31:41 KST**, 다음 request6 b6daf176-db00-562f-af41-8aee6f25d3c8이 실제 Astra max/CLI0.160.1 running, fault없음이다. audit attempt1도 running/error없음이며 앱·socket·PostgreSQL·두 native runtime 건강 상태를 확인했다. 새 signed Slack 수신→답변 왕복을 별도로 주장하지 않는다. [실제 계속](evidence/etf-exploration-20260930/second-audit-actual-continuation-20261014.json), [운영 건강](evidence/etf-exploration-20260930/audit-note-bound-post-apply-health-20261014.json).
+
+INTENT-v22의 형식 제한 복구와 실제 독립 검증 재개 확인은 완료했다. 과학 프로그램은 active, 측정 result2건·최종 보고1건이며 두 번째 audit 판정과 최종 보고서는 아직 없다. 현재 추가 owner 승인은 필요 없다. 새 읽기 전용 관찰기는45초 간격/최대24시간으로 active이며 보고 완료·독립 hold·uncertain job에 종료한다. 자동 경보·수리나 무기한 감시는 제공하지 않는다. [관찰기 확인](evidence/etf-exploration-20260930/second-audit-bounded-observer-active-20261014.json).
