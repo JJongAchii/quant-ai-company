@@ -336,7 +336,8 @@ services:
       SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
     secrets: [database_password, temporal_api_key, model_runtime_token]
     networks: [core, model, service_egress]
-    mem_limit: 192m
+    # Small-host default; the 8 GiB production host runs 320m since the briefing/trend collectors joined this process.
+    mem_limit: ${NEWS_MEMORY_LIMIT:-192m}
     cpus: 0.5
     depends_on:
       postgres: {condition: service_healthy}
@@ -466,6 +467,8 @@ services:
       CLAUDE_CONFIG_DIR: /state/auth
       CLAUDE_JOBS_DIR: /state/jobs
       CLAUDE_USAGE_CREDITS_DISABLED_CONFIRMED: ${CLAUDE_USAGE_CREDITS_DISABLED_CONFIRMED:-false}
+      # The CLI is pinned by version and SHA-256 in the image; it must never update itself at runtime.
+      DISABLE_AUTOUPDATER: '1'
       MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
     secrets: [model_runtime_token]
     volumes:

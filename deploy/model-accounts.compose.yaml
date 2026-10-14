@@ -9,6 +9,8 @@ services:
     environment:
       MODEL_ACCOUNTS_ENABLED: "true"
       MODEL_ACCOUNTS_OWNER_USER: ${MODEL_ACCOUNTS_OWNER_USER:?Set the allowed Slack owner before activation}
+      # Same registered research release as api/worker (research.compose.yaml); not this image's code commit.
+      COMPANY_CODE_COMMIT: ${RESEARCH_RELEASE_COMMIT:?Set the company release registered on the research worker}
     mem_limit: 128m
     cpus: 0.25
     healthcheck:

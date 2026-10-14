@@ -1,8 +1,17 @@
 # Apply after review alongside compose.yaml. Migrate first and provision the token/artifact directory.
 # The base company deploy stays unchanged until this explicit overlay is enabled.
+#
+# COMPANY_CODE_COMMIT on the research-facing services is the company release registered on the research worker,
+# not the code these containers run (that is the image's org.opencontainers.image.revision). Research jobs record
+# it and the worker resolves only registered releases (research/releases.py), so it moves only when the operator
+# registers a new release there.
+x-research-release: &research-release
+  COMPANY_CODE_COMMIT: ${RESEARCH_RELEASE_COMMIT:?Set the company release registered on the research worker}
+
 services:
   api:
     environment:
+      <<: *research-release
       COMPANY_RESEARCH_ENABLED: "true"
       RESEARCH_WORKER_TOKEN_FILE: /run/secrets/research_worker_token
       RESEARCH_ARTIFACT_DIR: /state/research
@@ -12,9 +21,11 @@ services:
       - research_worker_token
   slack-socket:
     environment:
+      <<: *research-release
       COMPANY_RESEARCH_ENABLED: "true"
   worker:
     environment:
+      <<: *research-release
       COMPANY_RESEARCH_ENABLED: "true"
       RESEARCH_ARTIFACT_DIR: /state/research
       RESEARCH_REPORT_BUCKET: ${RESEARCH_REPORT_BUCKET:?Set the existing approved backup bucket}
