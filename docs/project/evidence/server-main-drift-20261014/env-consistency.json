@@ -1,0 +1,174 @@
+{
+ "differing_across_services": {
+  "AWS_SHARED_CREDENTIALS_FILE": {
+   "<digest>": [
+    "video-worker"
+   ]
+  },
+  "BRIEFING_EVALUATION_EDITION_IDS": {
+   "<digest>": [
+    "codex-runtime"
+   ],
+   "[]": [
+    "api",
+    "briefing-data-worker",
+    "dispatch",
+    "news-worker",
+    "slack-socket",
+    "tech-feed-worker",
+    "worker"
+   ]
+  },
+  "BRIEFING_PUBLISH_ENABLED": {
+   "false": [
+    "account-gateway",
+    "codex-runtime"
+   ],
+   "true": [
+    "api",
+    "briefing-data-worker",
+    "dispatch",
+    "news-worker",
+    "slack-socket",
+    "tech-feed-worker",
+    "video-worker",
+    "worker"
+   ]
+  },
+  "BRIEFING_US_CLOSE_ENABLED": {
+   "false": [
+    "codex-runtime"
+   ],
+   "true": [
+    "briefing-data-worker",
+    "dispatch",
+    "news-worker"
+   ]
+  },
+  "CODEX_TIMEOUT_SECONDS": {
+   "300": [
+    "video-image-runtime"
+   ],
+   "900": [
+    "codex-runtime",
+    "quant-codex-runtime"
+   ]
+  },
+  "COMPANY_CODE_COMMIT": {
+   "0e09b852e6a36e2fee52fb1cc7baab1c83a757ce": [
+    "data-watch-worker"
+   ],
+   "46d853cbefd4ce808fc247a0ebba1f5df33f0cd8": [
+    "maintenance"
+   ],
+   "5e885d0a92bb8db89514ce54a5c25322e3e4f82a": [
+    "codex-runtime"
+   ],
+   "7b37ac48824598a0c3c89b0bfd898574456bccf7": [
+    "briefing-data-worker",
+    "dispatch",
+    "news-worker",
+    "video-worker"
+   ],
+   "8fde2509d4dd2191147fbcee5eaa952191d7c048": [
+    "tech-feed-worker"
+   ],
+   "bfa923b392cc880e54978cc28041970d6cc06dd6": [
+    "video-image-runtime"
+   ],
+   "c54667e2827506d50b4cbfaa63d924f2b69f21ab": [
+    "housing-feed-worker"
+   ],
+   "ea092f419b4b679df4c25e479a8cb361b4d046ff": [
+    "quant-codex-runtime",
+    "quant-feed-worker"
+   ],
+   "ec1fbeb29a49420a367f06af596283e6ead4ab72": [
+    "account-gateway",
+    "api",
+    "slack-socket",
+    "worker"
+   ],
+   "fde7681e0286501d8713e08e30a96991a88b9151": [
+    "claude-runtime"
+   ]
+  },
+  "MODEL_RUNTIME_URL": {
+   "http://codex-runtime:8080": [
+    "account-gateway",
+    "maintenance",
+    "news-worker",
+    "worker"
+   ],
+   "http://quant-codex-runtime:8080": [
+    "quant-feed-worker"
+   ]
+  },
+  "PYTHONPATH": {
+   "/app/.venv/lib/python3.12/site-packages": [
+    "video-image-runtime"
+   ],
+   "/opt/company/src": [
+    "briefing-data-worker",
+    "dispatch",
+    "news-worker",
+    "tech-feed-worker"
+   ],
+   "/opt/quant-code/src": [
+    "account-gateway",
+    "api",
+    "codex-runtime",
+    "quant-codex-runtime",
+    "quant-feed-worker",
+    "slack-socket",
+    "worker"
+   ]
+  },
+  "QUANT_FEED_PUBLISH_ENABLED": {
+   "false": [
+    "account-gateway",
+    "data-watch-worker",
+    "housing-feed-worker",
+    "maintenance",
+    "slack-socket",
+    "worker"
+   ],
+   "true": [
+    "api",
+    "briefing-data-worker",
+    "dispatch",
+    "news-worker",
+    "quant-feed-worker",
+    "tech-feed-worker"
+   ]
+  },
+  "SLACK_ALLOWED_CHANNELS": {
+   "[\"C0C1Q8D0B6K\", \"C0C2B9EUEGM\", \"C0C2J1SSX09\", \"C0C2KPB76KE\", \"C0C3K8ZB9PB\", \"C0C3Q7BFQCE\", \"C0C3Q7H30HL\", \"C0C3C6ELJ0P\", \"C0C2E59B1AA\", \"C0C6WTA9ECV\"]": [
+    "account-gateway",
+    "api",
+    "briefing-data-worker",
+    "dispatch",
+    "news-worker",
+    "slack-socket",
+    "tech-feed-worker",
+    "video-worker",
+    "worker"
+   ],
+   "[\"C0C1Q8D0B6K\", \"C0C2B9EUEGM\", \"C0C2J1SSX09\", \"C0C2KPB76KE\", \"C0C3K8ZB9PB\", \"C0C3Q7BFQCE\", \"C0C3Q7H30HL\", \"C0C3C6ELJ0P\", \"C0C2E59B1AA\"]": [
+    "quant-feed-worker"
+   ],
+   "[\"C0C1Q8D0B6K\",\"C0C2B9EUEGM\",\"C0C2J1SSX09\",\"C0C2KPB76KE\",\"C0C3K8ZB9PB\",\"C0C3Q7BFQCE\",\"C0C3Q7H30HL\",\"C0C3C6ELJ0P\"]": [
+    "data-watch-worker",
+    "housing-feed-worker",
+    "maintenance"
+   ]
+  }
+ },
+ "env_vars_total": 147,
+ "snapshot": {
+  "host": "Lightsail 2 vCPU / 8 GiB",
+  "main": "eed730e (after #140)",
+  "method": "read-only docker inspect/exec; package files hashed as git blobs inside each container; secret values never left the host (per-run salted digests only)",
+  "taken_kst": "2026-10-14 10:51-10:54"
+ }
+}
