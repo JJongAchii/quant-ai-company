@@ -125,6 +125,86 @@ def diagnostic_history(payload):
                                       "Full owner history and replay inputs remain stored; omitted evidence is unknown."}}
 
 
+def prioritize_inspections(material):
+    """Keep all explicit ranges across stateless rounds before incidental search context."""
+    requested = [row for row in material.get("saved_inspection_ranges", []) +
+                 material.get("saved_inspection_requests", []) +
+                 material.get("recent_inspection", {}).get("requests", [])
+                 if row.get("path") and not row.get("query")]
+    if not requested:
+        return False
+    prioritized, surrounding = [], []
+    for row in material.get("investigated_code", []):
+        chunks = []
+        for line in row.get("content", "").splitlines():
+            number, separator, _ = line.partition(": ")
+            if not separator or not number.isdecimal():
+                chunks = []
+                break
+            number = int(number)
+            needed = any(q["path"] == row.get("path") and q.get("start_line", 1) <= number <
+                         q.get("start_line", 1) + q.get("line_count", 120) for q in requested)
+            if not chunks or chunks[-1][0] != needed or chunks[-1][1][-1][0] + 1 != number:
+                chunks.append((needed, []))
+            chunks[-1][1].append((number, line))
+        if not chunks:
+            surrounding.append({**row, "recent_range": False})
+            continue
+        for needed, lines in chunks:
+            (prioritized if needed else surrounding).append({
+                **row, "start_line": lines[0][0], "content": "\n".join(line for _, line in lines),
+                "excerpted": True, "recent_range": needed})
+    if not prioritized:
+        return False
+    material["investigated_code"] = prioritized + surrounding
+    return True
+
+
+def compact_prompt_markers(value):
+    """Omission counts share the context-level explanation instead of repeating it."""
+    if isinstance(value, dict):
+        if set(value) == {"_prompt_omitted_items", "reason"} and value["reason"] == "shared_provider_context_budget":
+            value.pop("reason")
+        else:
+            for child in value.values():
+                compact_prompt_markers(child)
+    elif isinstance(value, list):
+        for child in value:
+            compact_prompt_markers(child)
+
+
+def compact_triage_context(material, original):
+    """Index repeated diagnostic detail before discarding previously requested code."""
+    history = material.get("history", {})
+    keys = {row.get("key") for row in material.get("observations", [])}
+    rows = history.get("evidence", [])
+    history["evidence"] = [
+        {**{key: row[key] for key in ("key", "id") if key in row},
+         **({"represented_in": "observations"} if row.get("key") in keys else {})} for row in rows]
+    history["prompt_index"] = {
+        "original_digest": digest(original), "indexed_evidence": len(rows),
+        "omitted_periods": len(history.get("periods", [])),
+        "lookup": "Historical bodies/statistics are unknown here. Complete originals remain bound in PostgreSQL.",
+    }
+    history["periods"] = []
+    history["roster"] = [{key: row[key] for key in ("id", "active", "version") if key in row}
+                         for row in history.get("roster", [])]
+    for row in material.get("inspection_catalog", []):
+        row.pop("content_digest", None)
+        row.pop("total_lines", None)
+    material["evidence_references"] = list(dict.fromkeys(material.get("evidence_references", [])))
+    system = material.get("current_implementation", {}).get("system", {})
+    for check in system.get("verifications", []):
+        if isinstance(check, dict) and "evidence" in check:
+            check["evidence"] = {"details_omitted": True, "excerpt_digest": digest(check["evidence"])}
+    configuration = system.get("runtime", {}).get("configuration", {})
+    if isinstance(configuration.get("capabilities"), dict):
+        configuration["capabilities"] = compact_prompt_value(
+            configuration["capabilities"], string_chars=48, list_items=1)
+    compact_prompt_markers(history)
+    compact_prompt_markers(system)
+
+
 def proposal_material(payload, schema):
     """Share a finite provider context budget; retain full evidence and reserved prompts in the DB."""
     material = copy.deepcopy(payload)
@@ -141,7 +221,18 @@ def proposal_material(payload, schema):
         # Catalogs repeat on every diagnostic round; exact inspection remains available.
         while compact_path_catalog(material):
             pass
-    header = INSTRUCTIONS + "SCHEMA:\n" + json.dumps(schema.model_json_schema(), separators=(",", ":")) + "\nEVIDENCE JSON:\n"
+    model_schema = schema.model_json_schema()
+    if schema is Triage:
+        def omit_display_titles(value):
+            if isinstance(value, dict):
+                return {key: omit_display_titles(item) for key, item in value.items()
+                        if not (key == "title" and isinstance(item, str))}
+            if isinstance(value, list):
+                return [omit_display_titles(item) for item in value]
+            return value
+        # JSON Schema display titles duplicate property names; constraints and title fields remain.
+        model_schema = omit_display_titles(model_schema)
+    header = INSTRUCTIONS + "SCHEMA:\n" + json.dumps(model_schema, separators=(",", ":")) + "\nEVIDENCE JSON:\n"
     # Stable evidence precedes per-round query results; avoid order drift after JSONB round-trips.
     material = json.loads(json.dumps(material, ensure_ascii=False, sort_keys=True))
     order = ("requested_diagnosis", "instructions", "observations", "history", "current_implementation")
@@ -167,6 +258,69 @@ def proposal_material(payload, schema):
             diagnostic["system"] = compact_prompt_value(
                 diagnostic.get("system", {}), string_chars=string_chars, list_items=list_items)
             material["prompt_system_compaction"] = stage + 1
+            material["prompt_excerpted"] = True
+            continue
+        if schema is Triage and material.get("prompt_history_compaction", 0) < 3:
+            # Historical detail must yield before the exact code requested for this case.
+            # Keep every evidence identity; full history and replay inputs remain bound in PostgreSQL.
+            stage = material.get("prompt_history_compaction", 0)
+            string_chars, list_items = [(1000, 8), (400, 4), (160, 2)][stage]
+            history = material.get("history", {})
+            material["history"] = {
+                key: [{**compact_prompt_value(row, string_chars=string_chars, list_items=list_items),
+                       **{field: row[field] for field in ("key", "id") if field in row}}
+                      for row in value] if key in {"evidence", "roster"} else
+                compact_prompt_value(value, string_chars=string_chars, list_items=list_items)
+                for key, value in history.items()
+            }
+            material["prompt_history_compaction"] = stage + 1
+            material["prompt_excerpted"] = True
+            continue
+        if schema is Triage and not material.get("prompt_context_indexed"):
+            compact_triage_context(material, payload.get("history", {}))
+            material["prompt_context_indexed"] = True
+            material["prompt_excerpted"] = True
+            continue
+        if schema is Triage and material.get("prompt_source_compaction", 0) < 2:
+            stage = material.get("prompt_source_compaction", 0)
+            limit = (400, 160)[stage]
+            for row in material.get("current_implementation", {}).get("source_files", []):
+                if len(row.get("content", "")) > limit:
+                    row["content"] = row["content"][:limit]
+                    row["excerpted"] = True
+            material["prompt_source_compaction"] = stage + 1
+            material["prompt_excerpted"] = True
+            continue
+        if schema is Triage and not material.get("prompt_inspection_priority"):
+            material["prompt_inspection_priority"] = True
+            if prioritize_inspections(material):
+                continue
+        older = [row for row in material.get("investigated_code", [])
+                 if row.get("recent_range") is False]
+        if older:
+            # The complete receipts and catalog remain available. Marking visibility happens
+            # above; omitted surrounding code cannot establish that a capability is absent.
+            oldest = max(older, key=lambda row: len(row.get("content", "")))
+            material["investigated_code"].remove(oldest)
+            material["prompt_excerpted"] = True
+            continue
+        if schema is Triage and not material.get("prompt_final_compaction"):
+            # Exact queried code takes precedence over duplicated previews and tool descriptions.
+            diagnostic = material.get("current_implementation", {})
+            for row in diagnostic.get("source_files", []):
+                row["content"] = ""
+                row["excerpted"] = True
+            for row in material.get("investigated_code", []):
+                # Lookup/cache signatures are enforced from stored receipts, not interpreted by the model.
+                for field in ("inspection_query", "readable_paths_digest", "inspection_complete", "cache_hit"):
+                    row.pop(field, None)
+            configuration = diagnostic.get("system", {}).get("runtime", {}).get("configuration", {})
+            if isinstance(configuration.get("capabilities"), dict):
+                configuration["capabilities"] = compact_prompt_value(
+                    configuration["capabilities"], string_chars=16, list_items=1)
+            material["prompt_final_compaction"] = (
+                "Source previews and capability descriptions are excerpted; unread detail is unknown. "
+                "Original source, configuration and permissions remain stored and enforced by the service.")
             material["prompt_excerpted"] = True
             continue
         excerpts = [item for key in ("investigated_code", "inspected_excerpts", "external_research")
@@ -289,6 +443,22 @@ class Maintainer:
         if self.store.hold_for_reconciliation(job):
             return
         payload, receipt, job_id = job["payload"], job["receipt"], str(job["id"])
+        if (job["state"] == 'pr' or job["state"] == 'blocked' and job["error"] == 'pr_ref_moved'):
+            if payload.get('finding', {}).get('evaluation', {}).get('mode') == 'regression':
+                snapshot = await asyncio.to_thread(self.github.snapshot)
+                if snapshot['commit'] != receipt['base']:
+                    await asyncio.to_thread(self.github.verify_base_retest, job)
+                    snapshot = await asyncio.to_thread(self.refresh_repository)
+                    from ..system_state import diagnosis_context
+
+                    with self.company.db.transaction() as conn:
+                        diagnosis = diagnosis_context(conn, self.company, payload['owners'], snapshot,
+                                                      payload.get('instruction', ''),
+                                                      observations=payload.get('observations', []))
+                    self.store.retest_base(job, snapshot, diagnosis)
+                    return
+                if job['state'] == 'blocked':
+                    raise ValueError('pr_ref_requires_reconciliation')
         if job["state"] in {"triage", "patch", "design", "evaluate", "publish"}:
             from ..system_state import diagnosis_context
 
@@ -376,6 +546,7 @@ class Maintainer:
                     raise ValueError("investigation_budget_exhausted")
                 from .investigation import append_inspections, external_research, inspect_code
 
+                await asyncio.to_thread(self.prefetch_inspections, payload["snapshot"], result.inspect)
                 with self.company.db.transaction() as conn:
                     evidence = inspect_code(conn, payload["snapshot"], result.inspect,
                                             previous=payload.get("investigation_requests", []))
@@ -580,6 +751,28 @@ class Maintainer:
         payload.pop("ci_started_at", None)
         self.store.save(job["id"], "patch", payload=payload, receipt={}, error=None)
         return True
+
+    def prefetch_inspections(self, snapshot, queries):
+        """Hydrate omitted requested files from their frozen commit before reading excerpts."""
+        from ..system_state import readable, record_repository
+
+        paths = set()
+        for query in queries:
+            candidates = ([query.path] if query.path else
+                          [path for path in sorted(snapshot["entries"])
+                           if query.query.casefold() in path.casefold()][:4])
+            paths.update(path for path in candidates if path in snapshot["entries"] and readable(path))
+        if not paths:
+            return
+        with self.company.db.transaction() as conn:
+            cached = conn.execute("SELECT files,metadata FROM repository_evidence WHERE commit=%s",
+                                  (snapshot["commit"],)).fetchone()
+        if not cached or paths <= set(cached["files"]):
+            return
+        files, coverage = self.github.read_inspection_files(snapshot, queries, previous=cached["files"])
+        metadata = {**cached["metadata"], "coverage": coverage}
+        with self.company.db.transaction() as conn:
+            record_repository(conn, snapshot, files, metadata)
 
     def refresh_repository(self):
         from ..system_state import record_repository

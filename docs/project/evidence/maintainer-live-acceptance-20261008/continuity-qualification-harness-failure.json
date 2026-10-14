@@ -1,0 +1,8 @@
+{
+  "source_commit": "bd859475fa687dae54c6958eae64bf4101329327",
+  "scope": "exact installed source digest extraction",
+  "failure": "run().strip() altered trailing source whitespace",
+  "candidate_installed": false,
+  "model_calls": 0,
+  "production_database_writes": 0
+}

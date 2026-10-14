@@ -1,0 +1,34 @@
+{
+  "patch_commit": "3ed0bd95455068f44bee2b59c900c23e0e926b20",
+  "related_tests": {
+    "passed": 57,
+    "seconds": 12.26,
+    "postgresql": "real disposable PostgreSQL 14",
+    "command": "QUANT_COMPANY_TEST_DATABASE_URL=postgresql://achii@127.0.0.1:56432/postgres uv run --frozen pytest -q --tb=short tests/test_maintenance_context_continuity.py tests/test_maintenance_requested_evidence.py tests/test_maintenance_inspection_reuse.py tests/test_maintenance_history_budget.py tests/test_maintenance_admission.py tests/test_system_state.py"
+  },
+  "lint": "uv run --frozen ruff check .: passed",
+  "model_slack_github_in_source_tests": "simulated",
+  "real_subscription_calls_by_operator": 0,
+  "actual_image_evidence": "function-query-qualification-v2.json",
+  "unchanged": {
+    "context_characters": 88000,
+    "inspection_excerpt_characters": 14000,
+    "investigation_rounds": 4,
+    "github_read_bytes": 2000000,
+    "authentication": "official ChatGPT",
+    "model_effort_and_concurrency": true
+  },
+  "harness_corrections": [
+    {
+      "effect": "none",
+      "error": "SyntaxError before writing qualification evidence",
+      "correction": "Encode multiline JSON as a Python string; shell quote the whole script"
+    },
+    {
+      "effect": "tmp cutover script prepared; no server effect",
+      "error": "Workspace permission prevented writing evidence in the qws attachment",
+      "correction": "Reran exact authorized evidence write with escalation"
+    }
+  ]
+}
+

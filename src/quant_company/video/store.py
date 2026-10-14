@@ -80,6 +80,7 @@ def delivery_text(job, artifacts, at=None):
     qa = job.get("qa") or {}
     findings = ([f"대본: {f}" for f in qa.get("plan_findings", [])] + [f"검토: {f}" for f in qa.get("review_findings", [])]
                 + [f"화면 검수: {f}" for f in qa.get("inspection_findings", [])]
+                + [f"렌더: {f}" for f in qa.get("render_findings", [])]
                 + [f"화면·음성: {f}" for f in artifacts.get("findings", [])])
     attempts = len(qa.get("plan_attempts", [])) or 1
     check = "자동 검사 통과" if not findings else f"자동 검사 지적 {len(findings)}건(아래, 제작은 계속함)"
@@ -642,6 +643,39 @@ class VideoStore:
         with self.db.transaction() as conn:
             return {r['asset_id']: r['at'] for r in conn.execute(
                 'SELECT asset_id,max(used_at) AS at FROM video_asset_usage GROUP BY asset_id').fetchall()}
+
+    def thumbnail_history(self, job, limit=8):
+        """Pictures of the latest episodes' thumbnails, newest first (owner, 2026-10-14: a thumbnail picture is new every
+        episode): a story picture's subject and brief with its Commons title and file hash, or the library photo shown."""
+        with self.db.transaction() as conn:
+            rows = conn.execute("""SELECT plan, qa FROM video_jobs WHERE id<>%s AND plan IS NOT NULL
+                ORDER BY created_at DESC LIMIT 40""", (str(job['id']),)).fetchall()
+        out = []
+        for row in rows:
+            plan, qa = row['plan'], row['qa'] or {}
+            thumb = plan.get('thumbnail_image') or ''
+            item = next((i for i in plan.get('illustrations') or [] if i.get('id') == thumb), None)
+            if not thumb:
+                continue
+            if item is None:
+                record = {'subject': thumb, 'brief': '', 'library': thumb}
+            else:
+                entry = (qa.get('illustrations') or {}).get(thumb) or {}
+                record = {'subject': item.get('subject', ''), 'brief': item.get('brief', '')}
+                record |= {k: entry[k] for k in ('commons_title', 'sha256') if entry.get(k)}
+                if not entry.get('file'):
+                    record['library'] = item.get('fallback', '')
+            if record not in out:
+                out.append(record)
+            if len(out) >= limit:
+                break
+        return out
+
+    def thumbnail_assets(self):
+        """Library pictures any episode used as its thumbnail."""
+        with self.db.transaction() as conn:
+            return {r['asset_id'] for r in conn.execute(
+                "SELECT DISTINCT asset_id FROM video_asset_usage WHERE slot='thumbnail' AND asset_id NOT LIKE 'gen-%'").fetchall()}
 
     def record_assets(self, job, plan, library, at=None):
         from .episode import assets

@@ -1,0 +1,175 @@
+{
+ "snapshot": {
+  "taken_kst": "2026-10-14 10:51-10:54",
+  "main": "eed730e (after #140)",
+  "host": "Lightsail 2 vCPU / 8 GiB",
+  "method": "read-only docker inspect/exec; package files hashed as git blobs inside each container; secret values never left the host (per-run salted digests only)"
+ },
+ "host": {
+  "units": "UNIT                                                        LOAD   ACTIVE   SUB     DESCRIPTION\nquant-company-analyst-monitor.service                       loaded inactive dead    Read-only continuous Analyst publication monitoring\nquant-company-backup.service                                loaded inactive dead    Consistent Quant Company database and receipt backup to S3\nquant-company-release.service                               loaded inactive dead    Apply human-approved Quant Company maintenance releases\nquant-company-storage-cleanup.service                       loaded inactive dead    Bounded Quant Company image/cache and verified local backup retention\nquant-company-technical-review-observer-v2-20261012.service loaded failed   failed  /usr/bin/python3 /tmp/monitor-technical-review-20261012.py --commit 68a53f1c699837256db5e8a4a6479bbd0fc82876 --helper-sha256 8f1967ceb0df899b0b04ba2a85dba25385c6c0db261324793187bdd77c5bb0ec\nquant-company-trend-preview.service                         loaded failed   failed  Validate actual Trend Scout previews and apply authorized publication gate\nquant-company-analyst-monitor.timer                         loaded active   waiting Continuous Analyst delivery and quality observations\nquant-company-backup.timer                                  loaded active   waiting Daily Quant Company backup, approximately 03:10 KST\nquant-company-release.timer                                 loaded active   waiting Check approved Quant Company releases\nquant-company-storage-cleanup.timer                         loaded active   waiting Daily Quant Company storage cleanup, approximately 03:40 KST\nquant-company-trend-preview.timer                           loaded active   waiting Observe Trend Scout daily previews and first delivery\n\nLegend: LOAD   \u2192 Reflects whether the unit definition was properly loaded.\n        ACTIVE \u2192 The high-level unit activation state, i.e. generalization of SUB.\n        SUB    \u2192 The low-level unit activation state, values depend on unit type.\n\n11 loaded units listed.\nTo show all installed unit files use 'systemctl list-unit-files'.\n",
+  "timers": "Wed 2026-10-14 01:52:52 UTC       8s Wed 2026-10-14 01:51:52 UTC      52s ago quant-company-release.timer         quant-company-release.service\nWed 2026-10-14 08:38:00 UTC       6h Tue 2026-10-13 22:58:02 UTC 2h 54min ago quant-company-analyst-monitor.timer quant-company-analyst-monitor.service\nWed 2026-10-14 18:14:39 UTC      16h Tue 2026-10-13 18:10:23 UTC       7h ago quant-company-backup.timer          quant-company-backup.service\nWed 2026-10-14 18:42:56 UTC      16h Tue 2026-10-13 18:44:23 UTC       7h ago quant-company-storage-cleanup.timer quant-company-storage-cleanup.service\nWed 2026-10-14 23:10:00 UTC      21h Tue 2026-10-13 23:30:01 UTC 2h 22min ago quant-company-trend-preview.timer   quant-company-trend-preview.service\n",
+  "current_release": "/opt/quant-company/releases/51ce4f91f141e65f909ac783e590ee0585dea3fa\n168\n0\n0\n",
+  "disk": "/dev/root       154G   99G   56G  64% /\nTYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE\nImages          278       23        56.81GB   32.27GB (56%)\nContainers      21        18        753.7kB   98.3kB (13%)\nLocal Volumes   1         1         16.24MB   0B (0%)\nBuild Cache     686       1         21.29GB   4.881GB\n",
+  "memory": "               total        used        free      shared  buff/cache   available\nMem:            7816        2468         210          73        5530        5347\n"
+ },
+ "db": {
+  "db_size": "1510 MB",
+  "tables": [
+   {
+    "name": "public.turns",
+    "rows": 16019,
+    "size": "816 MB"
+   },
+   {
+    "name": "public.research_stage_reads",
+    "rows": 14740,
+    "size": "116 MB"
+   },
+   {
+    "name": "public.news_reviews",
+    "rows": 1709,
+    "size": "94 MB"
+   },
+   {
+    "name": "public.repository_evidence",
+    "rows": 97,
+    "size": "89 MB"
+   },
+   {
+    "name": "public.news_articles",
+    "rows": 18152,
+    "size": "74 MB"
+   },
+   {
+    "name": "public.quant_feed_calls",
+    "rows": 1159,
+    "size": "66 MB"
+   },
+   {
+    "name": "public.news_triages",
+    "rows": 1610,
+    "size": "60 MB"
+   },
+   {
+    "name": "public.quant_feed_documents",
+    "rows": 816,
+    "size": "21 MB"
+   },
+   {
+    "name": "public.sources",
+    "rows": 5371,
+    "size": "20 MB"
+   },
+   {
+    "name": "public.maintenance_jobs",
+    "rows": 83,
+    "size": "18 MB"
+   },
+   {
+    "name": "public.maintenance_revisions",
+    "rows": 61,
+    "size": "14 MB"
+   },
+   {
+    "name": "public.trend_feed_snapshots",
+    "rows": 1079,
+    "size": "13 MB"
+   },
+   {
+    "name": "public.trend_feed_observations",
+    "rows": 10789,
+    "size": "10208 kB"
+   },
+   {
+    "name": "public.messages",
+    "rows": 6523,
+    "size": "8456 kB"
+   },
+   {
+    "name": "public.research_mission_stages",
+    "rows": 143,
+    "size": "7648 kB"
+   },
+   {
+    "name": "public.outbox",
+    "rows": 5927,
+    "size": "7368 kB"
+   },
+   {
+    "name": "public.brief_editions",
+    "rows": 21,
+    "size": "6968 kB"
+   },
+   {
+    "name": "public.data_watch_inventory",
+    "rows": 1517,
+    "size": "6736 kB"
+   },
+   {
+    "name": "public.maintenance_calls",
+    "rows": 117,
+    "size": "5400 kB"
+   },
+   {
+    "name": "public.model_account_calls",
+    "rows": 19335,
+    "size": "5016 kB"
+   },
+   {
+    "name": "public.brief_calls",
+    "rows": 48,
+    "size": "3776 kB"
+   },
+   {
+    "name": "public.trend_feed_digests",
+    "rows": 35,
+    "size": "3648 kB"
+   },
+   {
+    "name": "public.model_execution_bindings",
+    "rows": 10752,
+    "size": "2920 kB"
+   },
+   {
+    "name": "public.tech_feed_items",
+    "rows": 3056,
+    "size": "2640 kB"
+   },
+   {
+    "name": "public.news_events",
+    "rows": 3272,
+    "size": "2304 kB"
+   },
+   {
+    "name": "public.research_stage_attempts",
+    "rows": 595,
+    "size": "2112 kB"
+   },
+   {
+    "name": "public.trend_feed_api_receipts",
+    "rows": 783,
+    "size": "2040 kB"
+   },
+   {
+    "name": "public.trend_feed_calls",
+    "rows": 34,
+    "size": "1896 kB"
+   },
+   {
+    "name": "public.quant_feed_candidates",
+    "rows": 982,
+    "size": "1592 kB"
+   },
+   {
+    "name": "public.projects",
+    "rows": 3383,
+    "size": "1456 kB"
+   }
+  ],
+  "table_count": 131,
+  "roles": [
+   "postgres",
+   "company"
+  ]
+ }
+}

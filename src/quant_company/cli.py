@@ -90,7 +90,8 @@ async def demo(settings):
 def main():
     parser = argparse.ArgumentParser(prog="quant-company")
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("migrate")
+    migrate = sub.add_parser("migrate")
+    migrate.add_argument("--force", action="store_true", help="rerun every schema file even if its digest is current")
     serve = sub.add_parser("serve")
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8000)
@@ -172,7 +173,7 @@ def main():
     args = parser.parse_args()
     settings = Settings()
     if args.command == "migrate":
-        Company(settings).db.migrate()
+        Company(settings).db.migrate(force=args.force)
     elif args.command == "serve":
         import uvicorn
 

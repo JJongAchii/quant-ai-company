@@ -1,0 +1,11 @@
+{
+  "observed_at": "2026-10-14 00:35:32 UTC",
+  "unit": "quant-company-second-audit-observer-20261014.service",
+  "actual_systemd_state": "ExecMainStatus=0\nActiveState=active\nSubState=running\nActiveEnterTimestamp=Wed 2026-10-14 00:32:34 UTC\nInvocationID=2a4f7cce8a684347b0723f1520dbcab3",
+  "maximum_hours": 24,
+  "interval_seconds": 45,
+  "read_only": true,
+  "automatic_alerts": false,
+  "automatic_repairs": false,
+  "unbounded_monitoring_claimed": false
+}

@@ -12,7 +12,7 @@ from psycopg.types.json import Jsonb
 
 from quant_company.company import PolicyError
 from quant_company.contracts import AgentDecision, ProviderResponse
-from quant_company.research.audit_delivery import check_delivery, packet_data
+from quant_company.research.audit_delivery import MAX_NOTES, check_delivery, packet_data
 from quant_company.research.controller import MissionController
 from quant_company.research.mission_backend import MissionBackend
 from quant_company.research.policy_contracts import scoped_kwargs
@@ -49,7 +49,8 @@ def setup_audit(mission, contents, resident=()):
 def complete(company, identity, value):
     response = ProviderResponse(request_id=identity, provider="fixture", thread_id="synthetic-audit-thread",
         usage={"input_tokens": 100, "cached_input_tokens": 50, "output_tokens": 10},
-        decision=AgentDecision(say="", status="complete", artifacts=[{"title": "Synthetic", "content": json.dumps(value)}]))
+        decision=AgentDecision(say="", status="complete", artifacts=[{
+            "title": "Synthetic", "content": json.dumps(value, ensure_ascii=False)}]))
     return company.commit_turn(identity, response)
 
 
@@ -129,7 +130,9 @@ def test_incomplete_packet_cannot_be_marked_as_final(mission):
         assert stage["retry_at"] is None
 
 
-@pytest.mark.parametrize("characters,invalid", [(6171, False), (8000, False), (8001, True)])
+@pytest.mark.parametrize("characters,invalid", [
+    (6171, False), (8000, False), (8020, False), (MAX_NOTES, False), (MAX_NOTES + 1, True),
+])
 def test_bounded_notes_survive_full_delivery_and_preserve_over_limit_rejection(mission, characters, invalid):
     company = mission.company
     _, row, identity = setup_audit(mission, {"history.txt": "Synthetic immutable lineage evidence\n" * 2000})
@@ -164,7 +167,22 @@ def test_notes_padding_cannot_exceed_the_whole_prompt_bound(mission):
     _, _, identity = setup_audit(mission, {"small.txt": "Synthetic evidence"})
     data = packet_data(company.prepare_turn(identity)["request"]["prompt"])
     with pytest.raises(PolicyError, match="audit_packet_review_invalid"):
-        complete(company, identity, {"packet_digest": data["packet_digest"], "notes": " " * 8000 + "x"})
+        complete(company, identity, {"packet_digest": data["packet_digest"], "notes": " " * MAX_NOTES + "x"})
+
+
+def test_larger_cumulative_notes_still_cannot_overflow_resident_final_context(mission):
+    company = mission.company
+    _, _, identity = setup_audit(mission, {"code.py": "x" * 70000}, ["code.py"])
+    while True:
+        try:
+            request = company.prepare_turn(identity)["request"]
+        except PolicyError as exc:
+            assert str(exc) == "audit_packet_or_resident_evidence_exceeds_context"
+            break
+        data = packet_data(request["prompt"])
+        assert data["phase"] == "review"
+        complete(company, identity, {"packet_digest": data["packet_digest"], "notes": "가" * MAX_NOTES})
+        _, identity = active(mission)
 
 
 def test_scoped_audit_routes_full_lineage_through_frozen_history(company, tmp_path, qlab_profile, monkeypatch):

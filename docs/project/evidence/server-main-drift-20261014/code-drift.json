@@ -1,0 +1,511 @@
+{
+ "services": {
+  "account-gateway": {
+   "base_label": "ec1fbeb29a49",
+   "branch_files": [],
+   "compose_files": 13,
+   "created": "2026-10-06T12:29:55",
+   "extra_files": [],
+   "files": {
+    "behind": 47,
+    "branch": 0,
+    "extra": 0,
+    "missing": 69,
+    "not-in-git": 10,
+    "same": 153
+   },
+   "image": "quant-company-command-help:04a465865cf18dbc3cf2fb1aaa4191f6ca7e55ac",
+   "not_in_git_files": [
+    "briefing/store.py",
+    "cli.py",
+    "company.py",
+    "config.py",
+    "db.py",
+    "research/library.py",
+    "research/mission_backend.py",
+    "research/missions.py",
+    "runtime.py",
+    "slack.py"
+   ],
+   "tools": []
+  },
+  "api": {
+   "base_label": "ec1fbeb29a49",
+   "branch_files": [
+    "research/audit_delivery.py"
+   ],
+   "compose_files": 13,
+   "created": "2026-10-14T00:27:09",
+   "extra_files": [],
+   "files": {
+    "behind": 42,
+    "branch": 1,
+    "extra": 0,
+    "missing": 55,
+    "not-in-git": 8,
+    "same": 173
+   },
+   "image": "quant-company-audit-note-bound-api:8651516fa6d1feaecdd5da7653751d5b3df52308",
+   "not_in_git_files": [
+    "briefing/store.py",
+    "cli.py",
+    "company.py",
+    "config.py",
+    "research/controller.py",
+    "research/library.py",
+    "runtime.py",
+    "slack.py"
+   ],
+   "tools": []
+  },
+  "briefing-data-worker": {
+   "base_label": "7b37ac488245",
+   "branch_files": [],
+   "compose_files": 7,
+   "created": "2026-10-12T05:13:03",
+   "extra_files": [],
+   "files": {
+    "behind": 36,
+    "branch": 0,
+    "extra": 0,
+    "missing": 24,
+    "not-in-git": 15,
+    "same": 204
+   },
+   "image": "quant-company:7b37ac4-video-phase2-2",
+   "not_in_git_files": [
+    "briefing/store.py",
+    "cli.py",
+    "config.py",
+    "db.py",
+    "research/library.py",
+    "research/mission_backend.py",
+    "research/missions.py",
+    "runtime.py",
+    "slack.py",
+    "video/contracts.py",
+    "video/episode.py",
+    "video/motion.py",
+    "video/render.py",
+    "video/runner.py",
+    "video/store.py"
+   ],
+   "tools": []
+  },
+  "claude-runtime": {
+   "base_label": "fde7681e0286",
+   "branch_files": [],
+   "compose_files": 5,
+   "created": "2026-10-13T00:39:41",
+   "extra_files": [],
+   "files": {
+    "behind": 53,
+    "branch": 0,
+    "extra": 0,
+    "missing": 118,
+    "not-in-git": 8,
+    "same": 100
+   },
+   "image": "quant-company-repair-claude-runtime:68ffc8d1-video10",
+   "not_in_git_files": [
+    "cli.py",
+    "contracts.py",
+    "db.py",
+    "providers/codex_runner.py",
+    "providers/codex_runtime.py",
+    "quant_feed/store.py",
+    "runtime.py",
+    "staff/packs.py"
+   ],
+   "tools": [
+    "claude=2.1.280 (Claude Code)"
+   ]
+  },
+  "codex-runtime": {
+   "base_label": "bfa923b392cc",
+   "branch_files": [],
+   "compose_files": 7,
+   "created": "2026-10-12T08:15:27",
+   "extra_files": [],
+   "files": {
+    "behind": 54,
+    "branch": 0,
+    "extra": 0,
+    "missing": 70,
+    "not-in-git": 9,
+    "same": 146
+   },
+   "image": "quant-company-codex:5e885d0a-combined71-3-retryid",
+   "not_in_git_files": [
+    "cli.py",
+    "db.py",
+    "providers/client.py",
+    "providers/codex_runner.py",
+    "research/library.py",
+    "research/mission_backend.py",
+    "research/missions.py",
+    "runtime.py",
+    "slack.py"
+   ],
+   "tools": [
+    "codex=codex-cli 0.160.1",
+    "node=v22.23.2"
+   ]
+  },
+  "data-watch-worker": {
+   "base_label": "0e09b852e6a3",
+   "branch_files": [],
+   "compose_files": 6,
+   "created": "2026-10-06T10:18:39",
+   "extra_files": [],
+   "files": {
+    "behind": 56,
+    "branch": 0,
+    "extra": 0,
+    "missing": 108,
+    "not-in-git": 5,
+    "same": 110
+   },
+   "image": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-2a2aff76ac41",
+   "not_in_git_files": [
+    "company.py",
+    "config.py",
+    "db.py",
+    "providers/codex_runner.py",
+    "staff/packs.py"
+   ],
+   "tools": []
+  },
+  "dispatch": {
+   "base_label": "7b37ac488245",
+   "branch_files": [],
+   "compose_files": 9,
+   "created": "2026-10-13T00:04:57",
+   "extra_files": [],
+   "files": {
+    "behind": 29,
+    "branch": 0,
+    "extra": 0,
+    "missing": 23,
+    "not-in-git": 14,
+    "same": 213
+   },
+   "image": "quant-company-housing-rental:737b3dd66b82a348d22eaa9e26bfa8d3149ab548-dispatch-briefing-final-4",
+   "not_in_git_files": [
+    "cli.py",
+    "config.py",
+    "db.py",
+    "research/library.py",
+    "research/mission_backend.py",
+    "research/missions.py",
+    "runtime.py",
+    "slack.py",
+    "video/contracts.py",
+    "video/episode.py",
+    "video/motion.py",
+    "video/render.py",
+    "video/runner.py",
+    "video/store.py"
+   ],
+   "tools": []
+  },
+  "housing-feed-worker": {
+   "base_label": "c54667e28275",
+   "branch_files": [],
+   "compose_files": 6,
+   "created": "2026-10-12T08:24:14",
+   "extra_files": [],
+   "files": {
+    "behind": 55,
+    "branch": 0,
+    "extra": 0,
+    "missing": 109,
+    "not-in-git": 5,
+    "same": 110
+   },
+   "image": "quant-company-housing-rental:737b3dd66b82a348d22eaa9e26bfa8d3149ab548-housing-feed-worker",
+   "not_in_git_files": [
+    "company.py",
+    "config.py",
+    "db.py",
+    "providers/codex_runner.py",
+    "staff/packs.py"
+   ],
+   "tools": []
+  },
+  "maintenance": {
+   "base_label": "46d853cbefd4",
+   "branch_files": [
+    "maintenance/github.py",
+    "maintenance/investigation.py",
+    "maintenance/observation.py",
+    "maintenance/runner.py",
+    "maintenance/store.py"
+   ],
+   "compose_files": 16,
+   "created": "2026-10-13T06:20:54",
+   "extra_files": [
+    "maintenance/admission.py"
+   ],
+   "files": {
+    "behind": 52,
+    "branch": 5,
+    "extra": 1,
+    "missing": 91,
+    "not-in-git": 3,
+    "same": 128
+   },
+   "image": "quant-company-maintainer-query:3ed0bd9",
+   "not_in_git_files": [
+    "company.py",
+    "research/programs.py",
+    "staff/packs.py"
+   ],
+   "tools": []
+  },
+  "news-worker": {
+   "base_label": "7b37ac488245",
+   "branch_files": [],
+   "compose_files": 7,
+   "created": "2026-10-13T00:04:47",
+   "extra_files": [],
+   "files": {
+    "behind": 32,
+    "branch": 0,
+    "extra": 0,
+    "missing": 23,
+    "not-in-git": 14,
+    "same": 210
+   },
+   "image": "quant-company:7b37ac4-briefing-final-4",
+   "not_in_git_files": [
+    "cli.py",
+    "config.py",
+    "db.py",
+    "research/library.py",
+    "research/mission_backend.py",
+    "research/missions.py",
+    "runtime.py",
+    "slack.py",
+    "video/contracts.py",
+    "video/episode.py",
+    "video/motion.py",
+    "video/render.py",
+    "video/runner.py",
+    "video/store.py"
+   ],
+   "tools": []
+  },
+  "postgres": {
+   "base_label": "",
+   "compose_files": 2,
+   "created": "2026-09-21T12:45:53",
+   "image": "postgres@sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+   "tools": null
+  },
+  "quant-codex-runtime": {
+   "base_label": "ea092f419b4b",
+   "branch_files": [],
+   "compose_files": 7,
+   "created": "2026-10-06T11:42:38",
+   "extra_files": [],
+   "files": {
+    "behind": 58,
+    "branch": 0,
+    "extra": 0,
+    "missing": 93,
+    "not-in-git": 3,
+    "same": 125
+   },
+   "image": "quant-company-codex-upgrade:b77dc9511fb6aae2beff68df1c0ba7852bac6bd4-9d215e4309ac",
+   "not_in_git_files": [
+    "db.py",
+    "providers/client.py",
+    "staff/packs.py"
+   ],
+   "tools": [
+    "codex=codex-cli 0.160.1",
+    "node=v22.23.2"
+   ]
+  },
+  "quant-feed-worker": {
+   "base_label": "ea092f419b4b",
+   "branch_files": [],
+   "compose_files": 7,
+   "created": "2026-10-06T10:18:57",
+   "extra_files": [],
+   "files": {
+    "behind": 56,
+    "branch": 0,
+    "extra": 0,
+    "missing": 92,
+    "not-in-git": 2,
+    "same": 129
+   },
+   "image": "quant-company-model-assignments:bc123cad48f5dc9aabb8570c9b4c49cdfa38e968-2110d56b77c3",
+   "not_in_git_files": [
+    "research/controller.py",
+    "staff/packs.py"
+   ],
+   "tools": []
+  },
+  "slack-socket": {
+   "base_label": "ec1fbeb29a49",
+   "branch_files": [],
+   "compose_files": 7,
+   "created": "2026-10-08T05:44:54",
+   "extra_files": [],
+   "files": {
+    "behind": 46,
+    "branch": 0,
+    "extra": 0,
+    "missing": 56,
+    "not-in-git": 9,
+    "same": 168
+   },
+   "image": "quant-company:trend-window-20261008-3",
+   "not_in_git_files": [
+    "briefing/store.py",
+    "cli.py",
+    "company.py",
+    "config.py",
+    "research/library.py",
+    "research/mission_backend.py",
+    "research/missions.py",
+    "runtime.py",
+    "slack.py"
+   ],
+   "tools": []
+  },
+  "tech-feed-worker": {
+   "base_label": "bfa923b392cc",
+   "branch_files": [],
+   "compose_files": 7,
+   "created": "2026-10-08T00:48:46",
+   "extra_files": [],
+   "files": {
+    "behind": 48,
+    "branch": 0,
+    "extra": 0,
+    "missing": 53,
+    "not-in-git": 7,
+    "same": 171
+   },
+   "image": "sha256:b0127f74ec7c5414e8c200eac32518cc38880911c8a9e8291aaca82d8603b813",
+   "not_in_git_files": [
+    "briefing/store.py",
+    "config.py",
+    "providers/client.py",
+    "research/library.py",
+    "research/mission_backend.py",
+    "research/missions.py",
+    "slack.py"
+   ],
+   "tools": []
+  },
+  "video-image-runtime": {
+   "base_label": "bfa923b392cc",
+   "branch_files": [],
+   "compose_files": 9,
+   "created": "2026-10-12T10:41:12",
+   "extra_files": [],
+   "files": {
+    "behind": 54,
+    "branch": 0,
+    "extra": 0,
+    "missing": 69,
+    "not-in-git": 9,
+    "same": 147
+   },
+   "image": "quant-company-codex:5e885d0a-combined71-3-retryid-image2",
+   "not_in_git_files": [
+    "cli.py",
+    "db.py",
+    "providers/client.py",
+    "providers/codex_runner.py",
+    "research/library.py",
+    "research/mission_backend.py",
+    "research/missions.py",
+    "runtime.py",
+    "slack.py"
+   ],
+   "tools": [
+    "codex=codex-cli 0.160.1",
+    "node=v22.23.2"
+   ]
+  },
+  "video-worker": {
+   "base_label": "7b37ac488245",
+   "branch_files": [
+    "video/episode.py",
+    "video/motion.py",
+    "video/runner.py",
+    "video/store.py"
+   ],
+   "compose_files": 8,
+   "created": "2026-10-14T01:30:31",
+   "extra_files": [],
+   "files": {
+    "behind": 32,
+    "branch": 4,
+    "extra": 0,
+    "missing": 13,
+    "not-in-git": 8,
+    "same": 222
+   },
+   "image": "quant-company-video:7b37ac4-fargate16",
+   "not_in_git_files": [
+    "briefing/store.py",
+    "config.py",
+    "db.py",
+    "research/library.py",
+    "research/mission_backend.py",
+    "research/missions.py",
+    "runtime.py",
+    "slack.py"
+   ],
+   "tools": [
+    "ffmpeg=playwright=chromium-1243",
+    "playwright=chromium_headless_shell-1243"
+   ]
+  },
+  "worker": {
+   "base_label": "ec1fbeb29a49",
+   "branch_files": [
+    "research/audit_delivery.py"
+   ],
+   "compose_files": 15,
+   "created": "2026-10-14T00:27:49",
+   "extra_files": [
+    "maintenance/admission.py"
+   ],
+   "files": {
+    "behind": 41,
+    "branch": 1,
+    "extra": 1,
+    "missing": 69,
+    "not-in-git": 9,
+    "same": 159
+   },
+   "image": "quant-company-audit-note-bound-worker:8651516fa6d1feaecdd5da7653751d5b3df52308",
+   "not_in_git_files": [
+    "briefing/store.py",
+    "cli.py",
+    "company.py",
+    "config.py",
+    "db.py",
+    "research/controller.py",
+    "research/library.py",
+    "runtime.py",
+    "slack.py"
+   ],
+   "tools": []
+  }
+ },
+ "snapshot": {
+  "host": "Lightsail 2 vCPU / 8 GiB",
+  "main": "eed730e (after #140)",
+  "method": "read-only docker inspect/exec; package files hashed as git blobs inside each container; secret values never left the host (per-run salted digests only)",
+  "taken_kst": "2026-10-14 10:51-10:54"
+ }
+}

@@ -252,3 +252,27 @@ def test_remote_backend_requires_its_aws_settings():
 
     with pytest.raises(ValueError, match='Remote rendering requires'):
         Settings(_env_file=None, video_render_backend='remote', video_render_bucket='b')
+
+
+async def test_a_render_made_by_other_renderer_code_is_reported(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    """2026-10-13: the Fargate task ran the 10/12 render image while the worker had newer code; nothing said so."""
+    from quant_company.video.motion import RENDERER_DIGEST
+    from quant_company.video.store import delivery_text
+
+    store, _ = video
+    settings = remote_settings(store, tmp_path)
+    s3, ecs = FakeS3(), FakeECS()
+    monkeypatch.setattr(remote_module, 'boto3_clients', lambda s: (s3, ecs))
+    monkeypatch.setattr('quant_company.video.runner.download_audio', lambda url, path: path.write_bytes(b'speech'))
+    job = new_job(brief, video)
+    provider = InspectingProvider(visual=[VisualReview(passed=True, issues=[])])
+    speech, renderer = SimulatedSpeech(), InspectedRenderer()
+    current = await ticks(store, provider, speech, renderer, {'job': job['id'], 'stop': lambda j: ecs.runs})
+    simulate_task(s3, settings, ecs.runs[0], InspectedRenderer(renderer_code='0' * 64))
+    ecs.finish(current['qa']['render']['attempts'][-1]['task'])
+    current = await ticks(store, provider, speech, renderer, {'job': job['id'],
+                                                              'stop': lambda j: j['state'] not in {'rendering', 'inspecting'}})
+    assert current['state'] == 'uploading', current['error']
+    assert current['qa']['render_findings'] == [
+        f"Render image code 000000000000 differs from the worker's {RENDERER_DIGEST[:12]}: rebuild the render image"]
+    assert "렌더: Render image code" in delivery_text(current, current['artifacts'])

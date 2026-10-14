@@ -66,13 +66,15 @@ services:
     init: true
     user: '10001:10001'
     read_only: true
-    tmpfs: [/tmp:size=256m,mode=1777]
+    # Quoted: in a flow sequence the comma would otherwise split "mode=1777" into a second, invalid tmpfs entry.
+    tmpfs: ['/tmp:size=256m,mode=1777']
     shm_size: 128m
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     pids_limit: 256
     stop_grace_period: 120s
     mem_limit: ${VIDEO_MEMORY_LIMIT:-1536m}
+    memswap_limit: ${VIDEO_MEMSWAP_LIMIT:-3072m}
     cpus: ${VIDEO_CPUS:-1.5}
     logging:
       driver: local
@@ -89,6 +91,10 @@ services:
       TEMPORAL_TASK_QUEUE: ${TEMPORAL_TASK_QUEUE:-quant-company}
       # Script/review calls go only to the isolated Claude subscription runtime (--profile claude).
       VIDEO_MODEL_RUNTIME_URL: http://claude-runtime:8080
+      # Story pictures from the separate Codex image runtime (video-image.compose.yaml); unset = library only.
+      VIDEO_IMAGE_RUNTIME_URL: ${VIDEO_IMAGE_RUNTIME_URL:-}
+      VIDEO_IMAGE_MODEL: ${VIDEO_IMAGE_MODEL:-gpt-6-astra}
+      VIDEO_IMAGE_EFFORT: ${VIDEO_IMAGE_EFFORT:-low}
       MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
       COMPANY_MAX_DAILY_TURNS: ${COMPANY_MAX_DAILY_TURNS:-0}
       COMPANY_MODEL_TIMEOUT_SECONDS: ${COMPANY_MODEL_TIMEOUT_SECONDS:-960}

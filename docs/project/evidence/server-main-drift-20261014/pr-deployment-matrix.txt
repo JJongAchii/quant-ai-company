@@ -1,0 +1,51 @@
+PR    day         accoun    api briefi claude codex- data-w dispat housin mainte news-w quant- quant- slack- tech-f video- video- worker  title
+#142  2026-10-14     2%     2%     2%     0%     2%     0%     2%     0%     2%     2%     2%     2%     2%     2%     2%     2%     2%   Run the planning slate stage in shadow (P2a)
+#141  2026-10-14     2%     2%     2%     0%     2%     0%     2%     0%     1%     2%     1%     1%     2%     2%     2%     2%     2%   Add the model-free research planning foundation (P1)
+#140  2026-10-14    ·      ·       1%     0%    ·      ·       1%    ·      ·       1%    ·      ·      ·      ·      ·      ✓      ·     Fix 10/13–10/14 video layout, script checks, render drift an
+#139  2026-10-13     0%     0%     0%     0%     0%     0%     0%     0%     0%     0%     0%     0%     0%     0%     0%    92%     0%   Analyse published video performance and feed owner-adopted l
+#138  2026-10-13     2%    ✓       2%     2%     2%     2%     2%     2%     2%     2%     2%     2%     2%     2%     2%     2%    ✓     Land the operating research stack (#87, #105) on main
+#136  2026-10-13    35%    35%    88%     8%    37%     0%    90%     0%     0%    90%     2%     2%    35%    47%    40%    ✓      35%   Bring the production briefing and daily video source into ma
+#127  2026-10-08    ·      ✓      ✓      ·      ·      ·      ✓      ·      ·      ✓      ·      ·      ✓       1%    ·      ✓      ·     Rank search trends over recent observation windows
+#126  2026-10-08    20%    20%    ✓      20%    20%    20%    ✓      20%    20%    ✓      20%    20%    20%    20%    20%    ✓      20%   Fix search-trend replies starved by paced feed backlog
+#123  2026-10-08     9%     9%    17%    17%     9%     9%    17%     9%    92%    17%     9%     9%     9%     9%     9%    17%    17%   Repair Maintainer diagnosis context and reconciliation hando
+#121  2026-10-08    ·      ·      ✓      ·      ·      ·      ✓      ·      ·      ✓      ·      ·      ·      ✓      ·      ✓      ·     Restore Tech Scout delivery and isolate its collection lane
+#119  2026-10-07     0%    95%    ✓      ·       0%    ·      ✓      ·      ·      ✓      ·      ·      95%    ✓       0%    ✓       0%   검색 트렌드 정기 발송을 한국 시간 08:00·14:00·20:00으로 확장하고, 전용 Slack 채널의 소
+#118  2026-10-08     3%     3%     3%     3%     3%     3%     3%     3%    ✓       3%     3%     3%     3%     3%     3%     3%     3%   Optimize Maintainer evidence and investigation reuse
+#114  2026-10-06    ✓      ✓      ·      ·      ·      ·      ·      ·      ·      ·      ·      ·      ✓      ·      ·      ·      ·     제어 채널에 모델·계정 명령어 도움말 추가
+#113  2026-10-07     1%    95%    ✓       0%     1%     0%    ✓       0%     0%    ✓       0%     0%    95%    ✓       1%    ✓       1%   feat: send ten non-sports Korean search topics to Slack dail
+#111  2026-10-06    ·      ·      ·      ·      ✓      ·      ·      ·      ·      ·      ✓      ·      ·      ·      ✓      ·      ·     Codex 0.160.1 갱신과 안정 릴리스 후보 감지
+#110  2026-10-07     5%     5%     5%     5%     5%     5%     5%     5%     5%     5%     5%     5%     5%     5%     5%     5%    ✓     Recover director queue and record real Maintainer diagnostic
+#108  2026-10-06    ✓      ✓      ✓       2%    26%    26%    ✓      26%    ✓      ✓      26%    ✓      ✓      ✓      26%    ✓      ✓     직원 모델 배정과 작업별 모델 지정 기능 및 운영 배포
+#107  2026-10-06    ✓      ✓      ✓       7%    ✓       7%    ✓       7%     7%    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Finalize Quant Scout recovery on main
+#106  2026-10-06     3%     3%     3%     3%     3%     3%     3%     3%    ✓       3%     3%     3%     3%     3%     3%     3%     6%   Recover Maintainer failure intake and bounded diagnostic con
+#104  2026-10-06     2%     2%     2%    ·       2%    ✓       2%     2%    ✓       2%     2%     2%     2%     2%     2%     2%     2%   Make data-watch update status easier to scan
+#86   2026-09-30    ✓      ✓      ✓       1%    ✓       1%    ✓       1%    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Harden Quant Scout source-grounded editorial review
+#81   2026-09-28    ✓      ✓      ✓      ·      ✓      ✓      ✓      ·      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Flag published SEC 13F and insider gaps in data-watch
+#80   2026-09-28    ✓      ✓      ✓      ·      ✓      ✓      ✓       0%    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Show source update dates and concrete gaps in data-watch
+#79   2026-09-28    ✓      ✓      ✓      ·      ✓      ✓      ✓      ·      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Audit narrow initial-case differences in Quant citations
+#76   2026-09-28    ✓      ✓      ✓      ·      ✓      ✓      ✓      ·      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Audit exact-source Quant citation location corrections
+#75   2026-09-28    ✓      ✓      ✓       1%    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     서울·경기 분양·청약 Slack 피드 추가
+#74   2026-09-28    ✓      ✓      ✓      ·      ✓      ✓      ✓      ·      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Make data-watch status actionable and label stale inventory
+#72   2026-09-28    ✓      ✓      ✓      ·      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Pause Quant Scout publication and tighten research quality
+#69   2026-09-23    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Route model account controls through dedicated Slack channel
+#68   2026-09-23    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Add owner-controlled Slack Codex account selection
+#67   2026-09-28    ✓      ✓      ✓       2%    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Clarify data-watch Slack reports and preserve worker rollout
+#66   2026-09-23    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Run data-watch without restarting pinned research worker
+#65   2026-09-23    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Bound audit read progress by file
+#64   2026-09-22    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Keep causal audit evidence within prompt budget
+#63   2026-09-23    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     회사 Slack에 Maintainer 케이스와 data-watch 점검을 추가
+#62   2026-09-22    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Bind causal evidence to autonomous research audits
+#61   2026-09-22    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Repair validator evidence replay and audit format
+#60   2026-09-23    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Add evidence-first Quant Scout research feed
+#59   2026-09-22    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Recover timed-out research audits without rereading evidence
+#57   2026-09-22    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Reserve an independent Reporter news execution lane
+#56   2026-09-22    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Expose exact audit evidence continuation offsets
+#55   2026-09-22    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Preserve audit progress on duplicate evidence reads
+#54   2026-09-22    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Retain compact evidence through research audits
+#52   2026-09-22    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Add dedicated Tech Scout feed identity
+#51   2026-09-22    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Retain research evidence across turns
+#50   2026-09-22    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Bind autonomous hypotheses to the frozen experiment menu
+#49   2026-09-21    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Add zero-model technology feeds for the existing Slack Repor
+#48   2026-09-21    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Add persistent evidence-driven research missions and isolate
+#40   2026-09-21    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Connect approved Slack research to the 3070 worker and verif
+#39   2026-09-21    ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓      ✓     Restore Reporter coverage with free media and verified news 

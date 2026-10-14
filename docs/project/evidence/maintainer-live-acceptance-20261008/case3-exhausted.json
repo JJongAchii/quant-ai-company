@@ -1,0 +1,127 @@
+{
+  "at": "2026-10-13T06:06:09.368695+00:00",
+  "job": {
+    "at": "2026-10-13T05:40:22.599845+00:00",
+    "id": "297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b",
+    "error": "investigation_budget_exhausted",
+    "round": 4,
+    "state": "blocked",
+    "revision": 1
+  },
+  "calls": [
+    {
+      "id": "maint-297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b-triage",
+      "error": null,
+      "usage": {
+        "input_tokens": 38339,
+        "output_tokens": 2316,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "created_at": "2026-10-13T04:50:00.097632+00:00",
+      "response_saved": true
+    },
+    {
+      "id": "maint-297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b-triage-i1",
+      "error": null,
+      "usage": {
+        "input_tokens": 28686,
+        "output_tokens": 2752,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 2070
+      },
+      "created_at": "2026-10-13T04:56:25.497895+00:00",
+      "response_saved": true
+    },
+    {
+      "id": "maint-297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b-triage-i2",
+      "error": null,
+      "usage": {
+        "input_tokens": 29812,
+        "output_tokens": 2184,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "created_at": "2026-10-13T05:03:04.283094+00:00",
+      "response_saved": true
+    },
+    {
+      "id": "maint-297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b-r1-triage",
+      "error": null,
+      "usage": {
+        "input_tokens": 38443,
+        "output_tokens": 2230,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "created_at": "2026-10-13T05:09:56.676759+00:00",
+      "response_saved": true
+    },
+    {
+      "id": "maint-297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b-r1-triage-i1",
+      "error": null,
+      "usage": {
+        "input_tokens": 28857,
+        "output_tokens": 2281,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "created_at": "2026-10-13T05:16:32.331179+00:00",
+      "response_saved": true
+    },
+    {
+      "id": "maint-297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b-r1-triage-i2",
+      "error": null,
+      "usage": {
+        "input_tokens": 29857,
+        "output_tokens": 2273,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 1552
+      },
+      "created_at": "2026-10-13T05:22:53.770801+00:00",
+      "response_saved": true
+    },
+    {
+      "id": "maint-297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b-r1-triage-i3",
+      "error": null,
+      "usage": {
+        "input_tokens": 31187,
+        "output_tokens": 2691,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 2022
+      },
+      "created_at": "2026-10-13T05:29:22.490663+00:00",
+      "response_saved": true
+    },
+    {
+      "id": "maint-297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b-r1-triage-i4",
+      "error": null,
+      "usage": {
+        "input_tokens": 31275,
+        "output_tokens": 6378,
+        "cached_input_tokens": 0,
+        "reasoning_output_tokens": 5696
+      },
+      "created_at": "2026-10-13T05:36:12.090998+00:00",
+      "response_saved": true
+    }
+  ],
+  "last_decision": {
+    "reason": "현재 참조 system:3a75b34fce458856052a640a9f4f0723c3932cb20282f838bc90537e26ec7e49의 정확 커밋 77975ac6d28fc50f959c9db78f09d67f3202654a를 먼저 확인했다. requests.py는 이미 연결 케이스 추적, 후보 없는 진단 종료, PR 준비와 applied 상태를 구분하므로 이를 신규 기능으로 재제안하지 않는다. 추가 요청은 담당자와 단계별 다음 행동의 일관된 표시다. cases.current/card와 company.py의 maintenance_status 소비 경로도 제공되어 있다. 그러나 tests/test_maintenance_repair_path.py는 1–105행만 보이며, 74행에서 시작한 수리·PR 경로 시험의 나머지 본문과 기대값이 누락됐다. 관련 시험 확인이 필요한 지침에 따라 finding을 확정하지 않고, 이미 저장된 정확 조회 범위 101–201행의 재제공을 요청한다. 조사 한도는 0으로 기록되어 있으므로 새 광범위 검색을 요청하지 않는다. 과거 조사 한도 종료의 근거는 소유자 보고 message:0a6c71b3-76c4-475e-b947-1d2b62146cc7이며, 원본·응답은 보존 대상이다. 별도 운영자 입력 보존·파일 읽기 수리와 소스 PR #134는 이번 변경과 구분한다. 구현 목표는 유지하며 실행 버전의 기능 활성화·배포·검증 완료는 확인되지 않았다.",
+    "inspect": [
+      {
+        "path": "tests/test_maintenance_repair_path.py",
+        "query": null,
+        "line_count": 101,
+        "start_line": 101
+      }
+    ],
+    "has_finding": false
+  },
+  "slack_url": "https://achiisquantresearch.slack.com/archives/C0C3Q7BFQCE/p1791866371596809",
+  "original_responses_preserved": true,
+  "operator_reset_or_replay": false,
+  "bot_code_candidate": false,
+  "bot_pr": false
+}
+
