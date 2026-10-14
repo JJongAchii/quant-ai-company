@@ -1,0 +1,14 @@
+[Unit]
+Description=Compare production with CI-green main and release it when allowed (docs/adr/0045)
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+ConditionPathExists=/opt/quant-company/current/deploy/release.py
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/quant-company/current/deploy/release.py auto
+# A full release builds every image and waits for quiet services; an interrupted one is resumed by the next run.
+TimeoutStartSec=5h
+UMask=0022
+NoNewPrivileges=true

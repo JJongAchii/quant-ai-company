@@ -330,6 +330,42 @@ S3 다운로드와 새 DB 복원, 컨테이너 권한·공개 포트·메모리 
 실제 사용자 Slack 왕복도 확인했다. 맥북 완전 종료, 장시간 부하, 전체 호스트 유실 후 재구축은
 각각 별도 인수다.
 
+## 8. 릴리스와 main 자동 동기화
+
+운영 코드는 main 커밋 하나이고, 서비스는 `deploy/release.py`만 바꾼다
+([ADR 0044](adr/0044-production-runs-one-main-commit.md)). 손으로 릴리스하는 순서는 다음과 같다.
+`R`은 그 릴리스의 `deploy/release.py`다.
+
+```bash
+git archive --format=tar.gz --prefix=quant-ai-company/ SHA deploy src pyproject.toml uv.lock .dockerignore > release.tar.gz
+sudo python3 /opt/quant-company/current/deploy/release.py prepare --sha SHA --archive release.tar.gz
+R=/opt/quant-company/releases/SHA/deploy/release.py
+sudo python3 $R build --sha SHA && sudo python3 $R plan --sha SHA && sudo python3 $R migrate --sha SHA
+sudo python3 $R apply --sha SHA SERVICE...   # deploy/release.json의 그룹 순서대로
+sudo python3 $R verify --sha SHA && sudo python3 $R activate --sha SHA
+```
+
+자동 동기화([ADR 0045](adr/0045-ci-green-main-releases-itself.md))는 타이머 하나다.
+15분마다 운영과 CI를 통과한 main을 비교하고 `/var/lib/quant-company/release-status.json`에 쓴다.
+
+```bash
+sudo install -m 0644 /opt/quant-company/current/deploy/quant-company-release-auto.service \
+  /opt/quant-company/current/deploy/quant-company-release-auto.timer /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable --now quant-company-release-auto.timer
+sudo cat /var/lib/quant-company/release-status.json
+```
+
+`runtime.env` 값:
+
+| 값 | 뜻 |
+|---|---|
+| `RELEASE_AUTO_ENABLED` | `true`일 때만 반영한다. 그 밖에는 판단하고 보고만 한다. 손으로 릴리스하는 동안에는 `false`로 둔다. |
+| `VIDEO_RENDER_COMMIT` | 지금 렌더 작업 정의의 이미지를 빌드한 커밋이다. 렌더 입력이 이 커밋과 다르면 `render_required`로 멈춘다. |
+| `RELEASE_AUTO_WINDOWS` | 반영을 시작할 수 있는 KST 시간 창이다. 기본값은 `10:00-14:30,19:40-23:00`이다. |
+
+실패한 커밋은 다시 시도하지 않는다. 원인을 확인한 뒤
+`sudo python3 /opt/quant-company/current/deploy/release.py auto --retry`로 다시 시도한다.
+
 ## 선택: Claude 구독 독립 검토
 
 직원 답안의 독립 검토는 [별도 Claude 실행기](claude-runtime.md)의 `claude` profile로 연결한다.

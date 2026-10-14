@@ -8,6 +8,8 @@
     release.py apply    --sha SHA SERVICE ...      recreate services one at a time; roll a failed one back
     release.py verify   [--sha SHA]                every running service: commit, rendered config, package files
     release.py activate --sha SHA                  after all services run SHA: runtime.env pins and the current link
+    release.py auto [--retry]                      the timer: compare production with CI-green main and release it
+                                                   when allowed (RELEASE_AUTO_ENABLED=true); otherwise only report
 
 Every service is rendered from deploy/release.json of the release, runtime.env, and the release variables below.
 A service is recreated only when it is quiet, must settle on the release image with the planned config and the
@@ -15,9 +17,13 @@ release's exact package files, and is otherwise recreated from the compose set r
 """
 
 import argparse
+import ast
+import base64
 import contextlib
 import fcntl
+import fnmatch
 import hashlib
+import http.client
 import io
 import json
 import os
@@ -27,7 +33,9 @@ import subprocess
 import sys
 import tarfile
 import time
-from datetime import UTC, datetime
+import urllib.error
+import urllib.request
+from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path, PurePosixPath
 
 STATE = Path(os.environ.get("QC_STATE_DIR", "/var/lib/quant-company"))
@@ -35,16 +43,26 @@ RELEASES = Path(os.environ.get("QC_RELEASES_DIR", "/opt/quant-company/releases")
 PROJECT = "quant-company"
 SHA = re.compile(r"[0-9a-f]{40}")
 KEEP = {"postgres", "caddy"}  # data and edge containers are never recreated by a code release
+INCLUDE = ("deploy/", "src/", "pyproject.toml", "uv.lock", ".dockerignore")
 REQUIRED = ("deploy/release.json", "deploy/compose.yaml", "deploy/qdata-source.json", "pyproject.toml", "uv.lock",
             "src/quant_company/__init__.py")
 # Terminal states come from video/store.py and briefing/store.py.
 VIDEO_DONE = ("published", "expired", "held", "superseded", "blocked", "delivered", "delivery_failed",
               "delivery_uncertain")
+VIDEO_IDLE = VIDEO_DONE + ("awaiting_approval",)  # files ready, waiting on a person rather than the worker
 BRIEF_ACTIVE = ("planning", "inventorying", "writing", "reviewing", "revising", "final_reviewing")
 
 
 class ReleaseError(RuntimeError):
     pass
+
+
+class Busy(ReleaseError):
+    """Production work or another host operation is in the way; nothing is wrong with the release."""
+
+
+class NeedsOperator(ReleaseError):
+    """The release needs a host step this tool does not take (quant-data, host values, new or removed services)."""
 
 
 def run(args, env=None, input=None, check=True, timeout=1800):
@@ -115,6 +133,11 @@ def config_hash(args, service, runner=run, env=None):
     return out[-1] if out else None
 
 
+def config_hashes(args, runner=run, env=None):
+    return dict(line.split()[:2] for line in runner(args + ["config", "--hash", "*"], env=env).splitlines()
+                if len(line.split()) >= 2)
+
+
 def label(info, key):
     return (info or {}).get("Config", {}).get("Labels", {}).get(key)
 
@@ -127,7 +150,7 @@ def host_lock():
         try:
             fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
-            raise ReleaseError("another backup or release holds the host lock") from None
+            raise Busy("another backup or release holds the host lock") from None
         yield
 
 
@@ -140,20 +163,20 @@ def archive_commit(data):
 
 
 def unpack(data, target):
+    """Only what images are built from (INCLUDE): a GitHub tarball carries the whole repository."""
     with tarfile.open(fileobj=io.BytesIO(data), mode="r:*") as bundle:
         members = bundle.getmembers()
-        if sum(m.size for m in members) > 512 * 1024 * 1024:
-            raise ReleaseError("release archive expands beyond 512 MiB")
-        for item in members:
-            parts = PurePosixPath(item.name).parts
-            if item.name.startswith("/") or ".." in parts or not (item.isdir() or item.isfile()):
-                raise ReleaseError(f"unsafe archive member: {item.name}")
+        if bad := [m.name for m in members if m.name.startswith("/") or ".." in PurePosixPath(m.name).parts]:
+            raise ReleaseError(f"unsafe archive member: {bad[0]}")
         prefix = {PurePosixPath(m.name).parts[0] for m in members if m.isfile()}
         strip = 1 if len(prefix) == 1 and not any(m.name in REQUIRED for m in members) else 0
-        for item in members:
-            parts = PurePosixPath(item.name).parts[strip:]
-            if not parts:
-                continue
+        kept = [(m, PurePosixPath(m.name).parts[strip:]) for m in members]
+        kept = [(m, parts) for m, parts in kept if parts and "/".join(parts).startswith(INCLUDE)]
+        if bad := [m.name for m, _ in kept if not (m.isdir() or m.isfile())]:
+            raise ReleaseError(f"unsafe archive member: {bad[0]}")
+        if sum(m.size for m, _ in kept) > 512 * 1024 * 1024:
+            raise ReleaseError("release archive expands beyond 512 MiB")
+        for item, parts in kept:
             path = target.joinpath(*parts)
             if item.isdir():
                 path.mkdir(parents=True, exist_ok=True)
@@ -175,7 +198,7 @@ def qdata_source(pin):
         source = release / "deploy/qdata-source.json"
         if (release / "qdata").is_dir() and source.is_file() and json.loads(source.read_text()).get("commit") == pin:
             return release / "qdata"
-    raise ReleaseError(f"no prepared release carries quant-data {pin}; provide it before preparing")
+    raise NeedsOperator(f"no prepared release carries quant-data {pin}; provide it before preparing")
 
 
 def prepare(sha, archive):
@@ -308,7 +331,7 @@ def busy(service, runner=run):
     if service == "dispatch" and sql("SELECT count(*) FROM outbox WHERE status='sending'", runner):
         reasons.append("Slack send in flight")
     if service == "video-worker" and sql("SELECT count(*) FROM video_jobs WHERE state NOT IN ("
-                                         + ",".join(f"'{s}'" for s in VIDEO_DONE) + ")", runner):
+                                         + ",".join(f"'{s}'" for s in VIDEO_IDLE) + ")", runner):
         reasons.append("video job in production")
     if service in {"news-worker", "briefing-data-worker"}:
         if sql("SELECT count(*) FROM brief_calls WHERE state='running'", runner):
@@ -323,7 +346,7 @@ def wait_quiet(service, seconds, runner=run, sleep=time.sleep):
     deadline = time.monotonic() + seconds
     while reasons := busy(service, runner=runner):
         if time.monotonic() >= deadline:
-            raise ReleaseError(f"{service} stayed busy: {', '.join(reasons)}")
+            raise Busy(f"{service} stayed busy: {', '.join(reasons)}")
         sleep(10)
 
 
@@ -392,6 +415,13 @@ def settle(service, sha, root, wanted, runner=run, sleep=time.sleep, wait=150, h
     return True, "settled"
 
 
+def migrate(sha, runner=run):
+    """One schema migration from the release image; services skip unchanged schema digests on start."""
+    root = root_of(sha)
+    with host_lock():
+        return compose(root, sha, "run", "--rm", "--no-deps", "-T", "api", "quant-company", "migrate", runner=runner)
+
+
 def journal(record):
     directory = STATE / "release-journal"
     directory.mkdir(mode=0o700, exist_ok=True)
@@ -444,13 +474,13 @@ def apply(sha, services, quiet_seconds=900, runner=run, sleep=time.sleep):
 def verify(sha=None, runner=run):
     sha = sha or (RELEASES.parent / "current").resolve().name
     root = root_of(sha)
-    rows = []
+    rows, hashes = [], config_hashes(compose_args(root), runner=runner, env={**os.environ, **release_env(root, sha)})
     for service in ordered_services(root):
         info = inspect(service, runner=runner)
         if info is None:
             rows.append({"service": service, "ok": False, "problem": "not running"})
             continue
-        wanted = config_hash(compose_args(root), service, runner=runner, env={**os.environ, **release_env(root, sha)})
+        wanted = hashes.get(service)
         problems = []
         if label(info, "org.opencontainers.image.revision") != sha:
             problems.append(f"revision {label(info, 'org.opencontainers.image.revision')}")
@@ -501,13 +531,439 @@ def activate(sha, runner=run):
     return {"commit": sha, "current": str(root)}
 
 
+# ----------------------------------------------------------------------------------------------- automatic release
+
+GITHUB = "https://api.github.com"
+WORKFLOW = "quant-company-ci.yml"
+# KST starts: after the AM edition's video, done well before PM collection (KRX close + 20 minutes), after the PM video.
+WINDOWS = "10:00-14:30,19:40-23:00"
+KST = timezone(timedelta(hours=9))
+# The Fargate render task (`video render-task`) runs its own image (deploy/Dockerfile.render). The modules it imports,
+# its design assets, that image, its template and the dependencies must match the render image's commit
+# (VIDEO_RENDER_COMMIT). A change needs a new image and task definition, which the operator makes with owner approval.
+RENDER_ENTRY = "quant_company.video.remote"
+RENDER_FILES = ("deploy/Dockerfile.render", "deploy/render.json", "pyproject.toml", "uv.lock")
+RENDER_ASSETS = "src/quant_company/video/design/"
+# Host files a release does not install. A change is reported for the operator; it does not hold the release.
+OPERATOR_FILES = ("deploy/*.service", "deploy/*.timer", "deploy/Caddyfile", "deploy/storage_cleanup.py",
+                  "deploy/init-database.sh", "deploy/bootstrap-host.sh", "deploy/provision.py", "deploy/*.example*")
+
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *args, **kwargs):
+        return None
+
+
+class GitHub:
+    """Read-only access as the Maintainer GitHub App: every token is limited to contents and actions read. Errors
+    carry only the HTTP status, because response bodies can hold private details."""
+
+    def __init__(self, config=None, key=None, opener=None, signer=None):
+        value = json.loads(Path(config or STATE / "config/maintenance.json").read_text())
+        self.app_id, self.installation, self.repo = str(value["app_id"]), value["installation_id"], value["repository"]
+        self.key, self._token = Path(key or STATE / "secrets/maintenance_github_key"), None
+        self.open = opener or urllib.request.build_opener(NoRedirect).open
+        self.signer = signer or self.openssl
+
+    def openssl(self, unsigned):
+        signed = subprocess.run(["openssl", "dgst", "-sha256", "-sign", str(self.key)], input=unsigned,
+                                capture_output=True, timeout=10)
+        if signed.returncode:
+            raise ReleaseError("github_app_signing_failed")
+        return signed.stdout
+
+    @staticmethod
+    def request(url, token=None, data=None):
+        headers = {"User-Agent": "quant-company-release"}
+        if token:
+            headers |= {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json",
+                        "X-GitHub-Api-Version": "2022-11-28"}
+        if data is not None:
+            headers["Content-Type"] = "application/json"
+        return urllib.request.Request(url, headers=headers, method="GET" if data is None else "POST",
+                                      data=None if data is None else json.dumps(data).encode())
+
+    def read(self, request, sink, limit, timeout=60):
+        """Copy the response into SINK, at most LIMIT bytes. A redirect is not followed: its Location is returned."""
+        try:
+            with self.open(request, timeout=timeout) as response:
+                size = 0
+                while chunk := response.read(1 << 20):
+                    size += len(chunk)
+                    if size > limit:
+                        raise ReleaseError("github_response_too_large")
+                    sink.write(chunk)
+        except urllib.error.HTTPError as exc:
+            if exc.code in (301, 302, 303, 307, 308) and exc.headers.get("Location"):
+                return exc.headers["Location"]
+            raise ReleaseError(f"github_http_{exc.code}") from None
+        except (urllib.error.URLError, http.client.HTTPException, TimeoutError, ConnectionError):
+            raise ReleaseError("github_unreachable") from None
+        return None
+
+    def call(self, path, token=None, data=None):
+        sink = io.BytesIO()
+        if self.read(self.request(GITHUB + path, token or self.token(), data), sink, 32 * 1024 * 1024):
+            raise ReleaseError("github_unexpected_redirect")
+        return json.loads(sink.getvalue())
+
+    def token(self):
+        if self._token is None:
+            def encode(value):
+                return base64.urlsafe_b64encode(json.dumps(value, separators=(",", ":")).encode()).rstrip(b"=")
+            at = int(time.time())
+            unsigned = encode({"alg": "RS256", "typ": "JWT"}) + b"." + encode({"iat": at - 60, "exp": at + 540,
+                                                                              "iss": self.app_id})
+            jwt = (unsigned + b"." + base64.urlsafe_b64encode(self.signer(unsigned)).rstrip(b"=")).decode()
+            wanted = {"contents": "read", "actions": "read"}
+            data = self.call(f"/app/installations/{self.installation}/access_tokens", jwt,
+                             {"repositories": [self.repo.split("/")[1]], "permissions": wanted})
+            if {k: v for k, v in data["permissions"].items() if k != "metadata"} != wanted:
+                raise ReleaseError("github_token_not_read_only")
+            self._token = data["token"]
+        return self._token
+
+    def latest_green(self, branch="main"):
+        """The newest commit on BRANCH whose CI push run succeeded."""
+        runs = self.call(f"/repos/{self.repo}/actions/workflows/{WORKFLOW}/runs"
+                         f"?branch={branch}&event=push&status=success&per_page=20")["workflow_runs"]
+        runs = [r for r in runs if r["head_branch"] == branch and r["conclusion"] == "success"]
+        if not runs:
+            return None
+        newest = max(runs, key=lambda r: r["run_number"])
+        return {"sha": newest["head_sha"], "run": newest["html_url"], "completed_at": newest["updated_at"]}
+
+    def compare(self, base, head):
+        value = self.call(f"/repos/{self.repo}/compare/{base}...{head}?per_page=1")
+        return {"status": value["status"], "ahead_by": value["ahead_by"]}
+
+    def tarball(self, sha, path):
+        """The repository at SHA. GitHub redirects to codeload, which is fetched without the installation token (the
+        redirect carries its own short-lived one)."""
+        location = self.read(self.request(f"{GITHUB}/repos/{self.repo}/tarball/{sha}", self.token()), io.BytesIO(),
+                             1024 * 1024)
+        if not (location or "").startswith("https://codeload.github.com/"):
+            raise ReleaseError("github_tarball_redirect_unexpected")
+        with path.open("wb") as sink:
+            if self.read(self.request(location), sink, 400 * 1024 * 1024, timeout=300):
+                raise ReleaseError("github_unexpected_redirect")
+
+
+def files(root):
+    """Blob ids of a release's repository files (not its quant-data copy), keyed by repository path."""
+    out = {}
+    for path in root.rglob("*"):
+        rel = path.relative_to(root)
+        if path.is_file() and rel.parts[0] not in {"qdata", ".release.json"} and "__pycache__" not in rel.parts:
+            data = path.read_bytes()
+            out[rel.as_posix()] = hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+    return out
+
+
+def changed(old, new):
+    a, b = files(old), files(new)
+    return sorted(p for p in a.keys() | b.keys() if a.get(p) != b.get(p))
+
+
+def imported(root, entry):
+    """Repository paths of the quant_company modules ENTRY imports, directly or through other modules (static)."""
+    src, seen, todo, paths = root / "src", set(), [entry], set()
+    while todo:
+        name = todo.pop()
+        if name in seen or not (name == "quant_company" or name.startswith("quant_company.")):
+            continue
+        seen.add(name)
+        base = src.joinpath(*name.split("."))
+        path = base / "__init__.py" if (base / "__init__.py").is_file() else base.with_suffix(".py")
+        if not path.is_file():
+            continue  # a name imported from a module, not a module
+        paths.add(path.relative_to(root).as_posix())
+        parts = name.split(".")
+        package = parts if path.name == "__init__.py" else parts[:-1]
+        todo += [".".join(parts[:i]) for i in range(1, len(parts))]  # importing a module runs its packages
+        for node in ast.walk(ast.parse(path.read_bytes())):
+            if isinstance(node, ast.Import):
+                todo += [alias.name for alias in node.names]
+            elif isinstance(node, ast.ImportFrom):
+                stem = package[:len(package) - node.level + 1] if node.level else []
+                module = ".".join(stem + ([node.module] if node.module else []))
+                todo += [module, *(f"{module}.{alias.name}" for alias in node.names)]
+    return paths
+
+
+def render_changes(paths, roots):
+    modules = set().union(*(imported(root, RENDER_ENTRY) for root in roots))
+    return [p for p in paths if p in modules or p in RENDER_FILES or p.startswith(RENDER_ASSETS)]
+
+
+def operator_changes(paths):
+    return [p for p in paths if any(fnmatch.fnmatch(p, pattern) for pattern in OPERATOR_FILES)]
+
+
+def env_values():
+    values = {}
+    for line in envfile().read_text().splitlines():
+        if "=" in line and not line.lstrip().startswith("#"):
+            key, value = line.split("=", 1)
+            values[key.strip()] = value.strip().strip("'\"")
+    return values
+
+
+def in_window(now, spec):
+    at = now.astimezone(KST).strftime("%H:%M")
+    return any(start <= at < end for start, end in (part.strip().split("-") for part in spec.split(",") if part.strip()))
+
+
+def status_file():
+    return STATE / "release-status.json"
+
+
+def progress_file():
+    """The release this tool has started and not finished (or a restore it still owes); production state, not a report."""
+    return STATE / "release-auto-progress.json"
+
+
+def read_json(path):
+    try:
+        return json.loads(path.read_text())
+    except (OSError, ValueError):
+        return {}
+
+
+def write_json(path, value):
+    temp = path.with_name(path.name + ".tmp")
+    temp.write_text(json.dumps(value, indent=1, default=str) + "\n")
+    temp.chmod(0o644)
+    os.replace(temp, path)
+
+
+def read_status():
+    return read_json(status_file())
+
+
+def write_status(status, previous):
+    """The status other tools read (ops alerts); each change of action or target is also journaled."""
+    write_json(status_file(), status)
+    if (status.get("action"), status.get("target")) != (previous.get("action"), previous.get("target")):
+        directory = STATE / "release-journal"
+        directory.mkdir(mode=0o700, exist_ok=True)
+        with (directory / "auto.jsonl").open("a") as log:
+            entry = {key: status.get(key) for key in ("checked_at", "action", "target", "current", "detail")}
+            log.write(json.dumps(entry, default=str) + "\n")
+    return status
+
+
+def production_busy(runner=run):
+    """Work a full release would wait on; it starts only while there is none."""
+    return sorted({reason for service in ("worker", "news-worker", "video-worker")
+                   for reason in busy(service, runner=runner)})
+
+
+def host_free():
+    try:
+        with host_lock():
+            return True
+    except Busy:
+        return False
+
+
+def fetch(sha, github, protect=(), runner=run):
+    """SHA's prepared release, downloaded from GitHub unless an earlier run prepared it. Preparing one prunes old
+    releases that were never built, so commits that were only reported on do not pile up."""
+    root = root_of(sha)
+    if not (root / ".release.json").is_file():
+        archives = STATE / "release-archives"
+        archives.mkdir(mode=0o700, exist_ok=True)
+        archive = archives / f"{sha}.tar.gz"
+        try:
+            github.tarball(sha, archive)
+            prepare(sha, archive)
+        finally:
+            archive.unlink(missing_ok=True)
+        prune(protect={sha, *protect}, runner=runner, unbuilt_only=True)
+    return root
+
+
+def check_release(current_root, root, sha, runner=run):
+    """What a release cannot do alone: add or remove services, or render without a host value it needs."""
+    old, new = set(ordered_services(current_root)), set(ordered_services(root))
+    if old != new:
+        raise NeedsOperator(f"services change: added {sorted(new - old)}, removed {sorted(old - new)}")
+    try:
+        compose(root, sha, "config", "--quiet", runner=runner)
+    except ReleaseError as exc:
+        raise NeedsOperator(f"compose does not render with runtime.env: {exc}") from None
+
+
+def moved(sha, services, runner=run):
+    return [s for s in services if label(inspect(s, runner=runner), "org.opencontainers.image.revision") == sha]
+
+
+def restore(previous, target, runner=run):
+    """After a failed release, recreate every service already on TARGET from the release it replaced."""
+    services = moved(target, ordered_services(root_of(previous)), runner=runner)
+    result = {"services": services, "ok": True}
+    if services:
+        try:
+            apply(previous, services, runner=runner)
+        except ReleaseError as exc:
+            result.update(ok=False, detail=str(exc)[-300:])
+    return result
+
+
+def prune(keep=3, protect=(), runner=run, unbuilt_only=False):
+    """Releases this tool prepared beyond the newest KEEP, with their images (about 4.7 GB of layers each). Never the
+    current release, one a running container was created from, or a PROTECTed commit (the render image's).
+    UNBUILT_ONLY removes only releases that were never built, keeping every rollback point."""
+    current = (RELEASES.parent / "current").resolve()
+    used = set(runner(["docker", "ps", "--format", '{{.Label "com.docker.compose.project.working_dir"}}'],
+                      check=False).split())
+    made = sorted((d for d in RELEASES.iterdir() if (d / ".release.json").is_file()),
+                  key=lambda d: json.loads((d / ".release.json").read_text())["prepared_at"], reverse=True)
+    removed = []
+    for directory in made[keep:]:
+        if directory.resolve() == current or str(directory / "deploy") in used or directory.name in protect:
+            continue
+        tags = runner(["docker", "image", "ls", "--filter", f"reference=*:{directory.name}",
+                       "--format", "{{.Repository}}:{{.Tag}}"], check=False).split()
+        if tags and unbuilt_only:
+            continue
+        for tag in tags:
+            runner(["docker", "image", "rm", tag], check=False)
+        shutil.rmtree(directory)
+        removed.append(directory.name)
+    return removed
+
+
+def release_to(status, target, previous, values, runner=run):
+    """Build, migrate, apply every group, activate. Busy (quiet or lock) leaves the rest to the next run; any other
+    failure returns the services that moved to the release they replaced, and the commit is not tried again."""
+    started = status.get("started_at") or status["checked_at"]
+    write_json(progress_file(), {"phase": "releasing", "target": target, "previous": previous, "started_at": started})
+    status = {**status, "action": "releasing", "detail": None, "started_at": started}
+
+    def step(name):  # the status shows where a long release is; the timer starts no run while this one lasts
+        status["step"] = {"name": name, "at": datetime.now(UTC).isoformat(timespec="seconds")}
+        write_status(status, read_status())
+
+    try:
+        step("build")
+        build(target, runner=runner)
+        step("migrate")
+        migrate(target, runner=runner)
+        groups, released = manifest(root_of(target))["groups"], []
+        for index, group in enumerate(groups, 1):
+            step(f"apply {index}/{len(groups)}: {' '.join(group)}")
+            record = apply(target, group, quiet_seconds=600, runner=runner)
+            released += [e["service"] for e in record["services"] if e["result"] == "released"]
+        step("activate")
+        activate(target, runner=runner)
+    except Busy as exc:
+        return {**status, "action": "incomplete", "detail": str(exc)[-600:]}
+    except Exception as exc:  # noqa: BLE001 - recorded, production restored, the run exits non-zero
+        detail = f"{type(exc).__name__}: {exc}"[-600:]
+        # Until the restore succeeds, later runs keep restoring (at any hour) instead of resuming the release.
+        write_json(progress_file(), {"phase": "restoring", "target": target, "previous": previous, "detail": detail})
+        restored = restore(previous, target, runner=runner)
+        if restored["ok"]:
+            progress_file().unlink(missing_ok=True)
+        return {**status, "action": "failed", "failed_commit": target, "detail": detail, "restored": restored}
+    progress_file().unlink(missing_ok=True)
+    pruned = prune(protect={values.get("VIDEO_RENDER_COMMIT")}, runner=runner)
+    return {**status, "action": "released", "current": target, "target": None, "failed_commit": None, "drift": [],
+            "step": None, "released": {"commit": target, "services": released,
+                                       "finished_at": datetime.now(UTC).isoformat(timespec="seconds")},
+            "pruned": pruned}
+
+
+def decide(status, previous, values, now, github, runner=run):
+    current, progress = status["current"], read_json(progress_file())
+    if progress.get("phase") == "restoring":
+        status.update(target=progress["target"], detail=progress["detail"])
+        if status["mode"] != "release":
+            return {**status, "action": "would_restore"}
+        restored = restore(current, progress["target"], runner=runner)
+        if restored["ok"]:
+            progress_file().unlink(missing_ok=True)
+        return {**status, "action": "failed", "restored": restored}
+    status["drift"] = [row for row in verify(current, runner=runner) if not row["ok"]]
+    target = progress.get("target") if progress.get("phase") == "releasing" else None
+    # A release that already moved services is finished first, at any hour and without GitHub; one that moved none
+    # starts over under the usual checks.
+    if target and target != current and moved(target, ordered_services(root_of(current)), runner):
+        status.update(target=target, started_at=progress.get("started_at"))
+        status["operator_files"] = operator_changes(changed(root_of(current), root_of(target)))
+        resuming = True
+    else:
+        resuming = False
+        latest = status["latest_green"] = github.latest_green()
+        if not latest or latest["sha"] == current:
+            idle = "up_to_date" if latest else "no_green_main"
+            return {**status, "action": "drift" if status["drift"] else idle}
+        target = status["target"] = latest["sha"]
+        order = github.compare(current, target)
+        status["behind_by"] = order["ahead_by"]
+        if order["status"] != "ahead":
+            return {**status, "action": "refused",
+                    "detail": f"{target[:12]} is {order['status']} of the running release"}
+        render_commit = values.get("VIDEO_RENDER_COMMIT") or current
+        root = fetch(target, github, protect={render_commit}, runner=runner)
+        status["operator_files"] = operator_changes(changed(root_of(current), root))
+        base = root_of(current) if render_commit == current else fetch(render_commit, github, {target}, runner)
+        if render := render_changes(changed(base, root), [base, root]):
+            return {**status, "action": "render_required", "render_files": render[:20],
+                    "detail": f"{len(render)} render files differ from the render image's commit {render_commit[:12]}"}
+        check_release(root_of(current), root, target, runner=runner)
+        if previous.get("failed_commit") == target:
+            return {**status, "action": "held_after_failure",
+                    "detail": "this commit's release failed; `release.py auto --retry` tries it again"}
+        if status["drift"]:
+            return {**status, "action": "held_for_drift", "detail": "production differs from its own release"}
+        if not in_window(now, values.get("RELEASE_AUTO_WINDOWS") or WINDOWS):
+            return {**status, "action": "waiting_for_window"}
+        if reasons := production_busy(runner=runner):
+            return {**status, "action": "waiting_for_quiet", "detail": ", ".join(reasons)}
+    if not host_free():
+        return {**status, "action": "waiting_for_lock", "detail": "a backup or another release holds the host lock"}
+    if status["mode"] != "release":
+        return {**status, "action": "would_resume" if resuming else "would_release"}
+    return release_to(status, target, current, values, runner=runner)
+
+
+def auto(github=None, runner=run, now=None, retry=False):
+    """The timer's run (docs/adr/0044): compare production with CI-green main and write STATE/release-status.json;
+    with RELEASE_AUTO_ENABLED=true also release main when nothing holds it. RETRY tries a failed commit again."""
+    with (STATE / ".release-auto.lock").open("a") as handle:
+        try:
+            fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return {"action": "already_running"}
+        previous, values, now = read_status(), env_values(), now or datetime.now(UTC)
+        if retry:
+            previous["failed_commit"] = None
+        status = {"checked_at": now.isoformat(timespec="seconds"),
+                  "mode": "release" if values.get("RELEASE_AUTO_ENABLED") == "true" else "report",
+                  "current": (RELEASES.parent / "current").resolve().name,
+                  "render": {"commit": values.get("VIDEO_RENDER_COMMIT"),
+                             "task_definition": values.get("VIDEO_RENDER_TASK_DEFINITION")},
+                  "failed_commit": previous.get("failed_commit")}
+        try:
+            status = decide(status, previous, values, now, github or GitHub(), runner=runner)
+        except NeedsOperator as exc:
+            status.update(action="operator_required", detail=str(exc)[-600:])
+        except Exception as exc:  # noqa: BLE001 - recorded in the status; the run exits non-zero
+            status.update(action="error", detail=f"{type(exc).__name__}: {exc}"[-600:])
+        return write_status(status, read_status())
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=["prepare", "build", "plan", "migrate", "apply", "verify", "activate"])
+    parser.add_argument("command", choices=["prepare", "build", "plan", "migrate", "apply", "verify", "activate", "auto"])
     parser.add_argument("services", nargs="*")
     parser.add_argument("--sha")
     parser.add_argument("--archive")
     parser.add_argument("--quiet-seconds", type=int, default=900)
+    parser.add_argument("--retry", action="store_true", help="auto: try a commit whose release failed again")
     args = parser.parse_intermixed_args(argv)
     os.umask(0o022)
     if args.command == "prepare":
@@ -517,17 +973,19 @@ def main(argv=None):
     elif args.command == "plan":
         result = plan(args.sha, args.services)
     elif args.command == "migrate":
-        root = root_of(args.sha)
-        with host_lock():
-            result = compose(root, args.sha, "run", "--rm", "--no-deps", "-T", "api", "quant-company", "migrate")
+        result = migrate(args.sha)
     elif args.command == "apply":
         result = apply(args.sha, args.services, quiet_seconds=args.quiet_seconds)
     elif args.command == "verify":
         result = verify(args.sha)
+    elif args.command == "auto":
+        result = auto(retry=args.retry)
     else:
         result = activate(args.sha)
     print(json.dumps(result, indent=1, default=str))
     if args.command == "verify" and not all(row["ok"] for row in result):
+        return 1
+    if args.command == "auto" and result.get("action") in {"failed", "error"}:
         return 1
     return 0
 
