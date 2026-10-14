@@ -277,3 +277,25 @@ def test_planning_runs_without_autonomous_research(planning):
     assert ResearchRunner(h.company).tick()["state"] == "running"
     stage = planning_stage(h)
     assert h.company.prepare_turn(queued_turn(h, stage["task_id"]))["state"] == "ready"
+
+
+def test_maintenance_intake_reports_planning_output_hold(planning):
+    from datetime import timedelta
+    from importlib.resources import files
+
+    from quant_company.company import now
+    from quant_company.maintenance.problems import failure_observations
+
+    h = planning
+    PlanningController(h.company).tick()
+    stage = planning_stage(h)
+    turn = read_all(h, stage, queued_turn(h, stage["task_id"]))
+    for _ in range(3):
+        complete(h, turn, slate(candidate(envelope="not-approved")))
+        turn = queued_turn(h, stage["task_id"]) or turn
+    with h.company.db.transaction() as conn:
+        # The maintenance service applies its own schema (maintenance.store.Store.initialize).
+        conn.execute(files("quant_company.maintenance").joinpath("schema.sql").read_text())
+        rows = failure_observations(conn, h.company, "UHUMAN", now() - timedelta(hours=1))
+    found = [row for row in rows if row["detail"].get("planning_run_id") == str(stage["planning_run_id"])]
+    assert found and found[0]["detail"]["error"] == "planning_output_contract"
