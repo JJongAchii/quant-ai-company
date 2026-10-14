@@ -154,8 +154,10 @@ def screen_fix_prompt(source, plan, issues):
                          ensure_ascii=False, default=str))
 
 
-GENERAL_TAGS = frozenset({'오늘의 증시', '증시 브리핑', '마감 시황', '장전 시황', '주식 시황', '국내 증시', '미국 증시', '해외 증시',
-                          '주식', '주식 뉴스', '경제 뉴스', '시황', '증시', '주식 투자'})
+# Ordered: edition-neutral keywords first, since tidy_tags refills from the front.
+GENERAL_TAGS = ('오늘의 증시', '증시 브리핑', '주식 시황', '주식 뉴스', '경제 뉴스', '시황', '증시', '주식', '주식 투자', '주식시장',
+                '국내 증시', '미국 증시', '해외 증시', '장전 시황', '마감 시황')
+GENERAL = frozenset(t.replace(' ', '') for t in GENERAL_TAGS)
 CLOCK = re.compile(r'(?<!\d)\d{1,2}:\d{2}(?!\d)')
 
 
@@ -163,6 +165,36 @@ def nums(text):
     # ▲▼ carry the sign on screen, so source numbers are compared unsigned; leading zeros are formatting.
     found = {x.lstrip('+-') for x in re.findall(r'[+-]?\d+(?:\.\d+)?', text.replace(',', ''))}
     return {x if '.' in x else str(int(x)) for x in found}
+
+
+def general(tag):
+    return tag.replace(' ', '') in GENERAL
+
+
+# A body line can hold several sentences (10/14 AM: '…5.46% 내린 6,035.35에 마감했다. 장중 5,911.11(-7.41%)까지…'), and
+# '장중', '정규장 종가' and flow words qualify the sentence that carries them, not every number of the line.
+SENTENCE = re.compile(r'(?<=[.!?])\s+')
+# Clauses only scope a denial: '주가는 장전 약 3% 상승했으며 | 정규장 종가 반응은 제공되지 않았다.'
+CLAUSE = re.compile(r'(?:(?<=,)|(?<=며)|(?<=지만)|(?<=다가)|(?<=는데)|(?<=으나)|(?<=면서)|(?<=[았었였했됐렸랐졌]고))\s+')
+DENIAL = re.compile(r'지\s*않|없[다었음는]|미제공|미확인')
+# Tenors and dates ('3년 국채선물', '13일') are not the values a flow or close sentence states.
+TENOR = re.compile(r'\d+(?:\.\d+)?\s*(?:년물|년|개월|분기|거래일|일|월)')
+CLOSE_MARK = re.compile(re.escape(body.CLOSE))
+
+
+def sentences(text):
+    return [s for s in SENTENCE.split(text) if s.strip()]
+
+
+def stated(line, marker, deniable=False):
+    """Values of the line's sentences that carry the marker; with deniable, a mention whose own clause denies it marks
+    nothing (UnitedHealth, 10/14 AM: '정규장 종가 반응은 제공되지 않았다')."""
+    found = set()
+    for sentence in sentences(line):
+        mentions = [c for c in CLAUSE.split(sentence) if marker.search(c)]
+        if mentions and not (deniable and all(DENIAL.search(c) for c in mentions)):
+            found |= nums(TENOR.sub(' ', sentence))
+    return found
 
 
 def strings(value, key=''):
@@ -246,8 +278,8 @@ def check_title(plan, claims):
         if '급락' in text and not any(any(d >= (2 if INDEX_WORDS.search(line) else 3) for d in drops(line)) for line in lines):
             raise ValueError("'급락' needs an index fall of at least 2% or a stock fall of at least 3% in the brief")
         for number in nums(text):
-            holders = [line for line in lines if number in nums(line)]
-            if holders and all('장중' in line for line in holders) and '장중' not in text:
+            holders = [s for line in lines for s in sentences(line) if number in nums(s)]
+            if holders and all('장중' in s for s in holders) and '장중' not in text:
                 raise ValueError("An intraday value in the title or thumbnail needs '장중'")
     if INSTRUCTION.search(' '.join([hook, plan.thumbnail, plan.introduction, plan.pinned_comment, *(s.narration for s in plan.scenes)])):
         raise ValueError('Buy/sell instruction wording')
@@ -282,7 +314,32 @@ def validate_episode(plan, source, library=None, *, structure=True):
         raise ValueError(found[0])
 
 
-def episode_violations(plan, source, library=None, *, structure=True, photos=False):
+def norm_request(text):
+    return re.sub(r'\s+', ' ', (text or '').strip().lower().rstrip('.'))
+
+
+def repeated_thumbnail(plan, recent):
+    """A recent thumbnail the plan's thumbnail picture repeats (owner, 2026-10-14: a thumbnail picture is new every
+    episode): the same library photo, or a story picture asking for the same photo or the same scene."""
+    item = next((i for i in plan.illustrations if i.id == plan.thumbnail_image), None)
+    for old in recent:
+        if item is None:
+            if plan.thumbnail_image and plan.thumbnail_image == old.get('library'):
+                return old
+            continue
+        mine, theirs = request_parts(item.brief), request_parts(old.get('brief', ''))
+        if any(a and a == b for a, b in zip(mine, theirs, strict=True)):
+            return old
+    return None
+
+
+def request_parts(brief):
+    """(photo query, scene) of an illustration brief, normalized for comparison."""
+    match = re.match(r'^\s*PHOTO:\s*(.+?)\s*(?:\|\|\s*SCENE:\s*(.*))?$', brief or '', re.S)
+    return (norm_request(match[1]), norm_request(match[2])) if match else ('', norm_request(brief))
+
+
+def episode_violations(plan, source, library=None, *, structure=True, photos=False, recent=()):
     """Every check finding, in validation order (the first is what validate_episode raises). Messages keep the rule
     text and add the scene/field and offending values, so a revision request can fix all of them at once.
     photos: story pictures were offered, so the day's main subject must be asked for as a real photo found for this
@@ -313,10 +370,9 @@ def episode_violations(plan, source, library=None, *, structure=True, photos=Fal
         if any(c['single_outlet'] for c in cited) and not any(REPORT_LABEL in t for t in [scene.narration, *screen]):
             found.append(f'Single-outlet line needs {REPORT_LABEL} in scene {scene.id}')
         shown = nums(' '.join(screen)) - allowed_frame
-        if any(body.CLOSE in c['text'] and nums(c['text']) & shown for c in cited) and not any(CLOSE_LABEL in t for t in screen):
+        if any(stated(c['text'], CLOSE_MARK, deniable=True) & shown for c in cited) and not any(CLOSE_LABEL in t for t in screen):
             found.append(f'Regular-session close values need {CLOSE_LABEL} in scene {scene.id}')
-        if (any(body.FLOW.search(c['text']) and nums(c['text']) & shown for c in cited)
-                and not any(FLOW_LABEL in t for t in screen)):
+        if any(stated(c['text'], body.FLOW) & shown for c in cited) and not any(FLOW_LABEL in t for t in screen):
             found.append(f'Investor flows need {FLOW_LABEL} in scene {scene.id}')
         for key, text in [('narration', scene.narration)] + list(strings(scene.data)):
             if text.startswith('#') or (key == 'chips' and re.fullmatch(r'핵심 이슈 \d', text)):
@@ -350,6 +406,10 @@ def episode_violations(plan, source, library=None, *, structure=True, photos=Fal
         elif plan.thumbnail_image not in story:
             found.append(f"Thumbnail is not a story photo of the day's main subject ({plan.thumbnail_image}); "
                          f"use one of {story}")
+    old = repeated_thumbnail(plan, recent)
+    if old:
+        found.append(f"Thumbnail picture repeats a recent thumbnail ({old.get('subject')}: {old.get('brief') or old.get('library')}); "
+                     "the thumbnail picture is new every episode: ask for a clearly different subject and scene")
     ticker = nums(' '.join(claims[c]['text'] for c in plan.ticker.claim_ids if c in claims))
     if any(CLOCK.search(i.name + i.value + i.change) for i in plan.ticker.items):
         found.append('Clock time on screen in ticker')
@@ -369,25 +429,53 @@ def episode_violations(plan, source, library=None, *, structure=True, photos=Fal
                         *(('upload.stories', story) for story in copy.stories)):
         if not nums(text) <= allowed:
             found.append(f'Unbound number in video metadata ({label}: {", ".join(sorted(nums(text) - allowed))})')
-    shown = ' '.join([s.narration for s in plan.scenes] + [t for s in plan.scenes for _, t in strings(s.data)]).replace(' ', '')
-    missing = [t for t in copy.tags + [h[1:] for h in copy.hashtags] if t.replace(' ', '') not in shown and t not in GENERAL_TAGS]
+    shown = episode_text(plan)
+    missing = [t for t in copy.tags + [h[1:] for h in copy.hashtags] if t.replace(' ', '') not in shown and not general(t)]
     if missing:
         found.append(f'Tag is neither in the episode nor a general market keyword: {missing}')
     return found
 
 
+def episode_text(plan):
+    """Narration and card text without spaces: what a tag or hashtag word must appear in."""
+    return ' '.join([s.narration for s in plan.scenes] + [t for s in plan.scenes for _, t in strings(s.data)]).replace(' ', '')
+
+
+def tidy_tags(plan):
+    """Tags and hashtags found neither in the episode text nor among the general keywords are dropped instead of
+    discarding the script (10/14 AM: three versions were rejected over tags alone). General keywords refill the
+    13 tags UploadCopy requires, and '#증시' stands in for an emptied hashtag list."""
+    shown = episode_text(plan)
+
+    def kept(tag):
+        return tag.replace(' ', '') in shown or general(tag)
+
+    tags = [t for t in plan.upload.tags if kept(t)]
+    hashtags = [h for h in plan.upload.hashtags if kept(h[1:])] or ['#증시']
+    have = {t.replace(' ', '') for t in tags}
+    tags += [t for t in GENERAL_TAGS if t.replace(' ', '') not in have][:max(0, 13 - len(tags))]
+    if (tags, hashtags) == (plan.upload.tags, plan.upload.hashtags):
+        return plan
+    raw = plan.model_dump(mode='json')
+    raw['upload'].update(tags=tags, hashtags=hashtags)
+    return EpisodePlan.model_validate(raw)
+
+
 CARD_GUIDE = """Card catalog (use only these types; fields in parentheses):
 cold_open(kicker, question=[[[word,isGold],...] per line], stats=[{label,value,sub,big_dir?,sub_dir?}] x3) — first 8-10 s, the day's tension.
-summary3(title, cards=[{n,items=[[icon,size,color,caption,badge('up'|'dn'|''),symbol]] x2,title,stats=[[label,value,dir]] x2}] x3).
+summary3(title, cards=[{n,items=[[icon,size('sm'|'md'|'lg'),color('gold'|'sky'|'red'|'green'|'purple'|'cream'),caption,badge('up'|'dn'|''),symbol]] x2,title,stats=[[label,value,dir]] x2}] x3).
 market_board(title, tag, tiles=[{name,value,dir,change,sub,badge}] 4-8).
 headline(chips=[issue label, horizon], title, image={asset}, panel_title, source, stats=[{label,value,dir,change,sub}] 2-3).
 flow(chips, title, nodes=[{chips,source?,icon,head,big?|text?|rows?,dir?,sub?,badge?}] x3, foot?={chip,text}).
 compare(chips, title, tiles=[{label,source?,value,dir?,sub}] 2-3, chart_title, chart_source, bars=[{n,label,name}] x2, arrow_text, extra=[[label,value]] x2).
 bars(chips?, title, unit_note, source?, rows=[{name,n,label,tag?}] 2-8, image?={asset,caption,labels=[]}, side?={title,rows,signal}).
-map(chips, title, region='hormuz', panel_title, bars=[{name,w,label,gold?}], delta, delta_source, alt, cost_head, cost).
+map(chips, title, region='hormuz', panel_title, bars=[{name,w,label,gold?}], delta, delta_source, alt, cost_head, cost) —
+delta is one short line (e.g. 'WTI ▲40센트'), alt one short caption, cost one sentence.
 calendar(title, rows=[[date,weekday,badge,icon,event,time chip]]) or mode='day' (date,dow,badge,rows=[[icon,title,sub]],side_title,side=[{label,source?,value,dir?,sub}]).
 photo(chips, title, image={asset}, rows=[{chip,kind?('counter'|'signal'|'interp'),big?,text?,sub,source?}] 3).
-counter(chips, title, icon, topic, source?, blocks=[{x,label,value,sub?,dir?,gold?}] 2-3, rows=[{icon,text,source?}] 0-2).
+counter(chips, title, icon, topic, kicker?, source?, blocks=[{label,value,sub?,dir?,gold?}] 2-3, rows=[{icon,text,source?}] 0-2) — kicker heads
+the panel (default '다르게 볼 점': the brief's counter-view); name what the panel shows otherwise (e.g. '보도 해석', '근거').
+The template places the blocks side by side; keep each value short (a number with its unit).
 signals(chips?, title, tag?, rows=[{icon,topic,conds=[2],then}], note?, disclaimer?) — the last scene uses signals with a disclaimer.
 Icons: """ + ', '.join(sorted(ICONS)) + """.
 Order (owner decision 2026-10-12, issue first): cold_open (the day's sharpest question) → summary3 (optional roadmap) →
@@ -398,7 +486,9 @@ move, a record, flows that explain an issue), placed where it serves the story, 
 9-13 scenes (at most 14), about 4-5 minutes in total; one narration take per scene, under 220 characters each.
 Signs on screen use ▲/▼ with unsigned numbers; narration reads signs as words. Never compute differences, ratios or conversions.
 Where a field has a direction (dir/big_dir: market_board change, headline change, compare value, cold_open value, flow
-rows, image labels, ticker change) write the bare number (0.59%, 2bp): the screen draws ▲/▼ from the direction itself.
+rows, summary3 stats, counter blocks, image labels, ticker change) write the bare number (0.59%, 2bp): the screen draws
+▲/▼ from the direction itself. Give a direction only to a change (%, bp, points, won); a level such as an index close,
+a yield or a price takes no direction, and its change goes in sub.
 No clock times on screen (no collection or article times); label non-closing values with the single word 장중. Dates and 종가 stay.
 Hard checks (an episode failing one is discarded, so follow them exactly): chapters never go backwards in the order
 '' → 요약 → 시장 → 핵심 이슈 → 함께 볼 이슈 → 일정, so the calendar and the closing signals both use 일정; all narration
@@ -408,7 +498,7 @@ a scene that shows a regular-session close value, summary3 included, shows '""" 
 shows investor flows shows '""" + FLOW_LABEL + """'; the ticker has 3-12 items whose numbers are in its cited lines and
 a label with 종가 when those are regular-session closes; hashtags are one or two #word tokens of letters, digits or Hangul
 only (no spaces or symbols, never #증시story or #뭐든story); tags are 13-23 plain keywords without # or commas; every tag and
-hashtag word appears in the episode text or is a general market keyword."""
+hashtag word appears in the episode text as written (spacing aside) or is one of the general market keywords: """ + ', '.join(GENERAL_TAGS) + '.'
 
 
 def template(job):
@@ -422,9 +512,9 @@ def plan_class(job):
     return EpisodePlan if template(job) == 'motion-v2' else VideoPlan
 
 
-def plan_findings(job, plan, library=None, photos=False):
+def plan_findings(job, plan, library=None, photos=False, recent=()):
     if template(job) == 'motion-v2':
-        return episode_violations(plan, job['source'], library, photos=photos)
+        return episode_violations(plan, job['source'], library, photos=photos, recent=recent)
     from .contracts import validate_plan
 
     try:
@@ -489,9 +579,22 @@ LESSON_RULE = ("channel_lessons are standing lessons the owner adopted from the 
                "a lesson never justifies a fact, number or wording outside the cited lines.")
 
 
-def episode_prompt(source, feedback='', library=None, illustrations=False, lessons=()):
+THUMBNAIL_GUIDE = ("recent_thumbnails lists the pictures of the latest episodes' thumbnails. The thumbnail picture is new "
+                   "every episode (owner rule): ask for a subject and scene clearly different from every one of them (another "
+                   "object, place, angle or setting), never the same photo request, scene or listed photo.")
+
+
+REVISION_GUIDE = ("previous_version is the last version of this episode and revision_feedback lists what was wrong with it. "
+                  "Return that episode corrected: fix every listed item, apply the same rule wherever else it is broken, "
+                  "and keep everything else as it was.")
+
+
+def episode_prompt(source, feedback='', library=None, illustrations=False, lessons=(), previous=None,
+                   recent_thumbnails=()):
     """lessons: the owner-adopted lessons frozen in the job policy at creation ([{id, scope, text}]); none leaves the
-    prompt exactly as before, so frozen requests of older jobs keep their identity."""
+    prompt exactly as before, so frozen requests of older jobs keep their identity. previous: the last checked
+    version, revised rather than rewritten (10/14 AM: each rewrite from scratch renamed the scenes and broke the
+    fixed rule somewhere new)."""
     shelf = {k: {'tags': v.get('tags', []), 'kind': v.get('kind', ''),
                  **({'subject': v['subject'][:80]} if v.get('kind') == '자료사진' and v.get('subject') else {})}
              for k, v in (library or {}).items()}
@@ -531,8 +634,11 @@ def episode_prompt(source, feedback='', library=None, illustrations=False, lesso
             + (FACTS_GUIDE + '\n' if source.get('format') == 'facts' else '')
             + (ILLUSTRATION_GUIDE + '\n' if illustrations else '')
             + (LESSON_RULE + '\n' if lessons else '')
+            + (THUMBNAIL_GUIDE + '\n' if recent_thumbnails else '')
+            + (REVISION_GUIDE + '\n' if previous else '')
             + json.dumps({'day': str(source['day']), 'cutoff': str(source['cutoff']), 'edition': edition,
-                          'lines': prompt_claims(source),
-                          'assets': shelf, 'revision_feedback': feedback,
-                          **({'channel_lessons': [f"[{x['scope']}] {x['text']}" for x in lessons]} if lessons else {})},
-                         ensure_ascii=False))
+                          'lines': prompt_claims(source), 'assets': shelf, 'revision_feedback': feedback,
+                          **({'channel_lessons': [f"[{x['scope']}] {x['text']}" for x in lessons]} if lessons else {}),
+                          **({'recent_thumbnails': [{'subject': r.get('subject', ''), 'brief': r.get('brief', '')}
+                                                    for r in recent_thumbnails]} if recent_thumbnails else {}),
+                          **({'previous_version': previous} if previous else {})}, ensure_ascii=False))

@@ -2,6 +2,7 @@ import asyncio
 import base64
 import contextlib
 import io
+import json
 import math
 import shutil
 from datetime import UTC, datetime
@@ -32,9 +33,10 @@ from .episode import (
     plan_findings,
     screen_fix_prompt,
     template,
+    tidy_tags,
 )
 from .motion import FPS as MOTION_FPS
-from .motion import MotionRenderer
+from .motion import RENDERER_DIGEST, MotionRenderer
 from .render import Renderer, RenderInProgress, korean_numbers, spoken, verify_artifacts
 from .runway import RETAKE_RESERVE, RunwaySpeech, download_audio, speech_credits
 from .store import UncertainEffect, VideoStore
@@ -45,9 +47,18 @@ VIDEO_MODEL_WAIT_SECONDS = 120
 # Like an editor in a Claude session: rewrite until the checks pass, then keep the best version and report the rest.
 PLAN_ATTEMPTS = 6
 REVIEW_ROUNDS = 2
+# A turn the runtime lost (uncertain: the CLI exited or its result went missing; timeout: the process limit) says nothing
+# about the script. It is asked again as a new request after a pause and uses none of the attempts or rounds above, up to
+# these limits (2026-10-13 PM: five CLI exits in a row used five of six attempts, so fifteen review concerns never got a
+# new version).
+RUNTIME_OUTCOMES = frozenset({'uncertain', 'timeout'})
+PLAN_RUNTIME_RETRIES = 8
+REVIEW_RUNTIME_RETRIES = 4
 REVIEW_CHECKS = ('facts', 'numbers', 'conditions', 'coverage', 'readability')
 INSPECT_ROUNDS = 3
 REVIEW_PHASES = frozenset({'review', 'visual'})
+# ProviderRequest's prompt limit: a previous script version that would not fit is left out of the revision request.
+PROMPT_LIMIT = next(m.max_length for m in ProviderRequest.model_fields['prompt'].metadata if hasattr(m, 'max_length'))
 
 
 class ModelRejected(ValueError):
@@ -58,14 +69,37 @@ class ModelRejected(ValueError):
         self.code, self.detail = code, detail
 
 
+def written_attempts(qa):
+    """Script attempts the model actually answered (a lost runtime turn is not one)."""
+    return sum(a['outcome'] not in RUNTIME_OUTCOMES for a in qa.get('plan_attempts', []))
+
+
+def render_key(job, takes, images):
+    """Render directories are named by what they render, so an interrupted render resumes scene by scene and a changed
+    plan, take, picture or renderer code gets a new directory (a committed attempt is never overwritten)."""
+    return 'render-' + digest({'plan': job['plan'], 'takes': list(takes), 'template': template(job), 'fps': MOTION_FPS,
+                               'renderer': RENDERER_DIGEST, **({'images': images} if images else {})})[:20]
+
 def attempt_key(phase, number):
     return phase if number == 1 else f'{phase}-{number}'
 
 
 def repair_feedback(base, findings):
     note = ('The previous version was rejected. Fix every item below and keep what already followed the rules:\n'
-            + '\n'.join(f'- {f}' for f in findings[:25]))
+            + '\n'.join(f'- {f}' for f in findings[:50]))
     return f'{base}\n\n{note}' if base else note
+
+
+def open_concerns(qa):
+    """The reviewer's concerns on the last reviewed version; they travel with every later version until the next review
+    (10/14 AM: a failed check replaced them in the feedback, so later versions never saw eleven concerns)."""
+    rounds = [r for r in qa.get('review_rounds', []) if r.get('outcome') not in RUNTIME_OUTCOMES]
+    return list(rounds[-1].get('concerns', [])) if rounds else []
+
+
+def proposal(job, plan):
+    # A motion script loses the tags its text does not carry instead of being rejected for them (episode.tidy_tags).
+    return tidy_tags(plan) if template(job) == 'motion-v2' else plan
 
 
 def contract_detail(error):
@@ -108,8 +142,10 @@ class VideoRunner:
                                        self.settings.model_runtime_token.get_secret_value())
         return self._images
 
-    def find_photos(self, job, items, folder):
-        """Commons candidates for each photo request (network only); a failed lookup leaves that picture without one."""
+    def find_photos(self, job, items, folder, skip=frozenset(), thumbnail=''):
+        """Commons candidates for each photo request (network only); a failed lookup leaves that picture without one.
+        skip: Commons titles and file hashes of earlier thumbnails, never offered again for this episode's thumbnail
+        picture (owner, 2026-10-14); thumbnail: that picture's ID (every item when empty)."""
         import hashlib
 
         from . import photos
@@ -119,14 +155,19 @@ class VideoRunner:
         for item in items:
             rows = []
             try:
+                avoid = skip if not thumbnail or item.id == thumbnail else frozenset()
                 for row in photos.search(photos.query(item))[:8]:
                     if len(rows) >= photos.CANDIDATES:
                         break
+                    if row.get('title') in avoid:
+                        continue
                     try:
                         data = photos.download(row)
                     except Exception:  # noqa: BLE001 - one unreadable file: try the next candidate
                         continue
                     sha = hashlib.sha256(data).hexdigest()
+                    if sha in avoid:
+                        continue
                     name = f"{item.id}-photo{len(rows) + 1}-{sha[:10]}.jpg"
                     partial = folder / (name + '.partial')
                     partial.write_bytes(data)
@@ -176,10 +217,18 @@ class VideoRunner:
         (one Commons lookup and one Claude check per plan), then one generated picture per tick for the rest.
         True while pictures are still being looked up, checked, made or awaited."""
         from . import photos
-        from .illustrations import make_next, missing
+        from .illustrations import fresh_fallback, make_next, missing, recent_scenes
 
+        recent = (job.get('qa') or {}).get('recent_thumbnails') or []
         if not missing(job, plan):
-            return False
+            # Every picture is made or failed: a thumbnail without its picture never shows an earlier thumbnail's photo.
+            used = await asyncio.to_thread(self.store.thumbnail_assets) | {r['library'] for r in recent if r.get('library')}
+            fixed = fresh_fallback(plan, (job.get('qa') or {}).get('illustrations') or {},
+                                   MotionRenderer(self.settings).library, used)
+            if fixed is plan:
+                return False
+            await asyncio.to_thread(self.store.save, job, 'synthesizing', plan=fixed.model_dump(mode='json'))
+            return True
         folder = self.settings.video_artifact_dir / str(job['id']) / 'illustrations'
         asked = [item for item in missing(job, plan) if photos.query(item)]
         # One lookup and one check per plan: keyed by every photo request, not by those still missing, so a picture
@@ -187,7 +236,8 @@ class VideoRunner:
         round_key = digest([[i.id, i.subject, i.brief] for i in plan.illustrations if photos.query(i)]) if asked else None
         qa = dict(job.get('qa') or {})
         if asked and qa.get('photo_round') != round_key:
-            found = await asyncio.to_thread(self.find_photos, job, asked, folder)
+            skip = frozenset(v for r in recent for v in (r.get('commons_title'), r.get('sha256')) if v)
+            found = await asyncio.to_thread(self.find_photos, job, asked, folder, skip, plan.thumbnail_image)
             qa.update(photo_round=round_key, photo_candidates=found, photo_checked=False)
             await asyncio.to_thread(self.store.update_qa, job, qa)
             await asyncio.to_thread(self.store.save, job, 'synthesizing')  # releases the lease for the next tick
@@ -198,7 +248,7 @@ class VideoRunner:
             await asyncio.to_thread(self.store.update_qa, job, qa)
             await asyncio.to_thread(self.store.save, job, 'synthesizing')
             return True
-        made, waiting = await make_next(job, plan, self.images, self.settings, folder)
+        made, waiting = await make_next(job, plan, self.images, self.settings, folder, recent_scenes(recent))
         qa = dict(job.get('qa') or {})
         qa['illustrations'] = made
         await asyncio.to_thread(self.store.update_qa, job, qa)
@@ -318,9 +368,20 @@ class VideoRunner:
             await asyncio.to_thread(self.store.alert, job)
         return {"state": (await asyncio.to_thread(self.store.get, job["id"]))["state"], "job_id": str(job["id"])}
 
+    def last_version(self, job, attempts):
+        """The last version the model wrote (a lost runtime turn wrote none), as it was checked, with sorted keys so a
+        re-asked turn sends the identical request; None before the first."""
+        written = [a for a in attempts if a['outcome'] in {'passed', 'check_failed'}]
+        if not written:
+            return None
+        output = self.store.effect_receipt(job, written[-1]['key'], 'completed')['output']
+        plan = proposal(job, plan_class(job).model_validate(output))
+        return json.loads(json.dumps(plan.model_dump(mode='json'), sort_keys=True))
+
     async def write_plan(self, job):
-        """One attempt per tick. Findings go back as revision feedback; after the last attempt the version with the
-        fewest findings is produced anyway and its remaining findings travel with the files."""
+        """One attempt per tick. A motion script that failed a check or a review is revised from its last version with
+        the findings and the open review concerns; after the last attempt the version with the fewest findings is
+        produced anyway and its remaining findings travel with the files."""
         qa = dict(job.get('qa') or {})
         attempts = list(qa.get('plan_attempts', []))
         number = len(attempts) + 1
@@ -338,15 +399,24 @@ class VideoRunner:
                 qa['library'], qa['library_key'] = [[k, v] for k, v in library.items()], key
                 # Story pictures are offered only while the image runtime is configured; frozen with the shelf.
                 qa['illustrations_offered'] = bool(self.settings.video_image_runtime_url)
+                if 'recent_thumbnails' not in qa:  # frozen once, so every attempt and re-ask sends the same list
+                    qa['recent_thumbnails'] = await asyncio.to_thread(self.store.thumbnail_history, job)
                 await asyncio.to_thread(self.store.update_qa, job, qa)
-            prompt, contract = episode_prompt(job['source'], feedback, library,
-                                              illustrations=qa.get('illustrations_offered', False),
-                                              lessons=job['policy'].get('lessons', ())), 'video_episode_v1'
+            illustrations, lessons = qa.get('illustrations_offered', False), job['policy'].get('lessons', ())
+            recent = qa.get('recent_thumbnails') or []
+            previous = await asyncio.to_thread(self.last_version, job, attempts)
+            prompt = episode_prompt(job['source'], feedback, library, illustrations=illustrations, lessons=lessons,
+                                    previous=previous, recent_thumbnails=recent)
+            if len(prompt) > PROMPT_LIMIT:
+                prompt = episode_prompt(job['source'], feedback, library, illustrations=illustrations, lessons=lessons,
+                                        recent_thumbnails=recent)
+            contract = 'video_episode_v1'
         else:
             prompt, contract = production_prompt(job['source'], feedback), None
         try:
-            plan = await self.model(job, key, prompt, plan_class(job), contract)
-            findings = plan_findings(job, plan, library, photos=qa.get('illustrations_offered', False))
+            plan = proposal(job, await self.model(job, key, prompt, plan_class(job), contract))
+            findings = plan_findings(job, plan, library, photos=qa.get('illustrations_offered', False),
+                                     recent=qa.get('recent_thumbnails') or [])
             attempts.append({'key': key, 'outcome': 'check_failed' if findings else 'passed', 'findings': findings[:30]})
         except ModelRejected as rejected:
             plan, findings = None, [f'Output contract: {rejected.detail}' if rejected.detail else f'Model {rejected.code}']
@@ -356,16 +426,22 @@ class VideoRunner:
             qa['plan_findings'] = []
             await asyncio.to_thread(self.store.save, job, 'reviewing', plan=plan.model_dump(mode='json'), qa=qa)
             return
-        if number < PLAN_ATTEMPTS:
-            qa['feedback'] = repair_feedback(job['feedback'], findings)
+        lost = sum(a['outcome'] in RUNTIME_OUTCOMES for a in attempts)
+        if written_attempts(qa) < PLAN_ATTEMPTS and lost < PLAN_RUNTIME_RETRIES:
+            if attempts[-1]['outcome'] in RUNTIME_OUTCOMES:
+                # Same feedback as the lost turn; only the request is new.
+                await asyncio.to_thread(self.store.save, job, 'queued', qa=qa)
+                await asyncio.to_thread(self.store.wait, job, min(180, 30 * lost), 'model_retry')
+                return
+            qa['feedback'] = repair_feedback(job['feedback'], findings + open_concerns(qa))
             await asyncio.to_thread(self.store.save, job, 'queued', qa=qa)
             return
         usable = [a for a in attempts if a['outcome'] in {'passed', 'check_failed'}]
         if not usable:
             raise VideoFailure('plan_contract_failed')
         best = min(usable, key=lambda a: len(a['findings']))
-        plan = plan_class(job).model_validate((await asyncio.to_thread(self.store.effect_receipt, job, best['key'],
-                                                                       'completed'))['output'])
+        plan = proposal(job, plan_class(job).model_validate((await asyncio.to_thread(self.store.effect_receipt, job,
+                                                                                     best['key'], 'completed'))['output']))
         qa['plan_findings'] = best['findings']
         await asyncio.to_thread(self.store.save, job, 'reviewing', plan=plan.model_dump(mode='json'), qa=qa)
 
@@ -379,10 +455,19 @@ class VideoRunner:
             review = await self.model(job, key, review_prompt(job['source'], plan), VideoReview)
             concerns = list(review.concerns) + [f'{name} check failed' for name in REVIEW_CHECKS if not getattr(review, name)]
         except ModelRejected as rejected:
+            lost = sum(r.get('outcome') in RUNTIME_OUTCOMES for r in rounds)
+            if rejected.code in RUNTIME_OUTCOMES and lost < REVIEW_RUNTIME_RETRIES:
+                # The runtime lost the review turn: the same script is reviewed again, nothing is rewritten.
+                rounds.append({'key': key, 'passed': False, 'outcome': rejected.code, 'concerns': []})
+                qa['review_rounds'] = rounds
+                await asyncio.to_thread(self.store.save, job, 'reviewing', qa=qa)
+                await asyncio.to_thread(self.store.wait, job, min(180, 30 * (lost + 1)), 'model_retry')
+                return
             review, concerns = None, [f'Review output contract: {rejected.detail or rejected.code}']
         rounds.append({'key': key, 'passed': not concerns, 'concerns': concerns[:20]})
         qa['review_rounds'] = rounds
-        if concerns and len(rounds) < REVIEW_ROUNDS and len(qa.get('plan_attempts', [])) < PLAN_ATTEMPTS:
+        reviewed = sum(r.get('outcome') not in RUNTIME_OUTCOMES for r in rounds)
+        if concerns and reviewed < REVIEW_ROUNDS and written_attempts(qa) < PLAN_ATTEMPTS:
             qa['feedback'] = repair_feedback(job['feedback'], qa.get('plan_findings', []) + concerns)
             await asyncio.to_thread(self.store.save, job, 'queued', qa=qa)
             return
@@ -470,6 +555,9 @@ class VideoRunner:
                     current.update(outcome='failed', reason=f'collect: {type(error).__name__}: {error}'[:300])
                 else:
                     current.update(outcome='completed', finished_at=datetime.now(UTC).isoformat())
+                    code = str(artifacts.get('renderer') or 'unknown')
+                    qa['render_findings'] = [] if code == RENDERER_DIGEST else [
+                        f"Render image code {code[:12]} differs from the worker's {RENDERER_DIGEST[:12]}: rebuild the render image"]
                     return artifacts
             else:
                 current.update(outcome='failed', stop_code=status.get('stop_code'), reason=status.get('reason'))
@@ -600,14 +688,10 @@ class VideoRunner:
         elif state == "rendering":
             plan = plan_class(job).model_validate(job["plan"])
             takes = await self.takes(job, plan)
-            # The attempt directory is named by what it renders, so an interrupted render resumes scene by scene and a
-            # changed plan or take gets a new directory (a committed attempt is never overwritten).
             # Made pictures are part of what is rendered: a remade or fallen-back picture renders afresh.
             images = {k: v.get('sha256') or v.get('failed') for k, v in
                       ((job.get('qa') or {}).get('illustrations') or {}).items()}
-            directory = self.settings.video_artifact_dir / str(job["id"]) / ('render-' + digest(
-                {'plan': job['plan'], 'takes': [k for k, _ in takes], 'template': template(job), 'fps': MOTION_FPS,
-                 **({'images': images} if images else {})})[:20])
+            directory = self.settings.video_artifact_dir / str(job["id"]) / render_key(job, [k for k, _ in takes], images)
             directory.mkdir(parents=True, exist_ok=True)
             qa = dict(job.get('qa') or {})
             texts = [r['text'] for _, r in takes] if qa.get('retake') else None

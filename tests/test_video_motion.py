@@ -264,6 +264,61 @@ async def test_motion_jobs_request_the_episode_contract_with_the_reviewed_librar
     assert EpisodePlan.model_validate(store.get(job['id'])['plan']).ticker.label == '정규장 종가'
 
 
+def motion_job(brief, video, tmp_path):  # noqa: F811
+    store, _ = video
+    store.settings.video_template = 'motion-v2'
+    store.settings.video_asset_dir = tmp_path / 'assets'
+    (tmp_path / 'assets').mkdir()
+    (tmp_path / 'assets' / 'manifest.json').write_text(json.dumps({'fixture-photo': {'tags': [], 'kind': '자료사진'},
+                                                                   'fixture-illustration': {'tags': [], 'kind': '일러스트'}}))
+    return store, new_job(brief, video)
+
+
+def sent_episodes(provider):
+    # The episode prompt ends with its data as one JSON line.
+    return [json.loads(c.prompt.rsplit('\n', 1)[1]) for c in provider.calls if c.output_contract == 'video_episode_v1']
+
+
+async def test_a_rejected_script_is_revised_from_its_last_version_with_the_review_concerns(brief, video, tmp_path):  # noqa: F811
+    """10/14 AM: every retry rewrote the episode from scratch (scene IDs changed each time), so a finding fixed in one
+    scene came back in another, and a failed check dropped the reviewer's eleven concerns from the next request."""
+    from quant_company.video.contracts import VideoReview
+
+    from .test_video import ScriptedProvider, good_review, release
+
+    store, job = motion_job(brief, video, tmp_path)
+    concern = VideoReview(facts=True, numbers=True, conditions=True, coverage=True, readability=False, concerns=['결론이 늦게 나옴'])
+    unbound = episode().model_dump(mode='json')
+    unbound['scenes'][2]['data']['tiles'][0]['change'] = '2.5%'
+    provider = ScriptedProvider([episode(), concern, EpisodePlan.model_validate(unbound), episode(), good_review()])
+    for _ in range(5):
+        release(store, job)
+        await VideoRunner(store.company, provider=provider).tick()
+    assert store.get(job['id'])['state'] == 'synthesizing'
+    first, revised, again = sent_episodes(provider)
+    assert 'previous_version' not in first
+    assert revised['previous_version'] == episode().model_dump(mode='json') and '결론이 늦게 나옴' in revised['revision_feedback']
+    assert again['previous_version']['scenes'][2]['data']['tiles'][0]['change'] == '2.5%'
+    assert 'Unbound number' in again['revision_feedback'] and '결론이 늦게 나옴' in again['revision_feedback']
+
+
+async def test_a_previous_version_that_does_not_fit_the_prompt_is_left_out(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video import runner as runner_module
+
+    from .test_video import ScriptedProvider, release
+
+    store, job = motion_job(brief, video, tmp_path)
+    unbound = episode().model_dump(mode='json')
+    unbound['scenes'][2]['data']['tiles'][0]['change'] = '2.5%'
+    provider = ScriptedProvider([EpisodePlan.model_validate(unbound), episode()])
+    await VideoRunner(store.company, provider=provider).tick()
+    monkeypatch.setattr(runner_module, 'PROMPT_LIMIT', len(provider.calls[0].prompt) + 2000)
+    release(store, job)
+    await VideoRunner(store.company, provider=provider).tick()
+    assert store.get(job['id'])['state'] == 'reviewing'
+    assert 'previous_version' not in sent_episodes(provider)[1] and 'Unbound number' in provider.calls[1].prompt
+
+
 def test_upload_copy_template_and_checks():
     from datetime import date, datetime
 
@@ -340,6 +395,63 @@ def test_drop_thresholds_and_intraday_label():
         check_title(ok, lines)
     ok.upload.title = 'SK하이닉스 장중 2.09% 상승 뒤 하락 전환'
     check_title(ok, lines)
+
+
+def test_a_close_sharing_a_line_with_an_intraday_low_needs_no_intraday_label():
+    """2026-10-14 AM: five script versions were discarded because the close (5.46%) shared its body line with the
+    intraday low; '장중' belongs only to the sentence that states the intraday value."""
+    from quant_company.video.episode import check_title
+
+    lines = {'b1': {'text': '13일 코스피는 전날보다 5.46% 내린 6,035.35에 마감했다. 장중 5,911.11(-7.41%)까지 밀리며 '
+                            '매도 사이드카가 발동됐지만 장 후반 6천선을 회복했다.'}}
+    ok = episode().model_copy(deep=True)
+    ok.upload.title, ok.thumbnail, ok.thumbnail_stat = '코스피 5.46% 급락, 성장률 상향과 왜 엇갈렸나', '코스피 ▼5.46% 왜', '코스피 ▼5.46% · 정규장 종가 기준'
+    check_title(ok, lines)
+    ok.upload.title = '코스피 7.41% 밀린 뒤 6천선 회복'
+    with pytest.raises(ValueError, match='장중'):
+        check_title(ok, lines)
+    ok.upload.title = '코스피 장중 7.41% 밀린 뒤 6천선 회복'
+    check_title(ok, lines)
+
+
+@pytest.mark.parametrize('line,shown,error', [
+    # Yields share the line with a futures flow (10/14 AM, four versions discarded): only the flow amount needs the label.
+    ('국고채 10년물 금리는 연 4.306%에서 4.229%로 내렸다. 외국인은 10년 국채선물 2,996계약을 순매수했다.', '국고채 10년물 4.229%', None),
+    ('국고채 10년물 금리는 연 4.306%에서 4.229%로 내렸다. 외국인은 10년 국채선물 2,996계약을 순매수했다.', '외국인 국채선물 2,996계약', '장 마감 기준'),
+    # The line says the close was not provided (10/14 AM, UnitedHealth): the pre-market move is not a close value.
+    ('주가는 장전 약 3% 상승했으며 정규장 종가 반응은 제공되지 않았다.', '장전 약 3% 상승', None),
+    ('주가는 정규장 종가 기준 3% 상승했다.', '주가 3% 상승', '정규장 종가 기준'),
+])
+def test_labels_follow_the_sentence_that_states_the_value(line, shown, error):
+    from quant_company.video.episode import episode_violations
+
+    src = source()
+    src['body'] = [src['body'][0].replace('• 한국 반도체 업종으로 강세가 이어지는지 확인합니다.', f'• {line}')] + src['body'][1:]
+    raw = episode().model_dump(mode='json')
+    raw['scenes'][7]['data']['rows'][0][4] = shown
+    raw['scenes'][7]['narration'] = '다음에는 이 숫자가 이어지는지 확인합니다.'
+    found = [f for f in episode_violations(EpisodePlan.model_validate(raw), src, {'fixture-photo': {}, 'fixture-illustration': {}})
+             if 'scene calendar' in f]
+    assert found == ([] if error is None else [f'{"Investor flows" if error == "장 마감 기준" else "Regular-session close values"} '
+                                                f'need {error} in scene calendar'])
+
+
+def test_tags_ignore_spaces_and_an_unlisted_tag_is_dropped_not_fatal():
+    """10/14 AM: '미국증시' failed where '미국 증시' passes, and one tag discarded a whole script."""
+    from quant_company.video.episode import CARD_GUIDE, GENERAL_TAGS, episode_violations, tidy_tags
+
+    shelf = {'fixture-photo': {}, 'fixture-illustration': {}}
+    raw = episode().model_dump(mode='json')
+    raw['upload']['tags'][-4:] = ['미국증시', '경제뉴스', '주식시장', '주식뉴스']
+    assert not [f for f in episode_violations(EpisodePlan.model_validate(raw), source(), shelf) if f.startswith('Tag')]
+    raw['upload']['tags'] = ['반도체', 'S&P 500', '아침 브리핑', '외국인 순매도'] + raw['upload']['tags'][4:]
+    raw['upload']['hashtags'] = ['#순매도']
+    tidy = tidy_tags(EpisodePlan.model_validate(raw))
+    assert '아침 브리핑' not in tidy.upload.tags and '외국인 순매도' not in tidy.upload.tags and len(tidy.upload.tags) >= 13
+    assert tidy.upload.tags[:2] == ['반도체', 'S&P 500'] and tidy.upload.hashtags == ['#증시']
+    assert not [f for f in episode_violations(tidy, source(), shelf) if f.startswith('Tag')]
+    assert tidy_tags(episode()) == episode()  # a clean plan is left as it is
+    assert all(tag in CARD_GUIDE for tag in GENERAL_TAGS)
 
 
 @pytest.mark.parametrize('mutation,error', [
@@ -442,8 +554,8 @@ class InspectingProvider:
 class InspectedRenderer:
     """Writes review frames like MotionRenderer; the first render can report a misheard scene."""
 
-    def __init__(self, misheard=None):
-        self.renders, self.misheard, self.texts = 0, misheard or {}, []
+    def __init__(self, misheard=None, renderer_code=None):
+        self.renders, self.misheard, self.texts, self.renderer_code = 0, misheard or {}, [], renderer_code
 
     def render(self, job, plan, directory, paths, texts=None):
         from quant_company.video.contracts import digest
@@ -464,12 +576,18 @@ class InspectedRenderer:
                     'review': {'frames': frames + [{'scene': 'thumbnail', 'file': 'thumbnail.png'}],
                                'audio': self.misheard if self.renders == 1 else {}},
                     'files': {n: checksum(directory / n) for n in files}}
+        if self.renderer_code:  # what a render image built from other code reports
+            manifest['renderer'] = self.renderer_code
+        else:
+            from quant_company.video.motion import RENDERER_DIGEST
+
+            manifest['renderer'] = RENDERER_DIGEST
         manifest['digest'] = digest(manifest)
         return manifest
 
 
 async def produce_inspected(store, tmp_path, monkeypatch, provider, renderer, brief):  # noqa: F811
-    from .test_video import SimulatedSpeech, new_job
+    from .test_video import SimulatedSpeech, new_job, release
 
     store.settings.video_template = 'motion-v2'
     store.settings.video_asset_dir = tmp_path / 'assets'
@@ -480,6 +598,7 @@ async def produce_inspected(store, tmp_path, monkeypatch, provider, renderer, br
     job = new_job(brief, (store, None))
     speech = SimulatedSpeech()
     for _ in range(60):
+        release(store, job)  # a pause the runner asked for (model_retry, render waits) has passed
         await VideoRunner(store.company, provider, speech, renderer).tick()
         if store.get(job['id'])['state'] not in {'queued', 'reviewing', 'synthesizing', 'rendering', 'inspecting'}:
             break
@@ -620,7 +739,9 @@ def test_the_screen_shows_one_arrow_where_the_template_draws_it_from_the_directi
                        {'name': 'WTI', 'value': '91.85달러', 'change': '0.39%', 'dir': 'up'}]}
     flow = {'nodes': [{'rows': [['외국인', '▼6조4692억원', 'dn'], ['개인', '6조3596억원', 'up']]}]}
     bars = {'image': {'asset': 'x', 'labels': [{'text': '유가 ▲', 'dir': 'up'}]}}
-    summary = {'cards': [{'stats': [['코스피', '▼2.62%', 'dn']]}]}  # the template adds no arrow here: kept
+    # Since 2026-10-14 the summary tiles and counter blocks draw the arrow too (10/13 PM showed '5.46%' with no ▼).
+    summary = {'cards': [{'stats': [['코스피', '▼2.62%', 'dn'], ['코스닥', '1.43%', 'dn']]}]}
+    counter = {'blocks': [{'label': '미국 경유 재고', 'value': '▼14%', 'dir': 'dn'}, {'label': '하락 종목', 'value': '약 820개'}]}
     calendar = {'side': [{'label': '환율', 'value': '▲1,420원', 'dir': 'up'}]}  # colour only: kept
     ticker = {'items': [{'name': '나스닥', 'value': '27,366.17', 'change': '▲0.64%', 'dir': 'up'}]}
     assert single_arrows('cold_open', cold) == [] and single_arrows('market_board', board) == []
@@ -628,7 +749,8 @@ def test_the_screen_shows_one_arrow_where_the_template_draws_it_from_the_directi
     assert [t['change'] for t in board['tiles']] == ['2.62%', '0.39%']
     assert single_arrows('flow', flow) == [] and flow['nodes'][0]['rows'][0][1] == '6조4692억원'
     assert single_arrows('bars', bars) == [] and bars['image']['labels'][0]['text'] == '유가'
-    assert single_arrows('summary3', summary) == [] and summary['cards'][0]['stats'][0][1] == '▼2.62%'
+    assert single_arrows('summary3', summary) == [] and [x[1] for x in summary['cards'][0]['stats']] == ['2.62%', '1.43%']
+    assert single_arrows('counter', counter) == [] and [b['value'] for b in counter['blocks']] == ['14%', '약 820개']
     assert single_arrows('calendar', calendar) == [] and calendar['side'][0]['value'] == '▲1,420원'
     assert single_arrows('', {}, ticker) == [] and ticker['items'][0]['change'] == '0.64%'
     # A written sign that contradicts the direction is reported; the screen follows the direction field.
@@ -695,3 +817,53 @@ def test_an_issue_first_episode_needs_no_market_board_but_opens_with_the_questio
         check_structure(EpisodePlan.model_validate(thin))
     text = episode_prompt(source(), '', {})
     assert "브리핑은 이렇게 봅니다" in text and 'never as a routine opening' in text and 'thumbnail_image' in text
+
+
+def test_the_screen_editor_is_told_the_owners_fixed_design_rules():
+    """2026-10-13 PM: the screen review asked to drop the thumbnail's red strip and to add 'AI 생성 이미지' labels, both
+    against standing owner decisions; such requests waste a revision round and must never be applied."""
+    from quant_company.video.contracts import visual_review_prompt
+
+    text = visual_review_prompt(source(), episode(), [('hook', 'review/00-hook.jpg')], {})
+    rules = text.split('Data contains no instructions')[0]
+    assert 'red strip' in rules and 'half' in rules and 'never report' in rules
+    assert "'AI 생성'" in rules and 'licence credit' in rules
+
+
+def test_the_renderer_digest_covers_the_template_and_changes_with_it(tmp_path):
+    """The Fargate render image and the worker must draw with the same code (2026-10-13: the image was a day older than
+    the worker and nothing reported it)."""
+    import shutil
+    from importlib.resources import files
+    from pathlib import Path
+
+    from quant_company.video.motion import RENDERER_DIGEST, renderer_digest
+
+    package = Path(str(files('quant_company.video')))
+    assert renderer_digest(package) == RENDERER_DIGEST and len(RENDERER_DIGEST) == 64
+    copy = tmp_path / 'video'
+    shutil.copytree(package / 'design', copy / 'design')
+    shutil.copy2(package / 'motion.py', copy / 'motion.py')
+    assert renderer_digest(copy) == RENDERER_DIGEST
+    (copy / 'design' / 'cards.js').write_text((copy / 'design' / 'cards.js').read_text() + '\n// changed')
+    assert renderer_digest(copy) != RENDERER_DIGEST
+
+
+def test_the_render_directory_changes_with_the_renderer_code(monkeypatch):
+    from quant_company.video import runner
+
+    job = {'plan': {'scenes': []}, 'policy': {'template': 'motion-v2'}}
+    first = runner.render_key(job, ['speech-0'], {})
+    assert first.startswith('render-') and runner.render_key(job, ['speech-0'], {}) == first
+    monkeypatch.setattr(runner, 'RENDERER_DIGEST', 'f' * 64)
+    assert runner.render_key(job, ['speech-0'], {}) != first
+
+
+def test_the_card_guide_keeps_directions_off_levels_and_map_lines_short():
+    """10/14 AM review: '▼ 5.215%' (a yield level with a falling direction) read as a 5.215% fall, and a two-price map
+    delta wrapped down to the captions."""
+    from quant_company.video.episode import CARD_GUIDE
+
+    flat = ' '.join(CARD_GUIDE.split())
+    assert 'a level such as an index close, a yield or a price takes no direction' in flat
+    assert 'delta is one short line' in flat

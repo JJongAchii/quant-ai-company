@@ -892,3 +892,57 @@ def test_reviewers_write_their_notes_in_korean():
     source = body_source()
     assert 'Write every concern in Korean' in review_prompt(source, video_plan())
     assert 'Write detail and fix in Korean' in visual_review_prompt(source, video_plan(), [], {})
+
+
+async def test_runtime_failures_do_not_use_up_script_attempts(brief, video):  # noqa: F811
+    """2026-10-13 PM: five CLI exits (uncertain) used five of the six script attempts, so the reviewer's fifteen concerns
+    could not get a new version. A runtime failure is retried after a pause and the attempts stay for the content."""
+    from datetime import UTC, datetime
+
+    from quant_company.video.runner import PLAN_ATTEMPTS
+
+    store, _ = video
+    job = new_job(brief, video)
+    concern = VideoReview(facts=True, numbers=False, conditions=True, coverage=True, readability=True, concerns=['전일 누락'])
+    exits = [ProviderFault('uncertain', 'Claude did not confirm a complete review.') for _ in range(PLAN_ATTEMPTS - 1)]
+    provider = ScriptedProvider([*exits, video_plan(), concern, video_plan(), good_review()])
+    await VideoRunner(store.company, provider=provider).tick()
+    current = store.get(job['id'])
+    assert current['state'] == 'queued' and current['error'] == 'model_retry'
+    assert current['lease_until'] > datetime.now(UTC)  # paused before the next attempt
+    for _ in range(PLAN_ATTEMPTS + 2):  # four lost turns, then plan, review (concern), plan, review
+        release(store, job)
+        await VideoRunner(store.company, provider=provider).tick()
+    current = store.get(job['id'])
+    assert current['state'] == 'synthesizing', current['error']
+    assert [a['outcome'] for a in current['qa']['plan_attempts']] == ['uncertain'] * (PLAN_ATTEMPTS - 1) + ['passed', 'passed']
+    assert '전일 누락' in provider.calls[PLAN_ATTEMPTS + 1].prompt  # the concern reached a new script version
+    assert len({c.request_id for c in provider.calls}) == len(provider.calls)
+
+
+async def test_runtime_failures_stop_after_their_own_limit(brief, video):  # noqa: F811
+    from quant_company.video.runner import PLAN_RUNTIME_RETRIES
+
+    store, _ = video
+    job = new_job(brief, video)
+    provider = ScriptedProvider([ProviderFault('uncertain', 'lost') for _ in range(PLAN_RUNTIME_RETRIES)])
+    for _ in range(PLAN_RUNTIME_RETRIES):
+        release(store, job)
+        await VideoRunner(store.company, provider=provider).tick()
+    current = store.get(job['id'])
+    assert current['state'] == 'blocked' and current['error'] == 'plan_contract_failed'
+    assert len(provider.calls) == PLAN_RUNTIME_RETRIES
+
+
+async def test_a_runtime_failure_of_the_review_is_asked_again_not_counted_as_a_concern(brief, video):  # noqa: F811
+    store, _ = video
+    job = new_job(brief, video)
+    provider = ScriptedProvider([video_plan(), ProviderFault('uncertain', 'lost'), good_review()])
+    for _ in range(3):
+        release(store, job)
+        await VideoRunner(store.company, provider=provider).tick()
+    current = store.get(job['id'])
+    assert current['state'] == 'synthesizing', current['error']
+    assert current['qa']['review_findings'] == [] and len(current['qa']['plan_attempts']) == 1
+    assert [c.output_contract for c in provider.calls] == ['video_plan_v1', 'video_review_v1', 'video_review_v1']
+    assert provider.calls[1].request_id != provider.calls[2].request_id

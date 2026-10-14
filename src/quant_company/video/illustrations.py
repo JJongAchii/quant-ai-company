@@ -23,11 +23,17 @@ KNOWN = {"quota", "auth", "busy", "uncertain", "invalid_request", "timeout", "in
 GENERATED = 'AI 생성 이미지'
 
 
-def prompt(item):
+def prompt(item, avoid=()):
     from .photos import scene
 
     # A real-photo request ('PHOTO: … || SCENE: …') falls back to a generated picture of its scene part.
-    return f"{STYLE}\nSubject: {item.subject}\nScene: {scene(item) or item.subject}"
+    text = f"{STYLE}\nSubject: {item.subject}\nScene: {scene(item) or item.subject}"
+    if avoid:
+        # The thumbnail picture is new every episode (owner, 2026-10-14: two fab buildings in the same palette in a row).
+        text += ("\nThis is the episode's thumbnail picture. Make it clearly different from these recent thumbnail "
+                 "pictures (another subject view, setting and composition; use the scene's natural colours instead of the "
+                 "navy and gold palette): " + '; '.join(a[:160] for a in avoid[:8]))
+    return text
 
 
 def request_id(job, item):
@@ -95,13 +101,15 @@ class ImageClient:
         return data
 
 
-async def make_next(job, plan, client, settings, folder):
-    """Makes the next missing picture. Returns (illustrations map, waiting): waiting means ask again later."""
+async def make_next(job, plan, client, settings, folder, avoid=()):
+    """Makes the next missing picture. Returns (illustrations map, waiting): waiting means ask again later. avoid: recent
+    thumbnail scenes the thumbnail's picture must not look like."""
     made = dict((job.get('qa') or {}).get('illustrations') or {})
     for item in missing(job, plan):
         rid = request_id(job, item)
+        text = prompt(item, avoid if item.id == getattr(plan, 'thumbnail_image', '') else ())
         try:
-            meta = await client.generate(rid, settings.video_image_model, settings.video_image_effort, prompt(item))
+            meta = await client.generate(rid, settings.video_image_model, settings.video_image_effort, text)
             data = await client.download(rid, meta['sha256'])
         except ProviderFault as fault:
             if fault.code in {'busy', 'pending'}:
@@ -143,3 +151,29 @@ def library_entries(job, plan, settings, library):
         elif item.fallback in library:
             entries[item.id] = library[item.fallback]
     return entries
+
+
+def fresh_fallback(plan, made, library, used):
+    """The thumbnail picture that could not be made shows its fallback; a fallback that was already a thumbnail is swapped
+    for a library picture that never was (owner, 2026-10-14: never the same thumbnail picture twice), preferring one with
+    the fallback's tags, then photos. The plan is returned unchanged when nothing needs to change."""
+    item = next((i for i in getattr(plan, 'illustrations', []) if i.id == plan.thumbnail_image), None)
+    if item is None or (made.get(item.id) or {}).get('file') or item.fallback not in used:
+        return plan
+    tags = set((library.get(item.fallback) or {}).get('tags', []))
+    fresh = sorted((k for k in library if k not in used),
+                   key=lambda k: (not tags & set(library[k].get('tags', [])), library[k].get('kind') != '자료사진', k))
+    if not fresh:
+        return plan
+    raw = plan.model_dump(mode='json')
+    next(i for i in raw['illustrations'] if i['id'] == item.id)['fallback'] = fresh[0]
+    return type(plan).model_validate(raw)
+
+
+def recent_scenes(recent):
+    """What each recent thumbnail showed, for the thumbnail picture's prompt: the scene asked for, or the subject."""
+    from types import SimpleNamespace
+
+    from .photos import scene
+
+    return [scene(SimpleNamespace(brief=r['brief'])) or r.get('subject', '') for r in recent if r.get('brief') or r.get('subject')]

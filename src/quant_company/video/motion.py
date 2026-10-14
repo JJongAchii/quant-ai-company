@@ -4,6 +4,7 @@ The fixed template in ./design draws every frame from an EpisodePlan via a deter
 captured at 30 fps and encoded with the real narration. Layout, caption and audio checks gate the output."""
 
 import fcntl
+import hashlib
 import json
 import os
 import re
@@ -39,9 +40,29 @@ EDITIONS = {'am': '아침 시장 브리핑', 'close': '마감 브리핑'}
 # The template draws ▲/▼ from a direction field in front of these values (and after image labels). A sign the script
 # also wrote is dropped so the screen shows exactly one arrow (2026-10-12 morning: "▲ ▲0.59%" on 18 values).
 ARROWED = {'cold_open': ('stats', 'value', 'big_dir'), 'market_board': ('tiles', 'change', 'dir'),
-           'headline': ('stats', 'change', 'dir'), 'compare': ('tiles', 'value', 'dir')}
+           'headline': ('stats', 'change', 'dir'), 'compare': ('tiles', 'value', 'dir'), 'counter': ('blocks', 'value', 'dir')}
 SIGNS = {'up': '▲', 'dn': '▼'}
 LEAD_SIGN, TRAIL_SIGN = re.compile(r'^\s*([▲▼])\s*'), re.compile(r'\s*([▲▼])\s*$')
+
+
+def renderer_digest(root):
+    """SHA-256 over the code that turns a plan into frames: motion.py and every design file, by relative path."""
+    root = Path(root)
+    code = hashlib.sha256()
+    for path in sorted([root / 'motion.py', *(p for p in (root / 'design').rglob('*') if p.is_file())]):
+        code.update(str(path.relative_to(root)).encode() + b'\0' + path.read_bytes())
+    return code.hexdigest()
+
+
+# Render directories are named with it and every remote render reports it: the Fargate render image must be built from
+# the worker's code (2026-10-13: the image was a day older than the worker and nothing said so).
+RENDERER_DIGEST = renderer_digest(Path(__file__).parent)
+
+def chapter_names(scenes):
+    """Navigation pills for the chapters this episode has; an unused chapter would stay dark the whole video
+    (2026-10-13 PM: '시장' without a market scene)."""
+    used = {scene['chapter'] for scene in scenes}
+    return [c for c in CHAPTER_TITLES if c and c in used]
 
 
 def single_arrows(kind, data, ticker=None):
@@ -62,6 +83,11 @@ def single_arrows(kind, data, ticker=None):
         for item in data.get(key) or []:
             if isinstance(item, dict) and field in item:
                 item[field] = bare(item[field], item.get(direction), f'{kind} {item.get(field)}')
+    if kind == 'summary3':
+        for card in data.get('cards') or []:
+            for stat in (card.get('stats') or []) if isinstance(card, dict) else []:
+                if isinstance(stat, list) and len(stat) > 2:
+                    stat[1] = bare(stat[1], stat[2], f'summary3 {stat[1]}')
     if kind == 'flow':
         for node in data.get('nodes') or []:
             for row in (node.get('rows') or []) if isinstance(node, dict) else []:
@@ -361,12 +387,12 @@ class MotionRenderer:
         ticker = plan.ticker.model_dump(mode='json')
         self.sign_conflicts += single_arrows('', {}, ticker)
         ep = {'date_label': f"{day:%m.%d} {WEEKDAYS[day.weekday()]}", 'asof': '',
-              'sample_mark': sample, 'brand_label': EDITIONS.get(job['source'].get('edition_kind', 'am'), EDITIONS['am']), 'chapter_names': [c for c in CHAPTER_TITLES if c],
+              'sample_mark': sample, 'brand_label': EDITIONS.get(job['source'].get('edition_kind', 'am'), EDITIONS['am']), 'chapter_names': chapter_names(scenes),
               'ticker': ticker, 'scenes': scenes, 'total': total, 'changes': changes,
               'captions': all_captions}
         (page / 'episode.js').write_text('window.EP=' + json.dumps(ep, ensure_ascii=False) + ';')
         index = page / 'index.html'
-        page_digest = digest({'episode': ep, 'plan': plan.model_dump(mode='json'), 'fps': FPS})
+        page_digest = digest({'episode': ep, 'plan': plan.model_dump(mode='json'), 'fps': FPS, 'renderer': RENDERER_DIGEST})
         issues, findings, stills = {}, list(heard), []
         if self.sign_conflicts:
             findings.append('Written arrow contradicts the direction field (screen follows the field): '
@@ -493,8 +519,10 @@ class MotionRenderer:
         tab = browser.new_page(viewport={'width': 1280, 'height': 720})
         tab.route('http*://**/*', lambda route: route.abort())
         tab.goto((page / 'thumbnail.render.html').as_uri())
-        tab.evaluate('document.fonts.ready')
-        found = [] if tab.evaluate("document.querySelector('.q').getBoundingClientRect().bottom < document.querySelector('.bar').getBoundingClientRect().top") \
+        tab.evaluate('document.fonts.ready.then(() => fit())')
+        # The question must end above the stat and the stat above the bar (10/14 AM: a third line covered the stat).
+        found = [] if tab.evaluate("""(() => {const r = s => document.querySelector(s).getBoundingClientRect();
+            return r('.q').bottom <= r('.n').top + 1 && r('.n').bottom <= r('.bar').top;})()""") \
             else ['Thumbnail text exceeds safe screen area']
         tab.screenshot(path=str(directory / 'thumbnail.png'))
         tab.close()
@@ -545,7 +573,7 @@ class MotionRenderer:
                     'files': {n: checksum(directory / n) for n in names},
                     'generated_images': sorted(self.generated_used),
                     'chapters': chapters, 'scenes': scene_timings(scenes), 'description': description,
-                    'directory': str(directory)}
+                    'directory': str(directory), 'renderer': RENDERER_DIGEST}
         manifest['digest'] = digest(manifest)
         (directory / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
         return manifest
