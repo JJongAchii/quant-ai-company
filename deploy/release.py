@@ -903,6 +903,9 @@ def decide(status, previous, values, now, github, runner=run):
         target = status["target"] = latest["sha"]
         order = github.compare(current, target)
         status["behind_by"] = order["ahead_by"]
+        if order["status"] == "behind":  # production runs a newer main commit whose CI has not passed yet
+            return {**status, "target": None, "action": "drift" if status["drift"] else "ahead_of_green",
+                    "detail": f"the running release is newer than the latest CI-green main {target[:12]}"}
         if order["status"] != "ahead":
             return {**status, "action": "refused",
                     "detail": f"{target[:12]} is {order['status']} of the running release"}

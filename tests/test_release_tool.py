@@ -333,6 +333,9 @@ def test_auto_waits_for_window_quiet_and_a_clean_production(auto_host, monkeypat
     assert release.auto(FakeGitHub(FILES, latest=OLD), runner=no_docker, now=IN_WINDOW)["action"] == "drift"
     status = release.auto(FakeGitHub(FILES, status="diverged"), runner=no_docker, now=IN_WINDOW)
     assert status["action"] == "refused" and auto_host == []
+    monkeypatch.setattr(release, "verify", lambda sha, runner=None: [{"service": "api", "ok": True}])
+    status = release.auto(FakeGitHub(FILES, status="behind"), runner=no_docker, now=IN_WINDOW)
+    assert status["action"] == "ahead_of_green" and status["target"] is None  # released before its CI finished
 
 
 def test_auto_reports_host_files_a_release_does_not_install(auto_host):

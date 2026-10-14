@@ -30,7 +30,7 @@
      - quant-data 고정 커밋이 바뀌었다.
      - `runtime.env`에 없는 값 때문에 compose가 렌더되지 않는다.
    - `held_for_drift`: 운영이 자기 릴리스와 다르다. 손으로 배포했거나 `runtime.env` 변경을 적용하지 않은 경우다.
-   - `refused`: main이 운영 커밋의 후손이 아니다.
+   - `refused`: main이 운영 커밋의 후손이 아니다(갈라졌다). CI가 끝나기 전에 손으로 릴리스해 운영이 CI를 통과한 main보다 앞선 경우는 `ahead_of_green`으로 보고만 한다.
    - 운영자가 설치하는 호스트 파일(systemd unit, Caddyfile, storage cleanup 등)이 바뀌면 `operator_files`로 알린다. 이것만으로는 릴리스를 막지 않는다.
 5. **시간 창과 진행 중인 작업을 피한다.**
    - 반영을 시작하는 기본 창은 KST 10:00–14:30, 19:40–23:00이다(`RELEASE_AUTO_WINDOWS`). 끝은 다음 브리핑 수집(15:50, 05:20)보다 한 시간 넘게 앞선다.
