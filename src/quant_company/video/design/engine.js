@@ -50,6 +50,10 @@ function fitText(){
    let size=parseFloat(getComputedStyle(e).fontSize);const floor=size*0.45;
    while(e.scrollWidth>e.clientWidth+1&&size>floor){size*=0.94;e.style.fontSize=size.toFixed(1)+'px';}
    counters.forEach((c,i)=>{c.textContent=kept[i];});}
+  // A [data-fitbox] region scales its content down until it fits the region's height (10/14 AM: the map panel's text ran
+  // over its cost box and down to the captions).
+  for(const box of $$('[data-fitbox]',scn)){const inner=box.firstElementChild;let z=1;
+   while(inner&&box.scrollHeight>box.clientHeight+1&&z>0.62){z-=0.04;inner.style.zoom=z.toFixed(2);}}
   scn.style.display=shown;}
 }
 

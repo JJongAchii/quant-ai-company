@@ -314,7 +314,32 @@ def validate_episode(plan, source, library=None, *, structure=True):
         raise ValueError(found[0])
 
 
-def episode_violations(plan, source, library=None, *, structure=True, photos=False):
+def norm_request(text):
+    return re.sub(r'\s+', ' ', (text or '').strip().lower().rstrip('.'))
+
+
+def repeated_thumbnail(plan, recent):
+    """A recent thumbnail the plan's thumbnail picture repeats (owner, 2026-10-14: a thumbnail picture is new every
+    episode): the same library photo, or a story picture asking for the same photo or the same scene."""
+    item = next((i for i in plan.illustrations if i.id == plan.thumbnail_image), None)
+    for old in recent:
+        if item is None:
+            if plan.thumbnail_image and plan.thumbnail_image == old.get('library'):
+                return old
+            continue
+        mine, theirs = request_parts(item.brief), request_parts(old.get('brief', ''))
+        if any(a and a == b for a, b in zip(mine, theirs, strict=True)):
+            return old
+    return None
+
+
+def request_parts(brief):
+    """(photo query, scene) of an illustration brief, normalized for comparison."""
+    match = re.match(r'^\s*PHOTO:\s*(.+?)\s*(?:\|\|\s*SCENE:\s*(.*))?$', brief or '', re.S)
+    return (norm_request(match[1]), norm_request(match[2])) if match else ('', norm_request(brief))
+
+
+def episode_violations(plan, source, library=None, *, structure=True, photos=False, recent=()):
     """Every check finding, in validation order (the first is what validate_episode raises). Messages keep the rule
     text and add the scene/field and offending values, so a revision request can fix all of them at once.
     photos: story pictures were offered, so the day's main subject must be asked for as a real photo found for this
@@ -381,6 +406,10 @@ def episode_violations(plan, source, library=None, *, structure=True, photos=Fal
         elif plan.thumbnail_image not in story:
             found.append(f"Thumbnail is not a story photo of the day's main subject ({plan.thumbnail_image}); "
                          f"use one of {story}")
+    old = repeated_thumbnail(plan, recent)
+    if old:
+        found.append(f"Thumbnail picture repeats a recent thumbnail ({old.get('subject')}: {old.get('brief') or old.get('library')}); "
+                     "the thumbnail picture is new every episode: ask for a clearly different subject and scene")
     ticker = nums(' '.join(claims[c]['text'] for c in plan.ticker.claim_ids if c in claims))
     if any(CLOCK.search(i.name + i.value + i.change) for i in plan.ticker.items):
         found.append('Clock time on screen in ticker')
@@ -440,7 +469,8 @@ headline(chips=[issue label, horizon], title, image={asset}, panel_title, source
 flow(chips, title, nodes=[{chips,source?,icon,head,big?|text?|rows?,dir?,sub?,badge?}] x3, foot?={chip,text}).
 compare(chips, title, tiles=[{label,source?,value,dir?,sub}] 2-3, chart_title, chart_source, bars=[{n,label,name}] x2, arrow_text, extra=[[label,value]] x2).
 bars(chips?, title, unit_note, source?, rows=[{name,n,label,tag?}] 2-8, image?={asset,caption,labels=[]}, side?={title,rows,signal}).
-map(chips, title, region='hormuz', panel_title, bars=[{name,w,label,gold?}], delta, delta_source, alt, cost_head, cost).
+map(chips, title, region='hormuz', panel_title, bars=[{name,w,label,gold?}], delta, delta_source, alt, cost_head, cost) —
+delta is one short line (e.g. 'WTI ▲40센트'), alt one short caption, cost one sentence.
 calendar(title, rows=[[date,weekday,badge,icon,event,time chip]]) or mode='day' (date,dow,badge,rows=[[icon,title,sub]],side_title,side=[{label,source?,value,dir?,sub}]).
 photo(chips, title, image={asset}, rows=[{chip,kind?('counter'|'signal'|'interp'),big?,text?,sub,source?}] 3).
 counter(chips, title, icon, topic, kicker?, source?, blocks=[{label,value,sub?,dir?,gold?}] 2-3, rows=[{icon,text,source?}] 0-2) — kicker heads
@@ -457,7 +487,8 @@ move, a record, flows that explain an issue), placed where it serves the story, 
 Signs on screen use ▲/▼ with unsigned numbers; narration reads signs as words. Never compute differences, ratios or conversions.
 Where a field has a direction (dir/big_dir: market_board change, headline change, compare value, cold_open value, flow
 rows, summary3 stats, counter blocks, image labels, ticker change) write the bare number (0.59%, 2bp): the screen draws
-▲/▼ from the direction itself.
+▲/▼ from the direction itself. Give a direction only to a change (%, bp, points, won); a level such as an index close,
+a yield or a price takes no direction, and its change goes in sub.
 No clock times on screen (no collection or article times); label non-closing values with the single word 장중. Dates and 종가 stay.
 Hard checks (an episode failing one is discarded, so follow them exactly): chapters never go backwards in the order
 '' → 요약 → 시장 → 핵심 이슈 → 함께 볼 이슈 → 일정, so the calendar and the closing signals both use 일정; all narration
@@ -481,9 +512,9 @@ def plan_class(job):
     return EpisodePlan if template(job) == 'motion-v2' else VideoPlan
 
 
-def plan_findings(job, plan, library=None, photos=False):
+def plan_findings(job, plan, library=None, photos=False, recent=()):
     if template(job) == 'motion-v2':
-        return episode_violations(plan, job['source'], library, photos=photos)
+        return episode_violations(plan, job['source'], library, photos=photos, recent=recent)
     from .contracts import validate_plan
 
     try:
@@ -542,12 +573,17 @@ company's building) or uses the fallback. Without a nameable subject, brief is j
 least one PHOTO: the day's main subject, shown in its issue card and used as thumbnail_image; reuse each id where it fits."""
 
 
+THUMBNAIL_GUIDE = ("recent_thumbnails lists the pictures of the latest episodes' thumbnails. The thumbnail picture is new "
+                   "every episode (owner rule): ask for a subject and scene clearly different from every one of them (another "
+                   "object, place, angle or setting), never the same photo request, scene or listed photo.")
+
+
 REVISION_GUIDE = ("previous_version is the last version of this episode and revision_feedback lists what was wrong with it. "
                   "Return that episode corrected: fix every listed item, apply the same rule wherever else it is broken, "
                   "and keep everything else as it was.")
 
 
-def episode_prompt(source, feedback='', library=None, illustrations=False, previous=None):
+def episode_prompt(source, feedback='', library=None, illustrations=False, previous=None, recent_thumbnails=()):
     """previous: the last checked version, revised rather than rewritten (10/14 AM: each rewrite from scratch renamed the
     scenes and broke the fixed rule somewhere new)."""
     shelf = {k: {'tags': v.get('tags', []), 'kind': v.get('kind', ''),
@@ -588,7 +624,10 @@ def episode_prompt(source, feedback='', library=None, illustrations=False, previ
             + TITLE_GUIDE + '\n'
             + (FACTS_GUIDE + '\n' if source.get('format') == 'facts' else '')
             + (ILLUSTRATION_GUIDE + '\n' if illustrations else '')
+            + (THUMBNAIL_GUIDE + '\n' if recent_thumbnails else '')
             + (REVISION_GUIDE + '\n' if previous else '')
             + json.dumps({'day': str(source['day']), 'cutoff': str(source['cutoff']), 'edition': edition,
                           'lines': prompt_claims(source), 'assets': shelf, 'revision_feedback': feedback,
+                          **({'recent_thumbnails': [{'subject': r.get('subject', ''), 'brief': r.get('brief', '')}
+                                                    for r in recent_thumbnails]} if recent_thumbnails else {}),
                           **({'previous_version': previous} if previous else {})}, ensure_ascii=False))

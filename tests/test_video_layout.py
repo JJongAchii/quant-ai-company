@@ -4,6 +4,7 @@ the captions and a compare arrow drawn over its own label. The card data below i
 
 import importlib.util
 import json
+import shutil
 
 import pytest
 
@@ -201,3 +202,114 @@ def test_only_chapters_the_episode_uses_get_a_pill():
 
     scenes = [{'chapter': ''}, {'chapter': '요약'}, {'chapter': '핵심 이슈'}, {'chapter': '일정'}]
     assert chapter_names(scenes) == ['요약', '핵심 이슈', '일정']
+
+
+THUMB_RECTS = r"""() => {const R = s => {const r = document.querySelector(s).getBoundingClientRect();
+  return {t: r.top, b: r.bottom, l: r.left, r: r.right};};
+  const q = document.querySelector('.q');
+  return {q: R('.q'), n: R('.n'), bar: R('.bar'), size: parseFloat(getComputedStyle(q).fontSize),
+          lines: Math.round(q.getBoundingClientRect().height / parseFloat(getComputedStyle(q).lineHeight))};}"""
+
+
+def thumbnail(tmp_path, question, stat, template=None):
+    """Renders the thumbnail like a render does; returns the renderer's finding and the text boxes."""
+    if not importlib.util.find_spec('playwright'):
+        pytest.skip('Install optional video dependencies and Chromium')
+    from importlib.resources import files
+
+    from playwright.sync_api import sync_playwright
+
+    renderer = MotionRenderer(Settings(video_artifact_dir=tmp_path, video_asset_dir=tmp_path), aligner=object(), library={})
+    renderer.episode_assets = {}
+    page = tmp_path / 'page'
+    shutil.copytree(files('quant_company.video').joinpath('design'), page)
+    if template:
+        (page / 'thumbnail.html').write_text(template((page / 'thumbnail.html').read_text()))
+    plan = episode(thumbnail=question, thumbnail_stat=stat, thumbnail_image='')
+    ep = {'date_label': '10.14 수', 'sample_mark': '', 'brand_label': '아침 시장 브리핑'}
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(args=CHROMIUM_ARGS)
+        try:
+            found = renderer._thumbnail(browser, plan, page, ep, tmp_path)
+            tab = browser.new_page(viewport={'width': 1280, 'height': 720})
+            tab.goto((page / 'thumbnail.render.html').as_uri())
+            tab.evaluate('document.fonts.ready.then(() => window.fit && fit())')
+            rects = tab.evaluate(THUMB_RECTS)
+        finally:
+            browser.close()
+    return found, rects
+
+
+@pytest.mark.parametrize('question', ['반도체 급락에도 IMF는 성장률 상향?', '반도체 급락에도 IMF는 한국 성장률 상향?'])
+def test_a_long_thumbnail_question_shrinks_and_never_covers_the_stat(tmp_path, question):
+    """10/14 AM: the question took three lines at the fixed 104px and its last line '상향?' covered the stat
+    'SK하이닉스 10.09% 하락', which sat at a fixed height; the renderer's check only compared the question with the bar."""
+    found, box = thumbnail(tmp_path, question, 'SK하이닉스 10.09% 하락')
+    assert box['q']['b'] <= box['n']['t'] and box['n']['b'] <= box['bar']['t'], box
+    assert box['lines'] <= 2 and box['size'] >= 64, box
+    assert found == []
+
+
+def test_a_short_thumbnail_question_keeps_the_full_size(tmp_path):
+    found, box = thumbnail(tmp_path, '코스피 5.46% 급락', '코스피 ▼5.46% · 정규장 종가 기준')
+    assert box['size'] == 104 and box['q']['b'] <= box['n']['t'] and found == []
+
+
+def test_the_thumbnail_check_reports_text_covering_the_stat(tmp_path):
+    def broken(html):  # the stat pulled up under the question, as on 10/14
+        return html.replace('</style>', '.n{position:absolute;left:60px;top:200px}</style>')
+
+    found, _ = thumbnail(tmp_path, '반도체 급락에도 IMF는 성장률 상향?', 'SK하이닉스 10.09% 하락', template=broken)
+    assert found == ['Thumbnail text exceeds safe screen area']
+
+
+# 2026-10-14 AM cards (first render) that broke: the map's delta wrapped into six lines down to the captions, its alt
+# line landed on the captions and two preset markers claimed facts the brief never had; a long calendar date pushed its
+# chip onto the next row; a two-line extra value pushed the compare tiles out of their panel; a topic broke in two.
+OIL = {'alt': '이란 해군, 위치추적 끈 유조선 적발 · 선체 파손과 화재', 'region': 'hormuz', 'chips': ['유가·해상 통항', '수일~수주'],
+       'bars': [{'w': 100, 'gold': True, 'name': '10·11월 원유', 'label': '전년도 평균 대비 100% 넘게'},
+                {'w': 100, 'name': '10월 나프타', 'label': '100% 초과 · 비교 기준 미제시'}, {'w': 100, 'name': '11월 나프타', 'label': '거의 100%'}],
+       'cost': '골드만삭스: 러시아 경유 80만톤 추가 공급(기간 미제시)도 경유 도매가를 배럴당 1~2달러 낮추는 데 그칠 것',
+       'delta': '브렌트 105.69달러 ▼96센트 · WTI 94.14달러 ▲40센트', 'title': '유가는 엇갈리고, 호르무즈 위험은 남았다',
+       'cost_head': '다르게 볼 점', 'panel_title': '정부가 밝힌 확보 물량', 'delta_source': '화요일 정규장 종가 기준 · CNBC·연합뉴스'}
+CALENDAR14 = {'title': '다음 확인할 일정', 'rows': [
+    ['오늘', '수', '물가', 'percent', '미국 9월 소비자물가 · 시장 예상 3.7%', '시각 미확인'],
+    ['오늘', '수', '공개', 'doc', '앤트로픽 3분기 재무정보 공개 계획 · 관계자 보도', '시각 미확인'],
+    ['내일', '목', '지표', 'basket', '미국 9월 생산자물가·소매판매', '시각 미확인'],
+    ['10월 27~28일', '화·수', 'FOMC', 'bank', '미 연준 통화정책회의', '시각 미확인'],
+    ['10월 29일', '목', 'GDP', 'chartUp', '미국 3분기 GDP 속보·9월 개인소득 및 지출', '시각 미확인']]}
+RATES = {'bars': [{'n': 4.306, 'name': '전 거래일', 'label': '4.306%'}, {'n': 4.229, 'name': '13일', 'label': '4.229%'}],
+         'chips': ['장기금리와 한국은행', '당일'], 'title': '같은 금리 하락, 다른 이유', 'arrow_text': '안전자산 수요',
+         'extra': [['미국 금리 하락 배경', '에너지 공급 기대'], ['한국 금리 하락 배경', '주가 급락·외국인 선물 매수']],
+         'tiles': [{'dir': 'dn', 'sub': '장중 · 2bp 넘게 하락 · 정규장 종가 기준 미확인', 'label': '미 10년물', 'value': '5.215%', 'source': 'CNBC'},
+                   {'sub': '장중 · 보합', 'label': '미 2년물', 'value': '4.791%', 'source': 'CNBC'},
+                   {'dir': 'dn', 'sub': '전 거래일 3.921%에서 하락', 'label': '국고채 3년물', 'value': '3.857%', 'source': '연합뉴스'}],
+         'chart_title': '국고채 10년물', 'chart_source': '연합뉴스 · 13일 장 마감 기준'}
+WATCH = {**SIGNALS, 'rows': [{**SIGNALS['rows'][0], 'topic': '반도체·수급'}, {**SIGNALS['rows'][1], 'topic': '미국 물가·금리'},
+                             {**SIGNALS['rows'][2], 'topic': '유가·통항'}, {**SIGNALS['rows'][3], 'topic': '성장 전망'}]}
+BROKEN = ('overlap', 'outside-stage', 'card-overflow')
+
+
+def test_the_map_panel_keeps_its_text_inside_and_draws_no_preset_claims(tmp_path):
+    found = measure(tmp_path, plan_with(scene('oil', '함께 볼 이슈', 'map', OIL)),
+                    {'panel': '.glass', 'svg': 'svg text', 'delta': '[data-delta]'})['oil']
+    assert not [x for x in found['qa'] if x[0] in BROKEN], found['qa']
+    assert not [t for t in found['svg'] if '미군' in t['text'] or '환적' in t['text']]
+    assert len(found['delta']) == 1 and found['delta'][0]['h'] < 70 and inside(found['delta'][0], found['panel'][1])
+
+
+def test_a_long_calendar_date_stays_on_one_line_above_its_chip(tmp_path):
+    found = measure(tmp_path, plan_with(scene('week', '일정', 'calendar', CALENDAR14)), {'date': '[data-date]'})['week']
+    assert not [x for x in found['qa'] if x[0] in BROKEN], found['qa']
+    assert len(found['date']) == 5 and all(d['h'] < 50 and d['sw'] <= d['cw'] + 1 for d in found['date']), found['date']
+
+
+def test_compare_extra_values_keep_one_line_inside_their_panel(tmp_path):
+    found = measure(tmp_path, plan_with(scene('rates', '핵심 이슈', 'compare', RATES)), {'panel': '.glass', 'extra': '[data-extra]'})['rates']
+    assert not [x for x in found['qa'] if x[0] in BROKEN], found['qa']
+    assert all(inside(e, found['panel'][0]) for e in found['extra']), (found['extra'], found['panel'])
+
+
+def test_a_two_word_signal_topic_keeps_one_line(tmp_path):
+    found = measure(tmp_path, plan_with(scene('watch', '일정', 'signals', WATCH)), {'topic': '[data-topic]'})['watch']
+    assert len(found['topic']) == 4 and all(t['h'] < 50 and t['sw'] <= t['cw'] + 1 for t in found['topic']), found['topic']

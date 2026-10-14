@@ -142,8 +142,10 @@ class VideoRunner:
                                        self.settings.model_runtime_token.get_secret_value())
         return self._images
 
-    def find_photos(self, job, items, folder):
-        """Commons candidates for each photo request (network only); a failed lookup leaves that picture without one."""
+    def find_photos(self, job, items, folder, skip=frozenset(), thumbnail=''):
+        """Commons candidates for each photo request (network only); a failed lookup leaves that picture without one.
+        skip: Commons titles and file hashes of earlier thumbnails, never offered again for this episode's thumbnail
+        picture (owner, 2026-10-14); thumbnail: that picture's ID (every item when empty)."""
         import hashlib
 
         from . import photos
@@ -153,14 +155,19 @@ class VideoRunner:
         for item in items:
             rows = []
             try:
+                avoid = skip if not thumbnail or item.id == thumbnail else frozenset()
                 for row in photos.search(photos.query(item))[:8]:
                     if len(rows) >= photos.CANDIDATES:
                         break
+                    if row.get('title') in avoid:
+                        continue
                     try:
                         data = photos.download(row)
                     except Exception:  # noqa: BLE001 - one unreadable file: try the next candidate
                         continue
                     sha = hashlib.sha256(data).hexdigest()
+                    if sha in avoid:
+                        continue
                     name = f"{item.id}-photo{len(rows) + 1}-{sha[:10]}.jpg"
                     partial = folder / (name + '.partial')
                     partial.write_bytes(data)
@@ -210,10 +217,18 @@ class VideoRunner:
         (one Commons lookup and one Claude check per plan), then one generated picture per tick for the rest.
         True while pictures are still being looked up, checked, made or awaited."""
         from . import photos
-        from .illustrations import make_next, missing
+        from .illustrations import fresh_fallback, make_next, missing, recent_scenes
 
+        recent = (job.get('qa') or {}).get('recent_thumbnails') or []
         if not missing(job, plan):
-            return False
+            # Every picture is made or failed: a thumbnail without its picture never shows an earlier thumbnail's photo.
+            used = await asyncio.to_thread(self.store.thumbnail_assets) | {r['library'] for r in recent if r.get('library')}
+            fixed = fresh_fallback(plan, (job.get('qa') or {}).get('illustrations') or {},
+                                   MotionRenderer(self.settings).library, used)
+            if fixed is plan:
+                return False
+            await asyncio.to_thread(self.store.save, job, 'synthesizing', plan=fixed.model_dump(mode='json'))
+            return True
         folder = self.settings.video_artifact_dir / str(job['id']) / 'illustrations'
         asked = [item for item in missing(job, plan) if photos.query(item)]
         # One lookup and one check per plan: keyed by every photo request, not by those still missing, so a picture
@@ -221,7 +236,8 @@ class VideoRunner:
         round_key = digest([[i.id, i.subject, i.brief] for i in plan.illustrations if photos.query(i)]) if asked else None
         qa = dict(job.get('qa') or {})
         if asked and qa.get('photo_round') != round_key:
-            found = await asyncio.to_thread(self.find_photos, job, asked, folder)
+            skip = frozenset(v for r in recent for v in (r.get('commons_title'), r.get('sha256')) if v)
+            found = await asyncio.to_thread(self.find_photos, job, asked, folder, skip, plan.thumbnail_image)
             qa.update(photo_round=round_key, photo_candidates=found, photo_checked=False)
             await asyncio.to_thread(self.store.update_qa, job, qa)
             await asyncio.to_thread(self.store.save, job, 'synthesizing')  # releases the lease for the next tick
@@ -232,7 +248,7 @@ class VideoRunner:
             await asyncio.to_thread(self.store.update_qa, job, qa)
             await asyncio.to_thread(self.store.save, job, 'synthesizing')
             return True
-        made, waiting = await make_next(job, plan, self.images, self.settings, folder)
+        made, waiting = await make_next(job, plan, self.images, self.settings, folder, recent_scenes(recent))
         qa = dict(job.get('qa') or {})
         qa['illustrations'] = made
         await asyncio.to_thread(self.store.update_qa, job, qa)
@@ -383,18 +399,23 @@ class VideoRunner:
                 qa['library'], qa['library_key'] = [[k, v] for k, v in library.items()], key
                 # Story pictures are offered only while the image runtime is configured; frozen with the shelf.
                 qa['illustrations_offered'] = bool(self.settings.video_image_runtime_url)
+                if 'recent_thumbnails' not in qa:  # frozen once, so every attempt and re-ask sends the same list
+                    qa['recent_thumbnails'] = await asyncio.to_thread(self.store.thumbnail_history, job)
                 await asyncio.to_thread(self.store.update_qa, job, qa)
-            illustrations = qa.get('illustrations_offered', False)
+            illustrations, recent = qa.get('illustrations_offered', False), qa.get('recent_thumbnails') or []
             previous = await asyncio.to_thread(self.last_version, job, attempts)
-            prompt = episode_prompt(job['source'], feedback, library, illustrations=illustrations, previous=previous)
+            prompt = episode_prompt(job['source'], feedback, library, illustrations=illustrations, previous=previous,
+                                    recent_thumbnails=recent)
             if len(prompt) > PROMPT_LIMIT:
-                prompt = episode_prompt(job['source'], feedback, library, illustrations=illustrations)
+                prompt = episode_prompt(job['source'], feedback, library, illustrations=illustrations,
+                                        recent_thumbnails=recent)
             contract = 'video_episode_v1'
         else:
             prompt, contract = production_prompt(job['source'], feedback), None
         try:
             plan = proposal(job, await self.model(job, key, prompt, plan_class(job), contract))
-            findings = plan_findings(job, plan, library, photos=qa.get('illustrations_offered', False))
+            findings = plan_findings(job, plan, library, photos=qa.get('illustrations_offered', False),
+                                     recent=qa.get('recent_thumbnails') or [])
             attempts.append({'key': key, 'outcome': 'check_failed' if findings else 'passed', 'findings': findings[:30]})
         except ModelRejected as rejected:
             plan, findings = None, [f'Output contract: {rejected.detail}' if rejected.detail else f'Model {rejected.code}']

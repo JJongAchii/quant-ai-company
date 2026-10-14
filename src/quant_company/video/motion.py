@@ -511,8 +511,10 @@ class MotionRenderer:
         tab = browser.new_page(viewport={'width': 1280, 'height': 720})
         tab.route('http*://**/*', lambda route: route.abort())
         tab.goto((page / 'thumbnail.render.html').as_uri())
-        tab.evaluate('document.fonts.ready')
-        found = [] if tab.evaluate("document.querySelector('.q').getBoundingClientRect().bottom < document.querySelector('.bar').getBoundingClientRect().top") \
+        tab.evaluate('document.fonts.ready.then(() => fit())')
+        # The question must end above the stat and the stat above the bar (10/14 AM: a third line covered the stat).
+        found = [] if tab.evaluate("""(() => {const r = s => document.querySelector(s).getBoundingClientRect();
+            return r('.q').bottom <= r('.n').top + 1 && r('.n').bottom <= r('.bar').top;})()""") \
             else ['Thumbnail text exceeds safe screen area']
         tab.screenshot(path=str(directory / 'thumbnail.png'))
         tab.close()
