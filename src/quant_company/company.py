@@ -84,9 +84,11 @@ class Company:
         self.db = Database(settings.database_url)
         self.roles = roles if roles is not None else load_roles(settings)
         from .research.controller import MissionApprovalAdapter
+        from .research.planning_store import QuestionApprovalAdapter
         from .research.program_controller import ProgramApprovalAdapter
 
-        self.research_approval_adapters = (MissionApprovalAdapter(self), ProgramApprovalAdapter(self))
+        self.research_approval_adapters = (MissionApprovalAdapter(self), ProgramApprovalAdapter(self),
+                                           QuestionApprovalAdapter(self))
 
     def role(self, name: str) -> Role:
         role = self.roles.get(name)
@@ -173,6 +175,14 @@ class Company:
                         for name in ("engineer", "validator") if name in roles
                     ],
                 },
+                **({"research_planning": {
+                    "enabled": True,
+                    "usage": 'Director research_control: {action:"planning_question_draft",spec:<QuestionSpec>'
+                             '[,program_id:<uuid>]} proposes a research question for owner approval; '
+                             '{action:"planning_status"} reads questions, evidence sets and open gaps. '
+                             'A question carries no experiment or program authority. Leave undetermined mandates, '
+                             'budgets and data availability as unknown; never invent them.'}}
+                   if self.settings.research_planning_enabled else {}),
                 "news_reporting": {"enabled": self.settings.company_news_enabled,
                                    "publish_enabled": self.settings.news_publish_enabled},
                 "market_briefing": {"enabled": self.settings.briefing_enabled,
@@ -696,6 +706,17 @@ class Company:
                     conn.execute("UPDATE turns SET status='blocked',error=%s WHERE id=%s", (reason, turn_id))
                     conn.execute("UPDATE tasks SET status='blocked',error=%s WHERE id=%s", (reason, task["id"]))
                     return {"state": "done", "status": "blocked", "reason": reason}
+                if stage["planning_run_id"] is not None:
+                    from .research.planning_controller import hold_stage, planning_budget_reason
+
+                    reason = planning_budget_reason(self, conn, stage)
+                    if reason == "planning_daily_request_limit":
+                        return {"state": "defer", "seconds": 3600, "reason": reason}
+                    if reason:
+                        if reason != "planning_requires_remediation":
+                            hold_stage(self, conn, stage, reason)
+                        conn.execute("UPDATE turns SET status='blocked',error=%s WHERE id=%s", (reason, turn_id))
+                        return {"state": "done", "status": "blocked", "reason": reason}
             if task["priority"] > 0 and conn.execute("""SELECT 1 FROM turns t JOIN tasks k ON k.id=t.task_id
                 JOIN projects p ON p.id=k.project_id WHERE t.status IN ('queued','waiting') AND t.due_at<=now()
                 AND k.priority<%s AND k.revision=p.revision
@@ -728,7 +749,7 @@ class Company:
 
                     role, prompt = stage_prompt(self, conn, task, turn)
                     stage = _stage(conn, task["id"])
-                    if stage["stage"] == "program_data":
+                    if stage["stage"] == "program_data" or stage["planning_run_id"] is not None:
                         output_contract = "research_stage_v1"
                     if enabled(stage):
                         session = session_for(conn, stage, turn)
@@ -859,6 +880,11 @@ class Company:
                                  if failures >= 3 else "stage_response_rejected", "failure_count": failures,
                                  "scope": "Operational output failure; no research judgment."}, project["id"])
                     return
+                if stage and stage["planning_run_id"] is not None and private_reason == "invalid_output":
+                    from .research.planning_controller import output_failure
+
+                    output_failure(self, conn, stage, task)
+                    return
                 # Failed structured output is a technical repair, not a public performance artifact.
                 # Keep the exact provider evidence in private stage attempts and retry after backoff.
                 conn.execute("""UPDATE research_mission_stages SET state='waiting',error=%s,
@@ -898,6 +924,10 @@ class Company:
                 from .research.controller import mission_tool
 
                 return mission_tool(self, conn, self._project(conn, project_id, lock=False), task, arguments)
+            if arguments.get("action", "").startswith("planning_"):
+                from .research.planning_store import planning_tool
+
+                return planning_tool(self, conn, self._project(conn, project_id, lock=False), task, arguments)
             return ResearchStore(self).tool(conn, self._project(conn, project_id, lock=False), task, arguments)
         if request.name == "briefing_status":
             from .briefing.store import BriefStore

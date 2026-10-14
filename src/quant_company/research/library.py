@@ -66,6 +66,49 @@ def available_sources(company, conn, project, spec, program_id=None):
         WHERE id=ANY(%s) ORDER BY id""", (sorted(set(identities)),)).fetchall()
 
 
+def _literature(company, conn, project, roles):
+    sync_library(company, conn, project)
+    for row in conn.execute("SELECT source_id FROM research_literature WHERE project_id=%s AND state='current'",
+                            (project["id"],)):
+        roles.setdefault(row["source_id"], "literature")
+
+
+def _corpus_rows(conn, project, roles):
+    rows = conn.execute("""SELECT s.id,s.title,s.uri,s.content,s.available_at,s.synthetic,l.work_id,
+        l.created_at AS literature_created_at FROM sources s LEFT JOIN research_literature l ON l.source_id=s.id
+        WHERE s.id=ANY(%s) AND s.approved AND s.available_at<=now() AND (s.project_id IS NULL OR s.project_id=%s)
+        ORDER BY s.id""", (sorted(roles), project["id"])).fetchall()
+    return [dict(row) | {"authority": roles[row["id"]]} for row in rows]
+
+
+def program_corpus(company, conn, project, spec, program_id):
+    """available_sources() authority without recency caps. Planning only; legacy callers are unchanged."""
+    company._check_sources(conn, project["id"], spec.source_ids)
+    roles = dict.fromkeys(spec.source_ids, "explicit")
+    for row in conn.execute("""SELECT DISTINCT p.payload->>'source_id' AS source_id FROM research_mission_publications p
+        JOIN research_mission_trials t ON t.id=p.trial_id JOIN research_missions m ON m.id=t.mission_id
+        WHERE m.program_id=%s""", (program_id,)):
+        roles.setdefault(row["source_id"], "predecessor")
+    lineage_ids = [envelope.template.scientific_lineage.id for envelope in spec.envelopes
+                   if envelope.template.scientific_lineage is not None]
+    if lineage_ids:
+        for row in conn.execute("""SELECT DISTINCT p.payload->>'source_id' AS source_id
+            FROM research_mission_publications p JOIN research_scientific_lineage_trials l ON l.trial_id=p.trial_id
+            JOIN research_scientific_lineages s ON s.id=l.lineage_id WHERE s.project_id=%s AND s.id=ANY(%s)""",
+            (project["id"], lineage_ids)):
+            roles.setdefault(row["source_id"], "predecessor")
+    if spec.include_quant_feed:
+        _literature(company, conn, project, roles)
+    return _corpus_rows(conn, project, roles)
+
+
+def project_corpus(company, conn, project, source_refs):
+    company._check_sources(conn, project["id"], source_refs)
+    roles = dict.fromkeys(source_refs, "explicit")
+    _literature(company, conn, project, roles)
+    return _corpus_rows(conn, project, roles)
+
+
 def require_current(conn, source_ids):
     if conn.execute("SELECT 1 FROM research_literature WHERE source_id=ANY(%s) AND state<>'current'",
                     (list(source_ids),)).fetchone():
