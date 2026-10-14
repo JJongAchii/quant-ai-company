@@ -20,6 +20,15 @@ integration targets until a particular research task is authorized.
 - Do not print secrets or copy credential files into Git. Deployment templates reference secrets.
 - Tests: `uv run pytest`; lint: `uv run ruff check .`; demo: documented in README.
 
+Production runs one main commit on the Lightsail host (docs/adr/0044, docs/adr/0045):
+- Change production only by merging a reviewed PR to main. `deploy/release.py` on the host releases CI-green main,
+  automatically inside its windows or through the release operator. Never change the host directly: no ssh edits,
+  host-only compose overlays, apply scripts, `docker cp`/`exec` changes, manual container recreation or runtime.env edits.
+- Send what a release cannot do by itself to the release operator with the main SHA and exact values: render image
+  and task definition, added or removed services, runtime.env values, host units.
+- `/var/lib/quant-company/release-status.json` shows what production runs, how far main is ahead and why a release is
+  held. A direct host change shows there as drift and stops automatic releases.
+
 The root thread owns qws INTENT/STATUS and final integration. Builders do not spawn agents,
 change the contract, or judge research results.
 
