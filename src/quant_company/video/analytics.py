@@ -17,7 +17,7 @@ from ..company import PolicyError
 from ..contracts import ProviderAttachment, ProviderFault, ProviderRequest
 from ..providers.client import RuntimeClient
 from .analytics_contracts import VideoPerformance, WeeklyReview, performance_prompt, weekly_prompt
-from .analytics_metrics import KST, PT, hook_retention, parse_title, scene_drops, window
+from .analytics_metrics import KST, PT, hook_retention, in_series, parse_title, scene_drops, window
 from .analytics_slack import EDITIONS, card_text, failed_weekly_text, update_text, weekly_text
 from .analytics_store import REACH_GRACE_DAYS, AnalyticsStore
 
@@ -395,10 +395,13 @@ class AnalyticsRunner:
             parsed = parse_title(item["title"], item["published_at"])
             rows.append({"youtube_id": item["youtube_id"], "title": item["title"],
                          "published_kst": item["published_at"].astimezone(KST).isoformat(),
+                         "series": in_series(item["title"]),
                          "edition": parsed[1] if parsed else None, "day": parsed[0].isoformat() if parsed else None})
         latest = None
         today = at.astimezone(PT).date()
         for item in uploads:
+            if not in_series(item["title"]):
+                continue
             start, end = window(item["published_at"], "d3")
             if end < today:
                 latest = {"youtube_id": item["youtube_id"], "start": start.isoformat(), "end": end.isoformat(),

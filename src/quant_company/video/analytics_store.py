@@ -8,7 +8,7 @@ from psycopg.types.json import Jsonb
 
 from ..briefing.contracts import BRIEFER
 from ..company import PolicyError, as_json, stable
-from .analytics_metrics import HORIZONS, PT, baseline, parse_reach_csv, parse_title, window
+from .analytics_metrics import HORIZONS, PT, baseline, in_series, parse_reach_csv, parse_title, window
 from .contracts import digest
 
 BASIC = "channel_reach_basic_a1"
@@ -150,7 +150,7 @@ class AnalyticsStore:
 
     def due_snapshots(self, at=None):
         """(publication, horizon) whose fixed window is over and whose last day of reach data has arrived, or whose
-        window ended more than REACH_GRACE_DAYS ago without it."""
+        window ended more than REACH_GRACE_DAYS ago without it. Uploads of other series are skipped unless linked."""
         at = at or utcnow()
         today = at.astimezone(PT).date()
         with self.db.transaction() as conn:
@@ -162,6 +162,8 @@ class AnalyticsStore:
                                 (at - timedelta(days=MEASURE_DAYS),)).fetchall()
         due = []
         for row in rows:
+            if row["job_id"] is None and not in_series(row["title"]):
+                continue
             for horizon in HORIZONS:
                 end = window(row["published_at"], horizon)[1]
                 if (row["youtube_id"], horizon) in taken or end >= today:
@@ -389,10 +391,12 @@ class AnalyticsStore:
             analyses = conn.execute("SELECT kind,state,count(*) AS n FROM video_analyses GROUP BY kind,state").fetchall()
             lessons = conn.execute("SELECT state,count(*) AS n FROM video_lessons GROUP BY state").fetchall()
             jobs = conn.execute("SELECT report_type FROM video_report_jobs ORDER BY report_type").fetchall()
+        unlinked = [r for r in rows if r["job_id"] is None]
         return {"enabled": self.enabled(),
-                "publications": {"total": len(rows), "linked": sum(r["job_id"] is not None for r in rows),
+                "publications": {"total": len(rows), "linked": len(rows) - len(unlinked),
+                                 "other_series": sum(not in_series(r["title"]) for r in unlinked),
                                  "unlinked": [{"youtube_id": r["youtube_id"], "title": r["title"]}
-                                              for r in rows if r["job_id"] is None][:10]},
+                                              for r in unlinked if in_series(r["title"])][:10]},
                 "report_jobs": [r["report_type"] for r in jobs],
                 "latest_reach_day": day.isoformat() if day else None,
                 "snapshots": {r["horizon"]: r["n"] for r in snaps},

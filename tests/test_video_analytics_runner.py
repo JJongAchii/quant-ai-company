@@ -346,10 +346,18 @@ async def test_dry_run_sync_reads_youtube_and_writes_nothing(brief, video, analy
     assert analytics.publications() == [] and not outbox(analytics)
 
 
+async def test_dry_run_skips_other_series_for_the_latest_window(brief, video, analytics):  # noqa: F811
+    _, client = linked_upload(brief, video)
+    client.items.insert(0, upload("hhhhhhhhhhh", "[역사story] 한글날은 왜 10월 9일일까?", PUBLISHED.replace(day=22)))
+    preview = await AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider()).preview(AFTER_D3)
+    assert [(i["youtube_id"], i["series"]) for i in preview["uploads"]] == [("hhhhhhhhhhh", False), ("aaaaaaaaaaa", True)]
+    assert preview["latest_window"]["youtube_id"] == "aaaaaaaaaaa"
+
+
 async def test_status_counts_links_reports_snapshots_and_lessons(brief, video, analytics):  # noqa: F811
     await weekly_posted(brief, video, analytics)
     status = analytics.status()
-    assert status["publications"] == {"total": 1, "linked": 1, "unlinked": []}
+    assert status["publications"] == {"total": 1, "linked": 1, "other_series": 0, "unlinked": []}
     assert status["latest_reach_day"] == "2026-09-23" and status["snapshots"] == {"d3": 1}
     assert status["lessons"] == {"active": 1, "proposed": 1}
     assert status["report_jobs"] == ["channel_reach_basic_a1", "channel_reach_combined_a1"]

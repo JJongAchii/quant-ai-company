@@ -3,7 +3,8 @@
 소유자가 요청한 영상 성과 분석을 구현했다(설계: [ADR 0043](../adr/0043-video-performance-analytics.md), 운영:
 [daily-video 성과 분석](../daily-video.md#성과-분석)). 공개 업로드를 제작 작업에 연결하고, 노출·CTR·조회·이탈·유입·
 검색어를 고정 구간으로 측정한다. Claude 진단 카드와 월요일 리뷰를 성과 채널로 보내며, 소유자가 채택한 교훈만 새 영상
-작업에 고정한다. **운영 서버에 배포하거나 켠 증거는 없다.** 기본값은 `VIDEO_ANALYTICS_ENABLED=false`다.
+작업에 고정한다. 기본값은 `VIDEO_ANALYTICS_ENABLED=false`다. 2026-10-14에 운영 서버에 배포했고 실연결을 확인했지만
+**아직 켜지 않았다**([실연결](#실연결-2026-10-14)).
 
 ## 확인한 범위
 
@@ -38,11 +39,21 @@
 - 설정 검증(전용 허용 채널, 소유자, YouTube 채널), Analyst interactivity, OAuth scope, 썸네일 호스트와 토큰
   미전송, 보고서 다운로드 호스트 제한, 꺼지면 outbox `stale`
 
+## 실연결 (2026-10-14)
+
+[기록](evidence/video-analytics-20261014/verification.json). Google Cloud 설정(API 2개, OAuth 앱 프로덕션 게시)을 마쳤다.
+YouTube 재로그인(scope 3개, refresh token 있음)도 끝났다. 운영 서버의 17개 서비스가 main 5454e3d로 바뀌었고, 분석은
+꺼진 채다. `sync --dry-run`으로 공개 업로드 9편과 Reporting 작업 2개를 확인했다.
+
+10월 8일 마감 회차(10/8~10/10)는 조회 24, 시청 28분, 평균 2:11(46.6%), 좋아요 4, 댓글 2, 유입 6종으로
+Studio 고급 모드와 모두 같았다. 성과 채널 `#video-performance`를 만들고 Analyst 봇을 초대했다.
+
+dry-run에서 예전 제목 형식 3편이 회차로 읽히지 않았고, `[역사story]` 2편이 측정 대상에 들어 있었다. 둘 다 고쳤다
+(예전 형식 해석, 다른 시리즈 제외, 테스트 3개 추가·1개 갱신).
+
 ## 남은 운영 연결
 
-- 소유자 작업: Google Cloud에서 YouTube Analytics API·Reporting API를 사용 설정하고, OAuth 앱을 프로덕션으로
-  게시한 뒤 서버에서 YouTube에 다시 로그인한다(scope 3개). 성과 채널을 만들고 Analyst 봇을 초대한다.
-- claude-runtime과 video-worker를 이 버전으로 갱신해야 한다. Fargate 렌더 이미지는 manifest `scenes`를 위해 다음 갱신 때
-  함께 빌드한다. 그 전 회차는 챕터 시각을 쓴다.
-- 첫 실연결: `video-analytics sync --dry-run`의 조회·시청 수치를 Studio와 대조한다. 첫 Reporting 보고서가 오면
-  CTR 단위(비율/백분율)를 Studio 값과 대조한다. 그 뒤 첫 카드 1건을 실제로 게시하고 evidence에 기록한다.
+- 첫 Reporting 보고서가 오면 노출수·CTR을 Studio 값(위 회차 138회, 3.6%)과 대조한다. 그 뒤 켠다.
+- 켜기: 영상 작업이 진행 중이지 않을 때, main 통합 반영 절차로 네 값(`VIDEO_ANALYTICS_ENABLED`,
+  `VIDEO_ANALYTICS_CHANNEL_ID`, `SLACK_ALLOWED_CHANNELS`, `VIDEO_YOUTUBE_CHANNEL_ID`)을 함께 넣는다.
+- 첫 카드 1건이 실제로 게시되면 evidence에 기록한다.
