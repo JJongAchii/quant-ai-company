@@ -128,7 +128,7 @@ const CARDS = {
       const y = d.top + i * pitch, b = 0.5 + i * 0.3;
       return `<div class="glass" style="left:0;top:${y}px;width:1760px;height:${height}px;padding:0 36px;display:flex;align-items:center;gap:24px" data-in="${b},0.5">
        <span class="tile" style="width:84px;height:84px;background:rgba(60,207,180,.14);border:1px solid rgba(60,207,180,.4)"><span data-icon="${r.icon},52,#3CCFB4,${b + 0.3},0.7"></span></span>
-       <div style="width:150px;font-size:32px;font-weight:800;color:var(--signal)">${r.topic}</div>
+       <div data-topic data-fit style="width:150px;flex:none;font-size:32px;font-weight:800;color:var(--signal);white-space:nowrap;overflow:hidden">${r.topic}</div>
        <div style="flex:1;display:flex;align-items:center">${r.conds.map((c, j) => `${j ? `<span class="plus" data-pop="${b + 0.5 + j * 0.2},0.45">+</span>` : ''}<span class="pillc" data-pop="${b + 0.5 + j * 0.2},0.45">${c}</span>`).join('')}<span style="flex:1;height:0;border-top:2px dashed rgba(253,199,73,.35);margin:0 4px 0 22px" data-in="${b + 0.9},0.5,0"></span></div>
        <svg width="70" height="30" viewBox="0 0 70 30"><path d="M4 15H60M48 4L62 15L48 26" fill="none" stroke="#FDC749" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" data-draw="${b + 1.0},0.4"/></svg>
        <div style="width:470px;font-size:32px;font-weight:800;color:var(--gold)" data-in="${b + 1.2},0.45,10">${r.then}</div></div>`;
@@ -158,7 +158,8 @@ const CARDS = {
     d.rows.forEach(([dt, w, bd, ic, e, s], i) => {
       const y = top + i * 118;
       h += `<div data-in="${0.6 + i * 0.15},0.45" style="position:absolute;left:0;top:${y}px;width:1760px;height:100px">
-       <div style="position:absolute;left:0;top:10px;width:290px;text-align:right;font-size:38px;font-weight:800;color:var(--gold);line-height:1.1" class="tnum">${dt}${w ? `<span style="font-size:22px;color:var(--muted);margin-left:10px">${w}</span>` : ''}
+       <div style="position:absolute;left:0;top:10px;width:290px;text-align:right">
+         <div class="tnum" data-date data-fit style="font-size:38px;font-weight:800;color:var(--gold);line-height:1.1;white-space:nowrap;overflow:hidden">${dt}${w ? `<span style="font-size:.58em;color:var(--muted);margin-left:10px">${w}</span>` : ''}</div>
          ${bd ? `<div style="margin-top:6px"><span class="chip tag-gold" style="font-size:18px;padding:3px 12px">${bd}</span></div>` : ''}</div>
        <div style="position:absolute;left:${LX - 9}px;top:38px;width:19px;height:19px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 7px rgba(253,199,73,.18)"></div>
        <div class="glass" style="left:${LX + 42}px;top:0;width:${1760 - LX - 42}px;height:96px;padding:0 26px 0 18px;display:flex;align-items:center;gap:20px">
@@ -189,7 +190,7 @@ const CARDS = {
        <text x="566" y="320" text-anchor="middle" font-size="25" font-weight="700" fill="#AEB7D4">${b.name}</text>
        <path d="M352,${282 - ha - 52} C392,${282 - ha - 82} 432,${282 - ha - 78} 462,${282 - hb - 50}" fill="none" stroke="#5EA0FF" stroke-width="3.5" marker-end="url(#ahc_${d.id})" data-role="arrow" data-draw="3.0,0.6"/>
        <text x="407" y="${Math.min(282 - ha, 282 - hb) - 100}" text-anchor="middle" font-size="24" font-weight="800" fill="#5EA0FF" data-role="arrow-text" data-in="3.3,0.4,8">${d.arrow_text}</text></svg>
-      <div style="display:flex;gap:18px;margin-top:22px" data-in="3.6,0.45">${d.extra.map(e => `<div data-extra style="flex:1;min-width:0;padding:16px 22px;border-radius:16px;background:rgba(0,17,46,.45);border:1px solid rgba(252,241,219,.14)"><div class="muted" style="font-size:20px;font-weight:700">${e[0]}</div><div class="tnum" style="font-size:40px;font-weight:800;margin-top:2px">${e[1]}</div></div>`).join('')}</div></div>`;
+      <div style="display:flex;gap:18px;margin-top:22px" data-in="3.6,0.45">${d.extra.map(e => `<div data-extra style="flex:1;min-width:0;padding:16px 22px;border-radius:16px;background:rgba(0,17,46,.45);border:1px solid rgba(252,241,219,.14)"><div class="muted" style="font-size:20px;font-weight:700">${e[0]}</div><div class="tnum" data-fit style="font-size:40px;font-weight:800;margin-top:2px;white-space:nowrap;overflow:hidden">${e[1]}</div></div>`).join('')}</div></div>`;
   },
 
   bars(d) {
@@ -234,7 +235,7 @@ const CARDS = {
   photo(d) {
     const rows = d.rows.map((r, i) => `<div data-in="${1.2 + i * 0.5},0.45" style="padding:18px 0;${i < d.rows.length - 1 ? 'border-bottom:1px solid rgba(252,241,219,.12)' : ''}">
        <div style="display:flex;align-items:center;gap:12px"><span class="chip ${r.kind === 'counter' || r.kind === 'interp' ? '' : 'tag-line'}" style="${r.kind === 'counter' ? 'color:var(--counter)' : r.kind === 'signal' ? 'color:var(--signal);border-color:var(--signal)' : r.kind === 'interp' ? 'color:var(--gold);border-color:#E2A92C;background:rgba(253,199,73,.14)' : ''};font-size:19px;padding:4px 12px">${r.chip}</span>${src(r.source)}</div>
-       <div style="font-size:${r.big ? 44 : 30}px;font-weight:800;margin-top:10px;line-height:1.25" class="tnum">${r.big ? cnt(r.big, 1.4 + i * 0.5) : ''}${r.big && r.text ? ' ' : ''}${r.text ? `<span style="font-size:30px">${r.text}</span>` : ''}</div>
+       <div style="font-size:${r.big ? 44 : 30}px;font-weight:800;margin-top:10px;line-height:1.25;text-wrap:balance" class="tnum">${r.big ? cnt(r.big, 1.4 + i * 0.5) : ''}${r.big && r.text ? ' ' : ''}${r.text ? `<span style="font-size:30px">${r.text}</span>` : ''}</div>
        ${r.sub ? `<div class="muted" style="font-size:22px;font-weight:600;margin-top:4px">${r.sub}</div>` : ''}</div>`).join('');
     return header(d) + `<div class="paper imgbox" style="left:0;top:110px;width:860px;height:590px" data-in="0.5,0.55"><img src="${d.image.file}" data-kb="14,0.06">${d.image.credit ? `<span class="chip credit">${d.image.credit}</span>` : ''}</div>
       <div class="glass" style="left:900px;top:110px;width:860px;height:590px;padding:22px 40px;display:flex;flex-direction:column;justify-content:space-between" data-in="0.9,0.55">${rows}</div>`;
@@ -245,12 +246,14 @@ const CARDS = {
     const bars = d.bars.map((b, i) => `<div style="margin-top:${i ? 14 : 20}px;font-size:22px;font-weight:700;${b.gold ? 'color:var(--gold)' : ''}" class="${b.gold ? '' : 'muted'}">${b.name}</div>
       <div style="position:relative;height:44px;margin-top:6px"><div class="bar" style="left:0;top:0;width:${b.w}px;background:${b.gold ? 'var(--gold)' : '#AEB7D4'};transform-origin:left" data-bar="${1.4 + i * 0.4},0.8"></div><span class="tnum" style="position:absolute;left:${b.w + 14}px;top:4px;font-size:28px;font-weight:800;white-space:nowrap" data-in="${2.0 + i * 0.4},0.4,10">${b.label}</span></div>`).join('');
     return header(d) + `<div class="glass" style="left:0;top:110px;width:1060px;height:590px;overflow:hidden;padding:0" data-in="0.5,0.55" id="mapcard_${d.id}"></div>
-     <div class="glass" style="left:1100px;top:110px;width:660px;height:590px;padding:28px 36px" data-in="0.9,0.55">
+     <div class="glass" style="left:1100px;top:110px;width:660px;height:590px;padding:28px 36px;display:flex;flex-direction:column;gap:16px" data-in="0.9,0.55">
+      <div data-fitbox style="flex:1;min-height:0"><div>
       <div style="display:flex;align-items:center;gap:12px"><span data-icon="drop,34,#FDC749,1.1,0.6"></span><span class="lab">${d.panel_title}</span></div>${bars}
-      <div style="display:flex;align-items:center;gap:14px;margin-top:18px" data-in="2.6,0.4"><span class="dnn" style="font-size:44px;font-weight:800">${d.delta}</span>${src(d.delta_source)}</div>
-      <div class="muted" style="font-size:20px;font-weight:600;margin-top:10px;line-height:1.45" data-in="3.0,0.4">${d.alt}</div>
-      <div style="position:absolute;left:36px;right:36px;bottom:28px;padding:14px 20px;border-radius:14px;background:rgba(253,199,73,.12);border:1px solid rgba(253,199,73,.45);display:flex;align-items:center;gap:16px" data-in="${d.cost_at || 6.0},0.45">
-       <span data-icon="ship,52,#FDC749,${(d.cost_at || 6.0) + 0.2},0.8"></span><div style="font-size:22px;font-weight:700;line-height:1.35">${d.cost_head}<br><span style="color:var(--gold);font-size:31px;font-weight:800">${d.cost}</span>까지</div></div></div>`;
+      <div class="dnn" data-delta data-fit style="font-size:44px;font-weight:800;margin-top:18px;white-space:nowrap;overflow:hidden" data-in="2.6,0.4">${d.delta}</div>
+      <div style="margin-top:6px" data-in="2.6,0.4">${src(d.delta_source)}</div>
+      <div class="muted" style="font-size:20px;font-weight:600;margin-top:10px;line-height:1.45;text-wrap:balance" data-in="3.0,0.4">${d.alt}</div></div></div>
+      <div style="flex:none;padding:14px 20px;border-radius:14px;background:rgba(253,199,73,.12);border:1px solid rgba(253,199,73,.45);display:flex;align-items:center;gap:16px" data-in="${d.cost_at || 6.0},0.45">
+       <span data-icon="ship,52,#FDC749,${(d.cost_at || 6.0) + 0.2},0.8"></span><div style="font-size:22px;font-weight:700;line-height:1.35">${d.cost_head}<div style="color:var(--gold);font-size:${d.cost.length > 24 ? 24 : 31}px;font-weight:800;text-wrap:balance">${d.cost}</div></div></div></div>`;
   },
 };
 
@@ -270,9 +273,8 @@ function drawMap(d) {
   s.innerHTML += `<path d="${p}" fill="none" stroke="rgba(253,199,73,.25)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" data-draw="2.0,2.6"/>
    <path id="route_${d.id}" d="${p}" fill="none" stroke="#FDC749" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" data-draw="2.0,2.6"/>
    <g data-follow="#route_${d.id},2.0,2.6"><circle r="11" fill="#FCF1DB"/><circle r="5" fill="#011A43"/></g>`;
-  const e = M.escort, t = M.transship;
-  s.innerHTML += `<g data-in="4.6,0.45,10"><circle cx="${e[0]}" cy="${e[1]}" r="9" fill="#3CCFB4"/><rect x="${e[0] + 16}" y="${e[1] - 20}" width="214" height="40" rx="10" fill="rgba(0,17,46,.82)" stroke="#3CCFB4"/><text x="${e[0] + 28}" y="${e[1] + 8}" font-size="21" font-weight="700" fill="#FCF1DB">미군 호위 · 오만 연안</text></g>
-   <g data-in="5.2,0.45,10"><circle cx="${t[0]}" cy="${t[1]}" r="9" fill="#FDC749"/><rect x="${t[0] + 16}" y="${t[1] - 20}" width="150" height="40" rx="10" fill="rgba(0,17,46,.82)" stroke="#FDC749"/><text x="${t[0] + 28}" y="${t[1] + 8}" font-size="21" font-weight="700" fill="#FCF1DB">해협 밖 환적</text></g>
-   <text x="${M.W - 18}" y="${M.H - 16}" text-anchor="end" font-size="16" font-weight="600" fill="rgba(174,183,212,.7)">지도 데이터: Natural Earth · 경로는 개념도</text>`;
+  // No preset markers: '미군 호위 · 오만 연안' and '해협 밖 환적' came from the design sample and appeared on every Hormuz
+  // map as if reported (10/14 AM review); the map shows only geography, the route sketch and the strait.
+  s.innerHTML += `<text x="${M.W - 18}" y="${M.H - 16}" text-anchor="end" font-size="16" font-weight="600" fill="rgba(174,183,212,.7)">지도 데이터: Natural Earth · 경로는 개념도</text>`;
   document.getElementById('mapcard_' + d.id).appendChild(s);
 }

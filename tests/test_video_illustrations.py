@@ -442,3 +442,103 @@ def test_an_episode_photo_reaches_fargate_as_a_credited_library_photo_not_a_gene
     task = Settings(_env_file=None, video_artifact_dir=tmp_path / 'task', video_asset_dir=tmp_path / 'task-assets')
     entries = library_entries({'id': job_id, **frozen}, sent, task, manifest)
     assert entries['gen-1']['kind'] == '자료사진' and entries['gen-1']['license'] == 'CC BY-SA 4.0'
+
+
+# Owner, 2026-10-14: "썸네일 사진 항상 다르게 해! 절대 이전에 했던 것과 겹치지말고 새로 만들어." The 10/13 PM and 10/14 AM
+# thumbnails were two generated pictures of the same kind of chip-fab building in the same palette, and on 10/12 one
+# library photo was the thumbnail twice.
+RECENT = [{'subject': '반도체 공장', 'brief': 'PHOTO: SK hynix Icheon campus || SCENE: A modern semiconductor fab campus at dusk.'},
+          {'subject': 'korea-exchange', 'brief': '', 'library': 'korea-exchange'},
+          {'subject': '삼성전자', 'brief': 'PHOTO: Samsung Electronics Seocho', 'commons_title': 'File:Samsung Electronics 2023-08.jpg',
+           'sha256': 'ab' * 32}]
+
+
+def with_thumbnail(plan, image='gen-1'):
+    raw = plan.model_dump(mode='json')
+    raw['thumbnail_image'] = image
+    return EpisodePlan.model_validate(raw)
+
+
+def test_recent_thumbnails_are_shown_to_the_script_and_a_repeated_picture_is_a_finding():
+    offered = episode_prompt(body_source(), '', SHELF, illustrations=True, recent_thumbnails=RECENT)
+    data = json.loads(offered.rsplit('\n', 1)[1])
+    assert data['recent_thumbnails'] == [{'subject': r['subject'], 'brief': r['brief']} for r in RECENT]
+    assert 'new every episode' in offered
+    assert 'recent_thumbnails' not in episode_prompt(body_source(), '', SHELF, illustrations=True)
+
+    def repeats(plan, photos=True):
+        return [f for f in episode_violations(plan, body_source(), {**SHELF, 'korea-exchange': {}}, photos=photos, recent=RECENT)
+                if 'recent thumbnail' in f]
+
+    assert repeats(with_thumbnail(illustrated(brief=RECENT[0]['brief'])))  # the same photo request again
+    assert repeats(with_thumbnail(illustrated(brief='PHOTO: SK hynix wafer || SCENE: A modern semiconductor fab campus at dusk.')))
+    assert repeats(with_thumbnail(illustrated(brief='PHOTO: SK hynix HBM wafer close-up || SCENE: A silicon wafer held in a '
+                                                    'gloved hand under amber light.'))) == []
+    assert repeats(with_thumbnail(episode(), 'korea-exchange'), photos=False)  # a library photo that was a thumbnail
+
+
+def test_only_the_thumbnail_picture_is_generated_unlike_recent_thumbnails(tmp_path):
+    from quant_company.config import Settings
+    from quant_company.video.illustrations import prompt
+
+    item = illustrated().illustrations[0]
+    assert 'recent thumbnail' not in prompt(item)
+    varied = prompt(item, avoid=['A modern semiconductor fab campus at dusk.'])
+    assert 'A modern semiconductor fab campus at dusk.' in varied and 'natural colours' in varied
+    raw = with_thumbnail(illustrated()).model_dump(mode='json')
+    raw['illustrations'].append({'id': 'gen-2', 'subject': '항구', 'brief': BRIEF, 'fallback': 'fixture-photo'})
+    next(s for s in raw['scenes'] if s['id'] == 'photo')['data']['image'] = {'asset': 'gen-2'}
+    plan, job, images = EpisodePlan.model_validate(raw), {'id': '02a27a7c-1929-580f-b444-160bca078dc1', 'qa': {}}, FakeImages()
+    settings = Settings(_env_file=None, video_artifact_dir=tmp_path)
+    for _ in range(2):
+        job['qa']['illustrations'], _ = await_(make_next(job, plan, images, settings, tmp_path, avoid=['fab campus at dusk']))
+    assert 'fab campus at dusk' in images.calls[0][3] and 'fab campus at dusk' not in images.calls[1][3]
+
+
+def await_(coroutine):
+    import asyncio
+
+    return asyncio.new_event_loop().run_until_complete(coroutine)
+
+
+def test_a_thumbnail_without_its_picture_never_falls_back_to_an_earlier_thumbnail():
+    from quant_company.video.illustrations import fresh_fallback
+
+    plan = with_thumbnail(illustrated())  # gen-1 falls back to fixture-illustration
+    library = {'fixture-illustration': {'tags': ['반도체·메모리'], 'kind': '일러스트'},
+               'fixture-photo': {'tags': ['반도체·메모리'], 'kind': '자료사진'}, 'zz-other': {'tags': [], 'kind': '자료사진'}}
+    failed = {'gen-1': {'request_id': 'r', 'failed': 'quota'}}
+    fixed = fresh_fallback(plan, failed, library, used={'fixture-illustration'})
+    assert fixed.illustrations[0].fallback == 'fixture-photo'
+    assert fresh_fallback(plan, {'gen-1': {'request_id': 'r', 'file': 'x.png'}}, library, used={'fixture-illustration'}) is plan
+    assert fresh_fallback(plan, failed, library, used=set()) is plan
+
+
+async def test_runs_freeze_recent_thumbnails_and_skip_their_commons_photos(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video import photos
+    from quant_company.video.runner import VideoRunner
+
+    from .test_video import new_job
+
+    store, _ = video
+    store.settings.video_template, store.settings.video_asset_dir = 'motion-v2', tmp_path / 'assets'
+    (tmp_path / 'assets').mkdir()
+    (tmp_path / 'assets' / 'manifest.json').write_text(json.dumps(SHELF))
+    earlier = new_job(brief, video)
+    old = with_thumbnail(illustrated(brief='PHOTO: SK hynix Icheon campus || SCENE: A modern semiconductor fab campus at dusk.'))
+    with store.db.transaction() as conn:
+        conn.execute("UPDATE video_jobs SET state='delivered', plan=%s, qa=%s WHERE id=%s",
+                     (json.dumps(old.model_dump(mode='json')), json.dumps({'illustrations': {'gen-1': {
+                         'file': 'p.jpg', 'sha256': 'cd' * 32, 'kind': '자료사진', 'commons_title': 'File:Icheon fab.jpg'}}}),
+                      earlier['id']))
+        conn.execute("UPDATE video_jobs SET created_at=now()-interval '1 hour' WHERE id=%s", (earlier['id'],))
+    history = store.thumbnail_history({'id': 'ffffffff-ffff-ffff-ffff-ffffffffffff'})
+    assert history[0] == {'subject': '반도체 공장', 'brief': old.illustrations[0].brief,
+                          'commons_title': 'File:Icheon fab.jpg', 'sha256': 'cd' * 32}
+    item = with_thumbnail(illustrated(brief='PHOTO: SK hynix Icheon || SCENE: A wafer close-up.')).illustrations[0]
+    rows = [{'title': 'File:Icheon fab.jpg', 'url': 'u1'}, {'title': 'File:Wafer.jpg', 'url': 'u2', 'author': 'a',
+                                                           'license': 'CC0', 'license_url': '', 'page': 'p'}]
+    monkeypatch.setattr(photos, 'search', lambda term, **kw: rows)
+    monkeypatch.setattr(photos, 'download', lambda row, **kw: png())
+    found = VideoRunner(store.company).find_photos({'id': 'job'}, [item], tmp_path / 'f', skip={'File:Icheon fab.jpg'})
+    assert [r['title'] for r in found['gen-1']] == ['File:Wafer.jpg']

@@ -857,3 +857,13 @@ def test_the_render_directory_changes_with_the_renderer_code(monkeypatch):
     assert first.startswith('render-') and runner.render_key(job, ['speech-0'], {}) == first
     monkeypatch.setattr(runner, 'RENDERER_DIGEST', 'f' * 64)
     assert runner.render_key(job, ['speech-0'], {}) != first
+
+
+def test_the_card_guide_keeps_directions_off_levels_and_map_lines_short():
+    """10/14 AM review: '▼ 5.215%' (a yield level with a falling direction) read as a 5.215% fall, and a two-price map
+    delta wrapped down to the captions."""
+    from quant_company.video.episode import CARD_GUIDE
+
+    flat = ' '.join(CARD_GUIDE.split())
+    assert 'a level such as an index close, a yield or a price takes no direction' in flat
+    assert 'delta is one short line' in flat
