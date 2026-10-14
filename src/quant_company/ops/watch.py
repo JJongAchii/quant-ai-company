@@ -16,6 +16,7 @@ CONFIRM = {"critical": 1, "warning": 2}
 CLEAR_TICKS = 2
 MAX_ROOTS_PER_TICK = 5
 SNAPSHOT_STALE = timedelta(minutes=5)
+INSTALL_GRACE = timedelta(minutes=10)  # the probe timer is installed after the release that enables the watch
 RECENT_START = timedelta(minutes=30)
 CORE = {"postgres", "dispatch", "slack-socket", "worker"}
 FLEET = 3
@@ -43,13 +44,18 @@ def finding(key, kind, severity, title, *lines, once=False):
 
 
 def in_window(snapshot, service, now):
+    # The release tool swaps services one at a time and checks or restores each itself (docs/adr/0045).
+    if (snapshot.get("release") or {}).get("action") == "releasing" and service != "postgres":
+        return True
     window = snapshot.get("deploy_window")
     until = stamp(window.get("until")) if window else None
     return bool(until and until > now and ("*" in window["services"] or service in window["services"]))
 
 
-def host_findings(row, now):
+def host_findings(row, now, since=None):
     if not row:
+        if since and now - since < INSTALL_GRACE:
+            return []
         return [finding("collector", "condition", "warning", "호스트 수집기 기록 없음",
                         "ops_probe 타이머가 아직 설치되지 않았거나 PostgreSQL에 쓰지 못하고 있습니다.",
                         "컨테이너·디스크 상태는 알 수 없습니다.")]
@@ -270,10 +276,12 @@ class OpsWatch:
         with self.company.db.transaction() as conn:
             conn.execute("SELECT pg_advisory_xact_lock(%s)", (LOCK,))
             snapshot = conn.execute("SELECT collected_at,payload FROM ops_host_snapshots WHERE id=1").fetchone()
+            state = conn.execute("SELECT summary FROM ops_watch_state WHERE id=1").fetchone()
+            since = stamp((state or {}).get("summary", {}).get("since")) or now  # the watch's first tick
             current = {}
-            for item in host_findings(snapshot, now) + database_findings(conn, now):
+            for item in host_findings(snapshot, now, since) + database_findings(conn, now):
                 current.setdefault(item["key"], item)
-            summary = self.reconcile(conn, current, now)
+            summary = {**self.reconcile(conn, current, now), "since": since.isoformat()}
             conn.execute("""INSERT INTO ops_watch_state(id,ticked_at,summary) VALUES (1,%s,%s)
                 ON CONFLICT (id) DO UPDATE SET ticked_at=EXCLUDED.ticked_at,summary=EXCLUDED.summary""",
                          (now, Jsonb(summary)))

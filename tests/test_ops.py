@@ -340,3 +340,17 @@ def test_status_reply_names_the_running_release(ops):
     with ops.db.transaction() as conn:
         text = status_text(live_status(conn, now=now()))
     assert "🚀 릴리스 ccccccc · main보다 2커밋 뒤 · 판단 would_release (report," in text
+
+
+def test_a_running_release_is_a_deploy_window_and_a_new_watch_waits_for_the_probe(ops):
+    watch = OpsWatch(ops)
+    assert watch.tick()["findings"] == []  # the probe timer is installed after the release that enabled the watch
+    with ops.db.transaction() as conn:
+        conn.execute("UPDATE ops_watch_state SET summary=jsonb_set(summary,'{since}',to_jsonb(%s::text))",
+                     ((now() - timedelta(minutes=11)).isoformat(),))
+    assert watch.tick()["findings"] == ["collector"]
+    stopped = [container("postgres"), container("dispatch", "exited"), container("worker", "exited")]
+    snapshot(ops, containers=stopped, release=release("releasing", started_at=now().isoformat()))
+    assert watch.tick()["findings"] == []
+    snapshot(ops, containers=[container("postgres", "exited")], release=release("releasing", started_at=now().isoformat()))
+    assert watch.tick()["findings"] == ["down:postgres"]

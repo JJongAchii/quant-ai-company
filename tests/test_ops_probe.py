@@ -73,6 +73,9 @@ def test_silencers_cover_only_what_stops_in_app_alerts():
     assert sorted(probe.silencers(broken, NOW, timedelta(hours=1))) == ["dispatch", "postgres"]
     window = {"until": (NOW + timedelta(minutes=5)).isoformat(), "services": ["dispatch"]}
     assert list(probe.silencers(value(("postgres", "running"), ("dispatch", "exited"), window=window), NOW, None)) == []
+    releasing = value(("postgres", "running"), ("dispatch", "exited"))
+    releasing["release"] = {"action": "releasing"}
+    assert probe.silencers(releasing, NOW, None) == {}
 
 
 @pytest.fixture
