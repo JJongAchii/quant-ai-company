@@ -19,10 +19,9 @@ from ..providers.client import RuntimeClient
 from .analytics_contracts import VideoPerformance, WeeklyReview, performance_prompt, weekly_prompt
 from .analytics_metrics import KST, PT, hook_retention, in_series, parse_title, scene_drops, window
 from .analytics_slack import EDITIONS, card_text, failed_weekly_text, update_text, weekly_text
-from .analytics_store import REACH_GRACE_DAYS, AnalyticsStore
+from .analytics_store import REACH_GRACE_DAYS, REPORT_TYPES, AnalyticsStore
 
 LOG = logging.getLogger(__name__)
-REPORT_TYPES = ("channel_reach_basic_a1", "channel_reach_combined_a1")
 BASELINE_KEYS = ("impressions", "ctr", "views", "avg_view_pct", "hook_30s", "subscribers", "relative_retention")
 # A snapshot taken this many days after its window (a backfill) feeds baselines and the review, but posts no card.
 REPORT_DAYS = REACH_GRACE_DAYS + 2

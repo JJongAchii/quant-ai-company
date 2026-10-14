@@ -1,6 +1,6 @@
 {
   "record": "video-analytics-20261014",
-  "summary": "First real connection of the video performance analytics (ADR 0043). The YouTube login with the analytics scope, the dry-run reads and the Reporting API jobs are real; the numbers match YouTube Studio for the same video and window. Analytics stays switched off (VIDEO_ANALYTICS_ENABLED=false) until the reach reports arrive.",
+  "summary": "First real connection of the video performance analytics (ADR 0043). The YouTube login with the analytics scope, the dry-run reads and the Reporting API jobs are real; the numbers match YouTube Studio for the same video and window. The reach reports, backfilled by 2026-10-15, match Studio too (clicks exactly, impressions within 2 on one day). Analytics stays switched off (VIDEO_ANALYTICS_ENABLED=false) until the snapshot-timing fix and the title fix run in production.",
   "owner_decisions": [
     {"at": "2026-10-13", "quote": "분석 + 승인한 교훈을 제작에 반영 / API 자동 수집 / 영상별 카드 + 주간 심층 / 별도 성과 채널"},
     {"at": "2026-10-14", "quote": "응 오늘 오전영상 다 올라갔고 이제 진행할것들 이어서 진행해줘"},
@@ -49,15 +49,50 @@
       "impressions": 138,
       "ctr_studio": "3.6%",
       "by_source": "탐색 41 / 2.4%, 추천 86 / 0%, 채널 페이지 6 / 50.0%, 검색 5 / 20.0%",
-      "status": "not yet compared: the Reporting API had no reports at 15:31 KST"
+      "status": "compared on 2026-10-15 07:4x KST after the backfill, see reach_window_comparison"
     }
+  },
+  "reach_first_report": {
+    "report": "channel_reach_basic_a1 for 2026-10-12 (Pacific), created 2026-10-14 07:59:30Z; channel_reach_combined_a1 still had none",
+    "read": "downloaded in memory inside video-worker and parsed with analytics_metrics.parse_reach_csv; nothing stored",
+    "columns": "date,channel_id,video_id,video_thumbnail_impressions,video_thumbnail_impressions_ctr",
+    "ctr_unit": "ratio 0-1 (raw 0.2857142857142857 for 4 clicks of 14 impressions)",
+    "studio": "advanced mode, content by video, custom range 2026-10-12, read 2026-10-14 17:1x KST",
+    "videos": [
+      {"youtube_id": "wQD9VRkt6c0", "edition": "10월 12일 아침", "report": [83, "0.0%"], "studio": [83, "0%"]},
+      {"youtube_id": "DayOhWmiFis", "edition": "10월 13일 아침", "report": [14, "28.6%"], "studio": [14, "28.6%"]},
+      {"youtube_id": "lJX4U6_TnJw", "edition": "10월 8일 마감", "report": [6, "0.0%"], "studio": [6, "0%"]},
+      {"youtube_id": "ItMkCCxWocY", "edition": "10월 7일 마감", "report": [6, "0.0%"], "studio": [6, "0%"]},
+      {"youtube_id": "s18zcKgrlc4", "edition": "10월 8일 아침", "report": [6, "0.0%"], "studio": [6, "0%"]},
+      {"youtube_id": "ufOcO2lwnj8", "edition": "[역사story]", "report": [5, "0.0%"], "studio": [5, "0%"]},
+      {"youtube_id": "u-PJTgaF3SA", "edition": "[역사story]", "report": [2, "0.0%"], "studio": [2, "0%"]}
+    ],
+    "total": {"report": [122, "3.3%"], "studio": [122, "3.3%"]},
+    "finding": "the backfill delivers the newest day first; a snapshot keyed on the latest reported day would have been taken for 10/8-10/10 with no reach rows and kept. The by-source report arrived later than the basic one. Snapshots now wait for both report types on every day of the window."
+  },
+  "reach_window_comparison": {
+    "video": "lJX4U6_TnJw (10월 8일 마감), Pacific days 2026-10-08 ~ 2026-10-10",
+    "backfill": "both report types covered 2026-09-13 ~ 2026-10-12 at 2026-10-15 07:32 KST; the 10/8-10/10 reports were created 2026-10-14 12:52-15:49Z",
+    "read": "reports downloaded in memory and parsed with the production parser; Studio advanced mode by traffic source, per day and for the window, 2026-10-15 07:4x KST",
+    "window": {"report": [140, "5 clicks", "3.57%"], "studio": [138, "3.6%"]},
+    "by_source": [
+      {"source": "suggested / 추천 동영상", "report": [86, "0.0%"], "studio": [86, "0%"]},
+      {"source": "browse / 탐색 기능", "report": [43, "2.3%"], "studio": [41, "2.4%"]},
+      {"source": "channel / 채널 페이지", "report": [6, "50.0%"], "studio": [6, "50.0%"]},
+      {"source": "search / YouTube 검색", "report": [5, "20.0%"], "studio": [5, "20.0%"]}
+    ],
+    "by_day": [
+      {"day": "2026-10-08", "report": [23, "4 clicks"], "studio": [21, "19.1%"], "difference": "browse 15 vs 13; channel 3, search 5 and all clicks equal"},
+      {"day": "2026-10-09", "report": [108, "0 clicks"], "studio": [108, "0%"]},
+      {"day": "2026-10-10", "report": [9, "1 click"], "studio": [9, "11.1%"]}
+    ],
+    "conclusion": "clicks equal on every day and source; impressions equal except 2 browse impressions on the upload day, which Studio shows lower than the report's raw value. The parser reads the CSV value unchanged, so the cards will show the Reporting API figure (140, 3.6%)."
   },
   "slack": {
     "channel": "#video-performance (public), created in the owner's Slack session; Analyst (market_brief) invited with /invite",
     "why_not_the_bot": "no bot token has channels:manage (auth.test x-oauth-scopes, read-only check)"
   },
   "not_done": [
-    "CTR unit and impressions against Studio: after the first reach reports",
     "Switching on: VIDEO_ANALYTICS_ENABLED, VIDEO_ANALYTICS_CHANNEL_ID, SLACK_ALLOWED_CHANNELS, VIDEO_YOUTUBE_CHANNEL_ID through the main-consolidation release, with no video job in production",
     "First card posted for real"
   ]

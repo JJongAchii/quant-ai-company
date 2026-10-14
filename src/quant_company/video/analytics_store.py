@@ -12,6 +12,8 @@ from .analytics_metrics import HORIZONS, PT, baseline, in_series, parse_reach_cs
 from .contracts import digest
 
 BASIC = "channel_reach_basic_a1"
+# Totals per video, and the split by traffic source that the diagnosis reads.
+REPORT_TYPES = (BASIC, "channel_reach_combined_a1")
 # Reach data lags about two days; this many days after a window ends its snapshot is taken without it.
 REACH_GRACE_DAYS = 4
 BASELINE_DAYS = 28
@@ -149,13 +151,16 @@ class AnalyticsStore:
     # ---- Snapshots -------------------------------------------------------------------------------------------
 
     def due_snapshots(self, at=None):
-        """(publication, horizon) whose fixed window is over and whose last day of reach data has arrived, or whose
-        window ended more than REACH_GRACE_DAYS ago without it. Uploads of other series are skipped unless linked."""
+        """(publication, horizon) whose fixed window is over and has both reach reports for every day, or whose
+        window ended more than REACH_GRACE_DAYS ago without them. A new reporting job backfills the past newest day
+        first, and the two report types arrive apart, so the latest reported day says nothing about the others.
+        Uploads of other series are skipped unless linked."""
         at = at or utcnow()
         today = at.astimezone(PT).date()
         with self.db.transaction() as conn:
-            reach_day = conn.execute("""SELECT max(day) AS day FROM video_report_downloads
-                WHERE report_type=%s AND applied""", (BASIC,)).fetchone()["day"]
+            reported = {r["day"] for r in conn.execute("""SELECT day FROM video_report_downloads
+                WHERE report_type=ANY(%s) AND applied GROUP BY day HAVING count(DISTINCT report_type)=%s""",
+                                                       (list(REPORT_TYPES), len(REPORT_TYPES))).fetchall()}
             taken = {(r["youtube_id"], r["horizon"]) for r in
                      conn.execute("SELECT youtube_id,horizon FROM video_snapshots").fetchall()}
             rows = conn.execute("SELECT * FROM video_publications WHERE published_at>=%s ORDER BY published_at",
@@ -165,10 +170,11 @@ class AnalyticsStore:
             if row["job_id"] is None and not in_series(row["title"]):
                 continue
             for horizon in HORIZONS:
-                end = window(row["published_at"], horizon)[1]
+                start, end = window(row["published_at"], horizon)
                 if (row["youtube_id"], horizon) in taken or end >= today:
                     continue
-                if (reach_day and reach_day >= end) or today > end + timedelta(days=REACH_GRACE_DAYS):
+                days = {start + timedelta(days=n) for n in range((end - start).days + 1)}
+                if days <= reported or today > end + timedelta(days=REACH_GRACE_DAYS):
                     due.append((row, horizon))
         return due
 
