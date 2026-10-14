@@ -311,6 +311,7 @@ def fallback(value, now, *, config, credentials_path, state_path, sender=post):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--print', action='store_true', help='preview only (the default): print the snapshot, write nothing')
     parser.add_argument('--publish', action='store_true', help='upsert the snapshot into PostgreSQL')
     parser.add_argument('--fallback', action='store_true', help='direct Slack notice when the in-app watch is silenced')
     parser.add_argument('--synthetic-incident', action='store_true', help='mark this snapshot for an end-to-end alert test')
@@ -318,6 +319,8 @@ def main(argv=None):
     parser.add_argument('--credentials', type=Path, default=STATE / 'secrets/slack-credentials.json')
     parser.add_argument('--state', type=Path, default=STATE / 'ops/fallback-state.json')
     args = parser.parse_args(argv)
+    if args.print and (args.publish or args.fallback):
+        parser.error('--print writes nothing; drop --publish/--fallback')
     now = utcnow()
     value = snapshot(now, synthetic=args.synthetic_incident)
     receipt = {'collected_at': value['collected_at'], 'containers': len(value['containers']),

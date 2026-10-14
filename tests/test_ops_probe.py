@@ -130,3 +130,13 @@ def test_fallback_retries_a_rejected_opening_and_stays_off_until_configured(fall
     fallback_env["config"].update(OPS_FALLBACK_ENABLED="true", OPS_WATCH_ENABLED="false")
     assert probe.fallback(down, NOW, sender=rejected, **fallback_env) == {"state": "disabled"}
     assert len(attempts) == 2
+
+
+def test_print_previews_without_writing_and_refuses_write_flags(monkeypatch, capsys):
+    monkeypatch.setattr(probe, "snapshot", lambda now, synthetic=False: {"collected_at": "t", "containers": [],
+                                                                         "probe_errors": []})
+    monkeypatch.setattr(probe, "publish", lambda value: pytest.fail("preview must not publish"))
+    probe.main(["--print"])
+    assert json.loads(capsys.readouterr().out)["containers"] == []
+    with pytest.raises(SystemExit):
+        probe.main(["--print", "--publish"])

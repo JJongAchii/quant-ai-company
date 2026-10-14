@@ -53,7 +53,8 @@ release 유닛의 `exec-condition` 결과는 모델 배정 가드가 실행을 �
 
 ## 설정
 
-`runtime.env`(모든 앱 서비스 공통):
+`/var/lib/quant-company/config/runtime.env` 한 곳에 둔다. `compose.yaml`의 공통 환경 블록이 앞의 네 값을
+모든 앱 서비스에 전달하고, `OPS_FALLBACK_ENABLED`는 호스트 수집기만 읽는다.
 
 ```
 OPS_STATUS_ENABLED=true          # ops_status 도구와 '상태' 즉시 응답
@@ -64,11 +65,13 @@ OPS_FALLBACK_ENABLED=true        # 호스트 비상 경로. 오너가 명시적�
 ```
 
 - 운영 채널을 만들고 Director 봇을 초대한다. 게시 신원은 Director이고, 새 Slack 앱이나 자격증명은 필요 없다.
-- `ops_status`는 모델 출력 계약(`ToolRequest`)에 새 이름을 추가하므로, **worker와 codex-runtime 이미지를
-  함께** 교체해야 한다. codex-runtime이 자기 이미지의 계약으로 모델 답을 검증하기 때문이다.
-- 스키마는 `migrate`가 만든다. 수집기는 테이블을 만들지 않는다.
-- 수집기를 `/opt/quant-company/operations/ops-probe/ops_probe.py`에 설치하고 service·timer를
-  `/etc/systemd/system/`에 둔 뒤 timer를 활성화한다. 먼저 `--print`로 읽기 전용 출력을 확인한다.
+- 반영은 `deploy/release.py`로 한다(ADR 0044). `ops_status`는 모델 출력 계약(`ToolRequest`)에 새 이름을
+  추가하므로, 이 기능이 들어간 커밋으로 **codex-runtime까지** 교체돼야 켤 수 있다. codex-runtime이 자기
+  이미지의 계약으로 모델 답을 검증하기 때문이다.
+- 스키마는 릴리스의 `migrate`가 만든다(`CORE_SCHEMA`). 수집기는 테이블을 만들지 않는다.
+- 수집기는 활성 릴리스의 `/opt/quant-company/current/deploy/ops_probe.py`를 그대로 실행한다. 따로 복사하지
+  않는다. service·timer만 `/etc/systemd/system/`에 한 번 두고 timer를 활성화한다. 그 전에 같은 경로로
+  `--print`를 실행해 읽기 전용 출력을 확인한다. 이 파일이 없는 릴리스에서는 유닛이 조건 미충족으로 건너뛴다.
 - 비상 경로는 dispatch 말고 두 번째로 Slack에 보내는 경로다. 그래서 `OPS_WATCH_ENABLED`와 별개로
   `OPS_FALLBACK_ENABLED=true`가 있을 때만 동작한다. 켜기로 한 결정은 반영 기록에 남긴다. 꺼져 있으면
   수집기는 스냅샷만 기록한다.
