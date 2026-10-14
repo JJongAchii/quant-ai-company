@@ -356,6 +356,10 @@ class SlackOutbox:
                 from .data_watch.store import DataWatchStore
 
                 return gate(conn, DataWatchStore(self.company), row)
+            if row["message_kind"] == "ops_alert":
+                from .ops.watch import gate
+
+                return gate(conn, self.company, row)
             return not self.defer_news(conn, row, claimed=True)
 
     def claim(self):
@@ -408,6 +412,11 @@ class SlackOutbox:
                 from .data_watch.store import DataWatchStore
 
                 if not gate(conn, DataWatchStore(self.company), row):
+                    return False
+            if row["message_kind"] == "ops_alert":
+                from .ops.watch import gate
+
+                if not gate(conn, self.company, row):
                     return False
             if row["message_kind"] == "tech_feed":
                 from .tech_feed.store import TechFeedStore
@@ -475,7 +484,7 @@ class SlackOutbox:
             if status == "delivered" and sent_ts and row["agent"] == "maintainer" and not row["thread_ts"]:
                 conn.execute("UPDATE projects SET thread_ts=%s WHERE id=%s AND thread_ts IS NULL",
                              (sent_ts, row["project_id"]))
-            if status == "delivered" and sent_ts and row.get("message_kind") == "data_watch" and not row["thread_ts"]:
+            if status == "delivered" and sent_ts and row.get("message_kind") in {"data_watch", "ops_alert"} and not row["thread_ts"]:
                 conn.execute("UPDATE projects SET thread_ts=%s WHERE id=%s AND thread_ts IS NULL",
                              (sent_ts, row["project_id"]))
 
@@ -495,7 +504,7 @@ class SlackOutbox:
         # The stable client_msg_id helps correlation; it is not an exactly-once guarantee.
         body = {"channel": row["channel"], "thread_ts": row["thread_ts"],
                 "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT, QUANT_FEED_AGENT, BRIEFER, "trend_scout", "maintainer"}
-                or row["message_kind"] == "data_watch"
+                or row["message_kind"] in {"data_watch", "ops_alert"}
                 else f"[지시 v{row['revision']}] {row['text']}",
                 "client_msg_id": row["id"],
                 "unfurl_links": False, "unfurl_media": False,
@@ -562,7 +571,8 @@ class SlackOutbox:
                 return True
             result = response.json()
             requires_receipt = (row.get("message_kind") in {"news", "news_digest", "tech_feed", "quant_feed",
-                                                            "data_watch", "briefing", "housing_feed", "trend_feed", "video_review"}
+                                                            "data_watch", "briefing", "housing_feed", "trend_feed", "video_review",
+                                                            "ops_alert"}
                                 or row["agent"] == "maintainer")
             if row.get("update_ts") and result.get("ts") != row["update_ts"] and result.get("ok"):
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_update_receipt_mismatch")

@@ -51,7 +51,7 @@ def load_roles(settings: Settings) -> dict[str, Role]:
                      "maintenance_review", "maintenance_status", "system_status", "repository_read", "task_control",
                      "finance_search", "finance_read", "web_search", "web_read",
                      "finance_compute", "data_quality", "staff_status", "news_status", "research_control",
-                     "data_watch_status", "briefing_status"} | LAKE_TOOLS
+                     "data_watch_status", "briefing_status", "ops_status"} | LAKE_TOOLS
     for role in roles:
         if role.id == "quant_scout" and (role.active or role.tools or role.can_delegate_to):
             raise ValueError("Quant Scout must remain an outbound-only identity")
@@ -75,6 +75,12 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     if settings.data_watch_enabled and "data" in by_id:
         role = by_id["data"]
         by_id["data"] = role.model_copy(update={"tools": list(dict.fromkeys([*role.tools, "data_watch_status"]))})
+    if settings.ops_status_enabled:
+        # Granted here, not in the host roles file: the tool is read-only and needs no new credential.
+        for name in ("director", "market_brief"):
+            if name in by_id:
+                role = by_id[name]
+                by_id[name] = role.model_copy(update={"tools": list(dict.fromkeys([*role.tools, "ops_status"]))})
     return by_id
 
 
@@ -201,6 +207,13 @@ class Company:
                     "meaning": "Scheduled objective synthetic practice; actual results require staff_status. "
                                "Not model weight training, employee activation or general expert certification.",
                 },
+                **({"ops_status": "Director in an authorized thread, or Analyst in its briefing thread: {}. "
+                                  "Live read-only state of briefings, videos, research runs, Slack delivery, model "
+                                  "turns, open ops alerts and containers/host (from a one-minute host probe). "
+                                  "Use it before answering any progress or server-health question; answer from its "
+                                  "receipt, in KST, and say when the host facts are stale or missing. It cannot "
+                                  "restart, retry or change anything."}
+                   if self.settings.ops_status_enabled else {}),
                 "system_status": "Director only: {}. Shared current GitHub, deployed process/configuration, "
                                  "case corrections and scoped verification receipts. Check before claiming a current gap.",
                 "repository_read": "Director only: {query?: short keywords, path?: repository path, commit?: SHA, "
@@ -528,6 +541,11 @@ class Company:
                     from .maintenance.cases import status_text
 
                     summary = status_text(conn, self, project)
+                if (agent == "market_brief" and self.settings.ops_status_enabled
+                        and project["channel"] == self.settings.briefing_channel_id):
+                    from .ops.status import live_status, thread_text
+
+                    summary = thread_text(live_status(conn, project))
                 if (agent == "data" and self.settings.data_watch_enabled
                         and project["channel"] == self.settings.data_watch_channel_id
                         and project["owner_user"] == self.settings.data_watch_owner_user):
@@ -931,6 +949,21 @@ class Company:
                     or project["owner_user"] != self.settings.briefing_owner_user):
                 raise PolicyError("briefing_status requires the configured briefing owner and briefer")
             return BriefStore(self).status()
+        if request.name == "ops_status":
+            from .maintenance.requests import permitted, record_source
+            from .ops.status import live_status
+
+            project = self._project(conn, project_id, lock=False)
+            allowed = bool(task) and not arguments and self.settings.ops_status_enabled and (
+                (task["agent"] == "director" and permitted(self, project))
+                or (task["agent"] == "market_brief" and project["channel"] == self.settings.briefing_channel_id
+                    and project["owner_user"] == self.settings.briefing_owner_user))
+            if not allowed:
+                raise PolicyError("ops_status takes no arguments and requires the director in an authorized "
+                                  "thread or the analyst in its briefing thread")
+            result = live_status(conn, project)
+            result["source_id"] = record_source(conn, project, "ops_status", result)
+            return result
         if request.name == "news_status":
             from .news.store import NewsStore
 

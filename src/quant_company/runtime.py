@@ -194,6 +194,16 @@ async def dispatch_once(client, company):
             await asyncio.to_thread(BriefStore(company).flush)
         except (ValueError, OSError) as exc:
             logging.getLogger(__name__).error("Briefing configuration unavailable: %s", type(exc).__name__)
+    if getattr(company.settings, "ops_watch_enabled", False):
+        from .ops.watch import OpsWatch
+
+        if not hasattr(company, "_ops_watch"):
+            company._ops_watch = OpsWatch(company)
+        try:
+            await asyncio.to_thread(company._ops_watch.tick_if_due)
+        except Exception as exc:
+            # The watch must never stop replies; the host probe reports a watch that stops ticking.
+            logging.getLogger(__name__).error("Ops watch tick failed: %s", type(exc).__name__)
     if getattr(company.settings, "trend_feed_enabled", False) and not getattr(company, "_trend_feed_started", False):
         recurring = (company.settings.trend_feed_publication_hours != [8]
                      or company.settings.trend_feed_on_demand_enabled)

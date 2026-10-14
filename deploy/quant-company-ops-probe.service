@@ -1,0 +1,13 @@
+[Unit]
+Description=Read-only Quant Company host facts for the ops watch, with a direct Slack fallback
+After=docker.service network-online.target
+Wants=network-online.target
+ConditionPathExists=/var/lib/quant-company/config/runtime.env
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/quant-company/operations/ops-probe/ops_probe.py --publish --fallback
+TimeoutStartSec=50s
+Nice=5
+UMask=0077
+NoNewPrivileges=true
