@@ -22,9 +22,9 @@ class Store:
 
     def initialize(self):
         self.db.migrate()
-        with self.db.transaction() as conn:
-            conn.execute("SELECT pg_advisory_xact_lock(71350220)")
-            conn.execute(files("quant_company.maintenance").joinpath("schema.sql").read_text())
+        # Its CREATE INDEX on turns/tasks locks those tables even when the index exists; skip it while unchanged.
+        self.db.apply_schema("maintenance", [files("quant_company.maintenance").joinpath("schema.sql").read_text()],
+                             lock=71350220)
         self.heartbeat()
 
     def heartbeat(self):

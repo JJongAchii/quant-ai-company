@@ -448,7 +448,7 @@ def test_migration_moves_only_pending_tech_feed_delivery_off_reporter(tech):
         conn.execute("UPDATE outbox SET agent='reporter' WHERE id IN (%s,%s)",
                      (delivered["id"], pending["id"]))
         conn.execute("UPDATE outbox SET status='delivered' WHERE id=%s", (delivered["id"],))
-    tech.db.migrate()
+    tech.db.migrate(force=True)  # an upgraded database: its recorded schema digest predates these statements
     with tech.db.transaction() as conn:
         rows = conn.execute("""SELECT m.author,o.agent,o.status FROM messages m
             JOIN outbox o ON o.id=m.id WHERE m.id IN (%s,%s) ORDER BY o.status""",
