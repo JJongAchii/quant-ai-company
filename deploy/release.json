@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "compose_files": [
+    "compose.yaml",
+    "research.compose.yaml",
+    "autonomous-research.compose.yaml",
+    "model-accounts.compose.yaml",
+    "data-watch.compose.yaml",
+    "trend-feed.compose.yaml",
+    "video.compose.yaml",
+    "video-render.compose.yaml",
+    "video-image.compose.yaml"
+  ],
+  "build": ["api", "maintenance", "worker", "codex-runtime", "claude-runtime", "video-worker"],
+  "groups": [
+    ["data-watch-worker", "housing-feed-worker", "tech-feed-worker"],
+    ["quant-codex-runtime", "quant-feed-worker"],
+    ["codex-runtime", "video-image-runtime", "claude-runtime"],
+    ["account-gateway", "maintenance", "api", "slack-socket"],
+    ["worker", "dispatch"],
+    ["briefing-data-worker", "news-worker"],
+    ["video-worker"]
+  ],
+  "notes": {
+    "video-worker": "Its render task definition must run a render image built from the same commit (deploy/render.json)."
+  }
+}

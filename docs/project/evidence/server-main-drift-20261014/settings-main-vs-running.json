@@ -1,0 +1,142 @@
+{
+ "note": "Same env and secret files; current image vs current image + main (b80d04b) package, no network.",
+ "settings": {
+  "account-gateway": {
+   "changed": {},
+   "fields_new_in_main": 64,
+   "gone": [],
+   "new_true": []
+  },
+  "api": {
+   "changed": {},
+   "fields_new_in_main": 55,
+   "gone": [],
+   "new_true": []
+  },
+  "briefing-data-worker": {
+   "changed": {},
+   "fields_new_in_main": 19,
+   "gone": [],
+   "new_true": []
+  },
+  "claude-runtime": {
+   "changed": {
+    "company_max_project_tasks": [
+     40,
+     0
+    ]
+   },
+   "fields_new_in_main": 85,
+   "gone": [],
+   "new_true": [
+    "briefing_search_enabled"
+   ]
+  },
+  "codex-runtime": {
+   "changed": {},
+   "fields_new_in_main": 65,
+   "gone": [],
+   "new_true": [
+    "briefing_kr_close_enabled"
+   ]
+  },
+  "data-watch-worker": {
+   "changed": {
+    "company_max_project_tasks": [
+     40,
+     0
+    ]
+   },
+   "fields_new_in_main": 78,
+   "gone": [],
+   "new_true": [
+    "briefing_search_enabled"
+   ]
+  },
+  "dispatch": {
+   "changed": {},
+   "fields_new_in_main": 19,
+   "gone": [],
+   "new_true": []
+  },
+  "housing-feed-worker": {
+   "changed": {
+    "company_max_project_tasks": [
+     40,
+     0
+    ]
+   },
+   "fields_new_in_main": 78,
+   "gone": [],
+   "new_true": [
+    "briefing_search_enabled"
+   ]
+  },
+  "maintenance": {
+   "changed": {},
+   "fields_new_in_main": 73,
+   "gone": [],
+   "new_true": [
+    "briefing_search_enabled"
+   ]
+  },
+  "news-worker": {
+   "changed": {},
+   "fields_new_in_main": 19,
+   "gone": [],
+   "new_true": []
+  },
+  "quant-codex-runtime": {
+   "changed": {},
+   "fields_new_in_main": 74,
+   "gone": [],
+   "new_true": [
+    "briefing_search_enabled"
+   ]
+  },
+  "quant-feed-worker": {
+   "changed": {},
+   "fields_new_in_main": 73,
+   "gone": [],
+   "new_true": [
+    "briefing_search_enabled"
+   ]
+  },
+  "slack-socket": {
+   "changed": {},
+   "fields_new_in_main": 55,
+   "gone": [],
+   "new_true": []
+  },
+  "tech-feed-worker": {
+   "changed": {},
+   "fields_new_in_main": 54,
+   "gone": [],
+   "new_true": []
+  },
+  "video-image-runtime": {
+   "changed": {},
+   "fields_new_in_main": 65,
+   "gone": [],
+   "new_true": []
+  },
+  "video-worker": {
+   "changed": {},
+   "fields_new_in_main": 3,
+   "gone": [],
+   "new_true": []
+  },
+  "worker": {
+   "changed": {},
+   "fields_new_in_main": 64,
+   "gone": [],
+   "new_true": []
+  }
+ },
+ "snapshot": {
+  "host": "Lightsail 2 vCPU / 8 GiB",
+  "main": "eed730e (after #140)",
+  "method": "read-only docker inspect/exec; package files hashed as git blobs inside each container; secret values never left the host (per-run salted digests only)",
+  "taken_kst": "2026-10-14 10:51-10:54"
+ }
+}

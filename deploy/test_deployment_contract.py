@@ -37,7 +37,7 @@ def compose_config(*profiles, extra_env=None, overlays=()):
 
 def test_autonomous_overlay_preserves_boundaries_and_requires_explicit_activation(tmp_path):
     env = tmp_path / "runtime.env"
-    env.write_text("RESEARCH_REPORT_BUCKET=synthetic-qualification-bucket\n")
+    env.write_text("RESEARCH_REPORT_BUCKET=synthetic-qualification-bucket\nRESEARCH_RELEASE_COMMIT=" + "5" * 40 + "\n")
     services = compose_config(extra_env=env,
         overlays=("research.compose.yaml", "autonomous-research.compose.yaml"))["services"]
     assert services["worker"]["build"]["target"] == "autonomous-research"
@@ -128,7 +128,8 @@ def test_account_gateway_overlay_preserves_research_code_pin_and_auth_boundary(t
     runtime_pin = "quant-company-codex:" + "4" * 40
     env.write_text('MODEL_ACCOUNTS_ENABLED=true\nMODEL_ACCOUNTS_OWNER_USER=UOWNER\n'
                    'SLACK_ALLOWED_USERS=["UOWNER"]\nRESEARCH_REPORT_BUCKET=synthetic-backup-bucket\n'
-                   'PINNED_COMPANY_WORKER_IMAGE=' + pin + '\nPINNED_CODEX_RUNTIME_IMAGE=' + runtime_pin + '\n')
+                   'PINNED_COMPANY_WORKER_IMAGE=' + pin + '\nPINNED_CODEX_RUNTIME_IMAGE=' + runtime_pin + '\n'
+                   'RESEARCH_RELEASE_COMMIT=' + '5' * 40 + '\n')
     services = compose_config(extra_env=env, overlays=("research.compose.yaml", "autonomous-research.compose.yaml",
                                                       "model-accounts.compose.yaml"))["services"]
     worker, gateway, model = (services[name] for name in ("worker", "account-gateway", "codex-runtime"))
@@ -136,7 +137,10 @@ def test_account_gateway_overlay_preserves_research_code_pin_and_auth_boundary(t
     assert worker["environment"]["MODEL_ACCOUNTS_ENABLED"] == "true"
     assert worker["environment"]["MODEL_RUNTIME_URL"] == "http://codex-runtime:8080"
     assert model["image"] == runtime_pin
-    assert "COMPANY_CODE_COMMIT" not in worker["environment"]  # Inherited truthfully from the pinned image.
+    # Research jobs bind to the release registered on the research worker, which can differ from the code this
+    # image runs (its org.opencontainers.image.revision); every research-facing process records the same release.
+    for name in ("worker", "api", "slack-socket", "account-gateway"):
+        assert services[name]["environment"]["COMPANY_CODE_COMMIT"] == "5" * 40
     assert gateway["environment"]["MODEL_RUNTIME_URL"] == "http://codex-runtime:8080"
     assert {s["source"] for s in gateway["secrets"]} == {"database_password", "temporal_api_key", "model_runtime_token"}
     assert all("/codex/" not in v["source"] for v in gateway.get("volumes", []))
@@ -518,7 +522,8 @@ def test_data_watch_configuration_reaches_existing_processes_without_new_credent
     assert not any("data-watch" in str(v) for v in services["codex-runtime"]["volumes"])
     config = json.loads((DEPLOY / "research-worker.example.json").read_text())
     assert config["data_watch_enabled"] is False
-    env.write_text(env.read_text() + 'DATA_WATCH_CORE_ENABLED=true\nRESEARCH_REPORT_BUCKET=synthetic-bucket\n')
+    env.write_text(env.read_text() + 'DATA_WATCH_CORE_ENABLED=true\nRESEARCH_REPORT_BUCKET=synthetic-bucket\n'
+                   'RESEARCH_RELEASE_COMMIT=' + '5' * 40 + '\n')
     services = compose_config("maintenance", "data-watch", extra_env=env,
                               overlays=("research.compose.yaml", "data-watch.compose.yaml"))["services"]
     for name in ("api", "worker", "news-worker", "dispatch", "slack-socket", "maintenance"):

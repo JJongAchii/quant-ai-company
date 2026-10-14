@@ -1,0 +1,88 @@
+{
+  "captured_at": "2026-10-13T01:18:06.600798+00:00",
+  "patch_commit": "98796b93f2bfce5f27f803dd36bf0a307d23bcf4",
+  "scope": "Reserve explicit owner maintenance behind existing background; new background yields only to due authorized owner reservations; same models, budgets and one runtime slot.",
+  "targets": {
+    "worker": {
+      "name": "quant-company-worker-1",
+      "id": "2d416d9415bc8796a499b5b9bc5a26a3445d32124f4d84a2f607dce4203e6d14",
+      "base_image_id": "sha256:754aff9e52571895cb61a021f003495832e9dc0a13969933663db08dcc165578",
+      "image_tag": "quant-company-proposal-navigation-worker:5ec088b2854a2a94c6b514a25e2ae64e1a3dc6b0",
+      "project": "quant-company",
+      "service": "worker",
+      "compose_files": "/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/compose.yaml,/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/research.compose.yaml,/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/model-accounts.compose.yaml,/opt/quant-company/releases/bfa923b392cc880e54978cc28041970d6cc06dd6/deploy/data-watch.compose.yaml,/var/lib/quant-company/releases/analyst-autopublish-20261007-exact-env/publication.compose.yaml,/var/lib/quant-company/config/revision-loop-cf497665ee478e75d306519cf772318094f868cb-rollback-worker.compose.json,/var/lib/quant-company/config/revision-loop-3c7cc9130fe5196027b2314aeb788a81a2d66179-worker.compose.json,/var/lib/quant-company/config/maintainer-repair-68ffc8d1c16aaace04b98c259e49055beeb857b9-worker.compose.json,/var/lib/quant-company/config/research-repair-3171e59a5c7f6a2332c33b3bc1249abddccba6ef-worker.compose.json,/var/lib/quant-company/config/technical-review-68a53f1c699837256db5e8a4a6479bbd0fc82876-worker.compose.json,/var/lib/quant-company/config/proposal-navigation-5ec088b2854a2a94c6b514a25e2ae64e1a3dc6b0-worker.compose.json",
+      "envfile": "/var/lib/quant-company/config/runtime.env"
+    },
+    "maintenance": {
+      "name": "quant-company-maintenance-1",
+      "id": "b37bd15c1f74aa8c7ea01cb3fefaa96b7883ac1d0471fc7d4bf1a52fbe8f1fa3",
+      "base_image_id": "sha256:e237f655b2a67bd8313029bf762d9c890ecd0a5c6c96a9268d5a3ceee06dd5b7",
+      "image_tag": "quant-company-maintainer-selector:17619a2",
+      "project": "quant-company",
+      "service": "maintenance",
+      "compose_files": "/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/autonomous-research.compose.yaml,/opt/quant-company/releases/837ac72a76cf94625afa2b4ccbee5eb103ae6e03/deploy/model-accounts.compose.yaml,/var/lib/quant-company/config/maintainer-recovery-fadc0e54be0c470068bb18011cc6a1a9ec8ee971.compose.json,/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8.compose.json,/var/lib/quant-company/config/maintainer-recovery-46d853cbefd4ce808fc247a0ebba1f5df33f0cd8-memory.compose.json,/var/lib/quant-company/config/model-assignments-20261006-maintenance.compose.json,/var/lib/quant-company/config/maintainer-evidence-db94a2d026aeb10d26e68570089d495de50c3dcc.compose.json,/var/lib/quant-company/config/maintainer-inspection-055a63ca2bb35d4f3e4540456dd85fef30a066a6.compose.json,/var/lib/quant-company/config/maintainer-repair-68ffc8d1c16aaace04b98c259e49055beeb857b9-maintenance.compose.json,/var/lib/quant-company/config/maintainer-history-2427a485ed7e53a2dfda792694f78478b32a8e34.compose.json,/var/lib/quant-company/config/maintainer-selector-17619a29f12ab89f84c8d5cf942a230a9bc5983e.compose.json",
+      "envfile": "/var/lib/quant-company/config/runtime.env"
+    }
+  },
+  "base_sources": {
+    "worker": {
+      "path": "company.py",
+      "sha256": "7f03288f548f68d8cf8162bcf9fed5ccb5ef181dbc50a61b478bd93704a3d8ca"
+    },
+    "maintenance": {
+      "path": "maintenance/store.py",
+      "sha256": "67bef00b094e10c55a5d2f18157f3fb5750959187bc579ebd153d88648714b81"
+    }
+  },
+  "candidate_sources": {
+    "worker": {
+      "path": "company.py",
+      "sha256": "37b942458557ca44042e87931e83989412b72631bb393d171aa30ab4bf39a850"
+    },
+    "maintenance": {
+      "path": "maintenance/store.py",
+      "sha256": "9cf9206a3d53d04d9eb1cd7bd5a56cafb14ce99c33f528f1df6be607e59ad5c0"
+    }
+  },
+  "helper_sha256": "2f68824cf9eae5f7e6e0373983e391f2fa707b849dd2d2a145ec38fe2743c1e7",
+  "images": {
+    "worker": {
+      "tag": "quant-company-maintainer-admission-worker:98796b9",
+      "id": "sha256:52cbe1af63fed83802bd1fbc103b253be04084dacba192ec194fb5ad4f101a79"
+    },
+    "maintenance": {
+      "tag": "quant-company-maintainer-admission-maintenance:98796b9",
+      "id": "sha256:b40899b39e363eb93b368fb3a6fc0ea69586e3729b280dca3fed3c9a8c1fc063"
+    }
+  },
+  "comparison": {
+    "baseline": {
+      "reserves_behind_running_background": false,
+      "baseline_reason": "company_work_has_priority",
+      "next_new_background_yields": false,
+      "frozen_request_human_priority_and_release_verified": false
+    },
+    "candidate": {
+      "reserves_behind_running_background": true,
+      "baseline_reason": null,
+      "next_new_background_yields": true,
+      "frozen_request_human_priority_and_release_verified": true
+    },
+    "guards": {
+      "retry_due": true,
+      "stale_heartbeat": true,
+      "disabled": true,
+      "owner_revoked": true,
+      "revision_changed": true
+    },
+    "models": "not invoked",
+    "subscription_model_calls": 0,
+    "production_database_writes": 0,
+    "database": "real PostgreSQL in separate ephemeral container/network",
+    "slack": "simulated records in disposable database only",
+    "slack_writes": 0
+  },
+  "image_execution_configuration_unchanged": true,
+  "existing_independent_source_changes_preserved": true,
+  "temporary_database_and_network_removed": true
+}

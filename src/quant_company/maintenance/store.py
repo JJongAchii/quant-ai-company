@@ -1,3 +1,4 @@
+import copy
 from datetime import UTC, datetime, timedelta
 from importlib.resources import files
 from uuid import NAMESPACE_URL, uuid4, uuid5
@@ -21,9 +22,9 @@ class Store:
 
     def initialize(self):
         self.db.migrate()
-        with self.db.transaction() as conn:
-            conn.execute("SELECT pg_advisory_xact_lock(71350220)")
-            conn.execute(files("quant_company.maintenance").joinpath("schema.sql").read_text())
+        # Its CREATE INDEX on turns/tasks locks those tables even when the index exists; skip it while unchanged.
+        self.db.apply_schema("maintenance", [files("quant_company.maintenance").joinpath("schema.sql").read_text()],
+                             lock=71350220)
         self.heartbeat()
 
     def heartbeat(self):
@@ -153,7 +154,10 @@ class Store:
     def next_job(self):
         with self.db.transaction() as conn:
             return conn.execute("""SELECT * FROM maintenance_jobs
-                WHERE state IN ('review','triage','patch','design','evaluate','publish','ci','pr')
+                WHERE state IN ('review','triage','patch','design','evaluate','publish','ci','pr') OR
+                  (kind='repair' AND state='blocked' AND error='pr_ref_moved'
+                   AND payload->'finding'->'evaluation'->>'mode'='regression'
+                   AND receipt->'ci'->>'state'='passed' AND NOT receipt ? 'recheck_id')
                 ORDER BY (payload ? 'request_project_id') DESC,(error IS NULL) DESC,updated_at,id LIMIT 1""").fetchone()
 
     def check_authorization(self, job):
@@ -223,6 +227,75 @@ class Store:
             conn.execute("""UPDATE maintenance_jobs SET state='blocked',error='review_reconciliation_required',
                 receipt=%s,updated_at=now() WHERE id=%s""", (Jsonb(receipt), job["id"]))
         return True
+
+    def retest_base(self, job, snapshot, diagnosis):
+        """Link an unchanged validated regression proposal to a new base, without another model call."""
+        from .evaluation import validate_candidate, verify_plan
+        from .github import blob_sha
+        from .policy import ROOT, writable
+
+        payload, receipt = job["payload"], job["receipt"]
+        finding = verify_plan(payload)
+        if (job["kind"] != 'repair' or finding.evaluation.mode != 'regression'
+                or job["state"] not in {'pr', 'blocked'} or receipt.get('pr')
+                or job["state"] == 'blocked' and job["error"] != 'pr_ref_moved'
+                or receipt.get('ci', {}).get('state') != 'passed'
+                or snapshot['commit'] == receipt['base']):
+            raise ValueError('base_retest_not_authorized')
+        if digest(payload['changes']) != payload['patch_digest']:
+            raise ValueError('persisted_patch_changed')
+        revision = payload.get('diagnostic_revision', 0) + 1
+        if revision > 3:
+            raise ValueError('evidence_churn_requires_review')
+        identity = str(uuid5(NAMESPACE_URL, f"maintenance-base-retest:{job['id']}:{snapshot['commit']}"))
+        old_test = ROOT + 'tests/test_maintenance_regression_' + str(job['id']).replace('-', '') + '.py'
+        new_test = ROOT + 'tests/test_maintenance_regression_' + identity.replace('-', '') + '.py'
+        if old_test not in payload['changes'] or new_test in snapshot['entries']:
+            raise ValueError('base_retest_regression_path_changed')
+        for path in payload['changes']:
+            if path == old_test:
+                continue
+            original = payload['originals'].get(path)
+            entry = snapshot['entries'].get(path)
+            if original is None:
+                if entry or path not in finding.new_paths or not writable(path, new=True):
+                    raise ValueError('base_retest_new_path_changed')
+            elif (not entry or entry != payload['snapshot']['entries'].get(path)
+                  or entry.get('sha') != blob_sha(original) or not writable(path)):
+                raise ValueError('base_retest_original_source_changed')
+        replacement = copy.deepcopy(payload)
+        replacement['changes'][new_test] = replacement['changes'].pop(old_test)
+        replacement['regression_test_digest'] = digest(replacement['changes'][new_test])
+        replacement.update(snapshot=snapshot, diagnosis=diagnosis, diagnostic_revision=revision,
+                           predecessor=str(job['id']), patch_digest=digest(replacement['changes']))
+        replacement['base_retest'] = {'source_job_id': str(job['id']), 'source_receipt': receipt,
+                                     'original_patch_digest': payload['patch_digest'],
+                                     'original_test_path': old_test, 'new_test_path': new_test,
+                                     'criterion_digest': payload['evaluation_plan_digest'],
+                                     'model_calls': 0}
+        replacement.pop('ci_started_at', None)
+        validate_candidate(replacement)
+        with self.db.transaction() as conn:
+            parent = conn.execute('SELECT * FROM maintenance_jobs WHERE id=%s FOR UPDATE', (job['id'],)).fetchone()
+            if parent['receipt'].get('recheck_id') == identity:
+                child = conn.execute('SELECT * FROM maintenance_jobs WHERE id=%s', (identity,)).fetchone()
+                if (parent['payload'] != payload or not child
+                        or child['payload'].get('patch_digest') != replacement['patch_digest']
+                        or child['payload'].get('evaluation_plan_digest') != replacement['evaluation_plan_digest']):
+                    raise ValueError('base_retest_child_requires_reconciliation')
+                return identity
+            if (parent['payload'] != payload or parent['receipt'] != receipt
+                    or parent['state'] != job['state'] or parent['error'] != job['error']):
+                raise ValueError('base_retest_parent_changed')
+            conn.execute("""INSERT INTO maintenance_jobs(id,kind,state,payload)
+                VALUES (%s,'repair','publish',%s) ON CONFLICT DO NOTHING""", (identity, Jsonb(replacement)))
+            child = conn.execute('SELECT * FROM maintenance_jobs WHERE id=%s', (identity,)).fetchone()
+            if child['payload'] != replacement or child['state'] != 'publish' or child['receipt']:
+                raise ValueError('base_retest_child_requires_reconciliation')
+            conn.execute("""UPDATE maintenance_jobs SET receipt=receipt || %s,
+                state=CASE WHEN state='pr' THEN 'superseded' ELSE state END,updated_at=now() WHERE id=%s""",
+                         (Jsonb({'recheck_id': identity}), job['id']))
+        return identity
 
     def bind_diagnosis(self, job, snapshot, diagnosis):
         """Freeze each diagnostic revision; never overwrite a reserved request or replay input."""
@@ -376,10 +449,14 @@ class Store:
             if call:
                 if call["due_at"] > datetime.now(UTC):
                     raise Deferred("model_retry_due")
+            from .admission import lock
+
+            lock(conn)
+            automatic = not job["payload"].get("request_project_id")
             if conn.execute("""SELECT 1 FROM turns t JOIN tasks k ON k.id=t.task_id
                 JOIN projects p ON p.id=k.project_id
                 WHERE t.status IN ('queued','waiting','running') AND t.due_at<=now()
-                  AND k.revision=p.revision LIMIT 1""").fetchone():
+                  AND k.revision=p.revision AND (%s OR k.priority=0) LIMIT 1""", (automatic,)).fetchone():
                 raise Deferred("company_work_has_priority")
             pause = conn.execute("SELECT paused_until FROM runtime_control WHERE id=1").fetchone()
             if pause["paused_until"] and pause["paused_until"] > datetime.now(UTC):

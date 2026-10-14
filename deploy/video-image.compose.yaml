@@ -1,0 +1,48 @@
+# Optional overlay after video.compose.yaml (--profile video): Codex subscription image generation for the video worker
+# only (docs/project/VIDEO-VISUALS-DESIGN-20261012.md). It shares the codex-runtime ChatGPT login directory but keeps its
+# own receipts; it holds no database, Slack or paid API credentials. The worker uses it when VIDEO_IMAGE_RUNTIME_URL is
+# set (http://video-image-runtime:8080); unset keeps the worker on the photo library only.
+services:
+  video-image-runtime:
+    profiles: [video]
+    # The codex build target already contains quant_company.providers.video_image_runtime.
+    image: ${VIDEO_IMAGE_RUNTIME_IMAGE:-quant-company-codex:${RELEASE_COMMIT:-unqualified}}
+    command: [uvicorn, quant_company.providers.video_image_runtime:app, --host, 0.0.0.0, --port, "8080", --workers, "1"]
+    restart: unless-stopped
+    init: true
+    user: '10001:10001'
+    read_only: true
+    tmpfs: ['/tmp:size=64m,mode=1777']
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    cpus: 1
+    mem_limit: 512m
+    memswap_limit: 1g
+    stop_grace_period: 6m
+    logging:
+      driver: local
+      options: {max-size: 10m, max-file: '3'}
+    environment:
+      CODEX_BIN: codex
+      CODEX_HOME: /state/auth
+      CODEX_JOBS_DIR: /state/jobs
+      CODEX_TIMEOUT_SECONDS: '300'
+      MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
+    volumes:
+      - type: bind
+        source: ${STATE_DIR:-/var/lib/quant-company}/codex/auth
+        target: /state/auth
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${STATE_DIR:-/var/lib/quant-company}/codex/video-image-jobs
+        target: /state/jobs
+        bind: {create_host_path: false}
+    secrets: [model_runtime_token]
+    networks: [model, model_egress]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s

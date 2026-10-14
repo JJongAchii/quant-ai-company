@@ -743,6 +743,12 @@ class Company:
                     AND r.kind='routing' AND r.status NOT IN ('completed','superseded')))
                 LIMIT 1""", (task["priority"],)).fetchone():
                 return {"state": "defer", "seconds": 2, "reason": "higher_priority_request"}
+            if task["priority"] > 0 and not turn["request"]:
+                from .maintenance.admission import lock, owner_call_waiting
+
+                lock(conn)
+                if owner_call_waiting(conn, self):
+                    return {"state": "defer", "seconds": 2, "reason": "owner_maintenance_request"}
             if turn["status"] != "running":
                 conn.execute("INSERT INTO daily_usage(day,reserved) VALUES (CURRENT_DATE,0) ON CONFLICT DO NOTHING")
                 usage = conn.execute("SELECT * FROM daily_usage WHERE day=CURRENT_DATE FOR UPDATE").fetchone()

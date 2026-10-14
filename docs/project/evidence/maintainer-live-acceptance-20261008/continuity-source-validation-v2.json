@@ -1,0 +1,21 @@
+{
+  "captured_at": "2026-10-13T04:26:20.219182+00:00",
+  "prior_candidate": "bd859475fa687dae54c6958eae64bf4101329327",
+  "prior_candidate_installed": false,
+  "baseline_real_image": "required producer/consumer ranges remained missing; read-only same-commit requested blob and filename lookup succeeded",
+  "expanded_source_baseline": "same project history caused exact-code assertion failure",
+  "candidate": {
+    "real_PostgreSQL_related_tests_passed": 56,
+    "seconds": 9.78,
+    "ruff": "passed",
+    "local_frozen_real_case": {
+      "prompt_characters": 87527,
+      "previously_read_and_requested_test_lines": 665,
+      "all_visible": true,
+      "model_calls": 0,
+      "database_writes": 0
+    }
+  },
+  "interpretation": "Local replay verifies serialization of the frozen real evidence, not a new model decision or deployed result.",
+  "candidate_runner_sha256": "8d1913ea085ca221e88a14c0e90ab5378e3b676c6b9f6f408b6c273613fbe177"
+}
