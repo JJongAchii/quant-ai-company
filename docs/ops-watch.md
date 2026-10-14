@@ -50,7 +50,8 @@ Slack에서 서버 작업의 진행 상황을 물으면 봇이 실제 운영 상
   - `incomplete`가 1시간 넘게 이어짐
   - `releasing`이 2시간 넘게 이어지거나, 한 단계(`step`)가 60분 넘게 그대로임. 진행 중인 릴리스는 단계가 바뀔 때만
     상태 파일을 쓰고 타이머는 그동안 실행되지 않으므로, 45분 갱신 지연으로 보지 않는다.
-  - CI를 통과한 main이 24시간 넘게 반영되지 않음
+  - CI를 통과한 main이 24시간 넘게 반영되지 않음. 판단이 `up_to_date`(릴리스 파일을 바꾸지 않은 main 포함)나
+    `ahead_of_green`이면 세지 않는다.
   - 상태 파일이 45분 넘게 갱신되지 않음
 - `would_release`, `waiting_for_window`, `waiting_for_quiet`, `waiting_for_lock`, `up_to_date`는 정상 대기라서 알리지 않는다.
   운영 채널의 `상태` 답에는 현재 릴리스와 판단이 한 줄로 나온다.

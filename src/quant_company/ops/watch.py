@@ -172,7 +172,9 @@ def release_findings(release, now):
                              *([f"사유: {release['detail']}"] if release.get("detail") else [])))
     green = release.get("latest_green") or {}
     passed = stamp(green.get("completed_at"))
-    if green.get("sha") and current and green["sha"] != current and passed and now - passed > RELEASE_BEHIND:
+    # up_to_date also covers a newer main that changes no file a release deploys (docs, tests, CI only).
+    if (green.get("sha") and current and green["sha"] != current and action not in ("up_to_date", "ahead_of_green")
+            and passed and now - passed > RELEASE_BEHIND):
         found.append(finding("release_behind", "condition", "warning",
                              f"CI 통과 main {green['sha'][:7]} {int((now - passed).total_seconds() // 3600)}시간째 미반영",
                              f"운영 {current[:7]} · main보다 {release.get('behind_by') or '?'}커밋 뒤 · "

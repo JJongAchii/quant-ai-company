@@ -317,8 +317,11 @@ def test_release_waits_are_quiet_and_stalls_lag_and_failed_restores_are_findings
     snapshot(ops, release=release("releasing", checked=now() - timedelta(hours=2), started_at=started,
                                   step={"name": "build", "at": (now() - timedelta(minutes=61)).isoformat()}))
     assert watch.tick()["findings"] == ["release_step"]
-    snapshot(ops, release=release("up_to_date", checked=now() - timedelta(minutes=50), latest_green={
-        "sha": "a" * 40, "completed_at": (now() - timedelta(hours=25)).isoformat()}))
+    old_green = {"sha": "a" * 40, "completed_at": (now() - timedelta(hours=25)).isoformat()}
+    snapshot(ops, release=release("up_to_date", target=None, latest_green=old_green,
+                                  detail="main aaaaaaaaaaaa changes no file a release deploys"))
+    assert watch.tick()["findings"] == []
+    snapshot(ops, release=release("waiting_for_window", checked=now() - timedelta(minutes=50), latest_green=old_green))
     assert watch.tick()["findings"] == ["release_behind", "release_stale"]
     snapshot(ops, release=release("incomplete", started_at=(now() - timedelta(hours=2)).isoformat()))
     assert watch.tick()["findings"] == ["release_incomplete"]
