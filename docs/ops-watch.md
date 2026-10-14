@@ -43,12 +43,13 @@ Slack에서 서버 작업의 진행 상황을 물으면 봇이 실제 운영 상
 수집기는 릴리스 도구가 15분마다 쓰는 `/var/lib/quant-company/release-status.json`(ADR 0045)을 읽는다.
 필요한 필드만 남기고, 사유 문구에 들어 있는 자격증명 형태의 문자열은 잘라낸다. 파일이 없으면 아무것도 알리지 않는다.
 
-- **동작과 커밋마다 한 번만 알림** (사건형):
+- **동작과 커밋마다 한 번만 알림** (사건형, `failed`는 시도(`started_at`)마다):
   - `failed`, `error`, `render_required`, `operator_required`, `held_for_drift`, `drift`, `refused`, `no_green_main`
   - 운영자가 설치해야 하는 호스트 파일(`operator_files`)이 바뀐 경우
 - **상태형** (정상으로 돌아오면 해소를 남김):
   - `incomplete`가 1시간 넘게 이어짐
-  - `releasing`이 2시간 넘게 이어짐. 진행 중인 릴리스는 상태 파일을 갱신하지 않으므로 갱신 지연으로 보지 않는다.
+  - `releasing`이 2시간 넘게 이어지거나, 한 단계(`step`)가 60분 넘게 그대로임. 진행 중인 릴리스는 단계가 바뀔 때만
+    상태 파일을 쓰고 타이머는 그동안 실행되지 않으므로, 45분 갱신 지연으로 보지 않는다.
   - CI를 통과한 main이 24시간 넘게 반영되지 않음
   - 상태 파일이 45분 넘게 갱신되지 않음
 - `would_release`, `waiting_for_window`, `waiting_for_quiet`, `waiting_for_lock`, `up_to_date`는 정상 대기라서 알리지 않는다.

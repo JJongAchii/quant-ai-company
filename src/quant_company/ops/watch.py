@@ -31,6 +31,7 @@ RELEASE_ALERTS = {"failed": "릴리스 실패", "error": "릴리스 점검 오�
 RELEASE_STALE = timedelta(minutes=45)
 RELEASE_INCOMPLETE = timedelta(hours=1)
 RELEASE_RUNNING = timedelta(hours=2)
+RELEASE_STEP = timedelta(minutes=60)  # build ~10 min; each apply group waits at most 10 min for quiet
 RELEASE_BEHIND = timedelta(hours=24)
 log = logging.getLogger(__name__)
 
@@ -124,18 +125,25 @@ def release_findings(release, now):
     current, target = release.get("current"), release.get("target") or release.get("current")
     checked, started = stamp(release.get("checked_at")), stamp(release.get("started_at"))
     where = f"대상 {(target or '?')[:7]} · 운영 {(current or '?')[:7]} · 모드 {release.get('mode') or '?'}"
+    step = release.get("step") or {}
+    step_at = stamp(step.get("at"))
     if action == "releasing":
-        # A running release does not refresh the report; other timer runs only find the lock taken.
+        # Only the release itself rewrites the report (at each step); the timer does not start while it runs.
         if started and now - started > RELEASE_RUNNING:
             found.append(finding("release_running", "condition", "warning",
                                  f"릴리스 {(target or '?')[:7]} {int((now - started).total_seconds() // 3600)}시간째 진행 중",
-                                 f"시작 {kst(started, True)} KST", where))
+                                 f"시작 {kst(started, True)} KST · 단계 {step.get('name') or '?'}", where))
+        if step_at and now - step_at > RELEASE_STEP:
+            found.append(finding("release_step", "condition", "warning",
+                                 f"릴리스 단계 {int((now - step_at).total_seconds() // 60)}분째 그대로",
+                                 f"단계 {step.get('name') or '?'} · 시작 {kst(step_at, True)} KST", where))
     elif not checked or now - checked > RELEASE_STALE:
         found.append(finding("release_stale", "condition", "warning", "자동 릴리스 점검 멈춤",
                              f"마지막 점검 {kst(checked, True) if checked else '기록 없음'} KST. "
                              "quant-company-release-auto.timer가 15분마다 갱신해야 합니다."))
     if action in RELEASE_ALERTS:
-        lines = [where, *([f"사유: {release['detail']}"] if release.get("detail") else [])]
+        lines = [where, *([f"사유: {release['detail']}"] if release.get("detail") else []),
+                 *([f"멈춘 단계: {step['name']}"] if step.get("name") else [])]
         restored = release.get("restored")
         if action == "failed" and restored:
             moved = ", ".join(restored.get("services") or []) or "옮긴 서비스 없음"
@@ -147,12 +155,14 @@ def release_findings(release, now):
             lines.append(f"렌더 입력 {release.get('render_files') or '?'}개가 렌더 이미지 커밋과 다릅니다. "
                          "렌더 이미지와 작업 정의를 먼저 바꿔야 이어서 반영됩니다.")
         severity = "critical" if action == "failed" and restored and not restored.get("ok") else "warning"
-        found.append(finding(f"release:{action}:{target}", "event", severity,
+        # Each attempt at a commit (a --retry included) has its own start, so each failed attempt is reported.
+        attempt = f":{release.get('started_at') or 'restore'}" if action == "failed" else ""
+        found.append(finding(f"release:{action}:{target}{attempt}", "event", severity,
                              f"{RELEASE_ALERTS[action]} · {(target or '?')[:7]}", *lines, once=True))
     if action == "incomplete" and started and now - started > RELEASE_INCOMPLETE:
         found.append(finding("release_incomplete", "condition", "warning",
                              f"릴리스 {(target or '?')[:7]} 1시간 넘게 미완료",
-                             f"시작 {kst(started, True)} KST", where,
+                             f"시작 {kst(started, True)} KST · 멈춘 단계 {step.get('name') or '?'}", where,
                              *([f"사유: {release['detail']}"] if release.get("detail") else [])))
     green = release.get("latest_green") or {}
     passed = stamp(green.get("completed_at"))

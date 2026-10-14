@@ -199,6 +199,8 @@ def release_status(path=RELEASE_STATUS):
     return {'checked_at': moment(raw.get('checked_at')), 'mode': word(raw.get('mode')), 'action': word(raw.get('action')),
             'detail': scrub(raw.get('detail')), 'current': commit(raw.get('current')), 'target': commit(raw.get('target')),
             'failed_commit': commit(raw.get('failed_commit')), 'started_at': moment(raw.get('started_at')),
+            'step': {'name': scrub(raw['step'].get('name'), 120), 'at': moment(raw['step'].get('at'))}
+            if isinstance(raw.get('step'), dict) else None,
             'latest_green': {'sha': commit(green.get('sha')), 'completed_at': moment(green.get('completed_at'))}
             if green else None,
             'behind_by': raw['behind_by'] if type(raw.get('behind_by')) is int else None,

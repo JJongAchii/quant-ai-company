@@ -307,17 +307,32 @@ def test_release_waits_are_quiet_and_stalls_lag_and_failed_restores_are_findings
     snapshot(ops, release=release("waiting_for_quiet", detail="worker turn", latest_green={
         "sha": "a" * 40, "completed_at": (now() - timedelta(hours=2)).isoformat()}))
     assert watch.tick()["findings"] == []
-    snapshot(ops, release=release("releasing", checked=now() - timedelta(hours=1),
-                                  started_at=(now() - timedelta(minutes=50)).isoformat()))
-    assert watch.tick()["findings"] == []  # a running release does not refresh the report
+    started = (now() - timedelta(minutes=50)).isoformat()
+    snapshot(ops, release=release("releasing", checked=now() - timedelta(hours=1), started_at=started,
+                                  step={"name": "apply 3/7: codex-runtime", "at": (now() - timedelta(minutes=5)).isoformat()}))
+    assert watch.tick()["findings"] == []  # a running release rewrites the report only at each step
+    snapshot(ops, release=release("releasing", checked=now() - timedelta(hours=1), started_at=started,
+                                  step={"name": "build", "at": started}))
+    assert watch.tick()["findings"] == []
+    snapshot(ops, release=release("releasing", checked=now() - timedelta(hours=2), started_at=started,
+                                  step={"name": "build", "at": (now() - timedelta(minutes=61)).isoformat()}))
+    assert watch.tick()["findings"] == ["release_step"]
     snapshot(ops, release=release("up_to_date", checked=now() - timedelta(minutes=50), latest_green={
         "sha": "a" * 40, "completed_at": (now() - timedelta(hours=25)).isoformat()}))
     assert watch.tick()["findings"] == ["release_behind", "release_stale"]
     snapshot(ops, release=release("incomplete", started_at=(now() - timedelta(hours=2)).isoformat()))
     assert watch.tick()["findings"] == ["release_incomplete"]
-    snapshot(ops, release=release("failed", restored={"ok": False, "services": ["api"]}))
+    first = (now() - timedelta(hours=3)).isoformat()
+    snapshot(ops, release=release("failed", started_at=first, restored={"ok": False, "services": ["api"]}))
     summary = watch.tick()
-    assert summary["findings"] == ["release:failed:" + "a" * 40] and summary["announced"] == 1  # critical: at once
+    assert summary["findings"] == [f"release:failed:{'a' * 40}:{first}"] and summary["announced"] == 1  # critical
+    snapshot(ops, release=release("held_after_failure"))
+    watch.tick()
+    watch.tick()
+    retried = (now() - timedelta(minutes=20)).isoformat()
+    snapshot(ops, release=release("failed", started_at=retried, restored={"ok": True, "services": []}))
+    watch.tick()
+    assert watch.tick()["announced"] == 1  # a failed --retry of the same commit is its own report
 
 
 def test_status_reply_names_the_running_release(ops):

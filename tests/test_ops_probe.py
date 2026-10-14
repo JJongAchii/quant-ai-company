@@ -151,7 +151,8 @@ def test_release_status_keeps_only_checked_fields_and_cuts_credentials(tmp_path)
         "latest_green": {"sha": "17d7693", "completed_at": "2026-10-14T05:13:43Z", "run": "https://example"},
         "drift": [{"service": "api", "ok": False, "problem": "config differs"}, {"service": "worker", "ok": True}],
         "operator_files": ["deploy/quant-company-ops-probe.service", "../../etc/passwd`"], "render_files": ["a", "b"],
-        "restored": {"ok": True, "services": ["api", "$(id)"]}, "behind_by": True}))
+        "restored": {"ok": True, "services": ["api", "$(id)"]}, "behind_by": True,
+        "step": {"name": "apply 3/7: codex-runtime video-image-runtime", "at": "2026-10-14T10:41:00Z"}}))
     value = probe.release_status(path)
     assert value["target"] is None and value["current"].startswith("5454e3d") and value["behind_by"] is None
     assert "ghs_" not in value["detail"] and "[redacted]" in value["detail"]
@@ -159,6 +160,7 @@ def test_release_status_keeps_only_checked_fields_and_cuts_credentials(tmp_path)
     assert value["drift"] == [{"service": "api", "problem": "config differs"}]
     assert value["operator_files"] == ["deploy/quant-company-ops-probe.service"] and value["render_files"] == 2
     assert value["restored"] == {"ok": True, "services": ["api"]}
+    assert value["step"] == {"name": "apply 3/7: codex-runtime video-image-runtime", "at": "2026-10-14T10:41:00+00:00"}
     path.write_text("[]")
     with pytest.raises(ValueError):
         probe.release_status(path)
