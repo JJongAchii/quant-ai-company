@@ -1,0 +1,273 @@
+{
+  "state": "active",
+  "started_at": "2026-10-13T00:58:32.852591+00:00",
+  "patch_commit": "17619a29f12ab89f84c8d5cf942a230a9bc5983e",
+  "ci": {
+    "headRefOid": "17619a29f12ab89f84c8d5cf942a230a9bc5983e",
+    "isDraft": true,
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-13T00:58:01Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/JJongAchii/quant-ai-company/actions/runs/38329101847/job/115074509907",
+        "name": "service",
+        "startedAt": "2026-10-13T00:49:05Z",
+        "status": "COMPLETED",
+        "workflowName": "Quant Company CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-13T00:49:40Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/JJongAchii/quant-ai-company/actions/runs/38329101847/job/115074509638",
+        "name": "codex-protocol",
+        "startedAt": "2026-10-13T00:49:05Z",
+        "status": "COMPLETED",
+        "workflowName": "Quant Company CI"
+      }
+    ],
+    "url": "https://github.com/JJongAchii/quant-ai-company/pull/134"
+  },
+  "before": {
+    "quant-company-claude-runtime-1": {
+      "id": "76b5a9711b0113bf3bc66f10d100f84d5507c8b3487c9bc96d78279da0bbd3a7",
+      "image": "sha256:2e28a4ee36a7e62985b12849e852725f5dc595f0ebc8c86be1c6e928bea5c8b2",
+      "running": true
+    },
+    "quant-company-worker-1": {
+      "id": "2d416d9415bc8796a499b5b9bc5a26a3445d32124f4d84a2f607dce4203e6d14",
+      "image": "sha256:754aff9e52571895cb61a021f003495832e9dc0a13969933663db08dcc165578",
+      "running": true
+    },
+    "quant-company-api-1": {
+      "id": "72c4d215ee308dc5657d9cf1d86640b287cb30fefbb79cfcc3f288115a4697a6",
+      "image": "sha256:84c5e9e21af0fc7c1ab8a1fa846298451220f4d2f996bd10c4e59d39e3b34500",
+      "running": true
+    },
+    "quant-company-maintenance-1": {
+      "id": "2b9975f7b24bbe4c43384f07339da1ad6bfde829ace3c6431567c64e823d2611",
+      "image": "sha256:b645d6e7a629c25911f7193753f99a431f9d7906811d1e9825fe3b46e91e4627",
+      "running": true
+    },
+    "quant-company-dispatch-1": {
+      "id": "29741b12a4b99aa543e86b711452d10076803bf2ea889e4cd1f1279528eef26f",
+      "image": "sha256:fc08488844f7935a021da84115c43a031dfbdd07db5ebe6a0ee41d03813765e6",
+      "running": true
+    },
+    "quant-company-news-worker-1": {
+      "id": "7e0aaea506b3be060224fd9b56fcba0afc1e27d09cdd4da41771a2dca040a49d",
+      "image": "sha256:7d0b13f33db8351c5fa22d27607079cee8f332171e0e9d5ab36fe1d1b6d13295",
+      "running": true
+    },
+    "quant-company-video-worker-1": {
+      "id": "34d1abf998584efc1f4692dcde4c8f68dcca6f111b1faeccd18cf8475ae1c2cb",
+      "image": "sha256:40c08f30e2b98093262c7c9748e140587b0afecbd66873e6a8ba4acedea79fb8",
+      "running": true
+    },
+    "quant-company-video-image-runtime-1": {
+      "id": "553361fae52eabca6cbd651cfe6a93d6e742caf5859d0efe4cc6e116841e5c4c",
+      "image": "sha256:1e174044ba5068e8b24d1f3573bbcf0777c73e8da20aaa54fb78a9742345beaa",
+      "running": true
+    },
+    "quant-company-housing-feed-worker-1": {
+      "id": "fdb3029d96a151ce308cd439b76bb1edbfce2974b1a3b971c526923921070585",
+      "image": "sha256:c7f587c23613f6fb0a9232e303282957ab88dec9b6c98f0ba6f36b5e2440e45b",
+      "running": true
+    },
+    "quant-company-codex-runtime-1": {
+      "id": "b955828df407fb671936bd53b1c4b98e51de3ddad5788ba8df4c99279dca9489",
+      "image": "sha256:c75b71141deb0287eb78f9fc3be7d877d5ca6eb17ff65d4c836a7ec5be7c740c",
+      "running": true
+    },
+    "quant-company-briefing-data-worker-1": {
+      "id": "141f150c1604e42df8086da80ba471c39d637ef515e27b40c30f23b9cacaf833",
+      "image": "sha256:4b0632adfed5da7dceb7fdca255a9aaf4bef9cb04b48388827063d62d58c9728",
+      "running": true
+    },
+    "quant-company-slack-socket-1": {
+      "id": "c525852039debaceea4c952d8fb33ec22396c9f00b24b3034e0468decd0ed041",
+      "image": "sha256:98f271ded39ab7b24ec1b301555d6e181e14ac2cb44ca41c66976f7a3abd3ada",
+      "running": true
+    },
+    "quant-company-tech-feed-worker-1": {
+      "id": "098acc4256c15df7de223f79a016d02a21cf79cc6655b73b29beae22c2c17770",
+      "image": "sha256:b0127f74ec7c5414e8c200eac32518cc38880911c8a9e8291aaca82d8603b813",
+      "running": true
+    },
+    "quant-company-account-gateway-1": {
+      "id": "605ba7e80268de106868da025737696f0cf5797f1ff5f89e7e0cdee2aa2c5dda",
+      "image": "sha256:d6b04a5bfc004bc1a24869ef61a0ec829895e823528b7fd9f24b786face0f650",
+      "running": true
+    },
+    "quant-company-quant-codex-runtime-1": {
+      "id": "7cf1bc8f1ca30533a46d10e11454ecf1fe47bfe95d2e963302f4664c1aed9887",
+      "image": "sha256:94d32ec482ea0ba9cfd7890ef9f13113403beec858380ab8e3205d7b400e8fa1",
+      "running": true
+    },
+    "quant-company-quant-feed-worker-1": {
+      "id": "383235319c4c89abff43184354eda9348f9144eb1c1b9ac709bae9ea33406177",
+      "image": "sha256:05a3dab71ce4a0177342c0ec82a10f6b20c25aa9429217085e040207ecc516a9",
+      "running": true
+    },
+    "quant-company-data-watch-worker-1": {
+      "id": "0035b399d40a6c0032e2f9d4bb5e15e180672676a08719af22265a50c00c9615",
+      "image": "sha256:9b2f758c58445594badac690c24de418282bfdbc8523c3c1e06b1613ba5440fc",
+      "running": true
+    },
+    "quant-company-postgres-1": {
+      "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+      "image": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "running": true
+    }
+  },
+  "global_release": "/opt/quant-company/releases/51ce4f91f141e65f909ac783e590ee0585dea3fa",
+  "override": "/var/lib/quant-company/config/maintainer-selector-17619a29f12ab89f84c8d5cf942a230a9bc5983e.compose.json",
+  "original_case": {
+    "jobs": [
+      {
+        "id": "672a94ca-b8e9-51b7-8fb0-354b96c7f355",
+        "digest": "b4b5bee2916a645ab215c5383c6364c0"
+      },
+      {
+        "id": "c7d07401-ef8a-5d16-96f5-b6048b16dd1b",
+        "digest": "bde9ce309ce0bc49f575f664ddf6188d"
+      }
+    ],
+    "calls": [
+      {
+        "id": "maint-672a94ca-b8e9-51b7-8fb0-354b96c7f355-r2-triage",
+        "digest": "c1829ccd805b40cc3d9f110877823063"
+      },
+      {
+        "id": "maint-672a94ca-b8e9-51b7-8fb0-354b96c7f355-r2-triage-i1",
+        "digest": "3d61112c895d395ee115ae81ce08e1c3"
+      },
+      {
+        "id": "maint-672a94ca-b8e9-51b7-8fb0-354b96c7f355-r3-triage",
+        "digest": "cc39e3c62cd25263e4bd78879bdb4d22"
+      },
+      {
+        "id": "maint-672a94ca-b8e9-51b7-8fb0-354b96c7f355-r3-triage-i1",
+        "digest": "cf1fd36e52872c8ed348504ade1d2075"
+      },
+      {
+        "id": "maint-672a94ca-b8e9-51b7-8fb0-354b96c7f355-r3-triage-i2",
+        "digest": "699e1ea9288a54f946bc00f960db7388"
+      },
+      {
+        "id": "maint-672a94ca-b8e9-51b7-8fb0-354b96c7f355-r3-triage-i3",
+        "digest": "8e7c772470993942f2990f01d758787f"
+      },
+      {
+        "id": "maint-672a94ca-b8e9-51b7-8fb0-354b96c7f355-r3-triage-i4",
+        "digest": "f4dcda760c5cdbb49e1b1436e0ca83b3"
+      },
+      {
+        "id": "maint-672a94ca-b8e9-51b7-8fb0-354b96c7f355-triage",
+        "digest": "5edbd9d7ac6732e7c2c5618691803569"
+      }
+    ]
+  },
+  "scope": "maintenance observation selector only; maintenance session lock held; other workers continue",
+  "rollback_image": "quant-company-maintainer-history:2427a48",
+  "rollback_image_id": "sha256:b645d6e7a629c25911f7193753f99a431f9d7906811d1e9825fe3b46e91e4627",
+  "completed_at": "2026-10-13T00:58:41.347957+00:00",
+  "after": {
+    "quant-company-maintenance-1": {
+      "id": "b37bd15c1f74aa8c7ea01cb3fefaa96b7883ac1d0471fc7d4bf1a52fbe8f1fa3",
+      "image": "sha256:e237f655b2a67bd8313029bf762d9c890ecd0a5c6c96a9268d5a3ceee06dd5b7",
+      "running": true
+    },
+    "quant-company-claude-runtime-1": {
+      "id": "76b5a9711b0113bf3bc66f10d100f84d5507c8b3487c9bc96d78279da0bbd3a7",
+      "image": "sha256:2e28a4ee36a7e62985b12849e852725f5dc595f0ebc8c86be1c6e928bea5c8b2",
+      "running": true
+    },
+    "quant-company-worker-1": {
+      "id": "2d416d9415bc8796a499b5b9bc5a26a3445d32124f4d84a2f607dce4203e6d14",
+      "image": "sha256:754aff9e52571895cb61a021f003495832e9dc0a13969933663db08dcc165578",
+      "running": true
+    },
+    "quant-company-api-1": {
+      "id": "72c4d215ee308dc5657d9cf1d86640b287cb30fefbb79cfcc3f288115a4697a6",
+      "image": "sha256:84c5e9e21af0fc7c1ab8a1fa846298451220f4d2f996bd10c4e59d39e3b34500",
+      "running": true
+    },
+    "quant-company-dispatch-1": {
+      "id": "29741b12a4b99aa543e86b711452d10076803bf2ea889e4cd1f1279528eef26f",
+      "image": "sha256:fc08488844f7935a021da84115c43a031dfbdd07db5ebe6a0ee41d03813765e6",
+      "running": true
+    },
+    "quant-company-news-worker-1": {
+      "id": "7e0aaea506b3be060224fd9b56fcba0afc1e27d09cdd4da41771a2dca040a49d",
+      "image": "sha256:7d0b13f33db8351c5fa22d27607079cee8f332171e0e9d5ab36fe1d1b6d13295",
+      "running": true
+    },
+    "quant-company-video-worker-1": {
+      "id": "34d1abf998584efc1f4692dcde4c8f68dcca6f111b1faeccd18cf8475ae1c2cb",
+      "image": "sha256:40c08f30e2b98093262c7c9748e140587b0afecbd66873e6a8ba4acedea79fb8",
+      "running": true
+    },
+    "quant-company-video-image-runtime-1": {
+      "id": "553361fae52eabca6cbd651cfe6a93d6e742caf5859d0efe4cc6e116841e5c4c",
+      "image": "sha256:1e174044ba5068e8b24d1f3573bbcf0777c73e8da20aaa54fb78a9742345beaa",
+      "running": true
+    },
+    "quant-company-housing-feed-worker-1": {
+      "id": "fdb3029d96a151ce308cd439b76bb1edbfce2974b1a3b971c526923921070585",
+      "image": "sha256:c7f587c23613f6fb0a9232e303282957ab88dec9b6c98f0ba6f36b5e2440e45b",
+      "running": true
+    },
+    "quant-company-codex-runtime-1": {
+      "id": "b955828df407fb671936bd53b1c4b98e51de3ddad5788ba8df4c99279dca9489",
+      "image": "sha256:c75b71141deb0287eb78f9fc3be7d877d5ca6eb17ff65d4c836a7ec5be7c740c",
+      "running": true
+    },
+    "quant-company-briefing-data-worker-1": {
+      "id": "141f150c1604e42df8086da80ba471c39d637ef515e27b40c30f23b9cacaf833",
+      "image": "sha256:4b0632adfed5da7dceb7fdca255a9aaf4bef9cb04b48388827063d62d58c9728",
+      "running": true
+    },
+    "quant-company-slack-socket-1": {
+      "id": "c525852039debaceea4c952d8fb33ec22396c9f00b24b3034e0468decd0ed041",
+      "image": "sha256:98f271ded39ab7b24ec1b301555d6e181e14ac2cb44ca41c66976f7a3abd3ada",
+      "running": true
+    },
+    "quant-company-tech-feed-worker-1": {
+      "id": "098acc4256c15df7de223f79a016d02a21cf79cc6655b73b29beae22c2c17770",
+      "image": "sha256:b0127f74ec7c5414e8c200eac32518cc38880911c8a9e8291aaca82d8603b813",
+      "running": true
+    },
+    "quant-company-account-gateway-1": {
+      "id": "605ba7e80268de106868da025737696f0cf5797f1ff5f89e7e0cdee2aa2c5dda",
+      "image": "sha256:d6b04a5bfc004bc1a24869ef61a0ec829895e823528b7fd9f24b786face0f650",
+      "running": true
+    },
+    "quant-company-quant-codex-runtime-1": {
+      "id": "7cf1bc8f1ca30533a46d10e11454ecf1fe47bfe95d2e963302f4664c1aed9887",
+      "image": "sha256:94d32ec482ea0ba9cfd7890ef9f13113403beec858380ab8e3205d7b400e8fa1",
+      "running": true
+    },
+    "quant-company-quant-feed-worker-1": {
+      "id": "383235319c4c89abff43184354eda9348f9144eb1c1b9ac709bae9ea33406177",
+      "image": "sha256:05a3dab71ce4a0177342c0ec82a10f6b20c25aa9429217085e040207ecc516a9",
+      "running": true
+    },
+    "quant-company-data-watch-worker-1": {
+      "id": "0035b399d40a6c0032e2f9d4bb5e15e180672676a08719af22265a50c00c9615",
+      "image": "sha256:9b2f758c58445594badac690c24de418282bfdbc8523c3c1e06b1613ba5440fc",
+      "running": true
+    },
+    "quant-company-postgres-1": {
+      "id": "1c2512612076432b02539170f773be013ebf04d287f0e7151941ccc251f12fe4",
+      "image": "sha256:bb3e1a57e5407e0a5280b4211980a5e537f4abd234a87014ac979849a78dd825",
+      "running": true
+    }
+  },
+  "original_case_unchanged": true,
+  "other_containers_unchanged": true,
+  "environment_and_boundaries_unchanged": true,
+  "model_calls_by_operator": 0,
+  "global_admission_pause": false
+}

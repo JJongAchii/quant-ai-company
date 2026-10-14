@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-13T00:41:00.627227+00:00",
+  "baseline_timed_out_at_five_seconds": true,
+  "baseline_limit_seconds": 5.005206031026319,
+  "baseline_seconds": 28.241487757011782,
+  "candidate_seconds": 0.45669541403185576,
+  "exact_rows_unchanged": true,
+  "selected": 7,
+  "request_max_bytes_unchanged": 600000,
+  "model_calls": 0,
+  "database_writes": 0
+}

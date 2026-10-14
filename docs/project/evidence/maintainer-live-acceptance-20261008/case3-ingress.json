@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-13T04:57:56.96039+00:00",
+  "requests": [
+    {
+      "jobs": [
+        {
+          "id": "297ebe7d-3189-5ecf-92cb-b6b01d4f4d5b",
+          "kind": "review",
+          "calls": 2,
+          "error": null,
+          "state": "triage"
+        }
+      ],
+      "kind": "human",
+      "turns": [
+        {
+          "id": "1383125a-569e-5fba-ab3c-bc09226850a1",
+          "error": null,
+          "status": "completed",
+          "has_response": true
+        },
+        {
+          "id": "14839ef9-7ae9-53af-a54e-b3e258ad0fca",
+          "error": null,
+          "status": "completed",
+          "has_response": true
+        },
+        {
+          "id": "3698b890-7ad4-53b5-b009-8510614183f2",
+          "error": null,
+          "status": "completed",
+          "has_response": true
+        },
+        {
+          "id": "2f3a572f-8082-5ca0-b571-c9e731ed7f90",
+          "error": null,
+          "status": "completed",
+          "has_response": true
+        }
+      ],
+      "author": "U0C250E23NW",
+      "channel": "C0C3Q7BFQCE",
+      "task_id": "9ea6e272-5eaa-5ec1-86ab-261fd2f72584",
+      "thread_ts": "1791866371.596809",
+      "created_at": "2026-10-13T04:39:31.90394+00:00",
+      "message_id": "0a6c71b3-76c4-475e-b947-1d2b62146cc7",
+      "project_id": "9162557a-19da-5f2d-818e-09d285f8f71b",
+      "inbound_key": "slack:T0C1YRDRPNF:C0C3Q7BFQCE:1791866371.596809:maintainer",
+      "complete_request_matches": true
+    }
+  ]
+}

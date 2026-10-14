@@ -1,0 +1,171 @@
+{
+  "patch_commit": "789a64db7199ea21c37a46904a735df681cf1ac8",
+  "outcome": "candidate_rejected_before_installation",
+  "comparison": {
+    "baseline": {
+      "original_call_id": "maint-672a94ca-b8e9-51b7-8fb0-354b96c7f355-r3-triage-i4",
+      "original_job_unchanged": true,
+      "original_calls_unchanged": true,
+      "original_request_unchanged": true,
+      "observations_unchanged": true,
+      "prompt_characters": 87924,
+      "prompt_sha256": "e3f2e00d4edabf0d0a1e8c8aff253cf8b897efd9a3447dd27b0f7fc00c699df4",
+      "prompt_sections": {
+        "requested_diagnosis": 634,
+        "instructions": 4118,
+        "observations": 472,
+        "history": 29535,
+        "current_implementation": 23858,
+        "active_diagnosis": 169,
+        "editable_paths": 1608,
+        "evidence_references": 1031,
+        "external_research": 2,
+        "inspection_catalog": 3315,
+        "inspection_lookup": 310,
+        "inspection_rounds_remaining": 1,
+        "investigated_code": 15287,
+        "prompt_excerpted": 4,
+        "prompt_observation_compaction": 1,
+        "prompt_path_catalog": 450,
+        "prompt_system_compaction": 1,
+        "recent_inspection": 479,
+        "repository_paths": 1133
+      },
+      "diagnostic_sections": {
+        "coverage": 127,
+        "implementation_digest": 66,
+        "key": 73,
+        "runtime_scope_digest": 66,
+        "scope_digest": 66,
+        "scope_version": 1,
+        "source_files": 8431,
+        "system": 14885
+      },
+      "history_sections": {
+        "as_of": 34,
+        "evidence": 19478,
+        "interpretation": 339,
+        "periods": 5454,
+        "roster": 4008,
+        "sampling": 138
+      },
+      "stored_code_characters": 43579,
+      "all_ranges_visible": false,
+      "ranges": [
+        {
+          "path": "src/quant_company/maintenance/requests.py",
+          "start_line": 88,
+          "stored_lines": 75,
+          "visible_lines": 3,
+          "complete": false
+        },
+        {
+          "path": "src/quant_company/maintenance/requests.py",
+          "start_line": 219,
+          "stored_lines": 34,
+          "visible_lines": 0,
+          "complete": false
+        },
+        {
+          "path": "src/quant_company/maintenance/cases.py",
+          "start_line": 60,
+          "stored_lines": 75,
+          "visible_lines": 4,
+          "complete": false
+        },
+        {
+          "path": "tests/test_maintenance_repair_path.py",
+          "start_line": 59,
+          "stored_lines": 143,
+          "visible_lines": 2,
+          "complete": false
+        }
+      ],
+      "model_calls": 0,
+      "database_writes": 0
+    },
+    "candidate": {
+      "original_call_id": "maint-672a94ca-b8e9-51b7-8fb0-354b96c7f355-r3-triage-i4",
+      "original_job_unchanged": true,
+      "original_calls_unchanged": true,
+      "original_request_unchanged": true,
+      "observations_unchanged": true,
+      "prompt_characters": 87423,
+      "prompt_sha256": "8f8df60e215f26c2d836a541f8b3b524d72cfd6307811bb93292e84f1825e435",
+      "prompt_sections": {
+        "requested_diagnosis": 634,
+        "instructions": 4118,
+        "observations": 472,
+        "history": 18029,
+        "current_implementation": 23858,
+        "active_diagnosis": 169,
+        "editable_paths": 1608,
+        "evidence_references": 1031,
+        "external_research": 2,
+        "inspection_catalog": 3313,
+        "inspection_lookup": 310,
+        "inspection_rounds_remaining": 1,
+        "investigated_code": 25864,
+        "prompt_excerpted": 4,
+        "prompt_observation_compaction": 1,
+        "prompt_path_catalog": 450,
+        "prompt_system_compaction": 1,
+        "recent_inspection": 479,
+        "repository_paths": 1133,
+        "prompt_history_compaction": 1
+      },
+      "diagnostic_sections": {
+        "coverage": 127,
+        "implementation_digest": 66,
+        "key": 73,
+        "runtime_scope_digest": 66,
+        "scope_digest": 66,
+        "scope_version": 1,
+        "source_files": 8431,
+        "system": 14885
+      },
+      "history_sections": {
+        "as_of": 34,
+        "evidence": 11641,
+        "interpretation": 178,
+        "periods": 1679,
+        "roster": 4275,
+        "sampling": 138
+      },
+      "stored_code_characters": 43579,
+      "all_ranges_visible": false,
+      "ranges": [
+        {
+          "path": "src/quant_company/maintenance/requests.py",
+          "start_line": 88,
+          "stored_lines": 75,
+          "visible_lines": 57,
+          "complete": false
+        },
+        {
+          "path": "src/quant_company/maintenance/requests.py",
+          "start_line": 219,
+          "stored_lines": 34,
+          "visible_lines": 0,
+          "complete": false
+        },
+        {
+          "path": "src/quant_company/maintenance/cases.py",
+          "start_line": 60,
+          "stored_lines": 75,
+          "visible_lines": 53,
+          "complete": false
+        },
+        {
+          "path": "tests/test_maintenance_repair_path.py",
+          "start_line": 59,
+          "stored_lines": 143,
+          "visible_lines": 47,
+          "complete": false
+        }
+      ],
+      "model_calls": 0,
+      "database_writes": 0
+    }
+  }
+}

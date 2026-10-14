@@ -1,0 +1,30 @@
+{
+  "production_source": "94b46beef1d52287920533afb152c329cb2b444a",
+  "scope": "Qualification harness corrections only",
+  "attempts": [
+    {
+      "version": 2,
+      "failure": "baseline code mount unreadable by app user",
+      "fix": "read-only public source file mode0644"
+    },
+    {
+      "version": 3,
+      "failure": "disposable PG address not assigned",
+      "fix": "QUALIFICATION_PG variable"
+    },
+    {
+      "version": 4,
+      "failure": "baseline module package not set",
+      "fix": "use quant_company.maintenance for relative imports"
+    },
+    {
+      "version": 5,
+      "failure": "worker fixture imported older Store instead of deployed maintenance Store",
+      "fix": "qualification-only image combines exact worker Company and exact deployed maintenance Store"
+    }
+  ],
+  "models_invoked": 0,
+  "production_database_writes": 0,
+  "temporary_PG_and_network_removed": true,
+  "candidate_installed_only_after_full_success": true
+}
