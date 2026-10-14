@@ -14,13 +14,17 @@ from quant_company.research.planning_contracts import (
     METRICS,
     PLANNING_LIMITS,
     TOPICS,
+    CandidateReview,
     Estimand,
     PlanningCandidate,
+    PlanningCritique,
+    PlanningDecision,
     PlanningSlate,
     QuestionSpec,
     TriageCheck,
     TriageResult,
     engine_card,
+    service_order,
     summarize,
     task_proposal,
 )
@@ -117,3 +121,46 @@ def test_slate_states_why_it_is_empty_and_caps_candidates():
                                       "reading_notes": "Read"})
     assert (PLANNING_LIMITS["slate_turns"], PLANNING_LIMITS["attempts"], PLANNING_LIMITS["run_requests"],
             PLANNING_LIMITS["owner_day_requests"]) == (36, 3, 90, 120)
+
+
+def review(ordinal, **changes):
+    return {"candidate_ordinal": ordinal, "verdict": "support", "economic_rationale": "Fixture mechanism holds",
+            "alternative_explanations": "Market beta", "decisive_test": "Cost-adjusted comparison",
+            "cost_and_capacity_concerns": "Turnover", "evidence_quality": 2, "decision_value": 2,
+            "novelty": "distinct", **changes}
+
+
+def decision(**changes):
+    return {"order": [1, 2], "selected_ordinal": 1,
+            "routes": [{"candidate_ordinal": 1, "route": "experiment", "rationale": "Eligible and supported"},
+                       {"candidate_ordinal": 2, "route": "defer", "rationale": "Needs an evaluator"}],
+            "owner_summary": "Compared two fixture candidates; literature and plan review only.", **changes}
+
+
+def test_critique_reviews_each_candidate_once_and_keeps_unknown():
+    assert PlanningCritique.model_validate({"reviews": [review(1, evidence_quality="unknown")]}).reviews[0].evidence_quality == "unknown"
+    with pytest.raises(ValidationError, match="exactly once"):
+        PlanningCritique.model_validate({"reviews": [review(1), review(1)]})
+
+
+def test_decision_routes_every_candidate_with_one_selected_experiment():
+    assert PlanningDecision.model_validate(decision()).selected_ordinal == 1
+    with pytest.raises(ValidationError, match="each candidate once"):
+        PlanningDecision.model_validate(decision(order=[1]))
+    with pytest.raises(ValidationError, match="single experiment"):
+        PlanningDecision.model_validate(decision(selected_ordinal=None))
+    with pytest.raises(ValidationError, match="single experiment"):
+        PlanningDecision.model_validate(decision(routes=[
+            {"candidate_ordinal": 1, "route": "experiment", "rationale": "a"},
+            {"candidate_ordinal": 2, "route": "experiment", "rationale": "b"}]))
+
+
+def test_service_order_follows_the_design_keys():
+    candidates = {1: PlanningCandidate.model_validate(candidate(implementation_scope="new_model")),
+                  2: PlanningCandidate.model_validate(candidate(title="Second", implementation_scope="config_only")),
+                  3: PlanningCandidate.model_validate(candidate(title="Third"))}
+    reviews = {1: CandidateReview.model_validate(review(1)), 2: CandidateReview.model_validate(review(2)),
+               3: CandidateReview.model_validate(review(3, verdict="weak"))}
+    # Triage class first, then verdict, scores, implementation scope, novelty, ordinal.
+    assert service_order(candidates, {1: "eligible", 2: "eligible", 3: "eligible"}, reviews) == [2, 1, 3]
+    assert service_order(candidates, {1: "needs_data", 2: "duplicate", 3: "eligible"}, reviews) == [3, 1, 2]
