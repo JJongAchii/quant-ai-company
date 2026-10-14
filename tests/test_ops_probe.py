@@ -172,3 +172,18 @@ def test_release_status_keeps_only_checked_fields_and_cuts_credentials(tmp_path)
     path.write_text("[]")
     with pytest.raises(ValueError):
         probe.release_status(path)
+
+
+def test_a_synthetic_incident_outlasts_the_minutely_timer_and_then_lapses(tmp_path, monkeypatch):
+    path = tmp_path / "ops/synthetic-incident.json"
+    monkeypatch.setattr(probe, "SYNTHETIC", path)
+    assert probe.synthetic_until(NOW, path) is None
+    probe.start_synthetic(NOW, path)
+    assert probe.synthetic_until(NOW + timedelta(minutes=2), path) == NOW + timedelta(minutes=3)
+    assert probe.synthetic_until(NOW + timedelta(minutes=3, seconds=1), path) is None
+    for name in ("host_facts", "inspect_containers", "unit_results"):
+        monkeypatch.setattr(probe, name, lambda: (_ for _ in ()).throw(OSError()))
+    monkeypatch.setattr(probe, "release_status", lambda: None)
+    monkeypatch.setattr(probe, "deploy_window", lambda now: None)
+    assert probe.snapshot(NOW + timedelta(minutes=1)).get("synthetic_incident") is True  # a plain timer run
+    assert "synthetic_incident" not in probe.snapshot(NOW + timedelta(minutes=4))

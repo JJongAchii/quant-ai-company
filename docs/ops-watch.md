@@ -100,8 +100,9 @@ OPS_FALLBACK_ENABLED=true        # 호스트 비상 경로. 오너가 명시적�
 - 비상 경로는 호스트 비밀 파일 `secrets/slack-credentials.json`의 Director 토큰을 메모리로만 읽고,
   `chat.postMessage` 한 번만 호출한다. 결과가 불명확한 전송은 다시 보내지 않는다. 상태는
   `/var/lib/quant-company/ops/fallback-state.json`에 남는다.
-- 끝까지 확인하려면 `ops_probe.py --publish --synthetic-incident`를 두 번 실행한다. "테스트 경고"가
-  열리고, 이후 일반 수집 두 번 뒤에 해소가 기록된다.
+- 끝까지 확인하려면 `ops_probe.py --publish --synthetic-incident`를 한 번 실행한다. 이후 3분 동안은 timer의 일반
+  수집에도 테스트 표시가 붙는다(`/var/lib/quant-company/ops/synthetic-incident.json`). 약 2분 뒤 "테스트 경고"가 열리고,
+  표시가 끝난 뒤 약 2분이 지나면 같은 스레드에 해소가 남는다.
 
 ## 기록하지 않는 것
 

@@ -36,6 +36,8 @@ EXCEPTION = re.compile(r'^(?:[A-Za-z_][\w]*\.)*([A-Z]\w*(?:Error|Exception|Detec
 WATCH_STALE = timedelta(minutes=10)
 SLACK_ID = re.compile(r'[CDGUW][A-Z0-9]{2,30}')
 RELEASE_STATUS = STATE / 'release-status.json'
+SYNTHETIC = STATE / 'ops/synthetic-incident.json'
+SYNTHETIC_FOR = timedelta(minutes=3)  # longer than two watch ticks, so the minutely timer does not erase the test
 COMMIT = re.compile(r'[0-9a-f]{7,40}')
 WORD = re.compile(r'[a-z_][a-z0-9_-]{0,40}')
 HOST_PATH = re.compile(r'[\w./-]{1,200}')
@@ -216,11 +218,28 @@ def release_status(path=RELEASE_STATUS):
             if restored else None}
 
 
+def synthetic_until(now, path=None):
+    try:
+        until = datetime.fromisoformat(json.loads((path or SYNTHETIC).read_text())['until'])
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+    return until if until.tzinfo and until > now else None
+
+
+def start_synthetic(now, path=None):
+    """Every snapshot until then (the timer's included) carries the test incident; it recovers after it lapses."""
+    path = path or SYNTHETIC
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp = path.with_suffix('.tmp')
+    temp.write_text(json.dumps({'until': (now + SYNTHETIC_FOR).isoformat()}) + '\n')
+    os.replace(temp, path)
+
+
 def snapshot(now=None, *, synthetic=False):
     now = now or utcnow()
     value = {'format': SNAPSHOT_FORMAT, 'collected_at': now.isoformat(), 'probe_errors': [],
              'host': None, 'containers': [], 'drift': {}, 'units': {}, 'deploy_window': deploy_window(now)}
-    if synthetic:
+    if synthetic or synthetic_until(now):
         value['synthetic_incident'] = True
     try:
         value['host'] = host_facts()
@@ -379,7 +398,8 @@ def main(argv=None):
     parser.add_argument('--print', action='store_true', help='preview only (the default): print the snapshot, write nothing')
     parser.add_argument('--publish', action='store_true', help='upsert the snapshot into PostgreSQL')
     parser.add_argument('--fallback', action='store_true', help='direct Slack notice when the in-app watch is silenced')
-    parser.add_argument('--synthetic-incident', action='store_true', help='mark this snapshot for an end-to-end alert test')
+    parser.add_argument('--synthetic-incident', action='store_true',
+                        help='end-to-end alert test: with --publish, snapshots carry a test incident for 3 minutes')
     parser.add_argument('--env-file', type=Path, default=STATE / 'config/runtime.env')
     parser.add_argument('--credentials', type=Path, default=STATE / 'secrets/slack-credentials.json')
     parser.add_argument('--state', type=Path, default=STATE / 'ops/fallback-state.json')
@@ -387,6 +407,8 @@ def main(argv=None):
     if args.print and (args.publish or args.fallback):
         parser.error('--print writes nothing; drop --publish/--fallback')
     now = utcnow()
+    if args.synthetic_incident and args.publish:
+        start_synthetic(now)
     value = snapshot(now, synthetic=args.synthetic_incident)
     receipt = {'collected_at': value['collected_at'], 'containers': len(value['containers']),
                'probe_errors': value['probe_errors'], 'published': False}
