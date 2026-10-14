@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "slug": "anglerfish",
-  "currentIntent": "INTENT-v21.json",
-  "state": "research_active_second_result_audit_running",
-  "previousIntent": "INTENT-v20.json",
+  "currentIntent": "INTENT-v22.json",
+  "state": "note_policy_recovery_completed_actual_independent_audit_resumed",
+  "previousIntent": "INTENT-v21.json",
   "deliverables": {
     "POLICY": {
       "status": "completed",
@@ -35,8 +35,8 @@
       "latestProgressEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-director-selection-20261013.json"
     }
   },
-  "operationalStatus": "Latest actual company read 2026-10-13T02:28:39.458233+00:00: second3070 economic execution and artifact hash verified; result received and initial interpretation completed. Independent audit attempt1, latest model turn5 running, completed preceding responses4, stage error none. Existing request3 recovered automatically after two Temporal heartbeat timeouts; no operator production mutation, account change, scientific rerun or manual response application this check. Measured results2; reported trials1. Current owner approval not required. Audit verdict and second final report remain pending.",
-  "evidence": "../../project/evidence/etf-exploration-20260930/second-result-final-status-check-20261013.json",
+  "operationalStatus": "2026-10-14 actual bounded-note deployment completed09:28:41 KST, owned pause restored and coherent backup saved. Original8020-character cached packet5 committed unchanged09:31:01, event1047. At09:31:41 actual independent Astra max/CLI0.160.1 request6 running, audit attempt1 running/error none. Measured results2; reported trials1; no new science execution or audit verdict from recovery. Current owner approval not required; final audit and second report still pending.",
+  "evidence": "../../project/evidence/etf-exploration-20260930/second-audit-actual-continuation-20261014.json",
   "nextStage": {
     "stage": "audit_then_meaning_and_report",
     "programId": "f7deaf96-e677-5afe-93d4-18ac387043bb",
@@ -51,36 +51,43 @@
     "currentTaskId": "77c4b39e-fc7e-57bb-bcc5-69d0b8675e51",
     "proposalId": "895fe4bb-dc4c-4fde-9bb3-b3ca089b9766",
     "implementationConditionalOnSelection": true,
-    "currentTurnId": "53937d8b-aba9-5c9a-8858-47945b66b24e",
-    "currentTurnSequence": 5,
+    "currentTurnId": "b6daf176-db00-562f-af41-8aee6f25d3c8",
+    "currentTurnSequence": 6,
     "currentTurnState": "running"
   },
   "draftPr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
   "finalIntegration": {
-    "intent": "INTENT-v21.json",
-    "status": "scoped_runtime_applied_actual_proposal_accepted_and_successor_verified",
+    "intent": "INTENT-v22.json",
+    "status": "scoped_note_policy_runtime_applied_original_response_reconciled_actual_audit_continuation_verified",
     "currentIntentComplete": true,
     "canonicalMergeClaimed": false,
     "scientificProgrammeComplete": false,
     "secondEconomicEvaluationClaimed": true,
-    "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
-    "sourceCommit": "be0ae26",
-    "operationCommit": "5ec088b2854a2a94c6b514a25e2ae64e1a3dc6b0",
-    "actualIntegrationEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-runtime-applied-20261013.json",
-    "regression": {
-      "passed": 1856,
-      "skipped": 14,
-      "targetedPassed": 18,
-      "lint": "passed",
-      "modelSlackMarketFixtures": "synthetic"
-    },
-    "actualSuccessorEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-proposal-accepted-20261013.json",
-    "acceptedFieldsEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-accepted-relationship-fields-20261013.json",
-    "actualSlackMessageEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-slack-message-20261013.json",
+    "independentSecondResultAuditComplete": false,
     "liveOrPaperApprovalClaimed": false,
-    "actualLatestProgressEvidence": "../../project/evidence/etf-exploration-20260930/second-result-final-status-check-20261013.json",
-    "secondExecutionReceipt": "../../project/evidence/etf-exploration-20260930/second-economic-execution-receipt-20261013.json",
-    "independentSecondResultAuditComplete": false
+    "sourceCommit": "6a64d792333e0d5a871eb865f55d154656a06cb1",
+    "operationCommit": "8651516fa6d1feaecdd5da7653751d5b3df52308",
+    "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
+    "exactReviewComment": "https://github.com/JJongAchii/quant-ai-company/pull/105#issuecomment-6157971019",
+    "actualIntegrationEvidence": "../../project/evidence/etf-exploration-20260930/audit-note-bound-runtime-applied-20261014.json",
+    "reconciliationEvidence": "../../project/evidence/etf-exploration-20260930/second-audit-packet5-reconciled-20261014.json",
+    "actualSuccessorEvidence": "../../project/evidence/etf-exploration-20260930/second-audit-actual-continuation-20261014.json",
+    "regression": {
+      "observed_at": "2026-10-14T00:13:34.626977+00:00",
+      "source_commit": "6a64d792333e0d5a871eb865f55d154656a06cb1",
+      "full_suite_passed": true,
+      "full_passed": 1859,
+      "full_skipped": 14,
+      "full_seconds": 707.228,
+      "targeted_passed": 13,
+      "full_junit_sha256": "9e7d9606d509ed44c7738c583a5e71c7a3a9d5dfbb4fde0b526226f9bf20c52a",
+      "targeted_junit_sha256": "ec43951a6b9ee434242b01193cca3b43e14b662226f97358be6a3a4cce250e61",
+      "lint_passed": true,
+      "real_postgresql": true,
+      "real_git_and_pinned_qlab": true,
+      "model_slack_market_fixtures": "synthetic"
+    },
+    "exactShaHumanApprovalClaimed": false
   },
   "exploratoryPreparation": {
     "policy": "completed",
@@ -151,7 +158,7 @@
   "currentOperation": {
     "sourceCommit": "ec1fbeb29a49420a367f06af596283e6ead4ab72",
     "previousCommit": "e1e74d3cb1a25833c58a13baff3441f1381270ee",
-    "phase": "second_measured_result_received_audit_in_progress",
+    "phase": "second_result_independent_audit_in_progress",
     "review": "../../project/evidence/etf-exploration-20260930/held-audit-apply-review-20261006.json",
     "exactShaHumanApprovalClaimed": false,
     "activationReceipt": "../../project/evidence/etf-exploration-20260930/held-audit-cutover-active-20261006.json",
@@ -219,7 +226,7 @@
     "currentSelectionTaskId": "4af32f8b-46c0-5c03-bd86-edc86eec5e74",
     "currentSelectionReadChunks": 5,
     "challengeCompletedAt": "2026-10-13T00:49:40.177586+00:00",
-    "actualLatestProgressEvidence": "../../project/evidence/etf-exploration-20260930/second-result-final-status-check-20261013.json",
+    "actualLatestProgressEvidence": "../../project/evidence/etf-exploration-20260930/second-audit-actual-continuation-20261014.json",
     "secondEconomicExecutionCompletedAt": "2026-10-13T01:23:33.363698Z",
     "secondScientificTrialId": "e500a2c4-a091-5808-83c7-b5516a748278",
     "secondScientificJobId": "5973e464-d201-5865-8ca0-636d0943e344",
@@ -229,15 +236,19 @@
     "secondExecutionReceipt": "../../project/evidence/etf-exploration-20260930/second-economic-execution-receipt-20261013.json",
     "currentResearchStageId": "d2ea3e11-20b4-5ddb-8b08-12dd55c26879",
     "currentResearchTaskId": "77c4b39e-fc7e-57bb-bcc5-69d0b8675e51",
-    "secondResultIndependentAuditComplete": false
+    "secondResultIndependentAuditComplete": false,
+    "notePolicySourceCommit": "6a64d792333e0d5a871eb865f55d154656a06cb1",
+    "notePolicyOperationCommit": "8651516fa6d1feaecdd5da7653751d5b3df52308",
+    "notePolicyAppliedAt": "2026-10-14T00:28:41.058216+00:00",
+    "notePolicyReconciliationEventId": 1047
   },
   "currentIntentCompletion": {
-    "intent": "INTENT-v21.json",
+    "intent": "INTENT-v22.json",
     "status": "completed",
     "programmeStillActive": true,
     "scientificProgrammeComplete": false,
     "scientificDecisionsSupplied": false,
-    "evidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-proposal-accepted-20261013.json"
+    "evidence": "../../project/evidence/etf-exploration-20260930/second-audit-actual-continuation-20261014.json"
   },
   "previousAuditResumeDeliverables": {
     "AUDIT_DIAGNOSIS": {
@@ -254,49 +265,54 @@
       "actualProviderState": "running"
     }
   },
-  "phase": "second_measured_result_received_audit_in_progress",
+  "phase": "second_result_independent_audit_in_progress",
   "currentDeliverables": {
-    "CURRENT_STATUS": {
+    "ACTUAL_STATUS": {
       "status": "completed",
-      "evidence": "../../project/evidence/etf-exploration-20260930/successor-blocked-progress-20261013.json"
+      "evidence": "../../project/evidence/etf-exploration-20260930/second-audit-note-stall-20261014.json"
     },
-    "PROPOSAL_NAVIGATION": {
+    "BOUNDED_NOTE_POLICY": {
       "status": "completed",
-      "sourceCommit": "be0ae26",
-      "targetedPassed": 18,
-      "consumerChanged": false
+      "sourceCommit": "6a64d792333e0d5a871eb865f55d154656a06cb1",
+      "noteBound": 24000,
+      "writingTarget": 6000,
+      "promptBound": 90000
     },
     "QUALIFIED_APPLY": {
       "status": "completed",
-      "operationCommit": "5ec088b2854a2a94c6b514a25e2ae64e1a3dc6b0",
-      "evidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-runtime-applied-20261013.json"
+      "operationCommit": "8651516fa6d1feaecdd5da7653751d5b3df52308",
+      "evidence": "../../project/evidence/etf-exploration-20260930/audit-note-bound-runtime-applied-20261014.json",
+      "fullPassed": 1859,
+      "skipped": 14,
+      "targetedPassed": 13,
+      "lint": "passed",
+      "fixtures": "model Slack market synthetic"
     },
-    "ACTUAL_PROGRESS": {
-      "status": "completed_actual_staff_proposal_accepted_and_independent_challenge_completed",
-      "proposalId": "895fe4bb-dc4c-4fde-9bb3-b3ca089b9766",
-      "evidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-proposal-accepted-20261013.json",
-      "latestProgressEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-director-selection-20261013.json"
+    "ACTUAL_CONTINUATION": {
+      "status": "completed_actual_independent_model_call_verified",
+      "reconciliationEventId": 1047,
+      "requestId": "b6daf176-db00-562f-af41-8aee6f25d3c8",
+      "evidence": "../../project/evidence/etf-exploration-20260930/second-audit-actual-continuation-20261014.json"
     }
   },
   "currentMonitoring": {
-    "intent": 21,
-    "unit": "quant-company-technical-review-observer-v2-20261012.service",
+    "intent": 22,
+    "unit": "quant-company-second-audit-observer-20261014.service",
     "state": "active_running",
-    "intervalSeconds": 45,
     "maximumHours": 24,
-    "startedAt": "2026-10-12T02:39:06+00:00",
-    "maximumEndAt": "2026-10-13T02:39:06+00:00",
+    "intervalSeconds": 45,
     "readOnly": true,
     "automaticAlerts": false,
     "automaticRepairs": false,
     "currentlyRunning": true,
     "unboundedMonitoringClaimed": false,
-    "evidence": "../../project/evidence/etf-exploration-20260930/technical-review-bounded-observer-v2-active-20261012.json"
+    "evidence": "../../project/evidence/etf-exploration-20260930/second-audit-bounded-observer-active-20261014.json",
+    "observedAt": "2026-10-14 00:35:32 UTC"
   },
   "currentStatusCheck": {
-    "observedAt": "2026-10-13T02:28:39.458233+00:00",
-    "evidence": "../../project/evidence/etf-exploration-20260930/second-result-final-status-check-20261013.json",
-    "summary": "../../project/RESEARCH-PROGRESS-20261013.md",
+    "observedAt": "2026-10-14T00:31:41.153666+00:00",
+    "evidence": "../../project/evidence/etf-exploration-20260930/second-audit-actual-continuation-20261014.json",
+    "summary": "../../project/SECOND-AUDIT-NOTE-RECOVERY-20261014.md",
     "readOnly": true,
     "reportedEconomicTrials": 1,
     "measuredResults": 2,
@@ -319,12 +335,14 @@
     "actualReasoningEffort": "max",
     "additionalOwnerApprovalRequired": false,
     "performanceVerified": false,
-    "currentTurnId": "53937d8b-aba9-5c9a-8858-47945b66b24e",
-    "currentTurnSequence": 5,
+    "currentTurnId": "b6daf176-db00-562f-af41-8aee6f25d3c8",
+    "currentTurnSequence": 6,
     "currentTurnState": "running",
-    "actualCompletedAuditRequestCount": 4,
+    "actualCompletedAuditRequestCount": 5,
     "serverRetryRecoveredAutomatically": true,
-    "operatorProductionMutationThisCheck": false
+    "operatorProductionMutationThisCheck": false,
+    "productionRepairAppliedThisTurn": true,
+    "actualAuditModelExecutionVerified": true
   },
   "revisionLoopRepair": {
     "intent": "INTENT-v18.json",
@@ -525,13 +543,18 @@
     "additionalOwnerApprovalRequired": false
   },
   "boundedObserver": {
-    "unit": "quant-company-technical-review-observer-v2-20261012.service",
+    "intent": 22,
+    "unit": "quant-company-second-audit-observer-20261014.service",
+    "state": "active_running",
     "maximumHours": 24,
+    "intervalSeconds": 45,
     "readOnly": true,
-    "state": "active",
     "automaticAlerts": false,
     "automaticRepairs": false,
-    "evidence": "../../project/evidence/etf-exploration-20260930/technical-review-bounded-observer-v2-active-20261012.json"
+    "currentlyRunning": true,
+    "unboundedMonitoringClaimed": false,
+    "evidence": "../../project/evidence/etf-exploration-20260930/second-audit-bounded-observer-active-20261014.json",
+    "observedAt": "2026-10-14 00:35:32 UTC"
   },
   "priorCompletedTechnicalDisposition": {
     "intent": "INTENT-v20.json",
@@ -628,5 +651,46 @@
     "additionalOwnerApprovalRequired": false,
     "actualSelectionScopeMatchesDb": true,
     "independentChallengeCompleted": true
+  },
+  "priorCompletedNavigationIntegration": {
+    "intent": "INTENT-v21.json",
+    "status": "scoped_runtime_applied_actual_proposal_accepted_and_successor_verified",
+    "currentIntentComplete": true,
+    "canonicalMergeClaimed": false,
+    "scientificProgrammeComplete": false,
+    "secondEconomicEvaluationClaimed": true,
+    "pr": "https://github.com/JJongAchii/quant-ai-company/pull/105",
+    "sourceCommit": "be0ae26",
+    "operationCommit": "5ec088b2854a2a94c6b514a25e2ae64e1a3dc6b0",
+    "actualIntegrationEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-runtime-applied-20261013.json",
+    "regression": {
+      "passed": 1856,
+      "skipped": 14,
+      "targetedPassed": 18,
+      "lint": "passed",
+      "modelSlackMarketFixtures": "synthetic"
+    },
+    "actualSuccessorEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-proposal-accepted-20261013.json",
+    "acceptedFieldsEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-accepted-relationship-fields-20261013.json",
+    "actualSlackMessageEvidence": "../../project/evidence/etf-exploration-20260930/proposal-navigation-actual-slack-message-20261013.json",
+    "liveOrPaperApprovalClaimed": false,
+    "actualLatestProgressEvidence": "../../project/evidence/etf-exploration-20260930/second-result-final-status-check-20261013.json",
+    "secondExecutionReceipt": "../../project/evidence/etf-exploration-20260930/second-economic-execution-receipt-20261013.json",
+    "independentSecondResultAuditComplete": false
+  },
+  "priorAuditObserver": {
+    "intent": 21,
+    "unit": "quant-company-technical-review-observer-v2-20261012.service",
+    "state": "active_running",
+    "intervalSeconds": 45,
+    "maximumHours": 24,
+    "startedAt": "2026-10-12T02:39:06+00:00",
+    "maximumEndAt": "2026-10-13T02:39:06+00:00",
+    "readOnly": true,
+    "automaticAlerts": false,
+    "automaticRepairs": false,
+    "currentlyRunning": true,
+    "unboundedMonitoringClaimed": false,
+    "evidence": "../../project/evidence/etf-exploration-20260930/technical-review-bounded-observer-v2-active-20261012.json"
   }
 }
