@@ -927,7 +927,10 @@ def decide(status, previous, values, now, github, runner=run):
                     "detail": f"{target[:12]} is {order['status']} of the running release"}
         render_commit = values.get("VIDEO_RENDER_COMMIT") or current
         root = fetch(target, github, protect={render_commit}, runner=runner)
-        status["operator_files"] = operator_changes(changed(root_of(current), root))
+        if not (difference := changed(root_of(current), root)):  # docs or tests only: production runs the same files
+            return {**status, "action": "drift" if status["drift"] else "up_to_date", "target": None,
+                    "detail": f"main {target[:12]} changes no file a release deploys"}
+        status["operator_files"] = operator_changes(difference)
         base = root_of(current) if render_commit == current else fetch(render_commit, github, {target}, runner)
         if render := render_changes(changed(base, root), [base, root]):
             return {**status, "action": "render_required", "render_files": render[:20],

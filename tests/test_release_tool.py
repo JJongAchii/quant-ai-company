@@ -342,15 +342,26 @@ def test_auto_waits_for_window_quiet_and_a_clean_production(auto_host, monkeypat
     assert status["action"] == "ahead_of_green" and status["target"] is None  # released before its CI finished
 
 
+def test_a_main_that_changes_no_release_file_needs_no_release(auto_host):
+    github = FakeGitHub({**FILES, **RENDER})  # identical release files: the new commits touched docs or tests only
+    status = release.auto(github, runner=no_docker, now=IN_WINDOW)
+    assert status["action"] == "up_to_date" and status["target"] is None and "changes no file" in status["detail"]
+    configure(RELEASE_AUTO_ENABLED="true")
+    assert release.auto(github, runner=no_docker, now=IN_WINDOW)["action"] == "up_to_date" and auto_host == []
+
+
 def test_auto_reports_host_files_a_release_does_not_install(auto_host):
     github = FakeGitHub({**FILES, **RENDER, "deploy/quant-company-ops.timer": "[Timer]\n"})
     status = release.auto(github, runner=no_docker, now=IN_WINDOW)
     assert status["action"] == "would_release" and status["operator_files"] == ["deploy/quant-company-ops.timer"]
 
 
+CHANGED = {**FILES, **RENDER, "src/quant_company/company.py": "VALUE = 2\n"}
+
+
 def test_auto_release_runs_every_step_in_order(auto_host):
     configure(RELEASE_AUTO_ENABLED="true")
-    status = release.auto(FakeGitHub({**FILES, **RENDER}), runner=no_docker, now=IN_WINDOW)
+    status = release.auto(FakeGitHub(CHANGED), runner=no_docker, now=IN_WINDOW)
     assert status["action"] == "released" and status["current"] == SHA and status["target"] is None
     assert auto_host == [("build", SHA), ("migrate", SHA), ("apply", SHA, ["api"]), ("apply", SHA, ["worker"]),
                          ("activate", SHA)]
@@ -371,7 +382,7 @@ def test_a_failed_release_returns_moved_services_and_is_not_retried(auto_host, m
 
     monkeypatch.setattr(release, "apply", apply)
     monkeypatch.setattr(release, "moved", lambda sha, services, runner=None: ["api"])
-    github = FakeGitHub({**FILES, **RENDER})
+    github = FakeGitHub(CHANGED)
     status = release.auto(github, runner=no_docker, now=IN_WINDOW)
     assert status["action"] == "failed" and status["failed_commit"] == SHA
     assert status["restored"] == {"services": ["api"], "ok": True}
@@ -389,7 +400,7 @@ def test_an_incomplete_release_is_finished_at_any_hour_once_services_moved(auto_
         raise release.Busy("worker stayed busy: turn queued or running")
 
     monkeypatch.setattr(release, "apply", busy_apply)
-    github = FakeGitHub({**FILES, **RENDER})
+    github = FakeGitHub(CHANGED)
     first = release.auto(github, runner=no_docker, now=IN_WINDOW)
     assert first["action"] == "incomplete" and first["target"] == SHA and first["failed_commit"] is None
     monkeypatch.setattr(release, "moved", lambda sha, services, runner=None: [])  # nothing moved: start over
