@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     company_research_enabled: bool = False
     company_autonomous_research_enabled: bool = False
     research_planning_enabled: bool = False
+    research_planning_stages_enabled: bool = False
     research_audit_max_turns: int = Field(default=64, ge=2, le=128)
     research_audit_max_uncached_tokens: int = Field(default=750000, ge=10000, le=2000000)
     research_audit_max_output_tokens: int = Field(default=100000, ge=1000, le=200000)
@@ -284,6 +285,9 @@ class Settings(BaseSettings):
             raise ValueError("Fixture provider requires explicit FIXTURE_MODE=true")
         if self.company_autonomous_research_enabled and not self.company_research_enabled:
             raise ValueError("Autonomous research requires the durable research service")
+        if self.research_planning_stages_enabled and not (
+                self.research_planning_enabled and self.company_research_enabled):
+            raise ValueError("Planning stages require research planning and the durable research service")
         if self.company_improvements_enabled and (
             not self.improvements_channel_id.startswith("C")
             or self.improvements_channel_id not in self.slack_allowed_channels

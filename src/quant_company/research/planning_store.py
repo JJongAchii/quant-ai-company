@@ -104,14 +104,15 @@ class QuestionStore:
 
 
 def open_gap(conn, project_id, request: GapRequest, *, dependency_fingerprint, question_id=None,
-             evidence_set_id=None):
+             evidence_set_id=None, run_id=None, candidate_id=None):
     """One open gap per subject; repeated detection links to it instead of duplicating."""
     request = typed(GapRequest, request)
     key = fingerprint({"kind": request.kind, "subject": request.subject})
-    conn.execute("""INSERT INTO research_gaps(id,project_id,question_id,evidence_set_id,kind,subject,subject_key,
-        resolver,required_evidence,recheck_on,dependency_fingerprint) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        ON CONFLICT DO NOTHING""", (uuid4(), project_id, question_id, evidence_set_id, request.kind, request.subject,
-        key, request.resolver, request.required_evidence, request.recheck_on, dependency_fingerprint))
+    conn.execute("""INSERT INTO research_gaps(id,project_id,question_id,evidence_set_id,run_id,candidate_id,kind,
+        subject,subject_key,resolver,required_evidence,recheck_on,dependency_fingerprint)
+        VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING""",
+        (uuid4(), project_id, question_id, evidence_set_id, run_id, candidate_id, request.kind, request.subject, key,
+         request.resolver, request.required_evidence, request.recheck_on, dependency_fingerprint))
     return str(conn.execute("SELECT id FROM research_gaps WHERE project_id=%s AND subject_key=%s AND state='open'",
                             (project_id, key)).fetchone()["id"])
 

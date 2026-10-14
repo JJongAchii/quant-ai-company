@@ -189,3 +189,21 @@ def engine_card_key(spec: MissionSpec) -> str:
 
 def engine_card(spec: MissionSpec) -> EngineRuleCard | None:
     return ENGINE_RULE_CARDS.get(engine_card_key(spec))
+
+
+# Policy defaults from the design (14.2). Changing them is a policy revision.
+PLANNING_LIMITS = {"slate_turns": 36, "critique_turns": 28, "decision_turns": 12, "attempts": 3,
+                   "run_requests": 90, "owner_day_requests": 120, "owner_concurrent_runs": 1}
+
+
+class PlanningSlate(MissionModel):
+    schema_version: Literal[1] = 1
+    candidates: Annotated[list[PlanningCandidate], Field(max_length=3)]
+    no_candidate_reason: Annotated[str, Field(min_length=1, max_length=1200)] | None = None
+    reading_notes: Annotated[str, Field(min_length=1, max_length=3000)]
+
+    @model_validator(mode="after")
+    def reasoned(self):
+        if bool(self.candidates) == (self.no_candidate_reason is not None):
+            raise ValueError("Give candidates, or no candidates with a no_candidate_reason")
+        return self

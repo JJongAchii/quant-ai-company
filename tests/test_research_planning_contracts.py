@@ -12,9 +12,11 @@ from quant_company.research.mission_contracts import Objective
 from quant_company.research.planning_contracts import (
     ENGINE_RULE_CARDS,
     METRICS,
+    PLANNING_LIMITS,
     TOPICS,
     Estimand,
     PlanningCandidate,
+    PlanningSlate,
     QuestionSpec,
     TriageCheck,
     TriageResult,
@@ -101,3 +103,17 @@ def test_engine_card_follows_worker_transport_selection():
     assert engine_card(SimpleNamespace(schema_version=3, execution_profile="kr-etf-research-v2")).id == "kr-research-python-v2"
     assert engine_card(SimpleNamespace(schema_version=1, execution_profile="kr-etf-monthly-python-v1")) is None
     assert ENGINE_RULE_CARDS["kr-research-python-v2"].supported_execution_timings == ["prior_session_open_fill"]
+
+
+def test_slate_states_why_it_is_empty_and_caps_candidates():
+    assert PlanningSlate.model_validate({"candidates": [], "no_candidate_reason": "No eligible evidence",
+                                         "reading_notes": "Read the question and cards"}).candidates == []
+    with pytest.raises(ValidationError, match="no_candidate_reason"):
+        PlanningSlate.model_validate({"candidates": [], "reading_notes": "Read"})
+    with pytest.raises(ValidationError, match="no_candidate_reason"):
+        PlanningSlate.model_validate({"candidates": [candidate()], "no_candidate_reason": "x", "reading_notes": "Read"})
+    with pytest.raises(ValidationError):
+        PlanningSlate.model_validate({"candidates": [candidate(title=f"Fixture {n}") for n in range(4)],
+                                      "reading_notes": "Read"})
+    assert (PLANNING_LIMITS["slate_turns"], PLANNING_LIMITS["attempts"], PLANNING_LIMITS["run_requests"],
+            PLANNING_LIMITS["owner_day_requests"]) == (36, 3, 90, 120)
