@@ -174,8 +174,11 @@ def general(tag):
 # A body line can hold several sentences (10/14 AM: '…5.46% 내린 6,035.35에 마감했다. 장중 5,911.11(-7.41%)까지…'), and
 # '장중', '정규장 종가' and flow words qualify the sentence that carries them, not every number of the line.
 SENTENCE = re.compile(r'(?<=[.!?])\s+')
-# Clauses only scope a denial: '주가는 장전 약 3% 상승했으며 | 정규장 종가 반응은 제공되지 않았다.'
+# Clauses scope a denial ('주가는 장전 약 3% 상승했으며 | 정규장 종가 반응은 제공되지 않았다.') and a flow's values.
 CLAUSE = re.compile(r'(?:(?<=,)|(?<=며)|(?<=지만)|(?<=다가)|(?<=는데)|(?<=으나)|(?<=면서)|(?<=[았었였했됐렸랐졌]고))\s+')
+# A clause naming an investor holds that investor's amount even when the flow word ends the sentence
+# ('외국인은 4,000억원, 기관은 2,000억원을 순매수했다').
+INVESTOR = re.compile(r'외국인|외인|기관|개인|연기금|금융투자|투신|사모|기타법인')
 DENIAL = re.compile(r'지\s*않|없[다었음는]|미제공|미확인')
 # Tenors and dates ('3년 국채선물', '13일') are not the values a flow or close sentence states.
 TENOR = re.compile(r'\d+(?:\.\d+)?\s*(?:년물|년|개월|분기|거래일|일|월)')
@@ -194,6 +197,19 @@ def stated(line, marker, deniable=False):
         mentions = [c for c in CLAUSE.split(sentence) if marker.search(c)]
         if mentions and not (deniable and all(DENIAL.search(c) for c in mentions)):
             found |= nums(TENOR.sub(' ', sentence))
+    return found
+
+
+def flow_values(line):
+    """Values of the clauses that state an investor flow: in a sentence carrying a flow word, the clauses with a flow
+    word or an investor subject. 10/14 PM: '코스피는 5.46% 급락한 6,035로 마감했고 … 외국인은 4조5천억원 넘게 순매도해'
+    made the index drop a flow value, and the revision put '장 마감 기준' under the index card."""
+    found = set()
+    for sentence in sentences(line):
+        if body.FLOW.search(sentence):
+            for clause in CLAUSE.split(sentence):
+                if body.FLOW.search(clause) or INVESTOR.search(clause):
+                    found |= nums(TENOR.sub(' ', clause))
     return found
 
 
@@ -372,7 +388,7 @@ def episode_violations(plan, source, library=None, *, structure=True, photos=Fal
         shown = nums(' '.join(screen)) - allowed_frame
         if any(stated(c['text'], CLOSE_MARK, deniable=True) & shown for c in cited) and not any(CLOSE_LABEL in t for t in screen):
             found.append(f'Regular-session close values need {CLOSE_LABEL} in scene {scene.id}')
-        if any(stated(c['text'], body.FLOW) & shown for c in cited) and not any(FLOW_LABEL in t for t in screen):
+        if any(flow_values(c['text']) & shown for c in cited) and not any(FLOW_LABEL in t for t in screen):
             found.append(f'Investor flows need {FLOW_LABEL} in scene {scene.id}')
         for key, text in [('narration', scene.narration)] + list(strings(scene.data)):
             if text.startswith('#') or (key == 'chips' and re.fullmatch(r'핵심 이슈 \d', text)):

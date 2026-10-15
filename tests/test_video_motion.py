@@ -418,6 +418,14 @@ def test_a_close_sharing_a_line_with_an_intraday_low_needs_no_intraday_label():
     # Yields share the line with a futures flow (10/14 AM, four versions discarded): only the flow amount needs the label.
     ('국고채 10년물 금리는 연 4.306%에서 4.229%로 내렸다. 외국인은 10년 국채선물 2,996계약을 순매수했다.', '국고채 10년물 4.229%', None),
     ('국고채 10년물 금리는 연 4.306%에서 4.229%로 내렸다. 외국인은 10년 국채선물 2,996계약을 순매수했다.', '외국인 국채선물 2,996계약', '장 마감 기준'),
+    # One sentence joins the index close and the flow (10/14 PM, '…마감했고 … 순매도해'): the index drop is not a flow
+    # value, so the revision put '장 마감 기준' under the index card. Only the investor's clause holds flow values.
+    ('13일 코스피는 전날 대비 5.46% 급락한 6,035로 마감했고 삼성전자와 SK하이닉스는 각각 7%, 10% 넘게 하락했으며, '
+     '외국인은 4조5천억원 넘게 순매도해 6거래일 연속 매도했다.', '13일 코스피 5.46%', None),
+    ('13일 코스피는 전날 대비 5.46% 급락한 6,035로 마감했고 삼성전자와 SK하이닉스는 각각 7%, 10% 넘게 하락했으며, '
+     '외국인은 4조5천억원 넘게 순매도해 6거래일 연속 매도했다.', '외국인 4조5천억원 순매도', '장 마감 기준'),
+    # Each investor names its own amount before the shared flow word: both amounts are flow values.
+    ('외국인은 4,000억원, 기관은 2,000억원을 순매수했다.', '외국인 4,000억원', '장 마감 기준'),
     # The line says the close was not provided (10/14 AM, UnitedHealth): the pre-market move is not a close value.
     ('주가는 장전 약 3% 상승했으며 정규장 종가 반응은 제공되지 않았다.', '장전 약 3% 상승', None),
     ('주가는 정규장 종가 기준 3% 상승했다.', '주가 3% 상승', '정규장 종가 기준'),
