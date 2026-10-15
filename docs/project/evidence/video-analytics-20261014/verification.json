@@ -109,9 +109,21 @@
     "cards": "three posts in #video-performance (C0C96LFP2QL) delivered 11:51, 11:52 and 11:53 KST by Analyst; seen in the owner's Slack web session",
     "card_check": "the 10월 8일 마감 card shows views 24, average 2:11 (46.5%), impressions 140 and CTR 3.6%, the figures compared against Studio above"
   },
+  "thread_answers": {
+    "release": "main 3c87dc4 (includes #164, ADR 0046) released at 19:26 KST on 2026-10-15; contracts.py was the only render input that changed, so the release operator accepted the render image instead of rebuilding it (VIDEO_RENDER_ACCEPTED)",
+    "before_release": "replies posted in the 10/8 PM card thread at 12:06-15:02 KST went to the old company-turn path (Director, then Analyst without the analysis) and got generic answers; that path is what ADR 0046 replaces",
+    "question": {"posted": "2026-10-15 23:13:38 KST, in the 10/8 PM card thread, from the owner's Slack web session", "text": "이 영상 분석 결과를 바탕으로 썸네일 문구 후보 3개만 줘",
+                 "workflow_started": "within a second (dispatch)", "answer_delivered": "23:14:13 KST, same thread, Analyst",
+                 "content": "three thumbnail text options with the company name in the large text, grounded in the card's numbers (suggested 86 impressions with no click, browse CTR 2.3%, channel 50%, search 20%) and the thumbnail it saw; no internal field names"},
+    "instruction": {"posted": "23:14:54 KST", "text": "다음 영상부터 썸네일 큰 글씨에 그날 핵심 종목명을 넣어줘",
+                    "answer_delivered": "23:15:45 KST, same thread", "lesson": "proposed (scope thumbnail) with 채택/거절 buttons on the answer; left for the owner to decide",
+                    "studio_edits": "title with the series suffix at the end and tags 삼성3분기실적, 오늘의 증시"},
+    "observation": "the instruction answer was long (it restated the edits and the lesson in prose before listing them); the owner asked for short, act-on-it replies"
+  },
   "follow_ups": [
-    "Diagnosis wording: when job data is missing the model names internal fields (cold_open, scene_drops, stories/lead, null) instead of saying in plain words that the data is not there",
+    "Shorter answers: lead with the reply, do not restate the Studio edits or the lesson in prose",
     "First Monday review: 2026-10-19 09:00 KST",
-    "First 7-day update as a thread reply under each card"
+    "First 7-day update as a thread reply under each card",
+    "First card in the new format (Studio edits on the card, full diagnosis as its first thread reply)"
   ]
 }
