@@ -410,3 +410,17 @@ def test_a_paused_release_is_quiet_until_it_has_been_paused_for_two_hours(ops):
     snapshot(ops, release=release("up_to_date", target=None))
     summary = watch.tick()
     assert summary["findings"] == [] and "paused_since" not in summary
+
+
+def test_shared_values_that_differ_while_services_are_swapped_are_not_an_alert(ops):
+    watch = OpsWatch(ops)
+    drift = {"SLACK_ALLOWED_CHANNELS": [{"services": ["api", "dispatch"]}, {"services": ["worker"]}]}
+    snapshot(ops, drift=drift, release=release("paused", target=None, mode="paused"))
+    assert watch.tick()["findings"] == []  # 2026-10-15 11:36 KST: an operator moving 13 services one at a time
+    snapshot(ops, drift=drift, release=release("releasing", started_at=now().isoformat()))
+    assert watch.tick()["findings"] == []
+    window = {"until": (now() + timedelta(minutes=5)).isoformat(), "services": ["worker"], "reason": "swap"}
+    snapshot(ops, drift=drift, deploy_window=window, release=release("up_to_date", target=None))
+    assert watch.tick()["findings"] == []
+    snapshot(ops, drift=drift, release=release("up_to_date", target=None))
+    assert watch.tick()["findings"] == ["drift:SLACK_ALLOWED_CHANNELS"]
