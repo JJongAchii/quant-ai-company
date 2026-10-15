@@ -14,6 +14,10 @@ from .editor import bounded_prompt, render, validate_review
 from .feeds import timestamp
 from .originals import MAX_ARTICLE_TEXT
 
+# Work started under the earlier policy formula (it hashed the whole Slack allow-lists) still matches until then, so the
+# release that changes the formula strands nothing in flight. Afterwards only the current digest matches.
+LEGACY_POLICY_UNTIL = datetime(2026, 10, 20, tzinfo=UTC)
+
 
 class NewsStore:
     def __init__(self, company):
@@ -23,18 +27,25 @@ class NewsStore:
     def sources(self):
         return {item.id: item for item in load_sources(self.company.settings.news_sources_file)}
 
-    def policy(self):
+    def policy(self, legacy=False):
         settings = self.company.settings
+        # Only whether this lane's channel and owner are allowed counts. Hashing the whole Slack allow-lists made an
+        # unrelated channel strand news in flight (2026-10-15: three posts went stale). LEGACY is that earlier formula.
+        access = ({"allowed_channels": settings.slack_allowed_channels, "allowed_users": settings.slack_allowed_users}
+                  if legacy else {"channel_allowed": settings.news_channel_id in settings.slack_allowed_channels,
+                                  "owner_allowed": settings.news_owner_user in settings.slack_allowed_users})
         return fingerprint({"enabled": settings.company_news_enabled, "publish": settings.news_publish_enabled,
-                            "channel": settings.news_channel_id, "owner": settings.news_owner_user,
-                            "allowed_channels": settings.slack_allowed_channels,
-                            "allowed_users": settings.slack_allowed_users,
+                            "channel": settings.news_channel_id, "owner": settings.news_owner_user, **access,
                             "max_age": settings.news_max_age_hours,
                             "editor_policy": 3,
                             "optimization": settings.news_optimization_enabled,
                             "screening_policy": 2,
                             "delivery_window": settings.news_delivery_window_enabled,
                             "sources": [s.model_dump() for s in self.sources().values()]})
+
+    def policies(self):
+        """Digests that work in flight may carry: the current one and, while the formula changes over, the earlier one."""
+        return {self.policy()} | ({self.policy(legacy=True)} if datetime.now(UTC) < LEGACY_POLICY_UNTIL else set())
 
     def authorized(self):
         settings = self.company.settings
@@ -163,13 +174,13 @@ class NewsStore:
         if schedule.quiet(self.company.settings):
             return {"state": "quiet", "next_delay": schedule.next_delay(self.company.settings)}
         self.sync_sources()
-        policy = self.policy()
+        policy, policies = self.policy(), self.policies()
         with self.db.transaction() as conn:
             conn.execute("SELECT pg_advisory_xact_lock(71350227)")
             if conn.execute("SELECT 1 FROM runtime_control WHERE paused_until>now()").fetchone():
                 return {"state": "defer"}
             active = conn.execute("SELECT * FROM news_reviews WHERE state='running' ORDER BY created_at LIMIT 1 FOR UPDATE").fetchone()
-            if active and active["policy_digest"] != policy:
+            if active and active["policy_digest"] not in policies:
                 conn.execute("UPDATE news_reviews SET state='stale',completed_at=now() WHERE id=%s", (active["id"],))
                 self._stale_articles(conn, active["id"])
                 return {"state": "stale"}
@@ -294,7 +305,7 @@ class NewsStore:
                 if fingerprint(saved["response"]) != fingerprint(body):
                     raise ValueError("news_committed_response_changed")
                 return {"state": saved["state"], "duplicate": True}
-            if saved["state"] != "running" or not self.authorized() or saved["policy_digest"] != policy:
+            if saved["state"] != "running" or not self.authorized() or saved["policy_digest"] not in self.policies():
                 conn.execute("UPDATE news_reviews SET state='stale',response=%s,completed_at=now() WHERE id=%s",
                              (Jsonb(body), response.request_id))
                 self._stale_articles(conn, response.request_id)
@@ -384,7 +395,7 @@ class NewsStore:
     def delivery_allowed(self, conn, row):
         publication = conn.execute("SELECT * FROM news_publications WHERE id=%s", (row["id"],)).fetchone()
         return bool(publication and self.authorized() and self.company.settings.news_publish_enabled
-                    and publication["policy_digest"] == self.policy() and publication["expires_at"] > datetime.now(UTC)
+                    and publication["policy_digest"] in self.policies() and publication["expires_at"] > datetime.now(UTC)
                     and row["channel"] == self.company.settings.news_channel_id)
 
     def status(self):
