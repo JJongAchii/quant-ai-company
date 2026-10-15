@@ -40,7 +40,8 @@ EDITIONS = {'am': '아침 시장 브리핑', 'close': '마감 브리핑'}
 # The template draws ▲/▼ from a direction field in front of these values (and after image labels). A sign the script
 # also wrote is dropped so the screen shows exactly one arrow (2026-10-12 morning: "▲ ▲0.59%" on 18 values).
 ARROWED = {'cold_open': ('stats', 'value', 'big_dir'), 'market_board': ('tiles', 'change', 'dir'),
-           'headline': ('stats', 'change', 'dir'), 'compare': ('tiles', 'value', 'dir'), 'counter': ('blocks', 'value', 'dir')}
+           'headline': ('stats', 'change', 'dir'), 'compare': ('tiles', 'value', 'dir'), 'counter': ('blocks', 'value', 'dir'),
+           'photo': ('rows', 'big', 'dir')}
 SIGNS = {'up': '▲', 'dn': '▼'}
 LEAD_SIGN, TRAIL_SIGN = re.compile(r'^\s*([▲▼])\s*'), re.compile(r'\s*([▲▼])\s*$')
 
