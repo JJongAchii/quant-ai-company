@@ -143,14 +143,20 @@ def label(info, key):
 
 
 @contextlib.contextmanager
-def host_lock():
-    """Same lock as backups and Maintainer releases: one host-changing operation at a time."""
+def host_lock(wait=30, sleep=time.sleep):
+    """Same lock as backups and Maintainer releases: one host-changing operation at a time. A holder that lets go within
+    WAIT seconds (another tool only checking the lock) is waited for."""
     path = STATE / ".backup.lock"
     with path.open("a") as handle:
-        try:
-            fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
-            raise Busy("another backup or release holds the host lock") from None
+        deadline = time.monotonic() + wait
+        while True:
+            try:
+                fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError:
+                if time.monotonic() >= deadline:
+                    raise Busy("another backup or release holds the host lock") from None
+                sleep(1)
         yield
 
 
@@ -544,7 +550,18 @@ def activate(sha, runner=run):
         link.unlink(missing_ok=True)
         link.symlink_to(root)
         os.replace(link, current)
+    refresh_status(runner=runner)
     return {"commit": sha, "current": str(root)}
+
+
+AUTO_UNIT = Path("/etc/systemd/system/quant-company-release-auto.service")
+
+
+def refresh_status(runner=run):
+    """Runs the automatic check right away when it is installed, so nothing reads a status written before a release.
+    Inside that check itself (an automatic release) systemd merges the request into the running job."""
+    if AUTO_UNIT.exists():
+        runner(["systemctl", "start", "--no-block", AUTO_UNIT.name], check=False)
 
 
 # ----------------------------------------------------------------------------------------------- automatic release
@@ -779,7 +796,7 @@ def production_busy(runner=run):
 
 def host_free():
     try:
-        with host_lock():
+        with host_lock(wait=0):
             return True
     except Busy:
         return False
@@ -896,6 +913,8 @@ def release_to(status, target, previous, values, runner=run):
 
 def decide(status, previous, values, now, github, runner=run):
     current, progress = status["current"], read_json(progress_file())
+    if status["mode"] == "paused":  # an operator is changing production by hand: drift is their work in progress
+        return {**status, "action": "paused", "detail": "RELEASE_AUTO_ENABLED=paused"}
     if progress.get("phase") == "restoring":
         status.update(target=progress["target"], detail=progress["detail"])
         if status["mode"] != "release":
@@ -968,7 +987,7 @@ def auto(github=None, runner=run, now=None, retry=False):
         if retry:
             previous["failed_commit"] = None
         status = {"checked_at": now.isoformat(timespec="seconds"),
-                  "mode": "release" if values.get("RELEASE_AUTO_ENABLED") == "true" else "report",
+                  "mode": {"true": "release", "paused": "paused"}.get(values.get("RELEASE_AUTO_ENABLED"), "report"),
                   "current": (RELEASES.parent / "current").resolve().name,
                   "render": {"commit": values.get("VIDEO_RENDER_COMMIT"), "accepted": values.get("VIDEO_RENDER_ACCEPTED"),
                              "task_definition": values.get("VIDEO_RENDER_TASK_DEFINITION")},

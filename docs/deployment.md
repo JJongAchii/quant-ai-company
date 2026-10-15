@@ -359,7 +359,7 @@ sudo cat /var/lib/quant-company/release-status.json
 
 | 값 | 뜻 |
 |---|---|
-| `RELEASE_AUTO_ENABLED` | `true`일 때만 반영한다. 그 밖에는 판단하고 보고만 한다. 손으로 릴리스하는 동안에는 `false`로 둔다. |
+| `RELEASE_AUTO_ENABLED` | `true`일 때만 반영한다. `paused`이면 운영 커밋만 기록한다. 손으로 릴리스하는 동안에는 `paused`로 두었다가 끝나면 `true`로 돌린다. 그 밖의 값은 판단하고 보고만 한다. |
 | `VIDEO_RENDER_COMMIT` | 지금 렌더 작업 정의의 이미지를 빌드한 커밋이다. 렌더 입력이 이 커밋과 다르면 `render_required`로 멈춘다. |
 | `VIDEO_RENDER_ACCEPTED` | 운영자가 렌더 입력 차이를 검토해 렌더에 영향이 없다고 판단한 커밋이다. 있으면 이 커밋과 비교한다. 렌더 이미지를 다시 만들면 지운다. |
 | `RELEASE_AUTO_WINDOWS` | 반영을 시작할 수 있는 KST 시간 창이다. 기본값은 `10:00-14:30,19:40-23:00`이다. |
