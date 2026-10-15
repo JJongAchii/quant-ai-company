@@ -1,0 +1,128 @@
+{
+ "app": {
+  "size_prod_gb": 2.1,
+  "size_test_gb": 1.27,
+  "differences": {
+   "config.labels": {
+    "prod": {
+     "com.docker.compose.project": "quant-company",
+     "com.docker.compose.service": "api",
+     "com.docker.compose.version": "5.5.1",
+     "org.quant-company.qdata-revision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+    },
+    "test": {
+     "org.quant-company.qdata-revision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+    }
+   },
+   "uv_cache": {
+    "prod": true,
+    "test": false
+   }
+  }
+ },
+ "autonomous-research": {
+  "size_prod_gb": 2.23,
+  "size_test_gb": 1.4,
+  "differences": {
+   "config.labels": {
+    "prod": {
+     "com.docker.compose.project": "quant-company",
+     "com.docker.compose.service": "worker",
+     "com.docker.compose.version": "5.5.1",
+     "org.quant-company.qdata-revision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+    },
+    "test": {
+     "org.quant-company.qdata-revision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+    }
+   },
+   "uv_cache": {
+    "prod": true,
+    "test": false
+   }
+  }
+ },
+ "maintenance": {
+  "size_prod_gb": 2.11,
+  "size_test_gb": 1.28,
+  "differences": {
+   "config.labels": {
+    "prod": {
+     "com.docker.compose.project": "quant-company",
+     "com.docker.compose.service": "maintenance",
+     "com.docker.compose.version": "5.5.1",
+     "org.quant-company.qdata-revision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+    },
+    "test": {
+     "org.quant-company.qdata-revision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+    }
+   },
+   "uv_cache": {
+    "prod": true,
+    "test": false
+   }
+  }
+ },
+ "codex": {
+  "size_prod_gb": 2.89,
+  "size_test_gb": 2.05,
+  "differences": {
+   "config.labels": {
+    "prod": {
+     "com.docker.compose.project": "quant-company",
+     "com.docker.compose.service": "codex-runtime",
+     "com.docker.compose.version": "5.5.1",
+     "org.quant-company.qdata-revision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+    },
+    "test": {
+     "org.quant-company.qdata-revision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+    }
+   },
+   "uv_cache": {
+    "prod": true,
+    "test": false
+   }
+  }
+ },
+ "claude": {
+  "size_prod_gb": 2.44,
+  "size_test_gb": 1.61,
+  "differences": {
+   "config.labels": {
+    "prod": {
+     "com.docker.compose.project": "quant-company",
+     "com.docker.compose.service": "claude-runtime",
+     "com.docker.compose.version": "5.5.1",
+     "org.quant-company.qdata-revision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+    },
+    "test": {
+     "org.quant-company.qdata-revision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+    }
+   },
+   "uv_cache": {
+    "prod": true,
+    "test": false
+   }
+  }
+ },
+ "video": {
+  "size_prod_gb": 5.47,
+  "size_test_gb": 3.95,
+  "differences": {
+   "config.labels": {
+    "prod": {
+     "com.docker.compose.project": "quant-company",
+     "com.docker.compose.service": "video-worker",
+     "com.docker.compose.version": "5.5.1",
+     "org.quant-company.qdata-revision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+    },
+    "test": {
+     "org.quant-company.qdata-revision": "d6d7d0ed066ec49541e9acdd657c9ec5692ffc52"
+    }
+   },
+   "uv_cache": {
+    "prod": true,
+    "test": false
+   }
+  }
+ }
+}
