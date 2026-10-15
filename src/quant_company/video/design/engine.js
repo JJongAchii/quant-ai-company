@@ -50,6 +50,12 @@ function fitText(){
    let size=parseFloat(getComputedStyle(e).fontSize);const floor=size*0.45;
    while(e.scrollWidth>e.clientWidth+1&&size>floor){size*=0.94;e.style.fontSize=size.toFixed(1)+'px';}
    counters.forEach((c,i)=>{c.textContent=kept[i];});}
+  // Values shown side by side share the smallest fitted size (10/14 PM: each counter value shrank on its own, so the
+  // shortest number, '4000명', was drawn the largest beside '28만3000명' and read as the biggest change).
+  const groups={};
+  for(const e of $$('[data-fit-group]',scn))(groups[e.dataset.fitGroup]??=[]).push(e);
+  for(const g of Object.values(groups)){const min=Math.min(...g.map(e=>parseFloat(getComputedStyle(e).fontSize)));
+   g.forEach(e=>{e.style.fontSize=min.toFixed(1)+'px';});}
   // A [data-fitbox] region scales its content down until it fits the region's height (10/14 AM: the map panel's text ran
   // over its cost box and down to the captions).
   for(const box of $$('[data-fitbox]',scn)){const inner=box.firstElementChild;let z=1;

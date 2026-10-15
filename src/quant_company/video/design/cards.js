@@ -46,7 +46,7 @@ const CARDS = {
        </div>
        <div style="position:relative;height:350px;padding:28px 36px 0"><div class="h2">${c.title}</div>
         <div style="position:absolute;left:36px;right:36px;bottom:34px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
-         ${c.stats.map((s, k) => `<div class="stat" data-in="${b + 1.3 + k * 0.15},0.45" style="padding:14px 18px;border-radius:16px;background:rgba(11,21,48,.05);border:1px solid rgba(11,21,48,.08);min-width:0"><div class="k">${s[0]}</div><div class="v tnum ${s[2] ? C(s[2]) : ''}" style="${s[2] ? '' : 'color:var(--ink)'};font-size:${s[1].length > 8 ? 30 : 36}px;white-space:nowrap" data-fit>${s[2] && arrow(s[2]) ? arrow(s[2]) + ' ' : ''}${s[1]}</div></div>`).join('')}
+         ${c.stats.map((s, k) => `<div class="stat" data-in="${b + 1.3 + k * 0.15},0.45" style="padding:14px 18px;border-radius:16px;background:rgba(11,21,48,.05);border:1px solid rgba(11,21,48,.08);min-width:0"><div class="k">${s[0]}</div><div class="v tnum ${s[2] ? C(s[2]) : ''}" style="${s[2] ? '' : 'color:var(--ink)'};font-size:${s[1].length > 8 ? 30 : 36}px;white-space:nowrap" data-fit data-fit-group="s${i}">${s[2] && arrow(s[2]) ? arrow(s[2]) + ' ' : ''}${s[1]}</div></div>`).join('')}
         </div></div></div>`;
     }).join('');
     return `<div class="h1" style="position:absolute;top:0;left:0" data-in="0.15,0.5">${d.title}</div>${cards}`;
@@ -103,7 +103,7 @@ const CARDS = {
       const t = 1.0 + i * 0.6;
       return `<div style="position:absolute;left:${i * span}px;top:40px;width:${span - 40}px" data-block data-in="${t},0.45">
         <div class="lab muted" style="text-wrap:balance">${b.label}</div>
-        <div class="tnum" style="font-size:76px;font-weight:800;line-height:1;margin-top:14px;white-space:nowrap;${b.gold ? 'color:var(--gold)' : ''}" data-fit>${dirArrow(b.dir)}${cnt(b.value, t + 0.2)}</div>
+        <div class="tnum" style="font-size:76px;font-weight:800;line-height:1;margin-top:14px;white-space:nowrap;${b.gold ? 'color:var(--gold)' : ''}" data-fit data-fit-group="blocks">${dirArrow(b.dir)}${cnt(b.value, t + 0.2)}</div>
         ${b.sub ? `<div class="${b.dir ? C(b.dir, 1) : 'muted'}" style="font-size:25px;font-weight:800;margin-top:4px;text-wrap:balance"${b.dir ? ` data-pop="${t + 0.9},0.5"` : ''}>${b.sub}</div>` : ''}</div>`;
     }).join('');
     const rows = (d.rows || []).map((r, i) => `<div class="row" data-in="${2.6 + i * 0.5},0.45" style="margin-top:${i ? 18 : 0}px"><span class="tile deep" style="width:64px;height:64px"><span data-icon="${r.icon},42,#B28DFF,${2.8 + i * 0.5},0.7"></span></span><div class="body" style="font-weight:600;font-size:30px">${r.text}</div>${src(r.source)}</div>`).join('');
@@ -249,7 +249,7 @@ const CARDS = {
      <div class="glass" style="left:1100px;top:110px;width:660px;height:590px;padding:28px 36px;display:flex;flex-direction:column;gap:16px" data-in="0.9,0.55">
       <div data-fitbox style="flex:1;min-height:0"><div>
       <div style="display:flex;align-items:center;gap:12px"><span data-icon="drop,34,#FDC749,1.1,0.6"></span><span class="lab">${d.panel_title}</span></div>${bars}
-      <div class="dnn" data-delta data-fit style="font-size:44px;font-weight:800;margin-top:18px;white-space:nowrap;overflow:hidden" data-in="2.6,0.4">${d.delta}</div>
+      <div class="${d.delta_dir ? C(d.delta_dir, 1) : ''}" data-delta data-fit style="font-size:44px;font-weight:800;margin-top:18px;white-space:nowrap;overflow:hidden" data-in="2.6,0.4">${d.delta}</div>
       <div style="margin-top:6px" data-in="2.6,0.4">${src(d.delta_source)}</div>
       <div class="muted" style="font-size:20px;font-weight:600;margin-top:10px;line-height:1.45;text-wrap:balance" data-in="3.0,0.4">${d.alt}</div></div></div>
       <div style="flex:none;padding:14px 20px;border-radius:14px;background:rgba(253,199,73,.12);border:1px solid rgba(253,199,73,.45);display:flex;align-items:center;gap:16px" data-in="${d.cost_at || 6.0},0.45">

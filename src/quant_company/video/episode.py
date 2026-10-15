@@ -469,7 +469,7 @@ headline(chips=[issue label, horizon], title, image={asset}, panel_title, source
 flow(chips, title, nodes=[{chips,source?,icon,head,big?|text?|rows?,dir?,sub?,badge?}] x3, foot?={chip,text}).
 compare(chips, title, tiles=[{label,source?,value,dir?,sub}] 2-3, chart_title, chart_source, bars=[{n,label,name}] x2, arrow_text, extra=[[label,value]] x2).
 bars(chips?, title, unit_note, source?, rows=[{name,n,label,tag?}] 2-8, image?={asset,caption,labels=[]}, side?={title,rows,signal}).
-map(chips, title, region='hormuz', panel_title, bars=[{name,w,label,gold?}], delta, delta_source, alt, cost_head, cost) —
+map(chips, title, region='hormuz', panel_title, bars=[{name,w,label,gold?}], delta, delta_dir?('up'|'dn' when the delta states a rise or a fall), delta_source, alt, cost_head, cost) —
 delta is one short line (e.g. 'WTI ▲40센트'), alt one short caption, cost one sentence.
 calendar(title, rows=[[date,weekday,badge,icon,event,time chip]]) or mode='day' (date,dow,badge,rows=[[icon,title,sub]],side_title,side=[{label,source?,value,dir?,sub}]).
 photo(chips, title, image={asset}, rows=[{chip,kind?('counter'|'signal'|'interp'),big?,text?,sub,source?}] 3).
