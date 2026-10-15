@@ -282,6 +282,16 @@ def test_the_answer_prompt_keeps_the_card_rules_and_routes_instructions_to_lesso
         assert rule in prompt, rule
 
 
+def test_the_answer_prompt_keeps_replies_short_and_says_the_edits_once():
+    # 2026-10-15: the first live instruction answer restated its Studio edits and lesson in prose above the list.
+    from quant_company.video.analytics_contracts import answer_prompt
+
+    prompt = answer_prompt({"question": "q"})
+    for rule in ("600 characters", "shown under the answer", "do not describe, list or repeat them",
+                 "no headings", "one line"):
+        assert rule in prompt, rule
+
+
 def test_claude_runtime_schema_covers_the_analysis_contracts():
     from quant_company.contracts import ProviderRequest
     from quant_company.providers.claude_runner import output_schema
