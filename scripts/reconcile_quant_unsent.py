@@ -1,5 +1,9 @@
 """Explicitly reconcile certainly-unsent Quant posts after an allowlist-only change.
 
+Since 2026-10-16 the policy digest holds only whether the lane's own channel and owner are allowed, so adding an
+unrelated channel no longer stalls posts. This remains for posts frozen under the earlier formula, which hashed the
+whole allow-lists (`QuantFeedStore.policy(legacy=True)`); requeued posts take the current digest.
+
 No model invocation or direct Slack write. Old calls and their frozen bundles are
 never rewritten. Plan first, persist its receipt, then apply that exact digest.
 """
@@ -28,7 +32,7 @@ def reconcile(store, identities, old_channels, old_policy, *, apply_digest=None)
     current_policy = store.policy()
     try:
         settings.slack_allowed_channels = old_channels
-        if store.policy() != old_policy or not store.authorized():
+        if store.policy(legacy=True) != old_policy or not store.authorized():
             raise ValueError("quant_change_is_not_allowlist_only")
     finally:
         settings.slack_allowed_channels = current_channels

@@ -364,6 +364,11 @@ sudo cat /var/lib/quant-company/release-status.json
 | `VIDEO_RENDER_ACCEPTED` | 운영자가 렌더 입력 차이를 검토해 렌더에 영향이 없다고 판단한 커밋이다. 있으면 이 커밋과 비교한다. 렌더 이미지를 다시 만들면 지운다. |
 | `RELEASE_AUTO_WINDOWS` | 반영을 시작할 수 있는 KST 시간 창이다. 기본값은 `10:00-14:30,18:30-23:00`이다. |
 
+Slack 허용 목록(`SLACK_ALLOWED_CHANNELS`, `SLACK_ALLOWED_USERS`)을 바꿀 때는 다음을 지킨다.
+- 뉴스와 퀀트 피드의 정책값에는 자기 채널과 소유자가 허용됐는지만 들어간다. 그래서 다른 채널을 더하거나 빼도 진행 중인 일이 멈추지 않는다.
+- 브리핑의 정책값에는 아직 목록 전체가 들어간다. 그래서 브리핑을 만드는 동안(KST 05:20~08:00, 15:50~18:00) 바꾸면 그 회차가 멈춘다. 그 시간대에는 바꾸지 않는다.
+- 값을 넣고 같은 커밋으로 반영하는 동안에는 `RELEASE_AUTO_ENABLED=paused`로 둔다.
+
 실패한 커밋은 다시 시도하지 않는다. 원인을 확인한 뒤
 `sudo python3 /opt/quant-company/current/deploy/release.py auto --retry`로 다시 시도한다.
 

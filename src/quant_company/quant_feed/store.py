@@ -2,7 +2,7 @@
 
 import json
 import re
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 from psycopg.types.json import Jsonb
@@ -89,6 +89,11 @@ def _bibliographic_title(candidate, receipt):
     return candidate["title"]
 
 
+# Work started under the earlier policy formula (it hashed the whole Slack allow-lists) still matches until then, so the
+# release that changes the formula strands nothing in flight. Afterwards only the current digest matches.
+LEGACY_POLICY_UNTIL = datetime(2026, 10, 20, tzinfo=UTC)
+
+
 class QuantFeedStore:
     def __init__(self, company):
         self.company, self.db = company, company.db
@@ -105,13 +110,20 @@ class QuantFeedStore:
                     and s.quant_feed_channel_id.startswith(("C", "G"))
                     and s.quant_feed_channel_id not in {s.news_channel_id, s.tech_feed_channel_id})
 
-    def policy(self):
+    def policy(self, legacy=False):
         s = self.company.settings
+        # Only whether this lane's channel and owner are allowed counts; LEGACY hashed the whole Slack allow-lists.
+        access = ({"users": s.slack_allowed_users, "channels": s.slack_allowed_channels} if legacy else
+                  {"owner_allowed": s.quant_feed_owner_user in s.slack_allowed_users,
+                   "channel_allowed": s.quant_feed_channel_id in s.slack_allowed_channels})
         return fingerprint({"version": 21, "enabled": s.quant_feed_enabled, "publish": s.quant_feed_publish_enabled,
-                            "owner": s.quant_feed_owner_user, "channel": s.quant_feed_channel_id,
-                            "users": s.slack_allowed_users, "channels": s.slack_allowed_channels,
+                            "owner": s.quant_feed_owner_user, "channel": s.quant_feed_channel_id, **access,
                             "web": s.company_web_enabled, "sources": [x.model_dump() for x in self.sources().values()],
                             "role": self.company.roles[QUANT_FEED_AGENT].model_dump()})
+
+    def policies(self):
+        """Digests that work in flight may carry: the current one and, while the formula changes over, the earlier one."""
+        return {self.policy()} | ({self.policy(legacy=True)} if schedule.utcnow() < LEGACY_POLICY_UNTIL else set())
 
     def sync_sources(self, conn):
         sources = self.sources()
@@ -292,7 +304,7 @@ class QuantFeedStore:
             # Running IDs are recovered, never replaced. Blocked documents do not freeze unrelated work.
             active = conn.execute("SELECT * FROM quant_feed_calls WHERE state='running' ORDER BY created_at LIMIT 1 FOR UPDATE").fetchone()
             if active:
-                if active["policy_digest"] != policy:
+                if active["policy_digest"] not in self.policies():
                     self.block(conn, active, "policy_changed_requires_reconciliation")
                     return {"state": "blocked", "request_id": active["id"]}
                 if active["next_at"] > schedule.utcnow():
@@ -386,7 +398,7 @@ class QuantFeedStore:
                 if fingerprint(body) != fingerprint(saved["response"]):
                     raise ValueError("quant_committed_response_changed")
                 return {"state": saved["state"], "duplicate": True}
-            if saved["state"] != "running" or not self.authorized() or saved["policy_digest"] != self.policy():
+            if saved["state"] != "running" or not self.authorized() or saved["policy_digest"] not in self.policies():
                 self.block(conn, saved, "stale_policy_or_state")
                 return {"state": "stale"}
             if response.provider != self.company.settings.model_provider:
@@ -478,7 +490,7 @@ class QuantFeedStore:
         at = schedule.utcnow()
         saved = conn.execute("SELECT * FROM quant_feed_publications WHERE id=%s", (row["id"],)).fetchone()
         if not (saved and self.authorized() and self.company.settings.quant_feed_publish_enabled
-                and saved["policy_digest"] == self.policy() and row["channel"] == self.company.settings.quant_feed_channel_id):
+                and saved["policy_digest"] in self.policies() and row["channel"] == self.company.settings.quant_feed_channel_id):
             conn.execute("UPDATE outbox SET status='stale',error='quant_feed_policy_changed' WHERE id=%s", (row["id"],))
             return False
         conn.execute("INSERT INTO quant_feed_delivery(channel,next_at) VALUES(%s,%s) ON CONFLICT DO NOTHING", (row["channel"], at))

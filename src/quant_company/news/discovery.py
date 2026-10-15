@@ -29,9 +29,12 @@ class NewsDiscoveryStore(NewsStore):
         return (self.authorized() and self.company.settings.company_web_enabled
                 and self.company.settings.news_search_enabled)
 
-    def search_policy(self):
-        return fingerprint([self.policy(), self.company.settings.company_web_enabled,
+    def search_policy(self, legacy=False):
+        return fingerprint([self.policy(legacy), self.company.settings.company_web_enabled,
                             self.company.settings.news_search_enabled, "discovery-v2"])
+
+    def search_policies(self):
+        return {self.search_policy()} | ({self.search_policy(legacy=True)} if len(self.policies()) > 1 else set())
 
     def prepare(self):
         if not self.allowed():
@@ -50,7 +53,7 @@ class NewsDiscoveryStore(NewsStore):
                 # An ambiguous remote call cannot be replaced by another request ID, even after a policy edit.
                 if active["state"] == "blocked":
                     return {"state": "blocked", "reason": active["error"]}
-                if active["policy_digest"] != policy:
+                if active["policy_digest"] not in self.search_policies():
                     conn.execute("UPDATE news_searches SET state='blocked',error='search_policy_changed' WHERE id=%s", (active["id"],))
                     return {"state": "blocked", "reason": "search_policy_changed"}
                 if active["next_at"] > datetime.now(UTC):
@@ -111,7 +114,7 @@ class NewsDiscoveryStore(NewsStore):
                 if fingerprint(saved["response"]) != fingerprint(body):
                     raise ValueError("news_committed_search_changed")
                 return {"state": saved["state"], "duplicate": True}
-            if saved["state"] != "running" or not self.allowed() or saved["policy_digest"] != self.search_policy():
+            if saved["state"] != "running" or not self.allowed() or saved["policy_digest"] not in self.search_policies():
                 conn.execute("UPDATE news_searches SET state='stale',response=%s,completed_at=now() WHERE id=%s",
                              (Jsonb(body), response.request_id))
                 return {"state": "stale"}

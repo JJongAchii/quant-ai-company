@@ -1163,3 +1163,12 @@ def test_slack_locations_preserve_page_coverage_without_repeating_extraction_chu
                               "PDF p.11 [2/2]", "PDF p.27 [3/3]", "PDF p.28 [2/3]"]) == "PDF p.1–2, 11, 19, 27–28"
     assert display_locations(["HTML section Results", "HTML section Results", "PDF p.8"]) == (
         "PDF p.8 · HTML section Results")
+
+
+def test_an_unrelated_allowed_channel_keeps_a_frozen_request(quant):
+    original(quant)
+    first = quant.prepare()
+    quant.company.settings.slack_allowed_channels = [*quant.company.settings.slack_allowed_channels, "CUNRELATED"]
+    assert quant.prepare() == first
+    quant.company.settings.slack_allowed_channels = []  # the lane's own channel is no longer allowed
+    assert quant.prepare()["state"] in {"blocked", "paused"}
