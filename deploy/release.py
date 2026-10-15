@@ -568,8 +568,9 @@ def refresh_status(runner=run):
 
 GITHUB = "https://api.github.com"
 WORKFLOW = "quant-company-ci.yml"
-# KST starts: after the AM edition's video, done well before PM collection (KRX close + 20 minutes), after the PM video.
-WINDOWS = "10:00-14:30,19:40-23:00"
+# KST starts: after the AM edition's video, done well before PM collection (KRX close + 20 minutes), and from 18:30,
+# when the PM video job already exists, so the quiet check holds a release until that video is delivered.
+WINDOWS = "10:00-14:30,18:30-23:00"
 KST = timezone(timedelta(hours=9))
 # The Fargate render task (`video render-task`) runs its own image (deploy/Dockerfile.render). The modules it imports,
 # its design assets, that image, its template and the dependencies must match the render image's commit

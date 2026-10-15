@@ -502,6 +502,7 @@ def test_render_inputs_follow_the_render_task_imports(tmp_path):
 def test_windows_are_korean_time():
     assert release.in_window(IN_WINDOW, release.WINDOWS) and not release.in_window(OUT_OF_WINDOW, release.WINDOWS)
     assert release.in_window(datetime(2026, 10, 14, 11, 0, tzinfo=UTC), release.WINDOWS)  # 20:00 KST
+    assert release.in_window(datetime(2026, 10, 14, 9, 30, tzinfo=UTC), release.WINDOWS)  # 18:30 KST, PM video queued
 
 
 def test_prune_keeps_recent_current_running_and_protected_releases(host):
