@@ -760,6 +760,10 @@ def test_the_screen_shows_one_arrow_where_the_template_draws_it_from_the_directi
     assert single_arrows('summary3', summary) == [] and [x[1] for x in summary['cards'][0]['stats']] == ['2.62%', '1.43%']
     assert single_arrows('counter', counter) == [] and [b['value'] for b in counter['blocks']] == ['14%', '약 820개']
     assert single_arrows('calendar', calendar) == [] and calendar['side'][0]['value'] == '▲1,420원'
+    # Since 2026-10-15 photo rows draw the arrow of a big number's direction (10/15 PM: 'CoreWeave 16%' had no ▼).
+    photo = {'rows': [{'chip': '코어위브 주가', 'big': '▼16%', 'dir': 'dn'}, {'chip': '해석', 'text': '자금 가격 상승'}]}
+    assert single_arrows('photo', photo) == [] and photo['rows'][0]['big'] == '16%'
+    assert single_arrows('photo', {'rows': [{'big': '▲16%', 'dir': 'dn'}]}) == ['photo ▲16%']
     assert single_arrows('', {}, ticker) == [] and ticker['items'][0]['change'] == '0.64%'
     # A written sign that contradicts the direction is reported; the screen follows the direction field.
     wrong = {'stats': [{'label': '미 10년물', 'value': '2bp', 'change': '▼2bp', 'dir': 'up'}]}

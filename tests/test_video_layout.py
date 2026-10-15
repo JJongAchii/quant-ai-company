@@ -79,14 +79,16 @@ def plan_with(*cards):
     return EpisodePlan.model_validate(raw)
 
 
-def measure(tmp_path, plan, sels, *, captions=(), probe=None):
+def measure(tmp_path, plan, sels, *, captions=(), probe=None, library=None):
     """Builds the episode page like a render does and returns, per scene, the layout check and the element boxes."""
     if not importlib.util.find_spec('playwright'):
         pytest.skip('Install optional video dependencies and Chromium')
     from playwright.sync_api import sync_playwright
 
-    # These cards carry no pictures: no asset library, speech or FFmpeg is needed to lay them out.
-    renderer = MotionRenderer(Settings(video_artifact_dir=tmp_path, video_asset_dir=tmp_path), aligner=object(), library={})
+    # Most cards carry no pictures: no asset library, speech or FFmpeg is needed to lay them out. A photo card gets a
+    # one-entry library whose file the caller wrote under tmp_path.
+    renderer = MotionRenderer(Settings(video_artifact_dir=tmp_path, video_asset_dir=tmp_path), aligner=object(),
+                              library=library or {})
     renderer.sign_conflicts, renderer.generated_used, renderer.episode_assets = [], set(), {}
     page, scenes, _ = renderer._page({'id': 'layout', 'policy': {}}, plan, tmp_path / 'out')
     for number, item in enumerate(scenes):
@@ -357,3 +359,62 @@ def test_the_map_delta_takes_the_colour_of_its_direction(tmp_path, direction, cl
         data['delta_dir'] = direction
     found = measure(tmp_path, plan_with(scene('oil', '함께 볼 이슈', 'map', data)), {}, probe=DELTA)['oil']
     assert found['probe']['cls'] == cls, found['probe']
+
+
+
+# 2026-10-15 PM cards left after three visual reviews: the photo card drew 'CoreWeave 16%' (direction dn) as a bare white
+# number; the map's bars took w as pixels, so '약 40%'·'약 20%' became 40px and 20px squares with no scale; summary card
+# titles left one word on the second line ('…외국인 매도 속 / 급락'); and the cost line ignored the break the script wrote.
+PIXEL = bytes.fromhex('89504e470d0a1a0a0000000d4948445200000001000000010806000000'
+                      '1f15c4890000000d49444154789c6360f8cfc0f01f0005fe02fea3586b9b0000000049454e44ae426082')
+AI_COST = {'chips': ['AI 조달 부담', '수개월'], 'title': 'TSMC는 호실적, AI 투자 자금은 비싸졌다', 'image': {'asset': 'fixture-photo'},
+           'rows': [{'chip': '코어위브 주가', 'big': '16%', 'dir': 'dn', 'sub': '급락 · 수요일 보도 시점', 'source': 'CNBC'},
+                    {'chip': '코어위브 채권', 'big': '14.8%', 'sub': '2032년 만기채 만기수익률 · 수요일 보도 시점', 'source': 'CNBC'},
+                    {'chip': '해석', 'kind': 'interp', 'text': '다음 투자에 필요한 자금의 가격이 높아진다는 신호', 'sub': '기존 채권의 표면금리가 바뀐 것은 아님'}]}
+HORMUZ = {**OIL, 'bars': [{'w': 40, 'gold': True, 'name': '해협 원유 수출', 'label': '약 40% 적음'},
+                          {'w': 20, 'name': '우회 송유관 포함 지역 전체', 'label': '약 20% 적음'}],
+          'cost': '완충은 비축유 방출\n변수는 네타냐후 ‘군사행동 현재 부적절’ 발언과 기만전술 가능성이 겹친다는 점'}
+SUMMARY15 = json.loads(json.dumps(SUMMARY))
+SUMMARY15['cards'][0]['title'] = '반도체 충격과 외국인 매도 속 급락'
+ROW = """() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
+  const big=[...scn.querySelectorAll('.glass .tnum')].find(e=>e.textContent.includes('16%'));
+  return big && {text:big.textContent.trim(), arrows:[...big.querySelectorAll('span')].map(s=>[s.className,s.textContent.trim()])};}"""
+BARS = """() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
+  const bars=[...scn.querySelectorAll('[data-track]')];
+  return bars.length ? bars.map(t=>({track:t.getBoundingClientRect().width,
+    fill:t.querySelector('.bar').getBoundingClientRect().width})) : null;}"""
+LINES = r"""() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
+  const lines=e=>{const rg=document.createRange(); rg.selectNodeContents(e); const m=new Map();
+    for(const r of rg.getClientRects()){if(r.width<1) continue; const k=Math.round(r.top/8);
+      const [l,rt]=m.get(k)||[Infinity,-Infinity]; m.set(k,[Math.min(l,r.left),Math.max(rt,r.right)]);}
+    return {lines:[...m.values()].map(([l,r])=>r-l), box:e.getBoundingClientRect().width};};
+  return {titles:[...scn.querySelectorAll('.paper .h2')].map(lines), cost:[...scn.querySelectorAll('[data-cost]')].map(lines)};}"""
+
+
+def test_a_photo_row_draws_the_direction_of_its_number(tmp_path):
+    (tmp_path / 'p.png').write_bytes(PIXEL)
+    library = {'fixture-photo': {'file': 'p.png', 'kind': '자료사진', 'author': 'Peellden', 'license': 'CC BY-SA 3.0'}}
+    found = measure(tmp_path, plan_with(scene('ai-cost', '핵심 이슈', 'photo', AI_COST)), {}, probe=ROW,
+                    library=library)['ai-cost']
+    assert found['probe']['text'].startswith('▼') and found['probe']['text'].count('▼') == 1, found['probe']
+    assert ['dnn', '▼'] in found['probe']['arrows'], found['probe']
+
+
+def test_map_bars_fill_one_track_in_proportion(tmp_path):
+    found = measure(tmp_path, plan_with(scene('hormuz', '함께 볼 이슈', 'map', HORMUZ)), {}, probe=BARS)['hormuz']
+    bars = found['probe']
+    assert bars and len(bars) == 2 and bars[0]['track'] == bars[1]['track'] >= 240, bars
+    assert abs(bars[0]['fill'] / bars[1]['fill'] - 2) < 0.05 and bars[0]['fill'] < bars[0]['track'], bars
+    assert not [x for x in found['qa'] if x[0] in BROKEN], found['qa']
+
+
+def test_card_titles_wrap_without_a_lone_last_word(tmp_path):
+    found = measure(tmp_path, plan_with(scene('summary', '요약', 'summary3', SUMMARY15)), {}, probe=LINES)['summary']
+    first = found['probe']['titles'][0]['lines']
+    assert len(first) == 2 and first[1] >= 0.4 * first[0], first
+
+
+def test_the_cost_line_keeps_the_break_the_script_wrote(tmp_path):
+    found = measure(tmp_path, plan_with(scene('hormuz', '함께 볼 이슈', 'map', HORMUZ)), {}, probe=LINES)['hormuz']
+    (cost,) = found['probe']['cost']
+    assert len(cost['lines']) >= 2 and cost['lines'][0] < 0.5 * cost['box'], cost

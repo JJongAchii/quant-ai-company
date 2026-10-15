@@ -44,7 +44,7 @@ const CARDS = {
        <div class="spot"><div class="num" data-pop="${b + 0.3},0.5">${c.n}</div>
         ${c.items.map((it, k) => `<div class="spot-item"><div style="height:132px;display:flex;align-items:center"><span data-icon="${it[0]},${isz(it[1])},${col(it[2])},${b + 0.4 + k * 0.25},0.9"></span></div>${it[4] ? `<div class="badge ${it[4]}" data-pop="${b + 1.1 + k * 0.2},0.45">${it[5]}</div>` : ''}<div class="cap">${it[3]}</div></div>`).join('')}
        </div>
-       <div style="position:relative;height:350px;padding:28px 36px 0"><div class="h2">${c.title}</div>
+       <div style="position:relative;height:350px;padding:28px 36px 0"><div class="h2" style="text-wrap:balance">${c.title}</div>
         <div style="position:absolute;left:36px;right:36px;bottom:34px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
          ${c.stats.map((s, k) => `<div class="stat" data-in="${b + 1.3 + k * 0.15},0.45" style="padding:14px 18px;border-radius:16px;background:rgba(11,21,48,.05);border:1px solid rgba(11,21,48,.08);min-width:0"><div class="k">${s[0]}</div><div class="v tnum ${s[2] ? C(s[2]) : ''}" style="${s[2] ? '' : 'color:var(--ink)'};font-size:${s[1].length > 8 ? 30 : 36}px;white-space:nowrap" data-fit data-fit-group="s${i}">${s[2] && arrow(s[2]) ? arrow(s[2]) + ' ' : ''}${s[1]}</div></div>`).join('')}
         </div></div></div>`;
@@ -235,7 +235,7 @@ const CARDS = {
   photo(d) {
     const rows = d.rows.map((r, i) => `<div data-in="${1.2 + i * 0.5},0.45" style="padding:18px 0;${i < d.rows.length - 1 ? 'border-bottom:1px solid rgba(252,241,219,.12)' : ''}">
        <div style="display:flex;align-items:center;gap:12px"><span class="chip ${r.kind === 'counter' || r.kind === 'interp' ? '' : 'tag-line'}" style="${r.kind === 'counter' ? 'color:var(--counter)' : r.kind === 'signal' ? 'color:var(--signal);border-color:var(--signal)' : r.kind === 'interp' ? 'color:var(--gold);border-color:#E2A92C;background:rgba(253,199,73,.14)' : ''};font-size:19px;padding:4px 12px">${r.chip}</span>${src(r.source)}</div>
-       <div style="font-size:${r.big ? 44 : 30}px;font-weight:800;margin-top:10px;line-height:1.25;text-wrap:balance" class="tnum">${r.big ? cnt(r.big, 1.4 + i * 0.5) : ''}${r.big && r.text ? ' ' : ''}${r.text ? `<span style="font-size:30px">${r.text}</span>` : ''}</div>
+       <div style="font-size:${r.big ? 44 : 30}px;font-weight:800;margin-top:10px;line-height:1.25;text-wrap:balance" class="tnum">${r.big ? dirArrow(r.dir) + cnt(r.big, 1.4 + i * 0.5) : ''}${r.big && r.text ? ' ' : ''}${r.text ? `<span style="font-size:30px">${r.text}</span>` : ''}</div>
        ${r.sub ? `<div class="muted" style="font-size:22px;font-weight:600;margin-top:4px">${r.sub}</div>` : ''}</div>`).join('');
     return header(d) + `<div class="paper imgbox" style="left:0;top:110px;width:860px;height:590px" data-in="0.5,0.55"><img src="${d.image.file}" data-kb="14,0.06">${d.image.credit ? `<span class="chip credit">${d.image.credit}</span>` : ''}</div>
       <div class="glass" style="left:900px;top:110px;width:860px;height:590px;padding:22px 40px;display:flex;flex-direction:column;justify-content:space-between" data-in="0.9,0.55">${rows}</div>`;
@@ -244,7 +244,7 @@ const CARDS = {
   map(d) {
     POST.push(() => drawMap(d));
     const bars = d.bars.map((b, i) => `<div style="margin-top:${i ? 14 : 20}px;font-size:22px;font-weight:700;${b.gold ? 'color:var(--gold)' : ''}" class="${b.gold ? '' : 'muted'}">${b.name}</div>
-      <div style="position:relative;height:44px;margin-top:6px"><div class="bar" style="left:0;top:0;width:${b.w}px;background:${b.gold ? 'var(--gold)' : '#AEB7D4'};transform-origin:left" data-bar="${1.4 + i * 0.4},0.8"></div><span class="tnum" style="position:absolute;left:${b.w + 14}px;top:4px;font-size:28px;font-weight:800;white-space:nowrap" data-in="${2.0 + i * 0.4},0.4,10">${b.label}</span></div>`).join('');
+      <div style="display:flex;align-items:center;gap:14px;margin-top:6px"><div data-track style="position:relative;flex:none;width:240px;height:44px;border-radius:8px;background:rgba(252,241,219,.10)"><div class="bar" style="left:0;top:0;width:${Math.max(0, Math.min(100, +b.w || 0))}%;background:${b.gold ? 'var(--gold)' : '#AEB7D4'};transform-origin:left" data-bar="${1.4 + i * 0.4},0.8"></div></div><span class="tnum" data-fit style="flex:1;min-width:0;overflow:hidden;font-size:28px;font-weight:800;white-space:nowrap" data-in="${2.0 + i * 0.4},0.4,10">${b.label}</span></div>`).join('');
     return header(d) + `<div class="glass" style="left:0;top:110px;width:1060px;height:590px;overflow:hidden;padding:0" data-in="0.5,0.55" id="mapcard_${d.id}"></div>
      <div class="glass" style="left:1100px;top:110px;width:660px;height:590px;padding:28px 36px;display:flex;flex-direction:column;gap:16px" data-in="0.9,0.55">
       <div data-fitbox style="flex:1;min-height:0"><div>
@@ -253,7 +253,7 @@ const CARDS = {
       <div style="margin-top:6px" data-in="2.6,0.4">${src(d.delta_source)}</div>
       <div class="muted" style="font-size:20px;font-weight:600;margin-top:10px;line-height:1.45;text-wrap:balance" data-in="3.0,0.4">${d.alt}</div></div></div>
       <div style="flex:none;padding:14px 20px;border-radius:14px;background:rgba(253,199,73,.12);border:1px solid rgba(253,199,73,.45);display:flex;align-items:center;gap:16px" data-in="${d.cost_at || 6.0},0.45">
-       <span data-icon="ship,52,#FDC749,${(d.cost_at || 6.0) + 0.2},0.8"></span><div style="font-size:22px;font-weight:700;line-height:1.35">${d.cost_head}<div style="color:var(--gold);font-size:${d.cost.length > 24 ? 24 : 31}px;font-weight:800;text-wrap:balance">${d.cost}</div></div></div></div>`;
+       <span data-icon="ship,52,#FDC749,${(d.cost_at || 6.0) + 0.2},0.8"></span><div style="font-size:22px;font-weight:700;line-height:1.35">${d.cost_head}<div data-cost style="color:var(--gold);font-size:${d.cost.length > 24 ? 24 : 31}px;font-weight:800;text-wrap:balance;white-space:pre-line">${d.cost}</div></div></div></div>`;
   },
 };
 
