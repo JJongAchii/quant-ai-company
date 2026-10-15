@@ -58,9 +58,13 @@ services:
     image: quant-company-video:${RELEASE_COMMIT:-unqualified}
     build:
       context: ..
-      dockerfile: deploy/Dockerfile.video
+      dockerfile: deploy/Dockerfile
+      target: video
+      additional_contexts:
+        qdata: ${QDATA_BUILD_CONTEXT:-../../quant-data}
       args:
-        COMPANY_APP_IMAGE: quant-company:${RELEASE_COMMIT:-unqualified}
+        RELEASE_COMMIT: ${RELEASE_COMMIT:-unqualified}
+        QDATA_COMMIT: ${QDATA_COMMIT:-unqualified}
     command: [quant-company, video-worker]
     restart: unless-stopped
     init: true

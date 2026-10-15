@@ -248,7 +248,7 @@ def ordered_services(root):
 
 def build(sha, runner=run):
     root = root_of(sha)
-    for service in manifest(root)["build"]:  # api first: Dockerfile.video builds FROM the app image
+    for service in manifest(root)["build"]:  # targets of deploy/Dockerfile share its cached dependency layers
         compose(root, sha, "build", service, runner=runner, timeout=3600)
     services, problems = rendered(root, sha, runner=runner), []
     for service in ordered_services(root):
