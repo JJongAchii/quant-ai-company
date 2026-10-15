@@ -313,3 +313,47 @@ def test_compare_extra_values_keep_one_line_inside_their_panel(tmp_path):
 def test_a_two_word_signal_topic_keeps_one_line(tmp_path):
     found = measure(tmp_path, plan_with(scene('watch', '일정', 'signals', WATCH)), {'topic': '[data-topic]'})['watch']
     assert len(found['topic']) == 4 and all(t['h'] < 50 and t['sw'] <= t['cw'] + 1 for t in found['topic']), found['topic']
+
+
+# 2026-10-14 PM cards that misled after three visual reviews: each counter value shrank on its own, so the shortest
+# number ('4000명', the smallest change) was drawn the largest; two stats of one summary card came out in different
+# sizes; the map delta line is always the falling colour, so '…상승' was drawn blue.
+JOBS = {'icon': 'balance', 'chips': ['고용', '수개월'], 'title': '성장의 온기, 고용엔 고르지 않다',
+        'topic': '9월 고용보험 가입자 (전년 동월 대비)', 'source': '이투데이', 'kicker': '고용 근거',
+        'blocks': [{'dir': 'up', 'sub': '증가분 대부분 · 전체 28만8000명 증가', 'label': '서비스업', 'value': '28만3000명'},
+                   {'dir': 'dn', 'sub': '외국인 당연가입분 제외 · 건설업도 5900명 감소, 38개월 연속', 'label': '내국인 제조업',
+                    'value': '4000명'},
+                   {'dir': 'dn', 'gold': True, 'sub': '인구 감소 등 영향', 'label': '29세 이하', 'value': '5만5000명'}],
+        'rows': [{'icon': 'chip', 'text': '해석: 성장 전망 개선의 중심은 반도체 수출'}]}
+SUMMARY14 = json.loads(json.dumps(SUMMARY))
+SUMMARY14['cards'][1]['stats'] = [['미국 빅테크', '투자 실행의 제약', ''], ['시장이 볼 것', '수요 전망·실제 자금조달', '']]
+FIT_SIZES = """() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
+  return [...scn.querySelectorAll('[data-fit-group]')].map(e=>[e.dataset.fitGroup, parseFloat(getComputedStyle(e).fontSize),
+    e.scrollWidth<=e.clientWidth+1]);}"""
+DELTA = """() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
+  const e=scn.querySelector('[data-delta]'); return e && {cls:e.className, color:getComputedStyle(e).color};}"""
+
+
+def test_counter_values_side_by_side_share_one_size(tmp_path):
+    found = measure(tmp_path, plan_with(scene('jobs', '핵심 이슈', 'counter', JOBS)), {}, probe=FIT_SIZES)['jobs']
+    sizes = [size for group, size, _ in found['probe'] if group == 'blocks']
+    assert len(sizes) == 3 and len(set(sizes)) == 1, found['probe']
+    assert all(fits for _, _, fits in found['probe']), found['probe']
+
+
+def test_the_stats_of_one_summary_card_share_one_size(tmp_path):
+    found = measure(tmp_path, plan_with(scene('summary', '요약', 'summary3', SUMMARY14)), {}, probe=FIT_SIZES)['summary']
+    by_card: dict[str, set[float]] = {}
+    for group, size, fits in found['probe']:
+        by_card.setdefault(group, set()).add(size)
+        assert fits, found['probe']
+    assert len(by_card) == 3 and all(len(sizes) == 1 for sizes in by_card.values()), found['probe']
+
+
+@pytest.mark.parametrize('direction,cls', [('up', 'upn'), ('dn', 'dnn'), (None, '')])
+def test_the_map_delta_takes_the_colour_of_its_direction(tmp_path, direction, cls):
+    data = {**OIL, 'delta': '브렌트 1.24%·WTI 1.18% 상승 · 수요일 장중'}
+    if direction:
+        data['delta_dir'] = direction
+    found = measure(tmp_path, plan_with(scene('oil', '함께 볼 이슈', 'map', data)), {}, probe=DELTA)['oil']
+    assert found['probe']['cls'] == cls, found['probe']
