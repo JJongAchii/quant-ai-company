@@ -21,10 +21,22 @@ def repair():
     return module.reconcile
 
 
+@pytest.fixture(autouse=True)
+def earlier_formula_expired(monkeypatch):
+    # Posts frozen under the earlier policy formula, after its transition window: an unrelated channel stalls them.
+    from datetime import UTC, datetime
+
+    from quant_company.quant_feed import store
+    monkeypatch.setattr(store, "LEGACY_POLICY_UNTIL", datetime(2026, 1, 1, tzinfo=UTC))
+
+
 def blocked(quant):  # noqa: F811
     original(quant)
     publish(quant)
-    old_policy = quant.policy()
+    old_policy = quant.policy(legacy=True)
+    with quant.db.transaction() as conn:  # as frozen by a release before the formula changed
+        conn.execute("UPDATE quant_feed_publications SET policy_digest=%s", (old_policy,))
+        conn.execute("UPDATE quant_feed_calls SET policy_digest=%s", (old_policy,))
     channels = list(quant.company.settings.slack_allowed_channels)
     quant.company.settings.slack_allowed_channels = [*channels, "COTHER"]
     with quant.db.transaction() as conn:
