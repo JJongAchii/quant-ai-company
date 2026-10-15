@@ -1,6 +1,6 @@
 {
   "record": "video-analytics-20261014",
-  "summary": "First real connection of the video performance analytics (ADR 0043). The YouTube login with the analytics scope, the dry-run reads and the Reporting API jobs are real; the numbers match YouTube Studio for the same video and window. The reach reports, backfilled by 2026-10-15, match Studio too (clicks exactly, impressions within 2 on one day). Analytics stays switched off (VIDEO_ANALYTICS_ENABLED=false) until the snapshot-timing fix and the title fix run in production.",
+  "summary": "First real connection of the video performance analytics (ADR 0043). The YouTube login with the analytics scope, the dry-run reads and the Reporting API jobs are real; the numbers match YouTube Studio for the same video and window. The reach reports, backfilled by 2026-10-15, match Studio too (clicks exactly, impressions within 2 on one day). Analytics was switched on on 2026-10-15 at 11:43 KST and posted its first three cards at 11:51-11:53 KST.",
   "owner_decisions": [
     {"at": "2026-10-13", "quote": "분석 + 승인한 교훈을 제작에 반영 / API 자동 수집 / 영상별 카드 + 주간 심층 / 별도 성과 채널"},
     {"at": "2026-10-14", "quote": "응 오늘 오전영상 다 올라갔고 이제 진행할것들 이어서 진행해줘"},
@@ -8,7 +8,10 @@
   ],
   "deployment": {
     "2026-10-14 09:52 KST": "video-worker image quant-company-video:7b37ac4-analytics1 (analytics code on the running render image); schema v4 tables created as the table owner",
-    "2026-10-14 13:55 KST": "all 17 services replaced with main 5454e3d by the main-consolidation session; analytics code included, still disabled"
+    "2026-10-14 13:55 KST": "all 17 services replaced with main 5454e3d by the main-consolidation session; analytics code included, still disabled",
+    "2026-10-15 08:36 KST": "automatic release of main 21cea6b (includes the title fix #154), still disabled",
+    "2026-10-15 11:21 KST": "automatic release of main 8973a8b (includes the snapshot-timing fix #157), still disabled",
+    "2026-10-15 11:34-11:43 KST": "switched on by the release operator on the same SHA 8973a8b: VIDEO_ANALYTICS_ENABLED=true, VIDEO_ANALYTICS_CHANNEL_ID, VIDEO_YOUTUBE_CHANNEL_ID and the channel added to SLACK_ALLOWED_CHANNELS (11 -> 12); verify OK 11:43:41, automatic release resumed 11:44, no video job in production. The four values were first validated read-only with Settings() inside api, slack-socket, worker, news-worker, dispatch and video-worker"
   },
   "youtube_login": {
     "flow": "OAuth on the owner's Mac (the server tunnel on port 8767 failed twice); token file installed in the media-auth host volume, owner 10001, mode 0600",
@@ -92,8 +95,23 @@
     "channel": "#video-performance (public), created in the owner's Slack session; Analyst (market_brief) invited with /invite",
     "why_not_the_bot": "no bot token has channels:manage (auth.test x-oauth-scopes, read-only check)"
   },
-  "not_done": [
-    "Switching on: VIDEO_ANALYTICS_ENABLED, VIDEO_ANALYTICS_CHANNEL_ID, SLACK_ALLOWED_CHANNELS, VIDEO_YOUTUBE_CHANNEL_ID through the main-consolidation release, with no video job in production",
-    "First card posted for real"
+  "first_run": {
+    "workflow": "company-video-analytics-v1 started by dispatch at 11:34:52 KST; its first workflow task waited until 11:48:10 (the video-worker that polls the analytics queue restarted at 11:43:27, then about 5 more minutes in the backlog)",
+    "uploads": "11 public uploads recorded; 9 in the series, 6 linked to their production job by the title suffix; the 3 older-format uploads of 10/7-10/8 have no job (made before the job records), so their cards have no cold open or scene data",
+    "reports": "30 basic and 30 by-source reports applied, Pacific days 2026-09-13 ~ 2026-10-12",
+    "snapshots_d3": [
+      {"youtube_id": "ItMkCCxWocY", "edition": "10월 7일 마감", "window": "10/07-10/09", "impressions": 188, "ctr": "2.13%", "views": 44},
+      {"youtube_id": "s18zcKgrlc4", "edition": "10월 8일 아침", "window": "10/07-10/09", "impressions": 128, "ctr": "6.25%", "views": 50},
+      {"youtube_id": "lJX4U6_TnJw", "edition": "10월 8일 마감", "window": "10/08-10/10", "impressions": 140, "ctr": "3.57%", "views": 24}
+    ],
+    "expected": "exactly the three series uploads whose 3-day window had both reports on every day; later uploads wait for their days",
+    "analyses": "video_performance_v1 completed for all three, 11:50-11:53 KST, one at a time",
+    "cards": "three posts in #video-performance (C0C96LFP2QL) delivered 11:51, 11:52 and 11:53 KST by Analyst; seen in the owner's Slack web session",
+    "card_check": "the 10월 8일 마감 card shows views 24, average 2:11 (46.5%), impressions 140 and CTR 3.6%, the figures compared against Studio above"
+  },
+  "follow_ups": [
+    "Diagnosis wording: when job data is missing the model names internal fields (cold_open, scene_drops, stories/lead, null) instead of saying in plain words that the data is not there",
+    "First Monday review: 2026-10-19 09:00 KST",
+    "First 7-day update as a thread reply under each card"
   ]
 }

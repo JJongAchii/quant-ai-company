@@ -361,8 +361,8 @@ Claude 세션에서 편집자가 하듯 서버도 쓰고 → 검사하고 → �
 ## 성과 분석
 
 소유자가 올린 공개 영상의 성과를 읽어 진단하고, 소유자가 채택한 교훈만 다음 회차 대본 작성에 반영한다
-([ADR 0043](adr/0043-video-performance-analytics.md)). 기본값은 꺼짐이다. 2026-10-14부터 운영 서버에 코드가
-있고 YouTube 로그인·dry-run·Studio 대조는 마쳤지만 아직 꺼져 있다
+([ADR 0043](adr/0043-video-performance-analytics.md)). 기본값은 꺼짐이다. 운영에서는 2026-10-15 11:43 KST에 켰고,
+첫 카드 3건이 11:51~11:53에 성과 채널에 올라갔다
 ([실연결 기록](project/evidence/video-analytics-20261014/verification.json)).
 
 ```mermaid
