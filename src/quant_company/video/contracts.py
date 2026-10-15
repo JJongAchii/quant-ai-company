@@ -151,6 +151,10 @@ def review_prompt(source, plan):
             "briefing's own interpretation, alternatives and signals may be stated plainly as interpretation; do not ask "
             "for index levels or investor flows unless they are material that day, and treat an episode that spends its "
             "opening on routine index moves while the main issues get little analysis as missing material issues. "
+            "The owner wants an attention-grabbing title and thumbnail (2026-10-15): do not ask to tone down a hook, a "
+            "question or strong words; reject them only when one states something the lines do not support, exaggerates a "
+            "number's size or direction, or promises what the video does not deliver. If the title or thumbnail is flat or "
+            "generic, add one concern with a sharper alternative built from the lines. "
             "Return the five explicit boolean checks and concerns. Write every concern in Korean for the Korean editor.\n"
             + json.dumps({"source": {'day': source['day'], 'cutoff': source['cutoff'], 'claims': prompt_claims(source),
                                      'briefing': source['body']},
