@@ -68,6 +68,10 @@ MASTER_MAX_BYTES, MASTER_MAX_ROWS = 8 * 1024 * 1024, 300000
 # KRX's after-market session starts at 16:00 KST; from then on the per-stock close and the day's volume,
 # value and flows are no longer the regular-session values.
 AFTER_MARKET_START = time(16)
+# The index alone is stored from its confirmation: two equal reads 30 seconds apart between 16:00 and 16:05
+# (quant-data PR #49, 2026-10-13: the quote lags about 20 minutes and the after-market session does not move
+# the index), so its rows are collected after 16:00 and before this time.
+INDEX_CONFIRM_END = time(16, 5)
 CLOSE_LABEL = "정규장 종가 기준"
 # Field result 2026-10-08: the KRX index quote lags about 20 minutes (15:45 equals the 15:24:50 tick), so a
 # 15:40 index level, change, volume or value is not the official close. Writer-facing label of those values.
@@ -491,18 +495,21 @@ def krx_price(value):
 
 def krx_close_session(name, rows, edition, close_at, observed):
     """None when every sampled row is the edition's session, collected at or after the actual close and
-    before the 16:00 after-market start; otherwise the code rejecting the whole table."""
+    before the 16:00 after-market start (the index: before the end of its 16:00-16:05 confirmation);
+    otherwise the code rejecting the whole table."""
     if not rows:
         return {"dataset": name, "error": "no_current_session"}
     if any(r["date"] != str(edition.day) for r in rows):
         return {"dataset": name, "error": "not_current_session", "latest": max(r["date"] for r in rows),
                 "expected": str(edition.day)}
     stamps = [datetime.fromisoformat(r["collected_at"]) for r in rows]
-    end = datetime.combine(edition.day, AFTER_MARKET_START, KST)
+    index = name == KRX_CLOSE_TABLES["index"][0]
+    end = datetime.combine(edition.day, INDEX_CONFIRM_END if index else AFTER_MARKET_START, KST)
     if any(at < close_at for at in stamps):
         return {"dataset": name, "error": "collected_before_close"}
     if any(at >= end for at in stamps):
-        return {"dataset": name, "error": "collected_after_regular_session"}
+        return {"dataset": name, "error": "collected_after_index_confirmation" if index
+                else "collected_after_regular_session"}
     if any(at > observed for at in stamps):
         return {"dataset": name, "error": "collected_after_read"}
     return None
