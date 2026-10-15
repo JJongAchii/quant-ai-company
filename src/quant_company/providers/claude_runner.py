@@ -79,11 +79,12 @@ def output_schema(request):
                 "video_review_v1": (VideoReview, "Video adaptation review", "영상 각색 검토 완료"),
                 "video_visual_review_v1": (VisualReview, "Video visual review", "영상 화면 검수 완료"),
                 "video_screen_fix_v1": (ScreenFix, "Video screen fix", "영상 화면 수정 완료")}[request.output_contract]
-    if request.output_contract in {"video_performance_v1", "video_weekly_v1"}:
-        from ..video.analytics_contracts import VideoPerformance, WeeklyReview
+    if request.output_contract in {"video_performance_v1", "video_weekly_v1", "video_answer_v1"}:
+        from ..video.analytics_contracts import VideoAnswer, VideoPerformance, WeeklyReview
 
         return {"video_performance_v1": (VideoPerformance, "Video performance analysis", "영상 성과 분석 완료"),
-                "video_weekly_v1": (WeeklyReview, "Weekly video performance review", "주간 성과 분석 완료")}[
+                "video_weekly_v1": (WeeklyReview, "Weekly video performance review", "주간 성과 분석 완료"),
+                "video_answer_v1": (VideoAnswer, "Video performance answer", "영상 성과 답변 완료")}[
             request.output_contract]
     if request.output_contract == "agent_decision":
         return IndependentReview, "Independent explanation review", "독립 설명 검토 완료"

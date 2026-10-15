@@ -123,6 +123,16 @@ class SlackIngress:
             if role != "data" or user != self.settings.data_watch_owner_user:
                 return {"ok": True, "ignored": True}
             target = "data"
+        elif self.settings.video_analytics_enabled and channel == self.settings.video_analytics_channel_id:
+            # The owner's reply under a performance report is a question for claude-runtime, not a company turn.
+            if role != BRIEFER or not event.get("thread_ts"):
+                return {"ok": True, "ignored": True}
+            from .video.analytics_store import AnalyticsStore
+
+            return {"ok": True, **AnalyticsStore(self.company).ask(
+                event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:video-question", channel=channel,
+                thread_ts=event["thread_ts"], message_ts=timestamp, user=user,
+                text=re.sub(r"<@[A-Z0-9]+>", "", text))}
         elif improvements:
             if role != "maintainer":
                 return {"ok": True, "ignored": True}

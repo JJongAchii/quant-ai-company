@@ -110,7 +110,7 @@ class ProviderAttachment(StrictModel):
 
 
 # Rendered frames for the visual review; published thumbnails for the performance analysis.
-IMAGE_CONTRACTS = frozenset({"video_visual_review_v1", "video_performance_v1", "video_weekly_v1"})
+IMAGE_CONTRACTS = frozenset({"video_visual_review_v1", "video_performance_v1", "video_weekly_v1", "video_answer_v1"})
 
 
 class ProviderRequest(StrictModel):
@@ -130,6 +130,7 @@ class ProviderRequest(StrictModel):
                              "quant_critique_v1", "quant_critique_v2", "quant_search_v1",
                              "research_stage_v1", "video_plan_v1", "video_review_v1", "video_episode_v1",
                              "video_visual_review_v1", "video_screen_fix_v1", "video_performance_v1", "video_weekly_v1",
+                             "video_answer_v1",
                              "brief_plan_v1", "brief_inventory_v1", "brief_inventory_v2", "brief_compose_v1",
                              "brief_write_v1", "brief_review_v1", "brief_review_v2", "brief_conditions_v1",
                              "brief_facts_v1", "brief_editorial_v1", "brief_editorial_v2", "brief_source_notes_v1"] = "agent_decision"
@@ -149,7 +150,7 @@ class ProviderRequest(StrictModel):
                                       "video_screen_fix_v1"}:
             if not self.request_id.startswith("video-") or self.web_search or self.session is not None:
                 raise ValueError("Video output requires a tool-free video request")
-        elif self.output_contract in {"video_performance_v1", "video_weekly_v1"}:
+        elif self.output_contract in {"video_performance_v1", "video_weekly_v1", "video_answer_v1"}:
             if not self.request_id.startswith("video-analytics-") or self.web_search or self.session is not None:
                 raise ValueError("Video analytics output requires a tool-free analytics request")
         elif self.output_contract == "research_stage_v1":

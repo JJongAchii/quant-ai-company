@@ -16,9 +16,27 @@ from temporalio import activity
 from ..company import PolicyError
 from ..contracts import ProviderAttachment, ProviderFault, ProviderRequest
 from ..providers.client import RuntimeClient
-from .analytics_contracts import VideoPerformance, WeeklyReview, performance_prompt, weekly_prompt
+from .analytics_contracts import (
+    VideoAnswer,
+    VideoPerformance,
+    WeeklyReview,
+    answer_prompt,
+    performance_prompt,
+    weekly_prompt,
+)
 from .analytics_metrics import KST, PT, hook_retention, in_series, parse_title, scene_drops, window
-from .analytics_slack import EDITIONS, card_text, failed_weekly_text, update_text, weekly_text
+from .analytics_slack import (
+    EDITIONS,
+    EXPIRED_TEXT,
+    WAIT_TEXT,
+    answer_text,
+    card_text,
+    detail_text,
+    failed_answer_text,
+    failed_weekly_text,
+    update_text,
+    weekly_text,
+)
 from .analytics_store import REACH_GRACE_DAYS, REPORT_TYPES, AnalyticsStore
 
 LOG = logging.getLogger(__name__)
@@ -72,6 +90,21 @@ def plan_summary(job):
             or [{"chapter": c["title"], "start": c["start"]} for c in artifacts.get("chapters") or []]}
 
 
+def usable_changes(publication, changes):
+    """Studio edits the owner can paste as given. A new title must still read as this upload's own edition (the same
+    day and kind as its current title, else its kind), so the upload stays linked and measured after the change."""
+    current = parse_title(publication["title"], publication["published_at"])
+    keep = []
+    for change in changes:
+        if change["target"] == "title":
+            parsed = parse_title(change["text"], publication["published_at"])
+            if (parsed is None or change["text"].strip() == publication["title"].strip()
+                    or (parsed != current if current else parsed[1] != publication["edition_kind"])):
+                continue
+        keep.append(change)
+    return keep
+
+
 def medians(rows, keys=("ctr", "hook_30s", "avg_view_pct", "views")):
     result = {"n": len(rows)}
     for key in keys:
@@ -113,7 +146,7 @@ class AnalyticsRunner:
         result = {"state": "ok"}
         for name, stage in (("uploads", self.sync_uploads), ("reports", self.sync_reports),
                             ("snapshots", lambda: self.take_snapshots(at)), ("cards", self.cards),
-                            ("updates", self.updates), ("weekly", lambda: self.weekly(at))):
+                            ("details", self.details), ("updates", self.updates), ("weekly", lambda: self.weekly(at))):
             try:
                 result[name] = await stage()
             except (httpx.HTTPError, ValueError, OSError, PolicyError, ProviderFault) as error:
@@ -299,10 +332,23 @@ class AnalyticsRunner:
                 continue
             if receipt is None:
                 continue
+            if receipt.get("output"):
+                receipt = {**receipt, "output": {**receipt["output"],
+                                                 "changes": usable_changes(row, receipt["output"]["changes"])}}
             # The card shows the baselines the diagnosis was given.
             await asyncio.to_thread(self.store.post, youtube_id, f"{youtube_id}:d3", f"영상 성과 {youtube_id}",
                                     card_text(row, frozen["extra"]["baselines"], receipt), analysis_request=request_id)
             posted += 1
+        return posted
+
+    async def details(self):
+        """The full diagnosis as the first reply under each card, once Slack has confirmed the card."""
+        posted = 0
+        for row in await asyncio.to_thread(self.store.undetailed):
+            youtube_id = row["youtube_id"]
+            if await asyncio.to_thread(self.store.post, youtube_id, f"{youtube_id}:d3:detail", f"영상 성과 {youtube_id}",
+                                       detail_text(row, row["baselines"], row["output"]), reply_to=f"{youtube_id}:d3"):
+                posted += 1
         return posted
 
     async def updates(self):
@@ -383,6 +429,119 @@ class AnalyticsRunner:
         await asyncio.to_thread(self.store.post, f"weekly:{monday}", f"weekly:{monday}", f"주간 성과 리뷰 {monday}", text,
                                 analysis_request=request_id)
         return 1
+
+    # ---- The owner's questions in analytics threads -----------------------------------------------------------
+
+    @staticmethod
+    def thread_of(question):
+        """(project key, root post key, project title) of the thread a question was asked in."""
+        if question["youtube_id"]:
+            return question["youtube_id"], f"{question['youtube_id']}:d3", f"영상 성과 {question['youtube_id']}"
+        return question["thread_key"], question["thread_key"], f"주간 성과 리뷰 {question['week']}"
+
+    def answer_context(self, question):
+        """What the answer is built on: the thread's report and its inputs, the earlier exchange, the new message.
+        The images are the thumbnails the report itself was given."""
+        history = [{"owner": h["question"], "answer": h["answer"]} for h in self.store.thread_history(question)]
+        if question["youtube_id"]:
+            youtube_id = question["youtube_id"]
+            report = self.store.analysis(f"video-analytics-{youtube_id}-d3")
+            publication = self.store.publication(youtube_id)
+            snapshots = {h: self.store.snapshot(youtube_id, h) for h in ("d3", "d7", "d28")}
+            thread = {"video": {"youtube_id": youtube_id, "title": publication["title"],
+                                "proposed_title": publication["proposed_title"],
+                                "edition": EDITIONS.get(publication["edition_kind"], "기타"),
+                                "published_kst": publication["published_at"].astimezone(KST).isoformat(),
+                                "duration_s": publication["duration_s"],
+                                **plan_summary(self.store.job(publication["job_id"]))},
+                      "metrics": {h: compact(snap["metrics"]) for h, snap in snapshots.items() if snap},
+                      "baselines": ((report or {}).get("request") or {}).get("extra", {}).get("baselines"),
+                      "report": (report or {}).get("output")}
+        else:
+            report = self.store.analysis(f"video-analytics-weekly-{question['week']}")
+            start = datetime.combine(question["week"], datetime.min.time(), KST).replace(hour=WEEKLY_HOUR)
+            episodes = [{"youtube_id": e["youtube_id"], "title": e["title"], "edition": EDITIONS.get(e["edition_kind"], "기타"),
+                         "horizon": e["horizon"], "metrics": compact(e["metrics"])}
+                        for e in self.store.episodes(start - timedelta(days=REVIEW_DAYS)) if e["published_at"] < start]
+            thread = {"weekly_review": (report or {}).get("output"), "week_of": question["week"], "episodes": episodes}
+        refs = ((report or {}).get("request") or {}).get("attachments") or []
+        return {"thread": thread, "earlier": history, "owner_message": question["text"]}, refs
+
+    async def answer(self, question_id):
+        """Answer one question in its thread: 'answered', 'closed' (answered or given up already), 'waiting' (an
+        episode is in production, claude-runtime is busy or today's allowance is used: ask again later) or
+        'disabled'. While an episode is made the owner is told once that the answer follows."""
+        question = await asyncio.to_thread(self.store.question, question_id)
+        if not question or question["state"] != "pending":
+            return "closed"
+        if not self.store.enabled():
+            return "disabled"
+        key, root, title = self.thread_of(question)
+        if await asyncio.to_thread(self.store.producing):
+            if await asyncio.to_thread(self.store.notice_waiting, question_id):
+                await asyncio.to_thread(self.store.post, key, f"question:{question_id}:wait", title, WAIT_TEXT,
+                                        reply_to=root)
+            return "waiting"
+
+        def build():
+            context, refs = self.answer_context(question)
+            return self.frozen(answer_prompt(context), refs, self.settings.video_reasoning_effort)
+
+        request_id = f"video-analytics-answer-{question_id}"
+        try:
+            receipt, _ = await self.analyze(request_id, "answer", build, VideoAnswer, "video_answer_v1",
+                                            youtube_id=question["youtube_id"], week=question["week"])
+        except PolicyError as error:
+            LOG.warning("video analytics answer %s refused: %s", question_id, error)
+            return "waiting"
+        if receipt is None:
+            return "waiting"
+        output = receipt.get("output")
+        if output:
+            publication = (await asyncio.to_thread(self.store.publication, question["youtube_id"])
+                           if question["youtube_id"] else None)
+            changes = usable_changes(publication, output["changes"]) if publication else []
+            lesson = output.get("lesson")
+            if lesson:
+                known = {p["youtube_id"] for p in await asyncio.to_thread(self.store.publications)}
+                active = {x["text"] for x in await asyncio.to_thread(self.store.active_lessons)}
+                if not set(lesson["videos"]) <= known or lesson["text"] in active:
+                    lesson = None
+            if lesson:
+                analysis = await asyncio.to_thread(self.store.analysis, request_id)
+
+                def propose():
+                    with self.store.db.transaction() as conn:
+                        return self.store.propose(conn, analysis["id"], [lesson])
+
+                await asyncio.to_thread(propose)
+            text = answer_text(output, changes, lesson)
+        else:
+            text = failed_answer_text(receipt.get("code", "unknown"))
+        if not await asyncio.to_thread(self.store.post, key, f"answer:{question_id}", title, text, reply_to=root,
+                                       analysis_request=request_id):
+            return "waiting"
+        await asyncio.to_thread(self.store.close_question, question_id, "answered" if output else "failed")
+        return "answered"
+
+    async def give_up(self, question_id):
+        """After hours of waiting: say so in the thread and close the question."""
+        question = await asyncio.to_thread(self.store.question, question_id)
+        if not question or question["state"] != "pending":
+            return "closed"
+        key, root, title = self.thread_of(question)
+        await asyncio.to_thread(self.store.post, key, f"question:{question_id}:expired", title, EXPIRED_TEXT,
+                                reply_to=root)
+        await asyncio.to_thread(self.store.close_question, question_id, "expired")
+        return "expired"
+
+    @activity.defn(name="company_video_analytics_answer")
+    async def activity_answer(self, question_id: str) -> str:
+        return await self.answer(question_id)
+
+    @activity.defn(name="company_video_analytics_give_up")
+    async def activity_give_up(self, question_id: str) -> str:
+        return await self.give_up(question_id)
 
     async def preview(self, at=None):
         """sync --dry-run: the YouTube side only (uploads, reporting jobs, the latest finished d3 window) so the

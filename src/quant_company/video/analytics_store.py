@@ -206,6 +206,20 @@ class AnalyticsStore:
                 [stable(f"video-analytics-message:{r['youtube_id']}:{horizon}") for r in rows],)).fetchall()}
         return [r for r in rows if stable(f"video-analytics-message:{r['youtube_id']}:{horizon}") not in posted]
 
+    def undetailed(self):
+        """Cards with a diagnosis whose thread reply (the full diagnosis) is not posted yet, with what it shows.
+        Cards from before the Studio edits carried the full diagnosis themselves and get no reply."""
+        with self.db.transaction() as conn:
+            rows = conn.execute("""SELECT a.youtube_id,a.output,a.request->'extra'->'baselines' AS baselines,
+                s.window_start,s.window_end,s.metrics,p.title,p.edition_kind,p.published_at
+                FROM video_analyses a JOIN video_snapshots s ON s.youtube_id=a.youtube_id AND s.horizon='d3'
+                JOIN video_publications p ON p.youtube_id=a.youtube_id
+                WHERE a.kind='video' AND a.state='completed' AND a.message_id IS NOT NULL AND a.output ? 'changes'
+                ORDER BY a.created_at""").fetchall()
+            posted = {r["id"] for r in conn.execute("SELECT id FROM messages WHERE id=ANY(%s)", (
+                [stable(f"video-analytics-message:{r['youtube_id']}:d3:detail") for r in rows],)).fetchall()}
+        return [r for r in rows if stable(f"video-analytics-message:{r['youtube_id']}:d3:detail") not in posted]
+
     def episodes(self, since):
         """Publications since `since` with their latest snapshot (d28, else d7, else d3) and the lessons frozen in
         their job's policy."""
@@ -344,16 +358,18 @@ class AnalyticsStore:
         return ids
 
     def bound(self, lesson_id, message_id, ts, channel, action):
-        """The Monday of the delivered review message a button was rendered in, or None. adopt/reject: the lesson was
-        proposed by that review; retire: any active lesson (each review lists them)."""
+        """The thread ('weekly:<monday>' or a video ID) of the delivered message a button was rendered in, or None.
+        adopt/reject: the lesson was proposed by that review or answer; retire: any active lesson, from a review
+        (each review lists them)."""
         with self.db.transaction() as conn:
-            review = conn.execute("""SELECT a.id,a.week FROM video_analyses a JOIN outbox o ON o.id=a.message_id
-                WHERE a.message_id=%s AND a.kind='weekly' AND o.status='delivered' AND o.sent_ts=%s AND o.channel=%s""",
-                                  (message_id, ts, channel)).fetchone()
+            source = conn.execute("""SELECT a.id,a.kind,a.youtube_id,a.week FROM video_analyses a
+                JOIN outbox o ON o.id=a.message_id WHERE a.message_id=%s AND a.kind IN ('weekly','answer')
+                AND o.status='delivered' AND o.sent_ts=%s AND o.channel=%s""", (message_id, ts, channel)).fetchone()
             lesson = conn.execute("SELECT * FROM video_lessons WHERE id=%s", (lesson_id,)).fetchone()
-        if not review or not lesson or (action != "retire" and lesson["analysis_id"] != review["id"]):
+        if not source or not lesson or (action == "retire" and source["kind"] != "weekly") or (
+                action != "retire" and lesson["analysis_id"] != source["id"]):
             return None
-        return review["week"]
+        return source["youtube_id"] or f"weekly:{source['week']}"
 
     def lesson(self, lesson_id):
         with self.db.transaction() as conn:
@@ -437,6 +453,69 @@ class AnalyticsStore:
             if analysis_request:
                 conn.execute("UPDATE video_analyses SET message_id=%s WHERE request_id=%s", (identity, analysis_request))
         return str(identity)
+
+    # ---- The owner's questions in analytics threads ----------------------------------------------------------
+
+    def ask(self, *, event_key, channel, thread_ts, message_ts, user, text):
+        """The owner's reply under a delivered card or weekly review becomes one question; a Slack retry of the same
+        event is the same question. Other messages in the channel are not questions."""
+        text = text.strip()[:2000]
+        if (not self.enabled() or user != self.settings.briefing_owner_user or not text
+                or channel != self.settings.video_analytics_channel_id):
+            return {"ignored": True, "reason": "video_question_scope"}
+        with self.db.transaction() as conn:
+            root = conn.execute("""SELECT a.kind,a.youtube_id,a.week,o.id AS message_id FROM outbox o
+                JOIN video_analyses a ON a.message_id=o.id WHERE o.channel=%s AND o.sent_ts=%s AND o.status='delivered'
+                AND o.thread_ts IS NULL AND a.kind IN ('video','weekly')""", (channel, thread_ts)).fetchone()
+            if not root:
+                return {"ignored": True, "reason": "not_an_analytics_thread"}
+            video = root["youtube_id"] if root["kind"] == "video" else None
+            identity = stable("video-question:" + event_key)
+            inserted = conn.execute("""INSERT INTO video_questions(id,event_key,thread_key,youtube_id,week,
+                root_message_id,owner_user,channel,thread_ts,message_ts,text) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ON CONFLICT(event_key) DO NOTHING RETURNING id""",
+                                    (identity, event_key, video or f"weekly:{root['week']}", video,
+                                     None if video else root["week"], root["message_id"], user, channel, thread_ts,
+                                     message_ts, text)).fetchone()
+        return {"video_question": str(identity), "duplicate": inserted is None}
+
+    def question(self, question_id):
+        with self.db.transaction() as conn:
+            return conn.execute("SELECT * FROM video_questions WHERE id=%s", (question_id,)).fetchone()
+
+    def unstarted_questions(self):
+        """Open questions whose answering workflow dispatch has not started yet, oldest first."""
+        with self.db.transaction() as conn:
+            return [str(r["id"]) for r in conn.execute("""SELECT id FROM video_questions WHERE state='pending'
+                AND NOT workflow_started ORDER BY created_at LIMIT 10""").fetchall()]
+
+    def question_started(self, question_id):
+        with self.db.transaction() as conn:
+            conn.execute("UPDATE video_questions SET workflow_started=true WHERE id=%s", (question_id,))
+
+    def notice_waiting(self, question_id):
+        """True the first time only: the 'answer after production' notice is said once per question."""
+        with self.db.transaction() as conn:
+            return bool(conn.execute("""UPDATE video_questions SET waiting_noticed=true WHERE id=%s
+                AND NOT waiting_noticed RETURNING id""", (question_id,)).fetchone())
+
+    def close_question(self, question_id, state):
+        with self.db.transaction() as conn:
+            conn.execute("""UPDATE video_questions SET state=%s,closed_at=now() WHERE id=%s AND state='pending'""",
+                         (state, question_id))
+
+    def thread_history(self, question):
+        """The thread's earlier questions with their answers, oldest first (at most five)."""
+        with self.db.transaction() as conn:
+            rows = conn.execute("""SELECT q.text AS question,a.output->>'answer' AS answer FROM video_questions q
+                LEFT JOIN video_analyses a ON a.request_id='video-analytics-answer-'||q.id::text
+                WHERE q.thread_key=%s AND q.created_at<%s AND q.id<>%s ORDER BY q.created_at DESC LIMIT 5""",
+                                (question["thread_key"], question["created_at"], question["id"])).fetchall()
+        return rows[::-1]
+
+    def publication(self, youtube_id):
+        with self.db.transaction() as conn:
+            return conn.execute("SELECT * FROM video_publications WHERE youtube_id=%s", (youtube_id,)).fetchone()
 
     def posted(self, key):
         """Outbox row of a post (status, sent_ts) or None."""

@@ -20,6 +20,11 @@ SCOPES = {"title": "제목", "thumbnail": "썸네일", "opening": "오프닝", "
           "keywords": "키워드"}
 VERDICTS = {"keep": "유지", "retire": "은퇴 제안", "too_early": "판단 이르음"}
 LABELS = {"adopt": "채택", "reject": "거절", "retire": "은퇴"}
+TARGETS = {"title": "제목", "description": "설명 첫 줄", "tags": "태그 추가"}
+THREAD_HINT = "자세한 진단은 이 스레드에 이어집니다. 스레드에 질문이나 지시를 남기면 답합니다."
+WAIT_TEXT = "지금 영상을 만드는 중이라, 제작이 끝나면 이 스레드에 답할게요."
+EXPIRED_TEXT = "영상 제작이 길어져 이 질문에 답하지 못했어요. 다시 물어봐 주세요."
+LESSON_HINT = "아래 버튼으로 채택하거나 거절해 주세요. 채택한 교훈은 다음에 만드는 회차부터 반영됩니다."
 
 
 def _pct(value, digits=1):
@@ -66,14 +71,15 @@ def metric_lines(metrics, base):
     return lines
 
 
-def card_text(row, base, receipt):
-    """Three-day card: numbers against the same-edition baseline, where viewers came from and left, and the
-    diagnosis (or the numbers alone when the analysis turn failed)."""
-    metrics = row["metrics"]
+def window_line(row, base):
     kind = EDITIONS.get(row["edition_kind"], "기타")
-    lines = [f"📊 {headline(row)}",
-             f"업로드 후 3일({row['window_start']:%m/%d}~{row['window_end']:%m/%d}, 태평양 시간) · 비교: 같은 {kind} 회차 "
-             f"최근 28일 {base['n']}편 중앙값", *metric_lines(metrics, base)]
+    return (f"업로드 후 3일({row['window_start']:%m/%d}~{row['window_end']:%m/%d}, 태평양 시간) · 비교: 같은 {kind} 회차 "
+            f"최근 28일 {base['n']}편 중앙값")
+
+
+def source_lines(metrics):
+    """Where viewers came from, what they searched and the scene they left fastest."""
+    lines = []
     traffic = metrics.get("traffic") or []
     if traffic:
         lines.append("유입: " + " · ".join(f"{TRAFFIC.get(t['source'], t['source'])} {t['share']:.0%}"
@@ -85,15 +91,54 @@ def card_text(row, base, receipt):
     if steep:
         lines.append(f"이탈이 가장 가파른 장면: {steep['heading']}({steep['type']}) {round(steep['start'])}~"
                      f"{round(steep['end'])}초, 1분당 −{steep['per_minute'] * 100:.0f}%p")
+    return lines
+
+
+def change_lines(changes):
+    """What to paste into YouTube Studio, numbered, each with its one-line reason."""
+    if not changes:
+        return ["✏️ 지금 YouTube에서 바꿀 것은 없습니다."]
+    lines = ["✏️ YouTube에서 바꿔볼 것"]
+    for n, change in enumerate(changes, 1):
+        lines += [f"{n}. {TARGETS[change['target']]} → `{change['text']}`", f"   왜: {change['reason']}"]
+    return lines
+
+
+def card_text(row, base, receipt):
+    """Three-day card: the numbers against the same-edition baseline, what to change in YouTube Studio and the
+    one-line diagnosis; the full diagnosis follows in the thread. When the analysis turn failed, the numbers alone
+    with where viewers came from."""
+    metrics = row["metrics"]
     output = (receipt or {}).get("output")
     if output:
-        lines += ["", f"진단: {output['summary']}"]
-        lines += [f"+ {s}" for s in output["strengths"]] + [f"− {w}" for w in output["weaknesses"]]
-        lines += [f"• [{STAGES[h['stage']]} · 확신 {CONFIDENCE[h['confidence']]}] {h['claim']} — {h['evidence']}"
-                  for h in output["hypotheses"]]
-    else:
-        lines += ["", f"진단: 분석 실행 실패({(receipt or {}).get('code', 'unknown')}). 수치만 전달합니다."]
+        return "\n".join([f"📊 {headline(row)}", *metric_lines(metrics, base), "", *change_lines(output["changes"]),
+                          "", f"진단: {output['summary']}", THREAD_HINT])
+    return "\n".join([f"📊 {headline(row)}", window_line(row, base), *metric_lines(metrics, base), *source_lines(metrics),
+                      "", f"진단: 분석 실행 실패({(receipt or {}).get('code', 'unknown')}). 수치만 전달합니다."])
+
+
+def detail_text(row, base, output):
+    """The card's thread: the comparison window, where viewers came from and left, strengths, weaknesses and the
+    staged hypotheses with their evidence."""
+    lines = [f"🔎 자세한 진단 · {window_line(row, base)}", *source_lines(row["metrics"]), ""]
+    lines += [f"+ {s}" for s in output["strengths"]] + [f"− {w}" for w in output["weaknesses"]]
+    lines += [f"• [{STAGES[h['stage']]} · 확신 {CONFIDENCE[h['confidence']]}] {h['claim']} — {h['evidence']}"
+              for h in output["hypotheses"]]
     return "\n".join(lines)
+
+
+def answer_text(output, changes, lesson):
+    """The reply to the owner's message: the answer, then what to paste into Studio and a proposed lesson."""
+    lines = [output["answer"]]
+    if changes:
+        lines += ["", *change_lines(changes)]
+    if lesson:
+        lines += ["", f"💡 교훈 제안 · {SCOPES[lesson['scope']]}: {lesson['text']}", LESSON_HINT]
+    return "\n".join(lines)
+
+
+def failed_answer_text(code):
+    return f"답변을 만들지 못했어요({code}). 다시 물어봐 주세요."
 
 
 def update_text(row, base):
@@ -124,15 +169,18 @@ def failed_weekly_text(monday, code):
 
 
 def blocks(company, row):
-    """The review's text, then adopt/reject for each proposal it made and retire for every active lesson. Rendered
-    when sent, so the states shown are current."""
+    """A review: its text, then adopt/reject for each proposal it made and retire for every active lesson. An answer
+    that proposed a lesson: its text and adopt/reject. Rendered when sent, so the states shown are current."""
     with company.db.transaction() as conn:
-        review = conn.execute("SELECT id FROM video_analyses WHERE message_id=%s AND kind='weekly'", (row["id"],)).fetchone()
+        review = conn.execute("""SELECT id,kind FROM video_analyses WHERE message_id=%s AND kind IN ('weekly','answer')""",
+                              (row["id"],)).fetchone()
         if not review:
             return None
         proposed = conn.execute("""SELECT * FROM video_lessons WHERE analysis_id=%s AND state='proposed'
             ORDER BY id""", (review["id"],)).fetchall()
-    active = AnalyticsStore(company).lessons(["active"])
+    if review["kind"] == "answer" and not proposed:
+        return None
+    active = AnalyticsStore(company).lessons(["active"]) if review["kind"] == "weekly" else []
     result = [{"type": "section", "text": {"type": "mrkdwn", "text": row["text"][:3000]}}]
 
     def buttons(lesson, actions):
@@ -141,6 +189,8 @@ def blocks(company, row):
             {"type": "button", "action_id": "video_lesson_" + a, "text": {"type": "plain_text", "text": LABELS[a]},
              "value": value, **({"style": "primary"} if a == "adopt" else {})} for a in actions]}
 
+    if review["kind"] == "answer":
+        return result + [buttons(lesson, ("adopt", "reject")) for lesson in proposed]
     for n, lesson in enumerate(proposed, 1):
         evidence = lesson["evidence"]
         result.append({"type": "section", "text": {"type": "mrkdwn", "text": (
@@ -164,7 +214,8 @@ def reply_text(outcome, lesson, active, limit):
 
 
 def accept(ingress, role, payload, credential):
-    """Owner's adopt/reject/retire click on a delivered Monday review in the analytics channel."""
+    """Owner's adopt/reject/retire click on a delivered Monday review, or adopt/reject on a delivered answer, in the
+    analytics channel. The outcome is said in that message's thread."""
     settings = ingress.settings
     try:
         if (role != BRIEFER or payload["type"] != "block_actions" or payload["team"]["id"] != settings.slack_team_id
@@ -183,15 +234,17 @@ def accept(ingress, role, payload, credential):
                 or container.get("is_ephemeral")):
             raise ValueError("Invalid lesson message binding")
         store = AnalyticsStore(ingress.company)
-        week = store.enabled() and store.bound(binding["id"], binding["message"], message["ts"], channel, selected)
-        if not week:
-            raise ValueError("Lesson button outside a delivered review")
+        thread = store.enabled() and store.bound(binding["id"], binding["message"], message["ts"], channel, selected)
+        if not thread:
+            raise ValueError("Lesson button outside a delivered review or answer")
         event_key = f"video-lesson:{binding['id']}:{action['action_ts']}:{user}"
     except (KeyError, TypeError, ValueError, AttributeError):
         raise PolicyError("Malformed video lesson interaction") from None
     outcome = store.decide(binding["id"], selected, user, event_key)
     lesson = store.lesson(binding["id"])
-    store.post(f"weekly:{week}", "lesson-action:" + event_key, f"주간 성과 리뷰 {week}",
+    weekly = thread.startswith("weekly:")
+    store.post(thread, "lesson-action:" + event_key,
+               f"주간 성과 리뷰 {thread.removeprefix('weekly:')}" if weekly else f"영상 성과 {thread}",
                reply_text(outcome, lesson, len(store.active_lessons()), settings.video_analytics_max_lessons),
-               reply_to=f"weekly:{week}")
+               reply_to=thread if weekly else f"{thread}:d3")
     return {"ok": True, "lesson_action": True, "outcome": outcome}

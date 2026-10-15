@@ -174,6 +174,12 @@ async def dispatch_once(client, company):
             company._video_analytics_started = True
         except Exception as exc:
             logging.getLogger(__name__).error("Video analytics workflow start failed: %s", type(exc).__name__)
+    if getattr(company.settings, 'video_analytics_enabled', False):
+        try:
+            await start_video_questions(client, company)
+        except Exception as exc:
+            # Retried next loop; the outbox below must still be flushed.
+            logging.getLogger(__name__).error("Video question workflow start failed: %s", type(exc).__name__)
     if getattr(company.settings, "briefing_enabled", False):
         from .briefing.store import BriefStore
 
@@ -406,13 +412,33 @@ def make_video_worker(client, company, runner=None):
                   graceful_shutdown_timeout=timedelta(seconds=30))
 
 
+async def start_video_questions(client, company):
+    """One answering workflow per new owner question in an analytics thread; returns how many were started."""
+    from .video.analytics_store import AnalyticsStore
+    from .video.analytics_workflow import VideoQuestionWorkflow
+
+    store, started = AnalyticsStore(company), 0
+    for question_id in await asyncio.to_thread(store.unstarted_questions):
+        try:
+            await client.start_workflow(VideoQuestionWorkflow.run, question_id,
+                                        id=f"company-video-question-{question_id}",
+                                        task_queue=company.settings.temporal_task_queue+"-video-analytics",
+                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+            started += 1
+        except WorkflowAlreadyStartedError:
+            pass
+        await asyncio.to_thread(store.question_started, question_id)
+    return started
+
+
 def make_video_analytics_worker(client, company, runner=None):
     from .video.analytics import AnalyticsRunner
-    from .video.analytics_workflow import VideoAnalyticsWorkflow
+    from .video.analytics_workflow import VideoAnalyticsWorkflow, VideoQuestionWorkflow
 
     runner = runner or AnalyticsRunner(company)
     return Worker(client, task_queue=company.settings.temporal_task_queue+"-video-analytics",
-                  workflows=[VideoAnalyticsWorkflow], activities=[runner.activity_tick],
+                  workflows=[VideoAnalyticsWorkflow, VideoQuestionWorkflow],
+                  activities=[runner.activity_tick, runner.activity_answer, runner.activity_give_up],
                   max_concurrent_activities=1, max_cached_workflows=2,
                   graceful_shutdown_timeout=timedelta(seconds=30))
 
