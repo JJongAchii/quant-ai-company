@@ -875,3 +875,18 @@ def test_the_card_guide_keeps_directions_off_levels_and_map_lines_short():
     flat = ' '.join(CARD_GUIDE.split())
     assert 'a level such as an index close, a yield or a price takes no direction' in flat
     assert 'delta is one short line' in flat
+
+
+def test_title_and_thumbnail_text_are_written_to_grab_attention_within_the_lines():
+    """Owner, 2026-10-15: '영상 제목이나 썸네일 문구 등은 시청자가 이목을 끌만한 글로 어그로 잘 끌어주면 좋겠어.'
+    The hook is the owner's rule; the facts, the size words and the no-buy/sell rule still bind it."""
+    from quant_company.video.contracts import review_prompt
+    from quant_company.video.episode import TITLE_GUIDE, episode_prompt
+
+    for phrase in ('Owner rule (2026-10-15)', 'stop a scrolling viewer', 'curiosity gap', 'thumbnail text',
+                   'every fact and number comes from the lines', 'no buy/sell'):
+        assert phrase in TITLE_GUIDE, phrase
+    assert TITLE_GUIDE in episode_prompt(source())
+    review = review_prompt(source(), episode())
+    assert 'do not ask to tone down' in review and 'exaggerates a number' in review
+    assert 'flat or generic' in review

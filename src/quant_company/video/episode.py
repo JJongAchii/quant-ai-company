@@ -552,7 +552,14 @@ TITLE_GUIDE = (
     "next-session point. AM hook: one overnight number plus one of today's events. Its first 20 characters contain the "
     "day's number or a stock name from the lines. If it asks a question, the first 30 seconds (cold_open and the start "
     "of the summary) begin answering it. '급락' only for an index fall of 2% or more or a stock fall of 3% or more; an "
-    "intraday record says '장중'. Title and thumbnail numbers are confirmed values from the lines. No buy/sell wording.")
+    "intraday record says '장중'. Title and thumbnail numbers are confirmed values from the lines. No buy/sell wording. "
+    "Owner rule (2026-10-15): the title hook and the thumbnail text must stop a scrolling viewer and earn the click — a "
+    "curiosity gap, a reversal or contrast, what is at stake for the viewer, or a sharp question, in short, strong, "
+    "concrete Korean (in the spirit of '외국인이 던진 진짜 이유', '개미만 몰랐던 신호?', 'IMF는 올렸는데 증시는 왜 빠졌나', "
+    "'반등은 왜 하루 만에 꺾였나'). The thumbnail text is a two-line punchline that does not repeat the title word for word; "
+    "thumbnail_stat carries the concrete number. Never trade truth for clicks: every fact and number comes from the lines, "
+    "size words follow the lines (the '급락' rule above; '폭락' or '폭등' only when the lines say so), no buy/sell, price "
+    "target or guaranteed-return wording, and the video delivers what the title promises.")
 
 
 FACTS_GUIDE = ("This edition lists collected facts without issue analysis: make the short episode exactly "
