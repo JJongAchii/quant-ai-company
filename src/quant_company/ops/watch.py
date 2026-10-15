@@ -102,7 +102,12 @@ def host_findings(row, now, since=None, paused=None):
             found.append(finding("down:" + service, "condition", "critical" if service in CORE else "warning",
                                  f"{service} 중지", f"상태 {item.get('status')} · 종료 코드 {item.get('exit_code')}"
                                  f" · 종료 {kst(stamp(item.get('finished_at')), True)} KST"))
+    # Values differ while services move to new ones one at a time: by the release tool, by an operator who paused it
+    # (2026-10-15 11:36 KST: 13 services took a new SLACK_ALLOWED_CHANNELS over 9 minutes), or in a deploy window.
+    rolling = (snapshot.get("release") or {}).get("action") == "paused"
     for key, groups in (snapshot.get("drift") or {}).items():
+        if rolling or any(in_window(snapshot, service, now) for group in groups for service in group["services"]):
+            continue
         found.append(finding("drift:" + key, "condition", "warning", f"환경값 불일치: {key}",
                              "서비스마다 값이 다릅니다: " + " / ".join(",".join(group["services"]) for group in groups)))
     machine = snapshot.get("host") or {}
