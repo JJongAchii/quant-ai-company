@@ -26,6 +26,10 @@ VIDEO_STATES = {
     "delivery_uncertain": "❓ 전달 결과 확인 필요",
 }
 VIDEO_LIVE = {"queued", "reviewing", "synthesizing", "rendering", "inspecting", "uploading", "delivering", "approved"}
+# A login check or an auth fault sets needs_login and only a later login check clears it, so a successful call after
+# both means the account works again (2026-10-15: primary still carried a 09-28 check while it answered calls).
+LOGIN_NEEDED = """authentication='needs_login'
+    AND (last_fault='auth' OR last_success_at IS NULL OR checked_at>=last_success_at)"""
 RESEARCH_ACTIVE = ("queued", "claimed", "running", "cancel_requested", "received", "awaiting_audit")
 NOTES = {
     "times": "UTC ISO 8601. Convert to KST (+09:00) when answering.",
@@ -94,7 +98,7 @@ def host(conn, now=None):
         value["deploy_window"] = window
     if release := payload.get("release"):
         value["release"] = {key: release.get(key) for key in ("checked_at", "mode", "action", "current", "target",
-                                                               "behind_by", "detail")}
+                                                               "active", "behind_by", "detail")}
     return value
 
 
@@ -168,10 +172,11 @@ def turns(conn):
 
 
 def accounts(conn):
-    rows = conn.execute("""SELECT profile,authentication,paused_until,last_fault FROM model_accounts
-        WHERE authentication='needs_login' OR paused_until>now() ORDER BY profile""").fetchall()
-    return [{"profile": row["profile"], "authentication": row["authentication"],
-             "paused_until": iso(row["paused_until"]), "fault": row["last_fault"]} for row in rows]
+    rows = conn.execute(f"""SELECT profile,({LOGIN_NEEDED}) AS login_needed,
+        CASE WHEN paused_until>now() THEN paused_until END AS paused_until,last_fault FROM model_accounts
+        WHERE ({LOGIN_NEEDED}) OR paused_until>now() ORDER BY profile""").fetchall()
+    return [{"profile": row["profile"], "login_needed": row["login_needed"], "paused_until": iso(row["paused_until"]),
+             "fault": row["last_fault"]} for row in rows]
 
 
 def incidents(conn):
@@ -230,9 +235,14 @@ def status_text(value):
         for key, groups in facts["config_drift"].items():
             lines.append(f"⚠️ 환경값 불일치 {key}: " + " / ".join(",".join(group) for group in groups))
         if release := facts.get("release"):
-            behind = f" · main보다 {release['behind_by']}커밋 뒤" if release.get("behind_by") else ""
-            lines.append(f"🚀 릴리스 {(release.get('current') or '?')[:7]}{behind} · 판단 {release.get('action') or '?'}"
-                         f" ({release.get('mode') or '?'}, {kst(release.get('checked_at'))} 점검)")
+            active, current = release.get("active"), release.get("current")
+            if active and current and active != current and release.get("action") != "releasing":
+                lines.append(f"🚀 릴리스 {active[:7]} · 마지막 점검({kst(release.get('checked_at'))})은 이전 {current[:7]} 기준,"
+                             " 다음 점검 대기")
+            else:
+                behind = f" · main보다 {release['behind_by']}커밋 뒤" if release.get("behind_by") else ""
+                lines.append(f"🚀 릴리스 {(current or '?')[:7]}{behind} · 판단 {release.get('action') or '?'}"
+                             f" ({release.get('mode') or '?'}, {kst(release.get('checked_at'))} 점검)")
     for item in value["briefings"][:2]:
         label = BRIEF_STATES.get(item["state"], item["state"])
         done = f" {kst(item['committed_at'])}" if item["committed_at"] else f" · 마감 {kst(item['due_at'])}"
@@ -254,7 +264,9 @@ def status_text(value):
         pause = value["model_turns"]["model_pause"]
         lines.append(f"⏸️ 모델 작업 일시정지: {pause['reason']} · {kst(pause['until'])}까지")
     for account in value["model_accounts"]:
-        lines.append(f"🔑 모델 계정 {account['profile']}: {account['authentication']}")
+        states = [*(["로그인 필요"] if account["login_needed"] else []),
+                  *([f"한도 대기 · {kst(account['paused_until'])}까지"] if account["paused_until"] else [])]
+        lines.append(f"🔑 모델 계정 {account['profile']}: {' · '.join(states)}")
     alerts = value["open_alerts"]
     lines.append(f"🚨 열린 경고 {len(alerts)}건" + ("".join(f"\n  • {item['title']}" for item in alerts) if alerts else ""))
     return "\n".join(lines)

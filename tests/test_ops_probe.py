@@ -174,6 +174,18 @@ def test_release_status_keeps_only_checked_fields_and_cuts_credentials(tmp_path)
         probe.release_status(path)
 
 
+def test_release_status_names_the_release_that_runs_now(tmp_path):
+    path, link = tmp_path / "release-status.json", tmp_path / "current"
+    path.write_text(json.dumps({"action": "render_required", "current": "e" * 40}))
+    assert probe.release_status(path, link)["active"] is None  # no activated release
+    (tmp_path / "releases" / ("2" * 40)).mkdir(parents=True)
+    link.symlink_to(tmp_path / "releases" / ("2" * 40))
+    assert probe.release_status(path, link)["active"] == "2" * 40
+    link.unlink()
+    link.symlink_to(tmp_path / "releases")
+    assert probe.release_status(path, link)["active"] is None
+
+
 def test_a_synthetic_incident_outlasts_the_minutely_timer_and_then_lapses(tmp_path, monkeypatch):
     path = tmp_path / "ops/synthetic-incident.json"
     monkeypatch.setattr(probe, "SYNTHETIC", path)
