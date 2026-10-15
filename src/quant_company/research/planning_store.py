@@ -91,9 +91,11 @@ class QuestionStore:
             WHERE question_id=%s ORDER BY created_at DESC,id DESC LIMIT 3""", (question_id,)).fetchall()
         gaps = conn.execute("""SELECT id,kind,subject,resolver,required_evidence,recheck_on,state FROM research_gaps
             WHERE question_id=%s AND state='open' ORDER BY created_at,id""", (question_id,)).fetchall()
+        runs = conn.execute("""SELECT id,mode,state,outcome,hold_reason,created_at FROM research_planning_runs
+            WHERE question_id=%s ORDER BY created_at DESC,id DESC LIMIT 3""", (question_id,)).fetchall()
         return as_json({key: row[key] for key in ("id", "project_id", "program_id", "state", "origin", "priority",
             "current_revision", "digest", "title", "activated_event_id", "created_at")}
-            | {"spec": revision["payload"], "evidence_sets": sets, "open_gaps": gaps})
+            | {"spec": revision["payload"], "evidence_sets": sets, "open_gaps": gaps, "runs": runs})
 
     def status(self, conn, project):
         rows = conn.execute("SELECT id FROM research_questions WHERE project_id=%s ORDER BY created_at,id",

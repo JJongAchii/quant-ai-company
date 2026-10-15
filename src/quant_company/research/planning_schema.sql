@@ -77,3 +77,9 @@ CREATE TABLE IF NOT EXISTS research_planning_reviews (
 );
 ALTER TABLE research_gaps ADD COLUMN IF NOT EXISTS run_id uuid REFERENCES research_planning_runs(id);
 ALTER TABLE research_gaps ADD COLUMN IF NOT EXISTS candidate_id uuid REFERENCES research_planning_candidates(id);
+CREATE TABLE IF NOT EXISTS research_planning_decisions (
+ run_id uuid PRIMARY KEY REFERENCES research_planning_runs(id),
+ stage_id uuid NOT NULL REFERENCES research_mission_stages(id), attempt integer NOT NULL,
+ payload jsonb NOT NULL, service_order jsonb NOT NULL, override boolean NOT NULL, digest text NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);

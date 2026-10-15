@@ -193,7 +193,7 @@ flowchart TD
 | --- | --- | --- | --- |
 | P0 기준 재확인 | 병합된 main에서 부록 B 참조를 재확인. 운영 corpus 규모·문서 크기를 읽기 전용으로 측정 | 0 | 차이 보고, 정책값 보정. 코드 재확인은 10-13 완료(2.1) |
 | P1 결정적 기반 | 스키마, 질문과 승인 어댑터, 검색·evidence set·카드, triage(ProgramStore 공통 검증 추출), status·CLI | 0 | 실제 PostgreSQL 테스트. **legacy triage replay 보고서**(16.2). 완료(10-13, [P1 요약](RESEARCH-PLANNING-P1-20261013.md)) |
-| P2 직원 단계(shadow) | slate·critique·decision 단계, 네이티브 응답, 예산 hook, 재시작·replay | shadow만 | 운영 프로그램 질문으로 실제 모델 shadow run 1회. 부수효과 0건을 DB로 확인. 비용 보고. P2a 완료(10-14): run 엔진과 slate 단계, 후보·triage 기록([계획](RESEARCH-PLANNING-P2A-PLAN-20261014.md)). P2b(반론·선정·실제 모델 shadow)는 다음 PR |
+| P2 직원 단계(shadow) | slate·critique·decision 단계, 네이티브 응답, 예산 hook, 재시작·replay | shadow만 | 운영 프로그램 질문으로 실제 모델 shadow run 1회. 부수효과 0건을 DB로 확인. 비용 보고. P2a 완료(10-14): run 엔진과 slate 단계, 후보·triage 기록([계획](RESEARCH-PLANNING-P2A-PLAN-20261014.md)). P2b 코드 완료(10-14): 반론·결정 단계, 서비스 순서, run 보고서. 실제 모델 shadow run은 [절차서](RESEARCH-PLANNING-SHADOW-RUNBOOK-20261014.md)와 소유자 결정 후 |
 | P3 프로그램 연결 | 프로토콜 테이블, 소유자 전환 명령, ProgramController 게이트, admission을 고정한 handoff, legacy 목록 고정 수정 | fixture | 실제 PostgreSQL·Temporal fixture E2E. 운영 전환은 소유자 결정 후 |
 | P4 환류와 목적 검색 | gap trigger, 결과 환류, 후속 질문 제안, `-08` 슬롯 목적 검색(내부 전용) | 제한적 | 슬롯 호출 수 불변, 피드 미발행, 같은 변화에 run 1개 |
 
@@ -782,7 +782,9 @@ RESEARCH_PLANNING_DISCOVERY_ENABLED=false # P4 목적 검색
 
 **준비**
 - #87·#105의 main 병합(10-13 #138)과 P0 재확인을 마친다.
-- 다른 운영 세션의 배포 잠금과 apply 스크립트를 먼저 확인한다(`docs/runbooks/research-programs.md`).
+- 배포는 main 커밋을 `deploy/release.py`로만 한다([ADR 0044](../adr/0044-production-runs-one-main-commit.md), 10-14부터).
+  flag 값은 호스트 `runtime.env`에 두고, research overlay가 연구 서비스에 넘긴다.
+  실행 순서는 [shadow 절차서](RESEARCH-PLANNING-SHADOW-RUNBOOK-20261014.md)를 따른다.
 
 **순서**
 1. flag를 모두 끈 상태로 가산적 migration을 배포한다.

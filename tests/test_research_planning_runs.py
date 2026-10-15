@@ -197,14 +197,14 @@ def test_received_slate_records_candidates_and_triage_without_program_effects(pl
     PlanningController(h.company).tick()
     stage = planning_stage(h)
     complete(h, read_all(h, stage, queued_turn(h, stage["task_id"])), slate(candidate()))
-    assert PlanningController(h.company).tick() == {"state": "completed", "run_state": "triaged"}
+    assert PlanningController(h.company).tick()["state"] == "running"
     with h.company.db.transaction() as conn:
         row = conn.execute("SELECT * FROM research_planning_candidates").fetchone()
         review = conn.execute("SELECT payload FROM research_planning_reviews WHERE candidate_id=%s AND kind='triage'",
                               (row["id"],)).fetchone()
         question = conn.execute("SELECT state FROM research_questions WHERE id=%s", (h.question["id"],)).fetchone()
     assert row["ordinal"] == 1 and row["task_digest"] and review["payload"]["outcome"] == "eligible"
-    assert question["state"] == "waiting"
+    assert question["state"] == "open"
     assert counts(h) == before
 
 
@@ -326,3 +326,21 @@ def test_question_without_sources_runs_and_completes_empty(empty_planning):
     assert stage["context"]["allowed_source_ids"] == [] and stage["context"]["evidence_sources"] == []
     complete(h, read_all(h, stage, queued_turn(h, stage["task_id"])), slate(reason="The evidence set has no sources"))
     assert PlanningController(h.company).tick()["run_state"] == "completed"
+
+
+@pytest.mark.parametrize("change", ["revision=revision+1", "status='paused'"])
+def test_project_change_supersedes_the_active_run(planning, change):  # noqa: F811
+    h = planning
+    PlanningController(h.company).tick()
+    stage = planning_stage(h)
+    turn = queued_turn(h, stage["task_id"])
+    with h.company.db.transaction() as conn:
+        conn.execute(f"UPDATE projects SET {change} WHERE id=%s", (h.project["project_id"],))
+    assert PlanningController(h.company).tick() == {"state": "completed", "run_state": "superseded"}
+    assert h.company.prepare_turn(turn)["status"] == "stale"
+    with h.company.db.transaction() as conn:
+        run = conn.execute("SELECT state FROM research_planning_runs").fetchone()
+        row = conn.execute("SELECT state FROM research_mission_stages WHERE id=%s", (stage["id"],)).fetchone()
+        task = conn.execute("SELECT status FROM tasks WHERE id=%s", (stage["task_id"],)).fetchone()
+    assert (run["state"], row["state"], task["status"]) == ("superseded", "superseded", "superseded")
+    assert PlanningController(h.company).tick()["state"] == "idle"
