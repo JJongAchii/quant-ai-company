@@ -1,0 +1,28 @@
+{
+ "what": "2026-10-15 production changes after the 21cea6b release: the first automatic release, the video analytics values on the same commit, and the render image :10 with the release of 82cd010.",
+ "first_automatic_release": {
+  "commit": "8973a8ba3e48913f2366bc36b6a8ffcc523dff8a",
+  "contains": ["#156 briefing KRX close index", "#157 video analytics reach coverage", "#158 release status around manual releases", "#159 ops watch stale alerts"],
+  "timeline_kst": {"main_ci_green_seen": "09:33 waiting_for_window", "first_window_tick": "10:03 waiting_for_quiet (company turn running)", "started": "10:32", "built": "10:43", "incomplete": "11:07 worker stayed busy 10 minutes (director/data/researcher work in two projects, about 50 turns in 90 minutes)", "resumed": "11:07 by the next run", "released": "11:17"},
+  "verify": "17/17 ok", "news": "29 delivered, none stale", "alerts": "account:primary resolved 11:15 by #159; probe:docker opened 11:15 and closed 11:16 without an announcement"
+ },
+ "video_analytics_values": {
+  "commit": "8973a8ba3e48913f2366bc36b6a8ffcc523dff8a (unchanged)",
+  "requested_by": "video-performance session after the owner-created #video-performance channel",
+  "values": {"VIDEO_ANALYTICS_ENABLED": "true", "VIDEO_ANALYTICS_CHANNEL_ID": "C0C96LFP2QL", "VIDEO_YOUTUBE_CHANNEL_ID": "UCw2vvlz9fVm3Oo8ZSTFJNWg", "SLACK_ALLOWED_CHANNELS": "11 -> 12"},
+  "method": "RELEASE_AUTO_ENABLED=paused; dispatch and news-worker applied back to back right after a news batch was delivered with nothing pending (11:34:43-11:35:54), then the other 11 services; verify OK 11:43:41; automatic release resumed 11:44",
+  "news": "6 delivered, none stale (the allow-list change alters the news policy digest)",
+  "alerts": "one stale-config warning at 11:36 (values differed between services mid-apply), resolved 11:44; fixed by #162",
+  "result": "first analytics tick 11:48; three cards in #video-performance 11:51-11:53"
+ },
+ "render_10": {
+  "reason": "#161 changed design/cards.js and engine.js (renderer digest 1c47c052 -> 1ee82ede); #160 changed video/episode.py",
+  "release_commit": "82cd01015671356a0e59d8480db0056e88a3aebb (main with #160, #161, #162)",
+  "render_image": {"built_from": "82cd010 release directory, deploy/Dockerfile.render", "ecr_digest": "sha256:dad72f939d9747b73a5d9e51a3f339fb0a1c4c3cd33f7c7d95512cf5c60a8aa2", "pushed": "12:35 KST with a throwaway docker --config login"},
+  "change_set": {"name": "render-82cd010", "changes": [{"resource": "RenderTaskDefinition", "action": "Modify", "replacement": true, "details": ["ContainerDefinitions"]}], "approved_by": "owner (execute after checking it changes only the image)", "result": "UPDATE_COMPLETE; quant-company-render:10 ACTIVE (16 vCPU, 32 GB); :9 still ACTIVE"},
+  "test_render": {"script": "/tmp/run_amcheck.sh r10 quant-company-render:10 quant-company-video:82cd010 (run by the release operator because the video session's held messages expired)", "result": {"exit": 0, "capacity": "FARGATE_SPOT", "wall_seconds": 207.5, "video_seconds": 241.5, "findings": [], "renderer": "1ee82ede534834b8823bdd0754fdb991a102c1075aad7000dbe1056edd3ee440", "renderer_match": true}, "frame_check": "frame at 60 s viewed: cards fit, side-by-side numbers in one size"},
+  "release": {"values": {"VIDEO_RENDER_TASK_DEFINITION": "quant-company-render:10", "VIDEO_RENDER_COMMIT": "82cd010", "VIDEO_RENDER_ACCEPTED": "removed"}, "migrate": "12:48:02", "groups_ok_kst": ["12:49:49", "12:51:08", "12:53:21", "12:56:48", "12:58:01", "12:59:13", "12:59:49"], "verify": "17/17", "activated": "13:00:16 KST", "auto_resumed": "13:00 (up_to_date, render commit 82cd010, accepted none)"},
+  "news": "4 delivered, none stale"
+ },
+ "open": ["data bot is not a member of #quant-feeds (C0C3K8ZB9PB): seven answers to the owner's 09:58 question were blocked (not_in_channel)", "director bot is not a member of C0C2E59B1AA: three messages on 10-14 17:22-17:24 were blocked", "news policy digest should not include the whole Slack allow-list"]
+}
