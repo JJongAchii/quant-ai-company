@@ -418,3 +418,96 @@ def test_the_cost_line_keeps_the_break_the_script_wrote(tmp_path):
     found = measure(tmp_path, plan_with(scene('hormuz', '함께 볼 이슈', 'map', HORMUZ)), {}, probe=LINES)['hormuz']
     (cost,) = found['probe']['cost']
     assert len(cost['lines']) >= 2 and cost['lines'][0] < 0.5 * cost['box'], cost
+
+
+# 2026-10-16 AM cards left after three visual reviews: every summary card kept a 140px empty band between its title and
+# its stats (the stats sat at the card's bottom edge); the compare arrow and its label were always blue, so the KOFIX
+# '0.25%p 상승' arrow read as a fall, and the label rose to 4px under the chart's source chip; the five-row signals card
+# drew 84px icon tiles in 66px rows, so the tiles stuck out of their rows and touched each other.
+SUMMARY16 = {'title': '한국만 더 흔들린 이유와 오늘의 세 가지', 'cards': [
+    {'n': 1, 'title': '메모리 쏠림과 수급 압력',
+     'items': [['memory', 'lg', 'red', '삼성전자·SK하이닉스 쏠림', 'dn', '▼'], ['globe', 'md', 'sky', '외국인 매도·원화 약세', 'dn', '▼']],
+     'stats': [['시총 감소분 중 두 종목', '약 65%', ''], ['원/달러 기준가', '1,344.6원', '']]},
+    {'n': 2, 'title': '반등 뒤 뜨거운 물가',
+     'items': [['gauge', 'lg', 'red', '생산자물가 예상 상회', 'up', '▲'], ['basket', 'md', 'sky', '통제그룹 판매 부진', 'dn', '▼']],
+     'stats': [['PPI 전월 대비', '1.3%', 'up'], ['통제그룹 · 전망 0.3% 하회', '0.1%', '']]},
+    {'n': 3, 'title': '채권 강세, 대출 기준지표 상승',
+     'items': [['percent', 'md', 'green', '국고채 금리 하락', 'dn', '▼'], ['bank', 'lg', 'red', '코픽스 상승', 'up', '▲']],
+     'stats': [['국고채 10년', '6.8bp', 'dn'], ['코픽스 신규취급액', '0.25%p', 'up']]}]}
+KOFIX = {'bars': [{'n': 3.18, 'name': '전월', 'label': '3.18%'}, {'n': 3.43, 'name': '9월', 'label': '3.43%'}],
+         'chips': ['대출 금리', '수개월'], 'title': '국고채는 내렸는데, 주담대 기준지표는 올랐다', 'arrow_text': '0.25%p 상승',
+         'extra': [['잔액 기준', '3.05% → 3.15%'], ['한은 기준금리', '2.50% → 3.00%']],
+         'tiles': [{'sub': '15일 마감 · 6.8bp 하락', 'label': '국고채 10년', 'value': '4.193%', 'source': '연합뉴스'},
+                   {'sub': '15일 마감 · 1.6bp 하락', 'label': '국고채 3년', 'value': '3.867%', 'source': '연합뉴스'}],
+         'chart_title': '코픽스 신규취급액 기준', 'chart_source': '이투데이'}
+RETAIL = {'bars': [{'n': 6.4, 'name': '주유소 매출', 'label': '6.4%'}, {'n': 0.2, 'name': '주유소 제외 판매', 'label': '0.2%'}],
+          'chips': ['미국 물가', '왜 중요한가'], 'title': '숫자는 강했지만, 휘발유를 빼면 약했다', 'arrow_text': '주유소를 빼면',
+          'extra': [['전체 소매판매', '0.8% · 전망 0.4%'], ['통제그룹 (GDP 반영)', '0.1% · 전망 0.3% 하회']],
+          'tiles': [{'dir': 'up', 'sub': '전망 0.6% 상회 · 근원 0.7%', 'label': 'PPI 전월 대비', 'value': '1.3%', 'source': '연합뉴스'},
+                    {'dir': 'up', 'sub': '상품 상승분의 80% 이상', 'label': 'PPI 에너지 가격', 'value': '10.8%', 'source': '연합뉴스'}],
+          'chart_title': '9월 소매판매 전월 대비 (명목)', 'chart_source': '연합뉴스'}
+CONDITIONS = {'tag': '확인할 신호', 'title': '판단이 바뀌는 조건',
+              'note': '석유화학: EIA 원유 재고 감소 둔화, 에틸렌·나프타 가격 차 확대 시 마진 압박 판단 약화 · 한국장 수급은 장 마감 기준 집계로 확인',
+              'disclaimer': '투자 권유가 아닌 정보 제공 목적이며, 해석은 브리핑의 판단입니다. 투자 결정과 책임은 본인에게 있습니다.',
+              'rows': [{'icon': 'balance', 'then': '수급 악순환 우려 약화', 'conds': ['외국인 순매도·미수 거래·반대매매 감소', '원화 안정'],
+                        'topic': '한국장 회복 판단'},
+                       {'icon': 'memory', 'then': '공급 충격 해석 약화', 'conds': ['CXMT 양산 확대 지연', '메모리 계약가격 유지'],
+                        'topic': '메모리 공급 충격'},
+                       {'icon': 'gauge', 'then': '비용 압박·수요 둔화 해석 약화', 'conds': ['근원 PPI 상승률 둔화', '통제그룹 판매 회복'],
+                        'topic': '미국 물가·소비'},
+                       {'icon': 'bank', 'then': '가계 부담 확대 전망 약화', 'conds': ['은행 신규 조달금리 하락', '변동형 주담대 적용금리 안정'],
+                        'topic': '가계 대출 금리'},
+                       {'icon': 'shield', 'then': '방어 공백 위험 평가 하향', 'conds': ['추가 요격탄 실제 인도', '조기경보·군 통신 정상화'],
+                        'topic': '우크라이나 방공'}]}
+ARROW = """() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
+  const a=scn.querySelector('[data-role=arrow]'), t=scn.querySelector('[data-role=arrow-text]');
+  const head=scn.querySelector('marker path'); if(!a) return null;
+  return {arrow:a.getAttribute('stroke'), text:t.getAttribute('fill'), head:head.getAttribute('stroke')};}"""
+
+
+def test_summary_stats_follow_their_title_without_an_empty_band(tmp_path):
+    found = measure(tmp_path, plan_with(scene('summary', '요약', 'summary3', SUMMARY16)),
+                    {'card': '.paper', 'title': '.paper .h2', 'stat': '.paper .stat'})['summary']
+    assert not [x for x in found['qa'] if x[0] in BROKEN], found['qa']
+    assert len(found['card']) == 3 and len(found['stat']) == 6
+    for title, stats in zip(found['title'], (found['stat'][0:2], found['stat'][2:4], found['stat'][4:6]), strict=True):
+        assert stats[0]['t'] - title['b'] <= 40, (title, stats[0])
+    assert all(inside(card, found['stage']) for card in found['card'])
+    # '통제그룹 · 전망 0.3% 하회' takes two lines; every tile still has the same height, as the 10/16 inspection asked.
+    assert len({round(s['h']) for s in found['stat']}) == 1, [s['h'] for s in found['stat']]
+
+
+def test_summary_stats_line_up_across_cards_when_one_title_takes_two_lines(tmp_path):
+    found = measure(tmp_path, plan_with(scene('summary', '요약', 'summary3', SUMMARY15)),
+                    {'card': '.paper', 'title': '.paper .h2', 'stat': '.paper .stat'})['summary']
+    tops = {round(s['t']) for s in found['stat']}
+    assert max(tops) - min(tops) <= 2, tops
+    assert min(s['t'] for s in found['stat'][0:2]) - found['title'][0]['b'] <= 40, found['title'][0]
+    assert len({round(c['h']) for c in found['card']}) == 1, [c['h'] for c in found['card']]
+
+
+@pytest.mark.parametrize('direction,colour', [('up', '#FF5C6C'), ('dn', '#5EA0FF'), (None, '#FDC749')])
+def test_the_compare_arrow_takes_the_colour_of_its_direction(tmp_path, direction, colour):
+    data = {**KOFIX, 'arrow_dir': direction} if direction else KOFIX
+    found = measure(tmp_path, plan_with(scene('kofix', '함께 볼 이슈', 'compare', data)), {}, probe=ARROW)['kofix']
+    assert found['probe'] == {'arrow': colour, 'text': colour, 'head': colour}, found['probe']
+
+
+@pytest.mark.parametrize('data', [KOFIX, RETAIL], ids=['kofix', 'retail'])
+def test_the_compare_arrow_label_keeps_clear_of_the_chart_title(tmp_path, data):
+    found = measure(tmp_path, plan_with(scene('chart', '핵심 이슈', 'compare', data)),
+                    {'title': '.glass .lab', 'chip': '.glass .src', 'arrow': '[data-role=arrow]',
+                     'label': '[data-role=arrow-text]'})['chart']
+    label, arrow = found['label'][0], found['arrow'][0]
+    assert label['t'] - max(found['title'][0]['b'], found['chip'][0]['b']) >= 16, (label, found['title'], found['chip'])
+    assert label['b'] <= arrow['t'] or label['t'] >= arrow['b'] or label['r'] <= arrow['l'] or label['l'] >= arrow['r']
+    assert not [x for x in found['qa'] if x[0] in BROKEN], found['qa']
+
+
+def test_signal_icon_tiles_stay_inside_short_rows(tmp_path):
+    found = measure(tmp_path, plan_with(scene('watch', '일정', 'signals', CONDITIONS)),
+                    {'row': '.glass:has(> .tile)', 'tile': '.glass > .tile'})['watch']
+    assert len(found['row']) == 5 and len(found['tile']) == 5
+    for row, tile in zip(found['row'], found['tile'], strict=True):
+        assert inside(tile, row), (tile, row)
+    assert not [x for x in found['qa'] if x[0] in BROKEN], found['qa']
