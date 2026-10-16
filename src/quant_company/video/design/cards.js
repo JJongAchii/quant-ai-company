@@ -38,18 +38,23 @@ const CARDS = {
   },
 
   summary3(d) {
+    // Cards are as tall as their content: the stats follow the title, and the three cards share one grid (subgrid rows),
+    // so titles, stat rows and stat tiles line up across cards; the row is centred below the heading (2026-10-16 AM:
+    // stats pinned to the bottom of a fixed 600px card left a 140px empty band under every title, and a two-line label
+    // made one card's tiles taller than the others').
     const cards = d.cards.map((c, i) => {
-      const x = i * 600, b = 0.6 + i * 0.15;
-      return `<div class="paper" style="left:${x}px;top:100px;width:560px;height:600px;overflow:hidden" data-in="${b},0.55">
+      const b = 0.6 + i * 0.15;
+      return `<div class="paper" style="position:relative;min-width:0;overflow:hidden;grid-row:span 3;display:grid;grid-template-rows:subgrid;row-gap:0" data-in="${b},0.55">
        <div class="spot"><div class="num" data-pop="${b + 0.3},0.5">${c.n}</div>
         ${c.items.map((it, k) => `<div class="spot-item"><div style="height:132px;display:flex;align-items:center"><span data-icon="${it[0]},${isz(it[1])},${col(it[2])},${b + 0.4 + k * 0.25},0.9"></span></div>${it[4] ? `<div class="badge ${it[4]}" data-pop="${b + 1.1 + k * 0.2},0.45">${it[5]}</div>` : ''}<div class="cap">${it[3]}</div></div>`).join('')}
        </div>
-       <div style="position:relative;height:350px;padding:28px 36px 0"><div class="h2" style="text-wrap:balance">${c.title}</div>
-        <div style="position:absolute;left:36px;right:36px;bottom:34px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+       <div style="padding:28px 36px 0"><div class="h2" style="text-wrap:balance">${c.title}</div></div>
+        <div style="padding:24px 36px 34px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
          ${c.stats.map((s, k) => `<div class="stat" data-in="${b + 1.3 + k * 0.15},0.45" style="padding:14px 18px;border-radius:16px;background:rgba(11,21,48,.05);border:1px solid rgba(11,21,48,.08);min-width:0"><div class="k">${s[0]}</div><div class="v tnum ${s[2] ? C(s[2]) : ''}" style="${s[2] ? '' : 'color:var(--ink)'};font-size:${s[1].length > 8 ? 30 : 36}px;white-space:nowrap" data-fit data-fit-group="s${i}">${s[2] && arrow(s[2]) ? arrow(s[2]) + ' ' : ''}${s[1]}</div></div>`).join('')}
-        </div></div></div>`;
+        </div></div>`;
     }).join('');
-    return `<div class="h1" style="position:absolute;top:0;left:0" data-in="0.15,0.5">${d.title}</div>${cards}`;
+    return `<div class="h1" style="position:absolute;top:0;left:0" data-in="0.15,0.5">${d.title}</div>
+      <div style="position:absolute;left:0;top:100px;width:1760px;height:600px;display:flex;align-items:safe center"><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto auto auto;column-gap:40px;width:100%">${cards}</div></div>`;
   },
 
   market_board(d) {
@@ -79,20 +84,21 @@ const CARDS = {
 
   flow(d) {
     const nodes = d.nodes.map((n, i) => {
-      const x = i * 620, b = 0.7 + i * 0.9;
+      const b = 0.7 + i * 0.9;
       const inner = n.big ? `<div class="tnum" style="font-size:76px;font-weight:800;letter-spacing:-.02em;margin-top:10px;line-height:1">${cnt(n.big, b + 0.3, 1.0)}</div><div class="${C(n.dir)}" style="font-size:28px;font-weight:800;margin-top:10px">${n.sub}</div>`
         : n.rows ? n.rows.map((r, k) => `<div class="tnum" style="display:flex;justify-content:space-between;align-items:baseline;margin-top:${k ? 12 : 22}px;font-size:32px;font-weight:800"><span>${r[0]}</span><span class="${C(r[2])}">${arrow(r[2])} ${r[1]}</span></div>`).join('')
         : `<div class="h2" style="margin-top:20px;font-size:38px">${n.text}</div>`;
-      return `<div class="paper" style="left:${x}px;top:${d.top || 105}px;width:520px;height:${d.h || 330}px;padding:26px 32px" data-in="${b},0.5">
+      return `<div class="paper" style="position:relative;flex:none;width:520px;min-height:${d.h || 330}px;padding:26px 32px" data-in="${b},0.5">
         <div style="display:flex;gap:10px;align-items:center">${n.chips.map(c => c === '보도 해석' ? `<span class="chip interp">${c}</span>` : `<span class="chip" style="color:var(--ink-6)">${c}</span>`).join('')}${src(n.source)}</div>
         <div style="display:flex;align-items:center;gap:14px;margin-top:18px"><span class="tile navy" style="width:56px;height:56px"><span data-icon="${n.icon},38,#FDC749,${b + 0.3},0.7"></span></span><span style="font-size:28px;font-weight:800">${n.head}</span>${n.badge ? `<span class="chip tag-gold" data-pop="${b + 0.6},0.5">${n.badge}</span>` : ''}</div>${inner}</div>`;
     }).join('');
-    const y = (d.top || 105) + (d.h || 330) / 2;
-    const arrows = `<svg style="position:absolute;left:0;top:0;overflow:visible" width="1760" height="730"><defs><marker id="ah_${d.id}" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1,1 L10,6 L1,11" fill="none" stroke="#FDC749" stroke-width="2.5"/></marker></defs>
-      <path d="M530,${y} L600,${y}" stroke="#FDC749" stroke-width="4" fill="none" marker-end="url(#ah_${d.id})" data-draw="1.25,0.45"/>
-      <path d="M1150,${y} L1220,${y}" stroke="#FDC749" stroke-width="4" fill="none" marker-end="url(#ah_${d.id})" data-draw="2.15,0.45"/></svg>`;
-    const foot = d.foot ? `<div class="glass" style="left:0;top:${(d.top || 105) + (d.h || 330) + 40}px;width:1760px;height:150px;padding:0 40px;display:flex;align-items:center;gap:22px" data-in="3.4,0.5"><span class="chip interp" style="color:var(--gold);background:rgba(253,199,73,.12)">${d.foot.chip}</span><div class="body" style="font-weight:600">${d.foot.text}</div></div>` : '';
-    return header(d) + nodes + arrows + foot;
+    // The three cards share one row and its tallest card's height (10/16 PM: three-line notes ran out of fixed 330px
+    // cards). The arrows sit at the row's middle and the foot follows the row.
+    const arrows = [530, 1150].map((x, k) => `<svg style="position:absolute;left:${x}px;top:calc(50% - 1px);overflow:visible" width="70" height="2"><defs><marker id="ah_${d.id}_${k}" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1,1 L10,6 L1,11" fill="none" stroke="#FDC749" stroke-width="2.5"/></marker></defs>
+      <path d="M0,1 L70,1" stroke="#FDC749" stroke-width="4" fill="none" marker-end="url(#ah_${d.id}_${k})" data-draw="${1.25 + k * 0.9},0.45"/></svg>`).join('');
+    const foot = d.foot ? `<div class="glass" style="position:relative;flex:none;height:150px;padding:0 40px;display:flex;align-items:center;gap:22px" data-in="3.4,0.5"><span class="chip interp" style="color:var(--gold);background:rgba(253,199,73,.12)">${d.foot.chip}</span><div class="body" style="font-weight:600">${d.foot.text}</div></div>` : '';
+    return header(d) + `<div style="position:absolute;left:0;top:${d.top || 105}px;width:1760px;display:flex;flex-direction:column;gap:40px">
+      <div style="position:relative;display:flex;gap:100px;align-items:stretch">${nodes}${arrows}</div>${foot}</div>`;
   },
 
   counter(d) {
@@ -123,11 +129,13 @@ const CARDS = {
     // 182px pitch, four rows shrink (2026-10-13 PM: the fourth row and the disclaimer ran under the captions).
     const extras = (d.note ? 130 : 0) + (d.disclaimer ? 50 : 0), room = 730 - 106 - extras;
     const pitch = Math.min(182, Math.floor(room / d.rows.length)), height = pitch - 22;
+    // The icon tile shrinks with the row (2026-10-16 AM: 84px tiles in the 66px rows of a five-row card stuck out of them).
+    const tile = Math.min(84, height - 14), glyph = Math.round(tile * 0.62);
     d.top = d.top || 106 + Math.max(0, Math.floor((room - d.rows.length * pitch) / 2));
     const rows = d.rows.map((r, i) => {
       const y = d.top + i * pitch, b = 0.5 + i * 0.3;
       return `<div class="glass" style="left:0;top:${y}px;width:1760px;height:${height}px;padding:0 36px;display:flex;align-items:center;gap:24px" data-in="${b},0.5">
-       <span class="tile" style="width:84px;height:84px;background:rgba(60,207,180,.14);border:1px solid rgba(60,207,180,.4)"><span data-icon="${r.icon},52,#3CCFB4,${b + 0.3},0.7"></span></span>
+       <span class="tile" style="width:${tile}px;height:${tile}px;background:rgba(60,207,180,.14);border:1px solid rgba(60,207,180,.4)"><span data-icon="${r.icon},${glyph},#3CCFB4,${b + 0.3},0.7"></span></span>
        <div data-topic data-fit style="width:150px;flex:none;font-size:32px;font-weight:800;color:var(--signal);white-space:nowrap;overflow:hidden">${r.topic}</div>
        <div style="flex:1;display:flex;align-items:center">${r.conds.map((c, j) => `${j ? `<span class="plus" data-pop="${b + 0.5 + j * 0.2},0.45">+</span>` : ''}<span class="pillc" data-pop="${b + 0.5 + j * 0.2},0.45">${c}</span>`).join('')}<span style="flex:1;height:0;border-top:2px dashed rgba(253,199,73,.35);margin:0 4px 0 22px" data-in="${b + 0.9},0.5,0"></span></div>
        <svg width="70" height="30" viewBox="0 0 70 30"><path d="M4 15H60M48 4L62 15L48 26" fill="none" stroke="#FDC749" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" data-draw="${b + 1.0},0.4"/></svg>
@@ -170,8 +178,12 @@ const CARDS = {
   },
 
   compare(d) {
-    const [a, b] = d.bars, max = Math.max(a.n, b.n), H = 200;
+    // The arrow is red or blue only when the script says the measure rose or fell; other comparisons draw it gold
+    // (2026-10-16 AM: the fixed blue arrow made the KOFIX '0.25%p 상승' read as a fall). Bars stop at 180px so the arrow
+    // label stays clear of the chart title and its source chip (it rose to 4px under the chip).
+    const [a, b] = d.bars, max = Math.max(a.n, b.n), H = 180;
     const ha = H * a.n / max, hb = H * b.n / max;
+    const ac = d.arrow_dir === 'up' ? '#FF5C6C' : d.arrow_dir === 'dn' ? '#5EA0FF' : '#FDC749';
     const tiles = d.tiles.map((t, i) => `<div data-in="${1.0 + i * 0.4},0.45" style="padding:22px 28px;border-radius:18px;background:rgba(11,21,48,.05);border:1px solid rgba(11,21,48,.08);margin-top:${i ? 20 : 0}px">
        <div style="display:flex;align-items:center;gap:12px"><span class="ink6" style="font-size:22px;font-weight:700">${t.label}</span>${src(t.source)}</div>
        <div class="tnum ${t.dir ? C(t.dir) : ''}" style="font-size:48px;font-weight:800;margin-top:6px">${t.dir ? arrow(t.dir) + ' ' : ''}${cnt(t.value, 1.2 + i * 0.4)}</div>
@@ -180,7 +192,7 @@ const CARDS = {
      <div class="glass" style="left:860px;top:110px;width:900px;height:590px;padding:30px 44px" data-in="0.9,0.55">
       <div style="display:flex;align-items:center;gap:12px"><span class="lab">${d.chart_title}</span>${src(d.chart_source)}</div>
       <svg width="812" height="320" style="margin-top:40px;overflow:visible">
-       <defs><marker id="ahc_${d.id}" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1,1 L10,6 L1,11" fill="none" stroke="#5EA0FF" stroke-width="2.5"/></marker></defs>
+       <defs><marker id="ahc_${d.id}" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1,1 L10,6 L1,11" fill="none" stroke="${ac}" stroke-width="2.5"/></marker></defs>
        <line x1="60" y1="282" x2="752" y2="282" stroke="rgba(252,241,219,.25)" stroke-width="2"/>
        <rect x="151" y="${282 - ha}" width="190" height="${ha}" rx="10" fill="#AEB7D4" data-vbar="1.6,0.8"/>
        <rect x="471" y="${282 - hb}" width="190" height="${hb}" rx="10" fill="#FDC749" data-vbar="2.0,0.8"/>
@@ -188,8 +200,8 @@ const CARDS = {
        <text x="566" y="${282 - hb - 16}" text-anchor="middle" font-size="40" font-weight="800" fill="#FDC749" data-in="2.7,0.4,10">${b.label}</text>
        <text x="246" y="320" text-anchor="middle" font-size="25" font-weight="700" fill="#AEB7D4">${a.name}</text>
        <text x="566" y="320" text-anchor="middle" font-size="25" font-weight="700" fill="#AEB7D4">${b.name}</text>
-       <path d="M352,${282 - ha - 52} C392,${282 - ha - 82} 432,${282 - ha - 78} 462,${282 - hb - 50}" fill="none" stroke="#5EA0FF" stroke-width="3.5" marker-end="url(#ahc_${d.id})" data-role="arrow" data-draw="3.0,0.6"/>
-       <text x="407" y="${Math.min(282 - ha, 282 - hb) - 100}" text-anchor="middle" font-size="24" font-weight="800" fill="#5EA0FF" data-role="arrow-text" data-in="3.3,0.4,8">${d.arrow_text}</text></svg>
+       <path d="M352,${282 - ha - 52} C392,${282 - ha - 82} 432,${282 - ha - 78} 462,${282 - hb - 50}" fill="none" stroke="${ac}" stroke-width="3.5" marker-end="url(#ahc_${d.id})" data-role="arrow" data-draw="3.0,0.6"/>
+       <text x="407" y="${Math.max(4, Math.min(282 - ha, 282 - hb) - 100)}" text-anchor="middle" font-size="24" font-weight="800" fill="${ac}" data-role="arrow-text" data-in="3.3,0.4,8">${d.arrow_text}</text></svg>
       <div style="display:flex;gap:18px;margin-top:22px" data-in="3.6,0.45">${d.extra.map(e => `<div data-extra style="flex:1;min-width:0;padding:16px 22px;border-radius:16px;background:rgba(0,17,46,.45);border:1px solid rgba(252,241,219,.14)"><div class="muted" style="font-size:20px;font-weight:700">${e[0]}</div><div class="tnum" data-fit style="font-size:40px;font-weight:800;margin-top:2px;white-space:nowrap;overflow:hidden">${e[1]}</div></div>`).join('')}</div></div>`;
   },
 
