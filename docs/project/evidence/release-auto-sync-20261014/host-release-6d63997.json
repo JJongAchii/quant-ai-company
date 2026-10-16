@@ -1,0 +1,27 @@
+{
+ "what": "2026-10-16: render image :11 for #170 and the release of main 6d63997 (#168-#172) by the release operator; the false drift alert during the nightly backup.",
+ "render_11": {
+  "reason": "#170 changed design/cards.js, video/episode.py and video/motion.py (renderer digest 1ee82ede -> aaec7624)",
+  "render_commit": "1aceeb8fb67b3d7f52ee667ff47e49183ee52ceb",
+  "render_image": {"built_from": "1aceeb8 release directory, deploy/Dockerfile.render (361 s)", "renderer_in_image": "aaec76241ff86d058bceb07739e842c9f1b18c926172480ab55bcd6a36493e65", "ecr_digest": "sha256:d0749bc7a66d6f10f5756457d650ce84e410fb5268843c424dba26b01c200daa", "pushed": "08:00 KST with a throwaway docker --config login (removed)"},
+  "change_set": {"name": "render-1aceeb8", "changes": [{"resource": "RenderTaskDefinition", "action": "Modify", "replacement": true, "details": ["ContainerDefinitions"]}], "approved_by": "owner, before execution", "result": "UPDATE_COMPLETE 08:18 KST; quant-company-render:11 ACTIVE (16 vCPU, 32 GB, 50 GiB); :10, :9, :8 still ACTIVE"},
+  "test_render": {"script": "/tmp/run_amcheck.sh r11 quant-company-render:11 quant-company-video:1aceeb8", "result": {"exit": 0, "capacity": "FARGATE_SPOT", "wall_seconds": 248.4, "video_seconds": 241.5, "findings": [], "renderer_match": true}, "frame_check": "08-oil-hormuz: three bars inside the 240px track, labels fit; the video session checked 05-imf-outlook and 01-roadmap too"}
+ },
+ "release": {
+  "commit": "6d63997f2939711f2f0c192ef6100a5e0edfd791",
+  "contains": ["#168 evening window 18:30", "#169 news and quant feed policy digests hash only the lane's own access", "#171 dependency layers before the source", "#170 renderer", "#172 video analytics thread answers"],
+  "render_check": "1aceeb8 -> 6d63997 changed only video/analytics_contracts.py; no render input and no operator file, so VIDEO_RENDER_COMMIT=1aceeb8 stays valid",
+  "build": "64 s for all six images, about 1 GB disk (the first build on the new Dockerfile, for 1aceeb8, took 663 s)",
+  "waited_for": "the AM video: claude-runtime answered 429 from 00:00 to 07:44 KST (subscription limit), the job ran 07:44-09:33 and was delivered after its 09:00 deadline",
+  "values": {"RELEASE_AUTO_ENABLED": "paused during the release, then true", "VIDEO_RENDER_TASK_DEFINITION": "quant-company-render:11", "VIDEO_RENDER_COMMIT": "1aceeb8", "VIDEO_RENDER_ACCEPTED": "removed"},
+  "order": "dispatch first, then the deploy/release.json groups without it. #169 changes the policy digests that dispatch checks before delivering news and quant feed posts; only the new dispatch accepts both formulas (until 2026-10-20). In the file's order quant-feed-worker (group 2) would have run the new formula for minutes under the old dispatch (group 5), which marks such posts stale.",
+  "timeline_kst": {"migrate": "09:35:47", "dispatch": "09:35:47", "last_group_ok": "09:47:33", "verify": "17/17", "activated": "09:47:58", "auto_resumed": "09:48 up_to_date, no drift, render 1aceeb8/:11"},
+  "news_and_feeds": "13 posts delivered during the release; no news review went stale and no outbox row went stale"
+ },
+ "false_drift_alert": {
+  "when": "2026-10-16 03:17 KST (18:17 UTC), announced in #ops-alerts at 03:18, closed 03:34",
+  "cause": "quant-company-backup.service (18:11:55-18:20:47 UTC) stops services, copies state and starts them again while holding .backup.lock. The 18:17 check ran while the worker was still stopped (it started 18:17:46); reading its package failed, which verify counts as one differing file, and the check reported drift.",
+  "fix": "release.py auto reports waiting_for_lock and judges nothing while the host lock is held"
+ },
+ "cleanup": "the qc-test-* images and dockertest files from the #171 comparison were removed; free disk 23 GB -> 27 GB"
+}

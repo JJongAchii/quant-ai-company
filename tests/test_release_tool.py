@@ -564,6 +564,23 @@ def test_a_paused_check_only_reports_while_an_operator_works(auto_host, monkeypa
     assert status["mode"] == "paused" and status["action"] == "paused" and auto_host == []
 
 
+def test_a_check_during_a_backup_judges_nothing(auto_host, monkeypatch):
+    # 2026-10-16 03:17 KST: the backup had stopped the worker, its package read failed and a drift alert went out.
+    configure(RELEASE_AUTO_ENABLED="true")
+    monkeypatch.setattr(release, "host_free", lambda: False)
+
+    class Untouched(FakeGitHub):
+        def latest_green(self):
+            raise AssertionError("a check under the backup asks nothing")
+
+    def stopped(sha, runner=None):
+        raise AssertionError("services the backup stopped are not verified")
+
+    monkeypatch.setattr(release, "verify", stopped)
+    status = release.auto(Untouched(FILES), runner=no_docker, now=IN_WINDOW)
+    assert status["action"] == "waiting_for_lock" and "drift" not in status and auto_host == []
+
+
 def test_the_host_lock_waits_briefly_for_a_holder_that_lets_go(host):
     import fcntl
     holder = (release.STATE / ".backup.lock").open("a")

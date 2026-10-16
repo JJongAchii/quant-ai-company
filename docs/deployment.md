@@ -369,6 +369,9 @@ Slack 허용 목록(`SLACK_ALLOWED_CHANNELS`, `SLACK_ALLOWED_USERS`)을 바꿀 �
 - 브리핑의 정책값에는 아직 목록 전체가 들어간다. 그래서 브리핑을 만드는 동안(KST 05:20~08:00, 15:50~18:00) 바꾸면 그 회차가 멈춘다. 그 시간대에는 바꾸지 않는다.
 - 값을 넣고 같은 커밋으로 반영하는 동안에는 `RELEASE_AUTO_ENABLED=paused`로 둔다.
 
+백업이 호스트 잠금(`.backup.lock`)을 쥐고 있는 동안에는 점검이 아무것도 판단하지 않고 `waiting_for_lock`으로 보고한다.
+백업은 서비스를 멈췄다 다시 켜므로, 그 사이에 점검하면 멈춘 서비스를 drift로 잘못 본다.
+
 실패한 커밋은 다시 시도하지 않는다. 원인을 확인한 뒤
 `sudo python3 /opt/quant-company/current/deploy/release.py auto --retry`로 다시 시도한다.
 
