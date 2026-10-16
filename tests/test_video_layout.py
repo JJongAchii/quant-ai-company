@@ -213,7 +213,7 @@ THUMB_RECTS = r"""() => {const R = s => {const r = document.querySelector(s).get
           lines: Math.round(q.getBoundingClientRect().height / parseFloat(getComputedStyle(q).lineHeight))};}"""
 
 
-def thumbnail(tmp_path, question, stat, template=None):
+def thumbnail(tmp_path, question, stat, template=None, probe=None):
     """Renders the thumbnail like a render does; returns the renderer's finding and the text boxes."""
     if not importlib.util.find_spec('playwright'):
         pytest.skip('Install optional video dependencies and Chromium')
@@ -237,6 +237,8 @@ def thumbnail(tmp_path, question, stat, template=None):
             tab.goto((page / 'thumbnail.render.html').as_uri())
             tab.evaluate('document.fonts.ready.then(() => window.fit && fit())')
             rects = tab.evaluate(THUMB_RECTS)
+            if probe:
+                rects['probe'] = tab.evaluate(probe)
         finally:
             browser.close()
     return found, rects
@@ -511,3 +513,83 @@ def test_signal_icon_tiles_stay_inside_short_rows(tmp_path):
     for row, tile in zip(found['row'], found['tile'], strict=True):
         assert inside(tile, row), (tile, row)
     assert not [x for x in found['qa'] if x[0] in BROKEN], found['qa']
+
+
+# 2026-10-16 PM, the first episode on render :11: two of the three 'jobs' flow notes took three lines and ran out of the
+# bottom of their fixed 330px cards ('둔화' and '늦어질 수 있다' printed over the card edge). The layout check passed it,
+# because it skipped every card holding an svg with a viewBox, and every icon is one.
+JOBS16 = {'foot': {'chip': '확인할 신호',
+                   'text': "청년·숙박음식·건설 감소폭이 줄고 제조업 증가가 이어지면 '수출 개선이 내수로 확산되지 못한다'는 판단 약화"},
+          'chips': ['국내 고용', '수개월'], 'title': '제조업 고용은 회복, 청년·내수는 부진',
+          'nodes': [{'big': '1만6천명', 'dir': 'up', 'head': '9월 제조업 취업자', 'icon': 'chartUp', 'chips': ['무슨 일'],
+                     'sub': '27개월 만에 증가 전환 · 전체 취업자 11만3천명 증가, 8월 18만4천명보다 둔화', 'source': '이투데이 보도'},
+                    {'big': '14만7천명', 'dir': 'dn', 'head': '15∼29세 청년 취업자', 'icon': 'gauge', 'chips': ['약한 고리'],
+                     'sub': '46개월째 감소 · 실업률 5.4% · 약세가 이어지면 소비 관련 기업 매출 회복이 늦어질 수 있다',
+                     'source': '이투데이 보도'},
+                    {'big': '25만3천명', 'dir': 'up', 'head': '상용근로자', 'icon': 'check', 'chips': ['다르게 볼 점'],
+                     'sub': "비중 57.8%, 9월 기준 역대 최고 · 청년 '쉬었음' 4만4천명 감소", 'source': '이투데이 보도'}]}
+FLOW = r"""() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
+  const R=e=>{const r=e.getBoundingClientRect(); return {t:r.top,b:r.bottom,l:r.left,r:r.right};};
+  const text=n=>{const w=document.createTreeWalker(n,NodeFilter.SHOW_TEXT); let b=0,x;
+    while((x=w.nextNode())){if(!x.textContent.trim()) continue; const rg=document.createRange(); rg.selectNodeContents(x);
+      b=Math.max(b,rg.getBoundingClientRect().bottom);} return b;};
+  return {nodes:[...scn.querySelectorAll('.paper')].map(n=>({...R(n),text:text(n)})),
+          arrows:[...scn.querySelectorAll('path[marker-end]')].map(R), foot:R(scn.querySelector('.glass'))};}"""
+
+
+def test_flow_cards_grow_to_hold_a_three_line_note(tmp_path):
+    found = measure(tmp_path, plan_with(scene('jobs', '함께 볼 이슈', 'flow', JOBS16)), {}, probe=FLOW)['jobs']
+    nodes, arrows, foot = found['probe']['nodes'], found['probe']['arrows'], found['probe']['foot']
+    assert not [x for x in found['qa'] if x[0] in BROKEN], found['qa']
+    assert len(nodes) == 3 and len(arrows) == 2
+    for node in nodes:
+        assert node['text'] <= node['b'] - 16, node
+    assert len({round(n['b'] - n['t']) for n in nodes}) == 1, nodes
+    middle = (nodes[0]['t'] + nodes[0]['b']) / 2
+    for arrow, left, right in zip(arrows, nodes, nodes[1:], strict=False):
+        assert abs((arrow['t'] + arrow['b']) / 2 - middle) <= 3, (arrow, middle)
+        assert left['r'] <= arrow['l'] and arrow['r'] <= right['l'], (left, arrow, right)
+    assert foot['t'] - nodes[0]['b'] >= 30 and foot['b'] <= found['stage']['b'], (nodes[0], foot)
+
+
+ICON_CARD = """<div id="stage" style="position:absolute;left:80px;top:120px;width:1760px;height:730px">
+ <div class="scene" style="display:block;position:absolute;inset:0">
+  <div class="paper" style="position:absolute;left:0;top:0;width:520px;height:120px;padding:26px 32px;font-size:28px">
+   <span class="ico"><svg width="56" height="56" viewBox="0 0 64 64"><circle cx="32" cy="32" r="20"/></svg></span>
+   <div>넘치는 설명 · 세 줄을 넘는 긴 문장이 카드 아래 가장자리 밖으로 흘러내려 시청자에게 잘린 글자로 보입니다</div></div>
+  <div class="glass" style="position:absolute;left:600px;top:0;width:600px;height:300px;overflow:hidden">
+   <svg width="600" height="300" viewBox="0 0 60 30"><text x="5" y="15" font-size="4">지도</text></svg></div>
+ </div></div>"""
+
+
+def test_the_layout_check_reports_text_running_out_of_a_card_with_an_icon():
+    if not importlib.util.find_spec('playwright'):
+        pytest.skip('Install optional video dependencies and Chromium')
+    from playwright.sync_api import sync_playwright
+
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(args=CHROMIUM_ARGS)
+        try:
+            tab = browser.new_page(viewport={'width': 1920, 'height': 1080})
+            tab.set_content(ICON_CARD)
+            qa = tab.evaluate(QA_JS)
+        finally:
+            browser.close()
+    # A map or chart svg fills its card and may sit a few pixels over it; a 56px icon never excuses clipped text.
+    assert [x[1][:6] for x in qa if x[0] == 'card-overflow'] == ['넘치는 설명'], qa
+
+
+# 2026-10-16 PM thumbnail: the script wrote '외국인 사고 기관 던졌다\n바닥 신호일까?', but the page joined the two lines and
+# balanced them as '외국인 사고 기관 / 던졌다 바닥 신호일까?', which first reads as '외국인 사고 기관' (a foreigners' accident office).
+WORD_TOPS = r"""(words) => {const q=document.querySelector('.q'); const node=q.firstChild;
+  return words.map(w=>{const i=node.textContent.indexOf(w); const rg=document.createRange(); rg.setStart(node,i);
+    rg.setEnd(node,i+w.length); return Math.round(rg.getBoundingClientRect().top);});}"""
+
+
+def test_the_thumbnail_keeps_the_line_break_the_script_wrote(tmp_path):
+    words = "(['외국인', '던졌다', '바닥'])"
+    found, box = thumbnail(tmp_path, '외국인 사고 기관 던졌다\n바닥 신호일까?', '장중 ▲4.60% → 종가 ▲2.05%',
+                           probe=f'(() => ({WORD_TOPS})({words}))')
+    first, thrown, second = box['probe']
+    assert first == thrown < second, box['probe']
+    assert box['lines'] == 2 and box['q']['b'] <= box['n']['t'] and found == [], box

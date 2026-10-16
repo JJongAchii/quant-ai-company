@@ -84,20 +84,21 @@ const CARDS = {
 
   flow(d) {
     const nodes = d.nodes.map((n, i) => {
-      const x = i * 620, b = 0.7 + i * 0.9;
+      const b = 0.7 + i * 0.9;
       const inner = n.big ? `<div class="tnum" style="font-size:76px;font-weight:800;letter-spacing:-.02em;margin-top:10px;line-height:1">${cnt(n.big, b + 0.3, 1.0)}</div><div class="${C(n.dir)}" style="font-size:28px;font-weight:800;margin-top:10px">${n.sub}</div>`
         : n.rows ? n.rows.map((r, k) => `<div class="tnum" style="display:flex;justify-content:space-between;align-items:baseline;margin-top:${k ? 12 : 22}px;font-size:32px;font-weight:800"><span>${r[0]}</span><span class="${C(r[2])}">${arrow(r[2])} ${r[1]}</span></div>`).join('')
         : `<div class="h2" style="margin-top:20px;font-size:38px">${n.text}</div>`;
-      return `<div class="paper" style="left:${x}px;top:${d.top || 105}px;width:520px;height:${d.h || 330}px;padding:26px 32px" data-in="${b},0.5">
+      return `<div class="paper" style="position:relative;flex:none;width:520px;min-height:${d.h || 330}px;padding:26px 32px" data-in="${b},0.5">
         <div style="display:flex;gap:10px;align-items:center">${n.chips.map(c => c === '보도 해석' ? `<span class="chip interp">${c}</span>` : `<span class="chip" style="color:var(--ink-6)">${c}</span>`).join('')}${src(n.source)}</div>
         <div style="display:flex;align-items:center;gap:14px;margin-top:18px"><span class="tile navy" style="width:56px;height:56px"><span data-icon="${n.icon},38,#FDC749,${b + 0.3},0.7"></span></span><span style="font-size:28px;font-weight:800">${n.head}</span>${n.badge ? `<span class="chip tag-gold" data-pop="${b + 0.6},0.5">${n.badge}</span>` : ''}</div>${inner}</div>`;
     }).join('');
-    const y = (d.top || 105) + (d.h || 330) / 2;
-    const arrows = `<svg style="position:absolute;left:0;top:0;overflow:visible" width="1760" height="730"><defs><marker id="ah_${d.id}" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1,1 L10,6 L1,11" fill="none" stroke="#FDC749" stroke-width="2.5"/></marker></defs>
-      <path d="M530,${y} L600,${y}" stroke="#FDC749" stroke-width="4" fill="none" marker-end="url(#ah_${d.id})" data-draw="1.25,0.45"/>
-      <path d="M1150,${y} L1220,${y}" stroke="#FDC749" stroke-width="4" fill="none" marker-end="url(#ah_${d.id})" data-draw="2.15,0.45"/></svg>`;
-    const foot = d.foot ? `<div class="glass" style="left:0;top:${(d.top || 105) + (d.h || 330) + 40}px;width:1760px;height:150px;padding:0 40px;display:flex;align-items:center;gap:22px" data-in="3.4,0.5"><span class="chip interp" style="color:var(--gold);background:rgba(253,199,73,.12)">${d.foot.chip}</span><div class="body" style="font-weight:600">${d.foot.text}</div></div>` : '';
-    return header(d) + nodes + arrows + foot;
+    // The three cards share one row and its tallest card's height (10/16 PM: three-line notes ran out of fixed 330px
+    // cards). The arrows sit at the row's middle and the foot follows the row.
+    const arrows = [530, 1150].map((x, k) => `<svg style="position:absolute;left:${x}px;top:calc(50% - 1px);overflow:visible" width="70" height="2"><defs><marker id="ah_${d.id}_${k}" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1,1 L10,6 L1,11" fill="none" stroke="#FDC749" stroke-width="2.5"/></marker></defs>
+      <path d="M0,1 L70,1" stroke="#FDC749" stroke-width="4" fill="none" marker-end="url(#ah_${d.id}_${k})" data-draw="${1.25 + k * 0.9},0.45"/></svg>`).join('');
+    const foot = d.foot ? `<div class="glass" style="position:relative;flex:none;height:150px;padding:0 40px;display:flex;align-items:center;gap:22px" data-in="3.4,0.5"><span class="chip interp" style="color:var(--gold);background:rgba(253,199,73,.12)">${d.foot.chip}</span><div class="body" style="font-weight:600">${d.foot.text}</div></div>` : '';
+    return header(d) + `<div style="position:absolute;left:0;top:${d.top || 105}px;width:1760px;display:flex;flex-direction:column;gap:40px">
+      <div style="position:relative;display:flex;gap:100px;align-items:stretch">${nodes}${arrows}</div>${foot}</div>`;
   },
 
   counter(d) {
