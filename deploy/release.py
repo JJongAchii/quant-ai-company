@@ -916,6 +916,8 @@ def decide(status, previous, values, now, github, runner=run):
     current, progress = status["current"], read_json(progress_file())
     if status["mode"] == "paused":  # an operator is changing production by hand: drift is their work in progress
         return {**status, "action": "paused", "detail": "RELEASE_AUTO_ENABLED=paused"}
+    if not host_free():  # the nightly backup stops and restarts services under this lock: nothing to judge until it ends
+        return {**status, "action": "waiting_for_lock", "detail": "a backup or another release holds the host lock"}
     if progress.get("phase") == "restoring":
         status.update(target=progress["target"], detail=progress["detail"])
         if status["mode"] != "release":
