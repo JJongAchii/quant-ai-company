@@ -549,6 +549,64 @@ async def test_claude_quota_before_execution_defers_without_spending_allowance(b
         assert row['error'] == 'model_quota' and row['lease_until'] is not None
 
 
+async def test_a_lapsed_claude_login_waits_and_the_episode_continues_once_renewed(brief, video):  # noqa: F811
+    """2026-10-19 AM: the runtime's subscription login lapsed at 00:01 and the 07:05 episode stopped as blocked."""
+    from datetime import UTC, datetime, timedelta
+
+    store, _ = video
+    job = new_job(brief, video)
+    provider = SimulatedProvider()
+    async def lapsed(request):
+        raise ProviderFault('auth', 'Authenticate the isolated runtime using its Pro/Max account.')
+    provider.run = lapsed
+    assert (await VideoRunner(store.company, provider=provider).tick())['state'] == 'queued'
+    with store.db.transaction() as conn:
+        effect = conn.execute('SELECT * FROM video_effects WHERE job_id=%s', (job['id'],)).fetchone()
+        assert effect['state'] == 'rejected' and effect['receipt']['code'] == 'auth'
+        row = conn.execute('SELECT error,lease_until FROM video_jobs WHERE id=%s', (job['id'],)).fetchone()
+        assert row['error'] == 'model_auth' and row['lease_until'] >= datetime.now(UTC) + timedelta(minutes=4)
+        conn.execute('UPDATE video_jobs SET lease_until=NULL WHERE id=%s', (job['id'],))
+    assert (await VideoRunner(store.company, provider=provider).tick())['state'] == 'queued'
+    with store.db.transaction() as conn:
+        texts = [r['text'] for r in conn.execute("SELECT text FROM messages WHERE kind='video_status'").fetchall()]
+        conn.execute('UPDATE video_jobs SET lease_until=NULL WHERE id=%s', (job['id'],))
+    waits = [t for t in texts if t.startswith('영상 제작 대기')]
+    assert len(waits) == 1 and '로그인' in waits[0] and '이어서' in waits[0]
+    assert not [t for t in texts if t.startswith('영상 제작 중단')]
+    provider = SimulatedProvider()
+    assert (await VideoRunner(store.company, provider=provider).tick())['state'] == 'reviewing'
+    assert provider.calls[0].request_id == f"video-{job['id']}-plan"
+
+
+@pytest.mark.parametrize('key, stage', [('plan', 'queued'), ('plan-2', 'queued'), ('review-2', 'reviewing'),
+                                        ('visual-photos-1a2b3c4d', 'synthesizing'), ('visual', 'inspecting'),
+                                        ('fix-2', 'inspecting')])
+def test_an_episode_blocked_on_the_login_before_this_change_goes_back_to_its_stage(brief, video, key, stage):  # noqa: F811
+    store, _ = video
+    job = new_job(brief, video)
+    store.begin_effect(job, key, {'prompt': 'frozen'}, 'model')
+    store.save(job, 'blocked', error='model_auth')
+    store.resume_login_blocks()
+    current = store.get(job['id'])
+    assert current['state'] == stage and current['lease_until'] is None
+    assert store.begin_effect(current, key, {'prompt': 'frozen'}, 'model') is None  # asked again by the same ID
+
+
+def test_only_a_login_block_with_nothing_but_its_model_call_unresolved_goes_back(brief, video):  # noqa: F811
+    store, _ = video
+    job = new_job(brief, video)
+    store.begin_effect(job, 'plan', {'prompt': 'frozen'}, 'model')
+    store.begin_effect(job, 'speech-0', {'text': 'charged'}, 'speech', 1)
+    store.save(job, 'blocked', error='model_auth')
+    store.resume_login_blocks()
+    assert store.get(job['id'])['state'] == 'blocked'
+    store.finish_effect(job, 'speech-0', {'taskId': 'original-task'})
+    job = store.get(job['id'])
+    store.save(job, 'blocked', error='model_invalid_request')
+    store.resume_login_blocks()
+    assert store.get(job['id'])['state'] == 'blocked'
+
+
 async def test_non_claude_or_other_model_response_is_rejected(brief, video):  # noqa: F811
     store, _ = video
     job = new_job(brief, video)

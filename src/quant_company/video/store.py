@@ -56,11 +56,15 @@ REASONS = {
     "adaptation_review_failed": "대본 검토에서 불합격했습니다.",
     "external_effect_requires_reconciliation": "외부 요청 결과를 확인하지 못했습니다. 같은 요청을 자동으로 다시 보내지 않습니다.",
     "video_stage_failed:rendering": "렌더링 또는 기술 검사에 실패했습니다.",
+    "model_auth": "Claude 구독 로그인이 만료되어 대본·검수 요청을 보내지 못했습니다(실행 전 거절, 사용량 없음). "
+                  "서버에서 Claude 로그인을 갱신하면 5분 안에 자동으로 이어서 만듭니다.",
 }
 
 
 def reason(code):
     code = code or ""
+    if code in REASONS:
+        return REASONS[code]
     if code.startswith("model_"):
         return "대본 작성 실행기 오류(" + code + ")."
     return REASONS.get(code, "제작 단계 실패(" + code + ").")
@@ -98,6 +102,9 @@ def delivery_text(job, artifacts, at=None):
 
 
 LOCK = 71350301
+# The stage that makes each model call (runner.check_photos, write_plan, review_plan, inspect_video), first match wins.
+LOGIN_STAGES = (('visual-photos', 'synthesizing'), ('plan', 'queued'), ('review', 'reviewing'),
+                ('visual', 'inspecting'), ('fix', 'inspecting'))
 ACTIVE = ("queued", "reviewing", "synthesizing", "rendering", "inspecting", "uploading", "approved")
 # Only these states expire at publish_deadline; production states continue however late they run.
 APPROVAL = ("awaiting_approval", "approved")
@@ -371,7 +378,7 @@ class VideoStore:
 
     def defer(self, job, seconds, code='busy'):
         # A subscription window may reopen later; production waits for it however late it gets.
-        ceiling = 900 if code in {'quota', 'unavailable'} else 60
+        ceiling = 900 if code in {'quota', 'unavailable', 'auth'} else 60
         self.save(job, job['state'], error='model_'+code)
         with self.db.transaction() as conn:
             conn.execute('UPDATE video_jobs SET lease_until=%s WHERE id=%s AND state=%s',
@@ -590,10 +597,12 @@ class VideoStore:
     # ---- Alerts ------------------------------------------------------------------------------------------------
 
     def alert(self, job):
-        """One thread notice when an episode stops (blocked/uncertain). No spend is retried automatically."""
+        """One thread notice when an episode stops (blocked/uncertain) or waits for the owner to renew the Claude login.
+        No spend is retried automatically."""
         with self.db.transaction() as conn:
             current = conn.execute('SELECT * FROM video_jobs WHERE id=%s', (job['id'],)).fetchone()
-            if current['state'] not in {'blocked', 'uncertain'} or not self.allowed(current):
+            stopped = current['state'] in {'blocked', 'uncertain'}
+            if not (stopped or current['error'] == 'model_auth') or not self.allowed(current):
                 return None
             mid = stable(f"video-alert:{current['id']}:{current['state']}:{current['error']}")
             if conn.execute('SELECT 1 FROM messages WHERE id=%s', (mid,)).fetchone():
@@ -607,11 +616,27 @@ class VideoStore:
                 WHERE created_at >= date_trunc('month',now() AT TIME ZONE 'Asia/Seoul') AT TIME ZONE 'Asia/Seoul'
                 AND state<>'rejected'""").fetchone()['n']
             self.company._message(conn, project, None, 'market_brief', 'video_status',
-                f"영상 제작 중단 · {EDITION_NAMES.get(current['source'].get('edition_kind'), '브리핑')}\n"
+                f"영상 제작 {'중단' if stopped else '대기'} · {EDITION_NAMES.get(current['source'].get('edition_kind'), '브리핑')}\n"
                 f"사유: {reason(current['error'])}\n"
                 f"크레딧: 이 회차 {spent} · 이번 달 {month}/{self.settings.video_monthly_credit_limit} "
                 f"(회차 한도 {self.settings.video_episode_credit_limit})\n원문 브리핑은 그대로 확인할 수 있습니다.", message_id=mid)
             return str(mid)
+
+    def resume_login_blocks(self):
+        """Before 2026-10-19 a lapsed Claude login blocked the episode; it waits for the renewed login now. The runtime
+        refuses before any inference, so such an episode goes back to the stage of its model call and asks again by
+        the same ID. Any other unresolved effect keeps it blocked for reconciliation."""
+        with self.db.transaction() as conn:
+            rows = conn.execute("""SELECT j.*,e.id AS effect FROM video_jobs j JOIN video_effects e ON e.job_id=j.id
+                WHERE j.state='blocked' AND j.error='model_auth' AND e.state='running' AND e.kind='model'
+                AND (SELECT count(*) FROM video_effects o WHERE o.job_id=j.id AND o.state='running')=1""").fetchall()
+        for row in rows:
+            key = row['effect'].split(':', 1)[1]
+            stage = next((s for prefix, s in LOGIN_STAGES if key == prefix or key.startswith(prefix + '-')), None)
+            if stage and self.allowed(row):
+                with self.db.transaction() as conn:
+                    conn.execute("""UPDATE video_jobs SET state=%s,lease_until=NULL,updated_at=now()
+                        WHERE id=%s AND state='blocked' AND error='model_auth'""", (stage, row['id']))
 
     def skip_notices(self):
         """Fallback editions: no video, one alert in the brief's thread after the brief itself is delivered."""
