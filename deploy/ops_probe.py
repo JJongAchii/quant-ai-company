@@ -26,6 +26,9 @@ POSTGRES = 'quant-company-postgres-1'
 SNAPSHOT_FORMAT = 1
 UNITS = ('quant-company-backup.service', 'quant-company-storage-cleanup.service',
          'quant-company-analyst-monitor.service', 'quant-company-release.service')
+# state_backup.APP_SERVICES: the backup stops these for the database dump and starts them again before it uploads.
+BACKUP_SERVICES = ('slack-socket', 'maintenance', 'worker', 'news-worker', 'quant-codex-runtime', 'quant-feed-worker',
+                   'data-watch-worker', 'dispatch', 'api', 'account-gateway', 'codex-runtime', 'claude-runtime')
 # Values every process must agree on; per-service values (runtime URLs, commits, PATH) differ by design.
 SHARED_KEYS = ('SLACK_TEAM_ID', 'SLACK_ALLOWED_USERS', 'SLACK_ALLOWED_CHANNELS', 'BRIEFING_ENABLED',
                'BRIEFING_CHANNEL_ID', 'BRIEFING_OWNER_USER', 'NEWS_CHANNEL_ID', 'IMPROVEMENTS_CHANNEL_ID',
@@ -152,6 +155,14 @@ def unit_results():
     return results
 
 
+def backup_window(units):
+    """The services a running backup has stopped (2026-10-17~19 03:1x KST: a critical alert every night). A oneshot unit
+    is `activating` while it runs, and systemd ends it after TimeoutStartSec, so a hung backup still alerts."""
+    if (units.get('quant-company-backup') or {}).get('active') in ('activating', 'deactivating'):
+        return {'services': list(BACKUP_SERVICES)}
+    return None
+
+
 def deploy_window(now, path=STATE / 'ops/deploy-window.json'):
     """A change window; containers it names are reported as being deployed. An operator writes `until`; release.py
     apply writes `expires_at` and a commit for each recreation and removes the file once the service settles."""
@@ -251,7 +262,8 @@ def start_synthetic(now, path=None):
 def snapshot(now=None, *, synthetic=False):
     now = now or utcnow()
     value = {'format': SNAPSHOT_FORMAT, 'collected_at': now.isoformat(), 'probe_errors': [],
-             'host': None, 'containers': [], 'drift': {}, 'units': {}, 'deploy_window': deploy_window(now)}
+             'host': None, 'containers': [], 'drift': {}, 'units': {}, 'deploy_window': deploy_window(now),
+             'backup': None}
     if synthetic or synthetic_until(now):
         value['synthetic_incident'] = True
     try:
@@ -272,6 +284,7 @@ def snapshot(now=None, *, synthetic=False):
         value['probe_errors'].append('docker:' + type(error).__name__)
     try:
         value['units'] = unit_results()
+        value['backup'] = backup_window(value['units'])
     except (OSError, subprocess.SubprocessError) as error:
         value['probe_errors'].append('systemd:' + type(error).__name__)
     try:
@@ -305,6 +318,8 @@ def publish(value):
 def in_window(value, service, now):
     # The release tool swaps services one at a time; its own checks and restore cover them meanwhile.
     if (value.get('release') or {}).get('action') == 'releasing' and service != 'postgres':
+        return True
+    if service in ((value.get('backup') or {}).get('services') or ()):
         return True
     window = value.get('deploy_window')
     return bool(window and datetime.fromisoformat(window['until']) > now
