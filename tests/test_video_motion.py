@@ -27,13 +27,13 @@ def episode(**changes):
     # b005 overview, b007 issue fact, b009 mechanism, b010 counterpoint, b011 signal, b012 next check, b013/b014 closes.
     scenes = [
         dict(id='hook', chapter='', type='cold_open', claim_ids=['b001', 'b005', 'b013', 'b014'],
-             narration='보도에 따르면 미국 증시는 반도체가 주도했습니다. 그런데 업종별 흐름은 엇갈렸습니다.',
+             narration='미국 증시는 반도체가 주도했습니다. 그런데 업종별 흐름은 엇갈렸습니다.',
              data=dict(kicker='9월 22일 화요일 · 아침 시장 브리핑', question=[[['반도체가', 1], ['이끌었다', 0]]],
                        stats=[dict(label='S&P 500 · 정규장 종가 기준', value='5,300', sub='▲ 1.92%', sub_dir='up'),
                               dict(label='나스닥 종합 · 정규장 종가 기준', value='17,100', sub='▲ 0.59%', sub_dir='up'),
                               dict(label='업종 흐름', value='혼조', sub='기술주 밖 참여는 혼조')])),
         dict(id='summary', chapter='요약', type='summary3', claim_ids=['b001', 'b009', 'b011'],
-             narration='보도에 따르면 오늘 꼭 알아야 할 세 가지는 반도체 주도, 금리 하락의 해석, 그리고 상승의 확산 여부입니다.',
+             narration='오늘 꼭 알아야 할 세 가지는 반도체 주도, 금리 하락의 해석, 그리고 상승의 확산 여부입니다.',
              data=dict(title='오늘 꼭 알아야 할 <span style="color:var(--gold)">세 가지</span>',
                        cards=[dict(n='01', items=[['chip', 112, '#5EA0FF', '반도체', 'up', '▲'], ['chartUp', 112, '#FDC749', '주도', '', '']],
                                    title='반도체가<br>상승 주도', stats=[['업종 흐름', '엇갈림', ''], ['기술주 밖', '혼조', '']]),
@@ -47,15 +47,15 @@ def episode(**changes):
                  dict(name='S&P 500', value='5,300', dir='up', change='1.92%', sub='정규장 종가 기준', badge=''),
                  dict(name='나스닥 종합', value='17,100', dir='up', change='0.59%', sub='정규장 종가 기준', badge='')])),
         dict(id='head', chapter='핵심 이슈', type='headline', claim_ids=['b007', 'b013'],
-             narration='보도에 따르면 미국 지수는 상승했고 반도체가 상승을 주도했습니다.',
+             narration='미국 지수는 상승했고 반도체가 상승을 주도했습니다.',
              data=dict(chips=['핵심 이슈 1', '당일'], title='반도체 주도와 제한된 확산', image=dict(asset='fixture-illustration'),
                        panel_title='미국 지수', source='Synthetic fixture',
                        stats=[dict(label='S&P 500', value='5,300', dir='up', change='1.92%', sub='정규장 종가 기준'),
                               dict(label='업종 흐름', value='혼조', dir='', change='', sub='기술주 밖 참여')])),
         dict(id='flow', chapter='핵심 이슈', type='flow', claim_ids=['b005', 'b009', 'b007'],
-             narration='보도에 따르면 수익률 하락은 성장주의 할인 부담을 낮출 수 있다는 해석입니다.',
+             narration='수익률 하락은 성장주의 할인 부담을 낮출 수 있다는 해석입니다.',
              data=dict(chips=['핵심 이슈 1'], title='수익률 하락 → 할인 부담 완화', nodes=[
-                 dict(chips=['원인'], icon='percent', head='국채 수익률', text='수익률 하락'),
+                 dict(chips=['원인'], source='Synthetic fixture', icon='percent', head='국채 수익률', text='수익률 하락'),
                  dict(chips=['보도 해석'], icon='balance', head='해석', text='성장주 할인 부담<br>완화 가능'),
                  dict(chips=['결과'], icon='chartUp', head='반도체', text='상승을 주도')])),
         dict(id='photo', chapter='핵심 이슈', type='photo', claim_ids=['b010', 'b011'],
@@ -259,7 +259,8 @@ async def test_motion_jobs_request_the_episode_contract_with_the_reviewed_librar
     from .test_briefing import CONTENT
     # Only the delivered body: neither the raw article text nor its title reach the script writer.
     assert CONTENT[:40] not in request.prompt and 'Synthetic closing report' not in request.prompt
-    assert '"b001"' in request.prompt and 'report_label_required' in request.prompt
+    assert '"b001"' in request.prompt and 'outlet_on_card' in request.prompt
+    assert "never say '보도에 따르면'" in request.prompt  # owner, 2026-10-19: sources are shown on screen only
     assert state == 'reviewing'
     assert EpisodePlan.model_validate(store.get(job['id'])['plan']).ticker.label == '정규장 종가'
 
@@ -463,7 +464,7 @@ def test_tags_ignore_spaces_and_an_unlisted_tag_is_dropped_not_fatal():
 
 
 @pytest.mark.parametrize('mutation,error', [
-    ('tool', 'tool wording'), ('report', '보도에 따르면'), ('close', '정규장 종가 기준'), ('flow', '장 마감 기준'),
+    ('tool', 'tool wording'), ('report', 'outlet'), ('close', '정규장 종가 기준'), ('flow', '장 마감 기준'),
     ('few', 'scenes'),
 ])
 def test_body_attribution_labels_and_no_tool_wording(mutation, error):
@@ -473,7 +474,7 @@ def test_body_attribution_labels_and_no_tool_wording(mutation, error):
     if mutation == 'tool':
         raw['scenes'][5]['data']['rows'][0]['sub'] = 'AI 분석 결과'
     elif mutation == 'report':
-        raw['scenes'][0]['narration'] = '미국 증시는 반도체가 주도했습니다. 그런데 업종별 흐름은 엇갈렸습니다.'
+        raw['scenes'][3]['data']['source'] = '다른 매체'  # a one-outlet line on a card that names another outlet
     elif mutation == 'close':
         for tile in raw['scenes'][2]['data']['tiles']:
             tile['sub'] = '미국 지수'
@@ -894,3 +895,11 @@ def test_title_and_thumbnail_text_are_written_to_grab_attention_within_the_lines
     review = review_prompt(source(), episode())
     assert 'do not ask to tone down' in review and 'exaggerates a number' in review
     assert 'flat or generic' in review
+
+
+def test_a_card_names_its_outlet_with_or_without_the_word_news():
+    from quant_company.video.episode import shows_outlet
+
+    assert shows_outlet(['SBS 보도'], ['SBS 뉴스']) and shows_outlet(['CNBC · 연합뉴스'], ['연합뉴스'])
+    assert shows_outlet(['연합뉴스·이투데이'], ['이투데이']) and not shows_outlet(['연합뉴스'], ['SBS 뉴스'])
+    assert not shows_outlet(['브리핑 분석'], ['SBS 뉴스'])

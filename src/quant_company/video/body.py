@@ -86,7 +86,7 @@ def catalog(source):
 
 def prompt_lines(source):
     return {k: {'text': v['text'], 'section': v['section'], 'outlets': v['publishers'],
-                'report_label_required': v['single_outlet']} for k, v in catalog(source).items()}
+                'outlet_on_card': v['single_outlet']} for k, v in catalog(source).items()}
 
 
 def references(source, claim_ids):
