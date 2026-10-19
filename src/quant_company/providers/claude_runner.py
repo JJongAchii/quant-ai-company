@@ -15,8 +15,9 @@ import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
-from pydantic import ValidationError
+from pydantic import ValidationError, model_validator
 
 from ..contracts import AgentDecision, ArtifactDraft, ProviderFault, ProviderRequest, ProviderResponse
 from ..staff.review_contract import REVIEW_MODEL, IndependentReview
@@ -59,6 +60,25 @@ def environment(config, source):
     return result
 
 
+# Contracts only this runtime serves. contracts.py is also a render-task input (release.render_changes), so a contract
+# no other runtime knows is added here: the render image and codex-runtime stay as they are.
+CLAUDE_ONLY = ("newsletter_v1",)
+
+
+class ClaudeRequest(ProviderRequest):
+    output_contract: Literal[ProviderRequest.model_fields["output_contract"].annotation.__args__ + CLAUDE_ONLY] = (
+        "agent_decision")
+
+    @model_validator(mode="after")
+    def scoped_output(self):
+        if self.output_contract not in CLAUDE_ONLY:
+            return super().scoped_output()
+        if (not self.request_id.startswith("newsletter-") or self.web_search or self.session is not None
+                or self.attachments or self.brief_deadline_unix is not None):
+            raise ValueError("Newsletter output requires a tool-free newsletter request")
+        return self
+
+
 # Staff explanation reviews stay on the calibrated review model; video contracts may use the newer Opus.
 VIDEO_MODELS = frozenset({REVIEW_MODEL, "claude-opus-5-5"})
 
@@ -86,6 +106,10 @@ def output_schema(request):
                 "video_weekly_v1": (WeeklyReview, "Weekly video performance review", "주간 성과 분석 완료"),
                 "video_answer_v1": (VideoAnswer, "Video performance answer", "영상 성과 답변 완료")}[
             request.output_contract]
+    if request.output_contract == "newsletter_v1":
+        from ..newsletter.contracts import NewsletterDraft
+
+        return NewsletterDraft, "Evening brief email", "저녁 브리핑 메일 작성 완료"
     if request.output_contract == "agent_decision":
         return IndependentReview, "Independent explanation review", "독립 설명 검토 완료"
     raise ProviderFault("invalid_output", "This runtime does not produce the requested output contract.")
