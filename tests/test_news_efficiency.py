@@ -1,7 +1,7 @@
 """Real PostgreSQL; synthetic articles/model replies and simulated Slack only."""
 
 import json
-from datetime import UTC, timedelta
+from datetime import UTC, datetime, timedelta
 
 import httpx
 import pytest
@@ -23,7 +23,9 @@ news = news_fixture
 def efficient(news, monkeypatch):
     news.company.settings.news_optimization_enabled = True
     news.company.settings.news_delivery_window_enabled = True
-    clock = [schedule.opening().astimezone(UTC)]
+    # 06:00 KST of a day already past: before 06:00 KST the same day's opening lies ahead of the database clock.
+    start = schedule.opening()
+    clock = [(start if start <= datetime.now(UTC) else start - timedelta(days=1)).astimezone(UTC)]
     monkeypatch.setattr(schedule, "utcnow", lambda: clock[0])
     return news, clock
 
