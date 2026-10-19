@@ -1,0 +1,37 @@
+{
+ "what": "2026-10-19: the automatic release of main 7b9e49b (#177), render image :12 for #174 and the release of main 44e24f4 by the release operator before the PM video.",
+ "auto_release_7b9e49b": {
+  "contains": ["#177 the services a running backup stops count as a deploy window for the ops watch and its fallback"],
+  "timeline_kst": {"main_ci_green": "10:35", "10:47_check": "waiting_for_quiet (the AM video job was in production)", "am_video_delivered": "11:29", "released": "11:32"},
+  "result": "17/17 on 7b9e49b, drift [], render 1aceeb8/:11 unchanged; the probe snapshot carries the new backup field (null while no backup runs)"
+ },
+ "render_12": {
+  "reason": "#174 changed design/cards.js, design/thumbnail.html, video/episode.py and video/motion.py (summary3 subgrid, compare arrow colour from arrow_dir, signal icon tiles, flow card height, the card-overflow check for icon cards, the thumbnail keeps the script's line break)",
+  "render_changes": "computed with release.render_changes over the 1aceeb8 and 44e24f4 trees: the same four files; operator files []",
+  "render_commit": "44e24f421dc6679da89e8e690b0398dbb821f501",
+  "render_image": {"built_from": "44e24f4 release directory, deploy/Dockerfile.render (377 s; the six release images took 63 s)", "renderer": "b786f7f637f25132bc5125f559173911c55db5eac10149ea8a21a0946bd707da (the same in quant-company-video:44e24f4; :11 was aaec7624)", "ecr_digest": "sha256:31728b0b9bd61675498f1f99cd54c00d542f33fa5af050509d170bd3bc92279f", "pushed": "14:04 KST with a throwaway docker --config login (removed)"},
+  "change_set": {"name": "render-44e24f4", "changes": [{"resource": "RenderTaskDefinition", "action": "Modify", "replacement": true, "details": ["ContainerDefinitions"]}], "other_parameters": "previous values", "approved_by": "owner, in chat before execution", "result": "UPDATE_COMPLETE 14:13 KST; quant-company-render:12 ACTIVE (16 vCPU, 32 GB, 50 GiB); :11 and older still ACTIVE"},
+  "test_render": {
+   "script": "/tmp/run_jobcheck.sh r12 quant-company-render:12 quant-company-video:44e24f4 30e80639-a418-5a53-9eef-9371d1e0c624 render-2d27962b3aa5d4d00cc6 (run_amcheck.sh with the job and render as arguments)",
+   "job": "the 10/16 AM episode (summary3, flow, two compares, calendar, signals, photos; 14 scenes) with its delivered takes and pictures",
+   "result": {"exit": 0, "capacity": "FARGATE_SPOT", "wall_seconds": 218.2, "video_seconds": 271.34, "renderer_match": true, "findings": ["Scene kr-flow: Spoken numbers could not be verified in the transcription (the delivered render has the same finding)"]},
+   "frame_check": "the video session compared all 14 review frames and the thumbnail with the delivered render: summary, kofix, us-data and signals changed as intended, kr-why unchanged, the other nine frames and the thumbnail pixel-identical"
+  }
+ },
+ "release_44e24f4": {
+  "commit": "44e24f421dc6679da89e8e690b0398dbb821f501",
+  "contains": ["#174 renderer"],
+  "why_by_hand": "main became render_required; the owner wanted :12 for the PM video, whose edition starts at 15:50 and whose job follows after 17:00, outside the 18:30 window",
+  "ci": "main run 39201802950 green at 14:08 KST",
+  "values": {"RELEASE_AUTO_ENABLED": "paused during the release, then true", "VIDEO_RENDER_COMMIT": "44e24f421dc6679da89e8e690b0398dbb821f501", "VIDEO_RENDER_TASK_DEFINITION": "quant-company-render:12", "VIDEO_RENDER_ACCEPTED": "absent"},
+  "plan": "17 services, all recreated; video-worker's rollback not exact because its render values had just changed (a failed recreation would have needed the runtime.env backup taken before the change)",
+  "timeline_kst": {"paused_and_values": "14:19:49", "migrate": "14:20:43-14:20:51", "group_1": "14:20:51-14:22:36", "group_5_worker_dispatch": "14:29:36-14:30:46", "group_7_video_worker": "14:31:57-14:32:34", "verify": "17/17", "activated": "14:33:05", "auto_resumed": "14:33:21 up_to_date, drift [], render 44e24f4/:12"},
+  "video_worker": "quant-company-video:44e24f4, VIDEO_RENDER_TASK_DEFINITION=quant-company-render:12, renderer b786f7f6, no errors after recreation",
+  "effects": "no video job was active; 11 outbox rows in the release half hour, all delivered"
+ },
+ "test_container_alert": {
+  "what": "a down:video-worker warning (opened 14:19 KST, announced as a warning, closed 14:36) while the real video-worker was running",
+  "cause": "the test container jobcheck-r12 ran the release image quant-company-video:44e24f4, which carries the compose labels com.docker.compose.project=quant-company and com.docker.compose.service=video-worker. The ops probe lists containers by the project label, so once the test exited (14:17) it read as a stopped video-worker.",
+  "fix": "the test container was removed at 14:35 after its log was saved under video-fargate-test/jobcheck-r12/run.log, and the incident closed at 14:36; run_jobcheck.sh now starts test containers with --label com.docker.compose.project=video-fargate-test. The render_required notice closed at 14:34 once the status was up_to_date."
+ }
+}
