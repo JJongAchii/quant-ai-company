@@ -74,6 +74,7 @@ flowchart LR
 - 본편이 제작 중이면 Shorts 단계는 기다린다.
 - 다음 본편 작업이 생기면 끝나지 않은 Shorts는 포기하고 스레드에 한 줄 남긴다.
 - 본편 다음 회차를 위해 월 크레딧 80을 남길 수 없으면 Shorts는 만들지 않는다.
+- `deploy/release.py`는 Shorts가 작업 중일 때(쓰기·음성·렌더 단계에서 lease가 남은 동안) video-worker를 교체하지 않고 기다린다.
 
 렌더와 전달
 - 렌더는 작업 서버에서 `shorts_design/` 템플릿으로 한다. Fargate 렌더 이미지에 들어가지 않으므로 Shorts 변경은 렌더 이미지

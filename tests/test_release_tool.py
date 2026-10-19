@@ -541,6 +541,15 @@ def test_a_video_waiting_for_approval_does_not_hold_a_release():
     assert "NOT IN (" in queries[0] and "'awaiting_approval'" in queries[0] and "'approved'" not in queries[0]
 
 
+def test_a_shorts_cut_in_production_holds_the_video_worker():
+    def runner(args, env=None, input=None, check=True, timeout=None):
+        return "1" if "video_shorts" in args[-1] else "0"
+
+    assert release.busy("video-worker", runner=runner) == ["Shorts in production"]
+    assert release.production_busy(runner=runner) == ["Shorts in production"]
+    assert release.busy("video-worker", runner=lambda *a, **k: "") == []  # the table does not exist yet
+
+
 def test_an_email_being_sent_holds_dispatch():
     def runner(args, env=None, input=None, check=True, timeout=None):
         return "1" if "newsletter_sends" in args[-1] else "0"
