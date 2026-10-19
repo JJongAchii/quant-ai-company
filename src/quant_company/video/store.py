@@ -271,7 +271,8 @@ class VideoStore:
             return conn.execute("""SELECT id,state,receipt FROM video_effects WHERE kind='brand' AND id LIKE %s
                 ORDER BY created_at DESC LIMIT 1""", ('%:' + key,)).fetchone()
 
-    def budget_available(self, job, cost):
+    def budget_available(self, job, cost, reserve=0):
+        """reserve: credits that must stay in the month's budget after this spend (the Shorts keep the next episodes')."""
         with self.db.transaction() as conn:
             spent = conn.execute("""SELECT COALESCE(sum(credits),0) AS n FROM video_effects
                 WHERE created_at >= date_trunc('month',now() AT TIME ZONE 'Asia/Seoul') AT TIME ZONE 'Asia/Seoul'
@@ -279,7 +280,7 @@ class VideoStore:
             episode = conn.execute("""SELECT COALESCE(sum(e.credits),0) AS n FROM video_effects e
                 JOIN video_jobs j ON j.id=e.job_id WHERE j.edition_id=%s AND e.state<>'rejected'""",
                                    (job['edition_id'],)).fetchone()['n']
-            return (spent+cost <= self.settings.video_monthly_credit_limit
+            return (spent+cost+reserve <= self.settings.video_monthly_credit_limit
                     and episode+cost <= self.settings.video_episode_credit_limit)
 
     def save(self, job, state, **values):
