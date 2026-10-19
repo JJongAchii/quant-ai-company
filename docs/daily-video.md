@@ -82,6 +82,7 @@ flowchart LR
 - 제목에는 시리즈 이름("| …오늘의 증시story")을 붙이지 않는다. 그래서 본편 성과 분석에 섞이지 않는다.
 - 업로드 뒤 Studio에서 '관련 동영상'을 같은 날 본편으로 지정한다.
 
+## 비용과 계정
 
 대본 작성(`video_plan_v1`)과 별도 검토(`video_review_v1`)는 서버의 기존 Claude 구독 실행기
 ([Claude runtime](claude-runtime.md), Pro/Max 공식 로그인, `claude-opus-5-5`, 대본 xhigh·검토 max, Claude Code 2.1.280)에서 실행한다. Codex runtime으로

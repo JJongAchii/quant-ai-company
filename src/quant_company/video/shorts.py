@@ -20,7 +20,18 @@ from pydantic import Field, model_validator
 
 from ..contracts import StrictModel
 from .contracts import claim_catalog, digest, prompt_claims
-from .episode import REPORT_LABEL, frame, nums, strings, tool_wording
+from .episode import (
+    CLAUSE,
+    CLOSE_MARK,
+    REPORT_LABEL,
+    flow_values,
+    frame,
+    nums,
+    sentences,
+    stated,
+    strings,
+    tool_wording,
+)
 from .motion import CHROMIUM_ARGS, FPS, captions, word_times
 from .render import Aligner, RenderInProgress, checksum, probe, quality_probe, run, spoken
 from .upload import INSTRUCTION
@@ -33,6 +44,10 @@ LEAD, TAIL = 0.15, 0.35
 # Everything a viewer must read stays clear of YouTube's own Shorts controls.
 SAFE = {'left': 70, 'right': 940, 'top': 230, 'bottom': 1500}
 EDITION_WORDS = {'am': '아침', 'close': '마감'}
+
+
+class ShortsSuperseded(Exception):
+    """The next episode started while this cut was rendering: the episode goes first."""
 
 
 class ShortsScene(StrictModel):
@@ -108,21 +123,65 @@ def shorts_prompt(source, episode, concerns=(), feedback=''):
     return text
 
 
+UP = re.compile(r'상승|오른|올라|올랐|오름|급등|반등|증가|늘어|늘었|늘린')
+DOWN = re.compile(r'하락|내린|내려|내렸|떨어|급락|감소|줄어|줄었|줄인')
+
+
+def direction(text, value):
+    """'up' or 'dn' as the text states it for this number (a sign or ▲/▼ in front of it, or a direction word in its
+    clause), else None."""
+    for sentence in sentences(text):
+        for clause in CLAUSE.split(sentence):
+            plain = clause.replace(',', '')
+            for found in re.finditer(r'([+\-▲▼])?\s*(?<![\d.])' + re.escape(value) + r'(?![\d.]?\d)', plain):
+                if found.group(1) in ('+', '▲'):
+                    return 'up'
+                if found.group(1) in ('-', '▼'):
+                    return 'dn'
+                up, down = bool(UP.search(clause)), bool(DOWN.search(clause))
+                if up != down:
+                    return 'up' if up else 'dn'
+    return None
+
+
 def shorts_violations(plan, source):
     """The episode's binding rules on the cut: cited numbers only, no advice, no tool wording, no spoken attribution."""
-    claims, found, cited = claim_catalog(source), [], set()
+    claims, found, cited, lines = claim_catalog(source), [], set(), []
     allowed_frame = nums(frame(source))
     for scene in plan.scenes:
         unknown = sorted(set(scene.claim_ids) - claims.keys())
         if unknown:
             found.append(f'Unknown line IDs {unknown} in scene {scene.id}')
             continue
-        allowed = nums(' '.join(claims[c]['text'] for c in scene.claim_ids)) | allowed_frame
+        source_text = ' '.join(claims[c]['text'] for c in scene.claim_ids)
+        allowed = nums(source_text) | allowed_frame
         cited |= allowed
+        lines.append(source_text)
         screen = [text for _, text in strings(scene.data)]
-        extra = (nums(' '.join(screen)) | nums(scene.narration)) - allowed
+        shown = nums(' '.join(screen))
+        extra = (shown | nums(scene.narration)) - allowed
         if extra:
             found.append(f'Unbound number {sorted(extra)} in scene {scene.id}')
+        # A direction is drawn only where the cited line states one, and never against it (▲ for a fall).
+        for field, key in (('stat', 'stat_dir'), ('big', 'dir')):
+            if scene.data.get(key) in ('up', 'dn'):
+                for value in nums(str(scene.data.get(field, ''))):
+                    stated_dir = direction(source_text, value)
+                    if stated_dir != scene.data[key]:
+                        found.append(f"Direction of {scene.data.get(field)} in scene {scene.id} "
+                                     + ('is not stated by its line' if stated_dir is None else 'contradicts its line'))
+        for text in [scene.narration, *screen]:
+            for value in nums(text):
+                said, stated_dir = direction(text, value), direction(source_text, value)
+                if said and stated_dir and said != stated_dir:
+                    found.append(f'Direction of {value} in scene {scene.id} contradicts its line')
+        # The episode's labels: regular-session closes say 종가, investor flows say 마감 (on the card or spoken).
+        closes = set().union(*(stated(claims[c]['text'], CLOSE_MARK, deniable=True) for c in scene.claim_ids))
+        if closes & shown and not any('종가' in t for t in [scene.narration, *screen]):
+            found.append(f'Regular-session close values need 종가 in scene {scene.id}')
+        flows = set().union(*(flow_values(claims[c]['text']) for c in scene.claim_ids))
+        if flows & shown and not any('마감' in t for t in [scene.narration, *screen]):
+            found.append(f'Investor flow values need 마감 in scene {scene.id}')
         if tool_wording(scene.narration, *screen):
             found.append(f'Production or tool wording in scene {scene.id}')
         if INSTRUCTION.search(' '.join([scene.narration, *screen])):
@@ -132,6 +191,11 @@ def shorts_violations(plan, source):
     extra = nums(f'{plan.title} {plan.description}') - cited
     if extra:
         found.append(f'Unbound number {sorted(extra)} in the title or description')
+    every = ' '.join(lines)
+    for value in nums(plan.title):
+        said, stated_dir = direction(plan.title, value), direction(every, value)
+        if said and stated_dir and said != stated_dir:
+            found.append(f'Direction of {value} in the title contradicts its line')
     if tool_wording(plan.title, plan.description) or INSTRUCTION.search(f'{plan.title} {plan.description}'):
         found.append('Title or description carries tool or buy/sell wording')
     return found
@@ -164,10 +228,12 @@ class ShortsRenderer:
     """One browser, frame by frame: a Shorts is about 1,400 frames, small enough for the worker itself."""
 
     def __init__(self, settings, aligner=None):
-        self.settings = settings
+        self.settings, self.stop = settings, None
         self.aligner = aligner or Aligner(settings.video_alignment_model, settings.video_alignment_threads)
 
-    def render(self, job, plan, directory, audio_paths, outro_audio):
+    def render(self, job, plan, directory, audio_paths, outro_audio, stop=None):
+        """stop: asked every few seconds of frames; True gives the render up (ShortsSuperseded)."""
+        self.stop = stop
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
         lock = os.open(directory / '.render.lock', os.O_CREAT | os.O_RDWR, 0o600)
@@ -298,9 +364,13 @@ class ShortsRenderer:
                     stills.append({'scene': scene['id'], 'file': name})
                 encoder = subprocess.Popen([self.settings.video_ffmpeg, '-y', '-loglevel', 'error', '-f', 'image2pipe',
                                             '-framerate', str(FPS), '-c:v', 'mjpeg', '-i', '-', '-c:v', 'libx264', '-preset',
-                                            'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', str(directory / 'silent.mp4')],
+                                            'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', '-threads', '2',
+                                            str(directory / 'silent.mp4')],
                                            stdin=subprocess.PIPE)
                 for i in range(frames):
+                    if i % (5 * FPS) == 0 and self.stop and self.stop():
+                        encoder.kill()
+                        raise ShortsSuperseded()
                     tab.evaluate(f'seek({i / FPS})')
                     encoder.stdin.write(tab.screenshot(type='jpeg', quality=80))
                 encoder.stdin.close()

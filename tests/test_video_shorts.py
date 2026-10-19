@@ -29,13 +29,13 @@ from .test_video_render import ffmpeg_binary
 def shorts(**changes):
     value = dict(
         title='S&P 500 1.92% 상승, 반도체가 이끌었다', description='반도체가 이끈 미국 증시와 확산 여부를 짧게 정리합니다.',
-        scenes=[dict(id='hook', type='hook', narration='에스앤피 500이 1.92% 올랐습니다. 반도체가 이끌었습니다.',
+        scenes=[dict(id='hook', type='hook', narration='에스앤피 500이 정규장 종가 기준 1.92% 올랐습니다. 반도체가 이끌었습니다.',
                      claim_ids=['b013', 'b007'], data=dict(question='반도체가 이끈 상승, 확산될까?', stat='S&P 500 1.92%',
                                                            stat_dir='up')),
                 dict(id='index', type='point', narration='에스앤피 500은 5,300에 마감했습니다. 정규장 종가 기준입니다.',
-                     claim_ids=['b013'], data=dict(label='S&P 500', big='5,300', dir='up', text='정규장 종가 기준 1.92% 상승')),
+                     claim_ids=['b013'], data=dict(label='S&P 500', big='1.92%', dir='up', text='정규장 종가 5,300으로 마감')),
                 dict(id='nasdaq', type='point', narration='나스닥 종합은 0.59% 올라 17,100에 마감했습니다.',
-                     claim_ids=['b014'], data=dict(label='나스닥 종합', big='17,100', dir='up', text='상승폭은 0.59%로 더 작았습니다')),
+                     claim_ids=['b014'], data=dict(label='나스닥 종합', big='0.59%', dir='up', text='종가 17,100, 상승폭은 더 작았습니다')),
                 dict(id='signal', type='point', narration='다음은 비기술 업종으로 상승이 확산되는지 확인합니다.',
                      claim_ids=['b011', 'b012'], data=dict(label='확인할 신호', big='확산', text='비기술 업종과 한국 반도체로 이어질까'))])
     value.update(changes)
@@ -59,6 +59,9 @@ def test_a_cut_is_one_hook_and_three_points_without_the_series_name():
 
 @pytest.mark.parametrize('scene,field,value,error', [
     (1, 'big', '5,400', 'Unbound number'),
+    (1, 'dir', 'dn', 'contradicts its line'),  # ▼ for the 1.92% rise
+    (2, 'narration', '나스닥 종합은 0.59% 급락해 17,100에 마감했습니다.', 'contradicts its line'),
+    (2, 'text', '17,100으로 마감', '종가'),  # a close value without its label
     (2, 'narration', '보도에 따르면 나스닥 종합은 0.59% 올랐습니다.', '보도에 따르면'),
     (3, 'narration', '이 영상은 AI가 만든 요약입니다. 확산을 확인합니다.', 'tool wording'),
     (3, 'narration', '반도체는 지금 사세요. 확산을 확인합니다.', 'Buy/sell'),
@@ -107,7 +110,7 @@ class ShortsFileRenderer:
     def __init__(self):
         self.calls = []
 
-    def render(self, job, plan, directory, paths, outro):
+    def render(self, job, plan, directory, paths, outro, stop=None):
         self.calls.append((len(paths), outro))
         files = {'shorts.mp4': b'simulated-shorts', 'shorts.srt': b'1\n00:00:00,000 --> 00:00:01,000\nx\n',
                  'shorts-upload.txt': '[제목]\nS&P 500 1.92% 상승\n'.encode(), 'shorts-plan.json': plan.model_dump_json().encode()}
@@ -119,7 +122,10 @@ class ShortsFileRenderer:
         return manifest
 
 
-async def delivered_episode(store, tmp_path, monkeypatch, brief):  # noqa: F811
+async def delivered_episode(store, tmp_path, monkeypatch, brief, clock=None):  # noqa: F811
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
     from quant_company.video.contracts import VisualReview
 
     store.settings.video_upload_enabled = store.settings.video_publish_enabled = False
@@ -129,6 +135,8 @@ async def delivered_episode(store, tmp_path, monkeypatch, brief):  # noqa: F811
     assert job['state'] == 'delivering', job['error']
     with store.db.transaction() as conn:  # the dispatcher's receipt of the episode files (simulated)
         conn.execute("UPDATE video_jobs SET state='delivered' WHERE id=%s", (job['id'],))
+    if clock is not None:  # midday: no next episode is due (shorts_store.QUIET)
+        clock['at'] = datetime(2026, 9, 22, 12, 0, tzinfo=ZoneInfo('Asia/Seoul'))
     return job, provider, speech
 
 
@@ -147,8 +155,8 @@ async def shorts_ticks(store, provider, speech, renderer, job, limit=12):
 
 
 async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, video, tmp_path, monkeypatch):  # noqa: F811
-    store, _ = video
-    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief)
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     renderer = ShortsFileRenderer()
     assert (await VideoRunner(store.company, provider, speech).tick())['state'] == 'idle'  # off by default
     store.settings.video_shorts_enabled = True
@@ -177,8 +185,8 @@ async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, vid
 
 
 async def test_the_episode_goes_first_and_a_late_cut_is_given_up(brief, video, tmp_path, monkeypatch):  # noqa: F811
-    store, _ = video
-    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief)
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
     shorts_store = ShortsStore(store.company)
     with store.db.transaction() as conn:
@@ -202,8 +210,8 @@ async def test_the_episode_goes_first_and_a_late_cut_is_given_up(brief, video, t
 
 
 async def test_shorts_leave_the_credits_the_next_episodes_need(brief, video, tmp_path, monkeypatch):  # noqa: F811
-    store, _ = video
-    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief)
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
     with store.db.transaction() as conn:
         spent = conn.execute('SELECT COALESCE(sum(credits),0) AS n FROM video_effects').fetchone()['n']
@@ -213,11 +221,59 @@ async def test_shorts_leave_the_credits_the_next_episodes_need(brief, video, tmp
     assert row['state'] == 'skipped' and row['error'] == 'credit_reserve' and len(speech.calls) == takes
 
 
+async def test_the_reserve_is_kept_in_the_month_not_in_the_episode_cap(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    with store.db.transaction() as conn:
+        spent = conn.execute('SELECT COALESCE(sum(credits),0) AS n FROM video_effects').fetchone()['n']
+    store.settings.video_episode_credit_limit = spent + 5  # room for the cut's five takes, not for another 80
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'delivering', row['error']
+
+
+async def test_no_cut_starts_while_the_next_episode_is_due_or_after_a_stuck_one(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    shorts_store = ShortsStore(store.company)
+    clock['at'] = datetime(2026, 9, 22, 16, 30, tzinfo=ZoneInfo('Asia/Seoul'))  # the close brief's episode is due
+    assert shorts_store.claim() is None and shorts_store.get(job['id']) is None
+    clock['at'] = datetime(2026, 9, 22, 12, 0, tzinfo=ZoneInfo('Asia/Seoul'))
+    with store.db.transaction() as conn:  # an older episode stuck in production for days no longer holds the cuts
+        conn.execute("""INSERT INTO video_jobs(id,edition_id,version,source_digest,source,policy,state,publish_deadline,
+            created_at) VALUES(%s,%s,3,%s,%s,%s,'queued',%s,now()-interval '3 days')""",
+                     ('00000000-0000-0000-0000-000000000003', job['edition_id'], job['source_digest'],
+                      json.dumps(job['source']), json.dumps(job['policy']), job['publish_deadline']))
+    assert shorts_store.claim()['state'] == 'writing'
+
+
+async def test_a_lost_completion_keeps_the_file_receipt(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    shorts_store = ShortsStore(store.company)
+    shorts_store.delivery_receipt(row['delivery_message_id'], {'files': [{'id': 'F1', 'uploaded': True}], 'complete_requested': True})
+    with store.db.transaction() as conn:  # the dispatcher died after asking Slack to share the files
+        conn.execute("UPDATE outbox SET status='uncertain' WHERE id=%s", (row['delivery_message_id'],))
+    assert shorts_store.sync_deliveries() == 1
+    current = shorts_store.get(job['id'])
+    assert current['state'] == 'delivery_uncertain' and current['qa']['delivery']['files'][0]['id'] == 'F1'
+    with store.db.transaction() as conn:
+        note = conn.execute("SELECT o.text FROM outbox o JOIN messages m ON m.id=o.id WHERE m.text LIKE %s",
+                            ('%쇼츠 파일 전달 결과 확인 필요%',)).fetchone()
+    assert note['text'].startswith('<@UHUMAN>\n') and '서버 보관 경로' in note['text']
+
+
 async def test_a_lost_turn_is_asked_again_as_a_new_attempt(brief, video, tmp_path, monkeypatch):  # noqa: F811
     from quant_company.contracts import ProviderFault
 
-    store, _ = video
-    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief)
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
     provider.queues['video_shorts_v1'] = [ProviderFault('uncertain', 'the CLI exited'), shorts()]
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)

@@ -6,19 +6,21 @@ const back = p => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(p 
 const prog = (lt, s, d) => clamp((lt - s) / d);
 const ARROW = { up: '▲', dn: '▼' };
 // Numbers in a line are drawn gold, like the episode captions.
-const gold = s => String(s).replace(/(\d[\d,.]*\s?(?:%|%p|bp|조원|억원|억달러|달러|원|포인트|배)?)/g, '<em>$1</em>');
+const gold = s => String(s).replace(/(\d[\d,.]*\s?(?:%p|%|bp|조원|억원|억달러|달러|원|포인트|배)?)/g, '<em>$1</em>');
+// The arrow comes from the direction field; a sign the script also wrote would show twice.
+const bare = s => String(s).replace(/^\s*[▲▼+\-]\s*/, '');
 
 const CARDS = {
   hook(d) {
     const dir = ARROW[d.stat_dir] ? `<span class="${d.stat_dir}">${ARROW[d.stat_dir]} </span>` : '';
     // On screen from the first frame: the feed decides within two seconds.
     return `<div class="q">${gold(d.question)}</div>`
-      + (d.stat ? `<div class="stat ${d.stat_dir || ''}" data-fit data-in="0.35,0.4,40">${dir}${d.stat}</div>` : '');
+      + (d.stat ? `<div class="stat ${d.stat_dir || ''}" data-fit data-in="0.35,0.4,40">${dir}${dir ? bare(d.stat) : d.stat}</div>` : '');
   },
   point(d, sc) {
     const dir = ARROW[d.dir] ? `${ARROW[d.dir]} ` : '';
     return `<div class="lab" data-in="0,0.3,30"><span class="badge">${sc.n}</span>${d.label}</div>
-      <div class="big ${d.dir || ''}" data-fit data-pop="0.15,0.4">${dir}${d.big}</div>
+      <div class="big ${d.dir || ''}" data-fit data-pop="0.15,0.4">${dir}${dir ? bare(d.big) : d.big}</div>
       <div class="t" data-in="0.45,0.4,30">${gold(d.text)}</div>`;
   },
   outro(d) {

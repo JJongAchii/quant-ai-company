@@ -40,7 +40,7 @@ from .motion import RENDERER_DIGEST, MotionRenderer
 from .render import Renderer, RenderInProgress, korean_numbers, spoken, verify_artifacts
 from .runway import RETAKE_RESERVE, RunwaySpeech, download_audio, speech_credits
 from .shorts import OUTRO as SHORTS_OUTRO
-from .shorts import ShortsPlan, ShortsRenderer, shorts_prompt, shorts_violations
+from .shorts import ShortsPlan, ShortsRenderer, ShortsSuperseded, shorts_prompt, shorts_violations
 from .shorts_store import ShortsStore
 from .store import UncertainEffect, VideoStore
 from .youtube import YouTube
@@ -289,12 +289,12 @@ class VideoRunner:
         await asyncio.to_thread(self.store.finish_effect, job, key, result)
         return result
 
-    async def model(self, job, key, prompt, cls, contract=None, attachments=()):
+    async def model(self, job, key, prompt, cls, contract=None, attachments=(), effort=None):
         phase = key.split('-')[0]
         policy = job["policy"]
         # Reviews may think longer than writing; jobs frozen before the split use their single effort for both.
-        effort = (policy.get("review_effort", policy.get("effort", "high")) if phase in REVIEW_PHASES
-                  else policy.get("effort", "high"))
+        effort = effort or (policy.get("review_effort", policy.get("effort", "high")) if phase in REVIEW_PHASES
+                            else policy.get("effort", "high"))
         request = ProviderRequest(request_id=f"video-{job['id']}-{key}", model=policy["model"],
                                   reasoning_effort=effort, prompt=prompt,
                                   output_contract=contract or f"video_{phase}_v1", attachments=list(attachments))
@@ -391,7 +391,12 @@ class VideoRunner:
             return {"state": "idle"}
         job = await asyncio.to_thread(self.store.get, row['job_id'])
         try:
+            if digest(job["source"]) != job["source_digest"] or not self.store.allowed(job):
+                raise PolicyError('Video production account or source policy changed')
             await self.shorts_step(row, job)
+        except ShortsSuperseded:
+            # The next episode started mid-render: the next claim gives this cut up with its note.
+            await asyncio.to_thread(self.shorts.wait, row, 5, 'superseded')
         except ProviderFault as error:
             if error.code in {'busy', 'quota', 'pending', 'unavailable', 'auth'}:
                 # Asked again later under the same request ID, like the episode's turns; the next episode still wins.
@@ -401,9 +406,14 @@ class VideoRunner:
         except UncertainEffect:
             await asyncio.to_thread(self.shorts.skip, row, 'external_effect_requires_reconciliation',
                                     '쇼츠는 음성 생성 결과를 확인할 수 없어 멈췄습니다. 같은 요청을 다시 보내지 않습니다.')
-        except (ValueError, OSError, TimeoutError, httpx.HTTPError, PolicyError) as error:
-            await asyncio.to_thread(self.shorts.skip, row, f'shorts_failed:{row["state"]}:{type(error).__name__}',
-                                    '쇼츠를 만들지 못했습니다. 본편은 영향이 없습니다.')
+        except Exception as error:  # noqa: BLE001 - Runway and Chromium errors arrive in many shapes; none may hold the episode
+            if await asyncio.to_thread(self.store.has_uncertain_effect, job):
+                # A voice request may have been charged without its answer: kept as it is, never sent again.
+                await asyncio.to_thread(self.shorts.skip, row, 'external_effect_requires_reconciliation',
+                                        '쇼츠 음성 생성 결과를 확인할 수 없어 멈췄습니다(요금이 나갔을 수 있음). 같은 요청을 다시 보내지 않습니다.')
+            else:
+                await asyncio.to_thread(self.shorts.skip, row, f'shorts_failed:{row["state"]}:{type(error).__name__}',
+                                        '쇼츠를 만들지 못했습니다. 본편은 영향이 없습니다.')
         current = await asyncio.to_thread(self.shorts.get, row['job_id'])
         return {"state": "shorts_" + current['state'], "job_id": str(row['job_id'])}
 
@@ -419,7 +429,9 @@ class VideoRunner:
             prompt = shorts_prompt(job['source'], job['plan'], (job.get('qa') or {}).get('review_findings', []),
                                    '\n'.join(f'- {f}' for f in last[:30]))
             try:
-                plan = await self.model(job, f'shorts-{len(attempts) + 1}', prompt, ShortsPlan, contract='video_shorts_v1')
+                # A short cut of a checked episode: a lighter turn keeps the Claude lane free for the next episode.
+                plan = await self.model(job, f'shorts-{len(attempts) + 1}', prompt, ShortsPlan, contract='video_shorts_v1',
+                                        effort='high')
             except ModelRejected as error:
                 # A lost turn (uncertain, timeout) wrote nothing; like a rejected one, the next attempt is a new request.
                 attempts.append({'outcome': error.code if error.code in RUNTIME_OUTCOMES else 'rejected', 'code': error.code,
@@ -436,7 +448,7 @@ class VideoRunner:
             takes = self.shorts_takes(job, ShortsPlan.model_validate(row['plan']))
             pending = [(k, r) for k, r in takes if not await asyncio.to_thread(self.store.effect_receipt, job, k, 'completed')]
             cost = sum(speech_credits(r['text']) for _, r in pending)
-            if pending and not await asyncio.to_thread(self.store.budget_available, job, cost + SHORTS_CREDIT_RESERVE):
+            if pending and not await asyncio.to_thread(self.store.budget_available, job, cost, SHORTS_CREDIT_RESERVE):
                 await asyncio.to_thread(self.shorts.skip, row, 'credit_reserve',
                                         '쇼츠는 다음 회차들의 음성 크레딧을 남기기 위해 만들지 않았습니다.')
                 return
@@ -460,7 +472,8 @@ class VideoRunner:
             paths = await self.fetch_audio(job, takes, directory)
             try:
                 renderer = self.shorts_renderer or ShortsRenderer(self.settings)
-                artifacts = await asyncio.to_thread(renderer.render, job, plan, directory, paths[:-1], paths[-1])
+                artifacts = await asyncio.to_thread(renderer.render, job, plan, directory, paths[:-1], paths[-1],
+                                                    lambda: self.shorts.superseded(job['id']))
             except RenderInProgress:
                 await asyncio.to_thread(self.shorts.wait, row, 120, 'render_in_progress')
                 return
