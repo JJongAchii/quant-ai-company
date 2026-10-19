@@ -204,7 +204,11 @@ class SimulatedProvider:
     """claude-runtime stand-in: returns queued drafts or faults; no model, no network."""
 
     def __init__(self, *outputs):
-        self.outputs, self.calls = list(outputs), []
+        self.outputs, self.calls, self.cancelled = list(outputs), [], []
+
+    async def cancel(self, request_id):
+        self.cancelled.append(request_id)
+        return "cancelled"
 
     async def run(self, request):
         self.calls.append(request)

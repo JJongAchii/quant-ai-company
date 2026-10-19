@@ -327,6 +327,24 @@ async def test_only_the_claude_runtime_serves_the_newsletter_contract(fake_claud
             ClaudeRequest(**{**email.model_dump(), **bad})
 
 
+async def test_newsletter_turns_get_a_short_process_limit_of_their_own(fake_claude):
+    from quant_company.providers.claude_runner import ClaudeRequest
+
+    from .newsletter_fixtures import v5_draft
+
+    config, configure, _ = fake_claude
+    assert config.newsletter_timeout_seconds == 900 and config.video_timeout_seconds == 7200
+    config = replace(config, newsletter_timeout_seconds=1, video_timeout_seconds=10)
+    configure(delay=2, model="claude-opus-5-5", used_model="claude-opus-5-5", review=v5_draft().model_dump(mode="json"))
+    email = ClaudeRequest(request_id="newsletter-fixture-2", model="claude-opus-5-5", reasoning_effort="high",
+                          prompt="DATA: fixture", output_contract="newsletter_v1")
+    with pytest.raises(ProviderFault) as fault:
+        await runner(config).run(email)
+    assert fault.value.code == "timeout"
+    with pytest.raises(ValueError):
+        replace(config, newsletter_timeout_seconds=3601)
+
+
 async def test_video_contracts_may_use_opus_5_5_but_reviews_may_not(fake_claude):
     config, configure, calls = fake_claude
     configure(model="claude-opus-5-5", used_model="claude-opus-5-5",

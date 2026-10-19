@@ -30,6 +30,7 @@ from .newsletter_fixtures import (
     v5_draft,
 )
 from .test_briefing import brief, complete, definition  # noqa: F401
+from .test_maintenance_cases import improvements  # noqa: F401
 from .test_slack import event, signed
 from .test_temporal import temporal_environment  # noqa: F401
 
@@ -131,8 +132,15 @@ class SimulatedInbox:
         pass
 
 
-def reply(sender, subject, identity):
+def reply(sender, subject, identity, verdict="pass", forged=None):
+    """A reply as Gmail stores it: its own Authentication-Results on top (VERDICT), any FORGED one below it."""
     mail = EmailMessage(policy=default)
+    domain = sender.rpartition("@")[2]
+    if verdict:
+        mail["Authentication-Results"] = (f"mx.google.com; dkim={verdict} header.i=@{domain}; spf={verdict} "
+                                          f"smtp.mailfrom={sender}; dmarc={verdict} (p=NONE) header.from={domain}")
+    if forged:
+        mail["Authentication-Results"] = f"mx.google.com; dmarc={forged} header.from={domain}"
     mail["From"] = f"Fixture Reader <{sender}>"
     mail["Subject"] = subject
     mail["Message-ID"] = f"<{identity}@example.com>"
@@ -313,8 +321,16 @@ def test_masking_and_command_parsing():
     assert parse("이메일 시험 발송 owner.fixture@example.com") == {"action": "test", "address": OWNER_MAIL}
     assert parse("이메일 목록") == {"action": "list"} and parse("이메일 재동의 a@b.co")["action"] == "reconsent"
     assert parse("이메일 추가 a@b.co c@d.co") == {"action": "add", "address": None}
-    for conversation in ("이메일 추가하는 방법 알려줘", "이메일 목록 보여줘", "뉴스레터 추가 a@b.co"):
-        assert parse(conversation) is None
+    # The obvious variants are commands; anything else that starts like one or carries an address gets the usage line.
+    for variant, action in (("이메일 추가: owner.fixture@example.com", "add"), ("이메일 추가해줘 owner.fixture@example.com", "add"),
+                            ("이메일 시험 발송해 주세요 owner.fixture@example.com", "test"),
+                            ("이메일 삭제：owner.fixture@example.com", "remove")):
+        assert parse(variant) == {"action": action, "address": OWNER_MAIL}, variant
+    assert parse("이메일 목록 보여줘") == parse("이메일 목록 알려 주세요") == {"action": "list"}
+    for near in ("이메일 추가하는 방법 알려줘", "이메일 목록 전부", "뉴스레터 추가 a@b.co", "이 주소로 보내줘 qk@gmail.com", "이메일"):
+        assert parse(near) == {"action": "usage"}, near
+    for conversation in ("오늘 코스피는 어땠어?", "메일 서버 상태 알려줘", "<@U123ABC> 상태"):
+        assert parse(conversation) is None, conversation
 
 
 def test_html_and_plain_text_follow_the_approved_layout():
@@ -378,7 +394,7 @@ async def test_with_the_flag_off_nothing_is_written_or_sent(mail, brief):  # noq
 
 
 @pytest.mark.integration
-def test_an_enqueue_failure_never_holds_back_the_brief(mail, brief, monkeypatch):  # noqa: F811
+def test_an_enqueue_failure_never_holds_back_the_brief_and_is_said_once(mail, brief, monkeypatch):  # noqa: F811
     store, _ = mail
 
     def broken(self, conn, edition, at, *, auto):
@@ -387,7 +403,13 @@ def test_an_enqueue_failure_never_holds_back_the_brief(mail, brief, monkeypatch)
     monkeypatch.setattr(NewsletterStore, "ensure_issue", broken)
     edition = commit_pm(brief)
     assert rows(store, "SELECT state FROM brief_editions WHERE id=%s", edition.id)[0]["state"] == "committed"
-    assert issue_of(store, edition) is None
+    issue = issue_of(store, edition)
+    assert issue["state"] == "skipped" and issue["reason"] == "enqueue_failed"
+    deliver_root(store, edition.id)
+    dispatcher(store).tick()
+    dispatcher(store).tick()
+    notices = outbox(store, "newsletter_status")
+    assert len(notices) == 1 and "서버 오류" in notices[0]["text"] and "본문은 그대로 발송" in notices[0]["text"]
 
 
 @pytest.mark.integration
@@ -743,3 +765,214 @@ def test_the_fallback_holds_for_a_thin_edition():
     assert draft.issues[0].headline == "금리" and draft.market.swing is None and draft.calendar == []
     assert not [f for f in checks.findings(draft, source) if "없는 숫자" in f]
     assert "금리가 올랐습니다." in render.html(draft, day=source["day"], sender=SENDER, channel_url="https://example.com")
+
+
+# ---- Review fixes: direction, header lines, near-miss commands, the runtime slot, authenticated unsubscribes ----
+
+def test_a_reversed_investor_flow_or_index_move_is_rejected():
+    source = contracts.source(pm_row())
+    for change in ({"market__investors__0": {"name": "기관", "amount": "-5,731억"}},      # 순매수 shown as a sale
+                   {"market__investors__1": {"name": "외국인", "amount": "+357억"}},      # 순매도 shown as a purchase
+                   {"market__swing__close_change": "-1.76%"},                            # a rise shown as a fall
+                   {"market__flow": "코스피는 1.76% 하락한 5,768.01에 마감했습니다. 순환매가 나타났습니다."},
+                   {"market__investors_note": "외국인은 18조원 넘게 순매수했습니다. 순환매가 나타났습니다."},
+                   {"company": "기관은 5,731억원을 순매도했습니다."}):
+        found = checks.findings(v5_draft(**change), source)
+        assert any("방향" in f and "반대" in f for f in found), (change, found)
+    # The same values with the body's own directions pass.
+    same = v5_draft(market__flow="코스피는 1.76% 오른 5,768.01에 마감했습니다. 기관은 5,731억원을 순매수했습니다. 순환매가 "
+                                 "나타났습니다.")
+    assert checks.findings(same, source) == []
+
+
+def test_a_line_break_never_reaches_a_mail_header():
+    for field in ("headline", "accent", "preview"):
+        for bad in ("코스피\r\nBcc: someone@example.com", "코스피 3.2%\n", "코스피\u2028상승"):
+            with pytest.raises(ValidationError):
+                v5_draft(**{field: bad})
+    spaced = v5_draft(headline="코스피,  3.2%\t급락 출발 후", accent=" 1.8% 상승 마감 ")
+    assert render.subject(spaced, PM_DAY.isoformat()) == "코스피, 3.2% 급락 출발 후 1.8% 상승 마감 | 10/19 마감 브리핑"
+
+
+def test_required_issues_follow_what_the_body_showed():
+    source = contracts.source(pm_row())
+    source = {**source, "issues": source["issues"][:1]}  # the proposal had three; one reached the reader
+    draft = v5_draft()
+    draft = draft.model_copy(update={"issues": draft.issues[:1]})
+    assert not [f for f in checks.findings(draft, source) if f.startswith("issues:")]
+
+
+def video_job(store, edition, state):
+    with store.db.transaction() as conn:
+        conn.execute("""INSERT INTO video_jobs(id,edition_id,version,source_digest,source,policy,publish_deadline,state)
+            VALUES(%s,%s,1,'d','{}','{}',now()+interval '1 day',%s) ON CONFLICT(edition_id,version) DO UPDATE
+            SET state=excluded.state""", (stable(f"video-fixture:{edition.id}"), edition.id, state))
+
+
+@pytest.mark.integration
+async def test_no_email_turn_starts_while_the_video_needs_the_model(mail, brief):  # noqa: F811
+    store, _ = mail
+    edition = commit_pm(brief)
+    writer, provider = await write(store, v5_draft())
+    for state in ("queued", "reviewing", "synthesizing", "inspecting"):
+        video_job(store, edition, state)
+        assert await writer.tick() == {"state": "idle"} and not provider.calls, state
+    video_job(store, edition, "rendering")
+    assert (await writer.tick())["state"] == "ready" and len(provider.calls) == 1
+
+
+@pytest.mark.integration
+async def test_a_running_email_turn_yields_to_the_video_without_using_an_attempt(mail, brief):  # noqa: F811
+    store, clock = mail
+    edition = commit_pm(brief)
+    pending = ProviderFault("pending", "simulated: still running", 20)
+    writer, provider = await write(store, pending, v5_draft())
+    await writer.tick()
+    first = provider.calls[0].request_id
+    video_job(store, edition, "inspecting")  # the episode's screen review needs the one runtime slot
+    clock["at"] += timedelta(seconds=30)
+    assert await writer.tick() == {"state": "idle"}
+    assert provider.cancelled == [first] and len(provider.calls) == 1
+    issue = issue_of(store, edition)
+    assert [a["outcome"] for a in issue["attempts"]] == ["yielded"] and issue["request"] is None
+    video_job(store, edition, "rendering")
+    clock["at"] += timedelta(minutes=2)
+    assert (await writer.tick())["state"] == "ready"
+    assert provider.calls[1].request_id == first[:-1] + "2" and "PREVIOUS VERSION" not in provider.calls[1].prompt
+
+
+@pytest.mark.integration
+async def test_the_fallback_cancels_the_turn_it_replaced_and_never_uses_its_output(mail, brief):  # noqa: F811
+    store, clock = mail
+    recipient(store, OWNER_MAIL)
+    edition = commit_pm(brief)
+    deliver_root(store, edition.id)
+    pending = ProviderFault("pending", "simulated: still running", 20)
+    writer, provider = await write(store, pending)
+    await writer.tick()
+    frozen = provider.calls[0].request_id
+    clock["at"] = edition.due_at + FALLBACK_AFTER
+    smtp = SimulatedSmtp()
+    dispatcher(store, smtp).tick()
+    assert issue_of(store, edition)["origin"] == "fallback" and len(smtp.accepted) == 1
+    assert await writer.tick() == {"state": "idle"}
+    assert provider.cancelled == [frozen] and issue_of(store, edition)["cancel_request"] is None
+    late = NewsletterStore(store.company).accept(issue_of(store, edition), v5_draft(), {"outcome": "passed"})
+    assert not late and issue_of(store, edition)["origin"] == "fallback"
+
+
+@pytest.mark.integration
+def test_an_unsubscribe_needs_gmails_own_authentication(mail, brief):  # noqa: F811
+    store, _ = mail
+    recipient(store, OWNER_MAIL)
+    edition = commit_pm(brief)
+    deliver_root(store, edition.id)
+    # No verdict, and Gmail's own failing verdict above a forged passing one.
+    inbox = SimulatedInbox(reply(OWNER_MAIL, "수신거부", "f1", verdict=None),
+                           reply(OWNER_MAIL, "수신거부", "f2", verdict="fail", forged="pass"))
+    dispatcher(store, inbox=inbox).tick()
+    assert rows(store, "SELECT state FROM newsletter_recipients")[0]["state"] == "active"
+    assert not any(m["seen"] for m in inbox.mails.values()) and not outbox(store, "newsletter_status")
+    genuine = SimulatedInbox(reply(OWNER_MAIL, "Re: 수신 거부", "g1"))
+    dispatcher(store, inbox=genuine).tick()
+    assert rows(store, "SELECT state FROM newsletter_recipients")[0]["state"] == "unsubscribed"
+
+
+@pytest.mark.integration
+async def test_a_missing_password_with_the_flag_on_is_said_once_per_edition(mail, brief):  # noqa: F811
+    store, _ = mail
+    recipient(store, OWNER_MAIL)
+    store.settings.newsletter_password_file.unlink()
+    edition = commit_pm(brief)
+    deliver_root(store, edition.id)
+    writer, _ = await write(store, v5_draft())
+    await writer.tick()
+    for _ in range(3):
+        dispatcher(store).tick()
+    notices = [n["text"] for n in outbox(store, "newsletter_status")]
+    assert len(notices) == 1 and "보내지 못함" in notices[0] and "앱 비밀번호" in notices[0]
+
+
+@pytest.mark.integration
+def test_near_miss_commands_and_addresses_never_reach_a_model(mail, credentials):
+    store, _ = mail
+    company = store.company
+    client = TestClient(create_app(company.settings, company, credentials))
+
+    def send(text, ts):
+        raw, headers = signed(event(credentials, text=f"<@UBOT0> {text}", ts=ts), credentials["director"])
+        return client.post("/slack/events/director", content=raw, headers=headers).json()
+
+    assert send(f"이메일 추가: {OWNER_MAIL}", "400.001")["owner_control"]
+    assert send(f"이메일 추가해줘 {FRIEND_MAIL}", "400.002")["owner_control"]
+    assert send("이메일 목록 보여줘", "400.003")["owner_control"]
+    assert send(f"이 주소로 오늘 브리핑을 보내줘 {OWNER_MAIL}", "400.004")["owner_control"]
+    assert send("이메일 추가하는 방법 알려줘", "400.005")["owner_control"]
+    assert {r["address"] for r in rows(store, "SELECT address FROM newsletter_recipients")} == {OWNER_MAIL, FRIEND_MAIL}
+    replies = [r["text"] for r in outbox(store, "control")]
+    assert "수신 중 2" in replies[2] and all("@quant-director" in r for r in replies[3:5])
+    assert not rows(store, "SELECT * FROM turns")
+    stored = str(rows(store, "SELECT instruction FROM tasks")) + str(rows(store, "SELECT text FROM messages"))
+    stored += str(rows(store, "SELECT title,instruction FROM projects"))
+    assert OWNER_MAIL not in stored and FRIEND_MAIL not in stored
+
+
+@pytest.mark.integration
+def test_the_maintainer_answers_recipient_text_with_the_usage_line(improvements):  # noqa: F811
+    company, credentials = improvements
+    client = TestClient(create_app(company.settings, company, credentials))
+    with company.db.transaction() as conn:
+        before = conn.execute("SELECT count(*) AS n FROM turns").fetchone()["n"]
+    raw, headers = signed(event(credentials, role="maintainer", channel="CIMPROVE", ts="500.001",
+                                text=f"이메일 추가 {OWNER_MAIL} 해 주세요"), credentials["maintainer"])
+    assert client.post("/slack/events/maintainer", content=raw, headers=headers).json()["owner_control"]
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM turns").fetchone()["n"] == before
+        assert not conn.execute("SELECT 1 FROM newsletter_recipients").fetchone()
+        reply_row = conn.execute("""SELECT o.agent,o.text FROM outbox o JOIN messages m ON m.id=o.id
+            WHERE m.kind='control'""").fetchone()
+        stored = str(conn.execute("SELECT instruction FROM tasks").fetchall())
+        stored += str(conn.execute("SELECT text FROM messages").fetchall())
+    assert reply_row["agent"] == "maintainer" and "@quant-director" in reply_row["text"]
+    assert OWNER_MAIL not in stored
+
+
+@pytest.mark.integration
+async def test_the_writer_check_runs_at_the_tick_pace(mail, monkeypatch):
+    from quant_company.runtime import start_newsletter
+
+    class Client:
+        async def start_workflow(self, *args, **kwargs):
+            raise AssertionError("nothing to write")
+
+    store, _ = mail
+    store.settings.newsletter_enabled = False
+    calls = []
+    monkeypatch.setattr(NewsletterStore, "has_writing", lambda self: calls.append(1) or False)
+    store.company._newsletter = dispatcher(store)
+    for _ in range(5):
+        await start_newsletter(Client(), store.company)
+        if store.company._newsletter_tick:
+            await store.company._newsletter_tick
+    assert len(calls) == 1
+
+
+def test_gmails_authentication_results_are_read_for_the_sender_domain():
+    from quant_company.newsletter.delivery import authenticated
+
+    def header(*results):
+        mail = EmailMessage(policy=default)
+        for value in results:
+            mail["Authentication-Results"] = value
+        return email.message_from_bytes(bytes(mail), policy=default)
+
+    gmail = ("mx.google.com; dkim=pass header.i=@gmail.com header.s=20230601 header.b=AbCdEf; spf=pass (google.com: "
+             "domain of reader@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=reader@gmail.com; "
+             "dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com")
+    assert authenticated(header(gmail), "reader@gmail.com")
+    assert not authenticated(header(gmail), "someone@example.org")  # passes for another domain only
+    assert authenticated(header("mx.google.com; spf=pass smtp.mailfrom=bounce@mail.example.org; dkim=none"),
+                         "reader@example.org")
+    assert not authenticated(header("mx.google.com; dkim=fail header.d=example.org; spf=softfail; dmarc=fail"),
+                             "reader@example.org")
+    assert not authenticated(header("relay.example.net; dmarc=pass header.from=example.org"), "reader@example.org")
