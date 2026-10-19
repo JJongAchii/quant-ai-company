@@ -41,12 +41,21 @@ class ClaudeConfig:
     usage_credits_disabled_confirmed: bool = False
     # A full max-effort episode plan from the delivered brief exceeds the short explanation-review budget.
     video_timeout_seconds: float = 7200
+    # The evening brief email shares this one slot with the PM video: a short email never holds it for long.
+    newsletter_timeout_seconds: float = 900
 
     def __post_init__(self):
         if not math.isfinite(self.timeout_seconds) or not 0 < self.timeout_seconds <= 600:
             raise ValueError("Invalid Claude timeout")
         if not math.isfinite(self.video_timeout_seconds) or not 0 < self.video_timeout_seconds <= 10800:
             raise ValueError("Invalid Claude video timeout")
+        if not math.isfinite(self.newsletter_timeout_seconds) or not 0 < self.newsletter_timeout_seconds <= 1800:
+            raise ValueError("Invalid Claude newsletter timeout")
+
+    def process_limit(self, request):
+        if request.output_contract == "agent_decision":
+            return self.timeout_seconds
+        return self.newsletter_timeout_seconds if request.output_contract in CLAUDE_ONLY else self.video_timeout_seconds
 
 
 def environment(config, source):
@@ -293,8 +302,7 @@ class ClaudeRunner:
                 self.active[request.request_id] = asyncio.current_task()
                 try:
                     output = await self.process.run(command(self.config, request), cwd=cwd, env=env,
-                        stdin=stdin_payload(request), timeout_seconds=(self.config.timeout_seconds
-                            if request.output_contract == "agent_decision" else self.config.video_timeout_seconds),
+                        stdin=stdin_payload(request), timeout_seconds=self.config.process_limit(request),
                         max_stdout_bytes=MAX_OUTPUT if request.output_contract == "agent_decision" else VIDEO_MAX_OUTPUT,
                         max_stderr_bytes=65536)
                     # Persist the observed process boundary before parsing can reject its response.

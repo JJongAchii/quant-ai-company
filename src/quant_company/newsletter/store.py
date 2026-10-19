@@ -17,16 +17,29 @@ FALLBACK_AFTER = timedelta(minutes=45)
 # Regular sends of an edition start within this window; a flag switched on later never mails an old edition.
 SEND_WINDOW = timedelta(hours=12)
 AUTO_ATTEMPTS, TEST_ATTEMPTS = 3, 1
+# claude-runtime runs one turn at a time and the PM video comes first: no email turn starts while an episode of the last
+# day is in a stage that calls the model (video/store.py LOGIN_STAGES).
+VIDEO_MODEL_STATES = ("queued", "reviewing", "synthesizing", "inspecting")
+VIDEO_NEEDS_MODEL = """EXISTS (SELECT 1 FROM video_jobs v WHERE v.state=ANY(%(video_states)s)
+    AND v.created_at>%(video_since)s)"""
+# Turns that wrote something; a turn given up for the video ('yielded') does not use up an attempt.
+WRITTEN = "(SELECT count(*) FROM jsonb_array_elements(attempts) a WHERE a->>'outcome'<>'yielded')"
 # No SMTP session lasts this long, so a row still 'sending' was interrupted (crash, release, lost connection).
 STALE_SENDING = timedelta(minutes=10)
 TERMINAL = ("sent", "uncertain", "failed", "skipped")
 ADDRESS = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")
 ANY_ADDRESS = re.compile(r"[^\s<>|@:]+@[^\s<>|]+")
 STATE_NAMES = {"active": "수신 중", "removed": "삭제됨", "unsubscribed": "본인 수신 거부"}
+SKIPPED = {"fallback_failed": "메일을 만드는 중 오류가 나서 보내지 못했습니다",
+           "enqueue_failed": "메일 작업을 만드는 중 서버 오류가 나서 메일을 만들지 않았습니다. 브리핑 본문은 그대로 발송됐습니다"}
 
 
 def utcnow():
     return datetime.now(UTC)
+
+
+def video_window(at):
+    return {"video_states": list(VIDEO_MODEL_STATES), "video_since": at - timedelta(hours=24)}
 
 
 def mask(address):
@@ -53,14 +66,26 @@ class NewsletterStore:
     # ---- Issues --------------------------------------------------------------------------------------------
 
     def enqueue_isolated(self, conn, edition, at):
-        """Called inside the PM edition's commit: a failure here never holds back the brief body."""
+        """Called inside the PM edition's commit: a failure here never holds back the brief body. The email is then
+        recorded as skipped, so the brief's thread says once that there is no email today."""
         try:
             with conn.transaction():
                 return self.enqueue(conn, edition, at)
         except Exception:
             LOG.exception("newsletter enqueue failed for edition %s; the brief is committed without an email",
                           edition["id"])
-            return None
+        try:
+            with conn.transaction():
+                self.skip(conn, edition, at, "enqueue_failed")
+        except Exception:
+            LOG.exception("newsletter skip record failed for edition %s", edition["id"])
+        return None
+
+    def skip(self, conn, edition, at, reason):
+        conn.execute("""INSERT INTO newsletter_issues(id,edition_id,state,auto,reason,max_attempts,fallback_at,expires_at,
+            next_at,created_at) VALUES(%s,%s,'skipped',true,%s,%s,%s,%s,%s,%s) ON CONFLICT(edition_id) DO NOTHING""",
+                     (stable(f"newsletter:{edition['id']}"), edition["id"], reason, AUTO_ATTEMPTS, at + FALLBACK_AFTER,
+                      at + SEND_WINDOW, at, at))
 
     def enqueue(self, conn, edition, at):
         if not self.settings.newsletter_enabled or edition["kind"] != "pm" or not edition["publish"]:
@@ -88,17 +113,17 @@ class NewsletterStore:
             return bool(conn.execute("SELECT 1 FROM newsletter_issues WHERE state='writing' LIMIT 1").fetchone())
 
     def claim_writing(self, at=None):
-        """The next issue the writer may ask claude-runtime about: before its fallback time, attempts left, and either
-        an automatic issue with the flag on or a waiting test send."""
+        """The next issue the writer may ask claude-runtime about: before its fallback time, attempts left, either an
+        automatic issue with the flag on or a waiting test send, and no episode needing the model."""
         at = at or utcnow()
         with self.db.transaction() as conn:
-            row = conn.execute("""SELECT * FROM newsletter_issues i WHERE state='writing' AND next_at<=%s
-                AND (lease_until IS NULL OR lease_until<%s) AND fallback_at>%s
-                AND jsonb_array_length(attempts)<max_attempts
-                AND ((auto AND %s) OR EXISTS (SELECT 1 FROM newsletter_sends s WHERE s.issue_id=i.id
+            row = conn.execute(f"""SELECT * FROM newsletter_issues i WHERE state='writing' AND next_at<=%(at)s
+                AND (lease_until IS NULL OR lease_until<%(at)s) AND fallback_at>%(at)s AND {WRITTEN}<max_attempts
+                AND ((auto AND %(enabled)s) OR EXISTS (SELECT 1 FROM newsletter_sends s WHERE s.issue_id=i.id
                      AND s.kind='test' AND s.state='pending'))
+                AND NOT {VIDEO_NEEDS_MODEL}
                 ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1""",
-                               (at, at, at, self.settings.newsletter_enabled)).fetchone()
+                               {"at": at, "enabled": self.settings.newsletter_enabled, **video_window(at)}).fetchone()
             if row:
                 conn.execute("UPDATE newsletter_issues SET lease_until=%s WHERE id=%s", (at + timedelta(minutes=15), row["id"]))
             return row
@@ -128,6 +153,31 @@ class NewsletterStore:
                                (Jsonb(draft.model_dump(mode="json")), Jsonb([as_json(record)]), issue["id"])).fetchone()
             return bool(row)
 
+    def in_flight_while_video(self, at=None):
+        """Emails whose frozen turn may hold the runtime slot while an episode needs the model."""
+        at = at or utcnow()
+        with self.db.transaction() as conn:
+            return conn.execute(f"""SELECT * FROM newsletter_issues WHERE state='writing' AND request IS NOT NULL
+                AND {VIDEO_NEEDS_MODEL}""", video_window(at)).fetchall()
+
+    def yielded(self, issue, request_id, at=None):
+        """The turn was given up for the video: a new request later, without using an attempt."""
+        at = at or utcnow()
+        record = {"n": len(issue["attempts"]) + 1, "request_id": request_id, "outcome": "yielded", "at": at.isoformat()}
+        with self.db.transaction() as conn:
+            conn.execute("""UPDATE newsletter_issues SET attempts=attempts||%s::jsonb,request=NULL,next_at=%s,
+                updated_at=now() WHERE id=%s AND state='writing'""",
+                         (Jsonb([record]), at + timedelta(minutes=1), issue["id"]))
+
+    def cancels(self):
+        with self.db.transaction() as conn:
+            return conn.execute("""SELECT id,cancel_request FROM newsletter_issues WHERE cancel_request IS NOT NULL
+                AND state<>'writing'""").fetchall()
+
+    def cancelled(self, row):
+        with self.db.transaction() as conn:
+            conn.execute("UPDATE newsletter_issues SET cancel_request=NULL WHERE id=%s", (row["id"],))
+
     def release(self, issue):
         with self.db.transaction() as conn:
             conn.execute("UPDATE newsletter_issues SET lease_until=NULL WHERE id=%s", (issue["id"],))
@@ -137,8 +187,8 @@ class NewsletterStore:
         at = at or utcnow()
         done = 0
         with self.db.transaction() as conn:
-            rows = conn.execute("""SELECT * FROM newsletter_issues WHERE state='writing'
-                AND (fallback_at<=%s OR jsonb_array_length(attempts)>=max_attempts)
+            rows = conn.execute(f"""SELECT *,{WRITTEN} AS written FROM newsletter_issues WHERE state='writing'
+                AND (fallback_at<=%s OR {WRITTEN}>=max_attempts)
                 AND (auto OR EXISTS (SELECT 1 FROM newsletter_sends s WHERE s.issue_id=newsletter_issues.id
                      AND s.kind='test' AND s.state='pending'))
                 FOR UPDATE SKIP LOCKED""", (at,)).fetchall()
@@ -154,11 +204,11 @@ class NewsletterStore:
                     conn.execute("""UPDATE newsletter_sends SET state='failed',error='email_not_built',updated_at=now()
                         WHERE issue_id=%s AND state='pending'""", (row["id"],))
                     continue
-                why = "model_checks_failed" if len(row["attempts"]) >= row["max_attempts"] else (
+                why = "model_checks_failed" if row["written"] >= row["max_attempts"] else (
                     row["reason"] or "model_not_ready")
                 conn.execute("""UPDATE newsletter_issues SET state='ready',draft=%s,origin='fallback',findings=%s,
-                    reason=%s,request=NULL,lease_until=NULL,updated_at=now() WHERE id=%s""",
-                             (Jsonb(draft.model_dump(mode="json")), Jsonb(found), why, row["id"]))
+                    reason=%s,cancel_request=request->>'request_id',request=NULL,lease_until=NULL,updated_at=now()
+                    WHERE id=%s""", (Jsonb(draft.model_dump(mode="json")), Jsonb(found), why, row["id"]))
                 done += 1
         return done
 
@@ -329,8 +379,7 @@ class NewsletterStore:
                 if not project:
                     continue
                 if issue["state"] == "skipped":
-                    why = ("메일을 만드는 중 오류가 나서 보내지 못했습니다" if issue["reason"] == "fallback_failed"
-                           else "이번 마감 브리핑에는 주요 이슈 분석이 없어 메일을 만들지 않았습니다")
+                    why = SKIPPED.get(issue["reason"], "이번 마감 브리핑에는 주요 이슈 분석이 없어 메일을 만들지 않았습니다")
                     key, text = f"skip:{issue['id']}", f"저녁 브리핑 메일 보내지 않음 · {issue['day']:%m/%d} · {why}."
                 else:
                     key, text = f"result:{issue['id']}", self.result_text(conn, issue)
@@ -346,6 +395,24 @@ class NewsletterStore:
                 mid = self.notice_from_director(conn, project, f"test:{row['id']}", self.test_text(row))
                 conn.execute("UPDATE newsletter_sends SET notice_message_id=%s WHERE id=%s", (mid, row["id"]))
                 posted += 1
+        return posted
+
+    def unconfigured(self, at=None):
+        """NEWSLETTER_ENABLED without a sender address or app password: one line per edition in its thread, once its
+        email is ready (it still goes out if the sender is configured within the send window)."""
+        at = at or utcnow()
+        posted = 0
+        with self.db.transaction() as conn:
+            for issue in conn.execute("""SELECT i.id,i.edition_id,e.day FROM newsletter_issues i
+                JOIN brief_editions e ON e.id=i.edition_id WHERE i.auto AND i.state='ready' AND i.expires_at>%s""",
+                                      (at,)).fetchall():
+                project = self.brief_thread(conn, issue["edition_id"])
+                if project and not conn.execute("SELECT 1 FROM messages WHERE id=%s",
+                                                (stable(f"newsletter-notice:unconfigured:{issue['id']}"),)).fetchone():
+                    self.notice(conn, project, f"unconfigured:{issue['id']}",
+                                f"저녁 브리핑 메일 보내지 못함 · {issue['day']:%m/%d} · 발신 Gmail 주소나 앱 비밀번호가 아직 설정되지 "
+                                "않았습니다(docs/newsletter.md). 설정되면 커밋 후 12시간 안에는 이어서 보냅니다.")
+                    posted += 1
         return posted
 
     def notice_from_director(self, conn, project, key, text):

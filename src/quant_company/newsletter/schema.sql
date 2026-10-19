@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS newsletter_issues (
  state text NOT NULL CHECK(state IN ('writing','ready','sending','sent','skipped')),
  auto boolean NOT NULL, source jsonb, source_digest text, reason text,
  max_attempts integer NOT NULL CHECK(max_attempts>0), attempts jsonb NOT NULL DEFAULT '[]'::jsonb, request jsonb,
+ -- The turn a fallback replaced while it may still run on claude-runtime: the writer cancels it, its output is never used.
+ cancel_request text,
  draft jsonb, origin text CHECK(origin IN ('model','fallback')), findings jsonb NOT NULL DEFAULT '[]'::jsonb,
  fallback_at timestamptz NOT NULL, expires_at timestamptz NOT NULL,
  next_at timestamptz NOT NULL DEFAULT now(), lease_until timestamptz,

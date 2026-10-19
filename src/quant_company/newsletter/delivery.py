@@ -116,6 +116,27 @@ class SmtpMailer:
             raise Uncertain() from None
 
 
+def aligned(found, domain):
+    return found == domain or found.endswith("." + domain) or domain.endswith("." + found)
+
+
+def authenticated(mail, sender):
+    """Gmail's own verdict that SENDER's domain sent the mail: the topmost Authentication-Results from mx.google.com
+    (a forged one from the sender sits below it) with dmarc=pass for that domain, or an aligned dkim/spf pass."""
+    domain = sender.rpartition("@")[2]
+    verdict = next((str(value).lower() for value in mail.get_all("Authentication-Results") or []
+                    if str(value).strip().lower().startswith("mx.google.com")), "")
+    if not domain or not verdict:
+        return False
+    for method, key in (("dmarc", r"header\.from="), ("dkim", r"header\.(?:i=[^;\s]*@|d=)"),
+                        ("spf", r"smtp\.mailfrom=(?:[^;\s]*@)?")):
+        for result in re.finditer(rf"\b{method}=pass\b([^;]*)", verdict):
+            found = re.search(key + r"([a-z0-9.-]+)", result[1])
+            if found and aligned(found[1].strip("."), domain):
+                return True
+    return False
+
+
 class ImapInbox:
     def __init__(self, settings, secret, connect=imaplib.IMAP4_SSL):
         self.settings, self.secret, self.connect, self.imap = settings, secret, connect, None
@@ -134,18 +155,20 @@ class ImapInbox:
             pass
 
     def unread(self, limit=100):
-        """(number, sender address, subject, digest) of unread mails, without marking them read."""
+        """(number, sender address, subject, digest, authenticated) of unread mails, without marking them read."""
         status, data = self.imap.search(None, "UNSEEN")
         if status != "OK":
             return []
         rows = []
         for number in (data[0] or b"").split()[-limit:]:
-            status, parts = self.imap.fetch(number, "(BODY.PEEK[HEADER.FIELDS (FROM SUBJECT MESSAGE-ID DATE)])")
+            status, parts = self.imap.fetch(
+                number, "(BODY.PEEK[HEADER.FIELDS (FROM SUBJECT MESSAGE-ID DATE AUTHENTICATION-RESULTS)])")
             header = next((p[1] for p in parts or [] if isinstance(p, tuple)), b"") if status == "OK" else b""
             mail = email.message_from_bytes(header, policy=default)
             sender = parseaddr(str(mail.get("From", "")))[1].strip().lower()
             key = str(mail.get("Message-ID") or "") or f"{sender}|{mail.get('Date', '')}|{mail.get('Subject', '')}"
-            rows.append((number, sender, str(mail.get("Subject", "")), hashlib.sha256(key.encode()).hexdigest()))
+            rows.append((number, sender, str(mail.get("Subject", "")), hashlib.sha256(key.encode()).hexdigest(),
+                         authenticated(mail, sender)))
         return rows
 
     def seen(self, number):
@@ -184,6 +207,8 @@ class NewsletterDispatcher:
             result["fanned_out"] = self.store.fan_out(at)
         if not secret:
             result["unconfigured"] = self.store.fail_unconfigured()
+            if self.settings.newsletter_enabled:
+                result["unconfigured_notices"] = self.store.unconfigured(at)
         result["sent"] = self.send(secret, at) if secret else 0
         result["notices"] = self.store.notices(at)
         if secret and self.settings.newsletter_enabled and self.clock() >= self.next_inbox:
@@ -243,8 +268,9 @@ class NewsletterDispatcher:
         changed = 0
         try:
             with ImapInbox(self.settings, secret, self.imap) as inbox:
-                for number, sender, subject, digest in inbox.unread():
-                    if not UNSUBSCRIBE.search(subject) or not sender:
+                for number, sender, subject, digest, genuine in inbox.unread():
+                    # A From line anyone can forge stops nobody's mail: unread, no state change, nothing posted.
+                    if not UNSUBSCRIBE.search(subject) or not sender or not genuine:
                         continue
                     result = self.store.unsubscribe(sender, digest)
                     if result is None:

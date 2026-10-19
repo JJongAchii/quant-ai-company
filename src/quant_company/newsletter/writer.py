@@ -1,7 +1,9 @@
 """Writes the email on claude-runtime, in the video worker (the process that already holds that runtime's token).
 
 One turn per tick, with its own queue and records: a failure here never touches a video job or the brief. The
-request is frozen before it is sent, so a turn still running is asked again by the same ID."""
+runtime has one slot and the PM video comes first, so no turn starts while an episode needs the model, and a turn the
+fallback replaced is cancelled (its output is never used). The request is frozen before it is sent, so a turn still
+running is asked again by the same ID."""
 
 import asyncio
 import logging
@@ -12,6 +14,7 @@ from temporalio import activity
 from ..contracts import ProviderFault
 from ..providers.claude_runner import ClaudeRequest
 from ..providers.client import RuntimeClient
+from ..video.runner import contract_detail, single_artifact
 from . import checks
 from . import store as records
 from .contracts import NewsletterDraft, prompt
@@ -22,11 +25,6 @@ LOG = logging.getLogger(__name__)
 EFFORT = "high"
 MODEL_WAIT_SECONDS = 120
 WAITS = {"busy": 20, "quota": 900, "pending": 20, "unavailable": 60, "auth": 300}
-
-
-def contract_detail(error):
-    return "; ".join(".".join(map(str, e["loc"])) + ": " + e["msg"]
-                     for e in error.errors(include_url=False, include_input=False))[:1500]
 
 
 class NewsletterWriter:
@@ -50,7 +48,8 @@ class NewsletterWriter:
             return ClaudeRequest.model_validate(issue["request"])
         # A rewrite gets the last written version and what the checks (or the contract) rejected in the last turn.
         written = [a for a in issue["attempts"] if a.get("draft")]
-        last = issue["attempts"][-1] if issue["attempts"] else None
+        rejected = [a for a in issue["attempts"] if a["outcome"] in {"check_failed", "invalid_output"}]
+        last = rejected[-1] if rejected else None
         feedback = (last.get("findings") or [f"{last['outcome']}: {last.get('detail', '')}"]) if last else []
         request = ClaudeRequest(request_id=identity, model=self.settings.video_model, reasoning_effort=EFFORT,
                                 prompt=prompt(issue["source"], written[-1]["draft"] if written else None, feedback),
@@ -58,7 +57,30 @@ class NewsletterWriter:
         self.store.freeze_request(issue, request.model_dump(mode="json"))
         return request
 
+    async def cancel_replaced(self):
+        """Frees the slot from a turn the fallback replaced; a failed cancel only leaves it to finish unused."""
+        for row in await asyncio.to_thread(self.store.cancels):
+            try:
+                await self.provider.cancel(row["cancel_request"])
+            except (ProviderFault, ValueError) as error:
+                LOG.warning("newsletter turn %s was not cancelled: %s", row["cancel_request"],
+                            getattr(error, "code", type(error).__name__))
+            await asyncio.to_thread(self.store.cancelled, row)
+
+    async def yield_to_video(self):
+        """An episode reached a model stage while an email turn may still run: cancel it, ask again afterwards."""
+        for issue in await asyncio.to_thread(self.store.in_flight_while_video):
+            request_id = issue["request"]["request_id"]
+            try:
+                await self.provider.cancel(request_id)
+            except (ProviderFault, ValueError) as error:
+                LOG.warning("newsletter turn %s was not cancelled: %s", request_id,
+                            getattr(error, "code", type(error).__name__))
+            await asyncio.to_thread(self.store.yielded, issue, request_id)
+
     async def tick(self):
+        await self.cancel_replaced()
+        await self.yield_to_video()
         issue = await asyncio.to_thread(self.store.claim_writing)
         if not issue:
             return {"state": "idle"}
@@ -81,14 +103,10 @@ class NewsletterWriter:
             await asyncio.to_thread(self.store.attempt, issue, {**record, "outcome": error.code,
                                                                "detail": str(error.message)[:500]})
             return {"state": "attempted", "outcome": error.code}
-        decision = response.decision
         try:
-            if (response.provider != "claude" or response.usage.get("actual_model") != request.model
-                    or response.request_id != request.request_id or len(decision.artifacts) != 1
-                    or decision.status != "complete" or decision.tools or decision.delegations or decision.messages
-                    or decision.memories or decision.follow_up or response.web_searches):
+            if not single_artifact(response, request):
                 raise ValueError("newsletter response identity mismatch")
-            draft = NewsletterDraft.model_validate_json(decision.artifacts[0].content)
+            draft = NewsletterDraft.model_validate_json(response.decision.artifacts[0].content)
         except ValidationError as error:
             await asyncio.to_thread(self.store.attempt, issue, {**record, "outcome": "invalid_output",
                                                                "detail": contract_detail(error)})
@@ -103,6 +121,7 @@ class NewsletterWriter:
             await asyncio.to_thread(self.store.attempt, issue, {**record, "outcome": "check_failed", "findings": found,
                                                                "draft": draft.model_dump(mode="json")})
             return {"state": "attempted", "outcome": "check_failed", "findings": len(found)}
+        # A draft that arrives after the fallback replaced it is not used (accept only moves a 'writing' email).
         accepted = await asyncio.to_thread(self.store.accept, issue, draft, {**record, "outcome": "passed"})
         return {"state": "ready" if accepted else "superseded"}
 

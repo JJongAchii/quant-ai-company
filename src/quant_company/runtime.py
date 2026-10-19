@@ -413,6 +413,12 @@ async def start_newsletter(client, company):
     from .newsletter.store import NewsletterStore
     from .newsletter.workflow import NewsletterWorkflow
 
+    if not hasattr(company, "_newsletter"):
+        company._newsletter = NewsletterDispatcher(company)
+    task = getattr(company, "_newsletter_tick", None)
+    # Both checks run at the sending tick's pace (10 s), not on every dispatch loop.
+    if (task is not None and not task.done()) or not company._newsletter.due():
+        return
     if not getattr(company, "_newsletter_started", False) and (
             company.settings.newsletter_enabled or await asyncio.to_thread(NewsletterStore(company).has_writing)):
         try:
@@ -422,11 +428,7 @@ async def start_newsletter(client, company):
         except WorkflowAlreadyStartedError:
             pass
         company._newsletter_started = True
-    if not hasattr(company, "_newsletter"):
-        company._newsletter = NewsletterDispatcher(company)
-    task = getattr(company, "_newsletter_tick", None)
-    if (task is None or task.done()) and company._newsletter.due():
-        company._newsletter_tick = asyncio.create_task(asyncio.to_thread(company._newsletter.tick_if_due))
+    company._newsletter_tick = asyncio.create_task(asyncio.to_thread(company._newsletter.tick_if_due))
 
 
 def make_newsletter_worker(client, company, writer=None):
