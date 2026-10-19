@@ -35,6 +35,12 @@ RELEASE_RUNNING = timedelta(hours=2)
 RELEASE_STEP = timedelta(minutes=60)  # build ~10 min; each apply group waits at most 10 min for quiet
 RELEASE_BEHIND = timedelta(hours=24)
 RELEASE_PAUSED = timedelta(hours=2)  # RELEASE_AUTO_ENABLED=paused while an operator releases by hand
+# The claude-runtime login lapses at its refresh expiry (2026-10-19 00:01 KST); the owner renews it in a terminal on the
+# host, never through Slack. Announced a week ahead, again with a mention two days ahead, and when it has lapsed.
+CLAUDE_LOGIN_AHEAD = (("7d", timedelta(days=7), "warning"), ("2d", timedelta(days=2), "critical"))
+CLAUDE_LOGIN = ("Mac 터미널: ssh -t -i ~/.ssh/quant-company-lightsail-rsa ubuntu@15.165.137.122 "
+                "sudo bash /opt/quant-company/current/deploy/claude-login.sh")
+CLAUDE_CODE = "로그인 코드는 그 터미널에만 입력합니다(Slack·채팅에 붙이지 않음)."
 log = logging.getLogger(__name__)
 
 
@@ -129,7 +135,30 @@ def host_findings(row, now, since=None, paused=None):
                                  f"마지막 종료 {unit.get('exited_at') or '미상'}"))
     for error in snapshot.get("probe_errors") or []:
         found.append(finding("probe:" + error.split(":")[0], "condition", "warning", "호스트 수집 일부 실패", error))
-    return found + release_findings(snapshot.get("release"), now, paused)
+    return found + claude_login_findings(snapshot.get("claude_login"), now) + release_findings(snapshot.get("release"), now, paused)
+
+
+def claude_login_findings(login, now):
+    """deploy/ops_probe.claude_login; a lapsed login keeps the advance notices open until it is renewed."""
+    if not login:
+        return []
+    expiry = stamp(login.get("refresh_expires_at"))
+    lapsed = not login.get("logged_in") or bool(expiry and expiry <= now)
+    left = expiry - now if expiry else None
+    if lapsed:
+        title = "Claude 로그인 만료됨"
+    elif left and left < timedelta(days=2):
+        title = f"Claude 로그인 {round(left.total_seconds() / 3600)}시간 뒤 만료"
+    else:
+        title = f"Claude 로그인 {round(left.total_seconds() / 86400) if left else '?'}일 뒤 만료"
+    until = f"만료 {kst(expiry, True)} KST. 그 전에 다시 로그인하면 영상 대본·검수가 멈추지 않습니다." if expiry else ""
+    found = [finding("claude_login:" + name, "condition", severity, title, *filter(None, [until]), CLAUDE_LOGIN, CLAUDE_CODE)
+             for name, ahead, severity in CLAUDE_LOGIN_AHEAD if lapsed or (left is not None and left <= ahead)]
+    if lapsed:
+        found.append(finding("claude_login:lapsed", "condition", "critical", "Claude 로그인 풀림",
+                             "영상 대본·검수와 정기 검토가 로그인을 기다립니다. 다시 로그인하면 기다리던 영상이 자동으로 이어집니다.",
+                             CLAUDE_LOGIN, CLAUDE_CODE))
+    return found
 
 
 def release_findings(release, now, paused=None):

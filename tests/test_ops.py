@@ -439,3 +439,30 @@ def test_shared_values_that_differ_while_services_are_swapped_are_not_an_alert(o
     assert watch.tick()["findings"] == []
     snapshot(ops, drift=drift, release=release("up_to_date", target=None))
     assert watch.tick()["findings"] == ["drift:SLACK_ALLOWED_CHANNELS"]
+
+
+async def test_the_claude_login_is_announced_a_week_and_two_days_ahead_and_when_it_lapses(ops, credentials):
+    # 2026-10-19: the login lapsed at 00:01 KST unannounced and the 07:05 video waited until the owner noticed.
+    watch, (box, calls) = OpsWatch(ops), sender(ops, credentials)
+
+    def login(days, logged_in=True):
+        snapshot(ops, claude_login={"logged_in": logged_in,
+                                    "refresh_expires_at": (now() + timedelta(days=days)).isoformat()})
+        return watch.tick()["findings"]
+
+    assert login(10) == []
+    assert login(6) == ["claude_login:7d"]
+    watch.tick()
+    assert sorted(login(1.5)) == ["claude_login:2d", "claude_login:7d"]
+    await drain(box)
+    week, soon = calls
+    assert week["text"].startswith("🟠 *Claude 로그인 6일 뒤 만료*") and "claude-login.sh" in week["text"]
+    assert soon["text"].startswith("<@UHUMAN>\n🔴 *Claude 로그인 36시간 뒤 만료*") and "claude-login.sh" in soon["text"]
+    assert sorted(login(-0.1)) == ["claude_login:2d", "claude_login:7d", "claude_login:lapsed"]
+    assert sorted(login(1, logged_in=False)) == ["claude_login:2d", "claude_login:7d", "claude_login:lapsed"]
+    await drain(box)
+    assert calls[-1]["text"].startswith("<@UHUMAN>\n🔴 *Claude 로그인 풀림*") and "자동으로 이어" in calls[-1]["text"]
+    login(27)
+    assert login(27) == [] and watch.tick()["findings"] == []
+    snapshot(ops)
+    assert watch.tick()["findings"] == []  # a host without Claude has nothing to renew

@@ -217,3 +217,23 @@ def test_a_synthetic_incident_outlasts_the_minutely_timer_and_then_lapses(tmp_pa
     monkeypatch.setattr(probe, "deploy_window", lambda now: None)
     assert probe.snapshot(NOW + timedelta(minutes=1)).get("synthetic_incident") is True  # a plain timer run
     assert "synthetic_incident" not in probe.snapshot(NOW + timedelta(minutes=4))
+
+
+def test_the_claude_login_keeps_only_whether_it_is_logged_in_and_its_expiry(tmp_path):
+    # 2026-10-19 00:01 KST: the CLI emptied the login after its refresh expiry (10-18 01:03) and the 07:05 video waited.
+    auth = tmp_path / "claude/auth"
+    assert probe.claude_login(auth) is None  # Claude is not set up on this host
+    auth.mkdir(parents=True)
+    assert probe.claude_login(auth) == {"logged_in": False, "refresh_expires_at": None}
+    (auth / ".credentials.json").write_text(json.dumps({"claudeAiOauth": {
+        "accessToken": "sk-ant-oat01-secret", "refreshToken": "sk-ant-ort01-secret", "expiresAt": 1792395428000,
+        "refreshTokenExpiresAt": 1794724500000, "scopes": ["user:inference"], "subscriptionType": "max"}}))
+    value = probe.claude_login(auth)
+    assert value == {"logged_in": True, "refresh_expires_at": "2026-11-15T06:35:00+00:00"}
+    assert "secret" not in json.dumps(value)
+    (auth / ".credentials.json").write_text(json.dumps({"claudeAiOauth": {
+        "accessToken": "", "refreshToken": "", "expiresAt": 0, "refreshTokenExpiresAt": 1792253009958}}))
+    assert probe.claude_login(auth) == {"logged_in": False, "refresh_expires_at": "2026-10-17T16:03:29+00:00"}
+    (auth / ".credentials.json").write_text("[]")
+    with pytest.raises(ValueError):
+        probe.claude_login(auth)
