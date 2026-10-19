@@ -2,8 +2,9 @@
 
 Numbers: each number the writer wrote must be in the body in the same unit, or that body number rounded to fewer
 digits (3.17% -> 3.2%; 18조1,308억원 -> 18조원; truncation only before '넘게/이상/여'). Korean scale words fold into the
-value, so 18조1,308억원 never licenses 18억원 or 1,308조원. Wording: no advice, no production/tool wording and no
-links or footnotes; a phrase the body itself uses (a topic such as '생성형 AI') is allowed."""
+value, so 18조1,308억원 never licenses 18억원 or 1,308조원. A change or an amount also keeps its direction: the sign or
+the 상승/하락, 순매수/순매도 word next to it must agree with the body's. Wording: no advice, no production/tool wording
+and no links or footnotes; a phrase the body itself uses (a topic such as '생성형 AI') is allowed."""
 
 import re
 from dataclasses import dataclass
@@ -29,6 +30,13 @@ NORMAL_UNIT = {"%포인트": "%p", "퍼센트포인트": "%p", "퍼센트": "%",
 PLAIN = re.compile(r"(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)(\s*(?:" + "|".join(map(re.escape, UNITS)) + "))?")
 MORE = re.compile(r"\s*(?:넘게|넘는|넘어|이상|여|남짓|초과|[을를가이]\s*넘)")
 RAW = "~"  # a component of a compound body amount: matches only a unitless email number
+# Direction of a change or an amount: its own sign, else the first direction word after it in the same clause (no other
+# number, sentence end or list mark in between), else a board label right before it ('기관 순매수 5,731 억원').
+UP = re.compile(r"상승|오른|올라|오르|급등|반등|증가|늘어|늘었|늘린|순매수|매수\s*우위")
+DOWN = re.compile(r"하락|내린|내려|내리|떨어|급락|감소|줄어|줄었|줄인|순매도|매도\s*우위")
+CLAUSE_END = re.compile(r"[\d.!?,·;()\n]")
+LABEL = re.compile(r"(순매수|순매도|상승|하락)\s*$")
+CHANGE_UNITS = frozenset({"%", "%p", "bp"})
 
 # Advice, register and citation wording. Production/tool wording is the video's TOOL_WORDING plus the email's own.
 ADVICE = re.compile(
@@ -49,6 +57,7 @@ class Quantity:
     exp: int
     text: str
     more: bool = False
+    direction: str | None = None
 
 
 def exponent(literal):
@@ -71,9 +80,29 @@ def part(literal):
     return Decimal(literal.replace(",", "")), exponent(literal)
 
 
+def flat(text):
+    """plain() per line: lines stay apart, so a direction word never reaches across two body lines."""
+    return "\n".join(plain(line) for line in (text or "").split("\n"))
+
+
+def direction(text, start, end):
+    sign = text[max(0, start - 1):start]
+    if sign in {"+", "▲"}:
+        return "up"
+    if sign in {"-", "−", "▼"}:
+        return "down"
+    clause = CLAUSE_END.split(text[end:end + 24], maxsplit=1)[0]
+    found = sorted((m.start(), name) for name, pattern in (("up", UP), ("down", DOWN)) if (m := pattern.search(clause)))
+    if found:
+        return found[0][1]
+    label = LABEL.search(text[max(0, start - 8):start])
+    return None if not label else "up" if label[1] in {"순매수", "상승"} else "down"
+
+
 def quantities(text, *, raw=False):
-    """Every number of TEXT with its unit. With RAW, compound amounts also yield their components (body side)."""
-    text = plain(text)
+    """Every number of TEXT with its unit, and the direction of changes and amounts. With RAW, compound amounts also
+    yield their components (body side)."""
+    text = flat(text)
     found, blank = [], list(text)
 
     def take(match):
@@ -108,12 +137,14 @@ def quantities(text, *, raw=False):
             if raw:
                 found.append(Quantity(amount, RAW, digits, match[0]))
         unit = (groups["cur"] or groups["cur2"] or groups["cur3"] or "").strip()
-        found.append(Quantity(value, unit, exp, match[0].strip(), more(match.end())))
+        found.append(Quantity(value, unit, exp, match[0].strip(), more(match.end()),
+                              direction(text, match.start(), match.end())))
         take(match)
     for match in PLAIN.finditer("".join(blank)):
-        unit = (match[2] or "").strip()
-        found.append(Quantity(Decimal(match[1].replace(",", "")), NORMAL_UNIT.get(unit, unit), exponent(match[1]),
-                              match[0].strip(), more(match.end())))
+        unit = NORMAL_UNIT.get((match[2] or "").strip(), (match[2] or "").strip())
+        found.append(Quantity(Decimal(match[1].replace(",", "")), unit, exponent(match[1]), match[0].strip(),
+                              more(match.end()),
+                              direction(text, match.start(), match.end()) if unit in CHANGE_UNITS else None))
     return found
 
 
@@ -140,8 +171,14 @@ def unsupported_numbers(draft, source_text):
     findings = []
     for field, text in draft.texts():
         for quantity in quantities(text):
-            if not any(compatible(quantity, other) and matches(quantity, other) for other in allowed):
+            found = [other for other in allowed if compatible(quantity, other) and matches(quantity, other)]
+            if not found:
                 findings.append(f"{field}: '{quantity.text}' 는 브리핑 본문에 없는 숫자입니다(같은 단위의 반올림만 허용)")
+                continue
+            # The body's own directions for this value; a value it never states a direction for binds none.
+            known = {other.direction for other in found if other.direction}
+            if quantity.direction and known and quantity.direction not in known:
+                findings.append(f"{field}: '{quantity.text}' 의 방향(부호, 상승·하락, 순매수·순매도)이 브리핑 본문과 반대입니다")
     return findings
 
 
@@ -161,7 +198,8 @@ def wording(draft, source_text):
 
 def structure(draft, source):
     findings = []
-    required = min(2, source["issue_count"])
+    # Issues the reader actually saw in the body, not the proposal's count (a pruned issue never reached Slack).
+    required = min(2, len(source["issues"]))
     if len(draft.issues) < required:
         findings.append(f"issues: 주요 이슈는 {required}개 이상이어야 합니다")
     if source["calendar"] and not draft.calendar:

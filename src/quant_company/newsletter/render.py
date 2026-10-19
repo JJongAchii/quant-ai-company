@@ -26,7 +26,7 @@ DISCLAIMER = "투자 권유가 아닌 정보 제공용 자료이며, 투자 판�
 
 
 def subject(draft, day):
-    return f"{draft.headline} {draft.accent}".strip() + f" | {edition_label(day)} 마감 브리핑"
+    return " ".join(f"{draft.headline} {draft.accent}".split()) + f" | {edition_label(day)} 마감 브리핑"
 
 
 def unsubscribe_url(sender):

@@ -21,6 +21,8 @@ LEVEL = r"^\d{1,3}(?:,\d{3})*(?:\.\d+)?$"
 CHANGE = r"^[+-]\d+(?:\.\d+)?%$"
 # Closing net purchase as the boxes show it: '+5,731억', '-1조 869억', '-357억원'.
 AMOUNT = r"^[+-]\d[\d,]*(?:\.\d+)?\s*(?:조(?:\s*\d[\d,]*\s*억)?|억)원?$"
+# One line: the title and preview become mail headers, where a line break would end the header (and the day's mail).
+LINE = "^[^\r\n\u2028\u2029]*$"
 
 
 class Swing(StrictModel):
@@ -43,12 +45,12 @@ class Investor(StrictModel):
 
 
 class Term(StrictModel):
-    term: str = Field(min_length=1, max_length=20)
+    term: str = Field(min_length=1, max_length=20, pattern=LINE)
     meaning: str = Field(min_length=5, max_length=120)
 
 
 class Market(StrictModel):
-    heading: str = Field(min_length=2, max_length=40)
+    heading: str = Field(min_length=2, max_length=40, pattern=LINE)
     swing: Swing | None = None
     flow: str = Field(min_length=2, max_length=500)
     investors: list[Investor] = Field(default_factory=list, max_length=3)
@@ -61,7 +63,7 @@ class Market(StrictModel):
 
 
 class IssueBlock(StrictModel):
-    headline: str = Field(min_length=2, max_length=60)
+    headline: str = Field(min_length=2, max_length=60, pattern=LINE)
     body: str = Field(min_length=2, max_length=600)
     implication: str = Field(default="", max_length=400)
     check_kind: Literal["일정", "지표", "사항"] = "사항"
@@ -69,16 +71,16 @@ class IssueBlock(StrictModel):
 
 
 class CalendarRow(StrictModel):
-    when: str = Field(min_length=1, max_length=16)
-    what: str = Field(min_length=1, max_length=80)
-    note: str = Field(default="", max_length=40)
+    when: str = Field(min_length=1, max_length=16, pattern=LINE)
+    what: str = Field(min_length=1, max_length=80, pattern=LINE)
+    note: str = Field(default="", max_length=40, pattern=LINE)
 
 
 class NewsletterDraft(StrictModel):
     # Title in two lines; the subject is both lines plus the service's ' | MM/DD 마감 브리핑'.
-    headline: str = Field(min_length=2, max_length=40)
-    accent: str = Field(default="", max_length=30)
-    preview: str = Field(min_length=2, max_length=120)
+    headline: str = Field(min_length=2, max_length=40, pattern=LINE)
+    accent: str = Field(default="", max_length=30, pattern=LINE)
+    preview: str = Field(min_length=2, max_length=120, pattern=LINE)
     lead: str = Field(min_length=2, max_length=300)
     market: Market
     issues: list[IssueBlock] = Field(min_length=1, max_length=3)
@@ -170,7 +172,7 @@ def source(edition):
 
 def body_text(source):
     """The reader-facing text every number and wording check compares against."""
-    return " ".join(line["text"] for line in source["lines"]) + " " + source["day"]
+    return "\n".join(line["text"] for line in source["lines"]) + "\n" + source["day"]
 
 
 GUIDE = (
