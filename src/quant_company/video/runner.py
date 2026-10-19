@@ -39,6 +39,9 @@ from .motion import FPS as MOTION_FPS
 from .motion import RENDERER_DIGEST, MotionRenderer
 from .render import Renderer, RenderInProgress, korean_numbers, spoken, verify_artifacts
 from .runway import RETAKE_RESERVE, RunwaySpeech, download_audio, speech_credits
+from .shorts import OUTRO as SHORTS_OUTRO
+from .shorts import ShortsPlan, ShortsRenderer, shorts_prompt, shorts_violations
+from .shorts_store import ShortsStore
 from .store import UncertainEffect, VideoStore
 from .youtube import YouTube
 
@@ -56,6 +59,10 @@ PLAN_RUNTIME_RETRIES = 8
 REVIEW_RUNTIME_RETRIES = 4
 REVIEW_CHECKS = ('facts', 'numbers', 'conditions', 'coverage', 'readability')
 INSPECT_ROUNDS = 3
+# Shorts (video/shorts.py): written at most this many times, then given up for that episode. Its voice never takes the
+# credits the next episodes need: this many stay in the month's budget.
+SHORTS_ATTEMPTS = 3
+SHORTS_CREDIT_RESERVE = 80
 REVIEW_PHASES = frozenset({'review', 'visual'})
 # ProviderRequest's prompt limit: a previous script version that would not fit is left out of the revision request.
 PROMPT_LIMIT = next(m.max_length for m in ProviderRequest.model_fields['prompt'].metadata if hasattr(m, 'max_length'))
@@ -132,6 +139,7 @@ class VideoRunner:
         self._renderer = renderer
         self._remote = None
         self.youtube = youtube or YouTube(self.settings)
+        self.shorts, self.shorts_renderer = ShortsStore(company), None
 
     @property
     def images(self):
@@ -345,7 +353,8 @@ class VideoRunner:
             await asyncio.to_thread(self.store.resume_login_blocks)
         job = await asyncio.to_thread(self.store.claim)
         if not job:
-            return {"state": "idle"}
+            # The episode always goes first: a Shorts step runs only when no episode is in production.
+            return await self.shorts_tick() if self.shorts.enabled() else {"state": "idle"}
         try:
             if digest(job["source"]) != job["source_digest"]:
                 raise ValueError("Frozen briefing source changed")
@@ -374,6 +383,95 @@ class VideoRunner:
                                     error="external_effect_requires_reconciliation" if uncertain else code)
             await asyncio.to_thread(self.store.alert, job)
         return {"state": (await asyncio.to_thread(self.store.get, job["id"]))["state"], "job_id": str(job["id"])}
+
+    async def shorts_tick(self):
+        await asyncio.to_thread(self.shorts.sync_deliveries)
+        row = await asyncio.to_thread(self.shorts.claim)
+        if not row:
+            return {"state": "idle"}
+        job = await asyncio.to_thread(self.store.get, row['job_id'])
+        try:
+            await self.shorts_step(row, job)
+        except ProviderFault as error:
+            if error.code in {'busy', 'quota', 'pending', 'unavailable', 'auth'}:
+                # Asked again later under the same request ID, like the episode's turns; the next episode still wins.
+                await asyncio.to_thread(self.shorts.wait, row, max(30, error.retry_after_seconds or 300), 'model_' + error.code)
+            else:
+                await asyncio.to_thread(self.shorts.skip, row, 'model_' + error.code, '쇼츠는 대본 작성 실행기 오류로 만들지 않았습니다.')
+        except UncertainEffect:
+            await asyncio.to_thread(self.shorts.skip, row, 'external_effect_requires_reconciliation',
+                                    '쇼츠는 음성 생성 결과를 확인할 수 없어 멈췄습니다. 같은 요청을 다시 보내지 않습니다.')
+        except (ValueError, OSError, TimeoutError, httpx.HTTPError, PolicyError) as error:
+            await asyncio.to_thread(self.shorts.skip, row, f'shorts_failed:{row["state"]}:{type(error).__name__}',
+                                    '쇼츠를 만들지 못했습니다. 본편은 영향이 없습니다.')
+        current = await asyncio.to_thread(self.shorts.get, row['job_id'])
+        return {"state": "shorts_" + current['state'], "job_id": str(row['job_id'])}
+
+    async def shorts_step(self, row, job):
+        qa = dict(row['qa'] or {})
+        if row['state'] == 'writing':
+            attempts = qa.setdefault('attempts', [])
+            if len(attempts) >= SHORTS_ATTEMPTS:
+                await asyncio.to_thread(self.shorts.skip, row, 'check_failed',
+                                        '쇼츠는 대본 검사를 통과하지 못해 만들지 않았습니다.')
+                return
+            last = attempts[-1].get('findings', []) if attempts else []
+            prompt = shorts_prompt(job['source'], job['plan'], (job.get('qa') or {}).get('review_findings', []),
+                                   '\n'.join(f'- {f}' for f in last[:30]))
+            try:
+                plan = await self.model(job, f'shorts-{len(attempts) + 1}', prompt, ShortsPlan, contract='video_shorts_v1')
+            except ModelRejected as error:
+                # A lost turn (uncertain, timeout) wrote nothing; like a rejected one, the next attempt is a new request.
+                attempts.append({'outcome': error.code if error.code in RUNTIME_OUTCOMES else 'rejected', 'code': error.code,
+                                 'findings': [str(error.detail)[:300]]})
+                await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
+                return
+            found = shorts_violations(plan, job['source'])
+            attempts.append({'outcome': 'check_failed' if found else 'passed', 'findings': found})
+            if found:
+                await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
+            else:
+                await asyncio.to_thread(self.shorts.save, row, 'synthesizing', plan=plan.model_dump(mode='json'), qa=qa)
+        elif row['state'] == 'synthesizing':
+            takes = self.shorts_takes(job, ShortsPlan.model_validate(row['plan']))
+            pending = [(k, r) for k, r in takes if not await asyncio.to_thread(self.store.effect_receipt, job, k, 'completed')]
+            cost = sum(speech_credits(r['text']) for _, r in pending)
+            if pending and not await asyncio.to_thread(self.store.budget_available, job, cost + SHORTS_CREDIT_RESERVE):
+                await asyncio.to_thread(self.shorts.skip, row, 'credit_reserve',
+                                        '쇼츠는 다음 회차들의 음성 크레딧을 남기기 위해 만들지 않았습니다.')
+                return
+            if pending:
+                account = await self.speech.account(job['policy']['workspace_id'])
+                if cost > account['credits']['total']:
+                    await asyncio.to_thread(self.shorts.skip, row, 'runway_balance', '쇼츠는 음성 크레딧이 부족해 만들지 않았습니다.')
+                    return
+                key, request = pending[0]  # one take per tick, its task ID kept before polling
+                await self.effect(job, key, request, 'speech', lambda: self.speech.submit(**request),
+                                  cost=speech_credits(request['text']))
+                await asyncio.to_thread(self.shorts.save, row, 'synthesizing')
+                return
+            await asyncio.to_thread(self.shorts.save, row, 'rendering')
+        elif row['state'] == 'rendering':
+            plan = ShortsPlan.model_validate(row['plan'])
+            takes = self.shorts_takes(job, plan)
+            directory = self.settings.video_artifact_dir / str(job['id']) / ('shorts-' + digest(
+                {'plan': row['plan'], 'takes': [k for k, _ in takes]})[:16])
+            directory.mkdir(parents=True, exist_ok=True)
+            paths = await self.fetch_audio(job, takes, directory)
+            try:
+                renderer = self.shorts_renderer or ShortsRenderer(self.settings)
+                artifacts = await asyncio.to_thread(renderer.render, job, plan, directory, paths[:-1], paths[-1])
+            except RenderInProgress:
+                await asyncio.to_thread(self.shorts.wait, row, 120, 'render_in_progress')
+                return
+            await asyncio.to_thread(self.shorts.deliver, row, job, artifacts)
+
+    def shorts_takes(self, job, plan):
+        """(effect key, Runway request) per Shorts scene and the fixed closing line, keyed apart from the episode's takes."""
+        texts = [spoken(s.narration) for s in plan.scenes] + [SHORTS_OUTRO['say']]
+        return [(f"shorts-speech-{i}-{digest(text)[:12]}",
+                 {"text": text, "voice": job["policy"]["voice"], "model": job["policy"]["speech_model"]})
+                for i, text in enumerate(texts)]
 
     def last_version(self, job, attempts):
         """The last version the model wrote (a lost runtime turn wrote none), as it was checked, with sorted keys so a

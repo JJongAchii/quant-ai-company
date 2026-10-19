@@ -5,6 +5,7 @@ x-video-env: &video-env
   # false (default): files go to the owner in the brief's Slack thread. true: YouTube private upload + Slack approval.
   VIDEO_UPLOAD_ENABLED: ${VIDEO_UPLOAD_ENABLED:-false}
   VIDEO_PUBLISH_ENABLED: ${VIDEO_PUBLISH_ENABLED:-false}
+  VIDEO_SHORTS_ENABLED: ${VIDEO_SHORTS_ENABLED:-false}
   VIDEO_YOUTUBE_CHANNEL_ID: ${VIDEO_YOUTUBE_CHANNEL_ID:-}
   VIDEO_RUNWAY_WORKSPACE_ID: ${VIDEO_RUNWAY_WORKSPACE_ID:-0}
   VIDEO_MONTHLY_CREDIT_LIMIT: ${VIDEO_MONTHLY_CREDIT_LIMIT:-1500}

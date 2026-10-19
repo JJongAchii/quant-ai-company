@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:'Pretendard';font-weight:600;src:url(fonts/Pretendard-SemiBold.woff2) format('woff2');}
+@font-face{font-family:'Pretendard';font-weight:700;src:url(fonts/Pretendard-Bold.woff2) format('woff2');}
+@font-face{font-family:'Pretendard';font-weight:800;src:url(fonts/Pretendard-ExtraBold.woff2) format('woff2');}
+:root{--navy-900:#00112E;--navy-800:#011A43;--gold:#FDC749;--cream:#FCF1DB;--muted:#AEB7D4;--up:#FF5C6C;--dn:#5EA0FF}
+*{margin:0;padding:0;box-sizing:border-box}
+/* Vertical Shorts frame. YouTube draws its own controls over the top ~220px, the bottom ~380px and the right ~140px,
+   so every line stays inside x 70-940, y 230-1500. */
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--navy-800);font-family:'Pretendard',sans-serif;color:var(--cream);-webkit-font-smoothing:antialiased;word-break:keep-all}
+#bg{position:absolute;inset:0;background:radial-gradient(ellipse 90% 60% at 50% 42%,#0A2A63 0%,#011A43 55%,#00112E 100%)}
+#grid{position:absolute;inset:0;background-image:linear-gradient(rgba(252,241,219,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(252,241,219,.035) 1px,transparent 1px);background-size:72px 72px}
+#mark{position:absolute;left:70px;top:236px;display:flex;align-items:center;gap:14px;font-size:38px;font-weight:800}
+#mark img{height:54px}
+#mark span{font-size:28px;font-weight:700;color:var(--muted);margin-left:8px}
+#segs{position:absolute;left:70px;width:870px;top:322px;display:flex;gap:10px}
+#segs div{flex:1;height:8px;border-radius:4px;background:rgba(252,241,219,.16);overflow:hidden}
+#segs i{display:block;height:100%;width:0;background:var(--gold)}
+#stage{position:absolute;left:70px;top:390px;width:870px;height:920px}
+.scene{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center}
+.q{font-size:96px;font-weight:800;line-height:1.2;letter-spacing:-.03em;text-align:center;text-wrap:balance}
+.q em,.t em{font-style:normal;color:var(--gold)}
+.stat{margin-top:80px;text-align:center;font-size:150px;font-weight:800;letter-spacing:-.03em;white-space:nowrap;overflow:hidden}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:50%;background:var(--gold);color:var(--navy-800);font-size:46px;font-weight:800}
+.lab{display:flex;align-items:center;justify-content:center;gap:26px;font-size:52px;font-weight:800}
+.big{margin-top:50px;font-size:170px;font-weight:800;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-align:center}
+.t{margin-top:50px;font-size:62px;font-weight:700;line-height:1.35;text-align:center;text-wrap:balance}
+.up{color:var(--up)} .dn{color:var(--dn)}
+.out1{font-size:64px;font-weight:700;text-align:center;line-height:1.35;color:var(--cream)}
+.out2{margin-top:40px;font-size:104px;font-weight:800;text-align:center;color:var(--gold);letter-spacing:-.02em}
+.play{margin:70px auto 0;width:200px;height:140px;border-radius:40px;background:#E62117;display:flex;align-items:center;justify-content:center}
+#cap{position:absolute;left:70px;width:870px;top:1330px;height:170px;display:flex;align-items:center;justify-content:center}
+#capbox{max-width:870px;padding:14px 28px;border-radius:22px;background:rgba(0,12,34,.78);font-size:50px;font-weight:700;line-height:1.35;text-align:center;opacity:0;text-wrap:balance}
+#capbox em{font-style:normal;color:var(--gold)}
+</style>
+</head><body>
+<div id="bg"></div><div id="grid"></div>
+<div id="mark"><img src="logo_mark.png" alt="">뭐든story<span id="label"></span></div>
+<div id="segs"></div>
+<div id="stage"></div>
+<div id="cap"><div id="capbox"></div></div>
+<script src="episode.js"></script>
+<script src="shorts.js"></script>
+<script>boot();</script>
+</body></html>
