@@ -1,0 +1,26 @@
+{
+ "what": "2026-10-19: the release of main e0d75d8 (#176) by the release operator before the 10:00 KST window; the backup checks of the #173 fix; the nightly backup alerts of the ops watch.",
+ "release": {
+  "commit": "e0d75d8f7d334a0c5bbc7417cedbb64f0d151718",
+  "contains": ["#176 a lapsed Claude subscription login waits for the renewed login instead of blocking the daily video; an episode blocked as model_auth goes back to the stage of its model call"],
+  "why_before_the_window": "the 10/19 AM video job 78fa991c stopped at 07:05 KST as blocked/model_auth (the claude-runtime login had lapsed at 00:01 KST; the owner logged in again at 08:37). The owner asked through the video session to release as soon as it was safe.",
+  "render_check": "1aceeb8 -> e0d75d8 changed deploy/release.py, video/analytics_contracts.py, video/runner.py and video/store.py; render_changes [] and operator files [], so VIDEO_RENDER_COMMIT=1aceeb8 and quant-company-render:11 stay valid",
+  "ci": "the first main run failed one test unrelated to #176 (test_codex_runtime.py::test_briefing_has_its_own_single_slot_and_preserves_other_lanes: its calls() helper read calls.jsonl while the fake codex was still appending, JSONDecodeError on a partial line; 2887 passed). The failed job was rerun and passed at 09:15 KST; the release started only after that.",
+  "build": "631 s for all six images (08:42-08:53 KST). The nightly storage cleanup prunes build cache unused for 24 hours (docker buildx prune --filter until=24h), and the previous build was on 10/16, so the dependency layers were rebuilt. Builds within a day of the previous one still take about a minute.",
+  "values": {"RELEASE_AUTO_ENABLED": "paused during the release, then true", "VIDEO_RENDER_TASK_DEFINITION": "quant-company-render:11 (unchanged)", "VIDEO_RENDER_COMMIT": "1aceeb8 (unchanged)"},
+  "order": "the deploy/release.json groups in their own order; #176 changes no value that another service checks",
+  "plan": "17 services, every one with an exact rollback",
+  "timeline_kst": {"paused": "09:15:34", "migrate": "09:15:43", "group_1": "09:15:43-09:17:32", "group_7_video_worker": "09:27:03-09:27:40", "verify": "17/17", "activated": "09:28:08", "auto_resumed": "09:28:24 up_to_date, no drift, render 1aceeb8/:11"},
+  "effects": "5 outbox rows delivered during the release; no news review went stale",
+  "video": "the new video-worker moved the AM job from blocked to queued at 09:27:33. The plan request was asked again under its 07:05 request ID; claude-runtime started an Opus 5.5 turn at 09:27:35 with the renewed login and the plan completed at 09:39:57, the review at 09:52:57, and the revision began at 09:53. The blocked incident closed at 09:29; video_late stays open until delivery."
+ },
+ "backup_checks_after_173": {
+  "kst": ["10/17 03:17", "10/18 03:17", "10/19 03:17"],
+  "result": "each check during the backup reported waiting_for_lock and the next one up_to_date; no drift alert"
+ },
+ "backup_alerts_of_the_ops_watch": {
+  "kst": {"10/17": "03:13 dispatch fallback notice, 03:17 down:fleet (12 services, critical), 03:18 down:worker (critical)", "10/18": "03:15 dispatch fallback notice, 03:19 down:fleet (critical)", "10/19": "03:11 dispatch fallback notice, 03:15 down:fleet (critical)"},
+  "cause": "state_backup.py stops the 12 APP_SERVICES for the database dump and starts them again before it uploads (about 4-5 minutes). The probe saw dispatch stopped and posted its direct fallback notice; the in-app watch, ticking again once dispatch was back, read the last snapshot with 12 stopped services and announced down:fleet with the owner mentioned.",
+  "fix": "the probe records the backup's services while quant-company-backup.service is activating, and the watch and the fallback treat them as a deploy window; postgres and other services still alert"
+ }
+}

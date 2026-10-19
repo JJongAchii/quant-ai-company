@@ -228,6 +228,21 @@ def test_many_stopped_containers_are_one_alert_and_a_deploy_window_suppresses_th
     assert watch.tick()["findings"] == []
 
 
+def test_a_running_backup_is_a_window_for_the_services_it_stops(ops):
+    # 2026-10-17~19 03:1x KST: the backup stopped 12 services and the watch announced a critical alert each night.
+    backup = {"services": ["slack-socket", "worker", "dispatch", "api", "claude-runtime"]}
+    stopped = [container(name, "exited", exit_code=143) for name in backup["services"]]
+    snapshot(ops, containers=[container("postgres"), *stopped], backup=backup)
+    watch = OpsWatch(ops)
+    assert watch.tick()["findings"] == []
+    snapshot(ops, containers=[container("postgres"), *stopped, container("video-worker", "exited")], backup=backup)
+    assert watch.tick()["findings"] == ["down:video-worker"]
+    snapshot(ops, containers=[container("postgres", "exited"), *stopped], backup=backup)
+    assert watch.tick()["findings"] == ["down:postgres"]
+    snapshot(ops, containers=[container("postgres"), *stopped], backup=None)
+    assert watch.tick()["findings"] == ["down:fleet"]
+
+
 def test_unit_failures_are_findings_but_a_guarded_skip_is_not(ops):
     snapshot(ops, units={"quant-company-backup": {"result": "exit-code", "exited_at": "Tue 2026-10-13 18:17:57 UTC"},
                          "quant-company-release": {"result": "exec-condition", "exited_at": None}})

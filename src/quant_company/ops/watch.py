@@ -48,6 +48,9 @@ def in_window(snapshot, service, now):
     # The release tool swaps services one at a time and checks or restores each itself (docs/adr/0045).
     if (snapshot.get("release") or {}).get("action") == "releasing" and service != "postgres":
         return True
+    # The backup stops the app services for its database dump and starts them again (deploy/ops_probe.backup_window).
+    if service in ((snapshot.get("backup") or {}).get("services") or ()):
+        return True
     window = snapshot.get("deploy_window")
     until = stamp(window.get("until")) if window else None
     return bool(until and until > now and ("*" in window["services"] or service in window["services"]))

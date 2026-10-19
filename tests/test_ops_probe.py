@@ -83,6 +83,24 @@ def test_silencers_cover_only_what_stops_in_app_alerts():
     assert probe.silencers(releasing, NOW, None) == {}
 
 
+def test_a_running_backup_covers_the_services_it_stops_and_nothing_else():
+    backup_spec = importlib.util.spec_from_file_location("state_backup", Path(__file__).parents[1] / "deploy/state_backup.py")
+    state_backup = importlib.util.module_from_spec(backup_spec)
+    backup_spec.loader.exec_module(state_backup)
+    assert probe.BACKUP_SERVICES == state_backup.APP_SERVICES
+    assert probe.backup_window({"quant-company-backup": {"active": "inactive", "result": "success"}}) is None
+    assert probe.backup_window({}) is None
+    window = probe.backup_window({"quant-company-backup": {"active": "activating", "result": "success"}})
+    assert window == {"services": list(state_backup.APP_SERVICES)}
+    backing_up = value(("postgres", "running"), ("dispatch", "exited"))
+    backing_up["backup"] = window
+    assert probe.silencers(backing_up, NOW, None) == {}
+    # The backup needs PostgreSQL running for its dump, so a stopped database is still an alert.
+    broken = value(("postgres", "exited"), ("dispatch", "exited"))
+    broken["backup"] = window
+    assert list(probe.silencers(broken, NOW, None)) == ["postgres"]
+
+
 @pytest.fixture
 def fallback_env(tmp_path, monkeypatch):
     credentials = tmp_path / "slack.json"
