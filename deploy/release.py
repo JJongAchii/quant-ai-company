@@ -336,6 +336,9 @@ def busy(service, runner=run):
             reasons.append("turn queued or running")
     if service == "dispatch" and sql("SELECT count(*) FROM outbox WHERE status='sending'", runner):
         reasons.append("Slack send in flight")
+    # An SMTP session cut by a recreation leaves its recipient 'uncertain' (never resent); 0 before the table exists.
+    if service == "dispatch" and sql("SELECT count(*) FROM newsletter_sends WHERE state='sending'", runner):
+        reasons.append("email send in flight")
     if service == "video-worker" and sql("SELECT count(*) FROM video_jobs WHERE state NOT IN ("
                                          + ",".join(f"'{s}'" for s in VIDEO_IDLE) + ")", runner):
         reasons.append("video job in production")
