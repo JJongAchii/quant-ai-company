@@ -267,6 +267,52 @@ const CARDS = {
       <div style="flex:none;padding:14px 20px;border-radius:14px;background:rgba(253,199,73,.12);border:1px solid rgba(253,199,73,.45);display:flex;align-items:center;gap:16px" data-in="${d.cost_at || 6.0},0.45">
        <span data-icon="ship,52,#FDC749,${(d.cost_at || 6.0) + 0.2},0.8"></span><div style="font-size:22px;font-weight:700;line-height:1.35">${d.cost_head}<div data-cost style="color:var(--gold);font-size:${d.cost.length > 24 ? 24 : 31}px;font-weight:800;text-wrap:balance;white-space:pre-line">${d.cost}</div></div></div></div>`;
   },
+
+  // The channel's fixed opening and closing (motion.py BRAND), never written by the script.
+  sting(d) {
+    const name = d.title.replace(/story$/, '<b>story</b>');
+    return `<div class="sting"><div class="row" data-pop="0.02,0.5"><img src="logo_mark.png" alt=""><div class="name">${name}</div></div>
+      <div class="sweep" data-bar="0.3,0.6"></div><div class="series" data-in="0.5,0.45,20">${d.series}</div></div>`;
+  },
+
+  endcard(d) {
+    const svg = (path, fill = 'none') => `<svg width="70" height="70" viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">${path}</svg>`;
+    return `<div class="endcard"><div class="mark" data-in="0.05,0.4,20"><img src="logo_mark.png" alt="">${d.title}</div>
+      <div class="btns"><div class="ebtn sub" data-pop="0.1,0.45">${svg('<path d="M8 5v14l11-7z"/>', 'currentColor')}<div class="w"><span class="w1">구독</span><span class="w2">구독중 ✓</span></div></div>
+      <div class="ebtn like" data-pop="0.22,0.45">${svg('<path d="M7 11v9H4v-9h3zm0 0 4-7a2 2 0 0 1 3 2l-1 4h5a2 2 0 0 1 2 2.3l-1.3 6A2 2 0 0 1 16.7 20H7"/>')}</div>
+      <div class="ebtn bell" data-pop="0.34,0.45">${svg('<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4l2-2zM10 20a2 2 0 0 0 4 0"/>')}</div></div>
+      <svg class="cursor" viewBox="0 0 24 24"><path d="M4 2l16 10-7 1.5L10 21z" fill="#fff" stroke="#00112E" stroke-width="1.4"/></svg></div>`;
+  },
+};
+
+// Per-scene motion seek() cannot express with data attributes, driven by the scene-local time lt.
+const SEEK = {
+  endcard(scn, lt) {
+    const at = e => { let x = e.offsetWidth * 0.6, y = e.offsetHeight * 0.62; for (let q = e; q && q !== scn; q = q.offsetParent) { x += q.offsetLeft; y += q.offsetTop; } return [x, y]; };
+    const sub = $('.ebtn.sub', scn), like = $('.ebtn.like', scn), bell = $('.ebtn.bell', scn), cur = $('.cursor', scn);
+    // Arrive at each button, press it 0.1 s later: subscribe, like, then the bell.
+    const stops = [[1560, 1010], at(sub), at(like), at(bell)], times = [0.55, 1.15, 1.95, 2.75];
+    let p = stops[0];
+    for (let i = 1; i < stops.length; i++) {
+      const k = eio(prog(lt, i === 1 ? times[0] : times[i - 1] + 0.2, times[i] - (i === 1 ? times[0] : times[i - 1] + 0.2)));
+      if (lt >= (i === 1 ? times[0] : times[i - 1] + 0.2)) p = [stops[i - 1][0] + (stops[i][0] - stops[i - 1][0]) * k, stops[i - 1][1] + (stops[i][1] - stops[i - 1][1]) * k];
+    }
+    const press = times.slice(1).some(t => lt >= t + 0.05 && lt < t + 0.2);
+    cur.style.opacity = clamp((lt - times[0]) / 0.2);
+    cur.style.transform = `translate(${p[0] - 14}px,${p[1] - 8}px) scale(${press ? 0.84 : 1})`;
+    const on = lt >= times[1] + 0.1;
+    sub.classList.toggle('on', on);
+    $('.w1', sub).style.opacity = on ? 0 : 1;
+    $('.w2', sub).style.opacity = on ? 1 : 0;
+    const liked = lt >= times[2] + 0.1, lp = prog(lt, times[2] + 0.1, 0.35);
+    like.style.color = liked ? 'var(--gold)' : '';
+    $('svg', like).style.fill = liked ? 'var(--gold)' : 'none';
+    $('svg', like).style.transform = `scale(${liked && lp < 1 ? 1 + 0.35 * Math.sin(Math.PI * lp) : 1})`;
+    const rp = prog(lt, times[3] + 0.1, 0.8);
+    $('svg', bell).style.transform = `rotate(${rp > 0 && rp < 1 ? 22 * Math.sin(rp * 5 * Math.PI) * (1 - rp) : 0}deg)`;
+    $('svg', bell).style.transformOrigin = '50% 10%';
+    bell.style.color = lt >= times[3] + 0.1 ? 'var(--gold)' : '';
+  },
 };
 
 function drawMap(d) {

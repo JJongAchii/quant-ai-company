@@ -9,7 +9,7 @@ import pytest
 from quant_company.config import Settings
 from quant_company.contracts import AgentDecision, ProviderResponse
 from quant_company.video.episode import EpisodePlan, validate_episode
-from quant_company.video.motion import MotionRenderer, captions, word_times
+from quant_company.video.motion import BRAND, MotionRenderer, captions, word_times
 from quant_company.video.render import run, spoken_numbers_heard, verify_artifacts
 from quant_company.video.runner import VideoRunner
 
@@ -200,6 +200,45 @@ def test_motion_render_frames_layout_credits_and_artifact_binding(tmp_path):
     (tmp_path / 'out' / 'subtitles.srt').write_text('changed')
     with pytest.raises(ValueError):
         verify_artifacts(manifest, tmp_path)
+
+
+def test_the_fixed_opening_and_closing_frame_the_episode_without_moving_its_chapters(tmp_path):
+    """Owner, 2026-10-19: every episode opens with '안녕하세요, 뭐든story입니다.' and closes with the subscribe scene."""
+    if not importlib.util.find_spec('playwright'):
+        pytest.skip('Install optional video dependencies and Chromium')
+    ffmpeg = ffmpeg_binary()
+    settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_ffprobe='', video_asset_dir=tmp_path / 'assets',
+                        video_render_workers=2)
+    library(tmp_path / 'assets', ffmpeg)
+    plan = episode()
+    paths, brand = [], {}
+    for i in range(len(plan.scenes)):
+        path = tmp_path / f'a{i}.wav'
+        run([ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i', f'sine=frequency={330 + i * 60}:sample_rate=48000:duration=3', str(path)])
+        paths.append(path)
+    for name, seconds in (('sting', 2.1), ('endcard', 4.6)):
+        brand[name] = tmp_path / f'{name}.wav'
+        run([ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i', f'sine=frequency=520:sample_rate=48000:duration={seconds}', str(brand[name])])
+    job = {'id': 'fixture', 'source': source(), 'policy': {'template': 'motion-v2'}}
+    plain = MotionRenderer(settings, WordAligner()).render(job, plan, tmp_path / 'plain', paths)
+    manifest = MotionRenderer(settings, WordAligner()).render(job, plan, tmp_path / 'out', paths, brand=brand)
+    scenes = manifest['scenes']
+    assert manifest['brand'] == ['sting', 'endcard'] and plain['brand'] == []
+    assert [s['type'] for s in scenes][0] == 'sting' and scenes[-1]['type'] == 'endcard'
+    assert [s['id'] for s in scenes[1:-1]] == [s.id for s in plan.scenes]
+    assert scenes[0]['t0'] == 0 and 2.5 <= scenes[0]['t1'] <= 3.0 and scenes[-1]['t1'] - scenes[-1]['t0'] == pytest.approx(5.9, abs=.01)
+    assert manifest['duration'] == pytest.approx(plain['duration'] + scenes[0]['t1'] + 5.9, abs=.5)
+    # Same chapters and titles; the opening belongs to the first one and the closing opens none.
+    assert [c['title'] for c in manifest['chapters']] == [c['title'] for c in plain['chapters']]
+    assert manifest['chapters'][0]['start'] == 0 and manifest['chapters'][1]['start'] == pytest.approx(
+        plain['chapters'][1]['start'] + scenes[0]['t1'], abs=.01)
+    srt = (tmp_path / 'out' / 'subtitles.srt').read_text()
+    assert srt.split('\n')[2] == '안녕하세요, 뭐든story입니다.' and '구독과 좋아요, 알림 설정 부탁드려요.' in srt
+    # Checked on screen like every card, but never sent to the visual review.
+    assert not (tmp_path / 'out' / 'layout-qa.json').exists()
+    assert not any(f['scene'].startswith('brand-') for f in manifest['review']['frames'])
+    assert (tmp_path / 'out' / 'review' / '00-brand-sting.jpg').is_file()
+    verify_artifacts(manifest, tmp_path)
 
 
 def test_overflowing_text_is_reported_and_the_episode_still_renders(tmp_path):
@@ -566,7 +605,7 @@ class InspectedRenderer:
     def __init__(self, misheard=None, renderer_code=None):
         self.renders, self.misheard, self.texts, self.renderer_code = 0, misheard or {}, [], renderer_code
 
-    def render(self, job, plan, directory, paths, texts=None):
+    def render(self, job, plan, directory, paths, texts=None, brand=None):
         from quant_company.video.contracts import digest
         from quant_company.video.render import checksum
 
@@ -595,7 +634,7 @@ class InspectedRenderer:
         return manifest
 
 
-async def produce_inspected(store, tmp_path, monkeypatch, provider, renderer, brief):  # noqa: F811
+async def produce_inspected(store, tmp_path, monkeypatch, provider, renderer, brief, audio=None, speech=None):  # noqa: F811
     from .test_video import SimulatedSpeech, new_job, release
 
     store.settings.video_template = 'motion-v2'
@@ -603,9 +642,9 @@ async def produce_inspected(store, tmp_path, monkeypatch, provider, renderer, br
     (tmp_path / 'assets').mkdir()
     (tmp_path / 'assets' / 'manifest.json').write_text(json.dumps({'fixture-photo': {'tags': [], 'kind': '자료사진'},
                                                                    'fixture-illustration': {'tags': [], 'kind': '일러스트'}}))
-    monkeypatch.setattr('quant_company.video.runner.download_audio', lambda url, path: path.write_bytes(b'simulated-speech'))
+    monkeypatch.setattr('quant_company.video.runner.download_audio', audio or (lambda url, path: path.write_bytes(b'simulated-speech')))
     job = new_job(brief, (store, None))
-    speech = SimulatedSpeech()
+    speech = speech or SimulatedSpeech()
     for _ in range(60):
         release(store, job)  # a pause the runner asked for (model_retry, render waits) has passed
         await VideoRunner(store.company, provider, speech, renderer).tick()
@@ -631,9 +670,78 @@ async def test_final_visual_review_fixes_cards_rerenders_and_delivers(brief, vid
     assert contracts.count('video_visual_review_v1') == 2 and contracts.count('video_screen_fix_v1') == 1
     visual = next(c for c in provider.calls if c.output_contract == 'video_visual_review_v1')
     assert len(visual.attachments) == len(episode().scenes) + 1 and visual.attachments[0].media_type == 'image/jpeg'
-    assert renderer.renders == 2 and len(speech.calls) == len(episode().scenes)  # narration unchanged: no new takes
+    # Narration unchanged: no new takes (the fixed opening and closing lines are recorded once, before the first render).
+    assert renderer.renders == 2 and len(speech.calls) == len(episode().scenes) + len(BRAND)
     assert next(s for s in job['plan']['scenes'] if s['id'] == 'head')['data']['title'] == '반도체 주도'
     assert len(job['qa']['inspections']) == 2 and job['qa']['inspection_findings'] == []
+
+
+class BrandRenderer(InspectedRenderer):
+    def __init__(self):
+        super().__init__()
+        self.brand = []
+
+    def render(self, job, plan, directory, paths, texts=None, brand=None):
+        self.brand.append(brand)
+        return super().render(job, plan, directory, paths, texts)
+
+
+def real_audio(ffmpeg):
+    def write(url, path):
+        run([ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i', 'sine=frequency=440:sample_rate=48000:duration=1.5', '-f', 'wav', str(path)])
+    return write
+
+
+async def test_the_fixed_lines_are_recorded_once_and_framed_into_the_render(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video.contracts import VisualReview
+    from quant_company.video.runner import VideoRunner, brand_file, brand_requests
+    from quant_company.video.store import delivery_text
+
+    store, _ = video
+    store.settings.video_ffmpeg, store.settings.video_ffprobe = ffmpeg_binary(), ''
+    renderer = BrandRenderer()
+    job, speech = await produce_inspected(store, tmp_path, monkeypatch, InspectingProvider(visual=[VisualReview(passed=True, issues=[])]),
+                                          renderer, brief, audio=real_audio(ffmpeg_binary()))
+    assert job['state'] == 'uploading', job['error']
+    said = [c['text'] for c in speech.calls]
+    assert said.count(BRAND['sting']['say']) == 1 and said.count(BRAND['endcard']['say']) == 1
+    assert sorted(renderer.brand[-1]) == ['endcard', 'sting'] and all(p.is_file() for p in renderer.brand[-1].values())
+    assert job['qa']['brand_new'] == ['endcard', 'sting']
+    assert '시작·마무리 음성을 이번 회차에서 처음 만들었습니다' in delivery_text(job, job['artifacts'])
+    # Kept for every later episode: nothing is recorded again for the same voice.
+    assert await VideoRunner(store.company, speech=speech).record_brand({**job, 'qa': {}}) and len(speech.calls) == len(said)
+    # Another voice or speech model is another recording.
+    requests = brand_requests(job)
+    other = brand_requests({**job, 'policy': {**job['policy'], 'voice': 'Other'}})
+    assert brand_file(store.settings, 'sting', other['sting']) != brand_file(store.settings, 'sting', requests['sting'])
+
+
+async def test_an_episode_never_waits_for_the_fixed_lines(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    import httpx
+
+    from quant_company.video.contracts import VisualReview
+    from quant_company.video.store import delivery_text
+
+    from .test_video import SimulatedSpeech
+
+    store, _ = video
+    speech, renderer = SimulatedSpeech(), BrandRenderer()
+    submit = speech.submit
+
+    async def lost(**request):
+        if request['text'] == BRAND['sting']['say']:
+            speech.calls.append(request)
+            raise httpx.ReadTimeout('simulated lost receipt')
+        return await submit(**request)
+
+    speech.submit = lost
+    job, _ = await produce_inspected(store, tmp_path, monkeypatch, InspectingProvider(visual=[VisualReview(passed=True, issues=[])]),
+                                     renderer, brief, speech=speech)
+    assert job['state'] == 'uploading', job['error']
+    # The uncertain recording is never sent again and the episode renders without the fixed scenes.
+    assert [c['text'] for c in speech.calls].count(BRAND['sting']['say']) == 1 and renderer.brand == [None]
+    assert job['qa']['brand_skipped'].startswith('ReadTimeout')
+    assert '시작·마무리 장면 없이 만들었습니다' in delivery_text(job, job['artifacts'])
 
 
 async def test_misread_scene_is_rerecorded_in_number_words(brief, video, tmp_path, monkeypatch):  # noqa: F811
@@ -648,7 +756,7 @@ async def test_misread_scene_is_rerecorded_in_number_words(brief, video, tmp_pat
     job, speech = await produce_inspected(store, tmp_path, monkeypatch, provider, renderer, brief)
     assert job['state'] == 'uploading', job['error']
     board = next(s for s in episode().scenes if s.id == 'board')
-    assert len(speech.calls) == len(episode().scenes) + 1 and speech.calls[-1]['text'] == korean_numbers(board.narration)
+    assert len(speech.calls) == len(episode().scenes) + len(BRAND) + 1 and speech.calls[-1]['text'] == korean_numbers(board.narration)
     assert '오백' in speech.calls[-1]['text'] and renderer.renders == 2
     assert renderer.texts[1][[s.id for s in episode().scenes].index('board')] == korean_numbers(board.narration)
     with store.db.transaction() as conn:

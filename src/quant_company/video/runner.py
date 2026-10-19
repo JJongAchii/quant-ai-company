@@ -35,9 +35,9 @@ from .episode import (
     template,
     tidy_tags,
 )
+from .motion import BRAND, RENDERER_DIGEST, MotionRenderer
 from .motion import FPS as MOTION_FPS
-from .motion import RENDERER_DIGEST, MotionRenderer
-from .render import Renderer, RenderInProgress, korean_numbers, spoken, verify_artifacts
+from .render import Renderer, RenderInProgress, korean_numbers, probe, spoken, verify_artifacts
 from .runway import RETAKE_RESERVE, RunwaySpeech, download_audio, speech_credits
 from .store import UncertainEffect, VideoStore
 from .youtube import YouTube
@@ -56,6 +56,9 @@ PLAN_RUNTIME_RETRIES = 8
 REVIEW_RUNTIME_RETRIES = 4
 REVIEW_CHECKS = ('facts', 'numbers', 'conditions', 'coverage', 'readability')
 INSPECT_ROUNDS = 3
+# The fixed opening and closing lines (motion.BRAND) are recorded once per voice and kept for every later episode. Raise
+# the take to record them again when the owner rejects one: the kept file and its receipt keys carry it.
+BRAND_TAKE = 1
 REVIEW_PHASES = frozenset({'review', 'visual'})
 # ProviderRequest's prompt limit: a previous script version that would not fit is left out of the revision request.
 PROMPT_LIMIT = next(m.max_length for m in ProviderRequest.model_fields['prompt'].metadata if hasattr(m, 'max_length'))
@@ -74,11 +77,25 @@ def written_attempts(qa):
     return sum(a['outcome'] not in RUNTIME_OUTCOMES for a in qa.get('plan_attempts', []))
 
 
-def render_key(job, takes, images):
+def render_key(job, takes, images, brand=None):
     """Render directories are named by what they render, so an interrupted render resumes scene by scene and a changed
     plan, take, picture or renderer code gets a new directory (a committed attempt is never overwritten)."""
     return 'render-' + digest({'plan': job['plan'], 'takes': list(takes), 'template': template(job), 'fps': MOTION_FPS,
-                               'renderer': RENDERER_DIGEST, **({'images': images} if images else {})})[:20]
+                               'renderer': RENDERER_DIGEST, **({'images': images} if images else {}),
+                               **({'brand': brand} if brand else {})})[:20]
+
+
+def brand_requests(job):
+    return {name: {'text': line['say'], 'voice': job['policy']['voice'], 'model': job['policy']['speech_model']}
+            for name, line in BRAND.items()}
+
+
+def brand_name(name, request):
+    return f"{name}-{digest({**request, 'take': BRAND_TAKE})[:16]}"
+
+
+def brand_file(settings, name, request):
+    return Path(settings.video_artifact_dir) / 'brand' / f'{brand_name(name, request)}.mp3'
 
 def attempt_key(phase, number):
     return phase if number == 1 else f'{phase}-{number}'
@@ -492,6 +509,48 @@ class VideoRunner:
             result.append((await asyncio.to_thread(self.store.take_key, job, index, request), request))
         return result
 
+    async def record_brand(self, job):
+        """Records a missing fixed line (one per tick, like a scene); True once both are kept. Anything that stops them
+        (budget, an uncertain receipt, no speech service) leaves this episode without them: it never waits for them."""
+        qa = dict(job.get('qa') or {})
+        if qa.get('brand_skipped'):
+            return True
+        try:
+            for name, request in brand_requests(job).items():
+                path = brand_file(self.settings, name, request)
+                if path.is_file():
+                    continue
+                key = 'speech-brand-' + brand_name(name, request)
+                receipt = await asyncio.to_thread(self.store.effect_receipt, job, key, 'completed')
+                if receipt is None:
+                    await self.effect(job, key, request, 'speech', lambda request=request: self.speech.submit(**request),
+                                      cost=speech_credits(request['text']))
+                    await asyncio.to_thread(self.store.update_qa, job, qa)  # a line kept on an earlier tick
+                    await asyncio.to_thread(self.store.save, job, 'synthesizing')
+                    return False
+                url = await self.speech.completed(receipt['taskId'])
+                path.parent.mkdir(parents=True, exist_ok=True)
+                partial = path.with_suffix('.partial.mp3')
+                await asyncio.to_thread(download_audio, url, partial)
+                partial.replace(path)
+                qa['brand_new'] = sorted({*qa.get('brand_new', []), name})
+        except (UncertainEffect, PolicyError, ValueError, OSError, TimeoutError, httpx.HTTPError) as error:
+            qa['brand_skipped'] = f'{type(error).__name__}: {error}'[:200]
+        await asyncio.to_thread(self.store.update_qa, job, qa)
+        return True
+
+    def brand_audio(self, job):
+        """{'sting': file, 'endcard': file} when both fixed lines are kept and sound plausible, else None."""
+        if template(job) != 'motion-v2' or (job.get('qa') or {}).get('brand_skipped'):
+            return None
+        paths = {name: brand_file(self.settings, name, request) for name, request in brand_requests(job).items()}
+        try:
+            if all(p.is_file() and 0.5 <= float(probe(p, self.settings)['format']['duration']) <= 15 for p in paths.values()):
+                return paths
+        except (ValueError, OSError, KeyError):
+            pass
+        return None
+
     async def fetch_audio(self, job, takes, directory):
         paths = []
         for index, (key, _request) in enumerate(takes):
@@ -511,7 +570,7 @@ class VideoRunner:
             self._remote = RemoteRender(self.settings)
         return self._remote
 
-    async def render_remote(self, job, plan, takes, directory, texts, qa):
+    async def render_remote(self, job, plan, takes, directory, texts, qa, brand=None):
         """One Fargate task per attempt, asked again on later ticks like a model turn. Spot reclaims resume from the
         scenes already in S3; after the last attempt the episode renders here (it is always produced).
 
@@ -576,7 +635,7 @@ class VideoRunner:
             try:
                 if not await asyncio.to_thread(remote.inputs_ready, job, directory.name):
                     paths = await self.fetch_audio(job, takes, directory)
-                    await asyncio.to_thread(remote.upload_inputs, job, plan, paths, texts, directory.name)
+                    await asyncio.to_thread(remote.upload_inputs, job, plan, paths, texts, directory.name, brand)
                 await asyncio.to_thread(self.store.update_qa, job, qa)  # the receipt precedes the paid call
                 current['task'] = await asyncio.to_thread(remote.launch, job, directory.name, len(attempts))
                 current['launched_at'] = datetime.now(UTC).isoformat()
@@ -691,6 +750,8 @@ class VideoRunner:
                                   cost=speech_credits(request["text"]))
                 await asyncio.to_thread(self.store.save, job, "synthesizing")
                 return
+            if template(job) == 'motion-v2' and not await self.record_brand(job):
+                return
             await asyncio.to_thread(self.store.save, job, "rendering")
         elif state == "rendering":
             plan = plan_class(job).model_validate(job["plan"])
@@ -698,14 +759,16 @@ class VideoRunner:
             # Made pictures are part of what is rendered: a remade or fallen-back picture renders afresh.
             images = {k: v.get('sha256') or v.get('failed') for k, v in
                       ((job.get('qa') or {}).get('illustrations') or {}).items()}
-            directory = self.settings.video_artifact_dir / str(job["id"]) / render_key(job, [k for k, _ in takes], images)
+            brand = await asyncio.to_thread(self.brand_audio, job)
+            directory = self.settings.video_artifact_dir / str(job["id"]) / render_key(
+                job, [k for k, _ in takes], images, {n: p.name for n, p in brand.items()} if brand else None)
             directory.mkdir(parents=True, exist_ok=True)
             qa = dict(job.get('qa') or {})
             texts = [r['text'] for _, r in takes] if qa.get('retake') else None
             renderer = self.renderer_for(job)
             if (self.settings.video_render_backend == 'remote' and template(job) == 'motion-v2'
                     and not qa.get('render_local')):
-                artifacts = await self.render_remote(job, plan, takes, directory, texts, qa)
+                artifacts = await self.render_remote(job, plan, takes, directory, texts, qa, brand)
                 if artifacts is None:
                     return
                 library = MotionRenderer(self.settings).library
@@ -713,7 +776,7 @@ class VideoRunner:
                 paths = await self.fetch_audio(job, takes, directory)
                 try:
                     artifacts = await asyncio.to_thread(renderer.render, job, plan, directory, paths,
-                                                        **({'texts': texts} if texts else {}))
+                                                        **({'texts': texts} if texts else {}), **({'brand': brand} if brand else {}))
                 except RenderInProgress:
                     await asyncio.to_thread(self.store.wait, job, 120, 'render_in_progress')
                     return

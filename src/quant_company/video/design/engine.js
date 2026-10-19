@@ -76,7 +76,7 @@ function boot(){
  const tk=EP.ticker.items.map(it=>{const up=it.dir==='up';return `<span class="it"><span class="n">${it.name}</span>${it.value?`<span class="v tnum">${it.value}</span>`:''}<span class="${up?'upn':'dnn'} tnum">${up?'▲':'▼'} ${it.change}</span>${it.note?`<span class="n" style="margin-left:10px;font-weight:600">${it.note}</span>`:''}</span>`}).join('');
  $('#track').innerHTML=tk+tk;
  const stage=$('#stage');
- for(const sc of EP.scenes){const d=document.createElement('div');d.className='scene';d.dataset.t0=sc.t0;d.dataset.t1=sc.t1;d.dataset.ch=sc.chapter;d.dataset.id=sc.id;
+ for(const sc of EP.scenes){const d=document.createElement('div');d.className=sc.brand?'scene full':'scene';d.dataset.t0=sc.t0;d.dataset.t1=sc.t1;d.dataset.ch=sc.chapter;d.dataset.id=sc.id;d.dataset.type=sc.type;
   d.innerHTML=CARDS[sc.type](sc.data,sc);stage.appendChild(d);}
  injectIcons();
  for(const f of POST) f();
@@ -95,10 +95,11 @@ function seek(t){
  // background
  $('#glow').style.transform=`translate(${360+220*Math.sin(t*2*Math.PI/60)}px,${40+60*Math.cos(t*2*Math.PI/60)}px)`;
  for(const q of PARTS){const x=((q.x0+t*q.v)%1960)-20, y=q.y0+q.a*Math.sin(t*0.35+q.ph);q.e.style.transform=`translate(${x}px,${y}px)`;q.e.style.opacity=q.o*(0.6+0.4*Math.sin(t*0.8+q.ph));}
- let curCh='';
+ let curCh='',full=false;
  for(const scn of $$('.scene')){
   const t0=+scn.dataset.t0,t1=+scn.dataset.t1, vis=t>=t0&&t<t1; scn.style.display=vis?'block':'none'; if(!vis)continue;
-  curCh=scn.dataset.ch; const lt=t-t0;
+  curCh=scn.dataset.ch; const lt=t-t0; full=scn.classList.contains('full');
+  if(SEEK[scn.dataset.type]) SEEK[scn.dataset.type](scn,lt);
   const ex=clamp((t-(t1-0.4))/0.4); scn.style.opacity=1-ex*ex; scn.style.transform=`translateY(${-20*ex}px)`;
   for(const e of $$('[data-in]',scn)){const [s,d=0.5,dy=40]=e.dataset.in.split(',').map(Number);const p=eo(prog(lt,s,d));e.style.opacity=p;
    if(e instanceof SVGElement){e.setAttribute('transform',`translate(0,${(1-p)*dy})`);} else e.style.transform=`translateY(${(1-p)*dy}px) scale(${0.98+0.02*p})`;}
@@ -116,6 +117,7 @@ function seek(t){
    if(!g.dataset.base){const b=g.getBBox();const k=Math.min(680/b.width,400/b.height)*0.97;g.dataset.base=[350-(b.x+b.width/2)*k,222-(b.y+b.height/2)*k,k].join(',');}
    const [bx,by,bs]=g.dataset.base.split(',').map(Number);const z=1+0.06*clamp(lt/13);g.setAttribute('transform',`translate(${350+(bx-350)*z},${222+(by-222)*z}) scale(${bs*z})`);}
  }
+ document.body.classList.toggle('full',full);
  // chapters
  $$('.pill').forEach((p,i)=>{const on=CH[i]===curCh;p.querySelector('i').style.opacity=on?1:0;p.style.color=on?'#011A43':'';p.style.borderColor=on?'#FDC749':'';});
  $('#prog').style.width=(clamp(t/EP.total)*1920)+'px';

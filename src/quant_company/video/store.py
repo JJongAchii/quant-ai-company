@@ -95,8 +95,12 @@ def delivery_text(job, artifacts, at=None):
                                                       if v.get("file") and v.get("kind") != "자료사진"]
     images = (f"생성 그림 {len(generated)}장 포함(화면 표기 없음) · 업로드 때 YouTube의 "
               "'변경되었거나 합성된 콘텐츠' 항목을 '예'로 선택해 주세요\n") if generated else ""
+    # The fixed opening and closing lines are recorded once and reused (runner.BRAND_TAKE): the owner hears a new take.
+    brand = ("시작·마무리 장면 없이 만들었습니다(고정 음성 준비 실패)\n" if qa.get("brand_skipped")
+             else "시작·마무리 음성을 이번 회차에서 처음 만들었습니다. 들어 보시고 다시 만들어야 하면 말씀해 주세요\n"
+             if qa.get("brand_new") else "")
     return (f"영상 준비 완료 · {EDITION_NAMES.get(job['source'].get('edition_kind'), '브리핑')}\n"
-            f"{artifacts.get('title', '')}\n길이 {minutes}분 {seconds:02}초 · 대본 {attempts}회 작성 · {check}\n" + notes + images + timing +
+            f"{artifacts.get('title', '')}\n길이 {minutes}분 {seconds:02}초 · 대본 {attempts}회 작성 · {check}\n" + notes + images + brand + timing +
             "첨부: 영상(MP4) · 썸네일(PNG) · 자막(SRT) · 업로드 문안(upload.txt: 제목·설명·챕터·태그·고정 댓글)\n"
             "전체 시청 후 직접 업로드해 주세요.")
 
