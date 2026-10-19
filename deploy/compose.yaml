@@ -83,6 +83,14 @@ x-db-env: &db-env
   BRIEFING_KR_CLOSE_CUTOFF_MINUTES: ${BRIEFING_KR_CLOSE_CUTOFF_MINUTES:-40}
   BRIEFING_KR_CLOSE_DUE_MINUTES: ${BRIEFING_KR_CLOSE_DUE_MINUTES:-115}
   BRIEFING_KR_CLOSE_BASIS: ${BRIEFING_KR_CLOSE_BASIS:-regular}
+  # Evening brief email (docs/newsletter.md); the app password reaches dispatch alone, through its mount below.
+  NEWSLETTER_ENABLED: ${NEWSLETTER_ENABLED:-false}
+  NEWSLETTER_FROM_ADDRESS: ${NEWSLETTER_FROM_ADDRESS:-}
+  NEWSLETTER_FROM_NAME: ${NEWSLETTER_FROM_NAME:-뭐든story}
+  NEWSLETTER_SMTP_HOST: ${NEWSLETTER_SMTP_HOST:-smtp.gmail.com}
+  NEWSLETTER_SMTP_PORT: ${NEWSLETTER_SMTP_PORT:-587}
+  NEWSLETTER_IMAP_HOST: ${NEWSLETTER_IMAP_HOST:-imap.gmail.com}
+  NEWSLETTER_CHANNEL_URL: ${NEWSLETTER_CHANNEL_URL:-https://www.youtube.com/@anything-story}
   TECH_FEED_ENABLED: ${TECH_FEED_ENABLED:-false}
   TECH_FEED_PUBLISH_ENABLED: ${TECH_FEED_PUBLISH_ENABLED:-false}
   TECH_FEED_DEDICATED_WORKER: ${TECH_FEED_DEDICATED_WORKER:-false}
@@ -374,7 +382,18 @@ services:
       SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
       SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
       SLACK_CREDENTIALS_FILE: /run/secrets/slack_credentials
+      NEWSLETTER_PASSWORD_FILE: /run/newsletter/app_password
     secrets: [database_password, temporal_api_key, slack_credentials]
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/config/roles.json:/etc/quant-company/roles.json:ro
+      # The Gmail app password (deploy/set-newsletter-secret.sh) as a directory, not a compose secret: a missing
+      # secret file would stop dispatch from starting, while Docker creates this directory empty when it is absent,
+      # so every release works before the owner sets the password and the email simply stays inactive.
+      - type: bind
+        source: ${STATE_DIR:-/var/lib/quant-company}/secrets/newsletter
+        target: /run/newsletter
+        read_only: true
+        bind: {create_host_path: true}
     networks: [core, service_egress]
     mem_limit: ${DISPATCH_MEMORY_LIMIT:-256m}
     cpus: 0.5

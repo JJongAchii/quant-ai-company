@@ -252,7 +252,10 @@ async def test_ready_owner_request_overtakes_older_paced_broadcasts(trend, tech)
 def test_paced_backlog_is_skipped_with_bounded_work_and_without_a_feed_burst(trend, tech):
     with trend.db.transaction() as conn:
         at = conn.execute("SELECT now() AS at").fetchone()["at"]
-    trend.clock[0] = at.astimezone(schedule.KST).replace(hour=7, minute=20, second=0, microsecond=0).astimezone(UTC)
+    # 07:20 KST of a day already past: before 07:20 KST the same day's 07:20 lies ahead of the database clock (CI at
+    # 15:06 UTC on 2026-10-19 claimed the paced row).
+    morning = at.astimezone(schedule.KST).replace(hour=7, minute=20, second=0, microsecond=0)
+    trend.clock[0] = (morning if morning <= at else morning - timedelta(days=1)).astimezone(UTC)
     tech.clock[0] = trend.clock[0]
     paced_backlog(tech, 40)
     ingest(trend)

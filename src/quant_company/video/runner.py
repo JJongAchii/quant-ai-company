@@ -128,6 +128,15 @@ def contract_detail(error):
                      for e in error.errors(include_url=False, include_input=False))[:1500]
 
 
+def single_artifact(response, request):
+    """A claude-runtime answer to exactly this request on its model: one artifact and nothing a model could act on."""
+    decision = response.decision
+    return not (response.provider != "claude" or response.usage.get("actual_model") != request.model
+                or response.request_id != request.request_id or len(decision.artifacts) != 1
+                or decision.status != 'complete' or decision.tools or decision.delegations or decision.messages
+                or decision.memories or decision.follow_up or response.web_searches)
+
+
 class VideoFailure(ValueError):
     """A stage failure with an operator-facing reason code (store.REASONS); never carries URLs or secrets."""
 
@@ -331,11 +340,7 @@ class VideoRunner:
                     await asyncio.to_thread(self.store.fail_effect, job, key, {'code': error.code, 'detail': detail})
                     raise ModelRejected(error.code, detail) from None
                 raise
-            decision = response.decision
-            if (response.provider != "claude" or response.usage.get("actual_model") != request.model
-                    or response.request_id != request.request_id or len(decision.artifacts) != 1
-                    or decision.status != 'complete' or decision.tools or decision.delegations or decision.messages
-                    or decision.memories or decision.follow_up or response.web_searches):
+            if not single_artifact(response, request):
                 raise ValueError("Video model response identity mismatch")
             try:
                 result = cls.model_validate_json(response.decision.artifacts[0].content)

@@ -556,3 +556,50 @@ def test_data_watch_configuration_reaches_existing_processes_without_new_credent
         if name in {"api", "worker", "slack-socket", "dispatch"}:
             assert settings.company_research_enabled
     assert services["data-watch-worker"]["environment"]["COMPANY_RESEARCH_ENABLED"] == "true"
+
+
+def test_newsletter_password_reaches_only_dispatch_and_its_settings_reach_every_process_that_uses_them(tmp_path):
+    from quant_company.config import Settings
+
+    env = tmp_path / "newsletter.env"
+    env.write_text("NEWSLETTER_ENABLED=true\nNEWSLETTER_FROM_ADDRESS=sender.fixture@gmail.com\n"
+                   "BRIEFING_ENABLED=true\nBRIEFING_PUBLISH_ENABLED=true\n")
+    services = compose_config("video", "claude", extra_env=env, overlays=("video.compose.yaml",))["services"]
+    for name, service in services.items():
+        mounts = [v for v in service.get("volumes", [])
+                  if v["target"] == "/run/newsletter" or v.get("source", "").endswith("/secrets/newsletter")]
+        assert bool(mounts) == (name == "dispatch"), name
+        assert ("NEWSLETTER_PASSWORD_FILE" in service.get("environment", {})) == (name == "dispatch"), name
+        assert not any("newsletter" in str(item) for item in service.get("secrets", []))
+    dispatch = services["dispatch"]
+    mount = next(v for v in dispatch["volumes"] if v["target"] == "/run/newsletter")
+    assert mount["type"] == "bind" and mount["read_only"] and mount["source"].endswith("/secrets/newsletter")
+    # A directory Docker creates when it is absent (a missing compose secret file would stop dispatch from starting),
+    # so a release before the owner sets the password still starts and the email stays inactive.
+    assert mount.get("bind", {}).get("create_host_path", True) is True
+    assert {v["target"] for v in dispatch["volumes"]} >= {"/etc/quant-company/roles.json", "/state/video"}
+    assert {s["source"] for s in dispatch["secrets"]} == {"database_password", "temporal_api_key", "slack_credentials"}
+    # The commit hook (news-worker or dispatch), the commands (api, slack-socket), sending (dispatch), writing (video).
+    for name in ("api", "slack-socket", "dispatch", "news-worker", "worker", "video-worker"):
+        assert services[name]["environment"]["NEWSLETTER_ENABLED"] == "true", name
+    values = {k.lower(): v for k, v in dispatch["environment"].items()
+              if k.startswith(("NEWSLETTER_", "BRIEFING_")) and k != "BRIEFING_EVALUATION_EDITION_IDS"}
+    settings = Settings(**values)
+    assert settings.newsletter_enabled and settings.newsletter_from_address == "sender.fixture@gmail.com"
+    assert (settings.newsletter_smtp_host, settings.newsletter_smtp_port, settings.newsletter_imap_host) == (
+        "smtp.gmail.com", 587, "imap.gmail.com")
+    assert settings.newsletter_from_name == "뭐든story"
+    assert str(settings.newsletter_password_file) == "/run/newsletter/app_password"
+    assert settings.newsletter_channel_url == "https://www.youtube.com/@anything-story"
+    for name in ("codex-runtime", "claude-runtime"):
+        assert not any(key.startswith("NEWSLETTER_") for key in services[name]["environment"])
+    assert compose_config()["services"]["dispatch"]["environment"]["NEWSLETTER_ENABLED"] == "false"
+
+
+def test_newsletter_secret_script_reads_without_echo_and_writes_in_place():
+    path = DEPLOY / "set-newsletter-secret.sh"
+    script = path.read_text()
+    assert "read -rs" in script and "chmod 0600" in script and "chown 10001:10001" in script
+    assert "printf '%s' \"$password\" > \"$file\"" in script and "/var/lib/quant-company/secrets/newsletter" in script
+    assert 'echo "$password' not in script and "set -x" not in script and "mv " not in script
+    subprocess.run(["bash", "-n", str(path)], check=True)
