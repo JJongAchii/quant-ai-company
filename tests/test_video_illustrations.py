@@ -9,6 +9,7 @@ import pytest
 from quant_company.contracts import ProviderFault
 from quant_company.video.episode import EpisodePlan, episode_prompt, episode_violations
 from quant_company.video.illustrations import GENERATED, library_entries, make_next, missing, request_id
+from quant_company.video.motion import BRAND
 
 from .test_briefing import brief  # noqa: F401
 from .test_video import body_source, video  # noqa: F401
@@ -137,7 +138,8 @@ async def test_pictures_are_made_before_speech_and_the_episode_is_delivered(brie
     assert len(images.calls) == 1 and job['qa']['illustrations']['gen-1']['sha256']
     assert job['qa']['illustrations_offered'] is True
     plan_request = next(c for c in provider.calls if c.output_contract == 'video_episode_v1')
-    assert 'Story pictures' in plan_request.prompt and len(speech.calls) == len(episode().scenes)
+    # Every scene once, plus the fixed opening and closing lines recorded with the first episode.
+    assert 'Story pictures' in plan_request.prompt and len(speech.calls) == len(episode().scenes) + len(BRAND)
 
 
 def test_fargate_inputs_carry_the_pictures_to_the_same_job_path(tmp_path):
