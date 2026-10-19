@@ -1,5 +1,6 @@
 """Owner commands to the director for the email's recipients. Deterministic, like the daily-limit command: no model
-reads them, and the address appears masked everywhere except the recipient table."""
+reads them, and the address appears masked everywhere except the recipient table. Text that only looks like a command
+or carries an address gets the usage line instead of a model turn."""
 
 import re
 
@@ -9,8 +10,14 @@ from ..company import PolicyError, stable
 from . import store as records
 from .store import STATE_NAMES, NewsletterStore, mask, valid_address
 
-COMMAND = re.compile(r"이메일\s*(추가|재동의|삭제|목록|시험\s*발송)(?:\s+(.+?))?\s*[.!。]*", re.S)
+COMMAND = re.compile(r"이메일\s*(추가|재동의|삭제|목록|시험\s*발송)\s*"
+                     r"(?:해\s*(?:줘|주세요|줄래)|보여\s*(?:줘|주세요)|알려\s*(?:줘|주세요))?"
+                     r"(?:(?:\s*[:：]\s*|\s+)(.+?))?\s*[.!。]*", re.S)
 ACTIONS = {"추가": "add", "재동의": "reconsent", "삭제": "remove", "목록": "list"}
+ADDRESS_LIKE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+")
+USAGE = {"action": "usage"}
+USAGE_TEXT = ("저녁 브리핑 메일 수신자 명령은 @quant-director에게 이렇게 보내 주세요: `이메일 추가 <주소>` · `이메일 재동의 <주소>` · "
+              "`이메일 삭제 <주소>` · `이메일 목록` · `이메일 시험 발송 <주소>`. 메일 주소가 들어간 글은 모델에 보내지 않습니다.")
 
 
 def unlink(text):
@@ -20,30 +27,46 @@ def unlink(text):
 
 
 def parse(text):
-    match = COMMAND.fullmatch(unlink(text))
-    if not match:
-        return None
-    action = ACTIONS.get(match[1], "test")
-    argument = (match[2] or "").strip().lower()
-    if action == "list":
-        return None if argument else {"action": "list"}
-    return {"action": action, "address": argument if valid_address(argument) else None}
+    """A recipient command; USAGE for text that starts like one or carries an address (an address never reaches a
+    model); None for anything else."""
+    text = unlink(text)
+    match = COMMAND.fullmatch(text)
+    if match:
+        action = ACTIONS.get(match[1], "test")
+        argument = (match[2] or "").strip().lower()
+        if action == "list":
+            return dict(USAGE) if argument else {"action": "list"}
+        return {"action": action, "address": argument if valid_address(argument) else None}
+    return dict(USAGE) if text.startswith("이메일") or ADDRESS_LIKE.search(text) else None
 
 
-def authorized(company, project, task):
+def accepts(text, command, agent):
+    """The command an ingest may carry for TEXT: what parse() reads, or the usage line for any command-like text (the
+    only answer outside the director)."""
+    parsed = parse(text)
+    if command == USAGE:
+        return parsed is not None and agent in {"director", "maintainer"}
+    return command == parsed and agent == "director"
+
+
+def authorized(company, project, task, command):
     settings = company.settings
-    return (task["agent"] == "director" and project["owner_user"] == settings.briefing_owner_user
-            and project["owner_user"] in settings.slack_allowed_users and bool(project["channel"])
-            and (project["channel"] in settings.slack_allowed_channels or project["channel"].startswith("D")))
+    reachable = (project["owner_user"] in settings.slack_allowed_users and bool(project["channel"])
+                 and (project["channel"] in settings.slack_allowed_channels or project["channel"].startswith("D")))
+    if command == USAGE:
+        return reachable and task["agent"] in {"director", "maintainer"}
+    return reachable and task["agent"] == "director" and project["owner_user"] == settings.briefing_owner_user
 
 
 def apply(conn, company, project, task, event_key, command):
-    if not authorized(company, project, task):
+    if not authorized(company, project, task, command):
         raise PolicyError("Newsletter recipients are managed only by the briefing owner through the director")
     store = NewsletterStore(company)
     action, address = command["action"], command.get("address")
     recipient = None
-    if action == "list":
+    if action == "usage":
+        result, reply = "usage", USAGE_TEXT
+    elif action == "list":
         result, reply = "listed", listing(conn, company)
     elif not address:
         result, reply = "invalid_address", ("이메일 주소 형식을 확인하지 못했습니다. 예: `이메일 추가 name@example.com`")
@@ -58,7 +81,7 @@ def apply(conn, company, project, task, event_key, command):
                                        recipient["id"] if recipient else None, Jsonb(receipt)))
     company._event(conn, "newsletter_command", receipt, project["id"])
     conn.execute("UPDATE tasks SET status='completed',result=%s WHERE id=%s", (reply, task["id"]))
-    company._message(conn, project, task["id"], "director", "control", reply)
+    company._message(conn, project, task["id"], task["agent"], "control", reply)
     return receipt
 
 

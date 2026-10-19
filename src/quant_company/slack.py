@@ -181,6 +181,15 @@ class SlackIngress:
             return {"ok": True, "owner_control": True, **result}
         if target == "maintainer":
             from .maintenance.applications import accept_approval
+            from .newsletter.commands import USAGE
+            from .newsletter.commands import parse as parse_newsletter_command
+
+            # Recipient commands and addresses never become a Maintainer turn: the usage line answers them.
+            if parse_newsletter_command(text):
+                result = self.company.ingest(
+                    event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", text=text,
+                    owner=user, agent=target, channel=channel, thread_ts=thread_ts, newsletter_command=dict(USAGE))
+                return {"ok": True, "owner_control": True, **result}
 
             approval = accept_approval(
                 self.company, text=text, owner=user, channel=channel, thread_ts=thread_ts,
@@ -208,7 +217,7 @@ class SlackIngress:
 
             command = parse_newsletter_command(text)
             if command:
-                if user != self.settings.briefing_owner_user:
+                if user != self.settings.briefing_owner_user and command["action"] != "usage":
                     return {"ok": True, "ignored": True, "reason": "newsletter_owner_scope"}
                 result = self.company.ingest(
                     event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", text=text,

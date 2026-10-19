@@ -453,11 +453,11 @@ class Company:
             status_only = True
         stored = text
         if newsletter_command is not None:
-            from .newsletter.commands import parse as parse_newsletter_command
+            from .newsletter.commands import accepts
             from .newsletter.store import masked
 
-            if (newsletter_command != parse_newsletter_command(text) or agent != "director" or revise or interpret
-                    or control_action or daily_limit_command is not None):
+            if (not accepts(text, newsletter_command, agent) or revise or interpret or control_action
+                    or daily_limit_command is not None):
                 raise PolicyError("Invalid owner command")
             digest = fingerprint([digest, newsletter_command])
             status_only = True
