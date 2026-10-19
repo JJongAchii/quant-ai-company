@@ -541,6 +541,14 @@ def test_a_video_waiting_for_approval_does_not_hold_a_release():
     assert "NOT IN (" in queries[0] and "'awaiting_approval'" in queries[0] and "'approved'" not in queries[0]
 
 
+def test_an_email_being_sent_holds_dispatch():
+    def runner(args, env=None, input=None, check=True, timeout=None):
+        return "1" if "newsletter_sends" in args[-1] else "0"
+
+    assert release.busy("dispatch", runner=runner) == ["email send in flight"]
+    assert release.busy("dispatch", runner=lambda *a, **k: "") == []  # the table does not exist yet
+
+
 def test_activation_refreshes_the_automatic_status_when_the_timer_is_installed(host, monkeypatch):
     prepared(host)
     monkeypatch.setattr(release, "verify", lambda sha, runner=None: [{"service": "api", "ok": True}])

@@ -15,8 +15,9 @@ import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
-from pydantic import ValidationError
+from pydantic import ValidationError, model_validator
 
 from ..contracts import AgentDecision, ArtifactDraft, ProviderFault, ProviderRequest, ProviderResponse
 from ..staff.review_contract import REVIEW_MODEL, IndependentReview
@@ -40,12 +41,21 @@ class ClaudeConfig:
     usage_credits_disabled_confirmed: bool = False
     # A full max-effort episode plan from the delivered brief exceeds the short explanation-review budget.
     video_timeout_seconds: float = 7200
+    # The evening brief email shares this one slot with the PM video: a short email never holds it for long.
+    newsletter_timeout_seconds: float = 900
 
     def __post_init__(self):
         if not math.isfinite(self.timeout_seconds) or not 0 < self.timeout_seconds <= 600:
             raise ValueError("Invalid Claude timeout")
         if not math.isfinite(self.video_timeout_seconds) or not 0 < self.video_timeout_seconds <= 10800:
             raise ValueError("Invalid Claude video timeout")
+        if not math.isfinite(self.newsletter_timeout_seconds) or not 0 < self.newsletter_timeout_seconds <= 1800:
+            raise ValueError("Invalid Claude newsletter timeout")
+
+    def process_limit(self, request):
+        if request.output_contract == "agent_decision":
+            return self.timeout_seconds
+        return self.newsletter_timeout_seconds if request.output_contract in CLAUDE_ONLY else self.video_timeout_seconds
 
 
 def environment(config, source):
@@ -57,6 +67,25 @@ def environment(config, source):
     result.update(CLAUDE_CONFIG_DIR=str(config.auth_dir.resolve()), DISABLE_AUTOUPDATER="1",
                   CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1", NO_COLOR="1")
     return result
+
+
+# Contracts only this runtime serves. contracts.py is also a render-task input (release.render_changes), so a contract
+# no other runtime knows is added here: the render image and codex-runtime stay as they are.
+CLAUDE_ONLY = ("newsletter_v1",)
+
+
+class ClaudeRequest(ProviderRequest):
+    output_contract: Literal[ProviderRequest.model_fields["output_contract"].annotation.__args__ + CLAUDE_ONLY] = (
+        "agent_decision")
+
+    @model_validator(mode="after")
+    def scoped_output(self):
+        if self.output_contract not in CLAUDE_ONLY:
+            return super().scoped_output()
+        if (not self.request_id.startswith("newsletter-") or self.web_search or self.session is not None
+                or self.attachments or self.brief_deadline_unix is not None):
+            raise ValueError("Newsletter output requires a tool-free newsletter request")
+        return self
 
 
 # Staff explanation reviews stay on the calibrated review model; video contracts may use the newer Opus.
@@ -88,6 +117,10 @@ def output_schema(request):
                 "video_weekly_v1": (WeeklyReview, "Weekly video performance review", "주간 성과 분석 완료"),
                 "video_answer_v1": (VideoAnswer, "Video performance answer", "영상 성과 답변 완료")}[
             request.output_contract]
+    if request.output_contract == "newsletter_v1":
+        from ..newsletter.contracts import NewsletterDraft
+
+        return NewsletterDraft, "Evening brief email", "저녁 브리핑 메일 작성 완료"
     if request.output_contract == "agent_decision":
         return IndependentReview, "Independent explanation review", "독립 설명 검토 완료"
     raise ProviderFault("invalid_output", "This runtime does not produce the requested output contract.")
@@ -271,8 +304,7 @@ class ClaudeRunner:
                 self.active[request.request_id] = asyncio.current_task()
                 try:
                     output = await self.process.run(command(self.config, request), cwd=cwd, env=env,
-                        stdin=stdin_payload(request), timeout_seconds=(self.config.timeout_seconds
-                            if request.output_contract == "agent_decision" else self.config.video_timeout_seconds),
+                        stdin=stdin_payload(request), timeout_seconds=self.config.process_limit(request),
                         max_stdout_bytes=MAX_OUTPUT if request.output_contract == "agent_decision" else VIDEO_MAX_OUTPUT,
                         max_stderr_bytes=65536)
                     # Persist the observed process boundary before parsing can reject its response.
