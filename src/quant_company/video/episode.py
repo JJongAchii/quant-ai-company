@@ -251,12 +251,22 @@ def assets(value):
             yield from assets(v)
 
 
+def shows_outlet(screen, outlets):
+    """The card names one of the outlets (a source chip such as '연합뉴스' or 'CNBC · 연합뉴스'), spacing aside; a
+    trailing '뉴스'/'News' may be left out ('SBS 보도' names 'SBS 뉴스', 2026-10-15 PM)."""
+    shown = re.sub(r'\s+', '', ' '.join(screen))
+    names = {re.sub(r'\s+', '', name) for outlet in outlets for name in (outlet, re.sub(r'\s*(뉴스|News)$', '', outlet))}
+    return any(name and name in shown for name in names)
+
+
 def frame(source):
     """Calendar frame every scene may show: episode day, data cut-off and the source's own date words."""
     return f"{source['day']} {source['cutoff']}"
 
 
-REPORT_LABEL = '보도에 따르면'
+REPORT_LABEL = '보도에 따르면'  # never spoken or shown: sources live on the card (owner, 2026-10-19)
+# Cards with a source slot (CARD_GUIDE). Overview cards (cold_open, summary3, market_board, signals, calendar) carry none.
+SOURCE_CARDS = frozenset({'headline', 'flow', 'compare', 'bars', 'map', 'photo', 'counter'})
 CLOSE_LABEL = '정규장 종가 기준'
 FLOW_LABEL = '장 마감 기준'
 SCENES_MIN, SCENES_MAX = 9, 16
@@ -383,8 +393,9 @@ def episode_violations(plan, source, library=None, *, structure=True, photos=Fal
         if tool_wording(scene.narration, *screen):
             found.append(f'Production or tool wording in scene {scene.id}')
         cited = [claims[c] for c in scene.claim_ids]
-        if any(c['single_outlet'] for c in cited) and not any(REPORT_LABEL in t for t in [scene.narration, *screen]):
-            found.append(f'Single-outlet line needs {REPORT_LABEL} in scene {scene.id}')
+        outlets = sorted({p for c in cited if c['single_outlet'] for p in c['publishers']})
+        if outlets and scene.type in SOURCE_CARDS and not shows_outlet(screen, outlets):
+            found.append(f"Single-outlet line needs its outlet ({', '.join(outlets)}) as a source on the card in scene {scene.id}")
         shown = nums(' '.join(screen)) - allowed_frame
         if any(stated(c['text'], CLOSE_MARK, deniable=True) & shown for c in cited) and not any(CLOSE_LABEL in t for t in screen):
             found.append(f'Regular-session close values need {CLOSE_LABEL} in scene {scene.id}')
@@ -636,8 +647,11 @@ def episode_prompt(source, feedback='', library=None, illustrations=False, lesso
             "contradiction of the day, explain jargon in plain words, one idea per scene, and tell the viewer why it "
             "matters. Index levels and investor flows appear only when they are news that day or explain an issue. "
             "Speak at most two or three numbers per issue; exact figures live on the cards. "
-            f"Cite line IDs for every scene. A line with report_label_required comes from one outlet: say '{REPORT_LABEL}' "
-            "in that scene's narration. Regular-session closes carry "
+            "Cite line IDs for every scene. A line with outlet_on_card comes from one outlet: show that outlet (its "
+            "'outlets' name) as the source on that scene's card (headline, flow, compare, bars, map, photo or counter; "
+            "overview cards need none). Sources are shown on screen only (owner, 2026-10-19): never say "
+            f"'{REPORT_LABEL}' or read an outlet's name aloud, and keep it out of the title and thumbnail. "
+            "Regular-session closes carry "
             f"'{CLOSE_LABEL}' on screen and investor flows (순매수/순매도) carry '{FLOW_LABEL}' on screen. "
             "Never mention AI, models, tools, voices or how the video was produced, on screen or in the copy. "
             + ("Images may only use the asset IDs listed (recently used images are already removed) or the story pictures "
