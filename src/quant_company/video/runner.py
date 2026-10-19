@@ -64,6 +64,10 @@ REVIEW_PHASES = frozenset({'review', 'visual'})
 PROMPT_LIMIT = next(m.max_length for m in ProviderRequest.model_fields['prompt'].metadata if hasattr(m, 'max_length'))
 
 
+class BrandUnavailable(ValueError):
+    """The fixed opening and closing lines cannot be used for this episode (video/motion.py BRAND)."""
+
+
 class ModelRejected(ValueError):
     """An executed turn without a usable output (contract failure or process limit); the detail names the rule."""
 
@@ -510,46 +514,53 @@ class VideoRunner:
         return result
 
     async def record_brand(self, job):
-        """Records a missing fixed line (one per tick, like a scene); True once both are kept. Anything that stops them
-        (budget, an uncertain receipt, no speech service) leaves this episode without them: it never waits for them."""
+        """Records a missing fixed line (one per tick, like a scene) and freezes the lines this episode renders with
+        (qa['brand']); True once settled. Anything that stops them leaves this episode without them: it never waits.
+        Their receipts are kind 'brand' and shared by every episode, so an uncertain recording is never sent again by a
+        later episode and never makes the episode itself uncertain."""
         qa = dict(job.get('qa') or {})
-        if qa.get('brand_skipped'):
+        if 'brand' in qa:
             return True
         try:
             for name, request in brand_requests(job).items():
                 path = brand_file(self.settings, name, request)
                 if path.is_file():
+                    if not 0.5 <= float(probe(path, self.settings)['format']['duration']) <= 15:
+                        raise BrandUnavailable(f'kept {name} line is not usable speech: raise BRAND_TAKE')
                     continue
                 key = 'speech-brand-' + brand_name(name, request)
-                receipt = await asyncio.to_thread(self.store.effect_receipt, job, key, 'completed')
-                if receipt is None:
-                    await self.effect(job, key, request, 'speech', lambda request=request: self.speech.submit(**request),
+                kept = await asyncio.to_thread(self.store.brand_receipt, key)
+                if kept and kept['state'] != 'completed':
+                    raise BrandUnavailable(f'earlier recording {kept["state"]}: reconcile {kept["id"]}')
+                if kept is None:
+                    await self.effect(job, key, request, 'brand', lambda request=request: self.speech.submit(**request),
                                       cost=speech_credits(request['text']))
                     await asyncio.to_thread(self.store.update_qa, job, qa)  # a line kept on an earlier tick
                     await asyncio.to_thread(self.store.save, job, 'synthesizing')
                     return False
-                url = await self.speech.completed(receipt['taskId'])
+                url = await self.speech.completed(kept['receipt']['taskId'])
                 path.parent.mkdir(parents=True, exist_ok=True)
                 partial = path.with_suffix('.partial.mp3')
                 await asyncio.to_thread(download_audio, url, partial)
+                if not 0.5 <= float(probe(partial, self.settings)['format']['duration']) <= 15:
+                    partial.unlink(missing_ok=True)
+                    raise BrandUnavailable(f'recorded {name} line is not usable speech')
                 partial.replace(path)
                 qa['brand_new'] = sorted({*qa.get('brand_new', []), name})
-        except (UncertainEffect, PolicyError, ValueError, OSError, TimeoutError, httpx.HTTPError) as error:
-            qa['brand_skipped'] = f'{type(error).__name__}: {error}'[:200]
+            qa['brand'] = {name: brand_file(self.settings, name, request).name
+                           for name, request in brand_requests(job).items()}
+        except Exception as error:  # noqa: BLE001 - Runway errors arrive as exception groups; none may hold the episode
+            qa['brand'], qa['brand_skipped'] = None, f'{type(error).__name__}: {error}'[:200]
         await asyncio.to_thread(self.store.update_qa, job, qa)
         return True
 
     def brand_audio(self, job):
-        """{'sting': file, 'endcard': file} when both fixed lines are kept and sound plausible, else None."""
-        if template(job) != 'motion-v2' or (job.get('qa') or {}).get('brand_skipped'):
+        """{'sting': file, 'endcard': file} this episode was frozen with, while the kept files exist; else None."""
+        names = (job.get('qa') or {}).get('brand') if template(job) == 'motion-v2' else None
+        if not names:
             return None
-        paths = {name: brand_file(self.settings, name, request) for name, request in brand_requests(job).items()}
-        try:
-            if all(p.is_file() and 0.5 <= float(probe(p, self.settings)['format']['duration']) <= 15 for p in paths.values()):
-                return paths
-        except (ValueError, OSError, KeyError):
-            pass
-        return None
+        paths = {name: Path(self.settings.video_artifact_dir) / 'brand' / file for name, file in names.items()}
+        return paths if all(p.is_file() for p in paths.values()) else None
 
     async def fetch_audio(self, job, takes, directory):
         paths = []

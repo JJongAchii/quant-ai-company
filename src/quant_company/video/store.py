@@ -96,7 +96,11 @@ def delivery_text(job, artifacts, at=None):
     images = (f"생성 그림 {len(generated)}장 포함(화면 표기 없음) · 업로드 때 YouTube의 "
               "'변경되었거나 합성된 콘텐츠' 항목을 '예'로 선택해 주세요\n") if generated else ""
     # The fixed opening and closing lines are recorded once and reused (runner.BRAND_TAKE): the owner hears a new take.
-    brand = ("시작·마무리 장면 없이 만들었습니다(고정 음성 준비 실패)\n" if qa.get("brand_skipped")
+    # What the render actually contains decides the line (a render image older than the lines ignores them).
+    shown = artifacts.get("brand") or []
+    brand = ("" if "brand" not in qa else
+             f"시작·마무리 장면 없이 만들었습니다(고정 음성 준비 실패: {qa['brand_skipped'][:80]})\n" if qa.get("brand_skipped")
+             else "시작·마무리 장면 없이 만들었습니다(렌더에 들어가지 않음 · 렌더 이미지 확인 필요)\n" if not shown
              else "시작·마무리 음성을 이번 회차에서 처음 만들었습니다. 들어 보시고 다시 만들어야 하면 말씀해 주세요\n"
              if qa.get("brand_new") else "")
     return (f"영상 준비 완료 · {EDITION_NAMES.get(job['source'].get('edition_kind'), '브리핑')}\n"
@@ -217,7 +221,7 @@ class VideoStore:
         with self.db.transaction() as conn:
             conn.execute("SELECT pg_advisory_xact_lock(%s)", (LOCK,))
             conn.execute("""UPDATE video_jobs j SET state=CASE WHEN EXISTS
-                (SELECT 1 FROM video_effects e WHERE e.job_id=j.id AND e.state='running')
+                (SELECT 1 FROM video_effects e WHERE e.job_id=j.id AND e.state='running' AND e.kind<>'brand')
                 THEN 'uncertain' ELSE 'expired' END,lease_until=NULL,updated_at=now()
                 WHERE state=ANY(%s) AND publish_deadline<=%s
                 AND (lease_until IS NULL OR lease_until<now())""", (list(APPROVAL), utcnow()))
@@ -259,7 +263,13 @@ class VideoStore:
     def has_uncertain_effect(self, job):
         with self.db.transaction() as conn:
             return bool(conn.execute("""SELECT 1 FROM video_effects WHERE job_id=%s AND state='running'
-                AND kind<>'model' LIMIT 1""", (job['id'],)).fetchone())
+                AND kind NOT IN ('model','brand') LIMIT 1""", (job['id'],)).fetchone())
+
+    def brand_receipt(self, key):
+        """The receipt of a fixed line under any episode (runner.record_brand): the lines are shared by every episode."""
+        with self.db.transaction() as conn:
+            return conn.execute("""SELECT id,state,receipt FROM video_effects WHERE kind='brand' AND id LIKE %s
+                ORDER BY created_at DESC LIMIT 1""", ('%:' + key,)).fetchone()
 
     def budget_available(self, job, cost):
         with self.db.transaction() as conn:

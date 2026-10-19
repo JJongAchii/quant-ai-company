@@ -59,8 +59,9 @@ def reconcile(store, identity, key, receipt, note):
                      (job['id'], key, note, Jsonb(receipt)))
         if key == 'upload-session':
             conn.execute('UPDATE video_jobs SET upload_session=%s WHERE id=%s', (receipt['session'], job['id']))
-        unresolved = conn.execute("SELECT 1 FROM video_effects WHERE job_id=%s AND state='running' LIMIT 1",
-                                  (job['id'],)).fetchone()
+        # A fixed line's receipt (kind 'brand') belongs to every episode, never to one episode's recovery.
+        unresolved = conn.execute("""SELECT 1 FROM video_effects WHERE job_id=%s AND state='running' AND kind<>'brand'
+            LIMIT 1""", (job['id'],)).fetchone()
         state = 'uncertain' if unresolved else stage
         if video_store.utcnow() >= job['publish_deadline'] and state in video_store.APPROVAL:
             state = 'expired'
@@ -92,7 +93,8 @@ def retry(store, identity, note):
         job = conn.execute('SELECT * FROM video_jobs WHERE id=%s FOR UPDATE', (identity,)).fetchone()
         if (not job or job['state'] != 'blocked' or not store.allowed(job)
                 or job['error'] not in RETRYABLE
-                or conn.execute("SELECT 1 FROM video_effects WHERE job_id=%s AND state='running'", (identity,)).fetchone()):
+                or conn.execute("SELECT 1 FROM video_effects WHERE job_id=%s AND state='running' AND kind<>'brand'",
+                                (identity,)).fetchone()):
             raise PolicyError('Only known tasks, local rendering or the same upload session may be retried')
         stage = RETRYABLE[job['error']]
         if stage == 'uploading' and not job['upload_session']:
