@@ -204,6 +204,16 @@ class SlackIngress:
                     event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", text=text,
                     owner=user, agent=target, channel=channel, thread_ts=thread_ts, daily_limit_command=command)
                 return {"ok": True, "owner_control": True, **result}
+            from .newsletter.commands import parse as parse_newsletter_command
+
+            command = parse_newsletter_command(text)
+            if command:
+                if user != self.settings.briefing_owner_user:
+                    return {"ok": True, "ignored": True, "reason": "newsletter_owner_scope"}
+                result = self.company.ingest(
+                    event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", text=text,
+                    owner=user, agent=target, channel=channel, thread_ts=thread_ts, newsletter_command=command)
+                return {"ok": True, "owner_control": True, **result}
 
             from .research.approvals import has_targets, short_command
 
@@ -214,6 +224,12 @@ class SlackIngress:
                     event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", event_ts=timestamp)
                 if approval is not None:
                     return {"ok": True, **approval}
+        elif target != "maintainer":
+            from .newsletter.commands import parse as parse_newsletter_command
+
+            # Recipient commands belong to the director; another employee's model never receives the address.
+            if parse_newsletter_command(text):
+                return {"ok": True, "ignored": True, "reason": "newsletter_director_only"}
         revise = target != "maintainer" and text.startswith(("수정:", "변경:", "revise:"))
         if revise:
             text = text.split(":", 1)[1].strip()

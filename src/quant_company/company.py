@@ -381,7 +381,7 @@ class Company:
                project_id: str | None = None, channel: str | None = None, thread_ts: str | None = None,
                revise: bool = False, status_only: bool = False, daily_limit_command: dict | None = None,
                account_command: dict | None = None, account_help: bool = False,
-               model_command: dict | None = None,
+               model_command: dict | None = None, newsletter_command: dict | None = None,
                interpret: bool = False, control_action: str | None = None,
                approval_context: dict | None = None) -> dict:
         self.role(agent)
@@ -451,13 +451,25 @@ class Company:
                 raise PolicyError("Invalid owner command")
             digest = fingerprint([digest, daily_limit_command])
             status_only = True
+        stored = text
+        if newsletter_command is not None:
+            from .newsletter.commands import parse as parse_newsletter_command
+            from .newsletter.store import masked
+
+            if (newsletter_command != parse_newsletter_command(text) or agent != "director" or revise or interpret
+                    or control_action or daily_limit_command is not None):
+                raise PolicyError("Invalid owner command")
+            digest = fingerprint([digest, newsletter_command])
+            status_only = True
+            # Recipient addresses stay in the recipient table; the task, message and project keep a masked copy.
+            stored = masked(text)
         with self.db.transaction() as conn:
             conn.execute("SELECT pg_advisory_xact_lock(hashtextextended(%s,0))", (event_key,))
             old = conn.execute("SELECT * FROM inbound WHERE event_key=%s", (event_key,)).fetchone()
             if old:
                 if old["payload_digest"] != digest and not (
-                    (daily_limit_command is not None or interpret or control_action is not None
-                     or (research_command and approval_context))
+                    (daily_limit_command is not None or newsletter_command is not None or interpret
+                     or control_action is not None or (research_command and approval_context))
                     and old["payload_digest"] == prior_ingress_digest
                 ):
                     raise PolicyError("Request ID was already used for different content")
@@ -477,7 +489,8 @@ class Company:
                 project_id = stable("project:" + event_key)
                 project = conn.execute("""INSERT INTO projects(id,title,instruction,owner_user,channel,thread_ts)
                     VALUES (%s,%s,%s,%s,%s,%s) RETURNING *""",
-                                       (project_id, text[:120], '' if control_action else text, owner, channel, thread_ts)).fetchone()
+                                       (project_id, stored[:120], '' if control_action else stored, owner, channel,
+                                        thread_ts)).fetchone()
             if revise:
                 from .task_control import advance
 
@@ -485,7 +498,7 @@ class Company:
                 self._event(conn, "project_revised", {"revision": project["revision"], "by": owner}, project_id)
             limit_exhausted = False
             try:
-                task = self._new_task(conn, project, agent, text, task_id=stable("task:" + event_key),
+                task = self._new_task(conn, project, agent, stored, task_id=stable("task:" + event_key),
                                       status_only=status_only,
                                       kind='routing' if routing else 'control' if status_only else 'work',
                                       priority=-100 if routing else None)
@@ -493,11 +506,11 @@ class Company:
                 if str(exc) != "Project task limit exhausted" or not event_key.startswith("slack:") or revise:
                     raise
                 limit_exhausted = True
-                task = self._new_task(conn, project, agent, text, task_id=stable("task:" + event_key),
+                task = self._new_task(conn, project, agent, stored, task_id=stable("task:" + event_key),
                                       status_only=True, kind='control')
             conn.execute("INSERT INTO inbound(event_key,project_id,task_id,payload_digest) VALUES (%s,%s,%s,%s)",
                          (event_key, project_id, task["id"], digest))
-            self._message(conn, project, task["id"], owner, "human", text)
+            self._message(conn, project, task["id"], owner, "human", stored)
             if limit_exhausted:
                 notice = (f"이 스레드의 일반 업무 한도 {self.settings.company_max_project_tasks}건에 도달했습니다. "
                           "새 질문은 새 스레드에서 요청해 주세요. 이 스레드의 현황은 '상태'로 확인할 수 있습니다.")
@@ -530,6 +543,10 @@ class Company:
                 from .owner_controls import apply_daily_limit_command
 
                 apply_daily_limit_command(conn, self, project, task, event_key, text, daily_limit_command)
+            elif newsletter_command is not None:
+                from .newsletter.commands import apply as apply_newsletter_command
+
+                apply_newsletter_command(conn, self, project, task, event_key, newsletter_command)
             elif status_only:
                 rows = conn.execute("""SELECT agent,status,count(*) AS n FROM tasks WHERE project_id=%s AND id<>%s
                     GROUP BY agent,status ORDER BY agent,status""", (project_id, task["id"])).fetchall()
