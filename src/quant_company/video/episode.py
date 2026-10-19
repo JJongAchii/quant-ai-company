@@ -483,7 +483,8 @@ summary3(title, cards=[{n,items=[[icon,size('sm'|'md'|'lg'),color('gold'|'sky'|'
 market_board(title, tag, tiles=[{name,value,dir,change,sub,badge}] 4-8).
 headline(chips=[issue label, horizon], title, image={asset}, panel_title, source, stats=[{label,value,dir,change,sub}] 2-3).
 flow(chips, title, nodes=[{chips,source?,icon,head,big?|text?|rows?,dir?,sub?,badge?}] x3, foot?={chip,text}).
-compare(chips, title, tiles=[{label,source?,value,dir?,sub}] 2-3, chart_title, chart_source, bars=[{n,label,name}] x2, arrow_text, extra=[[label,value]] x2).
+compare(chips, title, tiles=[{label,source?,value,dir?,sub}] 2-3, chart_title, chart_source, bars=[{n,label,name}] x2, arrow_text,
+arrow_dir?('up'|'dn' when the arrow shows one measure rising or falling; omit it for other comparisons), extra=[[label,value]] x2).
 bars(chips?, title, unit_note, source?, rows=[{name,n,label,tag?}] 2-8, image?={asset,caption,labels=[]}, side?={title,rows,signal}).
 map(chips, title, region='hormuz', panel_title, bars=[{name,w(0-100: the bar's share of its track),label,gold?}], delta, delta_dir?('up'|'dn' when the delta states a rise or a fall), delta_source, alt, cost_head, cost) —
 delta is one short line (e.g. 'WTI ▲40센트'), alt one short caption, cost one sentence.

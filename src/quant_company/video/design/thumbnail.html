@@ -6,9 +6,10 @@ background:radial-gradient(ellipse 80% 70% at 35% 45%,#0A2A63 0%,#011A43 55%,#00
 -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 35%)}
 .badge{position:absolute;left:56px;top:52px;background:#FDC749;color:#011A43;font-weight:800;font-size:34px;padding:10px 22px;border-radius:14px}
 /* The question and the stat share one column above the bar, so a longer question pushes the stat down instead of covering
-   it (10/14 AM: a third line covered the stat); fit() shrinks the question to two lines inside the column. */
+   it (10/14 AM: a third line covered the stat); fit() shrinks the question to two lines inside the column. The question
+   keeps the line break the script wrote (10/16 PM: '외국인 사고 기관 / 던졌다 바닥 신호일까?' was balanced across it). */
 .copy{position:absolute;left:56px;top:150px;width:760px;height:450px;display:flex;flex-direction:column;justify-content:center;gap:24px}
-.q{font-size:104px;font-weight:800;line-height:1.12;letter-spacing:-.03em;text-wrap:balance}
+.q{font-size:104px;font-weight:800;line-height:1.12;letter-spacing:-.03em;text-wrap:balance;white-space:pre-line}
 .q b{color:#FDC749}.n{padding-left:4px;font-size:40px;font-weight:700;color:#FCF1DB}.n.up{color:#FF5C6C}.n.dn{color:#5EA0FF}
 .bar{position:absolute;left:0;right:0;bottom:0;height:100px;background:#00112E;border-top:3px solid #FDC749;display:flex;align-items:center;padding:0 56px;gap:16px;font-size:34px;font-weight:800}
 .bar img{height:58px}.bar span{color:#FDC749;font-weight:700;font-size:30px}.s{margin-left:auto;font-size:22px;color:#FF9FB0;font-weight:700}
