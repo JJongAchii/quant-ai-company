@@ -40,6 +40,7 @@ WATCH_STALE = timedelta(minutes=10)
 SLACK_ID = re.compile(r'[CDGUW][A-Z0-9]{2,30}')
 RELEASE_STATUS = STATE / 'release-status.json'
 CURRENT_RELEASE = Path('/opt/quant-company/current')  # release.py activate points it at the running release
+CLAUDE_AUTH = STATE / 'claude/auth'  # the isolated subscription login of claude-runtime (docs/claude-runtime.md)
 SYNTHETIC = STATE / 'ops/synthetic-incident.json'
 SYNTHETIC_FOR = timedelta(minutes=3)  # longer than two watch ticks, so the minutely timer does not erase the test
 COMMIT = re.compile(r'[0-9a-f]{7,40}')
@@ -203,6 +204,24 @@ def active_release(link=CURRENT_RELEASE):
     return name if COMMIT.fullmatch(name) else None
 
 
+def claude_login(auth=CLAUDE_AUTH):
+    """Whether claude-runtime is logged in and when its refresh token expires; the CLI empties the login at the first
+    refresh after that (2026-10-19 00:01 KST). No token is read into the result. None: Claude is not set up here."""
+    if not auth.is_dir():
+        return None
+    path = auth / '.credentials.json'
+    if not path.exists():
+        return {'logged_in': False, 'refresh_expires_at': None}
+    value = json.loads(path.read_text())
+    login = value.get('claudeAiOauth') if isinstance(value, dict) else None
+    if not isinstance(login, dict):
+        raise ValueError('Unexpected Claude credentials shape')
+    expiry = login.get('refreshTokenExpiresAt')
+    expires = (datetime.fromtimestamp(expiry / 1000, UTC).replace(microsecond=0).isoformat()
+               if isinstance(expiry, int) and expiry > 0 else None)
+    return {'logged_in': bool(login.get('accessToken') or login.get('refreshToken')), 'refresh_expires_at': expires}
+
+
 def release_status(path=RELEASE_STATUS, link=CURRENT_RELEASE):
     """The release tool's last report (docs/adr/0045), reduced to what the ops watch alerts on; None until installed.
 
@@ -291,6 +310,10 @@ def snapshot(now=None, *, synthetic=False):
         value['release'] = release_status()
     except (OSError, ValueError) as error:
         value['probe_errors'].append('release:' + type(error).__name__)
+    try:
+        value['claude_login'] = claude_login()
+    except (OSError, ValueError) as error:
+        value['probe_errors'].append('claude:' + type(error).__name__)
     return value
 
 
