@@ -1,0 +1,172 @@
+# 저녁 브리핑 이메일
+
+KRX 거래일마다 커밋된 마감(PM) 브리핑으로 바깥 사람도 읽기 쉬운 메일을 한 통 만들어, 소유자가 Slack에서 관리하는
+수신자에게 Gmail로 보낸다. 아침 브리핑은 메일로 보내지 않고, Slack 리포트 형식은 바꾸지 않는다. 형식은 소유자가 승인한
+시안 v5(2026-10-19 설계, `docs/superpowers/specs/2026-10-19-evening-brief-email-design.md`)를 따른다.
+기본값은 꺼짐(`NEWSLETTER_ENABLED=false`)이다.
+
+## 흐름
+
+1. **PM 에디션 커밋**(news-worker 또는 dispatch의 `BriefStore.flush`) 때 같은 트랜잭션의 savepoint에서 메일 한 건
+   (`newsletter_issues`, 에디션마다 고정 ID)을 만든다. 실패해도 브리핑 커밋은 그대로 진행된다. 아침 에디션, 미리보기,
+   플래그가 꺼진 날에는 만들지 않는다.
+   - 에디션에 `proposal`이 없거나 이슈가 0개면 그날은 보내지 않고, 루트 글이 Slack에 올라간 뒤 그 PM 브리핑 스레드에
+     한 줄만 남긴다.
+2. **작성**은 video-worker 프로세스의 별도 큐(`-newsletter`, `NewsletterWorkflow`)에서 claude-runtime으로 한다.
+   영상 작업 상태와 기록을 건드리지 않는다. 계약은 `newsletter_v1`, 요청 ID는 `newsletter-<메일 ID>-<회차>`이며
+   Claude 실행기만 이 계약을 안다(`providers/claude_runner.py`의 `ClaudeRequest`). `contracts.py`는 렌더 작업도
+   쓰는 모듈이라 건드리지 않았다. 그래서 렌더 이미지와 codex-runtime은 그대로다(`release.render_changes`가 빈 목록).
+   - 근거는 독자에게 나간 Slack 본문(`rendered`, 영상과 같은 방식으로 줄 단위로 읽음)과, 본문에 실제로 보인
+     `proposal`의 요약·이슈·일정 문장뿐이다. 원문 인용(evidence), source notes, Slack에 안 나간 수집값은 쓰지 않는다.
+   - 모델은 영상과 같은 `VIDEO_MODEL`, 노력은 `high`다. 같은 실행기를 영상이 쓰는 중이면(`busy`) 같은 요청 ID로
+     다시 묻는다.
+3. **검사**(결정적, `newsletter/checks.py`)를 통과한 글만 쓴다. 통과하지 못하면 지적 사항과 직전 글을 주고 다시
+   쓰게 한다(자동 메일 3회, 시험 발송용 1회).
+4. **대체본**: 커밋 후 45분까지 통과본이 없거나 재작성 횟수를 다 쓰면 dispatch가 본문 문장으로 같은 레이아웃의
+   대체본(30초 요약, 주요 숫자, 이슈 소제목과 사실 첫 문장, 확인할 것, 일정)을 만들어 보낸다. 하루를 건너뛰지 않는다.
+5. **발송**은 dispatch만 한다(모델 토큰 없음). Slack 발송과 따로 도는 스레드에서 10초마다 확인하므로 SMTP가 느려도
+   브리핑 글은 늦어지지 않는다. 결과는 그 PM 브리핑 스레드에 한 줄(발송 수, 실패, 결과 불확실, 대체본 여부)로 남긴다.
+
+## 메일 형식
+
+제목은 `<그날 가장 두드러진 사실> | MM/DD 마감 브리핑`이다. 머리글(로고·뭐든story·`MM/DD 장 마감 · 오늘의 증시story`·큰
+제목·2문장 요약), 오늘의 시장(출발→마감 그림, 지수 흐름, 투자자별 매매, 업종·종목, 용어 풀이), 주요 이슈 2~3개(사실
+소제목, 한 문단, 시사점, ▶ 확인할 일정/지표/사항), 기업 소식 0~1개, 주요 일정, ▶ 영상으로 보기 버튼, 끝부분(소개·수신
+이유·면책·수신 거부) 순서다. AI 작성 표시, 출처 줄, 각주 번호는 넣지 않는다.
+
+- 메일 클라이언트용 인라인 스타일 표 레이아웃이며 웹폰트를 쓰지 않는다. multipart/alternative로 텍스트 본문을 함께
+  보낸다. 로고는 `src/quant_company/video/design/logo_mark.png`를 그 자리에서 읽어 Content-ID로 넣는다.
+- `List-Unsubscribe: <mailto:<발신 주소>?subject=수신거부>`와 하단 '수신 거부' 링크가 같은 주소다.
+- 영상 버튼은 채널 페이지(`NEWSLETTER_CHANNEL_URL`)로 연결한다. 영상 업로드 주소는 넣지 않는다.
+
+## 검사 규칙
+
+- **숫자**: 메일의 모든 숫자는 Slack 본문에 있어야 한다. 같은 단위 안에서 유효숫자를 줄인 반올림만 허용한다
+  (3.17%→3.2%, 18조1,308억원→18조원). '넘게·이상·여' 앞의 숫자는 내림만 허용한다(18조원 넘게). 조·억·만은 값으로
+  환산하므로 18조1,308억원으로 18억원이나 1,308조원을 쓸 수 없다. 차이·합계 같은 새 숫자, %와 %p의 혼동도 거절한다.
+- **표현**: 매수·매도 권유, AI·모델·도구가 글을 만들었다는 표현(영상의 `TOOL_WORDING`과 메일용 목록), 출처·링크·각주,
+  '~요' 구어체 어미를 거절한다. 브리핑 본문에 그대로 있는 말(예: 'AI 투자', '앤트로픽' 같은 주제어)은 허용한다.
+- **구조**: 이슈는 본문 이슈 수와 2 중 작은 수 이상, 일정이 있으면 일정 블록, 제목에 숫자, 용어 풀이는 메일에 쓰인
+  용어만.
+
+## 수신자 관리 (Slack)
+
+브리핑 소유자(`BRIEFING_OWNER_USER`)만, DM 또는 허용 채널에서 **@quant-director를 멘션**해 쓴다. 하루 한도 명령과
+같은 경로로 처리하고 모델은 읽지 않는다. 다른 직원에게 보낸 같은 명령은 무시한다(주소가 모델에 가지 않게).
+
+| 명령 | 동작 |
+|---|---|
+| `이메일 추가 <주소>` | 형식을 검사해 추가한다. 삭제한 주소는 다시 켠다. 받는 분이 직접 수신 거부한 주소는 켜지 않고 그렇다고 답한다. |
+| `이메일 재동의 <주소>` | 받는 분이 다시 동의한 것을 소유자가 확인한 경우에만, 수신 거부한 주소를 다시 켠다. |
+| `이메일 삭제 <주소>` | 수신을 끈다. 기록은 남긴다. |
+| `이메일 목록` | 가린 주소(`qk***@gmail.com`)와 상태(수신 중·삭제됨·본인 수신 거부)를 보여 준다. |
+| `이메일 시험 발송 <주소>` | 플래그와 관계없이, 가장 최근 커밋된 PM 에디션의 메일을 (없으면 이때 한 번 작성해) **명령에 적은 주소에만** 보낸다. 결과는 명령한 스레드에 남긴다. |
+
+주소는 수신자 표에만 있다. 명령 글은 업무·메시지 기록에 가린 형태로 저장하고, 답장·로그·알림도 가린 주소만 쓴다.
+
+## 수신 거부
+
+dispatch가 같은 Gmail 계정을 IMAP(같은 앱 비밀번호)으로 5분마다 읽는다(플래그가 켜져 있고 비밀번호가 있을 때).
+제목에 `수신거부`·`수신 거부`·`unsubscribe`가 있는 읽지 않은 메일이 등록된 수신자에게서 왔으면 그 수신자를
+`unsubscribed`(소유자의 삭제와 다른 상태)로 바꾸고 메일을 읽음 처리한 뒤, 가장 최근 PM 브리핑 스레드에 가린 주소로
+한 줄 남긴다. 행동이 필요 없으므로 소유자를 태그하지 않는다. 수신자가 아닌 사람의 메일은 읽지 않은 채로 둔다.
+
+## 발송 영수증과 불확실한 발송
+
+SMTP에는 멱등 키가 없다. 수신자별 행(`newsletter_sends`)을 SMTP 세션이 그 주소를 말하기 전에 `sending`으로 커밋하고,
+Message-ID는 (에디션, 수신자)마다 고정이다. 성공하면 `sent`로 바꾼다.
+
+- 연결·로그인 실패, RCPT 거절처럼 서버가 메일을 받지 않은 것이 확실하면 5분 뒤 다시 시도하고(최대 6회) 그 뒤 `failed`다.
+- DATA 단계부터 끊긴 발송, 또는 10분 넘게 `sending`으로 남은 행은 `uncertain`이고 **자동으로 다시 보내지 않는다**.
+  릴리스는 `sending` 행이 있는 동안 dispatch를 다시 만들지 않는다.
+- 수신자를 정한 뒤 수신 거부·삭제된 주소는 보내기 직전에 다시 확인해 `skipped`로 둔다. 커밋 후 12시간이 지난 정기
+  발송은 보내지 않는다(나중에 플래그를 켜도 지난 메일이 가지 않는다).
+
+## 설정
+
+`deploy/compose.yaml`의 `x-db-env`(api, slack-socket, worker, news-worker, dispatch 등)와
+`deploy/video.compose.yaml`의 video-worker 목록에 명시돼 있다. 목록에 없는 값은 컨테이너에 들어가지 않는다.
+
+| 값 | 기본값 | 뜻 |
+|---|---|---|
+| `NEWSLETTER_ENABLED` | `false` | 자동 작성·발송·수신 거부 확인. 꺼져 있어도 시험 발송은 된다. |
+| `NEWSLETTER_FROM_ADDRESS` | 빈 값 | 발신 Gmail 주소(로그인 계정). 비어 있으면 보내지 않는다. |
+| `NEWSLETTER_FROM_NAME` | `뭐든story` | 보낸 사람 이름 |
+| `NEWSLETTER_SMTP_HOST`, `NEWSLETTER_SMTP_PORT` | `smtp.gmail.com`, `587` | STARTTLS로 접속 |
+| `NEWSLETTER_IMAP_HOST` | `imap.gmail.com` | 수신 거부 메일 확인(993) |
+| `NEWSLETTER_CHANNEL_URL` | `https://www.youtube.com/@anything-story` | 영상으로 보기 버튼 |
+| `NEWSLETTER_PASSWORD_FILE` | dispatch에만 `/run/newsletter/app_password` | compose에 고정. runtime.env에 넣지 않는다. |
+
+### 앱 비밀번호 파일
+
+비밀번호는 호스트의 `/var/lib/quant-company/secrets/newsletter/app_password`(UID 10001, 0600)에 있고, 그 **디렉터리**를
+dispatch에만 읽기 전용으로 `/run/newsletter`에 연결한다. compose 최상위 `secrets:`를 쓰지 않은 이유: 파일이 없는
+secret은 dispatch 컨테이너 생성 자체를 실패시킨다(compose가 secret을 `create_host_path: false` bind로 붙인다). 디렉터리
+bind는 `create_host_path: true`라 없으면 Docker가 빈 디렉터리를 만든다. 그래서 소유자가 비밀번호를 넣기 전에도 모든
+릴리스가 정상으로 진행되고, 파일이 없거나 비어 있으면 메일 기능만 꺼진 상태로 남는다. dispatch는 확인할 때마다 파일을
+다시 읽으므로 넣은 뒤 재시작이나 릴리스가 필요 없다.
+
+## 켜는 순서
+
+**1. 소유자: Gmail 계정과 앱 비밀번호**
+뭐든story 전용 Gmail 계정을 만들고 2단계 인증을 켠 뒤 앱 비밀번호(16자)를 만든다. 비밀번호는 채팅·Slack·Git에
+쓰지 않는다.
+
+**2. 소유자: 서버에 비밀번호 넣기** (이 기능이 들어간 main이 릴리스된 뒤)
+
+```bash
+ssh -t <회사 서버> sudo bash /opt/quant-company/current/deploy/set-newsletter-secret.sh
+```
+
+화면에 보이지 않게 입력받아(`read -rs`) 파일을 그 자리에서 0600으로 쓰고, 설정 여부만 출력한다.
+`... set-newsletter-secret.sh status`는 상태만, `clear`는 비운다(기능이 다시 꺼진다).
+
+**3. 릴리스 운영자: 발신 주소** (main의 이 커밋 이후, 정확한 값)
+
+```dotenv
+NEWSLETTER_FROM_ADDRESS=<1에서 만든 Gmail 주소>
+```
+
+runtime.env 값을 바꾸는 동안 `RELEASE_AUTO_ENABLED=paused`로 두고, 현재 커밋으로 `release.py apply`를
+`deploy/release.json` 그룹 순서대로 실행해 바뀐 서비스(`x-db-env`를 쓰는 서비스)를 다시 만든 뒤 `true`로 돌린다
+(docs/deployment.md). 그 밖의 값은 기본값 그대로 둔다. 이 기능의 릴리스 자체에는 렌더 이미지, 서비스 추가·삭제,
+호스트 unit 변경이 필요 없다.
+
+**4. 소유자: 수신자와 시험 발송** (Slack, @quant-director 멘션)
+
+```text
+이메일 추가 <소유자 주소>
+이메일 시험 발송 <소유자 주소>
+```
+
+몇 분 안에 '이메일 시험 발송 완료 · qk***@…'가 그 스레드에 남고 메일이 도착하는지 본다. 받은편지함 미리보기,
+로고, 휴대폰 화면, 수신 거부 링크(발신 주소로 제목 `수신거부` 메일 작성)를 확인한다. 실패하면 사유가 같은 스레드에
+남는다(예: 발신 주소나 앱 비밀번호 미설정).
+
+**5. 릴리스 운영자: 켜기** (소유자가 시험 발송을 확인한 뒤)
+
+```dotenv
+NEWSLETTER_ENABLED=true
+```
+
+3과 같은 방식으로 반영한다. video-worker도 이 값을 받는다. 다음 거래일 PM 브리핑부터 자동으로 작성·발송한다.
+
+## 상태 확인 (읽기 전용)
+
+```sql
+SELECT e.day,i.state,i.origin,i.reason,jsonb_array_length(i.attempts) AS attempts FROM newsletter_issues i
+  JOIN brief_editions e ON e.id=i.edition_id ORDER BY e.day DESC LIMIT 5;
+SELECT kind,state,error,count(*) FROM newsletter_sends GROUP BY 1,2,3;
+SELECT state,count(*) FROM newsletter_recipients GROUP BY 1;
+```
+
+`uncertain` 행은 도착했을 수도 있으므로 다시 보내지 않는다. 받는 분에게 직접 확인한 뒤에만 필요하면
+`이메일 시험 발송 <주소>`로 따로 보낸다. 쿼리 결과의 주소는 Slack·채팅에 옮기지 않는다.
+
+## 검증 범위
+
+`tests/test_newsletter.py`는 실제 PostgreSQL에서 PM 커밋 연결, 플래그, 명령(소유자 전용·가림·수신 거부 주소 거절·
+재동의), 숫자 검사, 45분 대체본, 수신자별 영수증(중복 없음, 끊긴 발송은 uncertain·재발송 없음), 수신 거부를 확인한다.
+claude-runtime, Gmail SMTP/IMAP, Slack은 프로세스 안의 시뮬레이션이며 실제 메일을 보내거나 읽지 않았다. 실제 Gmail
+발송은 위 4단계의 시험 발송으로 소유자 주소에서만 확인한다. `deploy/test_deployment_contract.py`는 비밀번호가 dispatch에만
+연결되고 설정이 각 프로세스에 들어가는지 확인한다.
