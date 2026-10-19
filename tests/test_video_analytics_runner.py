@@ -234,6 +234,27 @@ async def test_the_full_diagnosis_follows_in_the_card_thread_after_its_receipt(b
     assert len(outbox(analytics)) == 2
 
 
+async def test_a_posted_card_and_its_detail_are_no_longer_pending(brief, video, analytics):  # noqa: F811
+    _, client = linked_upload(brief, video)
+    runner = AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider())
+    await runner.tick(AFTER_D3)
+    assert analytics.unposted("d3") == []
+    deliver(analytics, outbox(analytics)[0], "300.001")
+    await runner.tick(AFTER_D3)
+    assert len(outbox(analytics)) == 2 and analytics.undetailed() == []
+
+
+async def test_a_card_posted_before_the_studio_edits_does_not_stop_the_tick(brief, video, analytics):  # noqa: F811
+    # Production 10/15-10/19: cards posted before #164 have receipts without changes.
+    _, client = linked_upload(brief, video)
+    runner = AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider())
+    await runner.tick(AFTER_D3)
+    with analytics.db.transaction() as conn:
+        conn.execute("UPDATE video_analyses SET receipt=receipt #- '{output,changes}',output=output-'changes'")
+    result = await runner.tick(AFTER_D3)
+    assert (result["state"], result["cards"], result["details"]) == ("ok", 0, 0) and len(outbox(analytics)) == 1
+
+
 async def test_a_card_whose_analysis_failed_has_no_detail_thread(brief, video, analytics):  # noqa: F811
     _, client = linked_upload(brief, video)
     runner = AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider(fault="invalid_output"))

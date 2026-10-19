@@ -197,12 +197,13 @@ class AnalyticsStore:
 
     def unposted(self, horizon):
         """Reportable snapshots of `horizon` whose Slack post does not exist yet, with their publication."""
+        # messages.id reads back as a UUID and stable() gives its text: compare text.
         with self.db.transaction() as conn:
             rows = conn.execute("""SELECT s.youtube_id,s.horizon,s.window_start,s.window_end,s.metrics,p.title,
                 p.proposed_title,p.edition_kind,p.published_at,p.job_id,p.duration_s,p.thumbnail_url
                 FROM video_snapshots s JOIN video_publications p USING(youtube_id)
                 WHERE s.horizon=%s AND (s.metrics->>'report')::boolean ORDER BY p.published_at""", (horizon,)).fetchall()
-            posted = {r["id"] for r in conn.execute("SELECT id FROM messages WHERE id=ANY(%s)", (
+            posted = {str(r["id"]) for r in conn.execute("SELECT id FROM messages WHERE id=ANY(%s)", (
                 [stable(f"video-analytics-message:{r['youtube_id']}:{horizon}") for r in rows],)).fetchall()}
         return [r for r in rows if stable(f"video-analytics-message:{r['youtube_id']}:{horizon}") not in posted]
 
@@ -216,7 +217,7 @@ class AnalyticsStore:
                 JOIN video_publications p ON p.youtube_id=a.youtube_id
                 WHERE a.kind='video' AND a.state='completed' AND a.message_id IS NOT NULL AND a.output ? 'changes'
                 ORDER BY a.created_at""").fetchall()
-            posted = {r["id"] for r in conn.execute("SELECT id FROM messages WHERE id=ANY(%s)", (
+            posted = {str(r["id"]) for r in conn.execute("SELECT id FROM messages WHERE id=ANY(%s)", (
                 [stable(f"video-analytics-message:{r['youtube_id']}:d3:detail") for r in rows],)).fetchall()}
         return [r for r in rows if stable(f"video-analytics-message:{r['youtube_id']}:d3:detail") not in posted]
 
