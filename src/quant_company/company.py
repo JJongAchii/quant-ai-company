@@ -320,7 +320,9 @@ class Company:
             owner = project["owner_user"]
             may_notify = author == "director" or (
                 author == "maintainer" and self.settings.company_improvements_enabled
-                and project["channel"] == self.settings.improvements_channel_id)
+                and project["channel"] == self.settings.improvements_channel_id) or (
+                # Daily video messages that need the owner (2026-10-19): ready files, a stop or wait, a failed delivery.
+                author == "market_brief" and kind in {"video_files", "video_review", "video_status"})
             mention = (notify_owner and may_notify and recipient is None
                        and owner in self.settings.slack_allowed_users and re.fullmatch(r"[UW][A-Z0-9]+", owner))
             rendered = re.sub(r"<@" + re.escape(owner) + r"(?:\|[^<>]*)?>", "", text).lstrip() if mention else text

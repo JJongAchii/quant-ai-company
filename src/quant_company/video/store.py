@@ -406,7 +406,8 @@ class VideoStore:
                     f"자료 기준: {current['source']['cutoff']}\n"
                     f"길이: {round(current['artifacts']['duration'])}초 · 자동 기술 검사 통과\n"
                     f"비공개 업로드 완료. 전체 시청 후 공개·수정·보류를 선택하세요. 공개 승인은 {deadline:%H:%M} KST에 만료됩니다.")
-            self.company._message(conn, project, None, "market_brief", "video_review", text, message_id=mid)
+            self.company._message(conn, project, None, "market_brief", "video_review", text, message_id=mid,
+                                  notify_owner=True)
             conn.execute("UPDATE video_jobs SET review_message_id=%s WHERE id=%s", (mid, current["id"]))
 
     def pending_notices(self):
@@ -442,7 +443,8 @@ class VideoStore:
                         'SELECT 1 FROM messages WHERE id=%s', (mid,)).fetchone():
                     self.company._message(conn, project, None, 'market_brief', 'video_status',
                         f"영상 제작 보류 · 디스크 여유 {free_gb:.1f}GB\n최소 {self.settings.video_min_free_gb:g}GB가 필요해 이 회차는 시작하지 않았습니다. "
-                        '원문 브리핑은 그대로 확인할 수 있습니다. 공간을 확보한 뒤 운영자가 다시 시도합니다.', message_id=mid)
+                        '원문 브리핑은 그대로 확인할 수 있습니다. 공간을 확보한 뒤 운영자가 다시 시도합니다.', message_id=mid,
+                        notify_owner=True)
 
     def late_notices(self):
         """One durable status notice at the files-ready target (publish time - lead); no new model call."""
@@ -534,7 +536,7 @@ class VideoStore:
                                    (current['id'],)).fetchone()['n']
             mid = stable(f"video-files:{current['id']}:{attempt}")
             self.company._message(conn, project, None, 'market_brief', 'video_files', delivery_text(current, artifacts, utcnow()),
-                                  message_id=mid)
+                                  message_id=mid, notify_owner=True)
             conn.execute('INSERT INTO video_deliveries(id,job_id,attempt) VALUES(%s,%s,%s)', (mid, current['id'], attempt))
             conn.execute("""UPDATE video_jobs SET state='delivering',artifacts=%s,artifact_digest=%s,delivery_message_id=%s,
                 error=NULL,lease_until=NULL,updated_at=now() WHERE id=%s""",
@@ -592,7 +594,8 @@ class VideoStore:
                 self.company._message(conn, project, None, 'market_brief', 'video_status',
                     f"{head} · {job['artifacts'].get('title', '')}\n{detail} 사유: {error}\n"
                     f"서버 보관 경로: {folder}\n(video.mp4 · thumbnail.png · subtitles.srt · upload.txt, "
-                    f"{self.settings.video_retention_days}일 보관)", message_id=stable('video-delivery-notice:'+str(message_id)))
+                    f"{self.settings.video_retention_days}일 보관)", message_id=stable('video-delivery-notice:'+str(message_id)),
+                    notify_owner=True)
 
     # ---- Alerts ------------------------------------------------------------------------------------------------
 
@@ -619,7 +622,8 @@ class VideoStore:
                 f"영상 제작 {'중단' if stopped else '대기'} · {EDITION_NAMES.get(current['source'].get('edition_kind'), '브리핑')}\n"
                 f"사유: {reason(current['error'])}\n"
                 f"크레딧: 이 회차 {spent} · 이번 달 {month}/{self.settings.video_monthly_credit_limit} "
-                f"(회차 한도 {self.settings.video_episode_credit_limit})\n원문 브리핑은 그대로 확인할 수 있습니다.", message_id=mid)
+                f"(회차 한도 {self.settings.video_episode_credit_limit})\n원문 브리핑은 그대로 확인할 수 있습니다.", message_id=mid,
+                notify_owner=True)
             return str(mid)
 
     def resume_login_blocks(self):
