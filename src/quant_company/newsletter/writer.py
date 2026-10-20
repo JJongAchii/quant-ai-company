@@ -1,9 +1,9 @@
 """Writes the email on claude-runtime, in the video worker (the process that already holds that runtime's token).
 
 One turn per tick, with its own queue and records: a failure here never touches a video job or the brief. The
-runtime has one slot and the PM video comes first, so no turn starts while an episode needs the model, and a turn the
-fallback replaced is cancelled (its output is never used). The request is frozen before it is sent, so a turn still
-running is asked again by the same ID."""
+runtime has one slot and the edition's video comes first, so no turn starts while an episode needs the model, and a
+turn the fallback replaced is cancelled (its output is never used). The request is frozen before it is sent, so a turn
+still running is asked again by the same ID."""
 
 import asyncio
 import logging
@@ -21,7 +21,7 @@ from .contracts import NewsletterDraft, prompt
 from .store import NewsletterStore
 
 LOG = logging.getLogger(__name__)
-# A short email: lighter than the episode script so it is ready well inside the 45-minute window.
+# A short email: lighter than the episode script so it is ready well inside the fallback wait (45 minutes at least).
 EFFORT = "high"
 MODEL_WAIT_SECONDS = 120
 WAITS = {"busy": 20, "quota": 900, "pending": 20, "unavailable": 60, "auth": 300}

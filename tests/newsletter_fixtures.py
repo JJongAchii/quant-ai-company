@@ -1,5 +1,6 @@
-"""Synthetic 10/19 PM edition for the evening brief email, shaped like the delivered brief (tests/test_briefing.py);
-every number of the approved v5 mockup is in its text. Fixture data only, never a real edition."""
+"""Synthetic 10/19 PM edition for the brief email, shaped like the delivered brief (tests/test_briefing.py); every
+number of the approved v5 mockup is in its text. The AM edition is tests/test_briefing.py's own 09/22 morning brief.
+Fixture data only, never a real edition."""
 
 from datetime import date, datetime, timedelta
 
@@ -11,7 +12,10 @@ from quant_company.briefing.editor import render
 from quant_company.contracts import AgentDecision, ArtifactDraft, ProviderFault, ProviderResponse
 from quant_company.newsletter.contracts import NewsletterDraft
 
+from .test_briefing import DAY as AM_DAY
+from .test_briefing import bundle as am_bundle
 from .test_briefing import definition
+from .test_briefing import proposal as am_proposal
 
 PM_DAY = date(2026, 10, 19)
 KST = schedule.KST
@@ -111,20 +115,38 @@ def pm_row(proposal=None):
             "proposal": proposal.model_dump(mode="json")}
 
 
+def am_row(proposal=None):
+    """The 09/22 AM edition (US close, tests/test_briefing.py) as its commit sees it (no database)."""
+    edition = definition("am", AM_DAY)
+    proposal = am_proposal() if proposal is None else proposal
+    return {"id": edition.id, "day": AM_DAY, "kind": "am", "publish": True,
+            "rendered": render(proposal, am_bundle(edition))[0], "proposal": proposal.model_dump(mode="json")}
+
+
 def commit_pm(brief, proposal=None, *, fallback=None):
     """The real PM commit (BriefStore.flush) of the fixture edition; returns the edition definition."""
-    store, clock = brief
     edition = definition("pm", PM_DAY)
+    proposal = pm_proposal(edition) if proposal is None and not fallback else proposal
+    return commit(brief, edition, pm_bundle(edition), proposal, fallback=fallback)
+
+
+def commit_am(brief, proposal=None, *, late=timedelta(0)):
+    """The real AM commit of the 09/22 edition (due 07:45 KST), LATE after its due time."""
+    edition = definition("am", AM_DAY)
+    return commit(brief, edition, am_bundle(edition), am_proposal() if proposal is None else proposal, late=late)
+
+
+def commit(brief, edition, data, proposal, *, fallback=None, late=timedelta(0)):
+    """The real commit (BriefStore.flush) of EDITION made ready with PROPOSAL; returns the edition definition."""
+    store, clock = brief
     clock["at"] = edition.cutoff - timedelta(minutes=1)
     store.register()
-    data = pm_bundle(edition)
-    proposal = pm_proposal(edition) if proposal is None and not fallback else proposal
     parts, quality = render(proposal, data, fallback=fallback)
     with store.db.transaction() as conn:
         conn.execute("""UPDATE brief_editions SET state='ready',bundle=%s,proposal=%s,rendered=%s,quality=%s,review=%s
             WHERE id=%s""", (Jsonb(data), Jsonb(proposal.model_dump(mode="json")) if proposal else None, Jsonb(parts),
                              Jsonb(quality), Jsonb({"verdict": "publish"}), edition.id))
-    clock["at"] = edition.due_at
+    clock["at"] = edition.due_at + late
     store.flush()
     return edition
 
