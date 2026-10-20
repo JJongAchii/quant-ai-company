@@ -15,7 +15,9 @@ from quant_company.video.contracts import digest
 from quant_company.video.render import checksum, run, verify_artifacts
 from quant_company.video.runner import VideoRunner
 from quant_company.video.shorts import (
+    CHARS_PER_SECOND,
     CHECKS,
+    HOOK_NARRATION,
     KO_COUNT,
     OUTRO,
     QA_JS,
@@ -54,7 +56,7 @@ def shorts(**changes):
     value = dict(
         title='S&P 500 1.92% 상승, 반도체가 이끌었다', description='반도체가 이끈 미국 증시와 확산 여부를 짧게 정리합니다.',
         hook=dict(headline='반도체가 이끈 미국 증시, 확산은 아직', question='확산될까?',
-                  narration='미국 증시는 반도체가 주도했지만 업종별 흐름은 엇갈렸습니다.', claim_ids=['b001', 'b013']),
+                  narration='반도체가 주도했지만 업종별 흐름은 엇갈렸습니다.', claim_ids=['b001', 'b013']),
         issues=[dict(id='semis', scene_ids=['head', 'flow'], label='반도체 주도', agenda='반도체가 이끈 상승', big='1.92%',
                      big_label='S&P 500', dir='up', body='정규장 종가 기준 S&P 500이 올랐고 반도체가 상승을 주도했습니다.',
                      note_kind='의미', note='수익률 하락은 할인 부담을 낮출 수 있음',
@@ -105,6 +107,20 @@ def test_a_cut_is_a_hook_two_to_five_issues_and_signals():
         ShortsPlan.model_validate({**plan, 'signals_narration': '[calm] 비기술 업종으로 확산되는지 확인합니다.'})
     with pytest.raises(ValueError, match='signs as words'):
         ShortsPlan.model_validate({**plan, 'signals_narration': '비기술 업종이 +2% 오르는지 확인합니다.'})
+
+
+def test_the_hook_is_one_breath_after_the_date_line():
+    # Owner, 10/20: the first preview's opener ran 11.5 s (the spec asks ~3-5 s); the on-screen headline carries the detail.
+    plan = shorts().model_dump(mode='json')
+    assert HOOK_NARRATION == 32 and len(plan['hook']['narration']) <= HOOK_NARRATION
+    ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': '가' * 32}})
+    with pytest.raises(ValueError, match='at most 32 characters'):
+        ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': '가' * 33}})
+    # The length estimate counts the hook with the date line at the voice's pace.
+    short, long = (ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': '가' * n}}) for n in (10, 32))
+    assert estimated_seconds(long) - estimated_seconds(short) == pytest.approx(22 / CHARS_PER_SECOND)
+    prompt = shorts_prompt(body_source(), episode().model_dump(mode='json'))
+    assert f'narration (8-{HOOK_NARRATION} characters' in prompt and 'one breath' in prompt
 
 
 def test_fixed_lines():
@@ -355,11 +371,12 @@ def test_every_scene_has_a_picture(tmp_path):
     built = ShortsRenderer(settings, WordAligner()).build(job, plan, bare, tmp_path / 'out', paths)
     shown = scene_classes(built['page'])
     # The cover is the first picture the episode shows (the headline card's), sharp behind the opener and blurred
-    # behind the agenda, the issues without their own picture and the outro.
+    # behind the agenda and the outro. The issues without their own picture show their chapter's other pictures blurred,
+    # each one the scene before does not show.
     assert {i: (bg, blur) for i, (bg, blur, _) in shown.items()} == {
-        'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'semis': ('img/illu.png', True),
+        'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'semis': ('img/photo.png', True),
         'check': ('img/illu.png', True), 'outro': ('img/illu.png', True)}
-    assert (built['page'] / 'img' / 'illu.png').is_file()
+    assert (built['page'] / 'img' / 'illu.png').is_file() and (built['page'] / 'img' / 'photo.png').is_file()
     assert not any('nophoto' in cls for *_, cls in shown.values()) and not any('picture' in f for f in built['findings'])
     # No picture anywhere (no reviewed library, no episode picture): a gradient, never a bare frame, and a finding.
     settings.video_asset_dir = tmp_path / 'empty'
@@ -368,6 +385,65 @@ def test_every_scene_has_a_picture(tmp_path):
     assert all(bg is None and 'nophoto' in cls for bg, _, cls in shown.values()), shown
     assert [f for f in built['findings'] if 'picture' in f] == [
         f'Shorts scene without a picture: {i}' for i in ('opener', 'agenda', 'semis', 'check', 'outro')]
+
+
+def test_an_issue_without_a_picture_takes_one_from_its_chapter_before_the_cover(tmp_path):
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    raw = episode().model_dump(mode='json')  # the thumbnail picture (the cover) is the headline card's illustration
+    raw['scenes'][6]['chapter'] = '함께 볼 이슈'  # counter: alone in its chapter, with no picture
+    assert [(s['id'], s['chapter']) for s in issue_scenes(raw)] == [
+        ('head', '핵심 이슈'), ('flow', '핵심 이슈'), ('photo', '핵심 이슈'), ('counter', '함께 볼 이슈')]
+    plan = shorts().model_dump(mode='json')
+    plan['issues'][0]['scene_ids'], plan['issues'][1]['scene_ids'] = ['flow'], ['counter']  # cards without a picture
+    plan = ShortsPlan.model_validate(plan)
+    shelf = json.loads((tmp_path / 'assets' / 'manifest.json').read_text())
+    nearby = cut_pictures(job, raw, plan, settings, shelf)['nearby']
+    assert [[p['path'].rsplit('/', 1)[1] for p in n] for n in nearby] == [['illu.png', 'photo.png'], []]
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, raw, tmp_path / 'out', tones(tmp_path, TAKES, ffmpeg))
+    shown = scene_classes(built['page'])
+    # flow: its chapter's nearest picture is the cover the agenda shows just before, so the photo two scenes on, with
+    # its own credit. counter: nothing else in its chapter, so the cover.
+    assert {i: (bg, blur) for i, (bg, blur, _) in shown.items()} == {
+        'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'semis': ('img/photo.png', True),
+        'check': ('img/illu.png', True), 'outro': ('img/illu.png', True)}
+    credits = {p['scene']: p['credit'] for p in built['pictures']}
+    assert credits['semis'] == '자료사진 · Fixture Author · CC BY 4.0' and credits['check'] == '' and credits['agenda'] == ''
+    [drawn] = on_page(built['page'], ["[...document.querySelectorAll('.scene')].map(e => e.querySelector('.credit')?.textContent || '')"])
+    assert drawn == ['', '', '자료사진 · Fixture Author · CC BY 4.0', '', '']
+    # The chapter's picture is taken even when the scene before shows it: the cover comes only after the chapter.
+    raw['scenes'][5]['chapter'] = '함께 볼 이슈'  # photo and counter
+    plan = shorts().model_dump(mode='json')
+    plan['issues'][0]['scene_ids'], plan['issues'][1]['scene_ids'] = ['photo'], ['counter']
+    built = ShortsRenderer(settings, WordAligner()).build(job, ShortsPlan.model_validate(plan), raw, tmp_path / 'again',
+                                                          tones(tmp_path, TAKES, ffmpeg))
+    shown = scene_classes(built['page'])
+    assert (shown['semis'][:2], shown['check'][:2]) == (('img/photo.png', False), ('img/photo.png', True))
+    assert {p['scene']: p['credit'] for p in built['pictures']}['check'] == '자료사진 · Fixture Author · CC BY 4.0'
+
+
+def test_the_headline_breaks_after_its_first_comma(tmp_path):
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    takes = tones(tmp_path, TAKES, ffmpeg)
+    raw = shorts().model_dump(mode='json')
+    # The headline's text, its breaks, whether each part is drawn on one line, and its size against the CSS size (92px).
+    lines = ("[...document.querySelectorAll('.opener .h1')].map(e => [e.innerText, e.querySelectorAll('br').length,"
+             " [...e.querySelectorAll('.part')].every(p => new Set([...p.getClientRects()].map(r => Math.round(r.top))).size === 1),"
+             " parseFloat(getComputedStyle(e).fontSize) / 92])")
+    shown = {}
+    # The owner's 10/20 headline broke mid-phrase ('나스닥 1.11% 반등, AI 칩 / 살 돈엔 금리 10% 이상').
+    for name, headline in (('comma', '나스닥 1.11% 반등, AI 칩 살 돈엔 금리 10% 이상'), ('fixture', raw['hook']['headline']),
+                           ('wide', '반도체, 미국 증시를 이끌었지만 비기술 업종 확산은 아직 혼조였다'), ('plain', '반도체가 이끈 미국 증시')):
+        raw['hook']['headline'] = headline
+        built = ShortsRenderer(settings, WordAligner()).build(job, ShortsPlan.model_validate(raw), episode().model_dump(mode='json'),
+                                                              tmp_path / name, takes)
+        [[shown[name]], fullwidth] = on_page(built['page'], [lines, "headline('반도체 주도，확산은 아직')"])
+    # Its second part needs the headline ~13% smaller to fit one line; the fixture's fits at the headline size.
+    assert shown['comma'][:3] == ['나스닥 1.11% 반등,\nAI 칩 살 돈엔 금리 10% 이상', 1, True] and 0.85 <= shown['comma'][3] < 0.9
+    assert shown['fixture'] == ['반도체가 이끈 미국 증시,\n확산은 아직', 1, True, 1]
+    # A second part that cannot fit one line even 15% smaller: the headline wraps as written, at its size.
+    assert shown['wide'] == ['반도체, 미국 증시를 이끌었지만 비기술 업종 확산은 아직 혼조였다', 0, True, 1]
+    assert shown['plain'] == ['반도체가 이끈 미국 증시', 0, True, 1]
+    assert '<br class="comma">' in fullwidth and '반도체 주도，</span>' in fullwidth
 
 
 def test_music_is_optional(tmp_path):

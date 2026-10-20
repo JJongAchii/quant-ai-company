@@ -16,11 +16,17 @@ const gold = s => esc(s).replace(/(\d(?:[\d,.]*\d)?\s?(?:%p|%|bp|조원|억원|�
 // only where the arrow replaces it (a level of -0.2% keeps its minus).
 const bare = (s, dir) => String(s).replace(dir ? /^\s*[▲▼+\-]\s*/ : /^\s*[▲▼]\s*/, '');
 const PLAY = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M6 3.5v17l14.5-8.5z"/></svg>';
+// A headline with a comma breaks after its first one, where its first phrase ends ('나스닥 1.11% 반등, / AI 칩 살 돈엔
+// 금리 10% 이상', not '… 반등, AI 칩 / 살 돈엔 …'); fit() keeps the break only where both parts fit a line each.
+const headline = s => {
+  const m = /, |，/.exec(s), rest = m ? s.slice(m.index + m[0].length).trim() : '';
+  return rest ? `<span class="part">${gold(s.slice(0, m.index + 1))}</span><br class="comma"><span class="part">${gold(rest)}</span>` : gold(s);
+};
 
 const CARDS = {
   opener(d) {
     // On screen from the first frame: the feed decides within two seconds.
-    return `<div class="inner"><div class="kicker">${esc(d.kicker)}</div><div class="h1">${gold(d.headline)}</div>
+    return `<div class="inner"><div class="kicker">${esc(d.kicker)}</div><div class="h1" data-text="${esc(d.headline)}">${headline(d.headline)}</div>
       <div class="ask" data-in="0.35,0.45,24">${esc(d.question)}</div></div>`;
   },
   agenda(d, sc) {
@@ -53,6 +59,18 @@ function fit() {
   for (const scn of $$('.scene')) {
     const shown = scn.style.display; scn.style.display = 'block';
     const box = $('.box', scn), inner = $('.inner', scn);
+    // A headline broken at its comma keeps the break only where each part fits one line: at the headline size, or at
+    // most 15% smaller (the owner's 10/20 headline needs 13%). Otherwise it wraps as written.
+    for (const h of $$('.h1', scn)) {
+      const parts = $$('.part', h);
+      if (!parts.length) continue;
+      parts.forEach(p => { p.style.whiteSpace = 'nowrap'; });
+      const scale = inner.clientWidth / Math.max(...parts.map(p => p.getBoundingClientRect().width));
+      parts.forEach(p => { p.style.whiteSpace = ''; });
+      const em = parseFloat(getComputedStyle(h).fontSize) / parseFloat(getComputedStyle(box).fontSize);
+      if (scale < 0.85) h.innerHTML = gold(h.dataset.text);
+      else if (scale < 1) h.style.fontSize = (em * scale * 0.99).toFixed(3) + 'em';
+    }
     // The whole text shrinks until it fits between the header and the captions.
     let base = 10;
     while (inner.offsetHeight > box.clientHeight && base > 6) { base -= 0.25; box.style.fontSize = base + 'px'; }
