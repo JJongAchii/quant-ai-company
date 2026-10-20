@@ -9,6 +9,7 @@ from psycopg.types.json import Jsonb
 
 from ..company import PolicyError, stable
 from . import store as video_store
+from .shorts import CHECKS
 from .store import ACTIVE as EPISODE_ACTIVE
 from .store import EDITION_NAMES, KST, LOCK, VideoStore
 
@@ -65,6 +66,12 @@ class ShortsStore:
                     AND created_at>now()-interval '24 hours' LIMIT 1""", (list(EPISODE_ACTIVE),)).fetchone():
                 row = None
             else:
+                # A cut given up on older checks gets one more look at what it already wrote (Runner.shorts_step).
+                conn.execute("""UPDATE video_shorts s SET state='writing',error=NULL,qa=s.qa||'{"recheck": true}'
+                    FROM video_jobs j WHERE j.id=s.job_id AND s.state='skipped' AND s.error='check_failed'
+                    AND COALESCE((s.qa->>'checks')::int,1)<%s AND j.state='delivered'
+                    AND j.updated_at>now()-interval '12 hours'
+                    AND NOT EXISTS (SELECT 1 FROM video_jobs n WHERE n.created_at>j.created_at)""", (CHECKS,))
                 # Only the newest episode, delivered in the last 12 hours: nothing older is cut after a release.
                 conn.execute("""INSERT INTO video_shorts(job_id) SELECT j.id FROM video_jobs j
                     WHERE j.state='delivered' AND j.updated_at>now()-interval '12 hours'
@@ -107,9 +114,9 @@ class ShortsStore:
             conn.execute('UPDATE video_shorts SET error=%s,lease_until=%s,updated_at=now() WHERE job_id=%s AND state=%s',
                          (reason, datetime.now(UTC) + timedelta(seconds=seconds), row['job_id'], row['state']))
 
-    def skip(self, row, reason, text):
+    def skip(self, row, reason, text, qa=None):
         """Given up for this episode, with one line in its thread; the episode itself is never affected."""
-        self.save(row, 'skipped', error=reason)
+        self.save(row, 'skipped', error=reason, **({'qa': qa} if qa is not None else {}))
         self.note(row['job_id'], text)
 
     def note(self, job_id, text, notify_owner=False):

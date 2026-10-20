@@ -7,13 +7,18 @@ import json
 import pytest
 
 from quant_company.config import Settings
+from quant_company.video import runner as runner_module
 from quant_company.video.contracts import digest
 from quant_company.video.render import checksum, run, verify_artifacts
 from quant_company.video.runner import VideoRunner
 from quant_company.video.shorts import (
+    CHECKS,
     NARRATION_LIMIT,
     ShortsPlan,
     ShortsRenderer,
+    closes_of,
+    direction,
+    settle,
     shorts_prompt,
     shorts_violations,
 )
@@ -75,6 +80,25 @@ def test_the_cut_follows_the_episode_binding_rules(scene, field, value, error):
     else:
         target['data'][field] = value
     assert any(error in f for f in shorts_violations(ShortsPlan.model_validate(raw), body_source()))
+
+
+def test_a_list_shares_its_verb_and_a_date_is_no_close():
+    # 10/20 AM: all three cuts were given up on these lines.
+    line = ('19일 정규장에서 에너지저장장치(ESS) 수요 기대에 삼성SDI는 11.70%, LG에너지솔루션은 7.20%, 포스코퓨처엠은 '
+            '10.90% 상승 마감했다.')
+    assert [direction(line, v) for v in ('11.70%', '7.20%', '10.90%')] == ['up', 'up', 'up']
+    assert direction('삼성SDI는 11.70%, 반면 LG에너지솔루션은 3.10% 하락했다.', '11.70%') is None
+    assert closes_of('나스닥 종합 26,430.89 pt · +1.11% · 정규장 종가 10/20 05:00 KST · Yahoo chart') == {'26430.89', '1.11'}
+
+
+def test_an_arrow_its_line_does_not_state_is_dropped_not_rejected():
+    raw = shorts().model_dump(mode='json')
+    raw['scenes'][1]['data']['big'] = '5,300'  # a level: its line states no direction for it
+    plan, dropped = settle(ShortsPlan.model_validate(raw), body_source())
+    assert dropped == ['index: 5,300'] and 'dir' not in plan.scenes[1].data and shorts_violations(plan, body_source()) == []
+    raw['scenes'][1]['data'].update(big='1.92%', dir='dn')  # against its line: kept, and the checks fail
+    plan, dropped = settle(ShortsPlan.model_validate(raw), body_source())
+    assert dropped == [] and any('contradicts its line' in f for f in shorts_violations(plan, body_source()))
 
 
 def test_the_prompt_cuts_the_delivered_episode_and_leaves_flagged_claims_out():
@@ -281,3 +305,25 @@ async def test_a_lost_turn_is_asked_again_as_a_new_attempt(brief, video, tmp_pat
     assert [a['outcome'] for a in row['qa']['attempts']] == ['uncertain', 'passed']
     keys = [c.request_id.rsplit('-', 1)[-1] for c in provider.calls if c.output_contract == 'video_shorts_v1']
     assert keys == ['1', '2']
+
+
+async def test_a_cut_given_up_on_older_checks_is_checked_again_without_a_new_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.queues['video_shorts_v1'] = [shorts(), shorts(), shorts()]
+    checks = runner_module.shorts_violations
+    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source: ['an older check'])
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'skipped' and row['error'] == 'check_failed' and row['qa']['checks'] == CHECKS
+    shorts_store = ShortsStore(store.company)
+    assert shorts_store.claim() is None  # given up on the current checks: not looked at again
+    monkeypatch.setattr(runner_module, 'shorts_violations', checks)
+    with store.db.transaction() as conn:  # as if given up before this version of the checks
+        conn.execute("UPDATE video_shorts SET qa=qa-'checks' WHERE job_id=%s", (job['id'],))
+    calls = len(provider.calls)
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'delivering', row['error']
+    assert len(provider.calls) == calls  # the written versions, no new turn
+    assert row['qa']['attempts'][-1]['recheck'] == {'checks': CHECKS, 'findings': []}
+    assert 'recheck' not in row['qa'] and row['plan'] == shorts().model_dump(mode='json')

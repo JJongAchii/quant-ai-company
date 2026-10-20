@@ -43,6 +43,9 @@ OUTRO = {'say': '왜 그런지, 앞으로 볼 신호는 본편에서 확인하�
 LEAD, TAIL = 0.15, 0.35
 # Everything a viewer must read stays clear of YouTube's own Shorts controls.
 SAFE = {'left': 70, 'right': 940, 'top': 230, 'bottom': 1500}
+# The version of the checks below. A cut given up on an older version is checked again, once, with the versions already
+# written (ShortsStore.claim): 2 = list directions, dates in close lines, unstated arrows dropped (10/20 AM).
+CHECKS = 2
 EDITION_WORDS = {'am': '아침', 'close': '마감'}
 
 
@@ -125,23 +128,67 @@ def shorts_prompt(source, episode, concerns=(), feedback=''):
 
 UP = re.compile(r'상승|오른|올라|올랐|오름|급등|반등|증가|늘어|늘었|늘린')
 DOWN = re.compile(r'하락|내린|내려|내렸|떨어|급락|감소|줄어|줄었|줄인')
+CONTRAST = re.compile(r'반면|다만|하지만|그러나')
+LIST_END = re.compile(r'\d(?:[\d.]*\d)?\s*(?:%p|%|bp|pt|원|달러|엔|배)?\s*,$')
+DATE_TIME = re.compile(r'\d{1,2}/\d{1,2}(?:/\d{2,4})?|\d{1,2}:\d{2}')
 
 
 def direction(text, value):
     """'up' or 'dn' as the text states it for this number (a sign or ▲/▼ in front of it, or a direction word in its
-    clause), else None."""
+    clause, or in the last item of the list it opens), else None."""
     for sentence in sentences(text):
-        for clause in CLAUSE.split(sentence):
+        clauses = CLAUSE.split(sentence)
+        for i, clause in enumerate(clauses):
             plain = clause.replace(',', '')
             for found in re.finditer(r'([+\-▲▼])?\s*(?<![\d.])' + re.escape(value) + r'(?![\d.]?\d)', plain):
                 if found.group(1) in ('+', '▲'):
                     return 'up'
                 if found.group(1) in ('-', '▼'):
                     return 'dn'
-                up, down = bool(UP.search(clause)), bool(DOWN.search(clause))
-                if up != down:
-                    return 'up' if up else 'dn'
+                said = clause_direction(clause)
+                if said:
+                    return said
+                # A list shares the verb of its last item (10/20 AM: '삼성SDI는 11.70%, LG에너지솔루션은 7.20%,
+                # 포스코퓨처엠은 10.90% 상승 마감했다').
+                rest = iter(clauses[i + 1:]) if list_item(clause) else iter(())
+                for item in rest:
+                    if not list_item(item):
+                        if nums(item) and not CONTRAST.match(item.strip()):
+                            return clause_direction(item)
+                        break
     return None
+
+
+def clause_direction(clause):
+    up, down = bool(UP.search(clause)), bool(DOWN.search(clause))
+    return ('up' if up else 'dn') if up != down else None
+
+
+def list_item(clause):
+    """'… 삼성SDI는 11.70%,': a clause ending in its number and a comma, with no verb of its own."""
+    return bool(LIST_END.search(clause.rstrip())) and not clause_direction(clause)
+
+
+def settle(plan, source):
+    """The plan without the arrows its cited lines do not state, and those arrows: a level or a comparison ('제안한
+    금리는 10% 이상으로 … 통상 약 7%보다 높다', 10/20 AM) is drawn without one. An arrow against its line stays and fails
+    the checks."""
+    claims, dropped, scenes = claim_catalog(source), [], []
+    for scene in plan.scenes:
+        data = dict(scene.data)
+        source_text = ' '.join(claims[c]['text'] for c in scene.claim_ids if c in claims)
+        for field, key in (('stat', 'stat_dir'), ('big', 'dir')):
+            values = nums(str(data.get(field, '')))
+            if data.get(key) in ('up', 'dn') and values and all(direction(source_text, v) is None for v in values):
+                dropped.append(f'{scene.id}: {data[field]}')
+                data.pop(key)
+        scenes.append(scene.model_copy(update={'data': data}))
+    return plan.model_copy(update={'scenes': scenes}), dropped
+
+
+def closes_of(line):
+    """Regular-session close values of a line; a date or a time ('정규장 종가 10/20 05:00 KST') is not one."""
+    return stated(DATE_TIME.sub(' ', line), CLOSE_MARK, deniable=True)
 
 
 def shorts_violations(plan, source):
@@ -176,7 +223,7 @@ def shorts_violations(plan, source):
                 if said and stated_dir and said != stated_dir:
                     found.append(f'Direction of {value} in scene {scene.id} contradicts its line')
         # The episode's labels: regular-session closes say 종가, investor flows say 마감 (on the card or spoken).
-        closes = set().union(*(stated(claims[c]['text'], CLOSE_MARK, deniable=True) for c in scene.claim_ids))
+        closes = set().union(*(closes_of(claims[c]['text']) for c in scene.claim_ids))
         if closes & shown and not any('종가' in t for t in [scene.narration, *screen]):
             found.append(f'Regular-session close values need 종가 in scene {scene.id}')
         flows = set().union(*(flow_values(claims[c]['text']) for c in scene.claim_ids))
