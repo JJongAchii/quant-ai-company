@@ -109,13 +109,24 @@ def test_a_cut_is_a_hook_two_to_five_issues_and_signals():
         ShortsPlan.model_validate({**plan, 'signals_narration': '비기술 업종이 +2% 오르는지 확인합니다.'})
 
 
+# A hook written under #194's 50-character limit, before the one-breath budget.
+OLD_HOOK = '미국 증시는 반도체가 주도했지만 업종별 흐름은 엇갈렸고 확산 여부는 아직 모릅니다'
+
+
 def test_the_hook_is_one_breath_after_the_date_line():
     # Owner, 10/20: the first preview's opener ran 11.5 s (the spec asks ~3-5 s); the on-screen headline carries the detail.
     plan = shorts().model_dump(mode='json')
-    assert HOOK_NARRATION == 32 and len(plan['hook']['narration']) <= HOOK_NARRATION
-    ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': '가' * 32}})
-    with pytest.raises(ValueError, match='at most 32 characters'):
-        ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': '가' * 33}})
+    assert HOOK_NARRATION == 32 and len(plan['hook']['narration']) <= HOOK_NARRATION and len(OLD_HOOK) == 45
+    assert not any('Hook narration' in f for f in violations(cut(hook={**plan['hook'], 'narration': '가' * 32})))
+    # A longer hook is a finding the model rewrites before any speech is paid, never a schema error: a plan stored under
+    # the old limits still validates after a release.
+    old = ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': OLD_HOOK}})
+    assert 'Hook narration is 45 characters, over 32: one sentence in one breath after the date line' in ' '.join(
+        shorts_violations(old, body_source(), episode().model_dump(mode='json')))
+    # So is a total over the 400-character budget that still fits the schema's 420.
+    raw = cut(signals_narration='가' * (405 - 5 * 66 - len(plan['hook']['narration'])))
+    raw['issues'] = [{**plan['issues'][0], 'id': f'long-{n}', 'narration': '가' * 66} for n in range(5)]
+    assert 'Narration is 405 characters in all, over 400: shorten the narrations' in violations(raw)
     # The length estimate counts the hook with the date line at the voice's pace.
     short, long = (ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': '가' * n}}) for n in (10, 32))
     assert estimated_seconds(long) - estimated_seconds(short) == pytest.approx(22 / CHARS_PER_SECOND)
@@ -587,6 +598,22 @@ async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, vid
     calls = len(provider.calls)
     await VideoRunner(store.company, provider, speech).tick()
     assert len(provider.calls) == calls
+
+
+async def test_a_plan_stored_under_the_old_limits_is_still_voiced_and_rendered(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    # A cut written under #194 (a 45-character hook) waits between ticks with no lease while a release swaps the worker.
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
+    assert row['state'] == 'synthesizing', row['error']
+    stored = {**row['plan'], 'hook': {**row['plan']['hook'], 'narration': OLD_HOOK}}
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE video_shorts SET plan=%s::jsonb WHERE job_id=%s', (json.dumps(stored), job['id']))
+    renderer, takes = ShortsFileRenderer(), len(speech.calls)
+    row = await shorts_ticks(store, provider, speech, renderer, job)
+    assert row['state'] == 'delivering', row['error']
+    assert speech.calls[takes]['text'] == '9월 22일 아침 브리핑입니다. ' + OLD_HOOK and len(renderer.calls) == 1
 
 
 async def test_an_episode_with_under_two_issue_scenes_spends_no_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811

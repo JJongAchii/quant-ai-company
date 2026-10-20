@@ -41,14 +41,17 @@ from .render import Aligner, RenderInProgress, checksum, probe, quality_probe, r
 from .upload import INSTRUCTION
 
 WIDTH, HEIGHT = 1080, 1920
-# The narration voice reads ~6.7 characters per second (episode.py). The model fills ~97% of the limit, so 400 characters
+# The narration voice reads ~6.7 characters per second (episode.py). The model fills ~97% of the budget, so 400 characters
 # are ~388 spoken: with the fixed lines (date, issue count and closing: ~63 characters) that is ~451 / 6.7 = ~67 s, plus
 # 0.5 s of lead and tail per scene (5-8 scenes) and the agenda hold the cut keeps: ~74 s, under the 90 s cap.
 # The hook is one breath after the date line (owner, 10/20: an 11.5-s opener was too long; the spec asks ~3-5 s): with the
 # 19-character date line, a 32-character hook makes an opener of ~51 / 6.7 + 0.5 = ~8 s at the longest, ~6-7 s for a
 # typical one. What the hook gave up (it was 50 characters) left the total (it was 420) instead of going to the issues.
-NARRATION_LIMIT = 400
-HOOK_NARRATION = 32
+# The prompt asks for the budgets and shorts_violations enforces them, so a longer cut is rewritten before any speech is
+# paid. The schema keeps #194's limits (420 in all, 50 for the hook): a plan stored under them before a release still
+# validates when it is voiced and rendered.
+NARRATION_BUDGET, HOOK_NARRATION = 400, 32
+NARRATION_LIMIT = 420
 CHARS_PER_SECOND = 6.7
 # Seconds a scene stays up beyond its speech; the renderer and the length estimate share these.
 OUTRO_HOLD = 6.0
@@ -63,7 +66,9 @@ LEAD, TAIL = 0.15, 0.35
 SAFE = {'left': 70, 'right': 940, 'top': 230, 'bottom': 1500}
 # The version of the checks below. A cut given up on an older version is checked again, once, with the versions already
 # written (ShortsStore.claim): 2 = list directions, dates in close lines, unstated arrows dropped (10/20 AM);
-# 3 = the news-style cut: issues cut from the episode's issue scenes, numbers also in the delivered episode.
+# 3 = the news-style cut: issues cut from the episode's issue scenes, numbers also in the delivered episode. The
+# narration budgets of 10/20 (hook 32, total 400) stay at 3: they only make the checks stricter, so nothing given up
+# could pass a recheck.
 CHECKS = 3
 EDITION_WORDS = {'am': '아침', 'close': '마감'}
 KO_COUNT = {2: '두', 3: '세', 4: '네', 5: '다섯'}
@@ -150,7 +155,7 @@ def issue_scenes(episode):
 class ShortsHook(StrictModel):
     headline: str = Field(min_length=4, max_length=40)
     question: str = Field(min_length=2, max_length=20)
-    narration: str = Field(min_length=8, max_length=HOOK_NARRATION)
+    narration: str = Field(min_length=8, max_length=50)  # schema limit; HOOK_NARRATION is the check's
     claim_ids: list[str] = Field(min_length=1, max_length=8)
 
 
@@ -236,7 +241,7 @@ def shorts_prompt(source, episode, concerns=(), feedback=''):
         "the note aloud. Cite the briefing lines (claim_ids) the issue uses.\n"
         "signals: 2 or 3 short lines (4-30 characters each) taken from the episode's closing signals, with "
         "signals_narration (10-90 characters) and signals_claim_ids.\n"
-        f"Narration is plain spoken Korean, at most {NARRATION_LIMIT} characters in all (the whole Shorts must stay "
+        f"Narration is plain spoken Korean, at most {NARRATION_BUDGET} characters in all (the whole Shorts must stay "
         "under 90 seconds); read signs as words.\n"
         "Every number on screen or in the narration must appear in the briefing lines its unit cites (claim_ids) and in "
         "the delivered episode. "
@@ -381,6 +386,12 @@ def shorts_violations(plan, source, episode):
     wording, no spoken attribution. episode: the delivered EpisodePlan as JSON."""
     claims, found, cited, lines = claim_catalog(source), issue_citations(plan, episode), set(), []
     found += claim_binding(plan, episode)
+    hook, total = len(plan.hook.narration), sum(len(x) for x in plan.narrations())
+    if hook > HOOK_NARRATION:
+        found.append(f'Hook narration is {hook} characters, over {HOOK_NARRATION}: one sentence in one breath after the date '
+                     'line (the headline carries the detail)')
+    if total > NARRATION_BUDGET:
+        found.append(f'Narration is {total} characters in all, over {NARRATION_BUDGET}: shorten the narrations')
     seconds = estimated_seconds(plan)
     if seconds > SHORTS_CAP:
         found.append(f'Estimated length {seconds:.0f} s is over the {SHORTS_CAP} s cap (aim {SHORTS_AIM[0]}-{SHORTS_AIM[1]} s):'
