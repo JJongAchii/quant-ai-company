@@ -374,6 +374,10 @@ class SlackOutbox:
                 from .video.store import VideoStore
 
                 return VideoStore(self.company).delivery_gate(conn, row)
+            if row['message_kind'] == 'video_shorts':
+                from .video.shorts_store import ShortsStore
+
+                return ShortsStore(self.company).delivery_gate(conn, row)
             if row['message_kind'] == 'video_analytics':
                 from .video.analytics_store import AnalyticsStore
 
@@ -431,6 +435,11 @@ class SlackOutbox:
                 from .video.store import VideoStore
 
                 if not VideoStore(self.company).delivery_gate(conn, row):
+                    return False
+            if row['message_kind'] == 'video_shorts':
+                from .video.shorts_store import ShortsStore
+
+                if not ShortsStore(self.company).delivery_gate(conn, row):
                     return False
             if row['message_kind'] == 'video_analytics':
                 from .video.analytics_store import AnalyticsStore
@@ -531,7 +540,7 @@ class SlackOutbox:
         if not row:
             return False
         token = self.credentials[row["agent"]]["bot_token"]
-        if row.get("message_kind") == "video_files":
+        if row.get("message_kind") in {"video_files", "video_shorts"}:
             # Episode files go through Slack's external upload API into the brief's thread (video/slack_files.py).
             from .video.slack_files import deliver
 

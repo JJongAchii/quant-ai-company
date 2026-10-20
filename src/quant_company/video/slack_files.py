@@ -43,7 +43,13 @@ async def stream(path, touch):
 
 
 async def deliver(outbox, row, token):
-    store = VideoStore(outbox.company)
+    if row.get('message_kind') == 'video_shorts':
+        from .shorts_store import ShortsStore
+        from .shorts_store import names as shorts_names
+
+        store, listed = ShortsStore(outbox.company), shorts_names
+    else:
+        store, listed = VideoStore(outbox.company), names
     job = await asyncio.to_thread(store.delivery_job, row['id'])
     receipt = {'files': [], 'attempt_message': row['id']}
 
@@ -67,7 +73,7 @@ async def deliver(outbox, row, token):
         async with httpx.AsyncClient(timeout=httpx.Timeout(30, write=600, read=120), transport=outbox.transport) as client:
             if not await asyncio.to_thread(outbox.before_send, row):
                 return False
-            for source, filename, _title in names(job):
+            for source, filename, _title in listed(job):
                 path = Path(directory) / source
                 size = path.stat().st_size
                 response = await client.post(API + 'files.getUploadURLExternal', headers=headers,
@@ -88,7 +94,7 @@ async def deliver(outbox, row, token):
                 receipt['files'][-1]['uploaded'] = True
                 await asyncio.to_thread(store.delivery_receipt, row['id'], receipt)
                 await asyncio.to_thread(touch)
-            files = [{'id': f['id'], 'title': title} for f, (_, _, title) in zip(receipt['files'], names(job), strict=True)]
+            files = [{'id': f['id'], 'title': title} for f, (_, _, title) in zip(receipt['files'], listed(job), strict=True)]
             receipt['complete_requested'] = True
             await asyncio.to_thread(store.delivery_receipt, row['id'], receipt)
             try:

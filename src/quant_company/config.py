@@ -83,6 +83,8 @@ class Settings(BaseSettings):
     video_enabled: bool = False
     video_upload_enabled: bool = False
     video_publish_enabled: bool = False
+    # A vertical Shorts cut of every delivered episode (owner, 2026-10-19; video/shorts.py).
+    video_shorts_enabled: bool = False
     video_artifact_dir: Path = Path("/var/lib/quant-company/video")
     video_credentials_dir: Path = Path("/run/secrets/video")
     video_youtube_channel_id: str = ""

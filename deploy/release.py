@@ -342,6 +342,10 @@ def busy(service, runner=run):
     if service == "video-worker" and sql("SELECT count(*) FROM video_jobs WHERE state NOT IN ("
                                          + ",".join(f"'{s}'" for s in VIDEO_IDLE) + ")", runner):
         reasons.append("video job in production")
+    # A Shorts cut holds its lease while the worker writes, voices or renders it; 0 before the table exists.
+    if service == "video-worker" and sql("SELECT count(*) FROM video_shorts WHERE state IN ('writing','synthesizing',"
+                                         "'rendering') AND lease_until>now()", runner):
+        reasons.append("Shorts in production")
     if service in {"news-worker", "briefing-data-worker"}:
         if sql("SELECT count(*) FROM brief_calls WHERE state='running'", runner):
             reasons.append("brief model call running")

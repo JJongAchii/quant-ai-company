@@ -116,3 +116,10 @@ CREATE TABLE IF NOT EXISTS video_questions (
  created_at timestamptz NOT NULL DEFAULT now(), closed_at timestamptz
 );
 CREATE INDEX IF NOT EXISTS video_questions_open ON video_questions(created_at) WHERE state='pending';
+-- Daily Shorts (owner, 2026-10-19; video/shorts.py): one vertical cut per delivered episode, made after it.
+CREATE TABLE IF NOT EXISTS video_shorts (
+ job_id uuid PRIMARY KEY REFERENCES video_jobs(id), state text NOT NULL DEFAULT 'writing',
+ plan jsonb, qa jsonb NOT NULL DEFAULT '{}'::jsonb, artifacts jsonb, error text,
+ delivery_message_id uuid REFERENCES messages(id), lease_until timestamptz,
+ created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
