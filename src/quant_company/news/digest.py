@@ -85,7 +85,7 @@ class NewsDigestStore(NewsStore):
     def allowed(self, conn, row):
         digest = conn.execute("SELECT * FROM news_digests WHERE id=%s", (row["id"],)).fetchone()
         if not (digest and self.authorized() and self.company.settings.news_publish_enabled
-                and digest["policy_digest"] == self.policy() and digest["expires_at"] > schedule.utcnow()
+                and digest["policy_digest"] in self.policies() and digest["expires_at"] > schedule.utcnow()
                 and row["channel"] == self.company.settings.news_channel_id):
             return False
         members = conn.execute("SELECT * FROM outbox WHERE id::text=ANY(%s)", (digest["member_ids"],)).fetchall()

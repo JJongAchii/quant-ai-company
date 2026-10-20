@@ -1,0 +1,129 @@
+<style>
+@font-face{font-family:'Pretendard';font-weight:600;src:url(/files/Pretendard-SemiBold.woff2) format('woff2');}
+@font-face{font-family:'Pretendard';font-weight:700;src:url(/files/Pretendard-Bold.woff2) format('woff2');}
+@font-face{font-family:'Pretendard';font-weight:800;src:url(/files/Pretendard-ExtraBold.woff2) format('woff2');}
+.wrap{display:grid;grid-template-columns:1fr 440px;gap:28px;align-items:start}
+@media (max-width:980px){.wrap{grid-template-columns:1fr}}
+.inbox{background:#fff;border:1px solid #E3E7F0;border-radius:12px;padding:10px 0;font-family:'Pretendard',-apple-system,sans-serif;color:#1B2440}
+.inbox .r{display:grid;grid-template-columns:36px 1fr;gap:10px;padding:10px 14px;border-bottom:1px solid #F0F2F8}
+.inbox .r:last-child{border-bottom:0}
+.inbox .av{width:36px;height:36px;border-radius:50%;background:#011A43;display:flex;align-items:center;justify-content:center}
+.inbox .av img{height:20px}
+.inbox .fr{font-weight:800;font-size:14px}.inbox .fr small{font-weight:600;color:#7A86A8;margin-left:6px;font-size:12px}
+.inbox .sj{font-weight:700;font-size:14px;margin-top:1px}
+.inbox .pv{font-size:13px;color:#7A86A8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inbox .dim{opacity:.45}
+.mail{background:#EEF1F7;padding:16px 0;border-radius:10px}
+.m{max-width:440px;margin:0 auto;background:#fff;color:#1B2440;font-family:'Pretendard',-apple-system,sans-serif;font-size:15px;line-height:1.7;border-radius:10px;overflow:hidden;word-break:keep-all}
+.m .hd{background:#011A43;color:#FCF1DB;padding:18px 22px 20px}
+.m .hd .b{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+.m .hd .b img{height:22px}
+.m .hd .b span{color:#AEB7D4;font-weight:600;font-size:12px;margin-left:auto}
+.m .hd h1{font-size:23px;font-weight:800;margin:14px 0 6px;letter-spacing:-.02em;color:#fff;line-height:1.35}
+.m .hd h1 em{font-style:normal;color:#FDC749}
+.m .hd .lead{font-size:14.5px;color:#D5DBEC;line-height:1.6}
+.m .sec{padding:18px 22px;border-bottom:1px solid #E8ECF4}
+.m .lab{font-size:12px;font-weight:800;color:#9B6B00;letter-spacing:.06em;margin-bottom:8px}
+.m h3{font-size:17px;font-weight:800;margin:0 0 6px;color:#011A43;letter-spacing:-.01em;line-height:1.4}
+.m p{margin:6px 0}
+.m .swing{display:flex;align-items:center;gap:10px;margin:10px 0 4px}
+.m .swing .pt{flex:1;border-radius:10px;padding:9px 10px;text-align:center}
+.m .swing .pt small{display:block;font-size:11.5px;font-weight:700;color:#4A5578}
+.m .swing .pt b{font-size:19px;font-feature-settings:"tnum" 1}
+.m .swing .o{background:#EAF0FF}.m .swing .c{background:#FFECEE}
+.m .swing .ar{font-size:20px;color:#9AA6C8}
+.up{color:#D7263D}.dn{color:#1E5EFF}
+.m .flow{display:flex;gap:6px;margin-top:8px}
+.m .flow div{flex:1;background:#F5F7FB;border-radius:8px;padding:7px 4px;text-align:center;font-size:12px;color:#4A5578}
+.m .flow b{display:block;font-size:14px}
+.m .gl{font-size:12.5px;color:#7A86A8;background:#F7F8FB;border-radius:6px;padding:5px 9px;margin-top:8px}
+.m .gl b{color:#4A5578}
+.m .me{background:#FFF8E6;border-radius:8px;padding:8px 11px;margin-top:8px;font-size:14px}
+.m .me b{color:#9B6B00}
+.m .watch{font-size:13.5px;margin-top:8px;color:#127A66;font-weight:700}
+.m .num{display:inline-block;width:22px;height:22px;border-radius:50%;background:#011A43;color:#FDC749;font-size:12px;font-weight:800;text-align:center;line-height:22px;margin-right:6px;vertical-align:2px}
+.m .one{font-size:14px;padding:9px 11px;border:1px solid #E8ECF4;border-radius:8px}
+.m .cal{list-style:none;padding:0;margin:0}
+.m .cal li{display:grid;grid-template-columns:62px 1fr;padding:6px 0;border-bottom:1px solid #F0F2F8;font-size:14px}
+.m .cal li:last-child{border-bottom:0}
+.m .cal b{color:#011A43}
+.m .cal i{font-style:normal;color:#127A66;font-size:12.5px;font-weight:700;display:block}
+.m .btn{display:inline-block;background:#E62117;color:#fff;font-weight:800;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:14px}
+.m .src{font-size:12px;color:#4A5578}.m .src a{color:#4A5578}
+.m .ft{padding:16px 22px;font-size:11.5px;color:#7A86A8;background:#F7F8FB;line-height:1.65}
+.m .ft a{color:#4A5578}
+.note{font-size:13px;color:var(--text-secondary,#888);line-height:1.6}
+.note b{color:var(--text-primary,#333)}
+</style>
+
+<h2>이메일 시안 v5 · 근거 줄 제외</h2>
+<p class="subtitle">구성은 v3와 같고, 문장을 리포트다운 존댓말(~습니다)로 바꿨어요. 비유와 구어체 제목은 뺐고, 어려운 용어 풀이는 남겼어요.</p>
+
+<div class="wrap">
+<div>
+  <div class="inbox">
+    <div class="r dim"><div class="av" style="background:#ccd"></div><div><div class="fr">은행 알림<small>오후 5:10</small></div><div class="sj">10월 카드 이용 내역 안내</div><div class="pv">고객님의 10월 카드 이용 내역을 안내해 드립니다…</div></div></div>
+    <div class="r"><div class="av"><img src="/files/logo_mark.png" alt=""></div><div><div class="fr">뭐든story<small>오후 5:32</small></div><div class="sj">코스피, 3.2% 급락 출발 후 1.8% 상승 마감 | 10/19 마감 브리핑</div><div class="pv">기관 5,731억원 순매수, 외국인은 마감까지 순매도. AI 투자 자금의 조달 비용 상승은 부담 요인으로…</div></div></div>
+    <div class="r dim"><div class="av" style="background:#ccd"></div><div><div class="fr">쇼핑몰<small>오후 4:48</small></div><div class="sj">주말 특가 마지막 기회</div><div class="pv">오늘 자정까지만 진행되는…</div></div></div>
+  </div>
+  <div class="note" style="margin-top:16px">
+    <p><b>v3에서 바뀐 점</b></p>
+    <p>· 말투: "~했어요" → "~습니다". 제목·소제목의 비유("지갑은 닫혀", "불씨")와 구어체("나한테 무슨 의미?")를 뺐어요.</p>
+    <p>· "나한테 무슨 의미?" → "시사점", "볼 신호" → "확인할 일정·지표"</p>
+    <p>· 쉬운 말 원칙은 유지: 위험 프리미엄, 순매수, 순환매는 괄호나 풀이로 설명해요.</p>
+    <p>· 구성·숫자는 v3와 같고, 숫자는 오늘 리포트와 하나씩 대조했어요.</p>
+    <p>· v5: 영상 버튼 아래 근거 기사 줄과 출처 링크를 뺐어요.</p>
+  </div>
+</div>
+
+<div class="mail"><div class="m">
+  <div class="hd">
+    <div class="b"><img src="/files/logo_mark.png" alt="">뭐든story<span>10/19 장 마감 · 오늘의 증시story</span></div>
+    <h1>코스피, 3.2% 급락 출발 후<br><em>1.8% 상승 마감</em></h1>
+    <div class="lead">기관은 5,731억원을 순매수했고, 외국인은 마감까지 순매도를 이어갔습니다. AI 투자 자금의 조달 비용 상승은 여전히 부담 요인입니다.</div>
+  </div>
+
+  <div class="sec"><div class="lab">오늘의 시장</div>
+    <h3>장중 낙폭을 모두 만회한 코스피</h3>
+    <div class="swing"><div class="pt o"><small>출발</small><b class="dn">5,488.41</b><small class="dn">▼ 3.17%</small></div><div class="ar">→</div><div class="pt c"><small>마감</small><b class="up">5,768.01</b><small class="up">▲ 1.76%</small></div></div>
+    <p>코스피는 3.17% 하락한 5,488.41로 출발했으나 낙폭을 모두 만회하고 1.76% 오른 5,768.01에 마감했습니다. 2거래일 연속 상승입니다. 코스닥도 2.73% 하락 출발 후 1.78% 오른 808.89에 마감했습니다.</p>
+    <p><b>투자자별 매매</b> · 유가증권시장에서 기관은 순매수, 개인과 외국인은 순매도했습니다.</p>
+    <div class="flow"><div>기관<b class="up">+5,731억</b></div><div>외국인<b class="dn">-357억</b></div><div>개인<b class="dn">-1조 869억</b></div></div>
+    <p>외국인은 장 초반 순매수에서 오전 중 순매도로 전환했습니다. 이달 2일부터 8거래일 연속 18조원 넘게 순매도한 흐름이 아직 돌아서지 않아, 수급 회복은 엇갈린 것으로 볼 수 있습니다.</p>
+    <p><b>업종·종목</b> · 장중에는 에너지저장장치(ESS) 관련 이차전지와 바이오 업종으로 순환매가 나타났습니다. 거래대금 상위 종목은 SK하이닉스(+0.16%), 삼성전자(+1.16%)였습니다.</p>
+    <div class="gl"><b>순매수</b> 매수 금액에서 매도 금액을 뺀 값으로, 음수이면 매도 우위를 뜻합니다.<br><b>순환매</b> 투자 자금이 한 업종에서 다른 업종으로 옮겨 가는 현상입니다.</div>
+  </div>
+
+  <div class="sec"><div class="lab">주요 이슈</div>
+    <h3><span class="num">1</span>AI 투자 자금의 조달 비용 상승</h3>
+    <p>AI 개발사 앤트로픽은 구글의 AI 반도체(TPU) 구매를 위해 600억달러 조달을 추진하며, 이 가운데 일부 채권에 연 10%가 넘는 금리를 제시했습니다. 신용도가 비슷한 기업의 통상 금리(약 7%)보다 높아, 외신은 AI 인프라 투자의 위험 프리미엄(투자자가 위험을 감수하는 대가로 요구하는 추가 수익)이 상승한 것으로 해석했습니다.</p>
+    <div class="me"><b>시사점</b> AI 투자금 회수에 대한 우려는 국내 반도체 기업에 대한 기대에도 부담으로 작용하고 있습니다. 반면 현재까지 집계된 미국 S&amp;P500 기업의 3분기 이익은 전년 대비 29.6% 증가해, 이익 확대가 이자 부담을 흡수할 수 있다는 시각도 있습니다.</div>
+    <div class="watch">▶ 확인할 일정: 21일 메타 실적 · 투자비를 뒷받침하는 현금창출 여부</div>
+
+    <h3 style="margin-top:18px"><span class="num">2</span>중국 성장률 예상 상회, 소비·부동산은 부진</h3>
+    <p>중국의 3분기 국내총생산(GDP)은 전년 동기 대비 4.5% 증가해 예상치(4.4%)를 웃돌았습니다. 다만 생산이 성장을 이끈 반면, 1~9월 부동산 투자는 20.6% 감소해 감소폭이 확대됐습니다.</p>
+    <div class="me"><b>시사점</b> 중국의 소비와 건설 수요가 약하면 한국 소비재·소재 기업의 판매 회복은 지연될 수 있습니다. 한국의 9월 자동차 수출은 5.5% 감소했으며, 아시아 수출이 60.0% 줄어든 반면 북미는 9.2% 늘어 지역별 차이가 컸습니다.</div>
+    <div class="watch">▶ 확인할 지표: 중국 소매판매 개선과 부동산 투자 감소폭 축소 여부</div>
+
+    <h3 style="margin-top:18px"><span class="num">3</span>유가 하락에도 남아 있는 공급 위험</h3>
+    <p>브렌트유는 1.80% 하락한 배럴당 107.88달러를 기록했습니다. 미국이 러시아산 에너지 구매국에 대한 신규 관세를 유예하면서 공급 확대 기대가 반영됐습니다. 그러나 러시아 석유 터미널과 사우디아라비아 인근 유조선 두 척이 공격을 받는 등 공급 위험은 이어지고 있습니다.</p>
+    <div class="me"><b>시사점</b> 유가 하락은 국내 기업의 원가 부담을 낮추는 요인이지만, 실제 공급 확대는 아직 확인되지 않았습니다.</div>
+    <div class="watch">▶ 확인할 사항: 피격 터미널의 선적 정상화 여부</div>
+  </div>
+
+  <div class="sec"><div class="lab">기업 소식</div>
+    <div class="one">현대로템은 K2 전차 주포 생산 역량을 갖춘 현대위아 특수사업부를 약 3,584억원에 인수하기로 결정했습니다. 거래는 11월 27일 현대위아 임시 주주총회 특별결의를 거쳐 진행됩니다.</div>
+  </div>
+
+  <div class="sec"><div class="lab">주요 일정</div><ul class="cal">
+    <li><b>20일 (화)</b><span>넷플릭스 실적 · 미국 주택착공</span></li>
+    <li><b>21일 (수)</b><span>메타 · 테슬라 실적<i>AI 투자 부담 관련 확인</i></span></li>
+    <li><b>22일 (목)</b><span>미국 신규 실업수당 청구</span></li>
+    <li><b>23일 (금)</b><span>미시간대 소비심리 · 기대인플레이션</span></li>
+    <li><b>27~28일</b><span>미국 연준 통화정책 회의</span></li></ul></div>
+
+  <div class="sec" style="text-align:center"><a class="btn" href="#">▶ 영상으로 보기</a></div>
+
+  <div class="ft">뭐든story는 매 거래일 아침과 장 마감 후 국내 증시의 주요 내용을 정리해 보내 드립니다. 이 메일은 뭐든story 리포트 수신에 동의하신 분께 발송됩니다.<br>투자 권유가 아닌 정보 제공용 자료이며, 투자 판단과 책임은 본인에게 있습니다.<br><a href="#">수신 거부</a></div>
+</div></div>
+</div>

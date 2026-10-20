@@ -43,7 +43,8 @@ def runner_from_environment() -> CodexRunner:
 
 
 def create_app(*, runner: CodexRunner | None = None, token: str | None = None,
-               runner_factory=None, max_request_bytes: int = MAX_REQUEST_BYTES) -> FastAPI:
+               runner_factory=None, max_request_bytes: int = MAX_REQUEST_BYTES,
+               request_model: type[ProviderRequest] = ProviderRequest) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         yield
@@ -84,7 +85,7 @@ def create_app(*, runner: CodexRunner | None = None, token: str | None = None,
                 if len(body) > max_request_bytes:
                     return JSONResponse({"code": "invalid_request", "message": "Request exceeds byte limit.",
                                          "retry_after_seconds": 0}, status_code=413)
-            payload = ProviderRequest.model_validate(strict_json(body))
+            payload = request_model.model_validate(strict_json(body))
             profile = request.headers.get("x-company-account", "primary")
             revision = int(request.headers.get("x-company-account-revision", "0"))
             if profile not in {"primary", "backup"} or not 0 <= revision < 2**63:

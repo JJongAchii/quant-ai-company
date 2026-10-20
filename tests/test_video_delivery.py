@@ -198,6 +198,39 @@ async def test_files_are_delivered_into_the_brief_thread_with_receipts(brief, sl
     assert not await send(store, slack) and len(slack.calls) == calls  # nothing is sent twice
 
 
+async def test_the_owner_is_tagged_only_where_a_video_needs_the_owner(brief, slack_video, monkeypatch):  # noqa: F811
+    """Owner, 2026-10-19: tag the owner on the ready files, a stop or a wait, and a failed delivery; not on progress notes."""
+    store, clock = slack_video
+    job = new_job(brief, slack_video)
+    clock['at'] = job['publish_deadline'] + timedelta(hours=1)
+    store.late_notices()
+    monkeypatch.setattr('quant_company.video.runner.download_audio', lambda url, path: path.write_bytes(b'simulated-speech'))
+    await produce(store)
+    current = store.get(job['id'])
+    quiet_other_outbox(store, current['delivery_message_id'])
+    assert await send(store, FakeSlack(complete='rejected'))
+    with store.db.transaction() as conn:
+        texts = {r['kind'] + ':' + r['text'].split('\n')[r['text'].startswith('<@')]: r['text'] for r in conn.execute(
+            "SELECT m.kind,o.text FROM outbox o JOIN messages m ON m.id=o.id WHERE m.kind LIKE 'video_%'").fetchall()}
+    progress = [t for k, t in texts.items() if '영상 제작 현황' in k]
+    ready = [t for k, t in texts.items() if k.startswith('video_files:영상 준비 완료')]
+    failed = [t for k, t in texts.items() if '영상 파일 전달 실패' in k]
+    assert progress and ready and failed
+    assert all(t.startswith('<@UHUMAN>\n') for t in ready + failed)
+    assert not any('<@' in t for t in progress)
+
+
+def test_a_stopped_or_waiting_episode_tags_the_owner(brief, slack_video):  # noqa: F811
+    store, _ = slack_video
+    job = new_job(brief, slack_video)
+    store.save(job, 'blocked', error='runway_account')
+    assert store.alert(job)
+    with store.db.transaction() as conn:
+        alert = conn.execute("SELECT o.text FROM outbox o JOIN messages m ON m.id=o.id "
+                             "WHERE m.kind='video_status' ORDER BY m.created_at DESC LIMIT 1").fetchone()
+    assert alert['text'].startswith('<@UHUMAN>\n영상 제작 중단')
+
+
 async def test_rejected_upload_posts_the_server_path_and_can_be_redelivered(brief, slack_video, monkeypatch):  # noqa: F811
     from quant_company.video.recovery import retry
 

@@ -174,6 +174,12 @@ async def dispatch_once(client, company):
             company._video_analytics_started = True
         except Exception as exc:
             logging.getLogger(__name__).error("Video analytics workflow start failed: %s", type(exc).__name__)
+    if getattr(company.settings, 'video_analytics_enabled', False):
+        try:
+            await start_video_questions(client, company)
+        except Exception as exc:
+            # Retried next loop; the outbox below must still be flushed.
+            logging.getLogger(__name__).error("Video question workflow start failed: %s", type(exc).__name__)
     if getattr(company.settings, "briefing_enabled", False):
         from .briefing.store import BriefStore
 
@@ -194,6 +200,21 @@ async def dispatch_once(client, company):
             await asyncio.to_thread(BriefStore(company).flush)
         except (ValueError, OSError) as exc:
             logging.getLogger(__name__).error("Briefing configuration unavailable: %s", type(exc).__name__)
+        try:
+            await start_newsletter(client, company)
+        except Exception as exc:
+            # Retried next loop; the email never holds back the brief or its Slack posts.
+            logging.getLogger(__name__).error("Newsletter workflow start failed: %s", type(exc).__name__)
+    if getattr(company.settings, "ops_watch_enabled", False):
+        from .ops.watch import OpsWatch
+
+        if not hasattr(company, "_ops_watch"):
+            company._ops_watch = OpsWatch(company)
+        try:
+            await asyncio.to_thread(company._ops_watch.tick_if_due)
+        except Exception as exc:
+            # The watch must never stop replies; the host probe reports a watch that stops ticking.
+            logging.getLogger(__name__).error("Ops watch tick failed: %s", type(exc).__name__)
     if getattr(company.settings, "trend_feed_enabled", False) and not getattr(company, "_trend_feed_started", False):
         recurring = (company.settings.trend_feed_publication_hours != [8]
                      or company.settings.trend_feed_on_demand_enabled)
@@ -385,6 +406,42 @@ async def dispatch_main(settings=None):
         await asyncio.sleep(1.1)
 
 
+async def start_newsletter(client, company):
+    """The writer workflow (video-worker queue) once there is something to write, and the sending tick in a thread of
+    its own so a slow SMTP or IMAP server never delays a Slack post."""
+    from .newsletter.delivery import NewsletterDispatcher
+    from .newsletter.store import NewsletterStore
+    from .newsletter.workflow import NewsletterWorkflow
+
+    if not hasattr(company, "_newsletter"):
+        company._newsletter = NewsletterDispatcher(company)
+    task = getattr(company, "_newsletter_tick", None)
+    # Both checks run at the sending tick's pace (10 s), not on every dispatch loop.
+    if (task is not None and not task.done()) or not company._newsletter.due():
+        return
+    if not getattr(company, "_newsletter_started", False) and (
+            company.settings.newsletter_enabled or await asyncio.to_thread(NewsletterStore(company).has_writing)):
+        try:
+            await client.start_workflow(NewsletterWorkflow.run, id="company-newsletter-v1",
+                                        task_queue=company.settings.temporal_task_queue+"-newsletter",
+                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+        except WorkflowAlreadyStartedError:
+            pass
+        company._newsletter_started = True
+    company._newsletter_tick = asyncio.create_task(asyncio.to_thread(company._newsletter.tick_if_due))
+
+
+def make_newsletter_worker(client, company, writer=None):
+    from .newsletter.workflow import NewsletterWorkflow
+    from .newsletter.writer import NewsletterWriter
+
+    writer = writer or NewsletterWriter(company)
+    return Worker(client, task_queue=company.settings.temporal_task_queue+"-newsletter",
+                  workflows=[NewsletterWorkflow], activities=[writer.activity_tick],
+                  max_concurrent_activities=1, max_cached_workflows=2,
+                  graceful_shutdown_timeout=timedelta(seconds=30))
+
+
 def make_video_worker(client, company, runner=None):
     from .video.runner import VideoRunner
     from .video.workflow import VideoWorkflow
@@ -396,13 +453,33 @@ def make_video_worker(client, company, runner=None):
                   graceful_shutdown_timeout=timedelta(seconds=30))
 
 
+async def start_video_questions(client, company):
+    """One answering workflow per new owner question in an analytics thread; returns how many were started."""
+    from .video.analytics_store import AnalyticsStore
+    from .video.analytics_workflow import VideoQuestionWorkflow
+
+    store, started = AnalyticsStore(company), 0
+    for question_id in await asyncio.to_thread(store.unstarted_questions):
+        try:
+            await client.start_workflow(VideoQuestionWorkflow.run, question_id,
+                                        id=f"company-video-question-{question_id}",
+                                        task_queue=company.settings.temporal_task_queue+"-video-analytics",
+                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
+            started += 1
+        except WorkflowAlreadyStartedError:
+            pass
+        await asyncio.to_thread(store.question_started, question_id)
+    return started
+
+
 def make_video_analytics_worker(client, company, runner=None):
     from .video.analytics import AnalyticsRunner
-    from .video.analytics_workflow import VideoAnalyticsWorkflow
+    from .video.analytics_workflow import VideoAnalyticsWorkflow, VideoQuestionWorkflow
 
     runner = runner or AnalyticsRunner(company)
     return Worker(client, task_queue=company.settings.temporal_task_queue+"-video-analytics",
-                  workflows=[VideoAnalyticsWorkflow], activities=[runner.activity_tick],
+                  workflows=[VideoAnalyticsWorkflow, VideoQuestionWorkflow],
+                  activities=[runner.activity_tick, runner.activity_answer, runner.activity_give_up],
                   max_concurrent_activities=1, max_cached_workflows=2,
                   graceful_shutdown_timeout=timedelta(seconds=30))
 
@@ -414,6 +491,8 @@ async def video_worker_main(settings=None):
     # The analytics reads use the same media-auth mount (YouTube token) as the video worker, on their own queue.
     async with contextlib.AsyncExitStack() as stack:
         await stack.enter_async_context(make_video_worker(client, company))
+        # The evening brief email is written here too (same claude-runtime), on its own queue and records.
+        await stack.enter_async_context(make_newsletter_worker(client, company))
         if settings.video_analytics_enabled:
             await stack.enter_async_context(make_video_analytics_worker(client, company))
         await asyncio.Event().wait()

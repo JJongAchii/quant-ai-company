@@ -42,6 +42,14 @@ bearer token을 넘기지 않는다. `/healthz`는 HTTP 생존 확인으로 인�
 직원 등급/절차 자동 승격에는 사용하지 않는다. quota/auth 장애는 업무 능력의 실패가 아니다.
 과제 원문/답안/권한이 달라졌거나 허위 인용/다른 모델/도구 실행이 감지되면 결과 저장을 막는다.
 
+갱신 토큰 만료 시각(`.credentials.json`의 `refreshTokenExpiresAt`)이 지난 뒤 처음 토큰을 갱신할 때 CLI가 로그인을
+비우고, 다시 로그인하기 전에는 살아나지 않는다(만료 2026-10-18 01:03, 비움 10-19 00:01 KST). 이때 일일 영상은 중단하지 않고 같은 요청 ID로 5분마다 다시 묻고, 브리핑 스레드에
+'영상 제작 대기' 알림을 한 번 남긴다. 위 로그인 명령으로 갱신하면 그 단계부터 이어서 만든다.
+
+운영 감시는 만료 7일 전과 2일 전, 그리고 로그인이 풀렸을 때 운영 채널에 알린다(docs/ops-watch.md). 갱신은 Mac 터미널에서
+`ssh -t <회사 서버> sudo bash /opt/quant-company/current/deploy/claude-login.sh` 한 줄로 한다. 위 compose 로그인 명령을
+실행한 뒤 loggedIn/authMethod/subscriptionType과 다음 만료 시각만 보여 준다. `status` 인자는 로그인 없이 상태만 본다.
+
 완료 결과는 원래 request ID로 복구한다. `running`/`failed` receipt가 남은 불확실한 호출은
 새 ID로 재시도하지 말고 해당 DB 행과 실행기 receipt를 먼저 대사한다. 직원 개발을 끄면
 정기 검토도 멈춘다. 검토만 끄려면 `COMPANY_STAFF_REVIEW_ENABLED=false`를 반영하고

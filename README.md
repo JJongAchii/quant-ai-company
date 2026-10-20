@@ -48,6 +48,10 @@ AM 최종 발송본을 글 중심 영상으로 제작하고 YouTube에 비공개
 로컬 렌더링을 사용합니다. 기본값은 비활성이고 서버 계정 연결·실제 업로드는 별도로 확인해야 합니다.
 [daily video 설정·데모·복구](docs/daily-video.md)를 참고하세요.
 
+KRX 거래일마다 커밋된 마감(PM) 브리핑으로 읽기 쉬운 저녁 브리핑 메일을 만들어 소유자가 Slack에서 관리하는
+수신자에게 Gmail로 보내는 기능을 추가했습니다. 기본값은 비활성(`NEWSLETTER_ENABLED=false`)입니다.
+[설정·시험 발송·복구](docs/newsletter.md)를 참고하세요.
+
 `tech-feed`에는 **AI 호출 없이** 국내외 기술 RSS·Atom의 원문 제목·링크·짧은 발췌를 전달하는
 별도 구독 기능을 추가했습니다. 12개 소스를 10분 대기 간격으로 수집하고 KST 06~24시에 한 건씩
 발송하며, 발송 전용 **Tech Scout** Slack 앱과 기존 DB·Temporal을 사용합니다. Tech Scout는

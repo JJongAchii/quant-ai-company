@@ -682,3 +682,28 @@ def test_editor_preserves_configured_effort_and_frozen_request(news):
     first = news.prepare_review()["request"]
     assert first["model"] == "gpt-6-astra" and first["reasoning_effort"] == "max"
     assert news.prepare_review()["request"] == first
+
+
+def test_an_unrelated_allowed_channel_keeps_news_in_flight(news):
+    ready_article(news)
+    prepared = news.prepare_review()
+    news.company.settings.slack_allowed_channels = [*news.company.settings.slack_allowed_channels, "CUNRELATED"]
+    assert news.commit_review(reply(prepared["request"]))["state"] != "stale"
+    with news.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM outbox").fetchone()["n"] == 1
+
+
+@pytest.mark.parametrize("cutover_passed", [False, True])
+def test_work_under_the_earlier_policy_formula_is_honoured_until_the_cutover(news, monkeypatch, cutover_passed):
+    from datetime import UTC, datetime
+
+    from quant_company.news import store
+
+    if cutover_passed:
+        monkeypatch.setattr(store, "LEGACY_POLICY_UNTIL", datetime(2026, 1, 1, tzinfo=UTC))
+    ready_article(news)
+    prepared = news.prepare_review()
+    with news.db.transaction() as conn:  # as written by the release before the formula changed
+        conn.execute("UPDATE news_reviews SET policy_digest=%s", (news.policy(legacy=True),))
+    state = news.commit_review(reply(prepared["request"]))["state"]
+    assert (state == "stale") is cutover_passed

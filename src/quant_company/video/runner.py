@@ -107,6 +107,15 @@ def contract_detail(error):
                      for e in error.errors(include_url=False, include_input=False))[:1500]
 
 
+def single_artifact(response, request):
+    """A claude-runtime answer to exactly this request on its model: one artifact and nothing a model could act on."""
+    decision = response.decision
+    return not (response.provider != "claude" or response.usage.get("actual_model") != request.model
+                or response.request_id != request.request_id or len(decision.artifacts) != 1
+                or decision.status != 'complete' or decision.tools or decision.delegations or decision.messages
+                or decision.memories or decision.follow_up or response.web_searches)
+
+
 class VideoFailure(ValueError):
     """A stage failure with an operator-facing reason code (store.REASONS); never carries URLs or secrets."""
 
@@ -298,8 +307,9 @@ class VideoRunner:
             try:
                 response = await self.provider.run(request)
             except ProviderFault as error:
-                # Both are reported before any inference: a shared lane or an exhausted subscription window.
-                if error.code in {'busy', 'quota'}:
+                # All are reported before any inference: a shared lane, an exhausted subscription window or a lapsed
+                # subscription login (2026-10-19 AM; the owner renews it by hand).
+                if error.code in {'busy', 'quota', 'auth'}:
                     await asyncio.to_thread(self.store.reject_busy_model, job, key, error.code)
                 # uncertain = the turn left no usable result (CLI exit, lost result, 2026-10-12 PM). Owner: production
                 # never blocks and the call count does not matter, so it is a failed attempt; the next attempt uses a
@@ -309,11 +319,7 @@ class VideoRunner:
                     await asyncio.to_thread(self.store.fail_effect, job, key, {'code': error.code, 'detail': detail})
                     raise ModelRejected(error.code, detail) from None
                 raise
-            decision = response.decision
-            if (response.provider != "claude" or response.usage.get("actual_model") != request.model
-                    or response.request_id != request.request_id or len(decision.artifacts) != 1
-                    or decision.status != 'complete' or decision.tools or decision.delegations or decision.messages
-                    or decision.memories or decision.follow_up or response.web_searches):
+            if not single_artifact(response, request):
                 raise ValueError("Video model response identity mismatch")
             try:
                 result = cls.model_validate_json(response.decision.artifacts[0].content)
@@ -340,6 +346,8 @@ class VideoRunner:
         for row in await asyncio.to_thread(self.store.pending_notices):
             if self.store.enabled():
                 await asyncio.to_thread(self.store.notice, row)
+        if self.store.enabled():
+            await asyncio.to_thread(self.store.resume_login_blocks)
         job = await asyncio.to_thread(self.store.claim)
         if not job:
             return {"state": "idle"}
@@ -355,6 +363,10 @@ class VideoRunner:
         except ProviderFault as error:
             if error.code in {'busy', 'quota', 'pending', 'unavailable'}:
                 await asyncio.to_thread(self.store.defer, job, error.retry_after_seconds or 30, error.code)
+            elif error.code == 'auth':
+                # Production never blocks: the episode asks again every 5 minutes and continues once the login is renewed.
+                await asyncio.to_thread(self.store.defer, job, 300, error.code)
+                await asyncio.to_thread(self.store.alert, job)
             else:
                 uncertain = error.code == 'uncertain' or await asyncio.to_thread(self.store.has_uncertain_effect, job)
                 await asyncio.to_thread(self.store.save, job, 'uncertain' if uncertain else "blocked", error="model_" + error.code)

@@ -7,6 +7,7 @@ import pytest
 from quant_company.video.analytics_metrics import (
     baseline,
     hook_retention,
+    in_series,
     parse_reach_csv,
     parse_title,
     pt_day,
@@ -25,6 +26,11 @@ from quant_company.video.analytics_metrics import (
      datetime(2026, 12, 31, 16, 30, tzinfo=UTC), (date(2026, 12, 31), "close")),
     ("연말 마감 정리 | 12월 31일 마감 · 오늘의 증시story",
      datetime(2027, 1, 1, 0, 30, tzinfo=UTC), (date(2026, 12, 31), "close")),
+    # The format used until 12 October: series tag first, "브리핑" after the edition.
+    ("[오늘의 증시story] 삼성전자 영업익 100조 첫 돌파에도 2%대 급락, 코스피 2.62% 하락 | 10월 8일 마감 브리핑",
+     datetime(2026, 10, 8, 8, 36, tzinfo=UTC), (date(2026, 10, 8), "close")),
+    ("[오늘의 증시story] 미국 10년물 금리 24년 만의 고점, 오늘 한국 증시는? | 10월 8일 아침 브리핑",
+     datetime(2026, 10, 7, 21, 41, tzinfo=UTC), (date(2026, 10, 8), "am")),
 ])
 def test_title_suffix_names_the_edition_day_and_kind(title, published, expected):
     assert parse_title(title, published) == expected
@@ -35,9 +41,22 @@ def test_title_suffix_names_the_edition_day_and_kind(title, published, expected)
     "엔비디아 4% 급등 | 13일 아침 · 오늘의 증시story",
     "Shorts: 오늘의 한 줄",
     "엔비디아 | 13월 40일 아침 · 오늘의 증시story",
+    "반도체 매수는 어디로 갔나? | 10월 7일 마감 브리핑",  # edition without the series tag
+    "[역사story] 한글날은 왜 10월 9일일까? | 10월 9일 아침 브리핑",
 ])
 def test_titles_without_the_series_suffix_are_not_matched(title):
     assert parse_title(title, datetime(2026, 10, 13, tzinfo=UTC)) is None
+
+
+@pytest.mark.parametrize("title,expected", [
+    ("코스피 5.46% 급락, 대체 뭐 때문에 빠졌을까? | 10월 13일 마감 · 오늘의 증시story", True),
+    ("[오늘의 증시story] 반도체 매수는 어디로 갔나? | 10월 7일 마감 브리핑", True),
+    ("[오늘의 증시story] 엔비디아 실적 발표 전 체크포인트", True),
+    ("[역사story] 한글날은 왜 10월 9일일까? 날짜를 바꾼 책 한 권", False),
+    ("Shorts: 오늘의 한 줄", False),
+])
+def test_only_the_brief_series_is_measured(title, expected):
+    assert in_series(title) is expected
 
 
 # Watch ratio falls from 1.0 at the start to 0.6 at a quarter of the video, then to 0.45 at the end.
@@ -137,11 +156,45 @@ def test_unknown_report_shape_is_refused():
 
 # ---- Analysis contracts and the production prompt --------------------------------------------------------------
 
+TITLE_CHANGE = {"target": "title", "text": "엔비디아 실적 앞두고 반도체 강세 확산될까 | 9월 22일 아침 · 오늘의 증시story",
+                "reason": "실제 검색어 '엔비디아 실적'이 제목에 없음"}
+
+
 def performance_output(**extra):
     return {"summary": "노출은 기준 이상이지만 클릭률이 낮았습니다.", "strengths": ["검색 유입 비중이 높음"],
             "weaknesses": ["썸네일 문구가 제목을 반복함"],
             "hypotheses": [{"stage": "ctr", "claim": "썸네일 문구가 제목과 같아 새 정보가 없음",
-                            "evidence": "CTR 3.1%, 아침 회차 중앙값 4.6%", "confidence": "medium"}], **extra}
+                            "evidence": "CTR 3.1%, 아침 회차 중앙값 4.6%", "confidence": "medium"}],
+            "changes": [TITLE_CHANGE, {"target": "tags", "text": "엔비디아 실적, 반도체 전망",
+                                       "reason": "검색 유입 300회 중 '엔비디아 실적' 120회"}], **extra}
+
+
+def test_performance_changes_are_paste_ready_studio_edits():
+    from pydantic import ValidationError
+
+    from quant_company.video.analytics_contracts import VideoPerformance
+
+    output = VideoPerformance.model_validate(performance_output())
+    assert [c.target for c in output.changes] == ["title", "tags"]
+    assert VideoPerformance.model_validate(performance_output(changes=[])).changes == []
+    for change in ({"target": "thumbnail"},  # an image cannot be pasted in Studio; lessons cover it
+                   {"text": "엔비디아 실적 앞두고 반도체 강세 확산될까"},  # drops the series suffix
+                   {"text": "가" * 80 + " | 9월 22일 아침 · 오늘의 증시story"},  # over YouTube's 100 characters
+                   {"reason": ""}):
+        with pytest.raises(ValidationError):
+            VideoPerformance.model_validate(performance_output(changes=[{**TITLE_CHANGE, **change}]))
+    with pytest.raises(ValidationError):
+        VideoPerformance.model_validate(performance_output(changes=[TITLE_CHANGE] * 4))
+    with pytest.raises(ValidationError):
+        VideoPerformance.model_validate({k: v for k, v in performance_output().items() if k != "changes"})
+
+
+def test_the_performance_prompt_asks_for_studio_edits_in_plain_words():
+    from quant_company.video.analytics_contracts import performance_prompt
+
+    prompt = performance_prompt({"video": {"title": "t"}})
+    for rule in ("changes", "YouTube Studio", "100", "· 오늘의 증시story", "field names"):
+        assert rule in prompt, rule
 
 
 def test_performance_output_requires_a_staged_hypothesis():
@@ -193,12 +246,59 @@ def test_analysis_requests_are_tool_free_and_may_carry_thumbnails():
                         output_contract="video_episode_v1", attachments=[image])
 
 
+def test_an_answer_is_text_with_optional_studio_edits_and_one_lesson():
+    from pydantic import ValidationError
+
+    from quant_company.video.analytics_contracts import VideoAnswer
+
+    lesson = {"text": "썸네일 큰 글씨에 그날 핵심 종목명을 넣는다", "scope": "thumbnail", "evidence": "소유자 지시, 탐색 CTR 2.9%",
+              "videos": ["aaaaaaaaaaa"], "expected": "CTR", "confidence": "low"}
+    answer = {"answer": "썸네일 문구 후보입니다.", "changes": [TITLE_CHANGE], "lesson": None}
+    assert VideoAnswer.model_validate(answer).changes[0].target == "title"
+    assert VideoAnswer.model_validate({**answer, "lesson": lesson}).lesson.scope == "thumbnail"
+    for bad in ({"answer": ""}, {"answer": "가" * 1501}, {"changes": [TITLE_CHANGE] * 4},
+                {"lesson": {**lesson, "scope": "facts"}}, {"lesson": {**lesson, "videos": []}}):
+        with pytest.raises(ValidationError):
+            VideoAnswer.model_validate({**answer, **bad})
+
+
+def test_answer_requests_are_tool_free_analytics_requests_with_thumbnails():
+    from quant_company.contracts import ProviderAttachment, ProviderRequest
+
+    image = ProviderAttachment(name="thumb-aaaaaaaaaaa.jpg", media_type="image/jpeg", data="aGVsbG8=")
+    ProviderRequest(request_id="video-analytics-answer-1", model="claude-opus-5-5", prompt="p",
+                    output_contract="video_answer_v1", attachments=[image])
+    for bad in ({"request_id": "video-answer-1"}, {"web_search": True}):
+        with pytest.raises(ValueError):
+            ProviderRequest(**{"request_id": "video-analytics-answer-1", "model": "claude-opus-5-5", "prompt": "p",
+                               "output_contract": "video_answer_v1", **bad})
+
+
+def test_the_answer_prompt_keeps_the_card_rules_and_routes_instructions_to_lessons():
+    from quant_company.video.analytics_contracts import answer_prompt
+
+    prompt = answer_prompt({"question": "q"})
+    for rule in ("thread", "lesson", "YouTube Studio", "field names", "1500"):
+        assert rule in prompt, rule
+
+
+def test_the_answer_prompt_keeps_replies_short_and_says_the_edits_once():
+    # 2026-10-15: the first live instruction answer restated its Studio edits and lesson in prose above the list.
+    from quant_company.video.analytics_contracts import answer_prompt
+
+    prompt = answer_prompt({"question": "q"})
+    for rule in ("600 characters", "shown under the answer", "do not describe, list or repeat them",
+                 "no headings", "one line"):
+        assert rule in prompt, rule
+
+
 def test_claude_runtime_schema_covers_the_analysis_contracts():
     from quant_company.contracts import ProviderRequest
     from quant_company.providers.claude_runner import output_schema
-    from quant_company.video.analytics_contracts import VideoPerformance, WeeklyReview
+    from quant_company.video.analytics_contracts import VideoAnswer, VideoPerformance, WeeklyReview
 
-    for contract, cls in (("video_performance_v1", VideoPerformance), ("video_weekly_v1", WeeklyReview)):
+    for contract, cls in (("video_performance_v1", VideoPerformance), ("video_weekly_v1", WeeklyReview),
+                          ("video_answer_v1", VideoAnswer)):
         request = ProviderRequest(request_id="video-analytics-weekly-2026-10-12", model="claude-opus-5-5",
                                   prompt="p", output_contract=contract)
         assert output_schema(request)[0] is cls
@@ -267,3 +367,18 @@ def test_lesson_buttons_turn_on_analyst_interactivity(tmp_path):
 
     manifests(Company(Settings(**ANALYTICS)), None, tmp_path, include_market_brief=True)
     assert json.loads((tmp_path / "market_brief.json").read_text())["settings"]["interactivity"] == {"is_enabled": True}
+
+
+def test_a_suggested_title_must_still_name_the_uploads_own_edition():
+    from quant_company.video.analytics import usable_changes
+
+    legacy = {"title": "[오늘의 증시story] 삼성전자 영업익 100조 첫 돌파에도 2%대 급락 | 10월 8일 마감 브리핑",
+              "published_at": datetime(2026, 10, 8, 8, 36, tzinfo=UTC), "edition_kind": "close"}
+    same = {"target": "title", "text": "삼성전자 영업익 100조 첫 돌파에도 2%대 급락 | 10월 8일 마감 · 오늘의 증시story",
+            "reason": "앞 20자가 시리즈 이름"}
+    tags = {"target": "tags", "text": "삼성전자 3분기 실적", "reason": "검색어 '삼성3분기실적'"}
+    assert usable_changes(legacy, [same, tags]) == [same, tags]  # the older format moves to the current one
+    for title in ("삼성전자 급락 | 10월 9일 마감 · 오늘의 증시story", "삼성전자 급락 | 10월 8일 아침 · 오늘의 증시story"):
+        assert usable_changes(legacy, [{**same, "text": title}, tags]) == [tags], title
+    current = {**legacy, "title": same["text"]}
+    assert usable_changes(current, [same]) == []  # no change at all

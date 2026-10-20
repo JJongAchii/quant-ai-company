@@ -31,6 +31,8 @@ METRICS = {"totals": {"views": 820, "watch_minutes": 2200.5, "avg_view_s": 161, 
                        {"source": "YT_SEARCH", "views": 300, "share": 300 / 820}],
            "search_terms": [{"term": "엔비디아 실적", "views": 120}]}
 BASIC = "date,channel_id,video_id,video_thumbnail_impressions,video_thumbnail_impressions_ctr\n"
+COMBINED = ("date,channel_id,video_id,traffic_source_type,traffic_source_detail,operating_system,device_type,"
+            "video_thumbnail_impressions,video_thumbnail_impressions_ctr\n")
 
 
 class SimulatedClient:
@@ -68,10 +70,18 @@ class SimulatedClient:
         self.files["u-" + report_id] = text
 
 
+NEW_TITLE = "엔비디아 실적 앞두고 반도체 강세 확산될까 | 9월 22일 아침 · 오늘의 증시story"
+
+
 def performance(**extra):
     return {"summary": "노출은 많았지만 썸네일 문구가 제목을 반복해 클릭이 적었습니다.", "strengths": ["검색 유입이 높음"],
             "weaknesses": ["오프닝 30초 이탈"], "hypotheses": [{"stage": "ctr", "claim": "썸네일 문구가 제목과 같음",
-                                                          "evidence": "CTR 4.0%, 기준 부족", "confidence": "low"}], **extra}
+                                                          "evidence": "CTR 4.0%, 기준 부족", "confidence": "low"}],
+            "changes": [{"target": "title", "text": NEW_TITLE, "reason": "실제 검색어 '엔비디아 실적'이 제목에 없음"},
+                        # Names another day: the upload would no longer read as its own edition.
+                        {"target": "title", "text": "반도체 강세 | 9월 23일 아침 · 오늘의 증시story", "reason": "다른 회차 제목"},
+                        {"target": "tags", "text": "엔비디아 실적, 반도체 전망", "reason": "검색 유입 300회 중 120회가 '엔비디아 실적'"}],
+            **extra}
 
 
 class SimulatedProvider:
@@ -99,6 +109,8 @@ def linked_upload(brief, video):  # noqa: F811
                                                "channel_reach_combined_a1": "job-channel_reach_combined_a1"})
     for day, rows in ((date(2026, 9, 21), "1000,0.05"), (date(2026, 9, 22), "400,0.025"), (date(2026, 9, 23), "100,0")):
         client.report(f"b{day.day}", day, BASIC + f"{day:%Y%m%d},UCfixture,aaaaaaaaaaa,{rows}\n")
+        client.report(f"c{day.day}", day, COMBINED + f"{day:%Y%m%d},UCfixture,aaaaaaaaaaa,3,,1,1,{rows}\n",
+                      "channel_reach_combined_a1")
     return job, client
 
 
@@ -134,9 +146,13 @@ async def test_the_three_day_card_carries_reach_retention_search_and_the_diagnos
     assert "반도체가 이끈 상승" in request.prompt and '"impressions": 1500' in request.prompt
     [card] = outbox(analytics)
     assert (card["channel"], card["thread_ts"], card["agent"]) == ("CPERF", None, "market_brief")
-    for piece in ("노출 1,500", "CTR 4.0%", "조회 820", "기준 부족", "30초 유지 84%", "반도체 강세, 어디까지",
-                  "엔비디아 실적", "썸네일 문구가 제목을 반복해"):
+    # The card itself is the numbers, what to paste into YouTube Studio and the one-line diagnosis.
+    for piece in ("노출 1,500", "CTR 4.0%", "조회 820", "기준 부족", "30초 유지 84%", "✏️ YouTube에서 바꿔볼 것",
+                  f"1. 제목 → `{NEW_TITLE}`", "왜: 실제 검색어 '엔비디아 실적'이 제목에 없음",
+                  "2. 태그 추가 → `엔비디아 실적, 반도체 전망`", "썸네일 문구가 제목을 반복해", "스레드"):
         assert piece in card["text"], piece
+    for detail in ("9월 23일", "반도체 강세, 어디까지", "썸네일 문구가 제목과 같음"):
+        assert detail not in card["text"], detail
     snapshot = analytics.snapshot("aaaaaaaaaaa", "d3")
     assert snapshot["metrics"]["impressions"] == 1500 and snapshot["metrics"]["ctr"] == pytest.approx(0.04)
     # Nothing is asked or posted twice.
@@ -198,8 +214,55 @@ async def test_the_seven_day_update_replies_in_the_card_thread_after_its_receipt
     assert len(outbox(analytics)) == 1  # waits for the card's Slack receipt
     deliver(analytics, outbox(analytics)[0], "300.001")
     await runner.tick(later)
-    card, update = outbox(analytics)
+    card, detail, update = outbox(analytics)
     assert update["thread_ts"] == "300.001" and "7일" in update["text"] and "조회 820" in update["text"]
+
+
+async def test_the_full_diagnosis_follows_in_the_card_thread_after_its_receipt(brief, video, analytics):  # noqa: F811
+    _, client = linked_upload(brief, video)
+    runner = AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider())
+    first = await runner.tick(AFTER_D3)
+    assert len(outbox(analytics)) == 1 and first["details"] == 0  # no thread before Slack's receipt
+    deliver(analytics, outbox(analytics)[0], "300.001")
+    result = await runner.tick(AFTER_D3)
+    card, detail = outbox(analytics)
+    assert result["details"] == 1 and detail["thread_ts"] == "300.001"
+    for piece in ("자세한 진단", "같은 아침 회차", "유입:", "\"엔비디아 실적\" 120", "반도체 강세, 어디까지",
+                  "+ 검색 유입이 높음", "− 오프닝 30초 이탈", "썸네일 문구가 제목과 같음 — CTR 4.0%"):
+        assert piece in detail["text"], piece
+    await runner.tick(AFTER_D3)
+    assert len(outbox(analytics)) == 2
+
+
+async def test_a_posted_card_and_its_detail_are_no_longer_pending(brief, video, analytics):  # noqa: F811
+    _, client = linked_upload(brief, video)
+    runner = AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider())
+    await runner.tick(AFTER_D3)
+    assert analytics.unposted("d3") == []
+    deliver(analytics, outbox(analytics)[0], "300.001")
+    await runner.tick(AFTER_D3)
+    assert len(outbox(analytics)) == 2 and analytics.undetailed() == []
+
+
+async def test_a_card_posted_before_the_studio_edits_does_not_stop_the_tick(brief, video, analytics):  # noqa: F811
+    # Production 10/15-10/19: cards posted before #164 have receipts without changes.
+    _, client = linked_upload(brief, video)
+    runner = AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider())
+    await runner.tick(AFTER_D3)
+    with analytics.db.transaction() as conn:
+        conn.execute("UPDATE video_analyses SET receipt=receipt #- '{output,changes}',output=output-'changes'")
+    result = await runner.tick(AFTER_D3)
+    assert (result["state"], result["cards"], result["details"]) == ("ok", 0, 0) and len(outbox(analytics)) == 1
+
+
+async def test_a_card_whose_analysis_failed_has_no_detail_thread(brief, video, analytics):  # noqa: F811
+    _, client = linked_upload(brief, video)
+    runner = AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider(fault="invalid_output"))
+    await runner.tick(AFTER_D3)
+    deliver(analytics, outbox(analytics)[0], "300.001")
+    await runner.tick(AFTER_D3)
+    [card] = outbox(analytics)
+    assert "유입:" in card["text"] and "\"엔비디아 실적\" 120" in card["text"]  # the numbers stay in the card
 
 
 def weekly_output(active_id):
@@ -346,10 +409,18 @@ async def test_dry_run_sync_reads_youtube_and_writes_nothing(brief, video, analy
     assert analytics.publications() == [] and not outbox(analytics)
 
 
+async def test_dry_run_skips_other_series_for_the_latest_window(brief, video, analytics):  # noqa: F811
+    _, client = linked_upload(brief, video)
+    client.items.insert(0, upload("hhhhhhhhhhh", "[역사story] 한글날은 왜 10월 9일일까?", PUBLISHED.replace(day=22)))
+    preview = await AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider()).preview(AFTER_D3)
+    assert [(i["youtube_id"], i["series"]) for i in preview["uploads"]] == [("hhhhhhhhhhh", False), ("aaaaaaaaaaa", True)]
+    assert preview["latest_window"]["youtube_id"] == "aaaaaaaaaaa"
+
+
 async def test_status_counts_links_reports_snapshots_and_lessons(brief, video, analytics):  # noqa: F811
     await weekly_posted(brief, video, analytics)
     status = analytics.status()
-    assert status["publications"] == {"total": 1, "linked": 1, "unlinked": []}
+    assert status["publications"] == {"total": 1, "linked": 1, "other_series": 0, "unlinked": []}
     assert status["latest_reach_day"] == "2026-09-23" and status["snapshots"] == {"d3": 1}
     assert status["lessons"] == {"active": 1, "proposed": 1}
     assert status["report_jobs"] == ["channel_reach_basic_a1", "channel_reach_combined_a1"]
@@ -368,9 +439,12 @@ async def test_one_unreadable_video_or_report_does_not_hold_up_the_rest(analytic
     client = Partly([upload(), upload("bbbbbbbbbbb")], jobs={"channel_reach_basic_a1": "job-channel_reach_basic_a1",
                                                              "channel_reach_combined_a1": "job-channel_reach_combined_a1"})
     client.report("broken", date(2026, 9, 22), "date,views\n20260922,3\n")
-    client.report("b23", date(2026, 9, 23), BASIC + "20260923,UCfixture,bbbbbbbbbbb,10,0.1\n")
+    for day in (21, 22, 23):
+        client.report(f"b{day}", date(2026, 9, day), BASIC + f"202609{day},UCfixture,bbbbbbbbbbb,10,0.1\n")
+        client.report(f"c{day}", date(2026, 9, day), COMBINED + f"202609{day},UCfixture,bbbbbbbbbbb,3,,1,1,10,0.1\n",
+                      "channel_reach_combined_a1")
     result = await AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider()).tick(AFTER_D3)
-    assert result["reports"] == 1 and result["snapshots"] == 1
+    assert result["reports"] == 6 and result["snapshots"] == 1
     assert analytics.snapshot("bbbbbbbbbbb", "d3") and not analytics.snapshot("aaaaaaaaaaa", "d3")
 
 

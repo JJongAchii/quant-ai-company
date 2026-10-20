@@ -40,7 +40,8 @@ EDITIONS = {'am': '아침 시장 브리핑', 'close': '마감 브리핑'}
 # The template draws ▲/▼ from a direction field in front of these values (and after image labels). A sign the script
 # also wrote is dropped so the screen shows exactly one arrow (2026-10-12 morning: "▲ ▲0.59%" on 18 values).
 ARROWED = {'cold_open': ('stats', 'value', 'big_dir'), 'market_board': ('tiles', 'change', 'dir'),
-           'headline': ('stats', 'change', 'dir'), 'compare': ('tiles', 'value', 'dir'), 'counter': ('blocks', 'value', 'dir')}
+           'headline': ('stats', 'change', 'dir'), 'compare': ('tiles', 'value', 'dir'), 'counter': ('blocks', 'value', 'dir'),
+           'photo': ('rows', 'big', 'dir')}
 SIGNS = {'up': '▲', 'dn': '▼'}
 LEAD_SIGN, TRAIL_SIGN = re.compile(r'^\s*([▲▼])\s*'), re.compile(r'\s*([▲▼])\s*$')
 
@@ -112,7 +113,7 @@ QA_JS = r"""() => {
   if(r.width>0&&r.height>0&&o>0.5) boxes.push({e,r,t:n.textContent.trim().slice(0,30)}); }
  for(const c of scn.querySelectorAll('.paper,.glass')){const r=c.getBoundingClientRect(); const inner=boxes.filter(b=>c.contains(b.e));
   if(inner.length && r.height>300){const bottom=Math.max(...inner.map(b=>b.r.bottom)); if((r.bottom-bottom)/r.height>0.25 && !c.querySelector('img,svg[viewBox]')) out.push(['empty-bottom',c.textContent.trim().slice(0,30)]);}
-  if(c.scrollHeight>c.clientHeight+2 && !c.classList.contains('imgbox') && !c.querySelector('svg[viewBox]')) out.push(['card-overflow',c.textContent.trim().slice(0,30)]);}
+  if(c.scrollHeight>c.clientHeight+2 && !c.classList.contains('imgbox') && ![...c.querySelectorAll('svg[viewBox]')].some(s=>!s.closest('.ico'))) out.push(['card-overflow',c.textContent.trim().slice(0,30)]);}
  for(const b of boxes) if(b.r.right>stage.right+1||b.r.bottom>stage.bottom+1||b.r.left<stage.left-1) out.push(['outside-stage',b.t]);
  const t=boxes.filter(b=>!b.e.closest('svg')||b.e.tagName==='text');
  for(let i=0;i<t.length;i++)for(let j=i+1;j<t.length;j++){const a=t[i],b=t[j]; if(a.e===b.e) continue;

@@ -58,9 +58,13 @@ services:
     image: quant-company-video:${RELEASE_COMMIT:-unqualified}
     build:
       context: ..
-      dockerfile: deploy/Dockerfile.video
+      dockerfile: deploy/Dockerfile
+      target: video
+      additional_contexts:
+        qdata: ${QDATA_BUILD_CONTEXT:-../../quant-data}
       args:
-        COMPANY_APP_IMAGE: quant-company:${RELEASE_COMMIT:-unqualified}
+        RELEASE_COMMIT: ${RELEASE_COMMIT:-unqualified}
+        QDATA_COMMIT: ${QDATA_COMMIT:-unqualified}
     command: [quant-company, video-worker]
     restart: unless-stopped
     init: true
@@ -106,6 +110,8 @@ services:
       BRIEFING_PUBLISH_ENABLED: ${BRIEFING_PUBLISH_ENABLED:-false}
       BRIEFING_OWNER_USER: ${BRIEFING_OWNER_USER:-}
       BRIEFING_CHANNEL_ID: ${BRIEFING_CHANNEL_ID:-}
+      # The evening brief email is written here on claude-runtime (docs/newsletter.md); sending stays in dispatch.
+      NEWSLETTER_ENABLED: ${NEWSLETTER_ENABLED:-false}
     secrets: [database_password, temporal_api_key, model_runtime_token]
     volumes:
       - ${STATE_DIR:-/var/lib/quant-company}/config/roles.json:/etc/quant-company/roles.json:ro

@@ -522,6 +522,23 @@ def test_a_table_outside_the_session_window_is_rejected_whole(lake, frames, tabl
         "krx_close_prices": set()}[table]
 
 
+def test_the_index_confirmed_after_16_is_accepted(lake):
+    """qdata stores the index only from two equal reads between 16:00 and 16:05 (quant-data PR #49: KRX index
+    quotes lag about 20 minutes and the after-market session does not move the index), so its rows are always
+    collected after 16:00. Prices and flows still end at 16:00 (test above)."""
+    publish(lake, krx_close_index=index_frame(at=kst(DAY, 16, 0, 30)))
+    result = derived(lake, at=kst(DAY, 16, 7))
+    assert not [e for e in errors(result) if e[0] == "krx_close_index"]
+    assert {"kospi", "kosdaq"} <= {o["instrument"] for o in result["observations"]}
+
+
+def test_an_index_collected_after_its_confirmation_window_is_rejected(lake):
+    publish(lake, krx_close_index=index_frame(at=kst(DAY, 16, 5)))
+    result = derived(lake, at=kst(DAY, 16, 7))
+    assert ("krx_close_index", "collected_after_index_confirmation") in errors(result)
+    assert not {"kospi", "kosdaq"} & {o["instrument"] for o in result["observations"]}
+
+
 def test_a_sample_mixing_sessions_rejects_the_table(lake):
     # Only six of today's eight flow rows: the bounded sample reaches yesterday's rows.
     flows = flow_frame()

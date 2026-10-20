@@ -44,7 +44,7 @@ class NewsScreeningStore(NewsStore):
                 return {"state": "idle"}
             active = conn.execute("SELECT * FROM news_triages WHERE state='running' ORDER BY created_at LIMIT 1 FOR UPDATE").fetchone()
             if active:
-                if active["policy_digest"] != policy:
+                if active["policy_digest"] not in self.policies():
                     self._block(conn, active["id"], "screen_policy_changed")
                     return {"state": "blocked", "reason": "screen_policy_changed"}
                 return ({"state": "defer"} if active["next_at"] > at
@@ -123,7 +123,7 @@ class NewsScreeningStore(NewsStore):
                 if fingerprint(saved["response"]) != fingerprint(body):
                     raise ValueError("news_committed_screen_changed")
                 return {"state": saved["state"], "duplicate": True}
-            if saved["state"] != "running" or not self.authorized() or saved["policy_digest"] != self.policy():
+            if saved["state"] != "running" or not self.authorized() or saved["policy_digest"] not in self.policies():
                 self._block(conn, saved["id"], "screen_policy_changed")
                 conn.execute("UPDATE news_triages SET response=%s WHERE id=%s", (Jsonb(body), saved["id"]))
                 return {"state": "blocked"}

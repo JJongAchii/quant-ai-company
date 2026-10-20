@@ -1,0 +1,43 @@
+{
+ "what": "2026-10-19 evening: the PM video on render :12, the video analytics stall and #182, the automatic releases of cac652e (#179, #180), 982fdee (#181, render inputs accepted without a new render image) and ce62b48 (#182).",
+ "pm_video_on_render_12": {
+  "job": "d955b6ff-6bdc-5c78-8e67-9f667e398bdd (10/19 close edition), created 16:46 KST, delivered 18:31",
+  "render": "one Fargate attempt 18:19:56-18:24:12 KST, completed",
+  "renderer": "b786f7f637f25132bc5125f559173911c55db5eac10149ea8a21a0946bd707da, the :12 image's (the :11 image is aaec7624)",
+  "qa": "passed; one finding 'Text exceeds safe screen area in scenes calendar', the same kind the 10/17 AM render on :11 had (scene export-jobs)"
+ },
+ "video_analytics_stall": {
+  "seen": "video-worker log: 'KeyError: changes' at video/analytics.py:337 in the cards stage, twice per tick (two activity attempts), every 30 minutes while no episode was in production; 20 since the 14:32 recreation",
+  "effect": "the last analysis before the fix was from 10/16 09:51 KST; the d3 snapshots of eight uploads (10/12 to 10/16) were reportable without a card, and the stages after cards (details, d7 updates, weekly) only ran on ticks during production, when cards returns early",
+  "cause": "unposted() and undetailed() tested stable() text against messages.id, which psycopg reads back as uuid.UUID (checked read-only in the video-worker container), so posted cards never left the pending list. Every tick went back to the three cards posted on 10/15, whose receipts predate #164 and have no 'changes'. KeyError is not among the errors tick() catches.",
+  "fix": "#182 (ce62b48): both queries compare text; two runner tests (a posted card and its detail are no longer pending; a card posted before the Studio edits does not stop the tick), both failing before the change"
+ },
+ "auto_release_cac652e": {
+  "contains": ["#179 tag the owner on daily video messages that need the owner", "#180 announce the Claude login expiry ahead and add a one-line renewal"],
+  "render_changes": "[] against 44e24f4",
+  "timeline_kst": {"main_ci_green": "21:24", "checked": "21:32:25", "build": "21:32:56", "groups": "21:34:13-21:45:35", "activate": "21:46:10", "released": "21:46"}
+ },
+ "render_accepted_982fdee": {
+  "contains": ["#181 a one-outlet line's source is shown on its card instead of saying '보도에 따르면' (owner, 10/19)"],
+  "render_changes": "src/quant_company/video/body.py, contracts.py, episode.py against 44e24f4 (release.render_changes over both trees); operator files []",
+  "review": "the changed names (prompt_lines' key, review_prompt, episode_violations, episode_prompt, the new shows_outlet and SOURCE_CARDS) are not used by the render path (video.remote's render_task, render, motion, upload, photos, illustrations); the render task uses plan_class, the plan model validators, body.references and contracts.digest, which the diff does not touch; motion.py and design/ are unchanged, so the renderer fingerprint stays b786f7f6",
+  "value": "VIDEO_RENDER_ACCEPTED=982fdee71c108afa4e5a3cf0ecb0c6eaa84351a7, set at 21:46:36 KST by the release operator after the cac652e run let go of its locks (.release-auto.lock, then .backup.lock), with a runtime.env backup; VIDEO_RENDER_COMMIT stays 44e24f4 and the task definition :12",
+  "why_after_cac652e": "the accepted commit becomes the comparison base, so setting it before cac652e was released would have reported cac652e as render_required",
+  "requested_by": "the video session, relaying the owner's 'if there is no problem, I approve :13; check it and handle it'; no new render image or change set was needed"
+ },
+ "auto_release_982fdee": {
+  "timeline_kst": {"main_ci_green": "21:39", "checked": "21:46:36 (started by the operator right after the value)", "groups": "21:48:11-", "video_worker": "21:59:27 quant-company-video:982fdee", "released": "22:00"},
+  "result": "17/17 on 982fdee, drift [], render commit 44e24f4, accepted 982fdee, :12; no video-worker errors after recreation"
+ },
+ "auto_release_ce62b48": {
+  "contains": ["#182"],
+  "timeline_kst": {"main_ci_green": "22:00", "checked": "22:02:40", "video_worker": "22:15:42 quant-company-video:ce62b48", "released": "22:16", "next_check": "22:17 up_to_date"}
+ },
+ "analytics_catch_up": {
+  "d3_analyses": "eight completed 22:18:46-22:28:24 KST (wQD9VRkt6c0, DayOhWmiFis, 3aHOgZXgrzw, Z1gVp05gxA0, CaoI4wtBnPg, PfVL_DYTnSM, rmImuHNlwAM, lvTkg9hC5cA)",
+  "posts": "16 between 22:20:29 and 22:29:54: eight cards and eight detail replies in their threads, all delivered",
+  "weekly": "the 10/19 review (video-analytics-weekly-2026-10-19) ran 22:29:55-22:42:23 KST in claude-runtime (exit 0) and failed its contract: 'patterns: Items must contain 1-300 characters'. The worker had stopped waiting after 120 s, so the row stayed running until the next tick (23:04:04) read the failed receipt by the same ID; the review went out as '분석 실행 실패(invalid_output)' with no proposals. The 300-character item limit is a field_validator only, so neither the prompt nor the schema tells the model; an executed turn is not replayed.",
+  "errors": "no KeyError or failed tick after the ce62b48 recreation"
+ },
+ "ops_incidents": "none opened during the evening releases"
+}

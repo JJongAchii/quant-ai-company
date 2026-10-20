@@ -79,14 +79,16 @@ def plan_with(*cards):
     return EpisodePlan.model_validate(raw)
 
 
-def measure(tmp_path, plan, sels, *, captions=(), probe=None):
+def measure(tmp_path, plan, sels, *, captions=(), probe=None, library=None):
     """Builds the episode page like a render does and returns, per scene, the layout check and the element boxes."""
     if not importlib.util.find_spec('playwright'):
         pytest.skip('Install optional video dependencies and Chromium')
     from playwright.sync_api import sync_playwright
 
-    # These cards carry no pictures: no asset library, speech or FFmpeg is needed to lay them out.
-    renderer = MotionRenderer(Settings(video_artifact_dir=tmp_path, video_asset_dir=tmp_path), aligner=object(), library={})
+    # Most cards carry no pictures: no asset library, speech or FFmpeg is needed to lay them out. A photo card gets a
+    # one-entry library whose file the caller wrote under tmp_path.
+    renderer = MotionRenderer(Settings(video_artifact_dir=tmp_path, video_asset_dir=tmp_path), aligner=object(),
+                              library=library or {})
     renderer.sign_conflicts, renderer.generated_used, renderer.episode_assets = [], set(), {}
     page, scenes, _ = renderer._page({'id': 'layout', 'policy': {}}, plan, tmp_path / 'out')
     for number, item in enumerate(scenes):
@@ -211,7 +213,7 @@ THUMB_RECTS = r"""() => {const R = s => {const r = document.querySelector(s).get
           lines: Math.round(q.getBoundingClientRect().height / parseFloat(getComputedStyle(q).lineHeight))};}"""
 
 
-def thumbnail(tmp_path, question, stat, template=None):
+def thumbnail(tmp_path, question, stat, template=None, probe=None):
     """Renders the thumbnail like a render does; returns the renderer's finding and the text boxes."""
     if not importlib.util.find_spec('playwright'):
         pytest.skip('Install optional video dependencies and Chromium')
@@ -235,6 +237,8 @@ def thumbnail(tmp_path, question, stat, template=None):
             tab.goto((page / 'thumbnail.render.html').as_uri())
             tab.evaluate('document.fonts.ready.then(() => window.fit && fit())')
             rects = tab.evaluate(THUMB_RECTS)
+            if probe:
+                rects['probe'] = tab.evaluate(probe)
         finally:
             browser.close()
     return found, rects
@@ -313,3 +317,279 @@ def test_compare_extra_values_keep_one_line_inside_their_panel(tmp_path):
 def test_a_two_word_signal_topic_keeps_one_line(tmp_path):
     found = measure(tmp_path, plan_with(scene('watch', '일정', 'signals', WATCH)), {'topic': '[data-topic]'})['watch']
     assert len(found['topic']) == 4 and all(t['h'] < 50 and t['sw'] <= t['cw'] + 1 for t in found['topic']), found['topic']
+
+
+# 2026-10-14 PM cards that misled after three visual reviews: each counter value shrank on its own, so the shortest
+# number ('4000명', the smallest change) was drawn the largest; two stats of one summary card came out in different
+# sizes; the map delta line is always the falling colour, so '…상승' was drawn blue.
+JOBS = {'icon': 'balance', 'chips': ['고용', '수개월'], 'title': '성장의 온기, 고용엔 고르지 않다',
+        'topic': '9월 고용보험 가입자 (전년 동월 대비)', 'source': '이투데이', 'kicker': '고용 근거',
+        'blocks': [{'dir': 'up', 'sub': '증가분 대부분 · 전체 28만8000명 증가', 'label': '서비스업', 'value': '28만3000명'},
+                   {'dir': 'dn', 'sub': '외국인 당연가입분 제외 · 건설업도 5900명 감소, 38개월 연속', 'label': '내국인 제조업',
+                    'value': '4000명'},
+                   {'dir': 'dn', 'gold': True, 'sub': '인구 감소 등 영향', 'label': '29세 이하', 'value': '5만5000명'}],
+        'rows': [{'icon': 'chip', 'text': '해석: 성장 전망 개선의 중심은 반도체 수출'}]}
+SUMMARY14 = json.loads(json.dumps(SUMMARY))
+SUMMARY14['cards'][1]['stats'] = [['미국 빅테크', '투자 실행의 제약', ''], ['시장이 볼 것', '수요 전망·실제 자금조달', '']]
+FIT_SIZES = """() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
+  return [...scn.querySelectorAll('[data-fit-group]')].map(e=>[e.dataset.fitGroup, parseFloat(getComputedStyle(e).fontSize),
+    e.scrollWidth<=e.clientWidth+1]);}"""
+DELTA = """() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
+  const e=scn.querySelector('[data-delta]'); return e && {cls:e.className, color:getComputedStyle(e).color};}"""
+
+
+def test_counter_values_side_by_side_share_one_size(tmp_path):
+    found = measure(tmp_path, plan_with(scene('jobs', '핵심 이슈', 'counter', JOBS)), {}, probe=FIT_SIZES)['jobs']
+    sizes = [size for group, size, _ in found['probe'] if group == 'blocks']
+    assert len(sizes) == 3 and len(set(sizes)) == 1, found['probe']
+    assert all(fits for _, _, fits in found['probe']), found['probe']
+
+
+def test_the_stats_of_one_summary_card_share_one_size(tmp_path):
+    found = measure(tmp_path, plan_with(scene('summary', '요약', 'summary3', SUMMARY14)), {}, probe=FIT_SIZES)['summary']
+    by_card: dict[str, set[float]] = {}
+    for group, size, fits in found['probe']:
+        by_card.setdefault(group, set()).add(size)
+        assert fits, found['probe']
+    assert len(by_card) == 3 and all(len(sizes) == 1 for sizes in by_card.values()), found['probe']
+
+
+@pytest.mark.parametrize('direction,cls', [('up', 'upn'), ('dn', 'dnn'), (None, '')])
+def test_the_map_delta_takes_the_colour_of_its_direction(tmp_path, direction, cls):
+    data = {**OIL, 'delta': '브렌트 1.24%·WTI 1.18% 상승 · 수요일 장중'}
+    if direction:
+        data['delta_dir'] = direction
+    found = measure(tmp_path, plan_with(scene('oil', '함께 볼 이슈', 'map', data)), {}, probe=DELTA)['oil']
+    assert found['probe']['cls'] == cls, found['probe']
+
+
+
+# 2026-10-15 PM cards left after three visual reviews: the photo card drew 'CoreWeave 16%' (direction dn) as a bare white
+# number; the map's bars took w as pixels, so '약 40%'·'약 20%' became 40px and 20px squares with no scale; summary card
+# titles left one word on the second line ('…외국인 매도 속 / 급락'); and the cost line ignored the break the script wrote.
+PIXEL = bytes.fromhex('89504e470d0a1a0a0000000d4948445200000001000000010806000000'
+                      '1f15c4890000000d49444154789c6360f8cfc0f01f0005fe02fea3586b9b0000000049454e44ae426082')
+AI_COST = {'chips': ['AI 조달 부담', '수개월'], 'title': 'TSMC는 호실적, AI 투자 자금은 비싸졌다', 'image': {'asset': 'fixture-photo'},
+           'rows': [{'chip': '코어위브 주가', 'big': '16%', 'dir': 'dn', 'sub': '급락 · 수요일 보도 시점', 'source': 'CNBC'},
+                    {'chip': '코어위브 채권', 'big': '14.8%', 'sub': '2032년 만기채 만기수익률 · 수요일 보도 시점', 'source': 'CNBC'},
+                    {'chip': '해석', 'kind': 'interp', 'text': '다음 투자에 필요한 자금의 가격이 높아진다는 신호', 'sub': '기존 채권의 표면금리가 바뀐 것은 아님'}]}
+HORMUZ = {**OIL, 'bars': [{'w': 40, 'gold': True, 'name': '해협 원유 수출', 'label': '약 40% 적음'},
+                          {'w': 20, 'name': '우회 송유관 포함 지역 전체', 'label': '약 20% 적음'}],
+          'cost': '완충은 비축유 방출\n변수는 네타냐후 ‘군사행동 현재 부적절’ 발언과 기만전술 가능성이 겹친다는 점'}
+SUMMARY15 = json.loads(json.dumps(SUMMARY))
+SUMMARY15['cards'][0]['title'] = '반도체 충격과 외국인 매도 속 급락'
+ROW = """() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
+  const big=[...scn.querySelectorAll('.glass .tnum')].find(e=>e.textContent.includes('16%'));
+  return big && {text:big.textContent.trim(), arrows:[...big.querySelectorAll('span')].map(s=>[s.className,s.textContent.trim()])};}"""
+BARS = """() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
+  const bars=[...scn.querySelectorAll('[data-track]')];
+  return bars.length ? bars.map(t=>({track:t.getBoundingClientRect().width,
+    fill:t.querySelector('.bar').getBoundingClientRect().width})) : null;}"""
+LINES = r"""() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
+  const lines=e=>{const rg=document.createRange(); rg.selectNodeContents(e); const m=new Map();
+    for(const r of rg.getClientRects()){if(r.width<1) continue; const k=Math.round(r.top/8);
+      const [l,rt]=m.get(k)||[Infinity,-Infinity]; m.set(k,[Math.min(l,r.left),Math.max(rt,r.right)]);}
+    return {lines:[...m.values()].map(([l,r])=>r-l), box:e.getBoundingClientRect().width};};
+  return {titles:[...scn.querySelectorAll('.paper .h2')].map(lines), cost:[...scn.querySelectorAll('[data-cost]')].map(lines)};}"""
+
+
+def test_a_photo_row_draws_the_direction_of_its_number(tmp_path):
+    (tmp_path / 'p.png').write_bytes(PIXEL)
+    library = {'fixture-photo': {'file': 'p.png', 'kind': '자료사진', 'author': 'Peellden', 'license': 'CC BY-SA 3.0'}}
+    found = measure(tmp_path, plan_with(scene('ai-cost', '핵심 이슈', 'photo', AI_COST)), {}, probe=ROW,
+                    library=library)['ai-cost']
+    assert found['probe']['text'].startswith('▼') and found['probe']['text'].count('▼') == 1, found['probe']
+    assert ['dnn', '▼'] in found['probe']['arrows'], found['probe']
+
+
+def test_map_bars_fill_one_track_in_proportion(tmp_path):
+    found = measure(tmp_path, plan_with(scene('hormuz', '함께 볼 이슈', 'map', HORMUZ)), {}, probe=BARS)['hormuz']
+    bars = found['probe']
+    assert bars and len(bars) == 2 and bars[0]['track'] == bars[1]['track'] >= 240, bars
+    assert abs(bars[0]['fill'] / bars[1]['fill'] - 2) < 0.05 and bars[0]['fill'] < bars[0]['track'], bars
+    assert not [x for x in found['qa'] if x[0] in BROKEN], found['qa']
+
+
+def test_card_titles_wrap_without_a_lone_last_word(tmp_path):
+    found = measure(tmp_path, plan_with(scene('summary', '요약', 'summary3', SUMMARY15)), {}, probe=LINES)['summary']
+    first = found['probe']['titles'][0]['lines']
+    assert len(first) == 2 and first[1] >= 0.4 * first[0], first
+
+
+def test_the_cost_line_keeps_the_break_the_script_wrote(tmp_path):
+    found = measure(tmp_path, plan_with(scene('hormuz', '함께 볼 이슈', 'map', HORMUZ)), {}, probe=LINES)['hormuz']
+    (cost,) = found['probe']['cost']
+    assert len(cost['lines']) >= 2 and cost['lines'][0] < 0.5 * cost['box'], cost
+
+
+# 2026-10-16 AM cards left after three visual reviews: every summary card kept a 140px empty band between its title and
+# its stats (the stats sat at the card's bottom edge); the compare arrow and its label were always blue, so the KOFIX
+# '0.25%p 상승' arrow read as a fall, and the label rose to 4px under the chart's source chip; the five-row signals card
+# drew 84px icon tiles in 66px rows, so the tiles stuck out of their rows and touched each other.
+SUMMARY16 = {'title': '한국만 더 흔들린 이유와 오늘의 세 가지', 'cards': [
+    {'n': 1, 'title': '메모리 쏠림과 수급 압력',
+     'items': [['memory', 'lg', 'red', '삼성전자·SK하이닉스 쏠림', 'dn', '▼'], ['globe', 'md', 'sky', '외국인 매도·원화 약세', 'dn', '▼']],
+     'stats': [['시총 감소분 중 두 종목', '약 65%', ''], ['원/달러 기준가', '1,344.6원', '']]},
+    {'n': 2, 'title': '반등 뒤 뜨거운 물가',
+     'items': [['gauge', 'lg', 'red', '생산자물가 예상 상회', 'up', '▲'], ['basket', 'md', 'sky', '통제그룹 판매 부진', 'dn', '▼']],
+     'stats': [['PPI 전월 대비', '1.3%', 'up'], ['통제그룹 · 전망 0.3% 하회', '0.1%', '']]},
+    {'n': 3, 'title': '채권 강세, 대출 기준지표 상승',
+     'items': [['percent', 'md', 'green', '국고채 금리 하락', 'dn', '▼'], ['bank', 'lg', 'red', '코픽스 상승', 'up', '▲']],
+     'stats': [['국고채 10년', '6.8bp', 'dn'], ['코픽스 신규취급액', '0.25%p', 'up']]}]}
+KOFIX = {'bars': [{'n': 3.18, 'name': '전월', 'label': '3.18%'}, {'n': 3.43, 'name': '9월', 'label': '3.43%'}],
+         'chips': ['대출 금리', '수개월'], 'title': '국고채는 내렸는데, 주담대 기준지표는 올랐다', 'arrow_text': '0.25%p 상승',
+         'extra': [['잔액 기준', '3.05% → 3.15%'], ['한은 기준금리', '2.50% → 3.00%']],
+         'tiles': [{'sub': '15일 마감 · 6.8bp 하락', 'label': '국고채 10년', 'value': '4.193%', 'source': '연합뉴스'},
+                   {'sub': '15일 마감 · 1.6bp 하락', 'label': '국고채 3년', 'value': '3.867%', 'source': '연합뉴스'}],
+         'chart_title': '코픽스 신규취급액 기준', 'chart_source': '이투데이'}
+RETAIL = {'bars': [{'n': 6.4, 'name': '주유소 매출', 'label': '6.4%'}, {'n': 0.2, 'name': '주유소 제외 판매', 'label': '0.2%'}],
+          'chips': ['미국 물가', '왜 중요한가'], 'title': '숫자는 강했지만, 휘발유를 빼면 약했다', 'arrow_text': '주유소를 빼면',
+          'extra': [['전체 소매판매', '0.8% · 전망 0.4%'], ['통제그룹 (GDP 반영)', '0.1% · 전망 0.3% 하회']],
+          'tiles': [{'dir': 'up', 'sub': '전망 0.6% 상회 · 근원 0.7%', 'label': 'PPI 전월 대비', 'value': '1.3%', 'source': '연합뉴스'},
+                    {'dir': 'up', 'sub': '상품 상승분의 80% 이상', 'label': 'PPI 에너지 가격', 'value': '10.8%', 'source': '연합뉴스'}],
+          'chart_title': '9월 소매판매 전월 대비 (명목)', 'chart_source': '연합뉴스'}
+CONDITIONS = {'tag': '확인할 신호', 'title': '판단이 바뀌는 조건',
+              'note': '석유화학: EIA 원유 재고 감소 둔화, 에틸렌·나프타 가격 차 확대 시 마진 압박 판단 약화 · 한국장 수급은 장 마감 기준 집계로 확인',
+              'disclaimer': '투자 권유가 아닌 정보 제공 목적이며, 해석은 브리핑의 판단입니다. 투자 결정과 책임은 본인에게 있습니다.',
+              'rows': [{'icon': 'balance', 'then': '수급 악순환 우려 약화', 'conds': ['외국인 순매도·미수 거래·반대매매 감소', '원화 안정'],
+                        'topic': '한국장 회복 판단'},
+                       {'icon': 'memory', 'then': '공급 충격 해석 약화', 'conds': ['CXMT 양산 확대 지연', '메모리 계약가격 유지'],
+                        'topic': '메모리 공급 충격'},
+                       {'icon': 'gauge', 'then': '비용 압박·수요 둔화 해석 약화', 'conds': ['근원 PPI 상승률 둔화', '통제그룹 판매 회복'],
+                        'topic': '미국 물가·소비'},
+                       {'icon': 'bank', 'then': '가계 부담 확대 전망 약화', 'conds': ['은행 신규 조달금리 하락', '변동형 주담대 적용금리 안정'],
+                        'topic': '가계 대출 금리'},
+                       {'icon': 'shield', 'then': '방어 공백 위험 평가 하향', 'conds': ['추가 요격탄 실제 인도', '조기경보·군 통신 정상화'],
+                        'topic': '우크라이나 방공'}]}
+ARROW = """() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
+  const a=scn.querySelector('[data-role=arrow]'), t=scn.querySelector('[data-role=arrow-text]');
+  const head=scn.querySelector('marker path'); if(!a) return null;
+  return {arrow:a.getAttribute('stroke'), text:t.getAttribute('fill'), head:head.getAttribute('stroke')};}"""
+
+
+def test_summary_stats_follow_their_title_without_an_empty_band(tmp_path):
+    found = measure(tmp_path, plan_with(scene('summary', '요약', 'summary3', SUMMARY16)),
+                    {'card': '.paper', 'title': '.paper .h2', 'stat': '.paper .stat'})['summary']
+    assert not [x for x in found['qa'] if x[0] in BROKEN], found['qa']
+    assert len(found['card']) == 3 and len(found['stat']) == 6
+    for title, stats in zip(found['title'], (found['stat'][0:2], found['stat'][2:4], found['stat'][4:6]), strict=True):
+        assert stats[0]['t'] - title['b'] <= 40, (title, stats[0])
+    assert all(inside(card, found['stage']) for card in found['card'])
+    # '통제그룹 · 전망 0.3% 하회' takes two lines; every tile still has the same height, as the 10/16 inspection asked.
+    assert len({round(s['h']) for s in found['stat']}) == 1, [s['h'] for s in found['stat']]
+
+
+def test_summary_stats_line_up_across_cards_when_one_title_takes_two_lines(tmp_path):
+    found = measure(tmp_path, plan_with(scene('summary', '요약', 'summary3', SUMMARY15)),
+                    {'card': '.paper', 'title': '.paper .h2', 'stat': '.paper .stat'})['summary']
+    tops = {round(s['t']) for s in found['stat']}
+    assert max(tops) - min(tops) <= 2, tops
+    assert min(s['t'] for s in found['stat'][0:2]) - found['title'][0]['b'] <= 40, found['title'][0]
+    assert len({round(c['h']) for c in found['card']}) == 1, [c['h'] for c in found['card']]
+
+
+@pytest.mark.parametrize('direction,colour', [('up', '#FF5C6C'), ('dn', '#5EA0FF'), (None, '#FDC749')])
+def test_the_compare_arrow_takes_the_colour_of_its_direction(tmp_path, direction, colour):
+    data = {**KOFIX, 'arrow_dir': direction} if direction else KOFIX
+    found = measure(tmp_path, plan_with(scene('kofix', '함께 볼 이슈', 'compare', data)), {}, probe=ARROW)['kofix']
+    assert found['probe'] == {'arrow': colour, 'text': colour, 'head': colour}, found['probe']
+
+
+@pytest.mark.parametrize('data', [KOFIX, RETAIL], ids=['kofix', 'retail'])
+def test_the_compare_arrow_label_keeps_clear_of_the_chart_title(tmp_path, data):
+    found = measure(tmp_path, plan_with(scene('chart', '핵심 이슈', 'compare', data)),
+                    {'title': '.glass .lab', 'chip': '.glass .src', 'arrow': '[data-role=arrow]',
+                     'label': '[data-role=arrow-text]'})['chart']
+    label, arrow = found['label'][0], found['arrow'][0]
+    assert label['t'] - max(found['title'][0]['b'], found['chip'][0]['b']) >= 16, (label, found['title'], found['chip'])
+    assert label['b'] <= arrow['t'] or label['t'] >= arrow['b'] or label['r'] <= arrow['l'] or label['l'] >= arrow['r']
+    assert not [x for x in found['qa'] if x[0] in BROKEN], found['qa']
+
+
+def test_signal_icon_tiles_stay_inside_short_rows(tmp_path):
+    found = measure(tmp_path, plan_with(scene('watch', '일정', 'signals', CONDITIONS)),
+                    {'row': '.glass:has(> .tile)', 'tile': '.glass > .tile'})['watch']
+    assert len(found['row']) == 5 and len(found['tile']) == 5
+    for row, tile in zip(found['row'], found['tile'], strict=True):
+        assert inside(tile, row), (tile, row)
+    assert not [x for x in found['qa'] if x[0] in BROKEN], found['qa']
+
+
+# 2026-10-16 PM, the first episode on render :11: two of the three 'jobs' flow notes took three lines and ran out of the
+# bottom of their fixed 330px cards ('둔화' and '늦어질 수 있다' printed over the card edge). The layout check passed it,
+# because it skipped every card holding an svg with a viewBox, and every icon is one.
+JOBS16 = {'foot': {'chip': '확인할 신호',
+                   'text': "청년·숙박음식·건설 감소폭이 줄고 제조업 증가가 이어지면 '수출 개선이 내수로 확산되지 못한다'는 판단 약화"},
+          'chips': ['국내 고용', '수개월'], 'title': '제조업 고용은 회복, 청년·내수는 부진',
+          'nodes': [{'big': '1만6천명', 'dir': 'up', 'head': '9월 제조업 취업자', 'icon': 'chartUp', 'chips': ['무슨 일'],
+                     'sub': '27개월 만에 증가 전환 · 전체 취업자 11만3천명 증가, 8월 18만4천명보다 둔화', 'source': '이투데이 보도'},
+                    {'big': '14만7천명', 'dir': 'dn', 'head': '15∼29세 청년 취업자', 'icon': 'gauge', 'chips': ['약한 고리'],
+                     'sub': '46개월째 감소 · 실업률 5.4% · 약세가 이어지면 소비 관련 기업 매출 회복이 늦어질 수 있다',
+                     'source': '이투데이 보도'},
+                    {'big': '25만3천명', 'dir': 'up', 'head': '상용근로자', 'icon': 'check', 'chips': ['다르게 볼 점'],
+                     'sub': "비중 57.8%, 9월 기준 역대 최고 · 청년 '쉬었음' 4만4천명 감소", 'source': '이투데이 보도'}]}
+FLOW = r"""() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
+  const R=e=>{const r=e.getBoundingClientRect(); return {t:r.top,b:r.bottom,l:r.left,r:r.right};};
+  const text=n=>{const w=document.createTreeWalker(n,NodeFilter.SHOW_TEXT); let b=0,x;
+    while((x=w.nextNode())){if(!x.textContent.trim()) continue; const rg=document.createRange(); rg.selectNodeContents(x);
+      b=Math.max(b,rg.getBoundingClientRect().bottom);} return b;};
+  return {nodes:[...scn.querySelectorAll('.paper')].map(n=>({...R(n),text:text(n)})),
+          arrows:[...scn.querySelectorAll('path[marker-end]')].map(R), foot:R(scn.querySelector('.glass'))};}"""
+
+
+def test_flow_cards_grow_to_hold_a_three_line_note(tmp_path):
+    found = measure(tmp_path, plan_with(scene('jobs', '함께 볼 이슈', 'flow', JOBS16)), {}, probe=FLOW)['jobs']
+    nodes, arrows, foot = found['probe']['nodes'], found['probe']['arrows'], found['probe']['foot']
+    assert not [x for x in found['qa'] if x[0] in BROKEN], found['qa']
+    assert len(nodes) == 3 and len(arrows) == 2
+    for node in nodes:
+        assert node['text'] <= node['b'] - 16, node
+    assert len({round(n['b'] - n['t']) for n in nodes}) == 1, nodes
+    middle = (nodes[0]['t'] + nodes[0]['b']) / 2
+    for arrow, left, right in zip(arrows, nodes, nodes[1:], strict=False):
+        assert abs((arrow['t'] + arrow['b']) / 2 - middle) <= 3, (arrow, middle)
+        assert left['r'] <= arrow['l'] and arrow['r'] <= right['l'], (left, arrow, right)
+    assert foot['t'] - nodes[0]['b'] >= 30 and foot['b'] <= found['stage']['b'], (nodes[0], foot)
+
+
+ICON_CARD = """<div id="stage" style="position:absolute;left:80px;top:120px;width:1760px;height:730px">
+ <div class="scene" style="display:block;position:absolute;inset:0">
+  <div class="paper" style="position:absolute;left:0;top:0;width:520px;height:120px;padding:26px 32px;font-size:28px">
+   <span class="ico"><svg width="56" height="56" viewBox="0 0 64 64"><circle cx="32" cy="32" r="20"/></svg></span>
+   <div>넘치는 설명 · 세 줄을 넘는 긴 문장이 카드 아래 가장자리 밖으로 흘러내려 시청자에게 잘린 글자로 보입니다</div></div>
+  <div class="glass" style="position:absolute;left:600px;top:0;width:600px;height:300px;overflow:hidden">
+   <svg width="600" height="300" viewBox="0 0 60 30"><text x="5" y="15" font-size="4">지도</text></svg></div>
+ </div></div>"""
+
+
+def test_the_layout_check_reports_text_running_out_of_a_card_with_an_icon():
+    if not importlib.util.find_spec('playwright'):
+        pytest.skip('Install optional video dependencies and Chromium')
+    from playwright.sync_api import sync_playwright
+
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(args=CHROMIUM_ARGS)
+        try:
+            tab = browser.new_page(viewport={'width': 1920, 'height': 1080})
+            tab.set_content(ICON_CARD)
+            qa = tab.evaluate(QA_JS)
+        finally:
+            browser.close()
+    # A map or chart svg fills its card and may sit a few pixels over it; a 56px icon never excuses clipped text.
+    assert [x[1][:6] for x in qa if x[0] == 'card-overflow'] == ['넘치는 설명'], qa
+
+
+# 2026-10-16 PM thumbnail: the script wrote '외국인 사고 기관 던졌다\n바닥 신호일까?', but the page joined the two lines and
+# balanced them as '외국인 사고 기관 / 던졌다 바닥 신호일까?', which first reads as '외국인 사고 기관' (a foreigners' accident office).
+WORD_TOPS = r"""(words) => {const q=document.querySelector('.q'); const node=q.firstChild;
+  return words.map(w=>{const i=node.textContent.indexOf(w); const rg=document.createRange(); rg.setStart(node,i);
+    rg.setEnd(node,i+w.length); return Math.round(rg.getBoundingClientRect().top);});}"""
+
+
+def test_the_thumbnail_keeps_the_line_break_the_script_wrote(tmp_path):
+    words = "(['외국인', '던졌다', '바닥'])"
+    found, box = thumbnail(tmp_path, '외국인 사고 기관 던졌다\n바닥 신호일까?', '장중 ▲4.60% → 종가 ▲2.05%',
+                           probe=f'(() => ({WORD_TOPS})({words}))')
+    first, thrown, second = box['probe']
+    assert first == thrown < second, box['probe']
+    assert box['lines'] == 2 and box['q']['b'] <= box['n']['t'] and found == [], box

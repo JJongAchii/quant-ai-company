@@ -1,0 +1,39 @@
+{
+ "what": "Manual release of main ed77918 (PR #151 merged) with deploy/release.py, then the automatic-release timer installed in report mode. Service inputs (src, dependencies, Dockerfiles, compose files, release.json) were identical to the running 5454e3d; only the image commit labels changed.",
+ "release": {
+  "commit": "ed77918fd50fdb905f1954571f51eaade11423d8",
+  "previous": "5454e3deb88ec66aa74f37f5c4fa4ecafb9691f7",
+  "main_ci": {"run": "https://github.com/JJongAchii/quant-ai-company/actions/runs/38519126557", "conclusion": "success", "completed_at": "2026-10-14T06:07:31Z"},
+  "archive_sha256": "acb658e6f773b747605891e42f88c5167ea28d05a86a76d8860fd0ee983e99f5",
+  "prepare": "2026-10-14T05:58:03Z",
+  "build": {"from": "2026-10-14T05:58:03Z", "ok": "2026-10-14T06:08:13Z"},
+  "plan": "17 services: all running, all recreate, all rollback_exact",
+  "migrate_ok": "2026-10-14T06:09:12Z",
+  "groups": [
+   {"services": ["data-watch-worker", "housing-feed-worker", "tech-feed-worker"], "from": "06:09:12Z", "ok": "06:10:58Z"},
+   {"services": ["quant-codex-runtime", "quant-feed-worker"], "from": "06:10:58Z", "ok": "06:12:17Z"},
+   {"services": ["codex-runtime", "video-image-runtime", "claude-runtime"], "from": "06:12:17Z", "ok": "06:14:32Z"},
+   {"services": ["account-gateway", "maintenance", "api", "slack-socket"], "from": "06:14:32Z", "ok": "06:17:56Z"},
+   {"services": ["worker", "dispatch"], "from": "06:17:56Z", "ok": "06:19:07Z"},
+   {"services": ["briefing-data-worker", "news-worker"], "from": "06:19:07Z", "ok": "06:20:18Z"},
+   {"services": ["video-worker"], "from": "06:20:18Z", "ok": "06:20:53Z"}
+  ],
+  "service_results": "17 released and settled (revision, config-hash, package files); 0 rolled back; rollback_exact true for all",
+  "verify": "17/17 ok",
+  "activated": "2026-10-14T06:21:18Z",
+  "pm_edition_collection_starts": "2026-10-14T06:50:00Z"
+ },
+ "after_activation": {
+  "runtime_env_added": {"VIDEO_RENDER_COMMIT": "5454e3deb88ec66aa74f37f5c4fa4ecafb9691f7 (render task definition :9)"},
+  "installed": ["quant-company-release-auto.service", "quant-company-release-auto.timer (enabled; next 06:32:57Z)"],
+  "disabled": ["quant-company-release.timer (old Maintainer executor, skipped by ExecCondition since 2026-10-06)", "quant-company-trend-preview.timer (trend publication gate finished 2026-10-06; failing daily on a docker command)"],
+  "reset_failed": ["quant-company-trend-preview.service", "quant-company-technical-review-observer-v2-20261012.service"],
+  "failed_units_after": 0,
+  "first_auto_run": {
+   "checked_at": "2026-10-14T06:21:48+00:00", "mode": "report", "action": "up_to_date",
+   "current": "ed77918fd50fdb905f1954571f51eaade11423d8", "latest_green": "ed77918fd50fdb905f1954571f51eaade11423d8",
+   "drift": [], "render": {"commit": "5454e3deb88ec66aa74f37f5c4fa4ecafb9691f7", "task_definition": "quant-company-render:9"}
+  }
+ },
+ "disk": {"available_before_build": "39G", "available_after_release": "33G", "docker_images": "72.89GB (40.6GB reclaimable)", "build_cache": "32.09GB (18.94GB reclaimable)"}
+}

@@ -1,0 +1,29 @@
+{
+ "what": "Manual release of main 21cea6b (#146 ops status/watch, #154 video analytics titles, #155 render acceptance) with the #146 runtime.env values in the same recreation round, then the ops collector, a synthetic incident and the resumed automatic release. Planned for the evening of 2026-10-14, done the next morning because the operator's Mac slept when the PM video finished (19:08 KST).",
+ "release": {
+  "commit": "21cea6b98ed8bc55ce33f09caee7bebd8af0c190",
+  "previous": "ed77918fd50fdb905f1954571f51eaade11423d8",
+  "main_ci": "success",
+  "prepared": "by release.py auto from the GitHub tarball at 2026-10-14T08:48:23Z; equal to the git tree (376 files, blob ids compared)",
+  "am_video_delivered": "2026-10-14T23:11Z (08:11 KST)",
+  "build": {"from": "2026-10-14T23:13:26Z", "ok": "2026-10-14T23:24:23Z"},
+  "runtime_env": {"RELEASE_AUTO_ENABLED": "false during the release", "SLACK_ALLOWED_CHANNELS": "+ C0C9XAHPY4Q (#ops-alerts)", "OPS_ALERT_CHANNEL_ID": "C0C9XAHPY4Q", "OPS_WATCH_OWNER_USER": "U0C250E23NW", "OPS_WATCH_ENABLED": "true", "OPS_STATUS_ENABLED": "true", "OPS_FALLBACK_ENABLED": "true"},
+  "plan": "17 recreate; rollback_exact only for the 4 model runtimes, because the old compose sets now render the new SLACK_ALLOWED_CHANNELS",
+  "quiet_before_apply": {"turns": 0, "outbox_sending": 0, "brief_calls_running": 0},
+  "migrate_ok": "2026-10-14T23:25:37Z (ops tables created; core schema digest changed)",
+  "groups_ok": ["23:27:20Z", "23:28:39Z", "23:30:53Z", "23:34:22Z", "23:35:32Z", "23:36:43Z", "23:37:21Z"],
+  "verify": "17/17 ok",
+  "activated": "2026-10-14T23:37:44Z"
+ },
+ "after": {
+  "VIDEO_RENDER_ACCEPTED": "21cea6b (reviewed: the only render-input change since 5454e3d is the ToolRequest name list in src/quant_company/contracts.py; the render task imports only StrictModel and ProviderFault from it)",
+  "ops_probe_print": {"probe_errors": [], "containers": 18, "drift": 0, "deploy_window": null},
+  "ops_probe_timer": "enabled 2026-10-14T23:38:09Z; first snapshot 23:39:00Z",
+  "synthetic_incident": {"run": "23:39:21Z published=true", "alert": "23:41:10Z 🟠 테스트 경고 delivered", "resolved": "23:44:12Z ✅ 해소 delivered", "incident": "closed 23:44:11Z, announced warning"},
+  "auto_resumed": "2026-10-14T23:40:21Z: mode release, up_to_date, drift 0"
+ },
+ "problems": [
+  {"what": "Three stale ops alerts in #ops-alerts", "detail": "account:primary (needs_login recorded 2026-09-28 although the account succeeded at 23:36Z); render_required and operator files from a release status written at 23:33Z, before activation", "fix": "ops watch fix by the ops session; #158 refreshes the status right after activate"},
+  {"what": "Three news posts not sent (stale)", "detail": "The news policy digest includes the whole Slack allow-list. Adding #ops-alerts changed it. dispatch ran the new settings from 23:34:59Z; the old news-worker created three publications with the old digest at 23:36:01Z, nine seconds before it was replaced, and dispatch marked them stale (news_policy_or_freshness_changed).", "decision": "owner: leave them unsent", "follow_up": "the news policy digest should depend on whether the news channel and owner are allowed, not on the whole allow-list"}
+ ]
+}

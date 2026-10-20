@@ -133,8 +133,9 @@ def fake_codex(tmp_path):
         control_path.write_text(json.dumps({"version": SUPPORTED_CLI_VERSION, **values}))
 
     def calls():
+        # Complete lines only: the fake may still be appending one (main CI 2026-10-19: JSONDecodeError on a partial line).
         path = tmp_path / "calls.jsonl"
-        return [json.loads(line) for line in path.read_text().splitlines()] if path.exists() else []
+        return [json.loads(line) for line in path.read_text().split("\n")[:-1]] if path.exists() else []
 
     return config, configure, calls
 

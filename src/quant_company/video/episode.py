@@ -174,8 +174,11 @@ def general(tag):
 # A body line can hold several sentences (10/14 AM: '…5.46% 내린 6,035.35에 마감했다. 장중 5,911.11(-7.41%)까지…'), and
 # '장중', '정규장 종가' and flow words qualify the sentence that carries them, not every number of the line.
 SENTENCE = re.compile(r'(?<=[.!?])\s+')
-# Clauses only scope a denial: '주가는 장전 약 3% 상승했으며 | 정규장 종가 반응은 제공되지 않았다.'
+# Clauses scope a denial ('주가는 장전 약 3% 상승했으며 | 정규장 종가 반응은 제공되지 않았다.') and a flow's values.
 CLAUSE = re.compile(r'(?:(?<=,)|(?<=며)|(?<=지만)|(?<=다가)|(?<=는데)|(?<=으나)|(?<=면서)|(?<=[았었였했됐렸랐졌]고))\s+')
+# A clause naming an investor holds that investor's amount even when the flow word ends the sentence
+# ('외국인은 4,000억원, 기관은 2,000억원을 순매수했다').
+INVESTOR = re.compile(r'외국인|외인|기관|개인|연기금|금융투자|투신|사모|기타법인')
 DENIAL = re.compile(r'지\s*않|없[다었음는]|미제공|미확인')
 # Tenors and dates ('3년 국채선물', '13일') are not the values a flow or close sentence states.
 TENOR = re.compile(r'\d+(?:\.\d+)?\s*(?:년물|년|개월|분기|거래일|일|월)')
@@ -194,6 +197,19 @@ def stated(line, marker, deniable=False):
         mentions = [c for c in CLAUSE.split(sentence) if marker.search(c)]
         if mentions and not (deniable and all(DENIAL.search(c) for c in mentions)):
             found |= nums(TENOR.sub(' ', sentence))
+    return found
+
+
+def flow_values(line):
+    """Values of the clauses that state an investor flow: in a sentence carrying a flow word, the clauses with a flow
+    word or an investor subject. 10/14 PM: '코스피는 5.46% 급락한 6,035로 마감했고 … 외국인은 4조5천억원 넘게 순매도해'
+    made the index drop a flow value, and the revision put '장 마감 기준' under the index card."""
+    found = set()
+    for sentence in sentences(line):
+        if body.FLOW.search(sentence):
+            for clause in CLAUSE.split(sentence):
+                if body.FLOW.search(clause) or INVESTOR.search(clause):
+                    found |= nums(TENOR.sub(' ', clause))
     return found
 
 
@@ -235,12 +251,22 @@ def assets(value):
             yield from assets(v)
 
 
+def shows_outlet(screen, outlets):
+    """The card names one of the outlets (a source chip such as '연합뉴스' or 'CNBC · 연합뉴스'), spacing aside; a
+    trailing '뉴스'/'News' may be left out ('SBS 보도' names 'SBS 뉴스', 2026-10-15 PM)."""
+    shown = re.sub(r'\s+', '', ' '.join(screen))
+    names = {re.sub(r'\s+', '', name) for outlet in outlets for name in (outlet, re.sub(r'\s*(뉴스|News)$', '', outlet))}
+    return any(name and name in shown for name in names)
+
+
 def frame(source):
     """Calendar frame every scene may show: episode day, data cut-off and the source's own date words."""
     return f"{source['day']} {source['cutoff']}"
 
 
-REPORT_LABEL = '보도에 따르면'
+REPORT_LABEL = '보도에 따르면'  # never spoken or shown: sources live on the card (owner, 2026-10-19)
+# Cards with a source slot (CARD_GUIDE). Overview cards (cold_open, summary3, market_board, signals, calendar) carry none.
+SOURCE_CARDS = frozenset({'headline', 'flow', 'compare', 'bars', 'map', 'photo', 'counter'})
 CLOSE_LABEL = '정규장 종가 기준'
 FLOW_LABEL = '장 마감 기준'
 SCENES_MIN, SCENES_MAX = 9, 16
@@ -367,12 +393,13 @@ def episode_violations(plan, source, library=None, *, structure=True, photos=Fal
         if tool_wording(scene.narration, *screen):
             found.append(f'Production or tool wording in scene {scene.id}')
         cited = [claims[c] for c in scene.claim_ids]
-        if any(c['single_outlet'] for c in cited) and not any(REPORT_LABEL in t for t in [scene.narration, *screen]):
-            found.append(f'Single-outlet line needs {REPORT_LABEL} in scene {scene.id}')
+        outlets = sorted({p for c in cited if c['single_outlet'] for p in c['publishers']})
+        if outlets and scene.type in SOURCE_CARDS and not shows_outlet(screen, outlets):
+            found.append(f"Single-outlet line needs its outlet ({', '.join(outlets)}) as a source on the card in scene {scene.id}")
         shown = nums(' '.join(screen)) - allowed_frame
         if any(stated(c['text'], CLOSE_MARK, deniable=True) & shown for c in cited) and not any(CLOSE_LABEL in t for t in screen):
             found.append(f'Regular-session close values need {CLOSE_LABEL} in scene {scene.id}')
-        if any(stated(c['text'], body.FLOW) & shown for c in cited) and not any(FLOW_LABEL in t for t in screen):
+        if any(flow_values(c['text']) & shown for c in cited) and not any(FLOW_LABEL in t for t in screen):
             found.append(f'Investor flows need {FLOW_LABEL} in scene {scene.id}')
         for key, text in [('narration', scene.narration)] + list(strings(scene.data)):
             if text.startswith('#') or (key == 'chips' and re.fullmatch(r'핵심 이슈 \d', text)):
@@ -467,12 +494,13 @@ summary3(title, cards=[{n,items=[[icon,size('sm'|'md'|'lg'),color('gold'|'sky'|'
 market_board(title, tag, tiles=[{name,value,dir,change,sub,badge}] 4-8).
 headline(chips=[issue label, horizon], title, image={asset}, panel_title, source, stats=[{label,value,dir,change,sub}] 2-3).
 flow(chips, title, nodes=[{chips,source?,icon,head,big?|text?|rows?,dir?,sub?,badge?}] x3, foot?={chip,text}).
-compare(chips, title, tiles=[{label,source?,value,dir?,sub}] 2-3, chart_title, chart_source, bars=[{n,label,name}] x2, arrow_text, extra=[[label,value]] x2).
+compare(chips, title, tiles=[{label,source?,value,dir?,sub}] 2-3, chart_title, chart_source, bars=[{n,label,name}] x2, arrow_text,
+arrow_dir?('up'|'dn' when the arrow shows one measure rising or falling; omit it for other comparisons), extra=[[label,value]] x2).
 bars(chips?, title, unit_note, source?, rows=[{name,n,label,tag?}] 2-8, image?={asset,caption,labels=[]}, side?={title,rows,signal}).
-map(chips, title, region='hormuz', panel_title, bars=[{name,w,label,gold?}], delta, delta_source, alt, cost_head, cost) —
+map(chips, title, region='hormuz', panel_title, bars=[{name,w(0-100: the bar's share of its track),label,gold?}], delta, delta_dir?('up'|'dn' when the delta states a rise or a fall), delta_source, alt, cost_head, cost) —
 delta is one short line (e.g. 'WTI ▲40센트'), alt one short caption, cost one sentence.
 calendar(title, rows=[[date,weekday,badge,icon,event,time chip]]) or mode='day' (date,dow,badge,rows=[[icon,title,sub]],side_title,side=[{label,source?,value,dir?,sub}]).
-photo(chips, title, image={asset}, rows=[{chip,kind?('counter'|'signal'|'interp'),big?,text?,sub,source?}] 3).
+photo(chips, title, image={asset}, rows=[{chip,kind?('counter'|'signal'|'interp'),big?,dir?('up'|'dn' for a big number that rose or fell),text?,sub,source?}] 3).
 counter(chips, title, icon, topic, kicker?, source?, blocks=[{label,value,sub?,dir?,gold?}] 2-3, rows=[{icon,text,source?}] 0-2) — kicker heads
 the panel (default '다르게 볼 점': the brief's counter-view); name what the panel shows otherwise (e.g. '보도 해석', '근거').
 The template places the blocks side by side; keep each value short (a number with its unit).
@@ -536,7 +564,14 @@ TITLE_GUIDE = (
     "next-session point. AM hook: one overnight number plus one of today's events. Its first 20 characters contain the "
     "day's number or a stock name from the lines. If it asks a question, the first 30 seconds (cold_open and the start "
     "of the summary) begin answering it. '급락' only for an index fall of 2% or more or a stock fall of 3% or more; an "
-    "intraday record says '장중'. Title and thumbnail numbers are confirmed values from the lines. No buy/sell wording.")
+    "intraday record says '장중'. Title and thumbnail numbers are confirmed values from the lines. No buy/sell wording. "
+    "Owner rule (2026-10-15): the title hook and the thumbnail text must stop a scrolling viewer and earn the click — a "
+    "curiosity gap, a reversal or contrast, what is at stake for the viewer, or a sharp question, in short, strong, "
+    "concrete Korean (in the spirit of '외국인이 던진 진짜 이유', '개미만 몰랐던 신호?', 'IMF는 올렸는데 증시는 왜 빠졌나', "
+    "'반등은 왜 하루 만에 꺾였나'). The thumbnail text is a two-line punchline that does not repeat the title word for word; "
+    "thumbnail_stat carries the concrete number. Never trade truth for clicks: every fact and number comes from the lines, "
+    "size words follow the lines (the '급락' rule above; '폭락' or '폭등' only when the lines say so), no buy/sell, price "
+    "target or guaranteed-return wording, and the video delivers what the title promises.")
 
 
 FACTS_GUIDE = ("This edition lists collected facts without issue analysis: make the short episode exactly "
@@ -612,8 +647,11 @@ def episode_prompt(source, feedback='', library=None, illustrations=False, lesso
             "contradiction of the day, explain jargon in plain words, one idea per scene, and tell the viewer why it "
             "matters. Index levels and investor flows appear only when they are news that day or explain an issue. "
             "Speak at most two or three numbers per issue; exact figures live on the cards. "
-            f"Cite line IDs for every scene. A line with report_label_required comes from one outlet: say '{REPORT_LABEL}' "
-            "in that scene's narration. Regular-session closes carry "
+            "Cite line IDs for every scene. A line with outlet_on_card comes from one outlet: show that outlet (its "
+            "'outlets' name) as the source on that scene's card (headline, flow, compare, bars, map, photo or counter; "
+            "overview cards need none). Sources are shown on screen only (owner, 2026-10-19): never say "
+            f"'{REPORT_LABEL}' or read an outlet's name aloud, and keep it out of the title and thumbnail. "
+            "Regular-session closes carry "
             f"'{CLOSE_LABEL}' on screen and investor flows (순매수/순매도) carry '{FLOW_LABEL}' on screen. "
             "Never mention AI, models, tools, voices or how the video was produced, on screen or in the copy. "
             + ("Images may only use the asset IDs listed (recently used images are already removed) or the story pictures "

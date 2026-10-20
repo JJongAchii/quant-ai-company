@@ -330,6 +330,51 @@ S3 다운로드와 새 DB 복원, 컨테이너 권한·공개 포트·메모리 
 실제 사용자 Slack 왕복도 확인했다. 맥북 완전 종료, 장시간 부하, 전체 호스트 유실 후 재구축은
 각각 별도 인수다.
 
+## 8. 릴리스와 main 자동 동기화
+
+운영 코드는 main 커밋 하나이고, 서비스는 `deploy/release.py`만 바꾼다
+([ADR 0044](adr/0044-production-runs-one-main-commit.md)). 손으로 릴리스하는 순서는 다음과 같다.
+`R`은 그 릴리스의 `deploy/release.py`다.
+
+```bash
+git archive --format=tar.gz --prefix=quant-ai-company/ SHA deploy src pyproject.toml uv.lock .dockerignore > release.tar.gz
+sudo python3 /opt/quant-company/current/deploy/release.py prepare --sha SHA --archive release.tar.gz
+R=/opt/quant-company/releases/SHA/deploy/release.py
+sudo python3 $R build --sha SHA && sudo python3 $R plan --sha SHA && sudo python3 $R migrate --sha SHA
+sudo python3 $R apply --sha SHA SERVICE...   # deploy/release.json의 그룹 순서대로
+sudo python3 $R verify --sha SHA && sudo python3 $R activate --sha SHA
+```
+
+자동 동기화([ADR 0045](adr/0045-ci-green-main-releases-itself.md))는 타이머 하나다.
+15분마다 운영과 CI를 통과한 main을 비교하고 `/var/lib/quant-company/release-status.json`에 쓴다.
+
+```bash
+sudo install -m 0644 /opt/quant-company/current/deploy/quant-company-release-auto.service \
+  /opt/quant-company/current/deploy/quant-company-release-auto.timer /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable --now quant-company-release-auto.timer
+sudo cat /var/lib/quant-company/release-status.json
+```
+
+`runtime.env` 값:
+
+| 값 | 뜻 |
+|---|---|
+| `RELEASE_AUTO_ENABLED` | `true`일 때만 반영한다. `paused`이면 운영 커밋만 기록한다. 손으로 릴리스하는 동안에는 `paused`로 두었다가 끝나면 `true`로 돌린다. 그 밖의 값은 판단하고 보고만 한다. |
+| `VIDEO_RENDER_COMMIT` | 지금 렌더 작업 정의의 이미지를 빌드한 커밋이다. 렌더 입력이 이 커밋과 다르면 `render_required`로 멈춘다. |
+| `VIDEO_RENDER_ACCEPTED` | 운영자가 렌더 입력 차이를 검토해 렌더에 영향이 없다고 판단한 커밋이다. 있으면 이 커밋과 비교한다. 렌더 이미지를 다시 만들면 지운다. |
+| `RELEASE_AUTO_WINDOWS` | 반영을 시작할 수 있는 KST 시간 창이다. 기본값은 `10:00-14:30,18:30-23:00`이다. |
+
+Slack 허용 목록(`SLACK_ALLOWED_CHANNELS`, `SLACK_ALLOWED_USERS`)을 바꿀 때는 다음을 지킨다.
+- 뉴스와 퀀트 피드의 정책값에는 자기 채널과 소유자가 허용됐는지만 들어간다. 그래서 다른 채널을 더하거나 빼도 진행 중인 일이 멈추지 않는다.
+- 브리핑의 정책값에는 아직 목록 전체가 들어간다. 그래서 브리핑을 만드는 동안(KST 05:20~08:00, 15:50~18:00) 바꾸면 그 회차가 멈춘다. 그 시간대에는 바꾸지 않는다.
+- 값을 넣고 같은 커밋으로 반영하는 동안에는 `RELEASE_AUTO_ENABLED=paused`로 둔다.
+
+백업이 호스트 잠금(`.backup.lock`)을 쥐고 있는 동안에는 점검이 아무것도 판단하지 않고 `waiting_for_lock`으로 보고한다.
+백업은 서비스를 멈췄다 다시 켜므로, 그 사이에 점검하면 멈춘 서비스를 drift로 잘못 본다.
+
+실패한 커밋은 다시 시도하지 않는다. 원인을 확인한 뒤
+`sudo python3 /opt/quant-company/current/deploy/release.py auto --retry`로 다시 시도한다.
+
 ## 선택: Claude 구독 독립 검토
 
 직원 답안의 독립 검토는 [별도 Claude 실행기](claude-runtime.md)의 `claude` profile로 연결한다.

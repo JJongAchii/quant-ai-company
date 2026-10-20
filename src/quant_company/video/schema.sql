@@ -101,3 +101,18 @@ CREATE TABLE IF NOT EXISTS video_lesson_actions (
  action text NOT NULL CHECK(action IN ('adopt','reject','retire')), outcome text NOT NULL,
  created_at timestamptz NOT NULL DEFAULT now()
 );
+-- v5: the owner's replies in analytics threads (a card or a weekly review), each answered once by claude-runtime in
+-- the same thread. An answer is an analysis of kind 'answer'; an instruction for future episodes comes back as a
+-- proposed lesson on that answer.
+ALTER TABLE video_analyses DROP CONSTRAINT IF EXISTS video_analyses_kind_check;
+ALTER TABLE video_analyses ADD CONSTRAINT video_analyses_kind_check CHECK(kind IN ('video','weekly','answer'));
+CREATE TABLE IF NOT EXISTS video_questions (
+ id uuid PRIMARY KEY, event_key text NOT NULL UNIQUE, thread_key text NOT NULL,
+ youtube_id text REFERENCES video_publications(youtube_id), week date, root_message_id uuid NOT NULL REFERENCES messages(id),
+ owner_user text NOT NULL, channel text NOT NULL, thread_ts text NOT NULL, message_ts text NOT NULL,
+ text text NOT NULL CHECK(length(text) BETWEEN 1 AND 2000),
+ state text NOT NULL DEFAULT 'pending' CHECK(state IN ('pending','answered','failed','expired')),
+ workflow_started boolean NOT NULL DEFAULT false, waiting_noticed boolean NOT NULL DEFAULT false,
+ created_at timestamptz NOT NULL DEFAULT now(), closed_at timestamptz
+);
+CREATE INDEX IF NOT EXISTS video_questions_open ON video_questions(created_at) WHERE state='pending';

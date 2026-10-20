@@ -31,6 +31,10 @@ class Settings(BaseSettings):
     data_watch_channel_id: str = ""
     data_watch_owner_user: str = ""
     data_watch_contracts_file: Path | None = None
+    ops_status_enabled: bool = False
+    ops_watch_enabled: bool = False
+    ops_alert_channel_id: str = ""
+    ops_watch_owner_user: str = ""
     temporal_address: str = "localhost:7233"
     temporal_namespace: str = "default"
     temporal_api_key: SecretStr = SecretStr("")
@@ -141,6 +145,17 @@ class Settings(BaseSettings):
     video_analytics_enabled: bool = False
     video_analytics_channel_id: str = ""
     video_analytics_max_lessons: int = Field(default=8, ge=1, le=12)
+    # Evening brief email (docs/newsletter.md): written on claude-runtime by the video worker after each committed PM
+    # edition, sent over Gmail SMTP by the dispatcher only. The app password file is mounted into dispatch alone; a
+    # missing or empty file leaves sending and the unsubscribe inbox inactive.
+    newsletter_enabled: bool = False
+    newsletter_from_address: str = Field(default="", pattern=r"^(|[^@\s<>]+@[^@\s<>]+\.[A-Za-z]{2,})$")
+    newsletter_from_name: str = Field(default="뭐든story", min_length=1, max_length=40)
+    newsletter_smtp_host: str = "smtp.gmail.com"
+    newsletter_smtp_port: int = Field(default=587, ge=1, le=65535)
+    newsletter_imap_host: str = "imap.gmail.com"
+    newsletter_channel_url: str = Field(default="https://www.youtube.com/@anything-story", pattern=r"^https://\S+$")
+    newsletter_password_file: Path | None = None
     briefing_calendar_overrides_file: Path | None = None
     # Public chart reads after the US close; off until the briefing data worker is qualified for it.
     briefing_us_close_enabled: bool = False
@@ -194,7 +209,7 @@ class Settings(BaseSettings):
     company_model_timeout_seconds: int = Field(default=960, ge=10, le=1800)
     fixture_mode: bool = False
 
-    @field_validator("briefing_calendar_overrides_file", mode="before")
+    @field_validator("briefing_calendar_overrides_file", "newsletter_password_file", mode="before")
     @classmethod
     def empty_briefing_overrides(cls, value):
         return None if value == "" else value
@@ -255,6 +270,8 @@ class Settings(BaseSettings):
                 self.video_render_bucket and self.video_render_cluster and self.video_render_task_definition
                 and self.video_render_subnets and self.video_render_security_group):
             raise ValueError("Remote rendering requires its bucket, cluster, task definition, subnets and security group")
+        if self.newsletter_enabled and not (self.briefing_enabled and self.briefing_publish_enabled):
+            raise ValueError("The evening brief email requires an enabled publishing briefing source")
         if self.video_enabled and not self.video_runway_workspace_id:
             raise ValueError('Video production requires an explicit Runway workspace')
         if self.video_upload_enabled and not (self.video_enabled and self.video_youtube_channel_id):
@@ -302,6 +319,15 @@ class Settings(BaseSettings):
             raise ValueError("Data watch requires a dedicated allowed Slack channel and owner")
         if self.data_watch_core_enabled and not self.data_watch_enabled:
             raise ValueError("Data watch core checks require data watch")
+        if self.ops_watch_enabled and (
+            not self.ops_alert_channel_id.startswith("C")
+            or self.ops_alert_channel_id not in self.slack_allowed_channels
+            or self.ops_watch_owner_user not in self.slack_allowed_users
+            or self.ops_alert_channel_id in {self.briefing_channel_id, self.improvements_channel_id,
+                                             self.data_watch_channel_id, self.news_channel_id,
+                                             self.model_accounts_channel_id, self.video_analytics_channel_id}
+        ):
+            raise ValueError("Ops watch requires a dedicated allowed Slack channel and owner")
         if self.briefing_evaluation_edition_ids and self.briefing_evaluation_edition_id:
             raise ValueError('Bounded briefing observation requires a single ID list')
         return self

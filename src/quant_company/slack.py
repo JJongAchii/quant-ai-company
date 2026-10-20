@@ -123,6 +123,16 @@ class SlackIngress:
             if role != "data" or user != self.settings.data_watch_owner_user:
                 return {"ok": True, "ignored": True}
             target = "data"
+        elif self.settings.video_analytics_enabled and channel == self.settings.video_analytics_channel_id:
+            # The owner's reply under a performance report is a question for claude-runtime, not a company turn.
+            if role != BRIEFER or not event.get("thread_ts"):
+                return {"ok": True, "ignored": True}
+            from .video.analytics_store import AnalyticsStore
+
+            return {"ok": True, **AnalyticsStore(self.company).ask(
+                event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:video-question", channel=channel,
+                thread_ts=event["thread_ts"], message_ts=timestamp, user=user,
+                text=re.sub(r"<@[A-Z0-9]+>", "", text))}
         elif improvements:
             if role != "maintainer":
                 return {"ok": True, "ignored": True}
@@ -171,6 +181,15 @@ class SlackIngress:
             return {"ok": True, "owner_control": True, **result}
         if target == "maintainer":
             from .maintenance.applications import accept_approval
+            from .newsletter.commands import USAGE
+            from .newsletter.commands import parse as parse_newsletter_command
+
+            # Recipient commands and addresses never become a Maintainer turn: the usage line answers them.
+            if parse_newsletter_command(text):
+                result = self.company.ingest(
+                    event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", text=text,
+                    owner=user, agent=target, channel=channel, thread_ts=thread_ts, newsletter_command=dict(USAGE))
+                return {"ok": True, "owner_control": True, **result}
 
             approval = accept_approval(
                 self.company, text=text, owner=user, channel=channel, thread_ts=thread_ts,
@@ -194,6 +213,16 @@ class SlackIngress:
                     event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", text=text,
                     owner=user, agent=target, channel=channel, thread_ts=thread_ts, daily_limit_command=command)
                 return {"ok": True, "owner_control": True, **result}
+            from .newsletter.commands import parse as parse_newsletter_command
+
+            command = parse_newsletter_command(text)
+            if command:
+                if user != self.settings.briefing_owner_user and command["action"] != "usage":
+                    return {"ok": True, "ignored": True, "reason": "newsletter_owner_scope"}
+                result = self.company.ingest(
+                    event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", text=text,
+                    owner=user, agent=target, channel=channel, thread_ts=thread_ts, newsletter_command=command)
+                return {"ok": True, "owner_control": True, **result}
 
             from .research.approvals import has_targets, short_command
 
@@ -204,6 +233,12 @@ class SlackIngress:
                     event_key=f"slack:{payload['team_id']}:{channel}:{timestamp}:{target}", event_ts=timestamp)
                 if approval is not None:
                     return {"ok": True, **approval}
+        elif target != "maintainer":
+            from .newsletter.commands import parse as parse_newsletter_command
+
+            # Recipient commands belong to the director; another employee's model never receives the address.
+            if parse_newsletter_command(text):
+                return {"ok": True, "ignored": True, "reason": "newsletter_director_only"}
         revise = target != "maintainer" and text.startswith(("수정:", "변경:", "revise:"))
         if revise:
             text = text.split(":", 1)[1].strip()
@@ -356,6 +391,10 @@ class SlackOutbox:
                 from .data_watch.store import DataWatchStore
 
                 return gate(conn, DataWatchStore(self.company), row)
+            if row["message_kind"] == "ops_alert":
+                from .ops.watch import gate
+
+                return gate(conn, self.company, row)
             return not self.defer_news(conn, row, claimed=True)
 
     def claim(self):
@@ -408,6 +447,11 @@ class SlackOutbox:
                 from .data_watch.store import DataWatchStore
 
                 if not gate(conn, DataWatchStore(self.company), row):
+                    return False
+            if row["message_kind"] == "ops_alert":
+                from .ops.watch import gate
+
+                if not gate(conn, self.company, row):
                     return False
             if row["message_kind"] == "tech_feed":
                 from .tech_feed.store import TechFeedStore
@@ -475,7 +519,7 @@ class SlackOutbox:
             if status == "delivered" and sent_ts and row["agent"] == "maintainer" and not row["thread_ts"]:
                 conn.execute("UPDATE projects SET thread_ts=%s WHERE id=%s AND thread_ts IS NULL",
                              (sent_ts, row["project_id"]))
-            if status == "delivered" and sent_ts and row.get("message_kind") == "data_watch" and not row["thread_ts"]:
+            if status == "delivered" and sent_ts and row.get("message_kind") in {"data_watch", "ops_alert"} and not row["thread_ts"]:
                 conn.execute("UPDATE projects SET thread_ts=%s WHERE id=%s AND thread_ts IS NULL",
                              (sent_ts, row["project_id"]))
 
@@ -495,7 +539,7 @@ class SlackOutbox:
         # The stable client_msg_id helps correlation; it is not an exactly-once guarantee.
         body = {"channel": row["channel"], "thread_ts": row["thread_ts"],
                 "text": row["text"] if row["agent"] in {"reporter", TECH_FEED_AGENT, QUANT_FEED_AGENT, BRIEFER, "trend_scout", "maintainer"}
-                or row["message_kind"] == "data_watch"
+                or row["message_kind"] in {"data_watch", "ops_alert"}
                 else f"[지시 v{row['revision']}] {row['text']}",
                 "client_msg_id": row["id"],
                 "unfurl_links": False, "unfurl_media": False,
@@ -562,7 +606,8 @@ class SlackOutbox:
                 return True
             result = response.json()
             requires_receipt = (row.get("message_kind") in {"news", "news_digest", "tech_feed", "quant_feed",
-                                                            "data_watch", "briefing", "housing_feed", "trend_feed", "video_review"}
+                                                            "data_watch", "briefing", "housing_feed", "trend_feed", "video_review",
+                                                            "ops_alert"}
                                 or row["agent"] == "maintainer")
             if row.get("update_ts") and result.get("ts") != row["update_ts"] and result.get("ok"):
                 await asyncio.to_thread(self.settle, row, "uncertain", error="slack_update_receipt_mismatch")

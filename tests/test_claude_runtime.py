@@ -294,6 +294,57 @@ async def test_rejected_video_output_records_rule_not_text(fake_claude):
     assert len(calls()) == 1
 
 
+async def test_only_the_claude_runtime_serves_the_newsletter_contract(fake_claude):
+    from quant_company.newsletter.contracts import NewsletterDraft
+    from quant_company.providers.claude_runner import ClaudeRequest
+
+    from .newsletter_fixtures import v5_draft
+
+    config, configure, calls = fake_claude
+    configure(model="claude-opus-5-5", used_model="claude-opus-5-5", review=v5_draft().model_dump(mode="json"))
+    email = ClaudeRequest(request_id="newsletter-fixture-1", model="claude-opus-5-5", reasoning_effort="high",
+                          prompt="DATA: fixture", output_contract="newsletter_v1")
+    app = create_app(runner=runner(config), token="private", request_model=ClaudeRequest)
+    client = RuntimeClient("http://runtime", "private", expected_provider="claude",
+                           transport=httpx.ASGITransport(app=app))
+    result = await client.run(email)
+    assert NewsletterDraft.model_validate_json(result.decision.artifacts[0].content) == v5_draft()
+    args = calls()[0]["args"]
+    assert "accent" in json.loads(args[args.index("--json-schema") + 1])["properties"]
+    # contracts.py, which the render task and codex-runtime use, does not know the contract.
+    codex = create_app(runner=runner(config), token="private")
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=codex), base_url="http://runtime") as http:
+        response = await http.post("/v1/turns", json=email.model_dump(mode="json"),
+                                   headers={"Authorization": "Bearer private"})
+    assert response.status_code == 422 and len(calls()) == 1
+    with pytest.raises(ValueError):
+        ProviderRequest.model_validate(email.model_dump())
+    # Every other request is the same request, with the same receipt digest.
+    video = {"request_id": "video-9-plan", "model": REVIEW_MODEL, "prompt": "p", "output_contract": "video_plan_v1"}
+    assert request_digest(ClaudeRequest(**video)) == request_digest(ProviderRequest(**video))
+    for bad in ({"request_id": "video-x-1"}, {"web_search": True}):
+        with pytest.raises(ValueError):
+            ClaudeRequest(**{**email.model_dump(), **bad})
+
+
+async def test_newsletter_turns_get_a_short_process_limit_of_their_own(fake_claude):
+    from quant_company.providers.claude_runner import ClaudeRequest
+
+    from .newsletter_fixtures import v5_draft
+
+    config, configure, _ = fake_claude
+    assert config.newsletter_timeout_seconds == 900 and config.video_timeout_seconds == 7200
+    config = replace(config, newsletter_timeout_seconds=1, video_timeout_seconds=10)
+    configure(delay=2, model="claude-opus-5-5", used_model="claude-opus-5-5", review=v5_draft().model_dump(mode="json"))
+    email = ClaudeRequest(request_id="newsletter-fixture-2", model="claude-opus-5-5", reasoning_effort="high",
+                          prompt="DATA: fixture", output_contract="newsletter_v1")
+    with pytest.raises(ProviderFault) as fault:
+        await runner(config).run(email)
+    assert fault.value.code == "timeout"
+    with pytest.raises(ValueError):
+        replace(config, newsletter_timeout_seconds=3601)
+
+
 async def test_video_contracts_may_use_opus_5_5_but_reviews_may_not(fake_claude):
     config, configure, calls = fake_claude
     configure(model="claude-opus-5-5", used_model="claude-opus-5-5",

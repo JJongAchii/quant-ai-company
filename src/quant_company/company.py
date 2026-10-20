@@ -51,7 +51,7 @@ def load_roles(settings: Settings) -> dict[str, Role]:
                      "maintenance_review", "maintenance_status", "system_status", "repository_read", "task_control",
                      "finance_search", "finance_read", "web_search", "web_read",
                      "finance_compute", "data_quality", "staff_status", "news_status", "research_control",
-                     "data_watch_status", "briefing_status"} | LAKE_TOOLS
+                     "data_watch_status", "briefing_status", "ops_status"} | LAKE_TOOLS
     for role in roles:
         if role.id == "quant_scout" and (role.active or role.tools or role.can_delegate_to):
             raise ValueError("Quant Scout must remain an outbound-only identity")
@@ -75,6 +75,12 @@ def load_roles(settings: Settings) -> dict[str, Role]:
     if settings.data_watch_enabled and "data" in by_id:
         role = by_id["data"]
         by_id["data"] = role.model_copy(update={"tools": list(dict.fromkeys([*role.tools, "data_watch_status"]))})
+    if settings.ops_status_enabled:
+        # Granted here, not in the host roles file: the tool is read-only and needs no new credential.
+        for name in ("director", "market_brief"):
+            if name in by_id:
+                role = by_id[name]
+                by_id[name] = role.model_copy(update={"tools": list(dict.fromkeys([*role.tools, "ops_status"]))})
     return by_id
 
 
@@ -201,6 +207,13 @@ class Company:
                     "meaning": "Scheduled objective synthetic practice; actual results require staff_status. "
                                "Not model weight training, employee activation or general expert certification.",
                 },
+                **({"ops_status": "Director in an authorized thread, or Analyst in its briefing thread: {}. "
+                                  "Live read-only state of briefings, videos, research runs, Slack delivery, model "
+                                  "turns, open ops alerts and containers/host (from a one-minute host probe). "
+                                  "Use it before answering any progress or server-health question; answer from its "
+                                  "receipt, in KST, and say when the host facts are stale or missing. It cannot "
+                                  "restart, retry or change anything."}
+                   if self.settings.ops_status_enabled else {}),
                 "system_status": "Director only: {}. Shared current GitHub, deployed process/configuration, "
                                  "case corrections and scoped verification receipts. Check before claiming a current gap.",
                 "repository_read": "Director only: {query?: short keywords, path?: repository path, commit?: SHA, "
@@ -307,7 +320,9 @@ class Company:
             owner = project["owner_user"]
             may_notify = author == "director" or (
                 author == "maintainer" and self.settings.company_improvements_enabled
-                and project["channel"] == self.settings.improvements_channel_id)
+                and project["channel"] == self.settings.improvements_channel_id) or (
+                # Daily video messages that need the owner (2026-10-19): ready files, a stop or wait, a failed delivery.
+                author == "market_brief" and kind in {"video_files", "video_review", "video_status"})
             mention = (notify_owner and may_notify and recipient is None
                        and owner in self.settings.slack_allowed_users and re.fullmatch(r"[UW][A-Z0-9]+", owner))
             rendered = re.sub(r"<@" + re.escape(owner) + r"(?:\|[^<>]*)?>", "", text).lstrip() if mention else text
@@ -366,7 +381,7 @@ class Company:
                project_id: str | None = None, channel: str | None = None, thread_ts: str | None = None,
                revise: bool = False, status_only: bool = False, daily_limit_command: dict | None = None,
                account_command: dict | None = None, account_help: bool = False,
-               model_command: dict | None = None,
+               model_command: dict | None = None, newsletter_command: dict | None = None,
                interpret: bool = False, control_action: str | None = None,
                approval_context: dict | None = None) -> dict:
         self.role(agent)
@@ -436,13 +451,25 @@ class Company:
                 raise PolicyError("Invalid owner command")
             digest = fingerprint([digest, daily_limit_command])
             status_only = True
+        stored = text
+        if newsletter_command is not None:
+            from .newsletter.commands import accepts
+            from .newsletter.store import masked
+
+            if (not accepts(text, newsletter_command, agent) or revise or interpret or control_action
+                    or daily_limit_command is not None):
+                raise PolicyError("Invalid owner command")
+            digest = fingerprint([digest, newsletter_command])
+            status_only = True
+            # Recipient addresses stay in the recipient table; the task, message and project keep a masked copy.
+            stored = masked(text)
         with self.db.transaction() as conn:
             conn.execute("SELECT pg_advisory_xact_lock(hashtextextended(%s,0))", (event_key,))
             old = conn.execute("SELECT * FROM inbound WHERE event_key=%s", (event_key,)).fetchone()
             if old:
                 if old["payload_digest"] != digest and not (
-                    (daily_limit_command is not None or interpret or control_action is not None
-                     or (research_command and approval_context))
+                    (daily_limit_command is not None or newsletter_command is not None or interpret
+                     or control_action is not None or (research_command and approval_context))
                     and old["payload_digest"] == prior_ingress_digest
                 ):
                     raise PolicyError("Request ID was already used for different content")
@@ -462,7 +489,8 @@ class Company:
                 project_id = stable("project:" + event_key)
                 project = conn.execute("""INSERT INTO projects(id,title,instruction,owner_user,channel,thread_ts)
                     VALUES (%s,%s,%s,%s,%s,%s) RETURNING *""",
-                                       (project_id, text[:120], '' if control_action else text, owner, channel, thread_ts)).fetchone()
+                                       (project_id, stored[:120], '' if control_action else stored, owner, channel,
+                                        thread_ts)).fetchone()
             if revise:
                 from .task_control import advance
 
@@ -470,7 +498,7 @@ class Company:
                 self._event(conn, "project_revised", {"revision": project["revision"], "by": owner}, project_id)
             limit_exhausted = False
             try:
-                task = self._new_task(conn, project, agent, text, task_id=stable("task:" + event_key),
+                task = self._new_task(conn, project, agent, stored, task_id=stable("task:" + event_key),
                                       status_only=status_only,
                                       kind='routing' if routing else 'control' if status_only else 'work',
                                       priority=-100 if routing else None)
@@ -478,11 +506,11 @@ class Company:
                 if str(exc) != "Project task limit exhausted" or not event_key.startswith("slack:") or revise:
                     raise
                 limit_exhausted = True
-                task = self._new_task(conn, project, agent, text, task_id=stable("task:" + event_key),
+                task = self._new_task(conn, project, agent, stored, task_id=stable("task:" + event_key),
                                       status_only=True, kind='control')
             conn.execute("INSERT INTO inbound(event_key,project_id,task_id,payload_digest) VALUES (%s,%s,%s,%s)",
                          (event_key, project_id, task["id"], digest))
-            self._message(conn, project, task["id"], owner, "human", text)
+            self._message(conn, project, task["id"], owner, "human", stored)
             if limit_exhausted:
                 notice = (f"이 스레드의 일반 업무 한도 {self.settings.company_max_project_tasks}건에 도달했습니다. "
                           "새 질문은 새 스레드에서 요청해 주세요. 이 스레드의 현황은 '상태'로 확인할 수 있습니다.")
@@ -515,6 +543,10 @@ class Company:
                 from .owner_controls import apply_daily_limit_command
 
                 apply_daily_limit_command(conn, self, project, task, event_key, text, daily_limit_command)
+            elif newsletter_command is not None:
+                from .newsletter.commands import apply as apply_newsletter_command
+
+                apply_newsletter_command(conn, self, project, task, event_key, newsletter_command)
             elif status_only:
                 rows = conn.execute("""SELECT agent,status,count(*) AS n FROM tasks WHERE project_id=%s AND id<>%s
                     GROUP BY agent,status ORDER BY agent,status""", (project_id, task["id"])).fetchall()
@@ -528,6 +560,11 @@ class Company:
                     from .maintenance.cases import status_text
 
                     summary = status_text(conn, self, project)
+                if (agent == "market_brief" and self.settings.ops_status_enabled
+                        and project["channel"] == self.settings.briefing_channel_id):
+                    from .ops.status import live_status, thread_text
+
+                    summary = thread_text(live_status(conn, project))
                 if (agent == "data" and self.settings.data_watch_enabled
                         and project["channel"] == self.settings.data_watch_channel_id
                         and project["owner_user"] == self.settings.data_watch_owner_user):
@@ -937,6 +974,21 @@ class Company:
                     or project["owner_user"] != self.settings.briefing_owner_user):
                 raise PolicyError("briefing_status requires the configured briefing owner and briefer")
             return BriefStore(self).status()
+        if request.name == "ops_status":
+            from .maintenance.requests import permitted, record_source
+            from .ops.status import live_status
+
+            project = self._project(conn, project_id, lock=False)
+            allowed = bool(task) and not arguments and self.settings.ops_status_enabled and (
+                (task["agent"] == "director" and permitted(self, project))
+                or (task["agent"] == "market_brief" and project["channel"] == self.settings.briefing_channel_id
+                    and project["owner_user"] == self.settings.briefing_owner_user))
+            if not allowed:
+                raise PolicyError("ops_status takes no arguments and requires the director in an authorized "
+                                  "thread or the analyst in its briefing thread")
+            result = live_status(conn, project)
+            result["source_id"] = record_source(conn, project, "ops_status", result)
+            return result
         if request.name == "news_status":
             from .news.store import NewsStore
 

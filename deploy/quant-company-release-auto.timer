@@ -1,0 +1,10 @@
+[Unit]
+Description=Check main against production every 15 minutes
+
+[Timer]
+OnCalendar=*:02/15
+RandomizedDelaySec=60
+Unit=quant-company-release-auto.service
+
+[Install]
+WantedBy=timers.target

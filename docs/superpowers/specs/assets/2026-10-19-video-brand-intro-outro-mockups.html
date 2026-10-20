@@ -1,0 +1,134 @@
+<style>
+@font-face{font-family:'Pretendard';font-weight:600;src:url(/files/Pretendard-SemiBold.woff2) format('woff2');}
+@font-face{font-family:'Pretendard';font-weight:700;src:url(/files/Pretendard-Bold.woff2) format('woff2');}
+@font-face{font-family:'Pretendard';font-weight:800;src:url(/files/Pretendard-ExtraBold.woff2) format('woff2');}
+.vid{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;font-family:'Pretendard',sans-serif;color:#FCF1DB;word-break:keep-all;
+  background:radial-gradient(ellipse 80% 70% at 50% 45%,#0A2A63 0%,#011A43 55%,#00112E 100%)}
+.vid .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(252,241,219,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(252,241,219,.04) 1px,transparent 1px);background-size:24px 24px}
+.cap{position:absolute;left:6%;right:6%;bottom:7%;text-align:center;font-size:15px;font-weight:600;line-height:1.35}
+.cap span{background:rgba(0,12,34,.75);padding:5px 12px;border-radius:8px;display:inline-block}
+.cap em{font-style:normal;color:#FDC749}
+.line{margin:10px 0 2px;font-size:15px;font-weight:700}
+.line small{display:block;font-weight:600;color:var(--text-secondary,#888);font-size:13px;margin-top:3px}
+.loop-note{font-size:12px;color:var(--text-secondary,#888);margin-top:6px}
+
+/* ---------- opening sting (shared) ---------- */
+.sting{position:absolute;left:0;right:0;top:22%;display:flex;flex-direction:column;align-items:center}
+.sting .row{display:flex;align-items:center;gap:12px;animation:pop 4s infinite}
+.sting img{height:46px}
+.sting .name{font-size:38px;font-weight:800;letter-spacing:-.02em}
+.sting .name b{color:#FDC749}
+.sting .sweep{height:3px;width:0;background:linear-gradient(90deg,rgba(253,199,73,.2),#FDC749);margin-top:10px;animation:sweep 4s infinite}
+.sting .series{margin-top:10px;font-size:15px;font-weight:700;color:#AEB7D4;letter-spacing:.04em;opacity:0;animation:fadein 4s infinite}
+@keyframes pop{0%{opacity:0;transform:scale(.85)}12%{opacity:1;transform:scale(1.04)}18%,82%{opacity:1;transform:scale(1)}100%{opacity:0}}
+@keyframes sweep{0%,10%{width:0}35%,82%{width:260px}100%{width:260px;opacity:0}}
+@keyframes fadein{0%,25%{opacity:0}40%,82%{opacity:1}100%{opacity:0}}
+.vid .cap span{animation:fadein 4s infinite}
+
+/* ---------- ending A: click ---------- */
+.endA .stack{position:absolute;left:0;right:0;top:24%;display:flex;justify-content:center;gap:14px;align-items:center}
+.btn{display:flex;align-items:center;gap:7px;font-weight:800;font-size:19px;border-radius:999px;padding:10px 20px;position:relative}
+.sub{background:#E62117;color:#fff;animation:subbed 5s infinite}
+.sub .t2{display:none}
+.like,.bell{background:rgba(252,241,219,.12);border:1px solid rgba(252,241,219,.25);color:#FCF1DB;padding:10px 14px}
+.like svg{animation:likepop 5s infinite;transform-origin:50% 60%}
+.bell svg{animation:ring 5s infinite;transform-origin:50% 10%}
+.cursor{position:absolute;width:22px;height:22px;left:62%;top:70%;animation:cursor 5s infinite;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6))}
+@keyframes subbed{0%,30%{background:#E62117;color:#fff}34%,100%{background:#3A4566;color:#C9D0E6}}
+@keyframes cursor{0%{left:70%;top:80%;opacity:0}8%{opacity:1}26%{left:39%;top:33%}30%{left:39%;top:34%;transform:scale(.85)}33%{transform:scale(1)}50%{left:57%;top:33%}54%{transform:scale(.85)}57%{transform:scale(1)}72%{left:67%;top:33%}76%{transform:scale(.85)}79%,92%{transform:scale(1);left:67%;top:33%;opacity:1}100%{opacity:0;left:67%;top:33%}}
+@keyframes likepop{0%,53%{transform:scale(1);fill:none}57%{transform:scale(1.5)}62%,100%{transform:scale(1);fill:#FDC749}}
+@keyframes ring{0%,75%{transform:rotate(0)}78%{transform:rotate(18deg)}81%{transform:rotate(-16deg)}84%{transform:rotate(10deg)}87%{transform:rotate(-6deg)}90%,100%{transform:rotate(0)}}
+.subtxt{position:relative;display:inline-block;width:76px}.subtxt i{font-style:normal;position:absolute;left:0;top:50%;transform:translateY(-50%);white-space:nowrap}
+.subtxt .w1{animation:w1 5s infinite}.subtxt .w2{opacity:0;animation:w2 5s infinite}
+@keyframes w1{0%,31%{opacity:1}33%,100%{opacity:0}}@keyframes w2{0%,31%{opacity:0}33%,100%{opacity:1}}
+
+/* ---------- ending B: brand end card ---------- */
+.endB .ec{position:absolute;left:0;right:0;top:15%;display:flex;flex-direction:column;align-items:center}
+.endB .row{display:flex;align-items:center;gap:10px}
+.endB img{height:40px}
+.endB .name{font-size:32px;font-weight:800}
+.endB .tag{margin-top:6px;font-size:14px;font-weight:700;color:#FDC749;letter-spacing:.03em}
+.endB .icons{margin-top:18px;display:flex;gap:16px}
+.endB .ic{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#AEB7D4}
+.endB .ic div{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;border:1.5px solid rgba(252,241,219,.25);background:rgba(0,17,46,.5)}
+.endB .ic:nth-child(1) div{animation:lit 5s infinite}
+.endB .ic:nth-child(2) div{animation:lit 5s .5s infinite}
+.endB .ic:nth-child(3) div{animation:lit 5s 1s infinite}
+@keyframes lit{0%,15%{background:rgba(0,17,46,.5);border-color:rgba(252,241,219,.25);transform:scale(1)}22%{transform:scale(1.15)}28%,90%{background:#FDC749;border-color:#FDC749;transform:scale(1)}100%{background:rgba(0,17,46,.5)}}
+.endB .ic div svg{stroke:#FCF1DB}
+
+/* ---------- ending C: lower band over last scene ---------- */
+.endC .last{position:absolute;left:5%;right:5%;top:8%;bottom:30%;border-radius:10px;background:linear-gradient(180deg,rgba(20,58,128,.62),rgba(10,42,99,.55));border:1px solid rgba(252,241,219,.14);padding:12px 16px}
+.endC .last .t{font-size:16px;font-weight:800;margin-bottom:8px}
+.endC .last .r{height:12px;border-radius:6px;background:rgba(252,241,219,.12);margin:7px 0}
+.endC .band{position:absolute;left:5%;right:5%;bottom:6%;height:20%;border-radius:12px;background:#00112E;border:1.5px solid rgba(253,199,73,.6);display:flex;align-items:center;gap:12px;padding:0 14px;animation:rise 5s infinite}
+.endC .band img{height:28px}
+.endC .band .tx{font-size:14px;font-weight:700;flex:1}
+.endC .band .mini{background:#E62117;color:#fff;font-size:13px;font-weight:800;padding:6px 12px;border-radius:999px}
+@keyframes rise{0%,10%{transform:translateY(140%);opacity:0}22%,90%{transform:translateY(0);opacity:1}100%{opacity:0}}
+</style>
+
+<h2>영상 시작 한 줄 · 마무리 장면 시안</h2>
+<p class="subtitle">화면은 실제 영상 색(남색·금색)과 로고로 만들었어요. 움직임은 반복 재생돼요. 마음에 드는 것을 클릭해 주세요(각 섹션에서 하나씩).</p>
+
+<div class="section">
+<h3>① 시작 한 줄 (2~3초, 그다음 바로 오늘의 질문 장면)</h3>
+<p class="subtitle">화면은 셋 다 같은 로고 등장이고, 말하는 문장만 달라요.</p>
+<div class="cards">
+  <div class="card" data-choice="intro-a" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="vid"><div class="grid"></div>
+      <div class="sting"><div class="row"><img src="/files/logo_mark.png" alt=""><div class="name">뭐든<b>story</b></div></div><div class="sweep"></div><div class="series">오늘의 증시story</div></div>
+      <div class="cap"><span>안녕하세요, <em>오늘의 증시story</em>입니다.</span></div></div></div>
+    <div class="card-body"><h3>A. 인사형</h3><p class="line">"안녕하세요, 오늘의 증시story입니다."<small>뉴스 앵커처럼 단정함. 무난하지만 기억에는 덜 남음.</small></p></div>
+  </div>
+  <div class="card" data-choice="intro-b" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="vid"><div class="grid"></div>
+      <div class="sting"><div class="row"><img src="/files/logo_mark.png" alt=""><div class="name">뭐든<b>story</b></div></div><div class="sweep"></div><div class="series">오늘의 증시story</div></div>
+      <div class="cap"><span>숫자 뒤에 숨은 이야기, <em>오늘의 증시story</em>.</span></div></div></div>
+    <div class="card-body"><h3>B. 슬로건형</h3><p class="line">"숫자 뒤에 숨은 이야기, 오늘의 증시story."<small>지표 나열이 아니라 '왜'를 풀어 주는 채널이라는 점을 매번 각인.</small></p></div>
+  </div>
+  <div class="card" data-choice="intro-c" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="vid"><div class="grid"></div>
+      <div class="sting"><div class="row"><img src="/files/logo_mark.png" alt=""><div class="name">뭐든<b>story</b></div></div><div class="sweep"></div><div class="series">아침 · 오늘의 증시story</div></div>
+      <div class="cap"><span>장 열리기 전 꼭 알아야 할 이야기, <em>오늘의 증시story</em>.</span></div></div></div>
+    <div class="card-body"><h3>C. 아침·마감 따로</h3><p class="line">아침 "장 열리기 전 꼭 알아야 할 이야기, 오늘의 증시story."<br>마감 "오늘 장이 남긴 이야기, 오늘의 증시story."<small>회차 성격이 바로 드러남. 문장이 조금 길어짐.</small></p></div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h3>② 마무리 장면 (4~5초, 면책 문구가 있는 마지막 장면 다음)</h3>
+<p class="subtitle">마무리 말은 셋 다 같아요: "오늘 영상이 도움이 되셨다면 구독과 좋아요, 알림 설정 부탁드려요."</p>
+<div class="cards">
+  <div class="card" data-choice="end-a" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="vid endA"><div class="grid"></div>
+      <div class="stack">
+        <div class="btn sub"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg><span class="subtxt">&nbsp;<i class="w1">구독</i><i class="w2">구독중 ✓</i></span></div>
+        <div class="btn like"><svg width="22" height="22" viewBox="0 0 24 24" stroke="#FCF1DB" stroke-width="2" fill="none" stroke-linejoin="round"><path d="M7 11v9H4v-9h3zm0 0 4-7a2 2 0 0 1 3 2l-1 4h5a2 2 0 0 1 2 2.3l-1.3 6A2 2 0 0 1 16.7 20H7"/></svg></div>
+        <div class="btn bell"><svg width="22" height="22" viewBox="0 0 24 24" stroke="#FCF1DB" stroke-width="2" fill="none" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4l2-2zM10 20a2 2 0 0 0 4 0"/></svg></div>
+      </div>
+      <svg class="cursor" viewBox="0 0 24 24"><path d="M4 2l16 10-7 1.5L10 21z" fill="#fff" stroke="#00112E" stroke-width="1.5"/></svg>
+      <div class="cap"><span>도움이 되셨다면 <em>구독·좋아요·알림</em> 부탁드려요</span></div></div></div>
+    <div class="card-body"><h3>A. 버튼 누르기</h3><p>커서가 구독 → 좋아요 → 알림을 차례로 눌러요. 구독은 '구독중 ✓'으로 바뀌고 종이 흔들려요. 유튜브에서 가장 익숙한 연출.</p></div>
+  </div>
+  <div class="card" data-choice="end-b" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="vid endB"><div class="grid"></div>
+      <div class="ec"><div class="row"><img src="/files/logo_mark.png" alt=""><div class="name">뭐든story</div></div>
+        <div class="tag">매일 아침 · 장 마감, 오늘의 증시story</div>
+        <div class="icons">
+          <div class="ic"><div><svg width="24" height="24" viewBox="0 0 24 24" stroke-width="2" fill="none"><path d="M8 5v14l11-7z" stroke-linejoin="round"/></svg></div>구독</div>
+          <div class="ic"><div><svg width="24" height="24" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linejoin="round"><path d="M7 11v9H4v-9h3zm0 0 4-7a2 2 0 0 1 3 2l-1 4h5a2 2 0 0 1 2 2.3l-1.3 6A2 2 0 0 1 16.7 20H7"/></svg></div>좋아요</div>
+          <div class="ic"><div><svg width="24" height="24" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4l2-2zM10 20a2 2 0 0 0 4 0"/></svg></div>알림</div>
+        </div></div>
+      <div class="cap"><span>도움이 되셨다면 <em>구독·좋아요·알림</em> 부탁드려요</span></div></div></div>
+    <div class="card-body"><h3>B. 브랜드 엔드카드</h3><p>로고와 채널명이 가운데, 아래 세 아이콘이 차례로 금색으로 켜져요. 차분하고 채널 색이 강하게 남아요.</p></div>
+  </div>
+  <div class="card" data-choice="end-c" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="vid endC"><div class="grid"></div>
+      <div class="last"><div class="t">오늘 볼 신호</div><div class="r" style="width:90%"></div><div class="r" style="width:75%"></div><div class="r" style="width:82%"></div></div>
+      <div class="band"><img src="/files/logo_mark.png" alt=""><div class="tx">도움이 되셨다면 구독·좋아요·알림!</div><div class="mini">구독</div></div></div></div>
+    <div class="card-body"><h3>C. 마지막 장면 위 하단 띠</h3><p>장면을 따로 만들지 않고, 마지막 '볼 신호' 장면 위로 띠가 올라와요. 가장 짧고 흐름이 안 끊기지만 존재감은 약해요.</p></div>
+  </div>
+</div>
+</div>
+<p class="loop-note">참고: 아직 실제 렌더 화면이 아니라 시안이에요. 고르시면 실제 1920×1080 템플릿으로 만들고, 시험 렌더 화면으로 다시 보여 드려요.</p>

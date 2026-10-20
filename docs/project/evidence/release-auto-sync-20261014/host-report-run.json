@@ -1,0 +1,32 @@
+{
+ "what": "release.py auto (this branch) on the production host in report mode, with a temporary state and releases directory; runtime.env, maintenance.json and the GitHub App key read in place. No service, file or setting of production was changed; the temporary directory was removed afterwards.",
+ "collected_at": "2026-10-14T05:26:01Z",
+ "duration_seconds": {"latest_green": 2.1, "auto_total": 24.7},
+ "github_token_permissions_requested": {"contents": "read", "actions": "read"},
+ "prepared_release_top_level": [".dockerignore", ".release.json", "deploy", "pyproject.toml", "qdata", "src", "uv.lock"],
+ "status": {
+  "checked_at": "2026-10-14T05:26:01+00:00",
+  "mode": "report",
+  "current": "5454e3deb88ec66aa74f37f5c4fa4ecafb9691f7",
+  "render": {"commit": null, "task_definition": "quant-company-render:9"},
+  "failed_commit": null,
+  "drift": [],
+  "latest_green": {
+   "sha": "17d7693efb327a703924508b21db15db0e857fd8",
+   "run": "https://github.com/JJongAchii/quant-ai-company/actions/runs/38513974754",
+   "completed_at": "2026-10-14T05:13:43Z"
+  },
+  "target": "17d7693efb327a703924508b21db15db0e857fd8",
+  "behind_by": 2,
+  "operator_files": [],
+  "action": "would_release"
+ },
+ "image_layers_per_release_bytes_approx": {
+  "app uv sync (after ARG RELEASE_COMMIT)": "1.38GB",
+  "autonomous apt": "99.3MB",
+  "maintenance apt": "7.51MB",
+  "codex node + @openai copy": "572MB",
+  "claude copy": "234MB",
+  "video apt (Dockerfile.video FROM the app image)": "2.43GB"
+ }
+}

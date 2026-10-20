@@ -15,6 +15,7 @@ CORE_SCHEMA = (
     ("quant_company.news", "schema.sql"),
     ("quant_company.briefing", "schema.sql"),
     ("quant_company.video", "schema.sql"),
+    ("quant_company.newsletter", "schema.sql"),
     ("quant_company.tech_feed", "schema.sql"),
     ("quant_company.trend_feed", "schema.sql"),
     ("quant_company.housing_feed", "schema.sql"),
@@ -25,6 +26,7 @@ CORE_SCHEMA = (
     ("quant_company.research", "program_schema.sql"),
     ("quant_company.research", "planning_schema.sql"),
     ("quant_company.data_watch", "schema.sql"),
+    ("quant_company.ops", "schema.sql"),
 )
 RETRYABLE = (psycopg.errors.LockNotAvailable, psycopg.errors.DeadlockDetected)
 
