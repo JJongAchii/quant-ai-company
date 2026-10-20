@@ -1,44 +1,86 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8">
 <style>
+@font-face{font-family:'Pretendard';font-weight:500;src:url(fonts/Pretendard-Medium.woff2) format('woff2');}
 @font-face{font-family:'Pretendard';font-weight:600;src:url(fonts/Pretendard-SemiBold.woff2) format('woff2');}
 @font-face{font-family:'Pretendard';font-weight:700;src:url(fonts/Pretendard-Bold.woff2) format('woff2');}
 @font-face{font-family:'Pretendard';font-weight:800;src:url(fonts/Pretendard-ExtraBold.woff2) format('woff2');}
-:root{--navy-900:#00112E;--navy-800:#011A43;--gold:#FDC749;--cream:#FCF1DB;--muted:#AEB7D4;--up:#FF5C6C;--dn:#5EA0FF}
+:root{--navy-900:#00112E;--navy:#011A43;--ink:rgba(0,17,46,.8);--gold:#FDC749;--cream:#FCF1DB;--muted:#C9D0E6;
+ --up:#FF5C6C;--dn:#5EA0FF;--red:#E62117;--lift:0 3px 18px rgba(0,8,24,.65)}
 *{margin:0;padding:0;box-sizing:border-box}
 /* Vertical Shorts frame. YouTube draws its own controls over the top ~220px, the bottom ~380px and the right ~140px,
    so every line stays inside x 70-940, y 230-1500. */
-html,body{width:1080px;height:1920px;overflow:hidden;background:var(--navy-800);font-family:'Pretendard',sans-serif;color:var(--cream);-webkit-font-smoothing:antialiased;word-break:keep-all}
-#bg{position:absolute;inset:0;background:radial-gradient(ellipse 90% 60% at 50% 42%,#0A2A63 0%,#011A43 55%,#00112E 100%)}
-#grid{position:absolute;inset:0;background-image:linear-gradient(rgba(252,241,219,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(252,241,219,.035) 1px,transparent 1px);background-size:72px 72px}
-#mark{position:absolute;left:70px;top:236px;display:flex;align-items:center;gap:14px;font-size:38px;font-weight:800}
-#mark img{height:54px}
-#mark span{font-size:28px;font-weight:700;color:var(--muted);margin-left:8px}
-#segs{position:absolute;left:70px;width:870px;top:322px;display:flex;gap:10px}
-#segs div{flex:1;height:8px;border-radius:4px;background:rgba(252,241,219,.16);overflow:hidden}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--navy-900);font-family:'Pretendard',sans-serif;color:var(--cream);-webkit-font-smoothing:antialiased;word-break:keep-all}
+em{font-style:normal;color:var(--gold)}
+
+/* Backgrounds: one full-bleed picture per scene, slowly zoomed, darkened where the text sits. */
+#bgs{position:absolute;inset:0;overflow:hidden;z-index:0}
+.bg{position:absolute;inset:0;overflow:hidden;opacity:0}
+.bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform}
+.bg.blur img{inset:-80px;width:calc(100% + 160px);height:calc(100% + 160px);filter:blur(22px) brightness(.7) saturate(1.15)}
+.bg .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,17,46,.78) 0%,rgba(0,17,46,.22) 19%,rgba(0,17,46,.2) 28%,rgba(0,17,46,.66) 42%,rgba(0,17,46,.9) 56%,rgba(0,17,46,.97) 74%,#00112E 100%)}
+.bg.blur .shade{background:linear-gradient(180deg,rgba(0,17,46,.7) 0%,rgba(0,17,46,.5) 30%,rgba(0,17,46,.66) 60%,rgba(0,17,46,.94) 82%,#00112E 100%)}
+.bg.nophoto{background:radial-gradient(ellipse 90% 60% at 50% 38%,#0E3270 0%,#011A43 55%,#00112E 100%)}
+.bg.nophoto::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(252,241,219,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(252,241,219,.04) 1px,transparent 1px);background-size:72px 72px}
+
+/* Header: the channel, the edition badge and one progress segment per scene. */
+#top{position:absolute;left:70px;width:870px;top:236px;height:62px;display:flex;align-items:center;gap:14px;font-size:36px;font-weight:800;text-shadow:var(--lift)}
+#top img{height:52px;filter:drop-shadow(0 2px 8px rgba(0,8,24,.5))}
+#badge{margin-left:auto;padding:9px 24px;border-radius:32px;background:var(--gold);color:var(--navy);font-size:32px;font-weight:800;text-shadow:none;box-shadow:0 4px 18px rgba(0,8,24,.4)}
+#segs{position:absolute;left:70px;width:870px;top:318px;display:flex;gap:10px}
+#segs div{flex:1;height:8px;border-radius:4px;background:rgba(252,241,219,.3);overflow:hidden;box-shadow:0 1px 6px rgba(0,8,24,.45)}
 #segs i{display:block;height:100%;width:0;background:var(--gold)}
-#stage{position:absolute;left:70px;top:390px;width:870px;height:920px}
-.scene{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center}
-.q{font-size:96px;font-weight:800;line-height:1.2;letter-spacing:-.03em;text-align:center;text-wrap:balance}
-.q em,.t em{font-style:normal;color:var(--gold)}
-.stat{margin-top:80px;text-align:center;font-size:150px;font-weight:800;letter-spacing:-.03em;white-space:nowrap;overflow:hidden}
-.badge{display:inline-flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:50%;background:var(--gold);color:var(--navy-800);font-size:46px;font-weight:800}
-.lab{display:flex;align-items:center;justify-content:center;gap:26px;font-size:52px;font-weight:800}
-.big{margin-top:50px;font-size:170px;font-weight:800;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-align:center}
-.t{margin-top:50px;font-size:62px;font-weight:700;line-height:1.35;text-align:center;text-wrap:balance}
-.up{color:var(--up)} .dn{color:var(--dn)}
-.out1{font-size:64px;font-weight:700;text-align:center;line-height:1.35;color:var(--cream)}
-.out2{margin-top:40px;font-size:104px;font-weight:800;text-align:center;color:var(--gold);letter-spacing:-.02em}
-.play{margin:70px auto 0;width:200px;height:140px;border-radius:40px;background:#E62117;display:flex;align-items:center;justify-content:center}
-#cap{position:absolute;left:70px;width:870px;top:1330px;height:170px;display:flex;align-items:center;justify-content:center}
-#capbox{max-width:870px;padding:14px 28px;border-radius:22px;background:rgba(0,12,34,.78);font-size:50px;font-weight:700;line-height:1.35;text-align:center;opacity:0;text-wrap:balance}
-#capbox em{font-style:normal;color:var(--gold)}
+
+/* Scenes. A box holds the text between the header and the captions; its type decides where the text sits. */
+.scene{position:absolute;inset:0;display:none}
+.box{position:absolute;left:70px;width:870px;top:400px;height:910px;display:flex;flex-direction:column;font-size:10px}
+.inner{display:flex;flex-direction:column;align-items:flex-start;width:100%}
+.opener .box,.issue .box{justify-content:flex-end}
+.agenda .box,.outro .box{justify-content:center}
+.kicker{padding:.22em .62em;border-radius:.3em;background:rgba(0,17,46,.82);border:3px solid var(--gold);color:var(--gold);font-size:4em;font-weight:800;line-height:1.3;box-shadow:0 6px 24px rgba(0,8,24,.35)}
+.credit{position:absolute;right:140px;top:346px;max-width:870px;padding:6px 14px;border-radius:10px;background:rgba(0,17,46,.74);border:1px solid rgba(252,241,219,.32);font-size:22px;font-weight:600;line-height:1.3;color:var(--cream)}
+
+.h1{margin-top:.3em;font-size:9.2em;font-weight:800;line-height:1.2;letter-spacing:-.03em;text-shadow:0 4px 30px rgba(0,8,24,.7),0 2px 6px rgba(0,8,24,.5);text-wrap:balance}
+.ask{margin-top:.38em;font-size:6.6em;font-weight:800;line-height:1.2;color:#fff;letter-spacing:-.02em;text-shadow:var(--lift)}
+
+.list{display:flex;flex-direction:column;gap:1.8em;margin-top:3.2em;width:100%}
+.row{display:flex;align-items:center;gap:2.4em;padding:1.8em 2.6em;border-radius:2.4em;background:rgba(0,17,46,.8);border:2px solid rgba(252,241,219,.2);box-shadow:0 8px 30px rgba(0,8,24,.3)}
+.row b,.pill b{flex:none;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--gold);color:var(--navy);font-weight:800}
+.row b{width:1.65em;height:1.65em;font-size:4.6em}
+.row div{min-width:0;flex:1}
+.row strong{display:block;white-space:nowrap;font-size:4.6em;font-weight:800;line-height:1.25;letter-spacing:-.01em}
+.row small{display:block;margin-top:.2em;font-size:3.4em;font-weight:600;line-height:1.3;color:var(--muted)}
+
+.pill{display:inline-flex;align-items:center;gap:.36em;max-width:100%;padding:.2em .7em .2em .2em;border-radius:1em;background:rgba(0,17,46,.82);font-size:4.4em;font-weight:800;line-height:1.25;white-space:nowrap;box-shadow:0 6px 24px rgba(0,8,24,.35)}
+.pill b{width:1.6em;height:1.6em;font-size:.9em}
+.pill i{font-style:normal;font-weight:700;font-size:.82em;color:var(--muted)}
+/* The number and what it is share one line: the number shrinks before its label is pushed off. */
+.num{display:flex;align-items:flex-end;gap:1.8em;margin-top:2.2em;width:100%}
+.num .v{flex:0 1 auto;min-width:0;font-size:14.5em;font-weight:800;line-height:1.02;letter-spacing:-.035em;white-space:nowrap;color:var(--gold);text-shadow:0 6px 34px rgba(0,8,24,.7),0 2px 6px rgba(0,8,24,.45)}
+.num .v.up{color:var(--up)} .num .v.dn{color:var(--dn)} .num .v{transform-origin:left bottom}
+.num .l{flex:0 0 auto;max-width:7.2em;padding-bottom:.42em;font-size:4.4em;font-weight:800;line-height:1.2;color:#fff;text-shadow:var(--lift)}
+.card{margin-top:2.6em;width:100%;padding:2.8em 3.2em 3em;border-radius:2.6em;background:rgba(0,17,46,.84);border-left:1em solid var(--gold);box-shadow:0 12px 40px rgba(0,8,24,.35)}
+.card p{font-size:4.6em;font-weight:600;line-height:1.45;color:var(--cream);text-wrap:pretty}
+.tag{display:inline-block;margin-top:.7em;padding:.3em .7em;border-radius:.4em;font-size:3.3em;font-weight:700;line-height:1.35}
+.tag strong{font-weight:800}
+.tag.k0{background:rgba(94,160,255,.2);color:#CFE1FF} .tag.k1{background:rgba(253,199,73,.18);color:#FFE3A1} .tag.k2{background:rgba(80,210,170,.18);color:#BDF3E2}
+
+.sigs{width:100%;margin-top:2.4em;padding:.6em 3.2em;border-radius:2.6em;background:rgba(0,17,46,.72);border:2px solid rgba(252,241,219,.16)}
+.sig{display:flex;gap:.55em;align-items:flex-start;padding:.6em 0;font-size:4.8em;font-weight:700;line-height:1.35}
+.sig+.sig{border-top:2px solid rgba(252,241,219,.14)}
+.sig b{flex:none;color:var(--gold)}
+.play{align-self:center;display:inline-flex;align-items:center;gap:.4em;margin-top:1.4em;padding:.46em .9em;border-radius:.6em;background:var(--red);color:#fff;font-size:5.2em;font-weight:800;line-height:1.2;box-shadow:0 12px 40px rgba(230,33,23,.45)}
+.play svg{width:.9em;height:.9em;flex:none}
+
+/* Captions: the spoken script, above YouTube's bottom controls. */
+#cap{position:absolute;left:70px;width:870px;top:1340px;height:160px;display:flex;align-items:center;justify-content:center}
+#capbox{max-width:870px;padding:14px 28px;border-radius:22px;background:rgba(0,12,34,.86);font-size:44px;font-weight:700;line-height:1.36;text-align:center;opacity:0;text-wrap:balance;box-shadow:0 8px 30px rgba(0,8,24,.35)}
 </style>
 </head><body>
-<div id="bg"></div><div id="grid"></div>
-<div id="mark"><img src="logo_mark.png" alt="">뭐든story<span id="label"></span></div>
-<div id="segs"></div>
+<div id="bgs"></div>
 <div id="stage"></div>
+<div id="top"><img src="logo_mark.png" alt="">뭐든story<span id="badge"></span></div>
+<div id="segs"></div>
 <div id="cap"><div id="capbox"></div></div>
 <script src="episode.js"></script>
 <script src="shorts.js"></script>

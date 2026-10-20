@@ -8,10 +8,12 @@ template (shorts_design/). It never enters the Fargate render image, so the epis
 
 import fcntl
 import json
+import math
 import os
 import re
 import shutil
 import subprocess
+from datetime import date
 from importlib.resources import files
 from pathlib import Path
 from typing import Literal
@@ -52,6 +54,8 @@ CHECKS = 3
 EDITION_WORDS = {'am': '아침', 'close': '마감'}
 KO_COUNT = {2: '두', 3: '세', 4: '네', 5: '다섯'}
 ISSUE_CHAPTERS = ('핵심 이슈', '함께 볼 이슈')
+# The cut's own scenes around the issues (ShortsRenderer.scenes).
+FIXED_SCENES = ('opener', 'agenda', 'outro')
 NOTE_KINDS = ('다르게 볼 점', '의미', '확인할 점')
 
 
@@ -59,11 +63,16 @@ class ShortsSuperseded(Exception):
     """The next episode started while this cut was rendering: the episode goes first."""
 
 
-def date_line(job):
-    """The fixed first line, '10월 20일 아침 브리핑입니다.' (the episode title's own words for the edition)."""
+def edition_date(job):
+    """'10월 20일 아침': the date badge, in the episode title's own words for the edition."""
     day = str(job['source']['day'])
     edition = EDITION_WORDS.get(job['source'].get('edition_kind'), '')
-    return f"{int(day[5:7])}월 {int(day[8:10])}일 {edition} 브리핑입니다.".replace('  ', ' ')
+    return ' '.join(x for x in (f'{int(day[5:7])}월', f'{int(day[8:10])}일', edition) if x)
+
+
+def date_line(job):
+    """The fixed first line, '10월 20일 아침 브리핑입니다.'."""
+    return f'{edition_date(job)} 브리핑입니다.'
 
 
 def agenda_line(count):
@@ -85,7 +94,8 @@ def asset_ids(value):
 def cut_pictures(job, episode, plan, settings, library):
     """{'hook', 'issues', 'cover'}: {'path', 'credit'} or None per picture, resolved as the episode's own render does
     (this episode's pictures first, then the reviewed library). An issue shows the first picture of its cited scenes;
-    the hook and the blurred cover show the episode's thumbnail picture, else the first issue picture."""
+    the hook and the blurred cover show the episode's thumbnail picture, else the first issue picture, else the first
+    picture any scene of the episode shows."""
     made = library_entries(job, plan_class(job).model_validate(episode), settings, library)
     by_id = {s['id']: s for s in episode['scenes']}
 
@@ -103,7 +113,8 @@ def cut_pictures(job, episode, plan, settings, library):
     for issue in plan.issues:
         ids = (a for sid in issue.scene_ids for a in asset_ids((by_id.get(sid) or {}).get('data')))
         issues.append(picture(next(ids, None)))
-    hook = picture(episode.get('thumbnail_image')) or next((p for p in issues if p), None)
+    hook = (picture(episode.get('thumbnail_image')) or next((p for p in issues if p), None)
+            or next((p for s in episode['scenes'] for p in [picture(next(asset_ids(s.get('data')), None))] if p), None))
     return {'hook': hook, 'issues': issues, 'cover': hook}
 
 
@@ -150,6 +161,8 @@ class ShortsPlan(StrictModel):
     def shape(self):
         if len({i.id for i in self.issues}) != len(self.issues):
             raise ValueError('Issue IDs must be unique')
+        if {i.id for i in self.issues} & set(FIXED_SCENES):
+            raise ValueError('Issue IDs opener, agenda and outro name the fixed scenes')
         if any(not 4 <= len(x) <= 30 for x in self.signals):
             raise ValueError('A signal is 4-30 characters')
         spoken_lines = self.narrations()
@@ -381,7 +394,7 @@ def upload_text(plan, job, credits):
 
 
 QA_JS = r"""(safe) => {
- const out=[]; const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='flex');
+ const out=[]; const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
  if(!scn) return [['no-scene','']];
  const boxes=[]; const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT); let n;
  while((n=walker.nextNode())){ if(!n.textContent.trim()) continue; const e=n.parentElement; if(e.closest('.scene')&&e.closest('.scene')!==scn) continue;
@@ -395,15 +408,41 @@ QA_JS = r"""(safe) => {
  return out;}"""
 
 
+def music_track(settings, job):
+    """The music bed under this cut: the tracks in {video_asset_dir}/music take turns by the episode's date. None when the
+    folder is missing, empty or unreadable (the cut is made without music)."""
+    try:
+        tracks = sorted(p for p in (Path(settings.video_asset_dir) / 'music').glob('*.mp3') if p.is_file())
+    except OSError:
+        return None
+    if not tracks:
+        return None
+    return tracks[date.fromisoformat(str(job['source']['day'])[:10]).toordinal() % len(tracks)]
+
+
+# About -22 dB under the narration, ducked further while it speaks, faded in and out over a second.
+MIX = ('[1:a]volume=0.08,afade=t=in:d=1,afade=t=out:st={fade}:d=1[m];[m][0:a]sidechaincompress=threshold=0.03:ratio=8:'
+       'attack=20:release=400[d];[0:a][d]amix=inputs=2:duration=first:normalize=0')
+
+
 class ShortsRenderer:
-    """One browser, frame by frame: a Shorts is about 1,400 frames, small enough for the worker itself."""
+    """One browser, frame by frame: a Shorts is about 2,000 frames, small enough for the worker itself."""
 
     def __init__(self, settings, aligner=None):
-        self.settings, self.stop = settings, None
+        self.settings, self.stop, self._library = settings, None, None
         self.aligner = aligner or Aligner(settings.video_alignment_model, settings.video_alignment_threads)
 
-    def render(self, job, plan, directory, audio_paths, outro_audio, stop=None):
-        """stop: asked every few seconds of frames; True gives the render up (ShortsSuperseded)."""
+    @property
+    def library(self):
+        """Reviewed images only, as the episode's renderer reads them (MotionRenderer.library)."""
+        if self._library is None:
+            path = Path(self.settings.video_asset_dir) / 'manifest.json'
+            self._library = json.loads(path.read_text()) if path.exists() else {}
+        return self._library
+
+    def render(self, job, plan, episode, directory, audio_paths, stop=None):
+        """episode: the delivered EpisodePlan as JSON. audio_paths: one take per scene (opener, agenda, each issue,
+        outro). stop: asked every few seconds of frames; True gives the render up (ShortsSuperseded)."""
         self.stop = stop
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
@@ -414,7 +453,7 @@ class ShortsRenderer:
             os.close(lock)
             raise RenderInProgress(str(directory)) from None
         try:
-            return self._render(job, plan, directory, [*audio_paths, outro_audio])
+            return self._render(job, plan, episode, directory, audio_paths)
         finally:
             os.close(lock)
 
@@ -424,14 +463,63 @@ class ShortsRenderer:
         design = files('quant_company.video').joinpath('design')
         shutil.copytree(design.joinpath('fonts'), page / 'fonts', dirs_exist_ok=True)
         shutil.copy2(design.joinpath('logo_mark.png'), page / 'logo_mark.png')
+        (page / 'img').mkdir(exist_ok=True)
         return page
 
-    def _render(self, job, plan, directory, audio_paths):
+    @staticmethod
+    def scenes(job, plan):
+        """The cut's scenes with the words they say: the dated opener, the issue list, each issue, the signals with the
+        fixed closing line. The fixed copy on screen is the service's, never the model's."""
+        count = len(plan.issues)
+        return [
+            {'id': 'opener', 'type': 'opener', 'narration': date_line(job) + ' ' + plan.hook.narration,
+             'data': {'kicker': '오늘의 질문', 'headline': plan.hook.headline, 'question': plan.hook.question}},
+            {'id': 'agenda', 'type': 'agenda', 'narration': agenda_line(count),
+             'data': {'kicker': f'오늘 볼 이슈 {count}가지', 'rows': [{'label': i.label, 'agenda': i.agenda} for i in plan.issues]}},
+            *({'id': i.id, 'type': 'issue', 'narration': i.narration,
+               'data': {'k': k, 'n': count, 'label': i.label, 'big': i.big, 'big_label': i.big_label, 'dir': i.dir,
+                        'body': i.body, 'note_kind': i.note_kind, 'note': i.note}}
+              for k, i in enumerate(plan.issues, 1)),
+            {'id': 'outro', 'type': 'outro', 'narration': plan.signals_narration + ' ' + OUTRO['say'],
+             'data': {'kicker': '확인할 신호', 'signals': list(plan.signals), 'button': '자세한 해석은 본편에서'}}]
+
+    def _pictures(self, job, plan, episode, scenes, page):
+        """bg, blur and credit per scene, each picture copied once into page/img: the opener shows the episode's picture
+        sharp, each issue its own (else the cover, blurred), the agenda and the outro the cover blurred."""
+        found = cut_pictures(job, episode, plan, self.settings, self.library)
+
+        def usable(picture):
+            return picture if picture and Path(picture['path']).is_file() else None
+
+        cover, issues = usable(found['cover']), [usable(p) for p in found['issues']]
+        chosen = [(usable(found['hook']) or cover, False), (cover, True),
+                  *((p, False) if p else (cover, True) for p in issues), (cover, True)]
+        names, pictures, findings = {}, [], []
+        for scene, (picture, blur) in zip(scenes, chosen, strict=True):
+            if picture is None:
+                scene.update(bg=None, blur=False, credit='')
+                findings.append(f"Shorts scene without a picture: {scene['id']}")
+                continue
+            path = Path(picture['path'])
+            if str(path) not in names:
+                name = path.name if path.name not in names.values() else f'{len(names)}-{path.name}'
+                shutil.copy2(path, page / 'img' / name)
+                names[str(path)] = name
+            name = names[str(path)]
+            scene.update(bg='img/' + name, blur=blur, credit=picture['credit'])
+            pictures.append({'scene': scene['id'], 'file': name, 'credit': picture['credit']})
+        return pictures, findings
+
+    def build(self, job, plan, episode, directory, audio_paths):
+        """The page before any frame: pictures copied, speech aligned, the timeline and EP written."""
+        directory = Path(directory)
+        directory.mkdir(parents=True, exist_ok=True)
         page = self._page(directory)
-        scenes = [{'id': s.id, 'type': s.type, 'narration': s.narration, 'data': dict(s.data)} for s in plan.scenes]
-        scenes.append({'id': 'outro', 'type': 'outro', 'narration': OUTRO['say'],
-                       'data': {'lead': OUTRO['lead'], 'main': OUTRO['main']}})
-        t, cues, alignment, findings = 0.0, [], [], []
+        scenes = self.scenes(job, plan)
+        pictures, findings = self._pictures(job, plan, episode, scenes, page)
+        # The list and the closing button stay up long enough to read, past their short fixed lines.
+        hold = {'agenda': 1.0 + 0.9 * len(plan.issues), 'outro': 6.0}
+        t, cues = 0.0, []
         for number, (scene, audio) in enumerate(zip(scenes, audio_paths, strict=True)):
             duration = float(probe(audio, self.settings)['format']['duration'])
             if not 0.5 <= duration <= 30:
@@ -446,39 +534,55 @@ class ShortsRenderer:
             if aligned is None:
                 aligned = self.aligner.align(audio, said)
                 cache.write_text(json.dumps({'key': key, 'aligned': aligned}, ensure_ascii=False))
-            alignment.append(aligned)
             findings += [f"Scene {scene['id']}: {f}" for f in aligned.get('findings', [])]
-            length = LEAD + duration + TAIL
+            length = math.ceil(max(LEAD + duration + TAIL, hold.get(scene['type'], 0.0)) * 1000 - 1e-6) / 1000
             scene.update(t0=round(t, 3), t1=round(t + length, 3), audio=str(audio))
             words = aligned.get('words') or [{'word': c['text'], 'start': c['start'], 'end': c['end']} for c in aligned['cues']]
             cues += captions(word_times(scene['narration'], words, duration), t + LEAD, t + length)
-            t += length
+            t = scene['t1']
         total = round(t, 3)
-        if not 15 <= total <= 90:
+        if not 20 <= total <= 100:
             raise ValueError('Shorts duration outside limits')
-        if not 35 <= total <= 60:
-            findings.append(f'Shorts runs {total:.0f} s (aim 40-50 s)')
+        if not 45 <= total <= 90:
+            findings.append(f'Shorts runs {total:.0f} s (aim 60-75 s)')
         day = str(job['source']['day'])
         label = f"{int(day[5:7])}.{int(day[8:10])} {EDITION_WORDS.get(job['source'].get('edition_kind'), '')}".strip()
-        ep = {'label': label, 'scenes': [{k: s[k] for k in ('id', 'type', 'data', 't0', 't1')} for s in scenes],
-              'captions': cues, 'total': total}
+        ep = {'label': label, 'date_badge': edition_date(job), 'captions': cues, 'total': total,
+              'scenes': [{k: s[k] for k in ('id', 'type', 'data', 't0', 't1', 'bg', 'blur', 'credit')} for s in scenes]}
         (page / 'episode.js').write_text('window.EP=' + json.dumps(ep, ensure_ascii=False) + ';')
+        return {'page': page, 'scenes': scenes, 'captions': cues, 'total': total, 'findings': findings,
+                'pictures': pictures, 'ep': ep}
+
+    def _render(self, job, plan, episode, directory, audio_paths):
+        built = self.build(job, plan, episode, directory, audio_paths)
+        page, scenes, cues, total, findings = (built[k] for k in ('page', 'scenes', 'captions', 'total', 'findings'))
         frames = int(total * FPS)
-        issues, stills = self._capture(page / 'index.html', scenes, frames, directory)
-        if issues:
-            findings.append('Text outside the Shorts safe area or overlapping in scenes ' + ', '.join(issues))
+        layout, stills, broken = self._capture(page / 'index.html', scenes, frames, directory)
+        findings += [f'Shorts picture could not be shown: {src}' for src in broken]
+        for scene_id, found in layout.items():
+            findings.append(f'Shorts layout in scene {scene_id}: ' + '; '.join(' '.join(x) for x in found)[:300])
+        ffmpeg = self.settings.video_ffmpeg
         pieces = []
         for i, scene in enumerate(scenes):
             piece = directory / f'aud-{i:02}.wav'
-            run([self.settings.video_ffmpeg, '-y', '-v', 'error', '-i', scene['audio'], '-af', f'adelay={int(LEAD * 1000)}:all=1,apad',
+            run([ffmpeg, '-y', '-v', 'error', '-i', scene['audio'], '-af', f'adelay={int(LEAD * 1000)}:all=1,apad',
                  '-t', f"{scene['t1'] - scene['t0']:.3f}", '-ar', '48000', '-ac', '2', str(piece)])
             pieces.append(piece)
         (directory / 'aud.txt').write_text(''.join(f"file '{p.name}'\n" for p in pieces))
         narration = directory / 'narration.wav'
-        run([self.settings.video_ffmpeg, '-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', str(directory / 'aud.txt'),
+        run([ffmpeg, '-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', str(directory / 'aud.txt'),
              '-af', 'loudnorm=I=-16:TP=-2.0:LRA=11,alimiter=limit=0.79:level=false', '-ar', '48000', str(narration)])
+        sound, music, track = narration, None, music_track(self.settings, job)
+        if track is not None:
+            mixed = directory / 'mixed.wav'
+            try:  # the track loops when it is shorter than the cut
+                run([ffmpeg, '-y', '-v', 'error', '-i', str(narration), '-stream_loop', '-1', '-t', f'{total:.3f}', '-i', str(track),
+                     '-filter_complex', MIX.format(fade=f'{max(total - 1, 0):.3f}'), '-ar', '48000', '-ac', '2', str(mixed)])
+                sound, music = mixed, track.name
+            except (ValueError, OSError):
+                findings.append(f'Music bed {track.name} could not be mixed; the cut has no music')
         output = directory / 'shorts.mp4'
-        run([self.settings.video_ffmpeg, '-y', '-v', 'error', '-i', str(directory / 'silent.mp4'), '-i', str(narration),
+        run([ffmpeg, '-y', '-v', 'error', '-i', str(directory / 'silent.mp4'), '-i', str(sound),
              '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', str(output)])
         media = probe(output, self.settings)
         video = next((s for s in media['streams'] if s['codec_type'] == 'video'), {})
@@ -494,16 +598,17 @@ class ShortsRenderer:
 
         (directory / 'shorts.srt').write_text('\n'.join(f'{i + 1}\n{stamp(a)} --> {stamp(b)}\n{re.sub("<[^>]+>", "", c)}\n'
                                                          for i, (a, b, c) in enumerate(cues)))
-        (directory / 'shorts-upload.txt').write_text(upload_text(plan, job, []))
+        credits = list(dict.fromkeys(p['credit'] for p in built['pictures'] if p['credit']))
+        (directory / 'shorts-upload.txt').write_text(upload_text(plan, job, credits))
         (directory / 'shorts-plan.json').write_text(plan.model_dump_json(indent=2))
         names = ['shorts.mp4', 'shorts.srt', 'shorts-upload.txt', 'shorts-plan.json']
         manifest = {'title': plan.title, 'duration': duration, 'qa_passed': True, 'fps': FPS, 'frames': frames, 'size': [WIDTH, HEIGHT],
-                    'findings': findings, 'audio_quality': measured, 'review': {'frames': stills},
-                    'scenes': [{k: s[k] for k in ('id', 'type', 't0', 't1')} for s in scenes],
+                    'findings': findings, 'audio_quality': measured, 'review': {'frames': stills}, 'music': music,
+                    'pictures': built['pictures'], 'scenes': [{k: s[k] for k in ('id', 'type', 't0', 't1')} for s in scenes],
                     'files': {n: checksum(directory / n) for n in names}, 'directory': str(directory)}
         manifest['digest'] = digest(manifest)
         (directory / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
-        for path in [*directory.glob('aud-*.wav'), directory / 'silent.mp4', directory / 'narration.wav', directory / 'aud.txt']:
+        for path in [*directory.glob('aud-*.wav'), directory / 'silent.mp4', narration, directory / 'mixed.wav', directory / 'aud.txt']:
             path.unlink(missing_ok=True)
         shutil.rmtree(page, ignore_errors=True)
         return manifest
@@ -522,6 +627,7 @@ class ShortsRenderer:
                 tab.on('pageerror', lambda e: errors.append(str(e)))
                 tab.goto(index.as_uri())
                 tab.evaluate('document.fonts.ready')
+                broken = tab.evaluate('pictures()')
                 tab.wait_for_timeout(300)
                 if errors:
                     raise ValueError('Shorts template failed to build')
@@ -549,4 +655,4 @@ class ShortsRenderer:
                     raise ValueError('Shorts frame encoding failed')
             finally:
                 browser.close()
-        return issues, stills
+        return issues, stills, broken

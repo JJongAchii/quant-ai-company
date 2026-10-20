@@ -3,6 +3,9 @@ PostgreSQL. Model, speech, alignment and Slack's HTTP API are simulated fixtures
 
 import importlib.util
 import json
+import re
+import subprocess
+from datetime import date
 
 import pytest
 
@@ -93,6 +96,8 @@ def test_a_cut_is_a_hook_two_to_five_issues_and_signals():
         ShortsPlan.model_validate({**plan, 'issues': long})
     with pytest.raises(ValueError, match='unique'):
         ShortsPlan.model_validate({**plan, 'issues': [plan['issues'][0], plan['issues'][0]]})
+    with pytest.raises(ValueError, match='fixed scenes'):  # the cut's own scene IDs
+        ShortsPlan.model_validate({**plan, 'issues': [plan['issues'][0], {**plan['issues'][1], 'id': 'outro'}]})
     with pytest.raises(ValueError, match='delivery tags'):
         ShortsPlan.model_validate({**plan, 'signals_narration': '[calm] 비기술 업종으로 확산되는지 확인합니다.'})
     with pytest.raises(ValueError, match='signs as words'):
@@ -182,27 +187,134 @@ def test_the_prompt_cuts_the_delivered_episode_and_leaves_flagged_claims_out():
     assert '나스닥 수치 해석이 과장됨' in prompt and 'Unbound number' in prompt and 'b013' in prompt
 
 
-def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
+def tones(folder, seconds, ffmpeg):
+    """One synthetic take per scene (opener, agenda, issues, outro), as long as given."""
+    paths = []
+    for i, length in enumerate(seconds):
+        path = folder / f's{i}.wav'
+        run([ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i', f'sine=frequency={330 + i * 60}:sample_rate=48000:duration={length}',
+             str(path)])
+        paths.append(path)
+    return paths
+
+
+def render_fixture(tmp_path, assets=True):
+    """Settings, job and the episode's pictures (the motion fixture library) for a real Shorts render."""
     if not importlib.util.find_spec('playwright'):
         pytest.skip('Install optional video dependencies and Chromium')
     ffmpeg = ffmpeg_binary()
-    settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_ffprobe='')
+    settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_ffprobe='', video_asset_dir=tmp_path / 'assets')
+    if assets:
+        library(tmp_path / 'assets', ffmpeg)
+    job = {'id': 'fixture', 'source': {**body_source(), 'edition_kind': 'am'}, 'policy': {'template': 'motion-v2'}}
+    return ffmpeg, settings, job
+
+
+# A short agenda take is held for the list; the outro is held for its button.
+TAKES = [4, 1, 6, 6, 3]
+
+
+def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
+    ffmpeg, settings, job = render_fixture(tmp_path)
     plan = shorts()
-    paths = []
-    for i in range(5):
-        path = tmp_path / f's{i}.wav'
-        run([ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i', f'sine=frequency={330 + i * 60}:sample_rate=48000:duration=8', str(path)])
-        paths.append(path)
-    job = {'id': 'fixture', 'source': {**body_source(), 'edition_kind': 'am'}, 'policy': {}}
-    manifest = ShortsRenderer(settings, WordAligner()).render(job, plan, tmp_path / 'out', paths[:-1], paths[-1])
-    assert manifest['size'] == [1080, 1920] and 40 < manifest['duration'] < 50
-    assert not any('safe area' in f for f in manifest['findings']), manifest['findings']
-    assert [s['type'] for s in manifest['scenes']] == ['hook', 'point', 'point', 'point', 'outro']
+    paths = tones(tmp_path, TAKES, ffmpeg)
+    manifest = ShortsRenderer(settings, WordAligner()).render(job, plan, episode().model_dump(mode='json'), tmp_path / 'out', paths)
+    assert manifest['size'] == [1080, 1920] and manifest['fps'] == 30
+    scenes = manifest['scenes']
+    assert [s['id'] for s in scenes] == ['opener', 'agenda', 'semis', 'check', 'outro']
+    assert [s['type'] for s in scenes] == ['opener', 'agenda', 'issue', 'issue', 'outro']
+    assert not any('outside-safe-area' in f or 'overlap' in f for f in manifest['findings']), manifest['findings']
+    assert scenes[1]['t1'] - scenes[1]['t0'] >= 1.0 + 0.9 * len(plan.issues) - 1e-6
+    assert scenes[-1]['t1'] - scenes[-1]['t0'] >= 6.0 - 1e-6
+    assert scenes[0]['t0'] == 0 and manifest['duration'] == pytest.approx(scenes[-1]['t1'], abs=.5)
+    assert manifest['music'] is None
+    pictures = {p['scene']: p for p in manifest['pictures']}
+    assert set(pictures) == {s['id'] for s in scenes}  # every scene shows a picture
+    assert pictures['check']['credit'] == '자료사진 · Fixture Author · CC BY 4.0' and pictures['semis']['credit'] == ''
+    assert not any('without a picture' in f for f in manifest['findings'])
     upload = (tmp_path / 'out' / 'shorts-upload.txt').read_text()
     assert plan.title in upload and '#Shorts' in upload and '관련 동영상' in upload and '|' not in upload.split('\n')[1]
+    assert '[사진 출처]\n자료사진 · Fixture Author · CC BY 4.0\n' in upload
     srt = (tmp_path / 'out' / 'shorts.srt').read_text()
-    assert '본편에서 확인하세요.' in srt
+    assert '9월 22일 아침 브리핑입니다.' in srt and '오늘 볼 이슈는 두 가지입니다.' in srt and '본편에서 확인하세요.' in srt
+    assert [f['scene'] for f in manifest['review']['frames']] == [s['id'] for s in scenes]
+    assert all((tmp_path / 'out' / f['file']).stat().st_size for f in manifest['review']['frames'])
+    assert not (tmp_path / 'out' / 'page').exists() and not list((tmp_path / 'out').glob('aud-*.wav'))
     verify_artifacts(manifest, tmp_path)
+
+
+def scene_classes(page):
+    """The page's scenes as built: {id: (EP bg, blur, the scene element's classes)}."""
+    from playwright.sync_api import sync_playwright
+
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        try:
+            tab = browser.new_page(viewport={'width': 1080, 'height': 1920})
+            tab.goto((page / 'index.html').as_uri())
+            tab.evaluate('seek(0)')
+            return {s['id']: (s['bg'], s['blur'], s['cls']) for s in tab.evaluate(
+                "EP.scenes.map(s => ({id: s.id, bg: s.bg, blur: s.blur,"
+                " cls: [...document.querySelector(`.scene[data-id=\"${s.id}\"]`).classList]}))")}
+        finally:
+            browser.close()
+
+
+def test_every_scene_has_a_picture(tmp_path):
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    paths = tones(tmp_path, TAKES, ffmpeg)
+    raw = shorts().model_dump(mode='json')
+    raw['issues'][0]['scene_ids'], raw['issues'][1]['scene_ids'] = ['flow'], ['counter']  # cards without a picture
+    plan = ShortsPlan.model_validate(raw)
+    bare = episode(thumbnail_image='').model_dump(mode='json')
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, bare, tmp_path / 'out', paths)
+    shown = scene_classes(built['page'])
+    # The cover is the first picture the episode shows (the headline card's), sharp behind the opener and blurred
+    # behind the agenda, the issues without their own picture and the outro.
+    assert {i: (bg, blur) for i, (bg, blur, _) in shown.items()} == {
+        'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'semis': ('img/illu.png', True),
+        'check': ('img/illu.png', True), 'outro': ('img/illu.png', True)}
+    assert (built['page'] / 'img' / 'illu.png').is_file()
+    assert not any('nophoto' in cls for *_, cls in shown.values()) and not any('picture' in f for f in built['findings'])
+    # No picture anywhere (no reviewed library, no episode picture): a gradient, never a bare frame, and a finding.
+    settings.video_asset_dir = tmp_path / 'empty'
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, bare, tmp_path / 'none', paths)
+    shown = scene_classes(built['page'])
+    assert all(bg is None and 'nophoto' in cls for bg, _, cls in shown.values()), shown
+    assert [f for f in built['findings'] if 'picture' in f] == [
+        f'Shorts scene without a picture: {i}' for i in ('opener', 'agenda', 'semis', 'check', 'outro')]
+
+
+def test_music_is_optional(tmp_path):
+    import av
+
+    from quant_company.video.shorts import music_track
+
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    assert music_track(settings, job) is None  # no folder
+    (tmp_path / 'assets' / 'music').mkdir()
+    assert music_track(settings, job) is None  # an empty folder
+    run([ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i', 'sine=frequency=220:sample_rate=44100:duration=3',
+         str(tmp_path / 'assets' / 'music' / 'a.mp3')])
+    assert music_track(settings, job) == tmp_path / 'assets' / 'music' / 'a.mp3'
+    paths = tones(tmp_path, TAKES, ffmpeg)
+    manifest = ShortsRenderer(settings, WordAligner()).render(job, shorts(), episode().model_dump(mode='json'),
+                                                             tmp_path / 'out', paths)
+    assert manifest['music'] == 'a.mp3'
+    total = manifest['scenes'][-1]['t1']
+    with av.open(str(tmp_path / 'out' / 'shorts.mp4')) as media:
+        stream = media.streams.audio[0]
+        assert float(stream.duration * stream.time_base) == pytest.approx(total, abs=.25)
+    # The bed plays on under the outro's held silence, where no narration is left (the 3-s track loops).
+    outro = manifest['scenes'][-1]
+    report = subprocess.run([ffmpeg, '-hide_banner', '-ss', f"{outro['t1'] - 1.8:.2f}", '-t', '0.6', '-i',
+                             str(tmp_path / 'out' / 'shorts.mp4'), '-af', 'volumedetect', '-f', 'null', '-'],
+                            capture_output=True, text=True, check=True).stderr
+    assert float(re.search(r'mean_volume: (-?[\d.]+) dB', report).group(1)) > -60
+    # Several tracks take turns by the episode's date.
+    (tmp_path / 'assets' / 'music' / 'b.mp3').write_bytes((tmp_path / 'assets' / 'music' / 'a.mp3').read_bytes())
+    day = date.fromisoformat(job['source']['day'])
+    assert music_track(settings, job).name == ['a.mp3', 'b.mp3'][day.toordinal() % 2]
 
 
 class ShortsFileRenderer:
