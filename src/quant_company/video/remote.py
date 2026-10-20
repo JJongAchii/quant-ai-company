@@ -104,7 +104,7 @@ class RemoteRender:
     def inputs_ready(self, job, key):
         return self.storage.exists(self.prefix(job, key) + '/in/ready.json')
 
-    def upload_inputs(self, job, plan, audio_paths, texts, key):
+    def upload_inputs(self, job, plan, audio_paths, texts, key, brand=None):
         storage, base = self.storage, self.prefix(job, key) + '/in/'
         if storage.exists(base + 'ready.json'):
             return False  # the same render key always has the same inputs
@@ -138,6 +138,10 @@ class RemoteRender:
         storage.put(base + 'texts.json', json.dumps(texts, ensure_ascii=False).encode())
         for index, path in enumerate(audio_paths):
             storage.put(base + f'speech-{index:02}.mp3', Path(path).read_bytes())
+        # The fixed opening and closing lines (motion.BRAND); a render without them still runs.
+        for name, path in (brand or {}).items():
+            storage.put(base + f'brand-{name}.mp3', Path(path).read_bytes())
+        storage.put(base + 'brand.json', json.dumps(sorted(brand or {})).encode())
         buffer = io.BytesIO()
         library_dir = Path(self.settings.video_asset_dir)
         with tarfile.open(fileobj=buffer, mode='w:gz') as archive:
@@ -254,6 +258,10 @@ def render_task(settings, uri, s3=None, renderer=None):
         path = directory / f'speech-{index:02}.mp3'
         path.write_bytes(storage.get(inputs + f'speech-{index:02}.mp3'))
         audio.append(path)
+    brand = {}
+    for name in (json.loads(storage.get(inputs + 'brand.json')) if storage.exists(inputs + 'brand.json') else []):
+        brand[name] = directory / f'brand-{name}.mp3'
+        brand[name].write_bytes(storage.get(inputs + f'brand-{name}.mp3'))
     for entry in (job.get('illustrations') or {}).values():
         if entry.get('file'):
             picture = directory.parent / 'illustrations' / Path(entry['file']).name
@@ -294,7 +302,8 @@ def render_task(settings, uri, s3=None, renderer=None):
     watchdog.start()
     thread = threading.Thread(target=syncer.run, daemon=True)
     thread.start()
-    artifacts = (renderer or MotionRenderer(settings)).render(job, plan, directory, audio, texts)
+    artifacts = (renderer or MotionRenderer(settings)).render(job, plan, directory, audio, texts,
+                                                             **({'brand': brand} if brand else {}))
     watchdog.cancel()
     syncer.stop.set()
     syncer.once()

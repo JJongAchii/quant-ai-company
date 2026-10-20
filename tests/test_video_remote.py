@@ -235,6 +235,38 @@ def test_render_task_resumes_finished_segments_and_writes_the_manifest_last(tmp_
     assert result['manifest'] == prefix + '/out/manifest.json'
 
 
+def test_the_fixed_opening_and_closing_travel_with_the_render_inputs(tmp_path):
+    from quant_company.config import Settings
+    from quant_company.video.remote import RemoteRender
+
+    s3 = FakeS3()
+    settings = Settings(_env_file=None, video_artifact_dir=tmp_path / 'video', video_asset_dir=tmp_path / 'assets',
+                        video_render_bucket='render-bucket')
+    (tmp_path / 'assets').mkdir()
+    (tmp_path / 'assets' / 'manifest.json').write_text('{}')
+    plan = episode()
+    audio = []
+    for i in range(len(plan.scenes)):
+        audio.append(tmp_path / f's{i}.mp3')
+        audio[-1].write_bytes(b'speech')
+    brand = {'sting': tmp_path / 'sting.mp3', 'endcard': tmp_path / 'endcard.mp3'}
+    for name, path in brand.items():
+        path.write_bytes(name.encode())
+    job = {'id': 'job-1', 'source': {}, 'policy': {'template': 'motion-v2'}, 'qa': {}}
+    remote = RemoteRender(settings, s3=s3, ecs=FakeECS())
+    remote.upload_inputs(job, plan, audio, None, 'render-abc', brand)
+    seen = {}
+
+    class Renderer:
+        def render(self, job, plan, directory, audio, texts, brand=None):
+            seen['brand'] = {name: path.read_bytes() for name, path in brand.items()}
+            (directory / 'video.mp4').write_bytes(b'video')
+            return {'directory': str(directory), 'files': {'video.mp4': 'x'}, 'duration': 1.0}
+
+    render_task(settings, 's3://render-bucket/render/job-1/render-abc', s3=s3, renderer=Renderer())
+    assert seen['brand'] == {'sting': b'sting', 'endcard': b'endcard'}
+
+
 def test_syncer_uploads_only_progress_and_artifacts(tmp_path):
     s3 = FakeS3()
     (tmp_path / 'review').mkdir()

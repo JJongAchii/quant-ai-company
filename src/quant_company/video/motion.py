@@ -45,6 +45,15 @@ ARROWED = {'cold_open': ('stats', 'value', 'big_dir'), 'market_board': ('tiles',
 SIGNS = {'up': '▲', 'dn': '▼'}
 LEAD_SIGN, TRAIL_SIGN = re.compile(r'^\s*([▲▼])\s*'), re.compile(r'\s*([▲▼])\s*$')
 
+# The channel's fixed opening and closing (owner, 2026-10-19): the same line, voice and picture in every episode. They
+# are not part of the written plan; the renderer adds them around it. 'say' is what the speech model reads ('story' in
+# Korean letters, so it is not read as English), 'show' is the caption.
+BRAND = {'sting': {'say': '안녕하세요, 뭐든 스토리입니다.', 'show': '안녕하세요, 뭐든story입니다.', 'lead': 0.25, 'tail': 0.45,
+                   'min': 2.0, 'data': {'title': '뭐든story', 'series': '오늘의 증시story'}},
+         'endcard': {'say': '오늘 영상이 도움이 되셨다면 구독과 좋아요, 알림 설정 부탁드려요.',
+                     'show': '오늘 영상이 도움이 되셨다면 구독과 좋아요, 알림 설정 부탁드려요.', 'lead': 0.3, 'tail': 1.0,
+                     'min': 4.5, 'data': {'title': '뭐든story'}}}
+
 
 def renderer_digest(root):
     """SHA-256 over the code that turns a plan into frames: motion.py and every design file, by relative path."""
@@ -106,7 +115,7 @@ def single_arrows(kind, data, ticker=None):
 QA_JS = r"""() => {
  const out=[]; const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
  if(!scn) return [['no-scene','']];
- const stage=document.querySelector('#stage').getBoundingClientRect();
+ const stage=(scn.classList.contains('full')?document.body:document.querySelector('#stage')).getBoundingClientRect();
  const walker=document.createTreeWalker(scn,NodeFilter.SHOW_TEXT); const boxes=[]; let n;
  while((n=walker.nextNode())){ if(!n.textContent.trim()) continue; const e=n.parentElement; const rg=document.createRange(); rg.selectNodeContents(n);
   const r=rg.getBoundingClientRect(); let o=1,q=e; while(q&&q!==scn){o*=+getComputedStyle(q).opacity; q=q.parentElement;}
@@ -266,6 +275,18 @@ def render_range(page, start, end, out, ffmpeg):
     return str(out)
 
 
+def brand_scene(name, audio, duration, start, chapter):
+    """A fixed opening or closing scene: no alignment (its line never changes), the caption timed over the speech."""
+    line = BRAND[name]
+    length = max(line['lead'] + duration + line['tail'], line['min'])
+    tokens = line['show'].split()
+    words = [(w, duration * i / len(tokens)) for i, w in enumerate(tokens)]
+    scene = {'id': f'brand-{name}', 'chapter': chapter, 'type': name, 'narration': line['show'], 'brand': True,
+             'data': dict(line['data']), 'lead': line['lead'], 't0': round(start, 3), 't1': round(start + length, 3),
+             'audio': str(audio), 'duration': duration}
+    return scene, captions(words, start + line['lead'], start + length)
+
+
 def scene_timings(scenes):
     """Rendered start/end of every card, kept in the manifest (and so in video_jobs.artifacts after the files are
     pruned): the performance analysis maps the audience retention curve onto these scenes."""
@@ -320,7 +341,9 @@ class MotionRenderer:
             for v in value:
                 yield from self._images(v)
 
-    def render(self, job, plan, directory, audio_paths, texts=None):
+    def render(self, job, plan, directory, audio_paths, texts=None, brand=None):
+        """brand: {'sting': audio, 'endcard': audio} adds the fixed opening and closing; without it the episode renders
+        as written (an episode is never held for them)."""
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
         # One render per directory: a thread left behind by an interrupted tick keeps the lock until it finishes.
@@ -331,7 +354,7 @@ class MotionRenderer:
             os.close(lock)
             raise RenderInProgress(str(directory)) from None
         try:
-            return self._render(job, plan, directory, audio_paths, texts)
+            return self._render(job, plan, directory, audio_paths, texts, brand)
         finally:
             os.close(lock)
 
@@ -342,7 +365,7 @@ class MotionRenderer:
             self.generated_used.add(asset_id)
         return asset
 
-    def _render(self, job, plan, directory, audio_paths, texts):
+    def _render(self, job, plan, directory, audio_paths, texts, brand=None):
         self.sign_conflicts, self.generated_used = [], set()
         self.episode_assets = library_entries(job, plan, self.settings, self.library)
         page, scenes, used = self._page(job, plan, directory)
@@ -350,6 +373,13 @@ class MotionRenderer:
         day = day_of(day)
         t, changes, prev, alignment, all_captions, heard, misheard = 0.0, [], None, [], [], [], {}
         texts = texts or [spoken(scene['narration']) for scene in scenes]
+        opening = closing = None
+        if brand:
+            # The opening shares the first chapter, so chapters still start at 00:00 and no wipe runs into the question.
+            opening, cues = brand_scene('sting', brand['sting'], float(probe(brand['sting'], self.settings)['format']['duration']),
+                                        t, scenes[0]['chapter'])
+            all_captions += cues
+            t, prev = opening['t1'], opening['chapter']
         for number, (scene, audio, said) in enumerate(zip(scenes, audio_paths, texts, strict=True)):
             duration = float(probe(audio, self.settings)['format']['duration'])
             if not 1 <= duration <= 150:
@@ -377,6 +407,13 @@ class MotionRenderer:
                 changes.append(round(t, 3))
             prev = scene['chapter']
             t += length
+        if brand:
+            # The closing stays in the last chapter: it opens no chapter of its own in the description.
+            closing, cues = brand_scene('endcard', brand['endcard'],
+                                        float(probe(brand['endcard'], self.settings)['format']['duration']), t, prev)
+            all_captions += cues
+            t = closing['t1']
+        scenes = [s for s in (opening, *scenes, closing) if s]
         total = round(t, 3)
         if not 3 <= total <= 600:
             raise ValueError('Video duration outside production limit')
@@ -442,7 +479,7 @@ class MotionRenderer:
         pieces = []
         for i, scene in enumerate(scenes):
             piece = directory / f'aud-{i:02}.wav'
-            run([self.settings.video_ffmpeg, '-y', '-v', 'error', '-i', scene['audio'], '-af', f'adelay={int(LEAD * 1000)}:all=1,apad',
+            run([self.settings.video_ffmpeg, '-y', '-v', 'error', '-i', scene['audio'], '-af', f"adelay={int(scene.get('lead', LEAD) * 1000)}:all=1,apad",
                  '-t', f"{scene['t1'] - scene['t0']:.3f}", '-ar', '48000', '-ac', '2', str(piece)])
             pieces.append(piece)
         (directory / 'aud.txt').write_text(''.join(f"file '{p.name}'\n" for p in pieces))
@@ -490,10 +527,12 @@ class MotionRenderer:
                 for number, scene in enumerate(scenes):
                     tab.evaluate(f"seek({scene['t1'] - 0.6})")
                     found = tab.evaluate(QA_JS)
-                    # The settled frame an editor would look at; reviewed by Claude before delivery.
+                    # The settled frame an editor would look at; reviewed by Claude before delivery. The fixed opening
+                    # and closing are the same in every episode, so they are checked here but not sent for review.
                     name = f"review/{number:02}-{scene['id']}.jpg"
                     tab.screenshot(path=str(directory / name), type='jpeg', quality=60)
-                    stills.append({'scene': scene['id'], 'file': name})
+                    if not scene.get('brand'):
+                        stills.append({'scene': scene['id'], 'file': name})
                     for a, b, _ in (c for c in all_captions if scene['t0'] <= c[0] < scene['t1']):
                         tab.evaluate(f'seek({(a + b) / 2})')
                         if tab.evaluate("document.querySelector('#capbox').getBoundingClientRect().height") > 2 * 40 * 1.35 + 30:
@@ -574,6 +613,7 @@ class MotionRenderer:
                     'files': {n: checksum(directory / n) for n in names},
                     'generated_images': sorted(self.generated_used),
                     'chapters': chapters, 'scenes': scene_timings(scenes), 'description': description,
+                    'brand': [s['type'] for s in scenes if s.get('brand')],
                     'directory': str(directory), 'renderer': RENDERER_DIGEST}
         manifest['digest'] = digest(manifest)
         (directory / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))

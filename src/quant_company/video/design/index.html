@@ -98,6 +98,27 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:var(--navy-800);
 .credit{position:absolute;left:18px;top:18px;color:var(--cream);background:rgba(0,17,46,.66);border-color:rgba(252,241,219,.35);font-size:19px}
 .row{display:flex;align-items:center;gap:22px}
 .sample{font-size:16px;font-weight:600;color:#FF9FB0;letter-spacing:.02em}
+
+/* fixed opening and closing (owner, 2026-10-19): full screen, without the top bar, chapters and ticker */
+.scene.full{position:fixed;left:0;top:0;width:1920px;height:1080px}
+body.full #top,body.full #prog,body.full #ticker,body.full #wipe{visibility:hidden}
+.sting{position:absolute;left:0;right:0;top:320px;display:flex;flex-direction:column;align-items:center}
+.sting .row{gap:34px}
+.sting img{height:150px}
+.sting .name{font-size:132px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.sting .name b{color:var(--gold);font-weight:800}
+.sting .sweep{width:860px;height:8px;margin-top:36px;border-radius:4px;background:linear-gradient(90deg,rgba(253,199,73,.2),#FDC749);transform-origin:left center}
+.sting .series{margin-top:30px;font-size:46px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+.endcard .mark{position:absolute;left:0;right:0;top:250px;display:flex;justify-content:center;align-items:center;gap:20px;font-size:60px;font-weight:800}
+.endcard .mark img{height:76px}
+.endcard .btns{position:absolute;left:0;right:0;top:450px;display:flex;justify-content:center;align-items:center;gap:48px}
+.ebtn{position:relative;height:136px;border-radius:68px;display:flex;align-items:center;justify-content:center;gap:22px;font-size:58px;font-weight:800}
+.ebtn.sub{padding:0 56px 0 48px;background:#E62117;color:#fff}
+.ebtn.sub.on{background:#3A4566;color:#C9D0E6}
+.ebtn.sub .w{position:relative;width:270px;height:70px}
+.ebtn.sub .w span{position:absolute;left:0;right:0;top:0;text-align:center;white-space:nowrap;line-height:70px}
+.ebtn.like,.ebtn.bell{width:136px;background:rgba(252,241,219,.12);border:2px solid rgba(252,241,219,.28)}
+.endcard .cursor{position:absolute;left:0;top:0;width:76px;height:76px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.55))}
 </style>
 </head><body>
 <div id="bg"></div><div id="grid"></div><div id="glow"></div><div id="parts"></div><div id="vig"></div>
