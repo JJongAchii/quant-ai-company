@@ -464,8 +464,13 @@ class VideoRunner:
                     receipt = await asyncio.to_thread(self.store.effect_receipt, job, f'shorts-{number}', 'completed')
                     if attempt['outcome'] != 'check_failed' or not receipt:
                         continue
-                    plan, dropped = settle(ShortsPlan.model_validate(receipt['output']), job['source'])
-                    attempt['recheck'] = {'checks': SHORTS_CHECKS, 'findings': shorts_violations(plan, job['source']),
+                    try:
+                        plan, dropped = settle(ShortsPlan.model_validate(receipt['output']), job['source'])
+                    except ValidationError:  # written in an older plan shape: nothing to check it against
+                        attempt['recheck'] = {'checks': SHORTS_CHECKS, 'findings': ['older plan shape']}
+                        continue
+                    attempt['recheck'] = {'checks': SHORTS_CHECKS,
+                                          'findings': shorts_violations(plan, job['source'], job['plan']),
                                           **({'dropped': dropped} if dropped else {})}
                     if not attempt['recheck']['findings']:
                         await asyncio.to_thread(self.shorts.save, row, 'synthesizing', plan=plan.model_dump(mode='json'),
@@ -489,7 +494,7 @@ class VideoRunner:
                 await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
                 return
             plan, dropped = settle(plan, job['source'])
-            found = shorts_violations(plan, job['source'])
+            found = shorts_violations(plan, job['source'], job['plan'])
             attempts.append({'outcome': 'check_failed' if found else 'passed', 'findings': found,
                              **({'dropped': dropped} if dropped else {})})
             if found:
@@ -524,7 +529,7 @@ class VideoRunner:
             paths = await self.fetch_audio(job, takes, directory)
             try:
                 renderer = self.shorts_renderer or ShortsRenderer(self.settings)
-                artifacts = await asyncio.to_thread(renderer.render, job, plan, directory, paths[:-1], paths[-1],
+                artifacts = await asyncio.to_thread(renderer.render, job, plan, job['plan'], directory, paths,
                                                     lambda: self.shorts.superseded(job['id']))
             except RenderInProgress:
                 await asyncio.to_thread(self.shorts.wait, row, 120, 'render_in_progress')

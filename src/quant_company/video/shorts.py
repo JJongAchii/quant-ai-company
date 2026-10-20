@@ -388,7 +388,8 @@ def upload_text(plan, job, credits):
     day = str(job['source']['day'])
     edition = EDITION_WORDS.get(job['source'].get('edition_kind'), '')
     sources = ('[사진 출처]\n' + '\n'.join(credits) + '\n\n') if credits else ''
-    return (f"[제목]\n{plan.title}\n\n[설명]\n{plan.description}\n\n"
+    return (f"[제목]\n{plan.title}\n\n[설명]\n{plan.description}\n"
+            "📩 구독자 전용 · 매일 아침·마감 증시 리포트 메일 신청은 채널 프로필 링크에서\n\n"
             f"본편: {int(day[5:7])}월 {int(day[8:10])}일 {edition} 브리핑 · 오늘의 증시story\n\n{sources}#Shorts #증시story #뭐든story\n\n"
             "[업로드 메모]\nYouTube Studio에서 이 Shorts의 '관련 동영상'을 같은 날 본편으로 지정해 주세요.\n")
 

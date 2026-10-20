@@ -385,13 +385,14 @@ class ShortsFileRenderer:
     def __init__(self):
         self.calls = []
 
-    def render(self, job, plan, directory, paths, outro, stop=None):
-        self.calls.append((len(paths), outro))
+    def render(self, job, plan, episode, directory, paths, stop=None):
+        self.calls.append((len(paths), paths[-1]))
         files = {'shorts.mp4': b'simulated-shorts', 'shorts.srt': b'1\n00:00:00,000 --> 00:00:01,000\nx\n',
                  'shorts-upload.txt': '[제목]\nS&P 500 1.92% 상승\n'.encode(), 'shorts-plan.json': plan.model_dump_json().encode()}
         for name, content in files.items():
             (directory / name).write_bytes(content)
         manifest = {'title': plan.title, 'duration': 46.0, 'qa_passed': True, 'findings': [], 'directory': str(directory),
+                    'scenes': [{'id': i.id, 'type': 'issue'} for i in plan.issues],
                     'files': {n: checksum(directory / n) for n in files}}
         manifest['digest'] = digest(manifest)
         return manifest
@@ -440,13 +441,15 @@ async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, vid
     assert row['state'] == 'delivering', row['error']
     request = next(c for c in provider.calls if c.output_contract == 'video_shorts_v1')
     assert request.request_id == f"video-{job['id']}-shorts-1" and episode().upload.title in request.prompt
-    assert len(speech.calls) - takes == 5 and speech.calls[-1]['text'] == '왜 그런지, 앞으로 볼 신호는 본편에서 확인하세요.'
-    assert renderer.calls == [(4, renderer.calls[0][1])]
+    count = 2 + len(shorts().issues) + 1
+    assert len(speech.calls) - takes == count == 5
+    assert speech.calls[-count]['text'].startswith('9월 22일 아침 브리핑입니다.') and speech.calls[-1]['text'].endswith(OUTRO['say'])
+    assert renderer.calls == [(count, renderer.calls[0][1])]
     with store.db.transaction() as conn:
         message = conn.execute("SELECT o.text,o.thread_ts FROM outbox o WHERE o.id=%s", (row['delivery_message_id'],)).fetchone()
         keys = [r['id'].split(':', 1)[1] for r in conn.execute(
             "SELECT id FROM video_effects WHERE job_id=%s AND id LIKE %s", (job['id'], '%:shorts-speech-%')).fetchall()]
-    assert message['text'].startswith('<@UHUMAN>\n쇼츠 준비 완료') and len(keys) == 5
+    assert message['text'].startswith('<@UHUMAN>\n쇼츠 준비 완료') and '이슈 2개' in message['text'] and len(keys) == count
     quiet_other_outbox(store, row['delivery_message_id'])
     slack = FakeSlack()
     assert await send(store, slack)
@@ -564,7 +567,7 @@ async def test_a_cut_given_up_on_older_checks_is_checked_again_without_a_new_tur
     store.settings.video_shorts_enabled = True
     provider.queues['video_shorts_v1'] = [shorts(), shorts(), shorts()]
     checks = runner_module.shorts_violations
-    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source: ['an older check'])
+    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode: ['an older check'])
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
     assert row['state'] == 'skipped' and row['error'] == 'check_failed' and row['qa']['checks'] == CHECKS
     shorts_store = ShortsStore(store.company)
@@ -608,3 +611,23 @@ def test_takes_open_with_the_date_and_close_with_the_outro():
     assert texts[0].startswith('9월 22일 아침 브리핑입니다. ') and texts[1] == '오늘 볼 이슈는 두 가지입니다.'
     assert texts[-1].endswith(OUTRO['say'])
     assert all(key.startswith(f'shorts-speech-{i}-') for i, (key, _) in enumerate(takes))
+
+
+async def test_recheck_skips_versions_of_the_old_shape(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.queues['video_shorts_v1'] = [shorts(), shorts(), shorts()]
+    checks = runner_module.shorts_violations
+    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode: ['a check'])
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'skipped' and row['error'] == 'check_failed'
+    monkeypatch.setattr(runner_module, 'shorts_violations', checks)
+    old = {'title': 'old', 'description': 'old', 'hook': '옛 훅', 'points': [], 'closing': 'x'}
+    with store.db.transaction() as conn:
+        conn.execute("UPDATE video_shorts SET qa=qa-'checks' WHERE job_id=%s", (job['id'],))
+        conn.execute("UPDATE video_effects SET receipt=jsonb_set(receipt,'{output}',%s::jsonb) WHERE job_id=%s AND id LIKE %s",
+                     (json.dumps(old), job['id'], '%:shorts-_'))
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'skipped' and row['error'] == 'check_failed' and row['qa']['checks'] == CHECKS
+    assert row['qa']['attempts'][-1]['recheck'] == {'checks': CHECKS, 'findings': ['older plan shape']}
