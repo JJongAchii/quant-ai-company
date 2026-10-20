@@ -2,7 +2,7 @@
 
 - 작성: 2026-10-14
 - 상태: P2b 코드 완료. 실제 모델 shadow run은 아래 2장의 소유자 결정 두 가지가 끝난 뒤에 한다.
-- 근거: [설계](RESEARCH-PLANNING-DESIGN-20261013.md) 5·12.7·14·16.2·18장, [P2a 계획](RESEARCH-PLANNING-P2A-PLAN-20261014.md), [P2b 계획](RESEARCH-PLANNING-P2B-PLAN-20261014.md), [ADR 0044](../adr/0044-production-runs-one-main-commit.md)
+- 근거: [설계](RESEARCH-PLANNING-DESIGN-20261013.md) 5·12.7·14·16.2·18장, [P2a 계획](RESEARCH-PLANNING-P2A-PLAN-20261014.md), [P2b 계획](RESEARCH-PLANNING-P2B-PLAN-20261014.md), [ADR 0044](../adr/0044-production-runs-one-main-commit.md), [ADR 0045](../adr/0045-ci-green-main-releases-itself.md)
 
 이 문서는 운영자가 따라 할 순서만 정한다. 실행 기록과 결과는 7장의 결과 보고서에 쓴다.
 shadow run은 후보 비교와 결정 기록까지만 한다. 다음은 하지 않는다.
@@ -17,10 +17,11 @@ P2b 코드에는 handoff 경로가 없다.
 
 - **운영은 main 커밋 하나로 돈다**([ADR 0044](../adr/0044-production-runs-one-main-commit.md)).
   - main에 병합된 커밋만 `deploy/release.py`로 배포한다.
-  - 배포와 호스트 `runtime.env` 값 변경은 릴리스 담당(소유자, 또는 소유자가 릴리스를 맡긴 운영 세션)에게 요청한다. 요청에는 main SHA와 서비스 이름을 적는다.
-  - overlay, apply 스크립트, 컨테이너 재생성, 서버 설정 파일을 직접 바꾸지 않는다.
-- 운영 커밋에 P2b가 들어 있어야 한다. `release.py verify`가 서비스별 커밋을 보여 준다.
-  10-14 전환 릴리스(`5454e3d`)에는 P2b가 없다.
+  - CI를 통과한 main은 자동 릴리스가 정해진 시간대에 배포한다([ADR 0045](../adr/0045-ci-green-main-releases-itself.md)).
+  - 호스트 `runtime.env` 값 변경은 릴리스 담당(소유자, 또는 소유자가 릴리스를 맡긴 운영 세션)에게 요청한다.
+    요청에는 main SHA, 서비스 이름, 값을 적는다.
+  - overlay, apply 스크립트, 컨테이너 재생성, `runtime.env`를 포함한 서버 설정 파일을 직접 바꾸지 않는다.
+- 운영 커밋에 P2b가 들어 있어야 한다. 호스트의 `/var/lib/quant-company/release-status.json`(읽기 전용)이 운영 커밋과 보류 사유를 보여 준다.
 - `COMPANY_RESEARCH_ENABLED=true`는 research overlay(`deploy/research.compose.yaml`)가 이미 켠다.
 - 계획 테이블은 가산적이다. release.py의 migrate 단계가 서비스 교체 전에 만든다.
 - 계획 flag 두 개(`RESEARCH_PLANNING_ENABLED`, `RESEARCH_PLANNING_STAGES_ENABLED`)는 research overlay가 연구 서비스 5곳에 넘긴다: api, slack-socket, worker, data-watch-worker, dispatch.
@@ -50,13 +51,15 @@ P2b 코드에는 handoff 경로가 없다.
 ## 3 켜는 순서
 
 1. **배포**
-   - P2b가 들어간 main 커밋을 release.py로 배포한다. 계획 flag는 `runtime.env`에 넣지 않는다(off).
+   - P2b가 main에 병합되면 자동 릴리스가 다음 시간 창에 배포한다. 계획 flag는 `runtime.env`에 넣지 않는다(off).
    - release.py의 migrate 단계가 `research_planning_decisions`를 만든다. migrate를 따로 실행하지 않는다.
    - 기존 동작이 그대로인지 확인한다: 대화, 프로그램 단계, 피드.
 2. **`RESEARCH_PLANNING_ENABLED=true`**
    - 릴리스 담당이 호스트 `runtime.env`에 이 값을 넣는다. research overlay가 연구 서비스 5곳에 같은 값을 넘긴다.
    - 같은 main 커밋으로 `release.py plan`을 돌린다. 바뀌는 서비스가 그 5곳뿐인지 확인하고, 그 5곳만 `apply`한다.
      apply는 서비스가 조용할 때 하나씩 바꾼다.
+   - 값을 바꾸고 apply하기 전까지는 자동 릴리스가 그 5곳을 drift로 보고 멈춘다(`held_for_drift`).
+     그래서 릴리스 담당은 자동 반영을 `RELEASE_AUTO_ENABLED=paused`로 두고, 값 변경과 apply를 한 번에 한 뒤 되돌린다.
    - 이 단계에서는 질문 초안, 상태 조회, 승인 버튼만 열린다. 모델 단계는 아직 돌지 않는다.
 3. **질문 초안**
    - 질문 전용 스레드를 새로 연다. 질문은 그 스레드(프로젝트)의 현재 revision에 묶인다.
@@ -107,7 +110,7 @@ P2b 코드에는 handoff 경로가 없다.
 
 ## 6 끄기와 롤백
 
-- **값을 바꾸는 방법**: 켤 때와 같다. 릴리스 담당이 `runtime.env` 값을 바꾸고, 같은 main 커밋으로 연구 서비스 5곳을 apply한다.
+- **값을 바꾸는 방법**: 켤 때와 같다. 릴리스 담당이 자동 반영을 멈추고, `runtime.env` 값을 바꾼 뒤 같은 main 커밋으로 연구 서비스 5곳을 apply한다.
 - **끄는 시점**: run이 `completed`나 `held`로 끝난 뒤가 가장 안전하다.
   진행 중에 끄면 대기 중인 계획 turn은 준비 단계에서 거부되고 run이 멈춘다. 다시 켜기 전에 운영자가 해당 run의 단계와 turn을 대사한다.
 - **새 run과 단계 생성 중지**: `RESEARCH_PLANNING_STAGES_ENABLED=false`.
