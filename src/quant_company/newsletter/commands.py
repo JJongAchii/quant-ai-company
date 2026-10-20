@@ -139,7 +139,7 @@ def test(conn, store, recipient, address, project, event_key):
     if issue["state"] == "skipped":
         return "no_email", (f"{edition['day']:%m/%d} 마감 브리핑에는 주요 이슈 분석이 없어 메일을 만들 수 없습니다.")
     store.add_test(conn, issue, address, project, event_key, at)
-    wait = " 메일을 먼저 작성하므로 몇 분 걸릴 수 있습니다(최대 45분)." if issue["state"] == "writing" else ""
+    wait = " 메일을 먼저 작성하므로 몇 분 걸릴 수 있습니다." if issue["state"] == "writing" else ""
     return "queued", (f"이메일 시험 발송 접수 · {shown} · {edition['day']:%m/%d} 마감 브리핑 메일 · 이 주소에만 보냅니다."
                       f"{wait} 결과는 이 스레드에 남깁니다.")
 
