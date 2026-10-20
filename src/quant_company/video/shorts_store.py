@@ -37,8 +37,9 @@ def delivery_text(job, artifacts):
     findings = artifacts.get('findings') or []
     check = '자동 검사 통과' if not findings else f'자동 검사 지적 {len(findings)}건(아래, 제작은 계속함)'
     notes = ''.join(f'• {f[:180]}\n' for f in findings[:5])
+    issues = sum(1 for x in artifacts.get('scenes', []) if x.get('type') == 'issue')
     return (f"쇼츠 준비 완료 · {EDITION_NAMES.get(job['source'].get('edition_kind'), '브리핑')}\n{artifacts.get('title', '')}\n"
-            f"길이 {round(artifacts.get('duration', 0))}초 · 세로 1080×1920 · {check}\n" + notes +
+            f"길이 {round(artifacts.get('duration', 0))}초 · 이슈 {issues}개 · 세로 1080×1920 · {check}\n" + notes +
             "첨부: 쇼츠 영상(MP4) · 자막(SRT) · 업로드 문안\n"
             "업로드 후 YouTube Studio에서 '관련 동영상'을 오늘 본편으로 지정해 주세요.")
 
@@ -123,9 +124,13 @@ class ShortsStore:
         with self.db.transaction() as conn:
             job = conn.execute('SELECT * FROM video_jobs WHERE id=%s', (job_id,)).fetchone()
             project = self.company._project(conn, job['source']['project_id'])
+            message_id = stable(f'video-shorts-note:{job_id}:{text}')
+            # The same line is said once: a cut given up again on a recheck must not fail on its own earlier note.
+            if conn.execute('SELECT 1 FROM messages WHERE id=%s', (message_id,)).fetchone():
+                return
             if project['thread_ts'] and project['status'] == 'active':
                 self.company._message(conn, project, None, 'market_brief', 'video_status', text,
-                                      message_id=stable(f'video-shorts-note:{job_id}:{text}'), notify_owner=notify_owner)
+                                      message_id=message_id, notify_owner=notify_owner)
 
     # ---- Delivery (Slack dispatcher, video/slack_files.py) -------------------------------------------------------
 

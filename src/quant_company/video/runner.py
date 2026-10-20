@@ -41,7 +41,17 @@ from .render import Renderer, RenderInProgress, korean_numbers, probe, spoken, v
 from .runway import RETAKE_RESERVE, RunwaySpeech, download_audio, speech_credits
 from .shorts import CHECKS as SHORTS_CHECKS
 from .shorts import OUTRO as SHORTS_OUTRO
-from .shorts import ShortsPlan, ShortsRenderer, ShortsSuperseded, settle, shorts_prompt, shorts_violations
+from .shorts import (
+    ShortsPlan,
+    ShortsRenderer,
+    ShortsSuperseded,
+    agenda_line,
+    date_line,
+    issue_scenes,
+    settle,
+    shorts_prompt,
+    shorts_violations,
+)
 from .shorts_store import ShortsStore
 from .store import UncertainEffect, VideoStore
 from .youtube import YouTube
@@ -447,6 +457,10 @@ class VideoRunner:
     async def shorts_step(self, row, job):
         qa = dict(row['qa'] or {})
         if row['state'] == 'writing':
+            if len(issue_scenes(job['plan'])) < 2:  # nothing to cut an issue list from: no turn is spent
+                await asyncio.to_thread(self.shorts.skip, row, 'too_few_issues',
+                                        '쇼츠는 본편에 이슈 장면이 2개 미만이라 만들지 않았습니다.')
+                return
             attempts = qa.setdefault('attempts', [])
             if qa.pop('recheck', False):
                 # Given up on older checks: the versions already written are checked again, latest first (it carries
@@ -455,8 +469,13 @@ class VideoRunner:
                     receipt = await asyncio.to_thread(self.store.effect_receipt, job, f'shorts-{number}', 'completed')
                     if attempt['outcome'] != 'check_failed' or not receipt:
                         continue
-                    plan, dropped = settle(ShortsPlan.model_validate(receipt['output']), job['source'])
-                    attempt['recheck'] = {'checks': SHORTS_CHECKS, 'findings': shorts_violations(plan, job['source']),
+                    try:
+                        plan, dropped = settle(ShortsPlan.model_validate(receipt['output']), job['source'])
+                    except ValidationError:  # written in an older plan shape: nothing to check it against
+                        attempt['recheck'] = {'checks': SHORTS_CHECKS, 'findings': ['older plan shape']}
+                        continue
+                    attempt['recheck'] = {'checks': SHORTS_CHECKS,
+                                          'findings': shorts_violations(plan, job['source'], job['plan']),
                                           **({'dropped': dropped} if dropped else {})}
                     if not attempt['recheck']['findings']:
                         await asyncio.to_thread(self.shorts.save, row, 'synthesizing', plan=plan.model_dump(mode='json'),
@@ -480,7 +499,7 @@ class VideoRunner:
                 await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
                 return
             plan, dropped = settle(plan, job['source'])
-            found = shorts_violations(plan, job['source'])
+            found = shorts_violations(plan, job['source'], job['plan'])
             attempts.append({'outcome': 'check_failed' if found else 'passed', 'findings': found,
                              **({'dropped': dropped} if dropped else {})})
             if found:
@@ -515,7 +534,7 @@ class VideoRunner:
             paths = await self.fetch_audio(job, takes, directory)
             try:
                 renderer = self.shorts_renderer or ShortsRenderer(self.settings)
-                artifacts = await asyncio.to_thread(renderer.render, job, plan, directory, paths[:-1], paths[-1],
+                artifacts = await asyncio.to_thread(renderer.render, job, plan, job['plan'], directory, paths,
                                                     lambda: self.shorts.superseded(job['id']))
             except RenderInProgress:
                 await asyncio.to_thread(self.shorts.wait, row, 120, 'render_in_progress')
@@ -523,8 +542,11 @@ class VideoRunner:
             await asyncio.to_thread(self.shorts.deliver, row, job, artifacts)
 
     def shorts_takes(self, job, plan):
-        """(effect key, Runway request) per Shorts scene and the fixed closing line, keyed apart from the episode's takes."""
-        texts = [spoken(s.narration) for s in plan.scenes] + [SHORTS_OUTRO['say']]
+        """(effect key, Runway request) per Shorts take, keyed apart from the episode's takes: the dated hook, the agenda,
+        each issue, then the signals with the fixed closing line."""
+        texts = [date_line(job) + ' ' + spoken(plan.hook.narration), agenda_line(len(plan.issues)),
+                 *(spoken(i.narration) for i in plan.issues),
+                 spoken(plan.signals_narration) + ' ' + SHORTS_OUTRO['say']]
         return [(f"shorts-speech-{i}-{digest(text)[:12]}",
                  {"text": text, "voice": job["policy"]["voice"], "model": job["policy"]["speech_model"]})
                 for i, text in enumerate(texts)]
