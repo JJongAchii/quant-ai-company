@@ -27,11 +27,13 @@ from .episode import (
     flow_values,
     frame,
     nums,
+    plan_class,
     sentences,
     stated,
     strings,
     tool_wording,
 )
+from .illustrations import library_entries
 from .motion import CHROMIUM_ARGS, FPS, captions, word_times
 from .render import Aligner, RenderInProgress, checksum, probe, quality_probe, run, spoken
 from .upload import INSTRUCTION
@@ -66,6 +68,43 @@ def date_line(job):
 
 def agenda_line(count):
     return f'오늘 볼 이슈는 {KO_COUNT[count]} 가지입니다.'
+
+
+def asset_ids(value):
+    """Asset IDs in a scene's data, depth-first."""
+    if isinstance(value, dict):
+        if isinstance(value.get('asset'), str):
+            yield value['asset']
+        for v in value.values():
+            yield from asset_ids(v)
+    elif isinstance(value, list):
+        for v in value:
+            yield from asset_ids(v)
+
+
+def cut_pictures(job, episode, plan, settings, library):
+    """{'hook', 'issues', 'cover'}: {'path', 'credit'} or None per picture, resolved as the episode's own render does
+    (this episode's pictures first, then the reviewed library). An issue shows the first picture of its cited scenes;
+    the hook and the blurred cover show the episode's thumbnail picture, else the first issue picture."""
+    made = library_entries(job, plan_class(job).model_validate(episode), settings, library)
+    by_id = {s['id']: s for s in episode['scenes']}
+
+    def picture(asset_id):
+        asset = made.get(asset_id) or library.get(asset_id)
+        if not asset:
+            return None
+        path = Path(asset['file'])
+        if not path.is_absolute():
+            path = Path(settings.video_asset_dir) / path
+        credit = f"자료사진 · {asset['author']} · {asset['license']}" if asset.get('kind') == '자료사진' else ''
+        return {'path': str(path), 'credit': credit}
+
+    issues = []
+    for issue in plan.issues:
+        ids = (a for sid in issue.scene_ids for a in asset_ids((by_id.get(sid) or {}).get('data')))
+        issues.append(picture(next(ids, None)))
+    hook = picture(episode.get('thumbnail_image')) or next((p for p in issues if p), None)
+    return {'hook': hook, 'issues': issues, 'cover': hook}
 
 
 def issue_scenes(episode):

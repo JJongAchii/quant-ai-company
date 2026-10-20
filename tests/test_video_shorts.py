@@ -14,10 +14,12 @@ from quant_company.video.runner import VideoRunner
 from quant_company.video.shorts import (
     CHECKS,
     KO_COUNT,
+    OUTRO,
     ShortsPlan,
     ShortsRenderer,
     agenda_line,
     closes_of,
+    cut_pictures,
     date_line,
     direction,
     issue_scenes,
@@ -30,7 +32,15 @@ from quant_company.video.shorts_store import ShortsStore
 from .test_briefing import brief  # noqa: F401
 from .test_video import body_source, video  # noqa: F401
 from .test_video_delivery import FakeSlack, quiet_other_outbox, send
-from .test_video_motion import InspectedRenderer, InspectingProvider, WordAligner, episode, produce_inspected
+from .test_video_motion import (
+    InspectedRenderer,
+    InspectingProvider,
+    WordAligner,
+    episode,
+    library,
+    produce_inspected,
+    source,
+)
 from .test_video_render import ffmpeg_binary
 
 
@@ -392,3 +402,33 @@ async def test_a_cut_given_up_on_older_checks_is_checked_again_without_a_new_tur
     assert len(provider.calls) == calls  # the written versions, no new turn
     assert row['qa']['attempts'][-1]['recheck'] == {'checks': CHECKS, 'findings': []}
     assert 'recheck' not in row['qa'] and row['plan'] == shorts().model_dump(mode='json')
+
+
+def test_cut_pictures_follow_the_cited_scenes(tmp_path):
+    ffmpeg = ffmpeg_binary()
+    settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_asset_dir=tmp_path / 'assets')
+    shelf = library(tmp_path / 'assets', ffmpeg)
+    job = {'id': 'fixture', 'source': source(), 'policy': {'template': 'motion-v2'}}
+    raw = episode().model_dump(mode='json')
+    plan = shorts()
+    pictures = cut_pictures(job, raw, plan, settings, shelf)
+    assert pictures['issues'][0] == {'path': str(tmp_path / 'assets' / 'illu.png'), 'credit': ''}
+    assert pictures['issues'][1]['path'] == str(tmp_path / 'assets' / 'photo.png')
+    assert pictures['issues'][1]['credit'] == '자료사진 · Fixture Author · CC BY 4.0'
+    assert pictures['hook'] == pictures['cover'] == pictures['issues'][0]  # the episode thumbnail is fixture-illustration
+    bare = shorts(issues=[{**plan.model_dump(mode='json')['issues'][0], 'scene_ids': ['flow']},
+                          {**plan.model_dump(mode='json')['issues'][1], 'scene_ids': ['photo', 'counter']}])
+    raw['thumbnail_image'] = ''
+    pictures = cut_pictures(job, raw, bare, settings, shelf)
+    assert pictures['issues'][0] is None and pictures['hook'] == pictures['issues'][1]
+
+
+def test_takes_open_with_the_date_and_close_with_the_outro():
+    job = {'id': 'fixture', 'source': source(), 'policy': {'voice': 'v', 'speech_model': 'm'}}
+    plan = shorts()
+    takes = VideoRunner.shorts_takes(None, job, plan)
+    texts = [request['text'] for _, request in takes]
+    assert len(takes) == 2 + len(plan.issues) + 1
+    assert texts[0].startswith('9월 22일 아침 브리핑입니다. ') and texts[1] == '오늘 볼 이슈는 두 가지입니다.'
+    assert texts[-1].endswith(OUTRO['say'])
+    assert all(key.startswith(f'shorts-speech-{i}-') for i, (key, _) in enumerate(takes))

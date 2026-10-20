@@ -41,7 +41,16 @@ from .render import Renderer, RenderInProgress, korean_numbers, probe, spoken, v
 from .runway import RETAKE_RESERVE, RunwaySpeech, download_audio, speech_credits
 from .shorts import CHECKS as SHORTS_CHECKS
 from .shorts import OUTRO as SHORTS_OUTRO
-from .shorts import ShortsPlan, ShortsRenderer, ShortsSuperseded, settle, shorts_prompt, shorts_violations
+from .shorts import (
+    ShortsPlan,
+    ShortsRenderer,
+    ShortsSuperseded,
+    agenda_line,
+    date_line,
+    settle,
+    shorts_prompt,
+    shorts_violations,
+)
 from .shorts_store import ShortsStore
 from .store import UncertainEffect, VideoStore
 from .youtube import YouTube
@@ -523,8 +532,11 @@ class VideoRunner:
             await asyncio.to_thread(self.shorts.deliver, row, job, artifacts)
 
     def shorts_takes(self, job, plan):
-        """(effect key, Runway request) per Shorts scene and the fixed closing line, keyed apart from the episode's takes."""
-        texts = [spoken(s.narration) for s in plan.scenes] + [SHORTS_OUTRO['say']]
+        """(effect key, Runway request) per Shorts take, keyed apart from the episode's takes: the dated hook, the agenda,
+        each issue, then the signals with the fixed closing line."""
+        texts = [date_line(job) + ' ' + spoken(plan.hook.narration), agenda_line(len(plan.issues)),
+                 *(spoken(i.narration) for i in plan.issues),
+                 spoken(plan.signals_narration) + ' ' + SHORTS_OUTRO['say']]
         return [(f"shorts-speech-{i}-{digest(text)[:12]}",
                  {"text": text, "voice": job["policy"]["voice"], "model": job["policy"]["speech_model"]})
                 for i, text in enumerate(texts)]
