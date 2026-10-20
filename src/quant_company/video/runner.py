@@ -39,8 +39,9 @@ from .motion import BRAND, RENDERER_DIGEST, MotionRenderer
 from .motion import FPS as MOTION_FPS
 from .render import Renderer, RenderInProgress, korean_numbers, probe, spoken, verify_artifacts
 from .runway import RETAKE_RESERVE, RunwaySpeech, download_audio, speech_credits
+from .shorts import CHECKS as SHORTS_CHECKS
 from .shorts import OUTRO as SHORTS_OUTRO
-from .shorts import ShortsPlan, ShortsRenderer, ShortsSuperseded, shorts_prompt, shorts_violations
+from .shorts import ShortsPlan, ShortsRenderer, ShortsSuperseded, settle, shorts_prompt, shorts_violations
 from .shorts_store import ShortsStore
 from .store import UncertainEffect, VideoStore
 from .youtube import YouTube
@@ -447,9 +448,23 @@ class VideoRunner:
         qa = dict(row['qa'] or {})
         if row['state'] == 'writing':
             attempts = qa.setdefault('attempts', [])
+            if qa.pop('recheck', False):
+                # Given up on older checks: the versions already written are checked again, latest first (it carries
+                # the most fixes), without a new turn.
+                for number, attempt in reversed(list(enumerate(attempts, 1))):
+                    receipt = await asyncio.to_thread(self.store.effect_receipt, job, f'shorts-{number}', 'completed')
+                    if attempt['outcome'] != 'check_failed' or not receipt:
+                        continue
+                    plan, dropped = settle(ShortsPlan.model_validate(receipt['output']), job['source'])
+                    attempt['recheck'] = {'checks': SHORTS_CHECKS, 'findings': shorts_violations(plan, job['source']),
+                                          **({'dropped': dropped} if dropped else {})}
+                    if not attempt['recheck']['findings']:
+                        await asyncio.to_thread(self.shorts.save, row, 'synthesizing', plan=plan.model_dump(mode='json'),
+                                                qa=qa)
+                        return
             if len(attempts) >= SHORTS_ATTEMPTS:
                 await asyncio.to_thread(self.shorts.skip, row, 'check_failed',
-                                        '쇼츠는 대본 검사를 통과하지 못해 만들지 않았습니다.')
+                                        '쇼츠는 대본 검사를 통과하지 못해 만들지 않았습니다.', {**qa, 'checks': SHORTS_CHECKS})
                 return
             last = attempts[-1].get('findings', []) if attempts else []
             prompt = shorts_prompt(job['source'], job['plan'], (job.get('qa') or {}).get('review_findings', []),
@@ -464,8 +479,10 @@ class VideoRunner:
                                  'findings': [str(error.detail)[:300]]})
                 await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
                 return
+            plan, dropped = settle(plan, job['source'])
             found = shorts_violations(plan, job['source'])
-            attempts.append({'outcome': 'check_failed' if found else 'passed', 'findings': found})
+            attempts.append({'outcome': 'check_failed' if found else 'passed', 'findings': found,
+                             **({'dropped': dropped} if dropped else {})})
             if found:
                 await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
             else:
