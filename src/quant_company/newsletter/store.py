@@ -12,8 +12,11 @@ from ..company import as_json, fingerprint, stable
 from . import checks, contracts
 
 LOG = logging.getLogger(__name__)
-# A checked draft is due this long after the PM commit; then the deterministic fallback goes out (design §3.3).
-FALLBACK_AFTER = timedelta(minutes=45)
+# A checked draft is due this long after the PM commit; then the deterministic fallback goes out (design §3.3). The
+# episode starts in the same minute as the commit and takes the model first for 1.5-2 hours (10/19 PM 16:46-18:31,
+# 10/16 PM 18:14-20:04), so a shorter wait sent the fallback every day. A test send waits only the short time.
+FALLBACK_AFTER = timedelta(hours=2, minutes=30)
+TEST_FALLBACK_AFTER = timedelta(minutes=45)
 # Regular sends of an edition start within this window; a flag switched on later never mails an old edition.
 SEND_WINDOW = timedelta(hours=12)
 AUTO_ATTEMPTS, TEST_ATTEMPTS = 3, 1
@@ -105,7 +108,8 @@ class NewsletterStore:
             ON CONFLICT(edition_id) DO NOTHING""",
                      (identity, edition["id"], "skipped" if reason else "writing", auto,
                       Jsonb(source) if source else None, fingerprint(source) if source else None, reason,
-                      AUTO_ATTEMPTS if auto else TEST_ATTEMPTS, at + FALLBACK_AFTER, at + SEND_WINDOW, at, at))
+                      AUTO_ATTEMPTS if auto else TEST_ATTEMPTS, at + (FALLBACK_AFTER if auto else TEST_FALLBACK_AFTER),
+                      at + SEND_WINDOW, at, at))
         return conn.execute("SELECT * FROM newsletter_issues WHERE edition_id=%s", (edition["id"],)).fetchone()
 
     def has_writing(self):
@@ -437,7 +441,7 @@ class NewsletterStore:
             parts.append(f"제외 {counts['skipped']}명")
         origin = "" if issue["origin"] != "fallback" else (
             " · 작성본이 검사를 통과하지 못해 브리핑 문장으로 만든 대체본을 보냈습니다" if issue["reason"] == "model_checks_failed"
-            else " · 45분 안에 작성본이 준비되지 않아 브리핑 문장으로 만든 대체본을 보냈습니다")
+            else " · 정해진 시간 안에 작성본이 준비되지 않아 브리핑 문장으로 만든 대체본을 보냈습니다")
         return f"{head} · " + " · ".join(parts) + origin + "."
 
     @staticmethod

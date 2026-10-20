@@ -17,7 +17,7 @@ from quant_company.contracts import ProviderFault, ProviderRequest
 from quant_company.newsletter import checks, contracts, render
 from quant_company.newsletter.commands import parse
 from quant_company.newsletter.delivery import NewsletterDispatcher
-from quant_company.newsletter.store import FALLBACK_AFTER, NewsletterStore, mask, masked
+from quant_company.newsletter.store import FALLBACK_AFTER, TEST_FALLBACK_AFTER, NewsletterStore, mask, masked
 from quant_company.newsletter.writer import NewsletterWriter
 
 from .newsletter_fixtures import (
@@ -511,7 +511,7 @@ async def test_without_a_checked_draft_45_minutes_after_the_commit_the_fallback_
     dispatcher(store, smtp).tick()
     issue = issue_of(store, edition)
     assert issue["origin"] == "fallback" and issue["reason"] == "model_busy" and len(smtp.accepted) == 1
-    assert any("45분 안에" in n["text"] for n in outbox(store, "newsletter_status"))
+    assert any("정해진 시간 안에" in n["text"] for n in outbox(store, "newsletter_status"))
     # A late model answer cannot replace what was sent.
     assert not NewsletterStore(store.company).accept(issue, v5_draft(), {"outcome": "passed"})
 
@@ -670,6 +670,7 @@ async def test_a_test_send_works_with_the_flag_off_and_reaches_only_the_named_ad
     command(store, f"이메일 시험 발송 {OWNER_MAIL}", "test-1")
     issue = issue_of(store, edition)
     assert issue["state"] == "writing" and not issue["auto"] and issue["max_attempts"] == 1
+    assert issue["fallback_at"] - issue["created_at"] == TEST_FALLBACK_AFTER < FALLBACK_AFTER  # no episode to wait for
     assert NewsletterStore(store.company).has_writing()  # the dispatcher now starts the writer workflow
     writer, provider = await write(store, v5_draft())
     assert (await writer.tick())["state"] == "ready" and len(provider.calls) == 1
