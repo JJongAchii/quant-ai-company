@@ -3,6 +3,8 @@ Model, speech and alignment are simulated fixtures; the frames, encoding and lay
 
 import importlib.util
 import json
+import re
+import subprocess
 
 import pytest
 
@@ -196,6 +198,15 @@ def test_motion_render_frames_layout_credits_and_artifact_binding(tmp_path):
     assert [s['id'] for s in manifest['scenes']] == [s.id for s in plan.scenes]
     assert manifest['scenes'][0]['t0'] == 0 and manifest['scenes'][-1]['t1'] == pytest.approx(manifest['duration'], abs=.5)
     assert '• Synthetic fixture / 2026.09.22' in upload
+    # The mail signup (owner, 2026-10-20): on top of the description, also the one YouTube is given, and under the
+    # pinned comment. It goes on after the copy checks, whose reference rule would reject its link.
+    signup = '📩 구독자 전용 · 매일 아침·마감 증시 리포트를 메일로 받아보세요\n👉 https://forms.gle/JffyKEoKmSCNFKsJ8\n\n'
+    assert f'[설명]\n{signup}미국 증시는 반도체가 주도했지만' in upload and manifest['description'].startswith(signup)
+    assert ('[고정 댓글]\n어떤 업종의 확산을 확인하고 계신가요?\n\n'
+            '📩 구독자 전용 매일 증시 리포트 메일 신청: https://forms.gle/JffyKEoKmSCNFKsJ8\n\n[자료사진 출처]') in upload
+    assert not any(f.startswith('Upload copy') for f in manifest['findings'])
+    assert manifest['music'] is None  # no music folder: the episode is made without a bed, and that is no finding
+    assert not any('Music' in f for f in manifest['findings'])
     verify_artifacts(manifest, tmp_path)
     (tmp_path / 'out' / 'subtitles.srt').write_text('changed')
     with pytest.raises(ValueError):
@@ -239,6 +250,53 @@ def test_the_fixed_opening_and_closing_frame_the_episode_without_moving_its_chap
     assert not any(f['scene'].startswith('brand-') for f in manifest['review']['frames'])
     assert (tmp_path / 'out' / 'review' / '00-brand-sting.jpg').is_file()
     verify_artifacts(manifest, tmp_path)
+
+
+def test_the_episode_plays_the_shorts_music_bed_and_renders_without_one(tmp_path):
+    """Owner, 2026-10-20: the episode gets the Shorts' bed too. Without a track, or with one FFmpeg cannot read, it
+    renders as before. Each render after the first resumes its frames, so only the sound is made again."""
+    if not importlib.util.find_spec('playwright'):
+        pytest.skip('Install optional video dependencies and Chromium')
+    ffmpeg = ffmpeg_binary()
+    settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_ffprobe='', video_asset_dir=tmp_path / 'assets',
+                        video_render_workers=2)
+    library(tmp_path / 'assets', ffmpeg)
+    plan = episode()
+    paths = []
+    for i in range(len(plan.scenes)):
+        path = tmp_path / f'a{i}.wav'
+        run([ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i', f'sine=frequency={330 + i * 60}:sample_rate=48000:duration=2', str(path)])
+        paths.append(path)
+    folder = tmp_path / 'assets' / 'music'
+    folder.mkdir()
+    run([ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i', 'sine=frequency=220:sample_rate=44100:duration=3', str(folder / 'bed.mp3')])
+    job = {'id': 'fixture', 'source': source(), 'policy': {'template': 'motion-v2'}}
+
+    def render(**music):
+        manifest = MotionRenderer(settings, WordAligner()).render(job, plan, tmp_path / 'out', paths, **music)
+        # The closing card holds past its 2-s line: no narration is left there, only the bed (the 3-s track loops).
+        closing = manifest['scenes'][-1]
+        report = subprocess.run([ffmpeg, '-hide_banner', '-ss', f"{closing['t1'] - 1.8:.2f}", '-t', '0.6', '-i',
+                                 str(tmp_path / 'out' / 'video.mp4'), '-af', 'volumedetect', '-f', 'null', '-'],
+                                capture_output=True, text=True, check=True).stderr
+        return manifest, float(re.search(r'mean_volume: (-?[\d.]+) dB', report).group(1))
+
+    manifest, tail = render()
+    assert manifest['music'] == 'bed.mp3' and tail > -60 and not any('Music' in f for f in manifest['findings'])
+    assert manifest['audio_quality']['true_peak_dbfs'] <= -1.5 and not (tmp_path / 'out' / 'mixed.wav').exists()
+    verify_artifacts(manifest, tmp_path)
+    # A remote render is given the track from its inputs, whatever the folder holds.
+    given = tmp_path / 'given.mp3'
+    given.write_bytes((folder / 'bed.mp3').read_bytes())
+    assert render(music=given)[0]['music'] == 'given.mp3'
+    (folder / 'bed.mp3').write_bytes(b'not an mp3 at all' * 100)
+    manifest, tail = render()
+    assert manifest['music'] is None and tail < -70
+    assert 'Music bed bed.mp3 could not be mixed; the cut has no music' in manifest['findings']
+    verify_artifacts(manifest, tmp_path)
+    (folder / 'bed.mp3').unlink()
+    manifest, tail = render()
+    assert manifest['music'] is None and tail < -70 and not any('Music' in f for f in manifest['findings'])
 
 
 def test_overflowing_text_is_reported_and_the_episode_still_renders(tmp_path):

@@ -23,6 +23,11 @@ CLOSING = ('──────────\n\n'
            '증시story에서 그 앞뒤 이야기를 함께 짚어봅니다.\n\n'
            '궁금한 시장 이야기나 다음에 다뤘으면 하는 주제가 있다면 댓글로 남겨주세요.')
 SIGNATURE = '세상의 뭐든, 이야기로 만나다. 뭐든story.'
+# The subscriber report mail signup (owner, 2026-10-20): two lines on top of the description and a last line under the
+# pinned comment, added by the renderer after the copy checks (the form is no brief reference, so check() rejects it).
+SIGNUP_URL = 'https://forms.gle/JffyKEoKmSCNFKsJ8'
+SIGNUP_LEAD = f'📩 구독자 전용 · 매일 아침·마감 증시 리포트를 메일로 받아보세요\n👉 {SIGNUP_URL}\n\n'
+SIGNUP_COMMENT = f'📩 구독자 전용 매일 증시 리포트 메일 신청: {SIGNUP_URL}'
 BASE_TAGS = ('#증시story', '#뭐든story')
 FIXED_TAGS = ('증시story', '뭐든story')
 TIMING = {'am': '장전', 'intraday': '장중', 'close': '마감'}

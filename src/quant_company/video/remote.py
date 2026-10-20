@@ -105,6 +105,8 @@ class RemoteRender:
         return self.storage.exists(self.prefix(job, key) + '/in/ready.json')
 
     def upload_inputs(self, job, plan, audio_paths, texts, key, brand=None):
+        from .render import music_track
+
         storage, base = self.storage, self.prefix(job, key) + '/in/'
         if storage.exists(base + 'ready.json'):
             return False  # the same render key always has the same inputs
@@ -142,13 +144,22 @@ class RemoteRender:
         for name, path in (brand or {}).items():
             storage.put(base + f'brand-{name}.mp3', Path(path).read_bytes())
         storage.put(base + 'brand.json', json.dumps(sorted(brand or {})).encode())
+        # The music bed (render.music_track) travels on its own: the library copy below leaves the music folder out, so
+        # the task renders with exactly this track or none. A track the worker cannot read renders without one.
+        track, bed = music_track(self.settings, job), None
+        try:
+            bed = track.read_bytes() if track else None
+        except OSError:
+            pass
+        if bed is not None:
+            storage.put(base + 'music.mp3', bed)
+        storage.put(base + 'music.json', json.dumps(track.name if bed is not None else None).encode())
         buffer = io.BytesIO()
         library_dir = Path(self.settings.video_asset_dir)
+        left_out = {'./music', *(['./manifest.json'] if extra else [])}
         with tarfile.open(fileobj=buffer, mode='w:gz') as archive:
-            if not extra:
-                archive.add(library_dir, arcname='.')
-            else:
-                archive.add(library_dir, arcname='.', filter=lambda info: None if info.name == './manifest.json' else info)
+            archive.add(library_dir, arcname='.', filter=lambda info: None if info.name in left_out else info)
+            if extra:
                 manifest = json.loads((library_dir / 'manifest.json').read_text()) if (library_dir / 'manifest.json').exists() else {}
                 manifest.update({asset: entry for asset, (entry, _) in extra.items()})
                 for entry, path in extra.values():
@@ -262,6 +273,11 @@ def render_task(settings, uri, s3=None, renderer=None):
     for name in (json.loads(storage.get(inputs + 'brand.json')) if storage.exists(inputs + 'brand.json') else []):
         brand[name] = directory / f'brand-{name}.mp3'
         brand[name].write_bytes(storage.get(inputs + f'brand-{name}.mp3'))
+    music = None
+    if storage.exists(inputs + 'music.json') and (name := json.loads(storage.get(inputs + 'music.json'))):
+        music = directory / 'music' / Path(name).name
+        music.parent.mkdir(exist_ok=True)
+        music.write_bytes(storage.get(inputs + 'music.mp3'))
     for entry in (job.get('illustrations') or {}).values():
         if entry.get('file'):
             picture = directory.parent / 'illustrations' / Path(entry['file']).name
@@ -303,7 +319,8 @@ def render_task(settings, uri, s3=None, renderer=None):
     thread = threading.Thread(target=syncer.run, daemon=True)
     thread.start()
     artifacts = (renderer or MotionRenderer(settings)).render(job, plan, directory, audio, texts,
-                                                             **({'brand': brand} if brand else {}))
+                                                             **({'brand': brand} if brand else {}),
+                                                             **({'music': music} if music else {}))
     watchdog.cancel()
     syncer.stop.set()
     syncer.once()

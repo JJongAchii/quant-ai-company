@@ -4,6 +4,7 @@ import hashlib
 import json
 import re
 import subprocess
+from datetime import date
 from difflib import SequenceMatcher
 from html import escape
 from pathlib import Path
@@ -159,6 +160,40 @@ def spoken_numbers_heard(expected, transcript):
     want = re.findall(r"\d+(?:\.\d+)?", expected.replace(",", ""))
     got = iter(re.findall(r"\d+(?:\.\d+)?", sino_digits(transcript).replace(",", "")))
     return all(any(g == w for g in got) for w in want)
+
+
+def music_track(settings, job):
+    """The music bed under this episode and its Shorts (owner, 2026-10-20: one track for both): the tracks in
+    {video_asset_dir}/music take turns by the episode's date. None when the folder is missing, empty or unreadable
+    (the video is made without music)."""
+    try:
+        tracks = sorted(p for p in (Path(settings.video_asset_dir) / 'music').glob('*.mp3') if p.is_file())
+    except OSError:
+        return None
+    if not tracks:
+        return None
+    return tracks[date.fromisoformat(str(job['source']['day'])[:10]).toordinal() % len(tracks)]
+
+
+# About -22 dB under the narration, ducked further while it speaks, faded in and out over a second; limited like the
+# narration chain so the bed never lifts the peak past -2 dBFS. The same level for a 75-s Shorts and a 5-min episode.
+MIX = ('[1:a]volume=0.08,afade=t=in:d=1,afade=t=out:st={fade}:d=1[m];[m][0:a]sidechaincompress=threshold=0.03:ratio=8:'
+       'attack=20:release=400[d];[0:a][d]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.79:level=false')
+
+
+def mix_music(settings, directory, narration, total, track, runner=None):
+    """(sound, track name or None, findings): the loudness-normalised narration with the bed under it, looped when the
+    track is shorter than the video. A track FFmpeg cannot read or a mix that hangs leaves the narration alone.
+    runner: the caller's media call (default run)."""
+    mixed = Path(directory) / 'mixed.wav'
+    try:
+        (runner or run)([settings.video_ffmpeg, '-y', '-v', 'error', '-i', str(narration), '-stream_loop', '-1',
+                         '-t', f'{total:.3f}', '-i', str(track), '-filter_complex', MIX.format(fade=f'{max(total - 1, 0):.3f}'),
+                         '-ar', '48000', '-ac', '2', str(mixed)], timeout=120)
+    except (ValueError, OSError, subprocess.TimeoutExpired):
+        mixed.unlink(missing_ok=True)
+        return narration, None, [f'Music bed {Path(track).name} could not be mixed; the cut has no music']
+    return mixed, Path(track).name, []
 
 
 class RenderInProgress(RuntimeError):
