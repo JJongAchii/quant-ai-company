@@ -695,12 +695,12 @@ def test_an_unrelated_allowed_channel_keeps_news_in_flight(news):
 
 @pytest.mark.parametrize("cutover_passed", [False, True])
 def test_work_under_the_earlier_policy_formula_is_honoured_until_the_cutover(news, monkeypatch, cutover_passed):
-    from datetime import UTC, datetime
+    from datetime import UTC, datetime, timedelta
 
     from quant_company.news import store
 
-    if cutover_passed:
-        monkeypatch.setattr(store, "LEGACY_POLICY_UNTIL", datetime(2026, 1, 1, tzinfo=UTC))
+    # Set around now in both cases: the real cutover (2026-10-20) has passed, so the clock must not decide the result.
+    monkeypatch.setattr(store, "LEGACY_POLICY_UNTIL", datetime.now(UTC) + timedelta(days=-1 if cutover_passed else 1))
     ready_article(news)
     prepared = news.prepare_review()
     with news.db.transaction() as conn:  # as written by the release before the formula changed
