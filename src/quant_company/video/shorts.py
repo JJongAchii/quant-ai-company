@@ -402,6 +402,8 @@ QA_JS = r"""(safe) => {
   let o=1,q=e; while(q&&q!==document.body){o*=+getComputedStyle(q).opacity; q=q.parentElement;}
   if(r.width>0&&r.height>0&&o>0.5) boxes.push({e,r,t:n.textContent.trim().slice(0,30)}); }
  for(const b of boxes) if(b.r.left<safe.left-1||b.r.right>safe.right+1||b.r.top<safe.top-1||b.r.bottom>safe.bottom+1) out.push(['outside-safe-area',b.t]);
+ for(const b of boxes){ const x=Math.min(innerWidth-1,Math.max(0,(b.r.left+b.r.right)/2)), y=Math.min(innerHeight-1,Math.max(0,(b.r.top+b.r.bottom)/2));
+  const hit=document.elementFromPoint(x,y); if(hit&&hit!==b.e&&!b.e.contains(hit)&&!hit.contains(b.e)) out.push(['covered',b.t]); }
  for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++){const a=boxes[i],b=boxes[j]; if(a.e===b.e||a.e.contains(b.e)||b.e.contains(a.e)) continue;
   const ix=Math.min(a.r.right,b.r.right)-Math.max(a.r.left,b.r.left), iy=Math.min(a.r.bottom,b.r.bottom)-Math.max(a.r.top,b.r.top);
   if(ix>3&&iy>3) out.push(['overlap',a.t,b.t]);}
@@ -420,9 +422,24 @@ def music_track(settings, job):
     return tracks[date.fromisoformat(str(job['source']['day'])[:10]).toordinal() % len(tracks)]
 
 
-# About -22 dB under the narration, ducked further while it speaks, faded in and out over a second.
+# About -22 dB under the narration, ducked further while it speaks, faded in and out over a second; limited like the
+# narration chain so the bed never lifts the peak past -2 dBFS.
 MIX = ('[1:a]volume=0.08,afade=t=in:d=1,afade=t=out:st={fade}:d=1[m];[m][0:a]sidechaincompress=threshold=0.03:ratio=8:'
-       'attack=20:release=400[d];[0:a][d]amix=inputs=2:duration=first:normalize=0')
+       'attack=20:release=400[d];[0:a][d]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.79:level=false')
+
+
+def mix_music(settings, directory, narration, total, track):
+    """(sound, track name or None, findings): the loudness-normalised narration with the bed under it, looped when the
+    track is shorter than the cut. A track FFmpeg cannot read or a mix that hangs leaves the narration alone."""
+    mixed = Path(directory) / 'mixed.wav'
+    try:
+        run([settings.video_ffmpeg, '-y', '-v', 'error', '-i', str(narration), '-stream_loop', '-1', '-t', f'{total:.3f}',
+             '-i', str(track), '-filter_complex', MIX.format(fade=f'{max(total - 1, 0):.3f}'), '-ar', '48000', '-ac', '2',
+             str(mixed)], timeout=120)
+    except (ValueError, OSError, subprocess.TimeoutExpired):
+        mixed.unlink(missing_ok=True)
+        return narration, None, [f'Music bed {Path(track).name} could not be mixed; the cut has no music']
+    return mixed, Path(track).name, []
 
 
 class ShortsRenderer:
@@ -574,13 +591,8 @@ class ShortsRenderer:
              '-af', 'loudnorm=I=-16:TP=-2.0:LRA=11,alimiter=limit=0.79:level=false', '-ar', '48000', str(narration)])
         sound, music, track = narration, None, music_track(self.settings, job)
         if track is not None:
-            mixed = directory / 'mixed.wav'
-            try:  # the track loops when it is shorter than the cut
-                run([ffmpeg, '-y', '-v', 'error', '-i', str(narration), '-stream_loop', '-1', '-t', f'{total:.3f}', '-i', str(track),
-                     '-filter_complex', MIX.format(fade=f'{max(total - 1, 0):.3f}'), '-ar', '48000', '-ac', '2', str(mixed)])
-                sound, music = mixed, track.name
-            except (ValueError, OSError):
-                findings.append(f'Music bed {track.name} could not be mixed; the cut has no music')
+            sound, music, found = mix_music(self.settings, directory, narration, total, track)
+            findings += found
         output = directory / 'shorts.mp4'
         run([ffmpeg, '-y', '-v', 'error', '-i', str(directory / 'silent.mp4'), '-i', str(sound),
              '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', str(output)])

@@ -18,6 +18,8 @@ from quant_company.video.shorts import (
     CHECKS,
     KO_COUNT,
     OUTRO,
+    QA_JS,
+    SAFE,
     ShortsPlan,
     ShortsRenderer,
     agenda_line,
@@ -223,7 +225,7 @@ def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
     scenes = manifest['scenes']
     assert [s['id'] for s in scenes] == ['opener', 'agenda', 'semis', 'check', 'outro']
     assert [s['type'] for s in scenes] == ['opener', 'agenda', 'issue', 'issue', 'outro']
-    assert not any('outside-safe-area' in f or 'overlap' in f for f in manifest['findings']), manifest['findings']
+    assert not any(k in f for f in manifest['findings'] for k in ('outside-safe-area', 'overlap', 'covered')), manifest['findings']
     assert scenes[1]['t1'] - scenes[1]['t0'] >= 1.0 + 0.9 * len(plan.issues) - 1e-6
     assert scenes[-1]['t1'] - scenes[-1]['t0'] >= 6.0 - 1e-6
     assert scenes[0]['t0'] == 0 and manifest['duration'] == pytest.approx(scenes[-1]['t1'], abs=.5)
@@ -243,8 +245,9 @@ def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
     verify_artifacts(manifest, tmp_path)
 
 
-def scene_classes(page):
-    """The page's scenes as built: {id: (EP bg, blur, the scene element's classes)}."""
+def on_page(page, scripts, t=0.0, style=''):
+    """Each script's value on the built page at time t (a QA function gets the safe area), optionally with a style
+    added first."""
     from playwright.sync_api import sync_playwright
 
     with sync_playwright() as pw:
@@ -252,12 +255,43 @@ def scene_classes(page):
         try:
             tab = browser.new_page(viewport={'width': 1080, 'height': 1920})
             tab.goto((page / 'index.html').as_uri())
-            tab.evaluate('seek(0)')
-            return {s['id']: (s['bg'], s['blur'], s['cls']) for s in tab.evaluate(
-                "EP.scenes.map(s => ({id: s.id, bg: s.bg, blur: s.blur,"
-                " cls: [...document.querySelector(`.scene[data-id=\"${s.id}\"]`).classList]}))")}
+            tab.evaluate('document.fonts.ready')
+            if style:
+                tab.add_style_tag(content=style)
+            tab.evaluate(f'seek({t})')
+            return [tab.evaluate(s, SAFE) if s.startswith('(safe)') else tab.evaluate(s) for s in scripts]
         finally:
             browser.close()
+
+
+def scene_classes(page):
+    """The page's scenes as built: {id: (EP bg, blur, the scene element's classes)}."""
+    [scenes] = on_page(page, ["EP.scenes.map(s => ({id: s.id, bg: s.bg, blur: s.blur,"
+                              " cls: [...document.querySelector(`.scene[data-id=\"${s.id}\"]`).classList]}))"])
+    return {s['id']: (s['bg'], s['blur'], s['cls']) for s in scenes}
+
+
+def test_layout_qa_finds_text_covered_by_the_background(tmp_path):
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    built = ShortsRenderer(settings, WordAligner()).build(job, shorts(), episode().model_dump(mode='json'), tmp_path / 'out',
+                                                          tones(tmp_path, TAKES, ffmpeg))
+    issue = built['scenes'][2]
+    [found] = on_page(built['page'], [QA_JS], issue['t1'] - 0.3)
+    assert found == []
+    # The pictures drawn over the text (the first draft's bug): every box is still in place, but nothing can be read.
+    [found] = on_page(built['page'], [QA_JS], issue['t1'] - 0.3, style='#bgs{z-index:5}')
+    assert {f[0] for f in found} == {'covered'} and any('1.92%' in f[1] for f in found), found
+
+
+def test_build_keeps_a_minus_without_an_arrow(tmp_path):
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    raw = shorts().model_dump(mode='json')
+    raw['issues'][0].update(big='-0.2%', dir=None)  # a signed level: the sign is the fact
+    raw['issues'][1].update(big='-0.59%', dir='dn')  # the arrow replaces the sign
+    built = ShortsRenderer(settings, WordAligner()).build(job, ShortsPlan.model_validate(raw), episode().model_dump(mode='json'),
+                                                          tmp_path / 'out', tones(tmp_path, TAKES, ffmpeg))
+    [shown] = on_page(built['page'], ["[...document.querySelectorAll('.scene.issue .num .v')].map(e => e.textContent)"])
+    assert shown == ['-0.2%', '▼0.59%']
 
 
 def test_every_scene_has_a_picture(tmp_path):
@@ -315,6 +349,36 @@ def test_music_is_optional(tmp_path):
     (tmp_path / 'assets' / 'music' / 'b.mp3').write_bytes((tmp_path / 'assets' / 'music' / 'a.mp3').read_bytes())
     day = date.fromisoformat(job['source']['day'])
     assert music_track(settings, job).name == ['a.mp3', 'b.mp3'][day.toordinal() % 2]
+
+
+def test_music_is_never_fatal_and_never_lifts_the_peak(tmp_path, monkeypatch):
+    from quant_company.video import shorts as shorts_module
+    from quant_company.video.shorts import mix_music
+
+    ffmpeg = ffmpeg_binary()
+    settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_ffprobe='')
+    # Clicks at the narration chain's 0.79 limit over a steady loud bed: too short for the ducking to catch, so without
+    # a limiter after the mix the two add up past -2 dBFS (about -1.6 dB).
+    narration, bed = tmp_path / 'narration.wav', tmp_path / 'bed.wav'
+    click = '0.79*eq(mod(n\\,12000)\\,0)*gte(t\\,1)'
+    run([ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i', f'aevalsrc={click}|{click}:s=48000:d=4', str(narration)])
+    run([ffmpeg, '-y', '-v', 'error', '-f', 'lavfi', '-i', 'aevalsrc=0.9|0.9:s=48000:d=4', str(bed)])
+    sound, music, found = mix_music(settings, tmp_path, narration, 4.0, bed)
+    assert (sound, music, found) == (tmp_path / 'mixed.wav', 'bed.wav', [])
+    report = subprocess.run([ffmpeg, '-hide_banner', '-i', str(sound), '-af', 'volumedetect', '-f', 'null', '-'],
+                            capture_output=True, text=True, check=True).stderr
+    assert float(re.search(r'max_volume: (-?[\d.]+) dB', report).group(1)) <= -2.0
+    # A track FFmpeg cannot read, or a mix that hangs: the cut goes on with the narration alone.
+    broken = tmp_path / 'broken.mp3'
+    broken.write_bytes(b'not an mp3 at all' * 100)
+    assert mix_music(settings, tmp_path, narration, 4.0, broken) == (
+        narration, None, ['Music bed broken.mp3 could not be mixed; the cut has no music'])
+
+    def hung(argv, timeout=600):
+        raise subprocess.TimeoutExpired(argv, timeout)
+
+    monkeypatch.setattr(shorts_module, 'run', hung)
+    assert mix_music(settings, tmp_path, narration, 4.0, bed)[:2] == (narration, None)
 
 
 class ShortsFileRenderer:

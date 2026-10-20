@@ -12,8 +12,9 @@ const FADE = 0.35;
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // Numbers in a line are drawn gold, like the episode captions.
 const gold = s => esc(s).replace(/(\d(?:[\d,.]*\d)?\s?(?:%p|%|bp|조원|억원|억달러|달러|원|포인트|배)?)/g, '<em>$1</em>');
-// The arrow comes from the direction field only; a sign the script also wrote would show twice.
-const bare = s => String(s).replace(/^\s*[▲▼+\-]\s*/, '');
+// The arrow comes from the direction field only: an arrow the script wrote is never drawn, and a +/- sign is dropped
+// only where the arrow replaces it (a level of -0.2% keeps its minus).
+const bare = (s, dir) => String(s).replace(dir ? /^\s*[▲▼+\-]\s*/ : /^\s*[▲▼]\s*/, '');
 const PLAY = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M6 3.5v17l14.5-8.5z"/></svg>';
 
 const CARDS = {
@@ -33,7 +34,7 @@ const CARDS = {
   issue(d) {
     const dir = ARROW[d.dir] || '';
     return `<div class="inner"><div class="pill" data-in="0,0.3,0,-50" data-fit><b>${d.k}</b>${esc(d.label)}<i>${d.k}/${d.n}</i></div>
-      <div class="num"><span class="v ${d.dir || ''}" data-pop="0.15,0.45" data-fit>${dir}${esc(bare(d.big))}</span>`
+      <div class="num"><span class="v ${d.dir || ''}" data-pop="0.15,0.45" data-fit>${dir}${esc(bare(d.big, ARROW[d.dir]))}</span>`
       + `<span class="l" data-in="0.4,0.4,0,-24">${esc(d.big_label)}</span></div>
       <div class="card" data-in="0.5,0.45,40"><p>${gold(d.body)}</p>`
       + `<span class="tag k${Math.max(0, KINDS.indexOf(d.note_kind))}" data-in="0.95,0.4,14"><strong>${esc(d.note_kind)}</strong> · ${esc(d.note)}</span></div></div>`;
