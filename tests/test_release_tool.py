@@ -548,6 +548,10 @@ def test_a_shorts_cut_in_production_holds_the_video_worker():
     assert release.busy("video-worker", runner=runner) == ["Shorts in production"]
     assert release.production_busy(runner=runner) == ["Shorts in production"]
     assert release.busy("video-worker", runner=lambda *a, **k: "") == []  # the table does not exist yet
+    queries = []
+    release.busy("video-worker", runner=lambda args, **k: queries.append(args[-1]) or "0")
+    # A cut waiting 30 minutes for a valid version holds nothing in flight.
+    assert any("video_shorts" in q and "no_valid_version" in q for q in queries)
 
 
 def test_an_email_being_sent_holds_dispatch():

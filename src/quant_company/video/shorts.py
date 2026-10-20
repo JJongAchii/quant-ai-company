@@ -41,9 +41,16 @@ from .render import Aligner, RenderInProgress, checksum, probe, quality_probe, r
 from .upload import INSTRUCTION
 
 WIDTH, HEIGHT = 1080, 1920
-# The narration voice reads ~6.7 characters per second (episode.py). The model fills ~97% of the limit, so 420 characters
-# are ~407 spoken: with the fixed lines (date, issue count and closing: ~63 characters) that is ~470 / 6.7 = ~70 s, plus
-# 0.5 s of lead and tail per scene (4-7 scenes) and the agenda and closing holds the cut keeps: ~78 s, under the 90 s cap.
+# The narration voice reads ~6.7 characters per second (episode.py). The model fills ~97% of the budget, so 400 characters
+# are ~388 spoken: with the fixed lines (date, issue count and closing: ~63 characters) that is ~451 / 6.7 = ~67 s, plus
+# 0.5 s of lead and tail per scene (5-8 scenes) and the agenda hold the cut keeps: ~74 s, under the 90 s cap.
+# The hook is one breath after the date line (owner, 10/20: an 11.5-s opener was too long; the spec asks ~3-5 s): with the
+# 19-character date line, a 32-character hook makes an opener of ~51 / 6.7 + 0.5 = ~8 s at the longest, ~6-7 s for a
+# typical one. What the hook gave up (it was 50 characters) left the total (it was 420) instead of going to the issues.
+# The prompt asks for the budgets and shorts_violations enforces them, so a longer cut is rewritten before any speech is
+# paid. The schema keeps #194's limits (420 in all, 50 for the hook): a plan stored under them before a release still
+# validates when it is voiced and rendered.
+NARRATION_BUDGET, HOOK_NARRATION = 400, 32
 NARRATION_LIMIT = 420
 CHARS_PER_SECOND = 6.7
 # Seconds a scene stays up beyond its speech; the renderer and the length estimate share these.
@@ -59,8 +66,11 @@ LEAD, TAIL = 0.15, 0.35
 SAFE = {'left': 70, 'right': 940, 'top': 230, 'bottom': 1500}
 # The version of the checks below. A cut given up on an older version is checked again, once, with the versions already
 # written (ShortsStore.claim): 2 = list directions, dates in close lines, unstated arrows dropped (10/20 AM);
-# 3 = the news-style cut: issues cut from the episode's issue scenes, numbers also in the delivered episode.
-CHECKS = 3
+# 3 = the news-style cut: issues cut from the episode's issue scenes, numbers also in the delivered episode;
+# 4 = a cut is never given up on its checks (owner, 10/20 PM; Runner.shorts_step): a cut given up on 3 is reopened and
+# goes on writing (the 10/20 PM cut, every turn rejected by the old worker while the release swapped it). The narration
+# budgets (hook 32, total 400) came with 4.
+CHECKS = 4
 EDITION_WORDS = {'am': '아침', 'close': '마감'}
 KO_COUNT = {2: '두', 3: '세', 4: '네', 5: '다섯'}
 ISSUE_CHAPTERS = ('핵심 이슈', '함께 볼 이슈')
@@ -102,12 +112,15 @@ def asset_ids(value):
 
 
 def cut_pictures(job, episode, plan, settings, library):
-    """{'hook', 'issues', 'cover'}: {'path', 'credit'} or None per picture, resolved as the episode's own render does
-    (this episode's pictures first, then the reviewed library). An issue shows the first picture of its cited scenes;
-    the hook and the blurred cover show the episode's thumbnail picture, else the first issue picture, else the first
-    picture any scene of the episode shows."""
+    """{'hook', 'issues', 'nearby', 'cover'}: {'path', 'credit'} or None per picture, resolved as the episode's own render
+    does (this episode's pictures first, then the reviewed library). An issue shows the first picture of its cited
+    scenes; 'nearby' lists, per issue, the pictures of the other scenes in its chapter, nearest first, for an issue
+    without its own (spec: the same chapter's other picture before the thumbnail's). The hook and the blurred cover show
+    the episode's thumbnail picture, else the first issue picture, else the first picture any scene of the episode
+    shows."""
     made = library_entries(job, plan_class(job).model_validate(episode), settings, library)
-    by_id = {s['id']: s for s in episode['scenes']}
+    scenes = episode['scenes']
+    by_id, order = {s['id']: s for s in scenes}, {s['id']: n for n, s in enumerate(scenes)}
 
     def picture(asset_id):
         asset = made.get(asset_id) or library.get(asset_id)
@@ -119,13 +132,20 @@ def cut_pictures(job, episode, plan, settings, library):
         credit = f"자료사진 · {asset.get('author', '')} · {asset.get('license', '')}" if asset.get('kind') == '자료사진' else ''
         return {'path': str(path), 'credit': credit}
 
+    def nearby(issue):
+        cited = [order[sid] for sid in issue.scene_ids if sid in order]
+        chapters = {scenes[n].get('chapter') for n in cited}
+        others = sorted((n for n, s in enumerate(scenes) if s.get('chapter') in chapters and n not in cited),
+                        key=lambda n: (min(abs(n - c) for c in cited), n))
+        return [p for n in others for p in [picture(next(asset_ids(scenes[n].get('data')), None))] if p]
+
     issues = []
     for issue in plan.issues:
         ids = (a for sid in issue.scene_ids for a in asset_ids((by_id.get(sid) or {}).get('data')))
         issues.append(picture(next(ids, None)))
     hook = (picture(episode.get('thumbnail_image')) or next((p for p in issues if p), None)
-            or next((p for s in episode['scenes'] for p in [picture(next(asset_ids(s.get('data')), None))] if p), None))
-    return {'hook': hook, 'issues': issues, 'cover': hook}
+            or next((p for s in scenes for p in [picture(next(asset_ids(s.get('data')), None))] if p), None))
+    return {'hook': hook, 'issues': issues, 'nearby': [nearby(i) for i in plan.issues], 'cover': hook}
 
 
 def issue_scenes(episode):
@@ -136,7 +156,7 @@ def issue_scenes(episode):
 class ShortsHook(StrictModel):
     headline: str = Field(min_length=4, max_length=40)
     question: str = Field(min_length=2, max_length=20)
-    narration: str = Field(min_length=8, max_length=50)
+    narration: str = Field(min_length=8, max_length=50)  # schema limit; HOOK_NARRATION is the check's
     claim_ids: list[str] = Field(min_length=1, max_length=8)
 
 
@@ -207,8 +227,10 @@ def shorts_prompt(source, episode, concerns=(), feedback=''):
         "line ('10월 20일 아침 브리핑입니다.') before everything, the issue-count line ('오늘 볼 이슈는 N가지입니다.') "
         "before the issues, and a closing line sending viewers to the full episode.\n"
         "hook: the episode's sharpest message, the same as its title and thumbnail, spoken right after the date line "
-        "with no greeting and no channel name. headline (4-40 characters, drawn big on the first frame, may wrap), "
-        "question (2-20 characters), narration (8-50 characters, one short sentence), claim_ids.\n"
+        "with no greeting and no channel name. headline (4-40 characters, drawn big on the first frame, may wrap; it "
+        "breaks after its first comma when both parts fit a line), question (2-20 characters), "
+        f"narration (8-{HOOK_NARRATION} characters: one short sentence said in one breath, the question or the news; "
+        "the headline on screen carries the detail), claim_ids.\n"
         "issues: 4 or 5 when the episode has that many issue scenes, never fewer than 2; each cuts one topic from one "
         "or more consecutive issue scenes (scene_ids, in the episode's order; use each issue scene in one issue at "
         "most). Per issue: id (short, unique), label (the topic, at most 16 characters), agenda (the line shown in the "
@@ -220,7 +242,7 @@ def shorts_prompt(source, episode, concerns=(), feedback=''):
         "the note aloud. Cite the briefing lines (claim_ids) the issue uses.\n"
         "signals: 2 or 3 short lines (4-30 characters each) taken from the episode's closing signals, with "
         "signals_narration (10-90 characters) and signals_claim_ids.\n"
-        f"Narration is plain spoken Korean, at most {NARRATION_LIMIT} characters in all (the whole Shorts must stay "
+        f"Narration is plain spoken Korean, at most {NARRATION_BUDGET} characters in all (the whole Shorts must stay "
         "under 90 seconds); read signs as words.\n"
         "Every number on screen or in the narration must appear in the briefing lines its unit cites (claim_ids) and in "
         "the delivered episode. "
@@ -365,6 +387,12 @@ def shorts_violations(plan, source, episode):
     wording, no spoken attribution. episode: the delivered EpisodePlan as JSON."""
     claims, found, cited, lines = claim_catalog(source), issue_citations(plan, episode), set(), []
     found += claim_binding(plan, episode)
+    hook, total = len(plan.hook.narration), sum(len(x) for x in plan.narrations())
+    if hook > HOOK_NARRATION:
+        found.append(f'Hook narration is {hook} characters, over {HOOK_NARRATION}: one sentence in one breath after the date '
+                     'line (the headline carries the detail)')
+    if total > NARRATION_BUDGET:
+        found.append(f'Narration is {total} characters in all, over {NARRATION_BUDGET}: shorten the narrations')
     seconds = estimated_seconds(plan)
     if seconds > SHORTS_CAP:
         found.append(f'Estimated length {seconds:.0f} s is over the {SHORTS_CAP} s cap (aim {SHORTS_AIM[0]}-{SHORTS_AIM[1]} s):'
@@ -550,15 +578,25 @@ class ShortsRenderer:
 
     def _pictures(self, job, plan, episode, scenes, page):
         """bg, blur and credit per scene, each picture copied once into page/img: the opener shows the episode's picture
-        sharp, each issue its own (else the cover, blurred), the agenda and the outro the cover blurred."""
+        sharp, each issue its own; an issue without one shows, blurred, a picture of another scene in its chapter (one
+        the scene before it does not show, if there is one), else the cover. The agenda and the outro show the cover
+        blurred. The credit is the shown picture's own."""
         found = cut_pictures(job, episode, plan, self.settings, self.library)
 
         def usable(picture):
             return picture if picture and Path(picture['path']).is_file() else None
 
-        cover, issues = usable(found['cover']), [usable(p) for p in found['issues']]
-        chosen = [(usable(found['hook']) or cover, False), (cover, True),
-                  *((p, False) if p else (cover, True) for p in issues), (cover, True)]
+        cover = usable(found['cover'])
+        chosen = [(usable(found['hook']) or cover, False), (cover, True)]
+        for own, nearby in zip(found['issues'], found['nearby'], strict=True):
+            if usable(own):
+                chosen.append((own, False))
+                continue
+            before = (chosen[-1][0] or {}).get('path')
+            near = [p for p in map(usable, nearby) if p]
+            fresh = [p for p in near if p['path'] != before]
+            chosen.append(((fresh or near or [cover])[0], True))
+        chosen.append((cover, True))
         names, pictures, findings = {}, [], []
         for scene, (picture, blur) in zip(scenes, chosen, strict=True):
             if picture is None:

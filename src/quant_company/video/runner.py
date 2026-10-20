@@ -73,9 +73,12 @@ INSPECT_ROUNDS = 3
 # The fixed opening and closing lines (motion.BRAND) are recorded once per voice and kept for every later episode. Raise
 # the take to record them again when the owner rejects one: the kept file and its receipt keys carry it.
 BRAND_TAKE = 1
-# Shorts (video/shorts.py): written at most this many times, then given up for that episode. Its voice never takes the
-# credits the next episodes need: this many stay in the month's budget.
-SHORTS_ATTEMPTS = 3
+# Shorts (video/shorts.py), like the episode, is never given up on its checks (owner, 10/20 PM): after this many written
+# versions (lost turns not counted) the one with the fewest findings is produced and its findings travel with the files.
+# With no version of the current shape at all, one more is asked for every SHORTS_RETRY seconds until the next episode
+# starts. Its voice never takes the credits the next episodes need: SHORTS_CREDIT_RESERVE stay in the month's budget.
+SHORTS_ATTEMPTS = 5
+SHORTS_RETRY = 1800
 SHORTS_CREDIT_RESERVE = 80
 REVIEW_PHASES = frozenset({'review', 'visual'})
 # ProviderRequest's prompt limit: a previous script version that would not fit is left out of the revision request.
@@ -481,10 +484,20 @@ class VideoRunner:
                         await asyncio.to_thread(self.shorts.save, row, 'synthesizing', plan=plan.model_dump(mode='json'),
                                                 qa=qa)
                         return
-            if len(attempts) >= SHORTS_ATTEMPTS:
-                await asyncio.to_thread(self.shorts.skip, row, 'check_failed',
-                                        '쇼츠는 대본 검사를 통과하지 못해 만들지 않았습니다.', {**qa, 'checks': SHORTS_CHECKS})
-                return
+                # Nothing written passes (or nothing was written: 10/20 PM, every turn rejected by the old worker during
+                # the release): the cut goes on writing under the rules below.
+            if sum(a['outcome'] not in RUNTIME_OUTCOMES for a in attempts) >= SHORTS_ATTEMPTS:
+                best = await asyncio.to_thread(self.shorts_fallback, job, attempts)
+                if best:
+                    plan, found, number = best
+                    qa.update(shipped_with_findings=found, shipped_attempt=number)
+                    await asyncio.to_thread(self.shorts.save, row, 'synthesizing', plan=plan.model_dump(mode='json'), qa=qa)
+                    return
+                if not qa.pop('retry_waited', False):
+                    qa['retry_waited'] = True
+                    await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
+                    await asyncio.to_thread(self.shorts.wait, row, SHORTS_RETRY, 'no_valid_version')
+                    return
             last = attempts[-1].get('findings', []) if attempts else []
             prompt = shorts_prompt(job['source'], job['plan'], (job.get('qa') or {}).get('review_findings', []),
                                    '\n'.join(f'- {f}' for f in last[:30]))
@@ -497,6 +510,9 @@ class VideoRunner:
                 attempts.append({'outcome': error.code if error.code in RUNTIME_OUTCOMES else 'rejected', 'code': error.code,
                                  'findings': [str(error.detail)[:300]]})
                 await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
+                if error.code in RUNTIME_OUTCOMES:  # not counted above: paced like the episode's lost turns
+                    lost = sum(a['outcome'] in RUNTIME_OUTCOMES for a in attempts)
+                    await asyncio.to_thread(self.shorts.wait, row, min(180, 30 * lost), 'model_retry')
                 return
             plan, dropped = settle(plan, job['source'])
             found = shorts_violations(plan, job['source'], job['plan'])
@@ -540,6 +556,23 @@ class VideoRunner:
                 await asyncio.to_thread(self.shorts.wait, row, 120, 'render_in_progress')
                 return
             await asyncio.to_thread(self.shorts.deliver, row, job, artifacts)
+
+    def shorts_fallback(self, job, attempts):
+        """(plan, findings, attempt number) of the written version with the fewest findings under the current checks, the
+        latest on a tie; None when no attempt holds a version of the current plan shape."""
+        best = None
+        for number, attempt in enumerate(attempts, 1):
+            receipt = self.store.effect_receipt(job, f'shorts-{number}', 'completed') if attempt['outcome'] == 'check_failed' else None
+            if not receipt:
+                continue
+            try:
+                plan, _ = settle(ShortsPlan.model_validate(receipt['output']), job['source'])
+            except ValidationError:
+                continue
+            found = shorts_violations(plan, job['source'], job['plan'])
+            if best is None or len(found) <= len(best[1]):
+                best = (plan, found, number)
+        return best
 
     def shorts_takes(self, job, plan):
         """(effect key, Runway request) per Shorts take, keyed apart from the episode's takes: the dated hook, the agenda,

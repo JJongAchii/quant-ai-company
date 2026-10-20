@@ -10,12 +10,15 @@ from datetime import date
 import pytest
 
 from quant_company.config import Settings
+from quant_company.contracts import ProviderFault
 from quant_company.video import runner as runner_module
 from quant_company.video.contracts import digest
 from quant_company.video.render import checksum, run, verify_artifacts
 from quant_company.video.runner import VideoRunner
 from quant_company.video.shorts import (
+    CHARS_PER_SECOND,
     CHECKS,
+    HOOK_NARRATION,
     KO_COUNT,
     OUTRO,
     QA_JS,
@@ -54,7 +57,7 @@ def shorts(**changes):
     value = dict(
         title='S&P 500 1.92% 상승, 반도체가 이끌었다', description='반도체가 이끈 미국 증시와 확산 여부를 짧게 정리합니다.',
         hook=dict(headline='반도체가 이끈 미국 증시, 확산은 아직', question='확산될까?',
-                  narration='미국 증시는 반도체가 주도했지만 업종별 흐름은 엇갈렸습니다.', claim_ids=['b001', 'b013']),
+                  narration='반도체가 주도했지만 업종별 흐름은 엇갈렸습니다.', claim_ids=['b001', 'b013']),
         issues=[dict(id='semis', scene_ids=['head', 'flow'], label='반도체 주도', agenda='반도체가 이끈 상승', big='1.92%',
                      big_label='S&P 500', dir='up', body='정규장 종가 기준 S&P 500이 올랐고 반도체가 상승을 주도했습니다.',
                      note_kind='의미', note='수익률 하락은 할인 부담을 낮출 수 있음',
@@ -105,6 +108,31 @@ def test_a_cut_is_a_hook_two_to_five_issues_and_signals():
         ShortsPlan.model_validate({**plan, 'signals_narration': '[calm] 비기술 업종으로 확산되는지 확인합니다.'})
     with pytest.raises(ValueError, match='signs as words'):
         ShortsPlan.model_validate({**plan, 'signals_narration': '비기술 업종이 +2% 오르는지 확인합니다.'})
+
+
+# A hook written under #194's 50-character limit, before the one-breath budget.
+OLD_HOOK = '미국 증시는 반도체가 주도했지만 업종별 흐름은 엇갈렸고 확산 여부는 아직 모릅니다'
+
+
+def test_the_hook_is_one_breath_after_the_date_line():
+    # Owner, 10/20: the first preview's opener ran 11.5 s (the spec asks ~3-5 s); the on-screen headline carries the detail.
+    plan = shorts().model_dump(mode='json')
+    assert HOOK_NARRATION == 32 and len(plan['hook']['narration']) <= HOOK_NARRATION and len(OLD_HOOK) == 45
+    assert not any('Hook narration' in f for f in violations(cut(hook={**plan['hook'], 'narration': '가' * 32})))
+    # A longer hook is a finding the model rewrites before any speech is paid, never a schema error: a plan stored under
+    # the old limits still validates after a release.
+    old = ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': OLD_HOOK}})
+    assert 'Hook narration is 45 characters, over 32: one sentence in one breath after the date line' in ' '.join(
+        shorts_violations(old, body_source(), episode().model_dump(mode='json')))
+    # So is a total over the 400-character budget that still fits the schema's 420.
+    raw = cut(signals_narration='가' * (405 - 5 * 66 - len(plan['hook']['narration'])))
+    raw['issues'] = [{**plan['issues'][0], 'id': f'long-{n}', 'narration': '가' * 66} for n in range(5)]
+    assert 'Narration is 405 characters in all, over 400: shorten the narrations' in violations(raw)
+    # The length estimate counts the hook with the date line at the voice's pace.
+    short, long = (ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': '가' * n}}) for n in (10, 32))
+    assert estimated_seconds(long) - estimated_seconds(short) == pytest.approx(22 / CHARS_PER_SECOND)
+    prompt = shorts_prompt(body_source(), episode().model_dump(mode='json'))
+    assert f'narration (8-{HOOK_NARRATION} characters' in prompt and 'one breath' in prompt
 
 
 def test_fixed_lines():
@@ -355,11 +383,12 @@ def test_every_scene_has_a_picture(tmp_path):
     built = ShortsRenderer(settings, WordAligner()).build(job, plan, bare, tmp_path / 'out', paths)
     shown = scene_classes(built['page'])
     # The cover is the first picture the episode shows (the headline card's), sharp behind the opener and blurred
-    # behind the agenda, the issues without their own picture and the outro.
+    # behind the agenda and the outro. The issues without their own picture show their chapter's other pictures blurred,
+    # each one the scene before does not show.
     assert {i: (bg, blur) for i, (bg, blur, _) in shown.items()} == {
-        'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'semis': ('img/illu.png', True),
+        'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'semis': ('img/photo.png', True),
         'check': ('img/illu.png', True), 'outro': ('img/illu.png', True)}
-    assert (built['page'] / 'img' / 'illu.png').is_file()
+    assert (built['page'] / 'img' / 'illu.png').is_file() and (built['page'] / 'img' / 'photo.png').is_file()
     assert not any('nophoto' in cls for *_, cls in shown.values()) and not any('picture' in f for f in built['findings'])
     # No picture anywhere (no reviewed library, no episode picture): a gradient, never a bare frame, and a finding.
     settings.video_asset_dir = tmp_path / 'empty'
@@ -368,6 +397,65 @@ def test_every_scene_has_a_picture(tmp_path):
     assert all(bg is None and 'nophoto' in cls for bg, _, cls in shown.values()), shown
     assert [f for f in built['findings'] if 'picture' in f] == [
         f'Shorts scene without a picture: {i}' for i in ('opener', 'agenda', 'semis', 'check', 'outro')]
+
+
+def test_an_issue_without_a_picture_takes_one_from_its_chapter_before_the_cover(tmp_path):
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    raw = episode().model_dump(mode='json')  # the thumbnail picture (the cover) is the headline card's illustration
+    raw['scenes'][6]['chapter'] = '함께 볼 이슈'  # counter: alone in its chapter, with no picture
+    assert [(s['id'], s['chapter']) for s in issue_scenes(raw)] == [
+        ('head', '핵심 이슈'), ('flow', '핵심 이슈'), ('photo', '핵심 이슈'), ('counter', '함께 볼 이슈')]
+    plan = shorts().model_dump(mode='json')
+    plan['issues'][0]['scene_ids'], plan['issues'][1]['scene_ids'] = ['flow'], ['counter']  # cards without a picture
+    plan = ShortsPlan.model_validate(plan)
+    shelf = json.loads((tmp_path / 'assets' / 'manifest.json').read_text())
+    nearby = cut_pictures(job, raw, plan, settings, shelf)['nearby']
+    assert [[p['path'].rsplit('/', 1)[1] for p in n] for n in nearby] == [['illu.png', 'photo.png'], []]
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, raw, tmp_path / 'out', tones(tmp_path, TAKES, ffmpeg))
+    shown = scene_classes(built['page'])
+    # flow: its chapter's nearest picture is the cover the agenda shows just before, so the photo two scenes on, with
+    # its own credit. counter: nothing else in its chapter, so the cover.
+    assert {i: (bg, blur) for i, (bg, blur, _) in shown.items()} == {
+        'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'semis': ('img/photo.png', True),
+        'check': ('img/illu.png', True), 'outro': ('img/illu.png', True)}
+    credits = {p['scene']: p['credit'] for p in built['pictures']}
+    assert credits['semis'] == '자료사진 · Fixture Author · CC BY 4.0' and credits['check'] == '' and credits['agenda'] == ''
+    [drawn] = on_page(built['page'], ["[...document.querySelectorAll('.scene')].map(e => e.querySelector('.credit')?.textContent || '')"])
+    assert drawn == ['', '', '자료사진 · Fixture Author · CC BY 4.0', '', '']
+    # The chapter's picture is taken even when the scene before shows it: the cover comes only after the chapter.
+    raw['scenes'][5]['chapter'] = '함께 볼 이슈'  # photo and counter
+    plan = shorts().model_dump(mode='json')
+    plan['issues'][0]['scene_ids'], plan['issues'][1]['scene_ids'] = ['photo'], ['counter']
+    built = ShortsRenderer(settings, WordAligner()).build(job, ShortsPlan.model_validate(plan), raw, tmp_path / 'again',
+                                                          tones(tmp_path, TAKES, ffmpeg))
+    shown = scene_classes(built['page'])
+    assert (shown['semis'][:2], shown['check'][:2]) == (('img/photo.png', False), ('img/photo.png', True))
+    assert {p['scene']: p['credit'] for p in built['pictures']}['check'] == '자료사진 · Fixture Author · CC BY 4.0'
+
+
+def test_the_headline_breaks_after_its_first_comma(tmp_path):
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    takes = tones(tmp_path, TAKES, ffmpeg)
+    raw = shorts().model_dump(mode='json')
+    # The headline's text, its breaks, whether each part is drawn on one line, and its size against the CSS size (92px).
+    lines = ("[...document.querySelectorAll('.opener .h1')].map(e => [e.innerText, e.querySelectorAll('br').length,"
+             " [...e.querySelectorAll('.part')].every(p => new Set([...p.getClientRects()].map(r => Math.round(r.top))).size === 1),"
+             " parseFloat(getComputedStyle(e).fontSize) / 92])")
+    shown = {}
+    # The owner's 10/20 headline broke mid-phrase ('나스닥 1.11% 반등, AI 칩 / 살 돈엔 금리 10% 이상').
+    for name, headline in (('comma', '나스닥 1.11% 반등, AI 칩 살 돈엔 금리 10% 이상'), ('fixture', raw['hook']['headline']),
+                           ('wide', '반도체, 미국 증시를 이끌었지만 비기술 업종 확산은 아직 혼조였다'), ('plain', '반도체가 이끈 미국 증시')):
+        raw['hook']['headline'] = headline
+        built = ShortsRenderer(settings, WordAligner()).build(job, ShortsPlan.model_validate(raw), episode().model_dump(mode='json'),
+                                                              tmp_path / name, takes)
+        [[shown[name]], fullwidth] = on_page(built['page'], [lines, "headline('반도체 주도，확산은 아직')"])
+    # Its second part needs the headline ~13% smaller to fit one line; the fixture's fits at the headline size.
+    assert shown['comma'][:3] == ['나스닥 1.11% 반등,\nAI 칩 살 돈엔 금리 10% 이상', 1, True] and 0.85 <= shown['comma'][3] < 0.9
+    assert shown['fixture'] == ['반도체가 이끈 미국 증시,\n확산은 아직', 1, True, 1]
+    # A second part that cannot fit one line even 15% smaller: the headline wraps as written, at its size.
+    assert shown['wide'] == ['반도체, 미국 증시를 이끌었지만 비기술 업종 확산은 아직 혼조였다', 0, True, 1]
+    assert shown['plain'] == ['반도체가 이끈 미국 증시', 0, True, 1]
+    assert '<br class="comma">' in fullwidth and '반도체 주도，</span>' in fullwidth
 
 
 def test_music_is_optional(tmp_path):
@@ -513,6 +601,22 @@ async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, vid
     assert len(provider.calls) == calls
 
 
+async def test_a_plan_stored_under_the_old_limits_is_still_voiced_and_rendered(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    # A cut written under #194 (a 45-character hook) waits between ticks with no lease while a release swaps the worker.
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
+    assert row['state'] == 'synthesizing', row['error']
+    stored = {**row['plan'], 'hook': {**row['plan']['hook'], 'narration': OLD_HOOK}}
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE video_shorts SET plan=%s::jsonb WHERE job_id=%s', (json.dumps(stored), job['id']))
+    renderer, takes = ShortsFileRenderer(), len(speech.calls)
+    row = await shorts_ticks(store, provider, speech, renderer, job)
+    assert row['state'] == 'delivering', row['error']
+    assert speech.calls[takes]['text'] == '9월 22일 아침 브리핑입니다. ' + OLD_HOOK and len(renderer.calls) == 1
+
+
 async def test_an_episode_with_under_two_issue_scenes_spends_no_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -615,8 +719,6 @@ async def test_a_lost_completion_keeps_the_file_receipt(brief, video, tmp_path, 
 
 
 async def test_a_lost_turn_is_asked_again_as_a_new_attempt(brief, video, tmp_path, monkeypatch):  # noqa: F811
-    from quant_company.contracts import ProviderFault
-
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
@@ -628,6 +730,17 @@ async def test_a_lost_turn_is_asked_again_as_a_new_attempt(brief, video, tmp_pat
     assert keys == ['1', '2']
 
 
+def given_up(store, job, checks):
+    """The cut as a worker before CHECKS 4 left it: skipped on its checks, at that version of them."""
+    with store.db.transaction() as conn:
+        conn.execute("UPDATE video_shorts SET state='skipped',error='check_failed',lease_until=NULL,"
+                     "qa=qa||jsonb_build_object('checks',%s::int) WHERE job_id=%s", (checks, job['id']))
+
+
+def shorts_keys(provider):
+    return [c.request_id.rsplit('-', 1)[-1] for c in provider.calls if c.output_contract == 'video_shorts_v1']
+
+
 async def test_a_cut_given_up_on_older_checks_is_checked_again_without_a_new_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -635,19 +748,80 @@ async def test_a_cut_given_up_on_older_checks_is_checked_again_without_a_new_tur
     provider.queues['video_shorts_v1'] = [shorts(), shorts(), shorts()]
     checks = runner_module.shorts_violations
     monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode: ['an older check'])
-    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
-    assert row['state'] == 'skipped' and row['error'] == 'check_failed' and row['qa']['checks'] == CHECKS
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=3)
+    assert row['state'] == 'writing' and [a['outcome'] for a in row['qa']['attempts']] == ['check_failed'] * 3
+    given_up(store, job, CHECKS)
     shorts_store = ShortsStore(store.company)
     assert shorts_store.claim() is None  # given up on the current checks: not looked at again
     monkeypatch.setattr(runner_module, 'shorts_violations', checks)
-    with store.db.transaction() as conn:  # as if given up before this version of the checks
-        conn.execute("UPDATE video_shorts SET qa=qa-'checks' WHERE job_id=%s", (job['id'],))
+    given_up(store, job, CHECKS - 1)  # as if given up before this version of the checks
     calls = len(provider.calls)
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
     assert row['state'] == 'delivering', row['error']
     assert len(provider.calls) == calls  # the written versions, no new turn
     assert row['qa']['attempts'][-1]['recheck'] == {'checks': CHECKS, 'findings': []}
     assert 'recheck' not in row['qa'] and row['plan'] == shorts().model_dump(mode='json')
+
+
+async def test_the_cut_given_up_by_the_old_worker_in_the_release_is_written_again(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    # 10/20 PM: the v1 worker claimed the cut at 19:00 while claude-runtime already wrote the v2 plan, so all three turns
+    # were rejected and the cut was skipped on checks 3 with no version written.
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.queues['video_shorts_v1'] = [ProviderFault('invalid_output', 'hook: Extra inputs are not permitted; scenes: Field required')]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=3)
+    assert [a['outcome'] for a in row['qa']['attempts']] == ['rejected'] * 3
+    assert CHECKS == 4
+    given_up(store, job, 3)
+    provider.queues['video_shorts_v1'] = [shorts()]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'delivering', row['error']
+    assert [a['outcome'] for a in row['qa']['attempts']] == ['rejected'] * 3 + ['passed'] and 'recheck' not in row['qa']
+    assert shorts_keys(provider) == ['1', '2', '3', '4']
+
+
+async def test_a_cut_is_produced_with_its_fewest_findings_after_the_last_version(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    titles = [f'반도체가 이끈 미국 증시 {name}판' for name in ('첫', '둘째', '셋째', '넷째', '다섯째')]
+    found = {t: [f'{t} 지적 {"가나다라"[k]}' for k in range(n)] for t, n in zip(titles, (3, 1, 2, 1, 4), strict=True)}
+    provider.queues['video_shorts_v1'] = [shorts(title=t) for t in titles]
+    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode: found[plan.title])
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=16)  # 5 versions, 5 takes, render
+    assert row['state'] == 'delivering', row['error']
+    assert [a['outcome'] for a in row['qa']['attempts']] == ['check_failed'] * 5 and shorts_keys(provider) == ['1', '2', '3', '4', '5']
+    # One finding each in the second and the fourth version: the latest is produced, its finding in the thread.
+    assert row['plan']['title'] == titles[3] and row['qa']['shipped_attempt'] == 4
+    assert row['qa']['shipped_with_findings'] == ['반도체가 이끈 미국 증시 넷째판 지적 가']
+    with store.db.transaction() as conn:
+        text = conn.execute('SELECT text FROM outbox WHERE id=%s', (row['delivery_message_id'],)).fetchone()['text']
+    assert '자동 검사 지적 1건(아래, 제작은 계속함)' in text and '• 대본: 반도체가 이끈 미국 증시 넷째판 지적 가\n' in text
+
+
+async def test_a_cut_with_no_valid_version_waits_and_writes_again(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from datetime import UTC, datetime, timedelta
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.queues['video_shorts_v1'] = [ProviderFault('invalid_output', 'issues: Field required')]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=5)
+    assert row['state'] == 'writing' and [a['outcome'] for a in row['qa']['attempts']] == ['rejected'] * 5
+    runner = VideoRunner(store.company, provider, speech)
+    runner.shorts_renderer = ShortsFileRenderer()
+    await runner.tick()
+    row = ShortsStore(store.company).get(job['id'])
+    # Nothing to produce: never skipped, asked again in 30 minutes (until the next episode starts).
+    assert row['state'] == 'writing' and row['error'] == 'no_valid_version' and len(row['qa']['attempts']) == 5
+    assert row['lease_until'] > datetime.now(UTC) + timedelta(minutes=29)
+    await runner.tick()  # still waiting
+    assert len(shorts_keys(provider)) == 5
+    provider.queues['video_shorts_v1'] = [shorts()]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'delivering', row['error']
+    assert shorts_keys(provider) == ['1', '2', '3', '4', '5', '6'] and row['qa']['attempts'][-1]['outcome'] == 'passed'
 
 
 def test_cut_pictures_follow_the_cited_scenes(tmp_path):
@@ -687,14 +861,16 @@ async def test_recheck_skips_versions_of_the_old_shape(brief, video, tmp_path, m
     provider.queues['video_shorts_v1'] = [shorts(), shorts(), shorts()]
     checks = runner_module.shorts_violations
     monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode: ['a check'])
-    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
-    assert row['state'] == 'skipped' and row['error'] == 'check_failed'
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=3)
+    assert [a['outcome'] for a in row['qa']['attempts']] == ['check_failed'] * 3
     monkeypatch.setattr(runner_module, 'shorts_violations', checks)
     old = {'title': 'old', 'description': 'old', 'hook': '옛 훅', 'points': [], 'closing': 'x'}
+    given_up(store, job, CHECKS - 1)
     with store.db.transaction() as conn:
-        conn.execute("UPDATE video_shorts SET qa=qa-'checks' WHERE job_id=%s", (job['id'],))
         conn.execute("UPDATE video_effects SET receipt=jsonb_set(receipt,'{output}',%s::jsonb) WHERE job_id=%s AND id LIKE %s",
                      (json.dumps(old), job['id'], '%:shorts-_'))
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
-    assert row['state'] == 'skipped' and row['error'] == 'check_failed' and row['qa']['checks'] == CHECKS
-    assert row['qa']['attempts'][-1]['recheck'] == {'checks': CHECKS, 'findings': ['older plan shape']}
+    # The versions of the old shape are passed over and the cut writes on.
+    assert row['state'] == 'delivering', row['error']
+    assert [a.get('recheck') for a in row['qa']['attempts']] == [{'checks': CHECKS, 'findings': ['older plan shape']}] * 3 + [None]
+    assert row['qa']['attempts'][-1]['outcome'] == 'passed' and shorts_keys(provider) == ['1', '2', '3', '4']

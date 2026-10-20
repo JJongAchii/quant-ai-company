@@ -33,10 +33,11 @@ def names(job):
     return [(source, stem + suffix, title) for source, suffix, title in FILES]
 
 
-def delivery_text(job, artifacts):
-    findings = artifacts.get('findings') or []
+def delivery_text(job, artifacts, script_findings=()):
+    """script_findings: what the checks still found in a cut produced after its last version (Runner.shorts_step)."""
+    findings = [f'대본: {f}' for f in script_findings] + [f'화면·음성: {f}' for f in artifacts.get('findings') or []]
     check = '자동 검사 통과' if not findings else f'자동 검사 지적 {len(findings)}건(아래, 제작은 계속함)'
-    notes = ''.join(f'• {f[:180]}\n' for f in findings[:5])
+    notes = ''.join(f'• {f[:180]}\n' for f in findings[:8]) + (f'• 외 {len(findings) - 8}건\n' if len(findings) > 8 else '')
     issues = sum(1 for x in artifacts.get('scenes', []) if x.get('type') == 'issue')
     return (f"쇼츠 준비 완료 · {EDITION_NAMES.get(job['source'].get('edition_kind'), '브리핑')}\n{artifacts.get('title', '')}\n"
             f"길이 {round(artifacts.get('duration', 0))}초 · 이슈 {issues}개 · 세로 1080×1920 · {check}\n" + notes +
@@ -145,8 +146,8 @@ class ShortsStore:
                 raise PolicyError('Brief thread receipt missing')
             mid = stable(f"video-shorts:{job['id']}")
             # Ready files wait for the owner's upload: the message mentions the owner (2026-10-19 tag rule).
-            self.company._message(conn, project, None, 'market_brief', 'video_shorts', delivery_text(job, artifacts),
-                                  message_id=mid, notify_owner=True)
+            text = delivery_text(job, artifacts, (current['qa'] or {}).get('shipped_with_findings', []))
+            self.company._message(conn, project, None, 'market_brief', 'video_shorts', text, message_id=mid, notify_owner=True)
             conn.execute("""UPDATE video_shorts SET state='delivering',artifacts=%s,delivery_message_id=%s,error=NULL,
                 lease_until=NULL,updated_at=now() WHERE job_id=%s""", (Jsonb(artifacts), mid, row['job_id']))
             return str(mid)
