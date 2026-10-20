@@ -267,6 +267,61 @@ def test_the_fixed_opening_and_closing_travel_with_the_render_inputs(tmp_path):
     assert seen['brand'] == {'sting': b'sting', 'endcard': b'endcard'}
 
 
+def test_the_music_bed_travels_with_the_render_inputs(tmp_path):
+    """The render image has no music folder: the worker's chosen track goes in the inputs, alone (the library copy
+    leaves the folder out), and the task renders with it; without one the task is given none."""
+    import tarfile
+    from datetime import date
+
+    from quant_company.config import Settings
+    from quant_company.video.remote import RemoteRender
+
+    s3 = FakeS3()
+    settings = Settings(_env_file=None, video_artifact_dir=tmp_path / 'video', video_asset_dir=tmp_path / 'assets',
+                        video_render_bucket='render-bucket')
+    (tmp_path / 'assets' / 'music').mkdir(parents=True)
+    (tmp_path / 'assets' / 'manifest.json').write_text('{}')
+    for name in ('a.mp3', 'b.mp3'):
+        (tmp_path / 'assets' / 'music' / name).write_bytes(name.encode())
+    plan = episode()
+    audio = []
+    for i in range(len(plan.scenes)):
+        audio.append(tmp_path / f's{i}.mp3')
+        audio[-1].write_bytes(b'speech')
+    job = {'id': 'job-1', 'source': {'day': '2026-10-20'}, 'policy': {'template': 'motion-v2'}, 'qa': {}}
+    remote = RemoteRender(settings, s3=s3, ecs=FakeECS())
+    remote.upload_inputs(job, plan, audio, None, 'render-abc')
+    chosen = ['a.mp3', 'b.mp3'][date(2026, 10, 20).toordinal() % 2]
+    inputs = Storage(s3, 'render-bucket')
+    assert json.loads(inputs.get('render/job-1/render-abc/in/music.json')) == chosen
+    with tarfile.open(fileobj=io.BytesIO(inputs.get('render/job-1/render-abc/in/assets.tar.gz')), mode='r:gz') as archive:
+        assert './manifest.json' in archive.getnames() and not any('music' in n for n in archive.getnames())
+    # The task, with its own empty folders as in the render image.
+    task = Settings(_env_file=None, video_artifact_dir=tmp_path / 'task', video_asset_dir=tmp_path / 'task-assets')
+    seen = {}
+
+    class Renderer:
+        def render(self, job, plan, directory, audio, texts, music=None):
+            seen['music'] = (music.name, music.read_bytes())
+            (directory / 'video.mp4').write_bytes(b'video')
+            return {'directory': str(directory), 'files': {'video.mp4': 'x'}, 'duration': 1.0}
+
+    render_task(task, 's3://render-bucket/render/job-1/render-abc', s3=s3, renderer=Renderer())
+    assert seen['music'] == (chosen, chosen.encode()) and not (tmp_path / 'task-assets' / 'music').exists()
+    # No track on the worker: none in the inputs and none given (a renderer without the argument still renders).
+    for name in ('a.mp3', 'b.mp3'):
+        (tmp_path / 'assets' / 'music' / name).unlink()
+    remote.upload_inputs(job, plan, audio, None, 'render-def')
+    assert json.loads(inputs.get('render/job-1/render-def/in/music.json')) is None
+
+    class Plain:
+        def render(self, job, plan, directory, audio, texts):
+            (directory / 'video.mp4').write_bytes(b'video')
+            return {'directory': str(directory), 'files': {'video.mp4': 'x'}, 'duration': 1.0}
+
+    render_task(task, 's3://render-bucket/render/job-1/render-def', s3=s3, renderer=Plain())
+
+
 def test_syncer_uploads_only_progress_and_artifacts(tmp_path):
     s3 = FakeS3()
     (tmp_path / 'review').mkdir()

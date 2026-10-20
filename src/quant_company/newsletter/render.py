@@ -23,6 +23,8 @@ UP, DOWN, MUTED, SOFT, LINE = "#D7263D", "#1E5EFF", "#7A86A8", "#4A5578", "#E8EC
 INTRO = "뭐든story는 매 거래일 아침과 장 마감 후 국내 증시의 주요 내용을 정리해 보내 드립니다."
 CONSENT = "이 메일은 뭐든story 리포트 수신에 동의하신 분께 발송됩니다."
 DISCLAIMER = "투자 권유가 아닌 정보 제공용 자료이며, 투자 판단과 책임은 본인에게 있습니다."
+# A sender in the reader's contacts keeps the report in the inbox (owner, 2026-10-20); the configured address.
+SAFE_SENDER = "받은편지함에서 놓치지 않으려면 {sender}을(를) 연락처에 추가해 주세요."
 
 
 def subject(draft, day, kind="pm"):
@@ -168,7 +170,7 @@ def html(draft, *, day, sender, channel_url, kind="pm", logo_src=f"cid:{LOGO_CID
 {company}{calendar}
 {section("", f'<a href="{e(channel_url)}" style="display:inline-block;background:#E62117;color:#FFFFFF;font-weight:800;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:14px;">▶ 영상으로 보기</a>', "text-align:center;")}
 <tr><td style="padding:16px 22px;font-size:11.5px;line-height:1.65;color:{MUTED};background:#F7F8FB;border-radius:0 0 10px 10px;">
-{e(INTRO)} {e(CONSENT)}<br>{e(DISCLAIMER)}<br><a href="{unsubscribe}" style="color:{SOFT};">수신 거부</a>
+{e(INTRO)} {e(CONSENT)}<br>{e(DISCLAIMER)}<br>{e(SAFE_SENDER.format(sender=sender))}<br><a href="{unsubscribe}" style="color:{SOFT};">수신 거부</a>
 </td></tr>
 </table></td></tr></table>
 </body></html>
@@ -203,7 +205,7 @@ def text(draft, *, day, sender, channel_url, kind="pm"):
         out.append("[주요 일정]")
         out += [f"{r.when}  {r.what}" + (f" ({r.note})" if r.note else "") for r in draft.calendar]
         out.append("")
-    out += [f"▶ 영상으로 보기: {channel_url}", "", "—", INTRO, CONSENT, DISCLAIMER,
+    out += [f"▶ 영상으로 보기: {channel_url}", "", "—", INTRO, CONSENT, DISCLAIMER, SAFE_SENDER.format(sender=sender),
             f"수신 거부: {unsubscribe_url(sender)}"]
     return "\n".join(out) + "\n"
 

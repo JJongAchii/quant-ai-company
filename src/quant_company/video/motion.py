@@ -21,7 +21,18 @@ from zoneinfo import ZoneInfo
 from .body import references as body_references
 from .contracts import digest
 from .illustrations import GENERATED, library_entries
-from .render import Aligner, RenderInProgress, checksum, probe, quality_probe, run, spoken
+from .render import (
+    Aligner,
+    RenderInProgress,
+    checksum,
+    mix_music,
+    music_track,
+    probe,
+    quality_probe,
+    run,
+    spoken,
+)
+from .upload import SIGNUP_COMMENT, SIGNUP_LEAD
 from .upload import compose as compose_upload
 
 KST = ZoneInfo('Asia/Seoul')
@@ -341,9 +352,10 @@ class MotionRenderer:
             for v in value:
                 yield from self._images(v)
 
-    def render(self, job, plan, directory, audio_paths, texts=None, brand=None):
+    def render(self, job, plan, directory, audio_paths, texts=None, brand=None, music=None):
         """brand: {'sting': audio, 'endcard': audio} adds the fixed opening and closing; without it the episode renders
-        as written (an episode is never held for them)."""
+        as written (an episode is never held for them). music: the bed's file (a remote render's, from its inputs);
+        without it the bed is the Shorts' (render.music_track). No track, or a mix that fails, renders without music."""
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
         # One render per directory: a thread left behind by an interrupted tick keeps the lock until it finishes.
@@ -354,7 +366,7 @@ class MotionRenderer:
             os.close(lock)
             raise RenderInProgress(str(directory)) from None
         try:
-            return self._render(job, plan, directory, audio_paths, texts, brand)
+            return self._render(job, plan, directory, audio_paths, texts, brand, music)
         finally:
             os.close(lock)
 
@@ -365,7 +377,7 @@ class MotionRenderer:
             self.generated_used.add(asset_id)
         return asset
 
-    def _render(self, job, plan, directory, audio_paths, texts, brand=None):
+    def _render(self, job, plan, directory, audio_paths, texts, brand=None, music=None):
         self.sign_conflicts, self.generated_used = [], set()
         self.episode_assets = library_entries(job, plan, self.settings, self.library)
         page, scenes, used = self._page(job, plan, directory)
@@ -486,8 +498,13 @@ class MotionRenderer:
         narration = directory / 'narration.wav'
         run([self.settings.video_ffmpeg, '-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', str(directory / 'aud.txt'),
              '-af', 'loudnorm=I=-16:TP=-2.0:LRA=11,alimiter=limit=0.79:level=false', '-ar', '48000', str(narration)])
+        # The Shorts' music bed under the whole episode (owner, 2026-10-20), mixed after the narration's loudness.
+        sound, bed, track = narration, None, music or music_track(self.settings, job)
+        if track is not None:
+            sound, bed, found = mix_music(self.settings, directory, narration, total, track)
+            findings += found
         output = directory / 'video.mp4'
-        run([self.settings.video_ffmpeg, '-y', '-v', 'error', '-i', str(silent), '-i', str(narration), '-c:v', 'copy', '-c:a', 'aac',
+        run([self.settings.video_ffmpeg, '-y', '-v', 'error', '-i', str(silent), '-i', str(sound), '-c:v', 'copy', '-c:a', 'aac',
              '-b:a', '192k', '-shortest', '-movflags', '+faststart', str(output)])
         media = probe(output, self.settings)
         video = next((s for s in media['streams'] if s['codec_type'] == 'video'), {})
@@ -501,10 +518,10 @@ class MotionRenderer:
             findings.append(f"True peak {measured['true_peak_dbfs']:.1f} dBTP above -1.5")
         manifest = self._package(job, plan, directory, scenes, all_captions, alignment, used, duration, measured, frames,
                                  findings, review={'frames': stills + [{'scene': 'thumbnail', 'file': 'thumbnail.png'}],
-                                                   'audio': misheard})
+                                                   'audio': misheard}, music=bed)
         # Intermediates are not part of the reviewed artifact set (about 0.2 GB per episode).
         for path in [*directory.glob('part-*.mp4'), *directory.glob('aud-*.wav'), directory / 'silent.mp4',
-                     directory / 'narration.wav', directory / 'parts.txt', directory / 'aud.txt']:
+                     directory / 'narration.wav', directory / 'mixed.wav', directory / 'parts.txt', directory / 'aud.txt']:
             path.unlink(missing_ok=True)
         shutil.rmtree(directory / 'page', ignore_errors=True)
         return manifest
@@ -569,7 +586,7 @@ class MotionRenderer:
         return found
 
     def _package(self, job, plan, directory, scenes, all_captions, alignment, used, duration, measured, frames, findings=(),
-                 review=None):
+                 review=None, music=None):
         def stamp(x):
             ms = round(x * 1000)
             return f'{ms // 3600000:02}:{ms // 60000 % 60:02}:{ms // 1000 % 60:02},{ms % 1000:03}'
@@ -592,7 +609,11 @@ class MotionRenderer:
                               [(c['start'], plan.thumbnail if i == 0 else c['title']) for i, c in enumerate(chapters)],
                               refs, self.settings.video_playlist_url, strict=False)
         findings = [*findings, *copy.pop('findings', [])]
-        description = copy['description']
+        # The signup lines go on after the copy checks, in the copy YouTube is given too, while it fits the limit.
+        description = SIGNUP_LEAD + copy['description']
+        if len(description.encode()) > 5000:
+            description = copy['description']
+            findings.append('Upload copy: the mail signup lines would pass the YouTube description limit; left out')
         photos = [a for a in used.values() if a['kind'] == '자료사진']
         credits = ''.join(f"\n- {a['subject']} · {a['author']} · {a['license']}"
                           + (f" ({a['license_url']})" if a.get('license_url') else '')
@@ -601,7 +622,8 @@ class MotionRenderer:
         publish = job['policy'].get('publish_at')
         when = f"[공개 시각]\n{datetime.fromisoformat(publish).astimezone(KST):%Y-%m-%d %H:%M} KST\n\n" if publish else ''
         (directory / 'upload.txt').write_text(when + f"[제목]\n{copy['title']}\n\n[설명]\n{description}\n\n[태그]\n{', '.join(copy['tags'])}\n\n"
-                                              f"[고정 댓글]\n{plan.pinned_comment}\n" + (f"\n[자료사진 출처]{credits}\n" if photos else ''))
+                                              f"[고정 댓글]\n{plan.pinned_comment}\n\n{SIGNUP_COMMENT}\n"
+                                              + (f"\n[자료사진 출처]{credits}\n" if photos else ''))
         (directory / 'sources.json').write_text(json.dumps(sources, ensure_ascii=False, indent=2))
         (directory / 'assets.json').write_text(json.dumps(used, ensure_ascii=False, indent=2))
         names = ['video.mp4', 'thumbnail.png', 'subtitles.srt', 'script.txt', 'plan.json', 'alignment.json', 'upload.txt',
@@ -613,7 +635,7 @@ class MotionRenderer:
                     'files': {n: checksum(directory / n) for n in names},
                     'generated_images': sorted(self.generated_used),
                     'chapters': chapters, 'scenes': scene_timings(scenes), 'description': description,
-                    'brand': [s['type'] for s in scenes if s.get('brand')],
+                    'brand': [s['type'] for s in scenes if s.get('brand')], 'music': music,
                     'directory': str(directory), 'renderer': RENDERER_DIGEST}
         manifest['digest'] = digest(manifest)
         (directory / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))

@@ -13,7 +13,6 @@ import os
 import re
 import shutil
 import subprocess
-from datetime import date
 from importlib.resources import files
 from pathlib import Path
 from typing import Literal
@@ -37,7 +36,8 @@ from .episode import (
 )
 from .illustrations import library_entries
 from .motion import CHROMIUM_ARGS, FPS, captions, word_times
-from .render import Aligner, RenderInProgress, checksum, probe, quality_probe, run, spoken
+from .render import Aligner, RenderInProgress, checksum, music_track, probe, quality_probe, run, spoken
+from .render import mix_music as mix
 from .upload import INSTRUCTION
 
 WIDTH, HEIGHT = 1080, 1920
@@ -486,36 +486,9 @@ QA_JS = r"""(safe) => {
  return out;}"""
 
 
-def music_track(settings, job):
-    """The music bed under this cut: the tracks in {video_asset_dir}/music take turns by the episode's date. None when the
-    folder is missing, empty or unreadable (the cut is made without music)."""
-    try:
-        tracks = sorted(p for p in (Path(settings.video_asset_dir) / 'music').glob('*.mp3') if p.is_file())
-    except OSError:
-        return None
-    if not tracks:
-        return None
-    return tracks[date.fromisoformat(str(job['source']['day'])[:10]).toordinal() % len(tracks)]
-
-
-# About -22 dB under the narration, ducked further while it speaks, faded in and out over a second; limited like the
-# narration chain so the bed never lifts the peak past -2 dBFS.
-MIX = ('[1:a]volume=0.08,afade=t=in:d=1,afade=t=out:st={fade}:d=1[m];[m][0:a]sidechaincompress=threshold=0.03:ratio=8:'
-       'attack=20:release=400[d];[0:a][d]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.79:level=false')
-
-
 def mix_music(settings, directory, narration, total, track):
-    """(sound, track name or None, findings): the loudness-normalised narration with the bed under it, looped when the
-    track is shorter than the cut. A track FFmpeg cannot read or a mix that hangs leaves the narration alone."""
-    mixed = Path(directory) / 'mixed.wav'
-    try:
-        run([settings.video_ffmpeg, '-y', '-v', 'error', '-i', str(narration), '-stream_loop', '-1', '-t', f'{total:.3f}',
-             '-i', str(track), '-filter_complex', MIX.format(fade=f'{max(total - 1, 0):.3f}'), '-ar', '48000', '-ac', '2',
-             str(mixed)], timeout=120)
-    except (ValueError, OSError, subprocess.TimeoutExpired):
-        mixed.unlink(missing_ok=True)
-        return narration, None, [f'Music bed {Path(track).name} could not be mixed; the cut has no music']
-    return mixed, Path(track).name, []
+    """The episode's music mix (render.mix_music) through this module's media call."""
+    return mix(settings, directory, narration, total, track, runner=run)
 
 
 class ShortsRenderer:

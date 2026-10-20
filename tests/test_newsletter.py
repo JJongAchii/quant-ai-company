@@ -371,6 +371,11 @@ def test_html_and_plain_text_follow_the_approved_layout():
     text = plain.get_content()
     assert "코스피 출발 5,488.41 (▼ 3.17%) → 마감 5,768.01 (▲ 1.76%)" in text and "기관 +5,731억" in text
     assert render.DISCLAIMER in text and "수신 거부: mailto:" in text
+    # The footer asks to add the configured sender to the contacts, in both parts, above the unsubscribe line.
+    contact = f"받은편지함에서 놓치지 않으려면 {SENDER}을(를) 연락처에 추가해 주세요."
+    lines = text.splitlines()  # the SMTP policy sends CRLF
+    assert page.index(contact) < page.index("수신 거부") and lines[lines.index(render.DISCLAIMER) + 1] == contact
+    assert lines[lines.index(contact) + 1].startswith("수신 거부: mailto:")
 
 
 # ---- PostgreSQL ------------------------------------------------------------------------------------------------
