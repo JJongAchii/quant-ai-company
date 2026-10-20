@@ -64,7 +64,7 @@ def episode(**changes):
                  dict(chip='다르게 볼 점', kind='counter', text='반도체 자체 재료 가능성', sub='금리만의 효과로 보지 않음'),
                  dict(chip='확인할 신호', kind='signal', text='비기술 업종 확산', sub='상승이 넓어지는지 확인'),
                  dict(chip='사실', text='반도체가 상승 주도', sub='업종별 흐름은 엇갈림')])),
-        dict(id='counter', chapter='핵심 이슈', type='counter', claim_ids=['b010'],
+        dict(id='counter', chapter='핵심 이슈', type='counter', claim_ids=['b010', 'b014'],
              narration='다르게 보면 금리보다 반도체 자체의 재료가 영향을 줬을 수도 있습니다.',
              data=dict(chips=['핵심 이슈 1'], title='금리만의 효과일까', icon='balance', topic='다르게 볼 점',
                        blocks=[dict(x=0, label='금리', value='할인 부담', gold=1, sub='수익률 하락의 효과'),

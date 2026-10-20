@@ -41,8 +41,18 @@ from .render import Aligner, RenderInProgress, checksum, probe, quality_probe, r
 from .upload import INSTRUCTION
 
 WIDTH, HEIGHT = 1080, 1920
-# About 70 seconds with the fixed lines, at the narration voice's ~7 characters per second.
-NARRATION_LIMIT = 560
+# The narration voice reads ~6.7 characters per second (episode.py). The model fills ~97% of the limit, so 420 characters
+# are ~407 spoken: with the fixed lines (date, issue count and closing: ~63 characters) that is ~470 / 6.7 = ~70 s, plus
+# 0.5 s of lead and tail per scene (4-7 scenes) and the agenda and closing holds the cut keeps: ~78 s, under the 90 s cap.
+NARRATION_LIMIT = 420
+CHARS_PER_SECOND = 6.7
+# Seconds a scene stays up beyond its speech; the renderer and the length estimate share these.
+OUTRO_HOLD = 6.0
+SHORTS_AIM, SHORTS_CAP, YOUTUBE_SHORTS_MAX = (60, 75), 90, 180
+
+
+def agenda_hold(count):
+    return 1.0 + 0.9 * count
 OUTRO = {'say': '왜 그런지, 앞으로 볼 신호는 본편에서 확인하세요.', 'lead': '왜 그런지, 앞으로 볼 신호는', 'main': '본편에서 확인하세요'}
 LEAD, TAIL = 0.15, 0.35
 # Everything a viewer must read stays clear of YouTube's own Shorts controls.
@@ -106,7 +116,7 @@ def cut_pictures(job, episode, plan, settings, library):
         path = Path(asset['file'])
         if not path.is_absolute():
             path = Path(settings.video_asset_dir) / path
-        credit = f"자료사진 · {asset['author']} · {asset['license']}" if asset.get('kind') == '자료사진' else ''
+        credit = f"자료사진 · {asset.get('author', '')} · {asset.get('license', '')}" if asset.get('kind') == '자료사진' else ''
         return {'path': str(path), 'credit': credit}
 
     issues = []
@@ -126,7 +136,7 @@ def issue_scenes(episode):
 class ShortsHook(StrictModel):
     headline: str = Field(min_length=4, max_length=40)
     question: str = Field(min_length=2, max_length=20)
-    narration: str = Field(min_length=8, max_length=90)
+    narration: str = Field(min_length=8, max_length=50)
     claim_ids: list[str] = Field(min_length=1, max_length=8)
 
 
@@ -141,7 +151,7 @@ class ShortsIssue(StrictModel):
     body: str = Field(min_length=20, max_length=90)
     note_kind: Literal['다르게 볼 점', '의미', '확인할 점']
     note: str = Field(min_length=4, max_length=36)
-    narration: str = Field(min_length=20, max_length=130)
+    narration: str = Field(min_length=20, max_length=95)
     claim_ids: list[str] = Field(min_length=1, max_length=8)
 
     def screen(self):
@@ -198,7 +208,7 @@ def shorts_prompt(source, episode, concerns=(), feedback=''):
         "before the issues, and a closing line sending viewers to the full episode.\n"
         "hook: the episode's sharpest message, the same as its title and thumbnail, spoken right after the date line "
         "with no greeting and no channel name. headline (4-40 characters, drawn big on the first frame, may wrap), "
-        "question (2-20 characters), narration (8-90 characters, one or two sentences), claim_ids.\n"
+        "question (2-20 characters), narration (8-50 characters, one short sentence), claim_ids.\n"
         "issues: 4 or 5 when the episode has that many issue scenes, never fewer than 2; each cuts one topic from one "
         "or more consecutive issue scenes (scene_ids, in the episode's order; use each issue scene in one issue at "
         "most). Per issue: id (short, unique), label (the topic, at most 16 characters), agenda (the line shown in the "
@@ -206,11 +216,12 @@ def shorts_prompt(source, episode, concerns=(), feedback=''):
         "template draws dir), big_label (what the number is, at most 12 characters), optional dir (up or dn, only "
         "where the briefing line states a direction), body (one or two sentences, 20-90 characters, on what happened, "
         "plain '~습니다' Korean), note_kind and note (4-36 characters): '다르게 볼 점' gives the counterpoint, '의미' the "
-        "meaning for the Korean market, '확인할 점' what to check next. narration (20-130 characters) says the body and "
+        "meaning for the Korean market, '확인할 점' what to check next. narration (20-95 characters) says the body and "
         "the note aloud. Cite the briefing lines (claim_ids) the issue uses.\n"
         "signals: 2 or 3 short lines (4-30 characters each) taken from the episode's closing signals, with "
         "signals_narration (10-90 characters) and signals_claim_ids.\n"
-        f"Narration is plain spoken Korean, {NARRATION_LIMIT} characters in all; read signs as words.\n"
+        f"Narration is plain spoken Korean, at most {NARRATION_LIMIT} characters in all (the whole Shorts must stay "
+        "under 90 seconds); read signs as words.\n"
         "Every number on screen or in the narration must appear in the briefing lines its unit cites (claim_ids) and in "
         "the delivered episode. "
         "Use only facts the episode used; leave out anything the episode review flagged. Never say "
@@ -321,10 +332,43 @@ def issue_citations(plan, episode):
     return found
 
 
+def estimated_seconds(plan):
+    """The cut's length before any speech is paid, as build() will lay it out: each scene is its spoken text at the
+    voice's pace plus lead and tail, the agenda and the closing at least as long as their holds. The date line is
+    counted at its longest ('10월 20일 아침 브리핑입니다.')."""
+    lines = {'opener': '10월 20일 아침 브리핑입니다. ' + plan.hook.narration, 'agenda': agenda_line(len(plan.issues)),
+             'outro': plan.signals_narration + ' ' + OUTRO['say']}
+    holds = {'agenda': agenda_hold(len(plan.issues)), 'outro': OUTRO_HOLD}
+    texts = [('opener', lines['opener']), ('agenda', lines['agenda']), *(('issue', i.narration) for i in plan.issues),
+             ('outro', lines['outro'])]
+    return sum(max(LEAD + len(spoken(t)) / CHARS_PER_SECOND + TAIL, holds.get(kind, 0.0)) for kind, t in texts)
+
+
+def claim_binding(plan, episode):
+    """Findings on claim IDs the episode's own scenes do not carry."""
+    found, by_id = [], {s['id']: set(s['claim_ids']) for s in episode['scenes']}
+    everywhere = set().union(*by_id.values()) if by_id else set()
+    for issue in plan.issues:
+        own = set().union(*(by_id.get(sid, set()) for sid in issue.scene_ids))
+        stray = sorted(set(issue.claim_ids) - own)
+        if stray:
+            found.append(f'Line IDs {stray} in issue {issue.id} are not used by its cited scenes')
+    for name, ids in (('the hook', plan.hook.claim_ids), ('the signals', plan.signals_claim_ids)):
+        stray = sorted(set(ids) - everywhere)
+        if stray:
+            found.append(f'Line IDs {stray} in {name} are not used anywhere in the episode')
+    return found
+
+
 def shorts_violations(plan, source, episode):
     """The episode's binding rules on the cut: cited numbers only (also in the delivered episode), no advice, no tool
     wording, no spoken attribution. episode: the delivered EpisodePlan as JSON."""
     claims, found, cited, lines = claim_catalog(source), issue_citations(plan, episode), set(), []
+    found += claim_binding(plan, episode)
+    seconds = estimated_seconds(plan)
+    if seconds > SHORTS_CAP:
+        found.append(f'Estimated length {seconds:.0f} s is over the {SHORTS_CAP} s cap (aim {SHORTS_AIM[0]}-{SHORTS_AIM[1]} s):'
+                     ' shorten the narrations')
     allowed_frame = nums(frame(source))
     in_episode = nums(episode_text(episode)) | allowed_frame
     units = [('the hook', plan.hook.claim_ids, [plan.hook.headline, plan.hook.question], plan.hook.narration, None),
@@ -374,6 +418,9 @@ def shorts_violations(plan, source, episode):
     extra = nums(f'{plan.title} {plan.description}') - cited
     if extra:
         found.append(f'Unbound number {sorted(extra)} in the title or description')
+    outside = nums(f'{plan.title} {plan.description}') - in_episode
+    if outside:
+        found.append(f'Number {sorted(outside)} in the title or description is not in the delivered episode')
     every = ' '.join(lines)
     for value in nums(plan.title):
         said, stated_dir = direction(plan.title, value), direction(every, value)
@@ -536,7 +583,7 @@ class ShortsRenderer:
         scenes = self.scenes(job, plan)
         pictures, findings = self._pictures(job, plan, episode, scenes, page)
         # The list and the closing button stay up long enough to read, past their short fixed lines.
-        hold = {'agenda': 1.0 + 0.9 * len(plan.issues), 'outro': 6.0}
+        hold = {'agenda': agenda_hold(len(plan.issues)), 'outro': OUTRO_HOLD}
         t, cues = 0.0, []
         for number, (scene, audio) in enumerate(zip(scenes, audio_paths, strict=True)):
             duration = float(probe(audio, self.settings)['format']['duration'])
@@ -559,10 +606,11 @@ class ShortsRenderer:
             cues += captions(word_times(scene['narration'], words, duration), t + LEAD, t + length)
             t = scene['t1']
         total = round(t, 3)
-        if not 20 <= total <= 100:
+        # Paid speech is never thrown away over length: only a cut YouTube cannot take as a Short raises.
+        if not 20 <= total <= YOUTUBE_SHORTS_MAX:
             raise ValueError('Shorts duration outside limits')
-        if not 45 <= total <= 90:
-            findings.append(f'Shorts runs {total:.0f} s (aim 60-75 s)')
+        if not 45 <= total <= SHORTS_CAP:
+            findings.append(f'Shorts runs {total:.0f} s (aim {SHORTS_AIM[0]}-{SHORTS_AIM[1]} s, at most {SHORTS_CAP} s)')
         day = str(job['source']['day'])
         label = f"{int(day[5:7])}.{int(day[8:10])} {EDITION_WORDS.get(job['source'].get('edition_kind'), '')}".strip()
         ep = {'label': label, 'date_badge': edition_date(job), 'captions': cues, 'total': total,

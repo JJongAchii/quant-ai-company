@@ -27,6 +27,7 @@ from quant_company.video.shorts import (
     cut_pictures,
     date_line,
     direction,
+    estimated_seconds,
     issue_scenes,
     settle,
     shorts_prompt,
@@ -93,8 +94,8 @@ def test_a_cut_is_a_hook_two_to_five_issues_and_signals():
             ShortsPlan.model_validate({**plan, 'issues': issues})
     with pytest.raises(ValueError, match='series name'):
         ShortsPlan.model_validate({**plan, 'title': '반도체가 이끌었다 | 9월 22일 아침 · 오늘의 증시story'})
-    long = [{**plan['issues'][0], 'id': f'long-{n}', 'narration': '가' * 130} for n in range(5)]
-    with pytest.raises(ValueError, match='Shorts length'):  # 5 x 130 + the hook and the signals
+    long = [{**plan['issues'][0], 'id': f'long-{n}', 'narration': '가' * 90} for n in range(5)]
+    with pytest.raises(ValueError, match='Shorts length'):  # 5 x 90 + the hook and the signals
         ShortsPlan.model_validate({**plan, 'issues': long})
     with pytest.raises(ValueError, match='unique'):
         ShortsPlan.model_validate({**plan, 'issues': [plan['issues'][0], plan['issues'][0]]})
@@ -121,7 +122,7 @@ def test_issues_cut_the_episode_issue_scenes_in_order():
     assert any('out of episode order' in f for f in violations(raw))
     raw = cut()  # within an issue any order is fine; only the first scene of each issue follows the episode
     raw['issues'][0]['scene_ids'], raw['issues'][1]['scene_ids'] = ['head', 'counter'], ['flow']
-    assert violations(raw) == []
+    assert not any('episode order' in f for f in violations(raw))
     assert any('cited twice' in f for f in violations(cut(issue=1, scene_ids=['flow', 'counter'])))
     assert any('does not have' in f for f in violations(cut(issue=1, scene_ids=['nowhere'])))
 
@@ -140,6 +141,36 @@ def test_only_visible_episode_text_counts_as_in_the_episode():
         raw = cut(issue=1, big=big, claim_ids=ids, dir=None)
         assert any('not in the delivered episode' in f for f in violations(raw)), big
     assert 'not in the delivered episode' not in ' '.join(violations(cut()))
+
+
+def test_an_over_long_plan_is_found_before_any_speech_is_paid(monkeypatch):
+    from quant_company.video import shorts as shorts_module
+
+    assert estimated_seconds(shorts()) < 60
+    assert not any('Estimated length' in f for f in violations(cut()))
+    # The plan's own character limit keeps real plans under the cap; a looser limit shows the estimate as the second guard.
+    monkeypatch.setattr(shorts_module, 'NARRATION_LIMIT', 2000)
+    raw = cut(signals_narration='가' * 10, hook=dict(cut()['hook'], narration='가' * 10))
+    raw['issues'] = [{**cut()['issues'][0], 'id': f'long-{n}', 'narration': '가' * 95} for n in range(5)]
+    plan = ShortsPlan.model_validate(raw)
+    assert estimated_seconds(plan) > 90
+    assert any('Estimated length' in f and 'over the 90 s cap' in f for f in violations(raw))
+
+
+def test_claim_ids_are_bound_to_the_episode_scenes():
+    # b010 is used by the episode (photo), but not by the scenes this issue cites (head, flow).
+    assert any('issue semis' in f and 'cited scenes' in f for f in violations(cut(issue=0, claim_ids=['b013', 'b010'])))
+    # b002 is a briefing line no scene of the episode carries.
+    assert any('the hook' in f and 'anywhere in the episode' in f for f in violations(cut(hook=dict(cut()['hook'], claim_ids=['b002']))))
+    assert any('the signals' in f and 'anywhere in the episode' in f for f in violations(cut(signals_claim_ids=['b002'])))
+
+
+def test_title_and_description_numbers_must_be_in_the_delivered_episode():
+    # '21' is in the cited line b002 (also cited by the issue) but in no visible text of the episode.
+    raw = cut(title='S&P 500 21일 상승, 반도체가 이끌었다')
+    raw['issues'][0]['claim_ids'] = ['b013', 'b007', 'b009', 'b002']
+    found = violations(raw)
+    assert any('title or description is not in the delivered episode' in f for f in found), found
 
 
 def test_two_issues_is_enough():
@@ -292,6 +323,26 @@ def test_build_keeps_a_minus_without_an_arrow(tmp_path):
                                                           tmp_path / 'out', tones(tmp_path, TAKES, ffmpeg))
     [shown] = on_page(built['page'], ["[...document.querySelectorAll('.scene.issue .num .v')].map(e => e.textContent)"])
     assert shown == ['-0.2%', '▼0.59%']
+
+
+def test_a_long_total_is_a_finding_not_a_raise(tmp_path):
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    takes = tones(tmp_path, [20, 20, 20, 20, 20], ffmpeg)  # ~100 s of paid speech
+    built = ShortsRenderer(settings, WordAligner()).build(job, shorts(), episode().model_dump(mode='json'), tmp_path / 'out', takes)
+    assert 90 < built['total'] < 180
+    assert any('at most 90 s' in f for f in built['findings'])
+
+
+def test_a_sparse_library_entry_cannot_raise_the_credit(tmp_path):
+    ffmpeg = ffmpeg_binary()
+    settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_asset_dir=tmp_path / 'assets')
+    shelf = library(tmp_path / 'assets', ffmpeg)
+    for entry in shelf.values():
+        entry.pop('author', None)
+        entry.pop('license', None)
+    job = {'id': 'fixture', 'source': source(), 'policy': {'template': 'motion-v2'}}
+    pictures = cut_pictures(job, episode().model_dump(mode='json'), shorts(), settings, shelf)
+    assert pictures['issues'][1]['credit'] == '자료사진 ·  · '
 
 
 def test_every_scene_has_a_picture(tmp_path):
@@ -460,6 +511,22 @@ async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, vid
     calls = len(provider.calls)
     await VideoRunner(store.company, provider, speech).tick()
     assert len(provider.calls) == calls
+
+
+async def test_an_episode_with_under_two_issue_scenes_spends_no_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    plan = store.get(job['id'])['plan']
+    for scene in plan['scenes']:
+        if scene.get('chapter') == '함께 볼 이슈' or scene['id'] in ('flow', 'photo', 'counter'):
+            scene['chapter'] = '시장'
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE video_jobs SET plan=%s::jsonb WHERE id=%s', (json.dumps(plan), job['id']))
+    turns = len([c for c in provider.calls if c.output_contract == 'video_shorts_v1'])
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'skipped' and row['error'] == 'too_few_issues'
+    assert len([c for c in provider.calls if c.output_contract == 'video_shorts_v1']) == turns
 
 
 async def test_the_episode_goes_first_and_a_late_cut_is_given_up(brief, video, tmp_path, monkeypatch):  # noqa: F811

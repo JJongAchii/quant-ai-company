@@ -47,6 +47,7 @@ from .shorts import (
     ShortsSuperseded,
     agenda_line,
     date_line,
+    issue_scenes,
     settle,
     shorts_prompt,
     shorts_violations,
@@ -456,6 +457,10 @@ class VideoRunner:
     async def shorts_step(self, row, job):
         qa = dict(row['qa'] or {})
         if row['state'] == 'writing':
+            if len(issue_scenes(job['plan'])) < 2:  # nothing to cut an issue list from: no turn is spent
+                await asyncio.to_thread(self.shorts.skip, row, 'too_few_issues',
+                                        '쇼츠는 본편에 이슈 장면이 2개 미만이라 만들지 않았습니다.')
+                return
             attempts = qa.setdefault('attempts', [])
             if qa.pop('recheck', False):
                 # Given up on older checks: the versions already written are checked again, latest first (it carries
