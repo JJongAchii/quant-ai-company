@@ -8,10 +8,17 @@
 x-research-release: &research-release
   COMPANY_CODE_COMMIT: ${RESEARCH_RELEASE_COMMIT:?Set the company release registered on the research worker}
 
+# Research planning (docs/project/RESEARCH-PLANNING-SHADOW-RUNBOOK-20261014.md) stays off until runtime.env turns it
+# on. Both values go to every research-facing service so drafting, approval and the stage tick agree; Settings
+# rejects planning stages on a service without the durable research service.
+x-research-planning: &research-planning
+  RESEARCH_PLANNING_ENABLED: ${RESEARCH_PLANNING_ENABLED:-false}
+  RESEARCH_PLANNING_STAGES_ENABLED: ${RESEARCH_PLANNING_STAGES_ENABLED:-false}
+
 services:
   api:
     environment:
-      <<: *research-release
+      <<: [*research-release, *research-planning]
       COMPANY_RESEARCH_ENABLED: "true"
       RESEARCH_WORKER_TOKEN_FILE: /run/secrets/research_worker_token
       RESEARCH_ARTIFACT_DIR: /state/research
@@ -21,11 +28,11 @@ services:
       - research_worker_token
   slack-socket:
     environment:
-      <<: *research-release
+      <<: [*research-release, *research-planning]
       COMPANY_RESEARCH_ENABLED: "true"
   worker:
     environment:
-      <<: *research-release
+      <<: [*research-release, *research-planning]
       COMPANY_RESEARCH_ENABLED: "true"
       RESEARCH_ARTIFACT_DIR: /state/research
       RESEARCH_REPORT_BUCKET: ${RESEARCH_REPORT_BUCKET:?Set the existing approved backup bucket}
@@ -37,9 +44,11 @@ services:
       - research_backup_aws
   data-watch-worker:
     environment:
+      <<: *research-planning
       COMPANY_RESEARCH_ENABLED: "true"
   dispatch:
     environment:
+      <<: *research-planning
       COMPANY_RESEARCH_ENABLED: "true"
 secrets:
   research_worker_token:

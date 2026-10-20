@@ -781,6 +781,9 @@ def commit_stage(company, conn, project, task, turn, response: ProviderResponse)
                                            *[ref.get("source_id") for ref in
                                              (item.get("contradiction_search") or {}).get("refs", [])
                                              if isinstance(ref, dict)]]})
+        if row["stage"] == "planning_critique":
+            cited = sorted({ref.get("source_id") for item in value.get("reviews", []) if isinstance(item, dict)
+                            for ref in item.get("counter_evidence", []) if isinstance(ref, dict)}, key=str)
         paths = {entry["source_id"]: entry["file"] for entry in row["context"].get("evidence_sources", [])}
         for source in cited:
             if not isinstance(source, str) or source not in paths:

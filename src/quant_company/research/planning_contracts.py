@@ -207,3 +207,76 @@ class PlanningSlate(MissionModel):
         if bool(self.candidates) == (self.no_candidate_reason is not None):
             raise ValueError("Give candidates, or no candidates with a no_candidate_reason")
         return self
+
+
+Score = Literal[0, 1, 2, 3, "unknown"]
+Route = Literal["experiment", "literature_only", "remediation", "awaiting_program", "defer", "reject"]
+
+
+class CandidateReview(MissionModel):
+    candidate_ordinal: Annotated[int, Field(ge=1, le=3)]
+    verdict: Literal["support", "weak", "reject"]
+    economic_rationale: Text
+    alternative_explanations: Text
+    decisive_test: Text
+    cost_and_capacity_concerns: Text
+    counter_evidence: Annotated[list[SourceCitation], Field(max_length=10)] = []
+    evidence_quality: Score
+    decision_value: Score
+    novelty: Literal["duplicate", "extension", "distinct", "unknown"]
+    required_checks: Annotated[list[Short], Field(max_length=10)] = []
+    blockers: Annotated[list[GapRequest], Field(max_length=5)] = []
+
+
+class PlanningCritique(MissionModel):
+    schema_version: Literal[1] = 1
+    reviews: Annotated[list[CandidateReview], Field(min_length=1, max_length=3)]
+
+    @model_validator(mode="after")
+    def one_review_each(self):
+        ordinals = [item.candidate_ordinal for item in self.reviews]
+        if len(set(ordinals)) != len(ordinals):
+            raise ValueError("Review each candidate exactly once")
+        return self
+
+
+class RouteChoice(MissionModel):
+    candidate_ordinal: Annotated[int, Field(ge=1, le=3)]
+    route: Route
+    rationale: Text
+
+
+class PlanningDecision(MissionModel):
+    schema_version: Literal[1] = 1
+    order: Annotated[list[Annotated[int, Field(ge=1, le=3)]], Field(min_length=1, max_length=3)]
+    selected_ordinal: Annotated[int, Field(ge=1, le=3)] | None = None
+    routes: Annotated[list[RouteChoice], Field(min_length=1, max_length=3)]
+    override_reason: Annotated[str, Field(min_length=1, max_length=1200)] | None = None
+    follow_up_questions: Annotated[list[QuestionSpec], Field(max_length=2)] = []
+    owner_summary: Annotated[str, Field(min_length=1, max_length=1200)]
+
+    @model_validator(mode="after")
+    def consistent(self):
+        routed = [item.candidate_ordinal for item in self.routes]
+        if len(set(self.order)) != len(self.order) or sorted(self.order) != sorted(routed) or len(set(routed)) != len(routed):
+            raise ValueError("order and routes must cover each candidate once")
+        experiments = [item.candidate_ordinal for item in self.routes if item.route == "experiment"]
+        if len(experiments) > 1 or experiments != ([self.selected_ordinal] if self.selected_ordinal else []):
+            raise ValueError("selected_ordinal must be the single experiment route")
+        return self
+
+
+TRIAGE_CLASS = {"eligible": 0, "unbound": 1, "needs_program": 1, "needs_evaluator": 1, "needs_data": 1,
+                "duplicate": 2, "out_of_scope": 2, "stale": 2, "invalid": 2}
+VERDICT_RANK = {"support": 0, "weak": 1, "reject": 2}
+SCORE_RANK = {3: 0, 2: 1, 1: 2, 0: 3, "unknown": 4}
+SCOPE_RANK = {"config_only": 0, "new_feature": 1, "new_model": 2, "new_data": 3, "unknown": 4}
+NOVELTY_RANK = {"distinct": 0, "extension": 1, "unknown": 2, "duplicate": 3}
+
+
+def service_order(candidates, triage, reviews):
+    """Design 11: the same candidates, reviews and policy always give the same order."""
+    return sorted(candidates, key=lambda ordinal: (
+        TRIAGE_CLASS[triage[ordinal]], VERDICT_RANK[reviews[ordinal].verdict],
+        SCORE_RANK[reviews[ordinal].evidence_quality], SCORE_RANK[reviews[ordinal].decision_value],
+        SCOPE_RANK[candidates[ordinal].implementation_scope], NOVELTY_RANK[reviews[ordinal].novelty], ordinal))

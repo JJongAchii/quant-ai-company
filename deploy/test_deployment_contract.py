@@ -558,6 +558,38 @@ def test_data_watch_configuration_reaches_existing_processes_without_new_credent
     assert services["data-watch-worker"]["environment"]["COMPANY_RESEARCH_ENABLED"] == "true"
 
 
+def test_research_planning_flags_reach_only_research_services(tmp_path):
+    from quant_company.config import Settings
+
+    # Render what deploy/release.py renders: every compose file the release lists, with all profiles.
+    env = tmp_path / "runtime.env"
+    env.write_text("RESEARCH_REPORT_BUCKET=synthetic-bucket\nRESEARCH_RELEASE_COMMIT=" + "5" * 40 + "\n"
+                   "MODEL_ACCOUNTS_OWNER_USER=UOWNER\nPINNED_COMPANY_WORKER_IMAGE=quant-company-autonomous:synthetic\n"
+                   "VIDEO_RENDER_BUCKET=synthetic-bucket\nVIDEO_RENDER_CLUSTER=synthetic-cluster\n"
+                   "VIDEO_RENDER_SECURITY_GROUP=sg-synthetic\nVIDEO_RENDER_SUBNETS=subnet-synthetic\n"
+                   "VIDEO_RENDER_TASK_DEFINITION=synthetic-render\n")
+    overlays = tuple(name for name in json.loads((DEPLOY / "release.json").read_text())["compose_files"]
+                     if name != "compose.yaml")
+    flags = {"RESEARCH_PLANNING_ENABLED", "RESEARCH_PLANNING_STAGES_ENABLED"}
+    services = compose_config("*", extra_env=env, overlays=overlays)["services"]
+    research = {name for name, service in services.items()
+                if service.get("environment", {}).get("COMPANY_RESEARCH_ENABLED") == "true"}
+    assert research == {"api", "slack-socket", "worker", "data-watch-worker", "dispatch"}
+    # Off unless runtime.env turns them on, and only where research runs: Settings rejects planning stages on a
+    # service without the durable research service.
+    assert {name for name, service in services.items() if flags & set(service.get("environment", {}))} == research
+    assert {services[name]["environment"][flag] for name in research for flag in flags} == {"false"}
+    env.write_text(env.read_text() + "RESEARCH_PLANNING_ENABLED=true\nRESEARCH_PLANNING_STAGES_ENABLED=true\n")
+    services = compose_config("*", extra_env=env, overlays=overlays)["services"]
+    for name in research:
+        values = services[name]["environment"]
+        settings = Settings(**{key.lower(): json.loads(value) if key in {
+            "SLACK_ALLOWED_USERS", "SLACK_ALLOWED_CHANNELS", "HOUSING_FEED_ALLOWED_CHANNELS",
+            "TREND_FEED_PUBLICATION_HOURS", "BRIEFING_EVALUATION_EDITION_IDS"} else value
+            for key, value in values.items()})
+        assert settings.research_planning_enabled and settings.research_planning_stages_enabled
+
+
 def test_newsletter_password_reaches_only_dispatch_and_its_settings_reach_every_process_that_uses_them(tmp_path):
     from quant_company.config import Settings
 

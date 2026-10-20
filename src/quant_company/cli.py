@@ -142,8 +142,9 @@ def main():
     quant_feed.add_argument("--live", action="store_true")
     quant_feed.add_argument("--output", type=Path)
     planning = sub.add_parser("research-planning")
-    planning.add_argument("action", choices=["status", "preview", "replay-triage"])
+    planning.add_argument("action", choices=["status", "preview", "replay-triage", "run-report"])
     planning.add_argument("--question")
+    planning.add_argument("--run")
     planning.add_argument("--bundle", type=Path)
     planning.add_argument("--output", type=Path)
     sub.add_parser("demo")
@@ -309,7 +310,9 @@ def main():
             parser.error("preview requires --question")
         if args.action == "replay-triage" and not args.bundle:
             parser.error("replay-triage requires --bundle")
-        result = command(settings, args.action, question=args.question, bundle=args.bundle)
+        if args.action == "run-report" and not args.run:
+            parser.error("run-report requires --run")
+        result = command(settings, args.action, question=args.question, bundle=args.bundle, run=args.run)
         rendered = json.dumps(result, default=str, ensure_ascii=False, indent=2) + "\n"
         if args.output:
             args.output.parent.mkdir(parents=True, exist_ok=True)
