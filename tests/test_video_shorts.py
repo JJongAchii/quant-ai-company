@@ -371,7 +371,7 @@ def test_every_scene_has_a_picture(tmp_path):
 
 
 def test_music_is_optional(tmp_path):
-    import av
+    av = pytest.importorskip('av')  # the cut is read back with PyAV (the video extra)
 
     from quant_company.video.shorts import music_track
 
