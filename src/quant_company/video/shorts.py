@@ -29,6 +29,7 @@ from .episode import (
     nums,
     sentences,
     stated,
+    strings,
     tool_wording,
 )
 from .motion import CHROMIUM_ARGS, FPS, captions, word_times
@@ -237,23 +238,33 @@ def closes_of(line):
     return stated(DATE_TIME.sub(' ', line), CLOSE_MARK, deniable=True)
 
 
+def episode_text(episode):
+    """The numbers a viewer of the delivered episode can read or hear: narrations, card text (tags stripped; icons, sizes,
+    colours and card numbers left out), title, thumbnail text."""
+    parts = [episode['upload']['title'], episode.get('thumbnail', ''), episode.get('thumbnail_stat', '')]
+    for scene in episode['scenes']:
+        parts.append(scene['narration'])
+        parts += [t for _, t in strings(scene['data']) if not t.startswith('#')]
+    return ' '.join(parts)
+
+
 def issue_citations(plan, episode):
     """Findings on which episode scenes the issues cut: issue scenes only, each once, in the episode's order."""
     found, order = [], {s['id']: n for n, s in enumerate(episode['scenes'])}
     allowed = {s['id'] for s in issue_scenes(episode)}
     seen, last = set(), -1
     for issue in plan.issues:
-        for scene_id in issue.scene_ids:
+        for number, scene_id in enumerate(issue.scene_ids):
             if scene_id not in order:
                 found.append(f'Issue {issue.id} cites scene {scene_id}, which the episode does not have')
             elif scene_id not in allowed:
                 found.append(f'Issue scene {scene_id} is not an issue scene (issue {issue.id})')
             elif scene_id in seen:
                 found.append(f'Issue scene {scene_id} is cited twice (issue {issue.id})')
-            elif order[scene_id] < last:
-                found.append(f'Issue scene {scene_id} is out of episode order (issue {issue.id})')
-            else:
-                last = order[scene_id]
+            elif number == 0:  # issues follow the episode by their first scene; their own scenes may come in any order
+                if order[scene_id] < last:
+                    found.append(f'Issue scene {scene_id} is out of episode order (issue {issue.id})')
+                last = max(last, order[scene_id])
             seen.add(scene_id)
     return found
 
@@ -263,7 +274,7 @@ def shorts_violations(plan, source, episode):
     wording, no spoken attribution. episode: the delivered EpisodePlan as JSON."""
     claims, found, cited, lines = claim_catalog(source), issue_citations(plan, episode), set(), []
     allowed_frame = nums(frame(source))
-    in_episode = nums(json.dumps(episode, ensure_ascii=False)) | allowed_frame
+    in_episode = nums(episode_text(episode)) | allowed_frame
     units = [('the hook', plan.hook.claim_ids, [plan.hook.headline, plan.hook.question], plan.hook.narration, None),
              *((f'issue {i.id}', i.claim_ids, i.screen(), i.narration, i) for i in plan.issues),
              ('the signals', plan.signals_claim_ids, plan.signals, plan.signals_narration, None)]

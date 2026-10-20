@@ -102,6 +102,9 @@ def test_issues_cut_the_episode_issue_scenes_in_order():
     raw = cut()
     raw['issues'][0]['scene_ids'], raw['issues'][1]['scene_ids'] = ['photo', 'counter'], ['head', 'flow']
     assert any('out of episode order' in f for f in violations(raw))
+    raw = cut()  # within an issue any order is fine; only the first scene of each issue follows the episode
+    raw['issues'][0]['scene_ids'], raw['issues'][1]['scene_ids'] = ['head', 'counter'], ['flow']
+    assert violations(raw) == []
     assert any('cited twice' in f for f in violations(cut(issue=1, scene_ids=['flow', 'counter'])))
     assert any('does not have' in f for f in violations(cut(issue=1, scene_ids=['nowhere'])))
 
@@ -111,6 +114,15 @@ def test_numbers_must_be_in_the_episode():
     raw = cut(issue=1, big='21', claim_ids=['b014', 'b002'], dir=None)
     assert any('not in the delivered episode' in f for f in violations(raw))
     assert not any('Unbound' in f for f in violations(raw))
+
+
+def test_only_visible_episode_text_counts_as_in_the_episode():
+    # '5' (from '05:00' in b013) and '21' (b002) are in cited lines but in no visible text of the episode; card numbers,
+    # icon sizes and colours (112, '01', #5EA0FF) are not text.
+    for big, ids in (('5', ['b013']), ('21', ['b014', 'b002']), ('112', ['b014'])):
+        raw = cut(issue=1, big=big, claim_ids=ids, dir=None)
+        assert any('not in the delivered episode' in f for f in violations(raw)), big
+    assert 'not in the delivered episode' not in ' '.join(violations(cut()))
 
 
 def test_two_issues_is_enough():
