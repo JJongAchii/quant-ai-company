@@ -13,11 +13,14 @@ from quant_company.video.render import checksum, run, verify_artifacts
 from quant_company.video.runner import VideoRunner
 from quant_company.video.shorts import (
     CHECKS,
-    NARRATION_LIMIT,
+    KO_COUNT,
     ShortsPlan,
     ShortsRenderer,
+    agenda_line,
     closes_of,
+    date_line,
     direction,
+    issue_scenes,
     settle,
     shorts_prompt,
     shorts_violations,
@@ -34,52 +37,102 @@ from .test_video_render import ffmpeg_binary
 def shorts(**changes):
     value = dict(
         title='S&P 500 1.92% 상승, 반도체가 이끌었다', description='반도체가 이끈 미국 증시와 확산 여부를 짧게 정리합니다.',
-        scenes=[dict(id='hook', type='hook', narration='에스앤피 500이 정규장 종가 기준 1.92% 올랐습니다. 반도체가 이끌었습니다.',
-                     claim_ids=['b013', 'b007'], data=dict(question='반도체가 이끈 상승, 확산될까?', stat='S&P 500 1.92%',
-                                                           stat_dir='up')),
-                dict(id='index', type='point', narration='에스앤피 500은 5,300에 마감했습니다. 정규장 종가 기준입니다.',
-                     claim_ids=['b013'], data=dict(label='S&P 500', big='1.92%', dir='up', text='정규장 종가 5,300으로 마감')),
-                dict(id='nasdaq', type='point', narration='나스닥 종합은 0.59% 올라 17,100에 마감했습니다.',
-                     claim_ids=['b014'], data=dict(label='나스닥 종합', big='0.59%', dir='up', text='종가 17,100, 상승폭은 더 작았습니다')),
-                dict(id='signal', type='point', narration='다음은 비기술 업종으로 상승이 확산되는지 확인합니다.',
-                     claim_ids=['b011', 'b012'], data=dict(label='확인할 신호', big='확산', text='비기술 업종과 한국 반도체로 이어질까'))])
+        hook=dict(headline='반도체가 이끈 미국 증시, 확산은 아직', question='확산될까?',
+                  narration='미국 증시는 반도체가 주도했지만 업종별 흐름은 엇갈렸습니다.', claim_ids=['b001', 'b013']),
+        issues=[dict(id='semis', scene_ids=['head', 'flow'], label='반도체 주도', agenda='반도체가 이끈 상승', big='1.92%',
+                     big_label='S&P 500', dir='up', body='정규장 종가 기준 S&P 500이 올랐고 반도체가 상승을 주도했습니다.',
+                     note_kind='의미', note='수익률 하락은 할인 부담을 낮출 수 있음',
+                     narration='에스앤피 500이 정규장 종가 기준 1.92% 올랐고 반도체가 상승을 주도했습니다. '
+                               '수익률 하락은 성장주의 할인 부담을 낮출 수 있습니다.',
+                     claim_ids=['b013', 'b007', 'b009']),
+                dict(id='check', scene_ids=['photo', 'counter'], label='다르게 볼 점', agenda='금리만의 효과일까', big='0.59%',
+                     big_label='나스닥 종합', dir='up', body='나스닥 종합도 정규장 종가 기준 0.59% 올랐지만 기술주 밖의 참여는 혼조였습니다.',
+                     note_kind='확인할 점', note='비기술 업종으로 확산되는지',
+                     narration='나스닥 종합은 0.59% 올랐지만 금리보다 반도체 자체의 재료가 영향을 줬을 수도 있습니다.',
+                     claim_ids=['b014', 'b010', 'b011'])],
+        signals=['비기술 업종 상승 확산', '한국 반도체 강세 지속'],
+        signals_narration='비기술 업종으로 상승이 확산되는지, 한국 반도체 강세가 이어지는지 확인합니다.',
+        signals_claim_ids=['b011', 'b012'])
     value.update(changes)
     return ShortsPlan.model_validate(value)
 
 
-def test_a_cut_is_one_hook_and_three_points_without_the_series_name():
+def cut(*, issue=None, **changes):
+    """The fixture plan as a dict with one issue's fields (or the plan's own) changed."""
+    raw = shorts().model_dump(mode='json')
+    if issue is not None:
+        raw['issues'][issue].update(changes)
+    else:
+        raw.update(changes)
+    return raw
+
+
+def violations(raw):
+    return shorts_violations(ShortsPlan.model_validate(raw), body_source(), episode().model_dump(mode='json'))
+
+
+def test_a_cut_is_a_hook_two_to_five_issues_and_signals():
     plan = shorts().model_dump(mode='json')
-    with pytest.raises(ValueError, match='one hook and three points'):
-        ShortsPlan.model_validate({**plan, 'scenes': [plan['scenes'][1], plan['scenes'][0], *plan['scenes'][2:]]})
+    for issues in (plan['issues'][:1], [{**plan['issues'][0], 'id': f'issue-{n}'} for n in range(6)]):
+        with pytest.raises(ValueError, match='issues'):
+            ShortsPlan.model_validate({**plan, 'issues': issues})
     with pytest.raises(ValueError, match='series name'):
         ShortsPlan.model_validate({**plan, 'title': '반도체가 이끌었다 | 9월 22일 아침 · 오늘의 증시story'})
-    long = [{**s, 'narration': '가' * 100} for s in plan['scenes']]
-    assert 4 * 100 > NARRATION_LIMIT
-    with pytest.raises(ValueError, match='Shorts length'):
-        ShortsPlan.model_validate({**plan, 'scenes': long})
-    with pytest.raises(ValueError, match='lacks'):
-        ShortsPlan.model_validate({**plan, 'scenes': [plan['scenes'][0], {**plan['scenes'][1], 'data': {'label': 'x'}},
-                                                     *plan['scenes'][2:]]})
+    long = [{**plan['issues'][0], 'id': f'long-{n}', 'narration': '가' * 130} for n in range(5)]
+    with pytest.raises(ValueError, match='Shorts length'):  # 5 x 130 + the hook and the signals
+        ShortsPlan.model_validate({**plan, 'issues': long})
+    with pytest.raises(ValueError, match='unique'):
+        ShortsPlan.model_validate({**plan, 'issues': [plan['issues'][0], plan['issues'][0]]})
+    with pytest.raises(ValueError, match='delivery tags'):
+        ShortsPlan.model_validate({**plan, 'signals_narration': '[calm] 비기술 업종으로 확산되는지 확인합니다.'})
+    with pytest.raises(ValueError, match='signs as words'):
+        ShortsPlan.model_validate({**plan, 'signals_narration': '비기술 업종이 +2% 오르는지 확인합니다.'})
 
 
-@pytest.mark.parametrize('scene,field,value,error', [
-    (1, 'big', '5,400', 'Unbound number'),
-    (1, 'dir', 'dn', 'contradicts its line'),  # ▼ for the 1.92% rise
-    (2, 'narration', '나스닥 종합은 0.59% 급락해 17,100에 마감했습니다.', 'contradicts its line'),
-    (2, 'text', '17,100으로 마감', '종가'),  # a close value without its label
-    (2, 'narration', '보도에 따르면 나스닥 종합은 0.59% 올랐습니다.', '보도에 따르면'),
-    (3, 'narration', '이 영상은 AI가 만든 요약입니다. 확산을 확인합니다.', 'tool wording'),
-    (3, 'narration', '반도체는 지금 사세요. 확산을 확인합니다.', 'Buy/sell'),
+def test_fixed_lines():
+    assert date_line({'source': {'day': '2026-10-20', 'edition_kind': 'am'}}) == '10월 20일 아침 브리핑입니다.'
+    assert date_line({'source': {'day': '2026-10-20', 'edition_kind': 'close'}}).endswith('마감 브리핑입니다.')
+    assert agenda_line(5) == '오늘 볼 이슈는 다섯 가지입니다.' and agenda_line(2) == '오늘 볼 이슈는 두 가지입니다.'
+    assert [KO_COUNT[n] for n in (3, 4)] == ['세', '네']
+
+
+def test_issues_cut_the_episode_issue_scenes_in_order():
+    assert [s['id'] for s in issue_scenes(episode().model_dump(mode='json'))] == ['head', 'flow', 'photo', 'counter']
+    assert any('Issue scene board is not an issue scene' in f for f in violations(cut(issue=0, scene_ids=['board'])))
+    raw = cut()
+    raw['issues'][0]['scene_ids'], raw['issues'][1]['scene_ids'] = ['photo', 'counter'], ['head', 'flow']
+    assert any('out of episode order' in f for f in violations(raw))
+    assert any('cited twice' in f for f in violations(cut(issue=1, scene_ids=['flow', 'counter'])))
+    assert any('does not have' in f for f in violations(cut(issue=1, scene_ids=['nowhere'])))
+
+
+def test_numbers_must_be_in_the_episode():
+    # '21' is in the cited line b002 ('2026-09-21 종가') but in no scene of the delivered episode.
+    raw = cut(issue=1, big='21', claim_ids=['b014', 'b002'], dir=None)
+    assert any('not in the delivered episode' in f for f in violations(raw))
+    assert not any('Unbound' in f for f in violations(raw))
+
+
+def test_two_issues_is_enough():
+    assert len(shorts().issues) == 2
+    assert shorts_violations(shorts(), body_source(), episode().model_dump(mode='json')) == []
+
+
+@pytest.mark.parametrize('change,error', [
+    (lambda r: r['issues'][0].update(big='5,400'), 'Unbound number'),
+    (lambda r: r['issues'][0].update(dir='dn'), 'contradicts its line'),  # ▼ for the 1.92% rise
+    (lambda r: r['issues'][1].update(narration='나스닥 종합은 0.59% 급락해 금리보다 반도체 재료가 영향을 줬을 수도 있습니다.'),
+     'contradicts its line'),
+    (lambda r: r['issues'][1].update(body='나스닥 종합은 0.59% 올랐지만 기술주 밖의 참여는 혼조였습니다.'), '종가'),  # no label
+    (lambda r: r['issues'][1].update(narration='보도에 따르면 나스닥 종합은 0.59% 올랐습니다. 반도체 재료도 있습니다.'), '보도에 따르면'),
+    (lambda r: r.update(signals_narration='이 영상은 AI가 만든 요약입니다. 확산을 확인합니다.'), 'tool wording'),
+    (lambda r: r.update(signals_narration='반도체는 지금 사세요. 확산을 확인합니다.'), 'Buy/sell'),
+    (lambda r: r['hook'].update(headline='S&P 500이 3.1% 올랐다'), 'Unbound number'),
 ])
-def test_the_cut_follows_the_episode_binding_rules(scene, field, value, error):
-    assert shorts_violations(shorts(), body_source()) == []
-    raw = shorts().model_dump(mode='json')
-    target = raw['scenes'][scene]
-    if field == 'narration':
-        target['narration'] = value
-    else:
-        target['data'][field] = value
-    assert any(error in f for f in shorts_violations(ShortsPlan.model_validate(raw), body_source()))
+def test_the_cut_follows_the_episode_binding_rules(change, error):
+    raw = cut()
+    change(raw)
+    assert any(error in f for f in violations(raw)), violations(raw)
 
 
 def test_a_list_shares_its_verb_and_a_date_is_no_close():
@@ -92,13 +145,13 @@ def test_a_list_shares_its_verb_and_a_date_is_no_close():
 
 
 def test_an_arrow_its_line_does_not_state_is_dropped_not_rejected():
-    raw = shorts().model_dump(mode='json')
-    raw['scenes'][1]['data']['big'] = '5,300'  # a level: its line states no direction for it
+    raw = cut(issue=0, big='5,300', claim_ids=['b013'])  # a level: its line states no direction for it
     plan, dropped = settle(ShortsPlan.model_validate(raw), body_source())
-    assert dropped == ['index: 5,300'] and 'dir' not in plan.scenes[1].data and shorts_violations(plan, body_source()) == []
-    raw['scenes'][1]['data'].update(big='1.92%', dir='dn')  # against its line: kept, and the checks fail
+    assert dropped == ['semis: 5,300'] and plan.issues[0].dir is None
+    assert shorts_violations(plan, body_source(), episode().model_dump(mode='json')) == []
+    raw = cut(issue=0, big='1.92%', dir='dn')  # against its line: kept, and the checks fail
     plan, dropped = settle(ShortsPlan.model_validate(raw), body_source())
-    assert dropped == [] and any('contradicts its line' in f for f in shorts_violations(plan, body_source()))
+    assert dropped == [] and any('contradicts its line' in f for f in violations(raw))
 
 
 def test_the_prompt_cuts_the_delivered_episode_and_leaves_flagged_claims_out():
