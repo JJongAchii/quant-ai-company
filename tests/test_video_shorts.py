@@ -10,6 +10,7 @@ from datetime import date
 import pytest
 
 from quant_company.config import Settings
+from quant_company.contracts import ProviderFault
 from quant_company.video import runner as runner_module
 from quant_company.video.contracts import digest
 from quant_company.video.render import checksum, run, verify_artifacts
@@ -718,8 +719,6 @@ async def test_a_lost_completion_keeps_the_file_receipt(brief, video, tmp_path, 
 
 
 async def test_a_lost_turn_is_asked_again_as_a_new_attempt(brief, video, tmp_path, monkeypatch):  # noqa: F811
-    from quant_company.contracts import ProviderFault
-
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
@@ -731,6 +730,17 @@ async def test_a_lost_turn_is_asked_again_as_a_new_attempt(brief, video, tmp_pat
     assert keys == ['1', '2']
 
 
+def given_up(store, job, checks):
+    """The cut as a worker before CHECKS 4 left it: skipped on its checks, at that version of them."""
+    with store.db.transaction() as conn:
+        conn.execute("UPDATE video_shorts SET state='skipped',error='check_failed',lease_until=NULL,"
+                     "qa=qa||jsonb_build_object('checks',%s::int) WHERE job_id=%s", (checks, job['id']))
+
+
+def shorts_keys(provider):
+    return [c.request_id.rsplit('-', 1)[-1] for c in provider.calls if c.output_contract == 'video_shorts_v1']
+
+
 async def test_a_cut_given_up_on_older_checks_is_checked_again_without_a_new_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -738,19 +748,80 @@ async def test_a_cut_given_up_on_older_checks_is_checked_again_without_a_new_tur
     provider.queues['video_shorts_v1'] = [shorts(), shorts(), shorts()]
     checks = runner_module.shorts_violations
     monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode: ['an older check'])
-    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
-    assert row['state'] == 'skipped' and row['error'] == 'check_failed' and row['qa']['checks'] == CHECKS
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=3)
+    assert row['state'] == 'writing' and [a['outcome'] for a in row['qa']['attempts']] == ['check_failed'] * 3
+    given_up(store, job, CHECKS)
     shorts_store = ShortsStore(store.company)
     assert shorts_store.claim() is None  # given up on the current checks: not looked at again
     monkeypatch.setattr(runner_module, 'shorts_violations', checks)
-    with store.db.transaction() as conn:  # as if given up before this version of the checks
-        conn.execute("UPDATE video_shorts SET qa=qa-'checks' WHERE job_id=%s", (job['id'],))
+    given_up(store, job, CHECKS - 1)  # as if given up before this version of the checks
     calls = len(provider.calls)
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
     assert row['state'] == 'delivering', row['error']
     assert len(provider.calls) == calls  # the written versions, no new turn
     assert row['qa']['attempts'][-1]['recheck'] == {'checks': CHECKS, 'findings': []}
     assert 'recheck' not in row['qa'] and row['plan'] == shorts().model_dump(mode='json')
+
+
+async def test_the_cut_given_up_by_the_old_worker_in_the_release_is_written_again(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    # 10/20 PM: the v1 worker claimed the cut at 19:00 while claude-runtime already wrote the v2 plan, so all three turns
+    # were rejected and the cut was skipped on checks 3 with no version written.
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.queues['video_shorts_v1'] = [ProviderFault('invalid_output', 'hook: Extra inputs are not permitted; scenes: Field required')]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=3)
+    assert [a['outcome'] for a in row['qa']['attempts']] == ['rejected'] * 3
+    assert CHECKS == 4
+    given_up(store, job, 3)
+    provider.queues['video_shorts_v1'] = [shorts()]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'delivering', row['error']
+    assert [a['outcome'] for a in row['qa']['attempts']] == ['rejected'] * 3 + ['passed'] and 'recheck' not in row['qa']
+    assert shorts_keys(provider) == ['1', '2', '3', '4']
+
+
+async def test_a_cut_is_produced_with_its_fewest_findings_after_the_last_version(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    titles = [f'반도체가 이끈 미국 증시 {name}판' for name in ('첫', '둘째', '셋째', '넷째', '다섯째')]
+    found = {t: [f'{t} 지적 {"가나다라"[k]}' for k in range(n)] for t, n in zip(titles, (3, 1, 2, 1, 4), strict=True)}
+    provider.queues['video_shorts_v1'] = [shorts(title=t) for t in titles]
+    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode: found[plan.title])
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=16)  # 5 versions, 5 takes, render
+    assert row['state'] == 'delivering', row['error']
+    assert [a['outcome'] for a in row['qa']['attempts']] == ['check_failed'] * 5 and shorts_keys(provider) == ['1', '2', '3', '4', '5']
+    # One finding each in the second and the fourth version: the latest is produced, its finding in the thread.
+    assert row['plan']['title'] == titles[3] and row['qa']['shipped_attempt'] == 4
+    assert row['qa']['shipped_with_findings'] == ['반도체가 이끈 미국 증시 넷째판 지적 가']
+    with store.db.transaction() as conn:
+        text = conn.execute('SELECT text FROM outbox WHERE id=%s', (row['delivery_message_id'],)).fetchone()['text']
+    assert '자동 검사 지적 1건(아래, 제작은 계속함)' in text and '• 대본: 반도체가 이끈 미국 증시 넷째판 지적 가\n' in text
+
+
+async def test_a_cut_with_no_valid_version_waits_and_writes_again(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from datetime import UTC, datetime, timedelta
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.queues['video_shorts_v1'] = [ProviderFault('invalid_output', 'issues: Field required')]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=5)
+    assert row['state'] == 'writing' and [a['outcome'] for a in row['qa']['attempts']] == ['rejected'] * 5
+    runner = VideoRunner(store.company, provider, speech)
+    runner.shorts_renderer = ShortsFileRenderer()
+    await runner.tick()
+    row = ShortsStore(store.company).get(job['id'])
+    # Nothing to produce: never skipped, asked again in 30 minutes (until the next episode starts).
+    assert row['state'] == 'writing' and row['error'] == 'no_valid_version' and len(row['qa']['attempts']) == 5
+    assert row['lease_until'] > datetime.now(UTC) + timedelta(minutes=29)
+    await runner.tick()  # still waiting
+    assert len(shorts_keys(provider)) == 5
+    provider.queues['video_shorts_v1'] = [shorts()]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'delivering', row['error']
+    assert shorts_keys(provider) == ['1', '2', '3', '4', '5', '6'] and row['qa']['attempts'][-1]['outcome'] == 'passed'
 
 
 def test_cut_pictures_follow_the_cited_scenes(tmp_path):
@@ -790,14 +861,16 @@ async def test_recheck_skips_versions_of_the_old_shape(brief, video, tmp_path, m
     provider.queues['video_shorts_v1'] = [shorts(), shorts(), shorts()]
     checks = runner_module.shorts_violations
     monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode: ['a check'])
-    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
-    assert row['state'] == 'skipped' and row['error'] == 'check_failed'
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=3)
+    assert [a['outcome'] for a in row['qa']['attempts']] == ['check_failed'] * 3
     monkeypatch.setattr(runner_module, 'shorts_violations', checks)
     old = {'title': 'old', 'description': 'old', 'hook': '옛 훅', 'points': [], 'closing': 'x'}
+    given_up(store, job, CHECKS - 1)
     with store.db.transaction() as conn:
-        conn.execute("UPDATE video_shorts SET qa=qa-'checks' WHERE job_id=%s", (job['id'],))
         conn.execute("UPDATE video_effects SET receipt=jsonb_set(receipt,'{output}',%s::jsonb) WHERE job_id=%s AND id LIKE %s",
                      (json.dumps(old), job['id'], '%:shorts-_'))
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
-    assert row['state'] == 'skipped' and row['error'] == 'check_failed' and row['qa']['checks'] == CHECKS
-    assert row['qa']['attempts'][-1]['recheck'] == {'checks': CHECKS, 'findings': ['older plan shape']}
+    # The versions of the old shape are passed over and the cut writes on.
+    assert row['state'] == 'delivering', row['error']
+    assert [a.get('recheck') for a in row['qa']['attempts']] == [{'checks': CHECKS, 'findings': ['older plan shape']}] * 3 + [None]
+    assert row['qa']['attempts'][-1]['outcome'] == 'passed' and shorts_keys(provider) == ['1', '2', '3', '4']

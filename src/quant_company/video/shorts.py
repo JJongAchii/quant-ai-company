@@ -66,10 +66,11 @@ LEAD, TAIL = 0.15, 0.35
 SAFE = {'left': 70, 'right': 940, 'top': 230, 'bottom': 1500}
 # The version of the checks below. A cut given up on an older version is checked again, once, with the versions already
 # written (ShortsStore.claim): 2 = list directions, dates in close lines, unstated arrows dropped (10/20 AM);
-# 3 = the news-style cut: issues cut from the episode's issue scenes, numbers also in the delivered episode. The
-# narration budgets of 10/20 (hook 32, total 400) stay at 3: they only make the checks stricter, so nothing given up
-# could pass a recheck.
-CHECKS = 3
+# 3 = the news-style cut: issues cut from the episode's issue scenes, numbers also in the delivered episode;
+# 4 = a cut is never given up on its checks (owner, 10/20 PM; Runner.shorts_step): a cut given up on 3 is reopened and
+# goes on writing (the 10/20 PM cut, every turn rejected by the old worker while the release swapped it). The narration
+# budgets (hook 32, total 400) came with 4.
+CHECKS = 4
 EDITION_WORDS = {'am': '아침', 'close': '마감'}
 KO_COUNT = {2: '두', 3: '세', 4: '네', 5: '다섯'}
 ISSUE_CHAPTERS = ('핵심 이슈', '함께 볼 이슈')
