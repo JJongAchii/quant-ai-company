@@ -147,7 +147,7 @@ class Settings(BaseSettings):
     video_analytics_enabled: bool = False
     video_analytics_channel_id: str = ""
     video_analytics_max_lessons: int = Field(default=8, ge=1, le=12)
-    # Evening brief email (docs/newsletter.md): written on claude-runtime by the video worker after each committed PM
+    # Brief email (docs/newsletter.md): written on claude-runtime by the video worker after each committed AM and PM
     # edition, sent over Gmail SMTP by the dispatcher only. The app password file is mounted into dispatch alone; a
     # missing or empty file leaves sending and the unsubscribe inbox inactive.
     newsletter_enabled: bool = False

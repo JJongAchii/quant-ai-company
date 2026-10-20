@@ -17,7 +17,7 @@ from email.policy import default
 from email.utils import parseaddr
 
 from . import store as records
-from .contracts import NewsletterDraft
+from .contracts import NewsletterDraft, edition_kind
 from .render import message
 from .store import NewsletterStore, mask
 
@@ -261,7 +261,8 @@ class NewsletterDispatcher:
         draft = NewsletterDraft.model_validate(row["draft"])
         s = self.settings
         mail = message(draft, day=row["source"]["day"], sender=s.newsletter_from_address, name=s.newsletter_from_name,
-                       to=row["address"], message_id=row["message_id"], channel_url=s.newsletter_channel_url)
+                       to=row["address"], message_id=row["message_id"], channel_url=s.newsletter_channel_url,
+                       kind=edition_kind(row["source"]))
         return mail.as_bytes()
 
     def read_inbox(self, secret):

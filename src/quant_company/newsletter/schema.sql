@@ -1,4 +1,4 @@
--- Evening brief email (docs/newsletter.md). Recipient addresses live only in these tables; logs, Slack and receipts
+-- Brief email (docs/newsletter.md). Recipient addresses live only in these tables; logs, Slack and receipts
 -- show them masked. 'removed' is the owner's choice, 'unsubscribed' the recipient's own and only 재동의 lifts it.
 CREATE TABLE IF NOT EXISTS newsletter_recipients (
  id uuid PRIMARY KEY, address text NOT NULL UNIQUE CHECK(address = lower(address)),
@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS newsletter_recipients (
  unsubscribed_at timestamptz,
  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
 );
--- One email per PM edition. auto: created by the PM commit with NEWSLETTER_ENABLED (goes to every active recipient);
+-- One email per AM or PM edition. auto: created by its commit with NEWSLETTER_ENABLED (goes to every active recipient);
 -- otherwise created by a test command and sent only to the addresses those commands name.
 CREATE TABLE IF NOT EXISTS newsletter_issues (
  id uuid PRIMARY KEY, edition_id uuid NOT NULL UNIQUE REFERENCES brief_editions(id),

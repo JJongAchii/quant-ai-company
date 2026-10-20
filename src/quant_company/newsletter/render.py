@@ -11,7 +11,7 @@ from html import escape
 from pathlib import Path
 from urllib.parse import quote
 
-from .contracts import edition_label
+from .contracts import KIND_NAMES, edition_label
 
 # Read in place; the brand mark stays where the video design keeps it.
 LOGO = Path(__file__).resolve().parent.parent / "video" / "design" / "logo_mark.png"
@@ -20,13 +20,18 @@ UNSUBSCRIBE_SUBJECT = "수신거부"
 FONT = "-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',Arial,sans-serif"
 INK, NAVY, CREAM, GOLD, LABEL = "#1B2440", "#011A43", "#FCF1DB", "#FDC749", "#9B6B00"
 UP, DOWN, MUTED, SOFT, LINE = "#D7263D", "#1E5EFF", "#7A86A8", "#4A5578", "#E8ECF4"
-INTRO = "뭐든story는 매 거래일 장 마감 후 국내 증시의 주요 내용을 정리해 보내 드립니다."
+INTRO = "뭐든story는 매 거래일 아침과 장 마감 후 국내 증시의 주요 내용을 정리해 보내 드립니다."
 CONSENT = "이 메일은 뭐든story 리포트 수신에 동의하신 분께 발송됩니다."
 DISCLAIMER = "투자 권유가 아닌 정보 제공용 자료이며, 투자 판단과 책임은 본인에게 있습니다."
 
 
-def subject(draft, day):
-    return " ".join(f"{draft.headline} {draft.accent}".split()) + f" | {edition_label(day)} 마감 브리핑"
+def subject(draft, day, kind="pm"):
+    return " ".join(f"{draft.headline} {draft.accent}".split()) + f" | {edition_label(day)} {KIND_NAMES[kind]} 브리핑"
+
+
+def masthead(day, kind):
+    """The header's right label and the plain text's first line."""
+    return f"{edition_label(day)} {'아침' if kind == 'am' else '장 마감'} · 오늘의 증시story"
 
 
 def unsubscribe_url(sender):
@@ -131,7 +136,7 @@ def calendar_html(rows):
     return f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">{cells}</table>'
 
 
-def html(draft, *, day, sender, channel_url, logo_src=f"cid:{LOGO_CID}"):
+def html(draft, *, day, sender, channel_url, kind="pm", logo_src=f"cid:{LOGO_CID}"):
     m = draft.market
     market = (heading(m.heading) + swing(m) + paragraph(m.flow) + paragraph(m.investors_text, "투자자별 매매")
               + investors(m) + paragraph(m.investors_note) + paragraph(m.sectors, "업종·종목") + board(m)
@@ -144,7 +149,7 @@ def html(draft, *, day, sender, channel_url, logo_src=f"cid:{LOGO_CID}"):
     unsubscribe = e(unsubscribe_url(sender))
     return f"""<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light"><title>{e(subject(draft, day))}</title></head>
+<meta name="color-scheme" content="light"><title>{e(subject(draft, day, kind))}</title></head>
 <body style="margin:0;padding:0;background:#EEF1F7;word-break:keep-all;">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#EEF1F7;">{e(draft.preview)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#EEF1F7;">
@@ -153,7 +158,7 @@ def html(draft, *, day, sender, channel_url, logo_src=f"cid:{LOGO_CID}"):
 <tr><td style="background:{NAVY};padding:18px 22px 20px;border-radius:10px 10px 0 0;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
 <td style="font-size:15px;font-weight:800;color:{CREAM};"><img src="{logo_src}" alt="" height="22" style="height:22px;vertical-align:middle;margin-right:8px;border:0;">뭐든story</td>
-<td align="right" style="font-size:12px;font-weight:600;color:#AEB7D4;">{edition_label(day)} 장 마감 · 오늘의 증시story</td>
+<td align="right" style="font-size:12px;font-weight:600;color:#AEB7D4;">{masthead(day, kind)}</td>
 </tr></table>
 <h1 style="font-size:23px;line-height:1.35;font-weight:800;margin:14px 0 6px;color:#FFFFFF;letter-spacing:-.02em;">{e(draft.headline)}{accent}</h1>
 <p style="margin:0;font-size:14.5px;line-height:1.6;color:#D5DBEC;">{e(draft.lead)}</p>
@@ -170,9 +175,9 @@ def html(draft, *, day, sender, channel_url, logo_src=f"cid:{LOGO_CID}"):
 """
 
 
-def text(draft, *, day, sender, channel_url):
+def text(draft, *, day, sender, channel_url, kind="pm"):
     m = draft.market
-    out = [f"뭐든story · {edition_label(day)} 장 마감 · 오늘의 증시story", "", f"{draft.headline} {draft.accent}".strip(),
+    out = [f"뭐든story · {masthead(day, kind)}", "", f"{draft.headline} {draft.accent}".strip(),
            "", draft.lead, "", "[오늘의 시장]", m.heading]
     if m.swing:
         s = m.swing
@@ -203,17 +208,17 @@ def text(draft, *, day, sender, channel_url):
     return "\n".join(out) + "\n"
 
 
-def message(draft, *, day, sender, name, to, message_id, channel_url, logo=None):
+def message(draft, *, day, sender, name, to, message_id, channel_url, kind="pm", logo=None):
     """multipart/alternative: plain text, then HTML with the logo as a related part (Content-ID)."""
     mail = EmailMessage(policy=SMTP)
     mail["From"] = Address(display_name=name, addr_spec=sender)
     mail["To"] = to
-    mail["Subject"] = subject(draft, day)
+    mail["Subject"] = subject(draft, day, kind)
     mail["Date"] = formatdate()
     mail["Message-ID"] = message_id
     mail["List-Unsubscribe"] = f"<{unsubscribe_url(sender)}>"
-    mail.set_content(text(draft, day=day, sender=sender, channel_url=channel_url))
-    mail.add_alternative(html(draft, day=day, sender=sender, channel_url=channel_url), subtype="html")
+    mail.set_content(text(draft, day=day, sender=sender, channel_url=channel_url, kind=kind))
+    mail.add_alternative(html(draft, day=day, sender=sender, channel_url=channel_url, kind=kind), subtype="html")
     mail.get_payload()[1].add_related(LOGO.read_bytes() if logo is None else logo, "image", "png",
                                       cid=f"<{LOGO_CID}>", disposition="inline", filename="logo.png")
     return mail

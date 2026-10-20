@@ -8,6 +8,7 @@ from psycopg.types.json import Jsonb
 
 from ..company import PolicyError, stable
 from . import store as records
+from .contracts import KIND_NAMES
 from .store import STATE_NAMES, NewsletterStore, mask, valid_address
 
 COMMAND = re.compile(r"이메일\s*(추가|재동의|삭제|목록|시험\s*발송)\s*"
@@ -16,7 +17,7 @@ COMMAND = re.compile(r"이메일\s*(추가|재동의|삭제|목록|시험\s*발�
 ACTIONS = {"추가": "add", "재동의": "reconsent", "삭제": "remove", "목록": "list"}
 ADDRESS_LIKE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+")
 USAGE = {"action": "usage"}
-USAGE_TEXT = ("저녁 브리핑 메일 수신자 명령은 @quant-director에게 이렇게 보내 주세요: `이메일 추가 <주소>` · `이메일 재동의 <주소>` · "
+USAGE_TEXT = ("브리핑 메일 수신자 명령은 @quant-director에게 이렇게 보내 주세요: `이메일 추가 <주소>` · `이메일 재동의 <주소>` · "
               "`이메일 삭제 <주소>` · `이메일 목록` · `이메일 시험 발송 <주소>`. 메일 주소가 들어간 글은 모델에 보내지 않습니다.")
 
 
@@ -103,7 +104,7 @@ def add(conn, store, recipient, address, project, event_key):
         conn.execute("INSERT INTO newsletter_recipients(id,address,state) VALUES(%s,%s,'active')",
                      (stable("newsletter-recipient:" + address), address))
         result = "added"
-    return result, (f"저녁 브리핑 메일 수신자 {'다시 켬' if result == 're_enabled' else '추가'} · {shown} · 수신 중 "
+    return result, (f"브리핑 메일 수신자 {'다시 켬' if result == 're_enabled' else '추가'} · {shown} · 수신 중 "
                     f"{active_count(conn)}명. {flag_note(store)}")
 
 
@@ -124,7 +125,7 @@ def remove(conn, store, recipient, address, project, event_key):
     if recipient["state"] != "active":
         return "not_active", f"{shown}은 이미 받지 않는 주소입니다(현재: {STATE_NAMES[recipient['state']]})."
     store.set_state(conn, recipient["id"], "removed")
-    return "removed", f"저녁 브리핑 메일 수신을 껐습니다 · {shown} · 기록은 남깁니다. 수신 중 {active_count(conn)}명."
+    return "removed", f"브리핑 메일 수신을 껐습니다 · {shown} · 기록은 남깁니다. 수신 중 {active_count(conn)}명."
 
 
 def test(conn, store, recipient, address, project, event_key):
@@ -133,26 +134,27 @@ def test(conn, store, recipient, address, project, event_key):
         return "refused_unsubscribed", f"{shown}은 받는 분이 직접 수신 거부한 주소라 시험 메일도 보내지 않습니다."
     edition = store.latest_edition(conn)
     if not edition:
-        return "no_edition", "보낼 마감 브리핑이 아직 없습니다. 오늘 저녁 브리핑이 발송된 뒤 다시 요청해 주세요."
+        return "no_edition", "보낼 브리핑이 아직 없습니다. 다음 브리핑이 발송된 뒤 다시 요청해 주세요."
     at = records.utcnow()
     issue = store.ensure_issue(conn, edition, at, auto=False)
+    what = f"{edition['day']:%m/%d} {KIND_NAMES[edition['kind']]} 브리핑"
     if issue["state"] == "skipped":
-        return "no_email", (f"{edition['day']:%m/%d} 마감 브리핑에는 주요 이슈 분석이 없어 메일을 만들 수 없습니다.")
+        return "no_email", f"{what}에는 주요 이슈 분석이 없어 메일을 만들 수 없습니다."
     store.add_test(conn, issue, address, project, event_key, at)
     wait = " 메일을 먼저 작성하므로 몇 분 걸릴 수 있습니다." if issue["state"] == "writing" else ""
-    return "queued", (f"이메일 시험 발송 접수 · {shown} · {edition['day']:%m/%d} 마감 브리핑 메일 · 이 주소에만 보냅니다."
-                      f"{wait} 결과는 이 스레드에 남깁니다.")
+    return "queued", (f"이메일 시험 발송 접수 · {shown} · {what} 메일 · 이 주소에만 보냅니다.{wait} 결과는 이 스레드에 "
+                      "남깁니다.")
 
 
 def flag_note(store):
-    return ("매 거래일 마감 브리핑 뒤 발송됩니다." if store.settings.newsletter_enabled
+    return ("매 거래일 아침·마감 브리핑 뒤 발송됩니다." if store.settings.newsletter_enabled
             else "자동 발송은 아직 꺼져 있습니다(NEWSLETTER_ENABLED=false).")
 
 
 def listing(conn, company):
     rows = conn.execute("SELECT address,state FROM newsletter_recipients ORDER BY created_at").fetchall()
     counts = {state: sum(row["state"] == state for row in rows) for state in STATE_NAMES}
-    head = (f"저녁 브리핑 메일 수신자 {len(rows)}명 · 수신 중 {counts['active']} · 삭제 {counts['removed']} · "
+    head = (f"브리핑 메일 수신자 {len(rows)}명 · 수신 중 {counts['active']} · 삭제 {counts['removed']} · "
             f"수신 거부 {counts['unsubscribed']}")
     lines = [f"• {mask(row['address'])} · {STATE_NAMES[row['state']]}" for row in rows[:50]]
     return "\n".join([head, *lines, flag_note(NewsletterStore(company))])

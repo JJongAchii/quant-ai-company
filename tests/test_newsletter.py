@@ -1,9 +1,10 @@
-"""Evening brief email. Real PostgreSQL; claude-runtime, Gmail SMTP/IMAP and Slack are simulated in-process (no
-network, no real mailbox, no Slack): nothing here stands for a deployed or sent email."""
+"""Brief email (AM and PM editions). Real PostgreSQL; claude-runtime, Gmail SMTP/IMAP and Slack are simulated
+in-process (no network, no real mailbox, no Slack): nothing here stands for a deployed or sent email."""
 
 import email
+import hashlib
 import smtplib
-from datetime import timedelta
+from datetime import datetime, timedelta
 from email.message import EmailMessage
 from email.policy import default
 
@@ -17,12 +18,23 @@ from quant_company.contracts import ProviderFault, ProviderRequest
 from quant_company.newsletter import checks, contracts, render
 from quant_company.newsletter.commands import parse
 from quant_company.newsletter.delivery import NewsletterDispatcher
-from quant_company.newsletter.store import FALLBACK_AFTER, TEST_FALLBACK_AFTER, NewsletterStore, mask, masked
+from quant_company.newsletter.store import (
+    FALLBACK_AFTER,
+    TEST_FALLBACK_AFTER,
+    NewsletterStore,
+    fallback_at,
+    mask,
+    masked,
+)
 from quant_company.newsletter.writer import NewsletterWriter
 
 from .newsletter_fixtures import (
+    KST,
     PM_DAY,
     SimulatedProvider,
+    am_proposal,
+    am_row,
+    commit_am,
     commit_pm,
     deliver_root,
     pm_proposal,
@@ -364,15 +376,19 @@ def test_html_and_plain_text_follow_the_approved_layout():
 # ---- PostgreSQL ------------------------------------------------------------------------------------------------
 
 @pytest.mark.integration
-def test_the_pm_commit_creates_one_email_per_edition_and_none_for_the_morning(mail, brief):  # noqa: F811
+def test_each_committed_edition_creates_one_email_and_the_morning_one_waits_until_08_40(mail, brief):  # noqa: F811
     store, _ = mail
-    complete(brief)  # a committed AM edition
-    assert not rows(store, "SELECT * FROM newsletter_issues")
+    am, _, _ = complete(brief)  # the real AM flow, committed at its 07:45 KST due time
+    morning = issue_of(store, am)
+    assert morning["state"] == "writing" and morning["auto"] and morning["source"]["kind"] == "am"
+    # 2h30m after the commit would be 10:15, past the 09:00 open.
+    assert morning["fallback_at"] == datetime(2026, 9, 22, 8, 40, tzinfo=KST)
     edition = commit_pm(brief)
     brief[0].flush()
     issues = rows(store, "SELECT * FROM newsletter_issues")
-    assert len(issues) == 1 and str(issues[0]["edition_id"]) == edition.id
-    issue = issues[0]
+    assert len(issues) == 2 and {str(i["edition_id"]) for i in issues} == {am.id, edition.id}
+    issue = issue_of(store, edition)
+    assert issue["source"]["kind"] == "pm"
     assert issue["state"] == "writing" and issue["auto"] and issue["max_attempts"] == 3
     assert issue["fallback_at"] == edition.due_at + FALLBACK_AFTER
     assert issue["source_digest"] and issue["source"]["label"] == "10/19"
@@ -460,7 +476,7 @@ async def test_a_checked_draft_goes_once_to_each_active_recipient_with_receipts(
     dispatcher(store, smtp).tick()
     brief[0].flush()
     assert len(smtp.accepted) == 2
-    notice = [n for n in outbox(store, "newsletter_status") if "저녁 브리핑 메일" in n["text"]]
+    notice = [n for n in outbox(store, "newsletter_status") if "마감 브리핑 메일" in n["text"]]
     assert len(notice) == 1 and "2명 발송" in notice[0]["text"] and notice[0]["thread_ts"] == "200.000"
     assert issue_of(store, edition)["state"] == "sent"
     assert OWNER_MAIL not in str(rows(store, "SELECT detail FROM events")) + str(outbox(store))
@@ -547,7 +563,7 @@ async def test_an_interrupted_send_is_uncertain_and_never_sent_again(mail, brief
     assert states[OWNER_MAIL]["state"] == "uncertain" and states[OWNER_MAIL]["error"] == "smtp_data_interrupted"
     assert states[OWNER_MAIL]["attempts"] == 1 and states[FRIEND_MAIL]["state"] == "sent"
     assert smtp.to(FRIEND_MAIL) and not smtp.to(OWNER_MAIL)
-    notice = [n["text"] for n in outbox(store, "newsletter_status") if "저녁 브리핑 메일" in n["text"]]
+    notice = [n["text"] for n in outbox(store, "newsletter_status") if "마감 브리핑 메일" in n["text"]]
     assert notice and "결과 불확실 1명(자동으로 다시 보내지 않음)" in notice[0]
 
 
@@ -977,3 +993,162 @@ def test_gmails_authentication_results_are_read_for_the_sender_domain():
     assert not authenticated(header("mx.google.com; dkim=fail header.d=example.org; spf=softfail; dmarc=fail"),
                              "reader@example.org")
     assert not authenticated(header("relay.example.net; dmarc=pass header.from=example.org"), "reader@example.org")
+
+
+# ---- Morning email (owner decision 2026-10-20: both the AM and the PM brief are mailed) ------------------------
+
+def test_the_morning_fallback_time_is_08_40_at_the_latest_and_never_under_45_minutes():
+    def at(hour, minute):
+        return datetime(2026, 10, 19, hour, minute, tzinfo=KST)
+
+    am, pm = {"kind": "am", "day": PM_DAY}, {"kind": "pm", "day": PM_DAY}
+    assert fallback_at(pm, at(16, 46), auto=True) == at(16, 46) + FALLBACK_AFTER
+    assert fallback_at(am, at(6, 55), auto=True) == at(8, 40)  # 09:25 would be after the 09:00 open
+    assert fallback_at(am, at(5, 50), auto=True) == at(8, 20)  # an early commit keeps its 2h30m
+    assert fallback_at(am, at(8, 10), auto=True) == at(8, 55)  # a late commit still gets 45 minutes
+    for edition in (am, pm):
+        assert fallback_at(edition, at(8, 10), auto=False) == at(8, 10) + TEST_FALLBACK_AFTER
+
+
+def test_the_morning_prompt_has_its_own_guide_and_the_closing_prompt_is_unchanged():
+    # The PM guide as PM requests were frozen with before the morning email (bcc60ab).
+    assert hashlib.sha256(contracts.GUIDE.encode()).hexdigest() == (
+        "5a0b7421693056bfbffc66b1efa134c291282c2d065880d72162313d7624634a")
+    pm = contracts.source(pm_row())
+    assert pm["kind"] == "pm" and contracts.prompt(pm).startswith(contracts.GUIDE + "\nDATA:\n")
+    legacy = {key: value for key, value in pm.items() if key != "kind"}  # frozen before the morning email
+    assert contracts.prompt(legacy) == contracts.prompt(pm)
+    am = contracts.source(am_row())
+    text = contracts.prompt(am)
+    assert am["kind"] == "am" and text.startswith(contracts.GUIDE_AM + "\nDATA:\n") and contracts.GUIDE not in text
+    for rule in ("morning email", "overnight", "today's Korean session", "has not started", "previous Korean session",
+                 "'나스닥 1.1% 반등,'", "'오늘 한국장 관건은'", "~습니다", "round within the same unit", "footnote"):
+        assert rule in text, rule
+
+
+def test_the_morning_subject_and_header_name_the_morning():
+    draft = v5_draft()
+    assert render.subject(draft, "2026-10-20", "am") == "코스피, 3.2% 급락 출발 후 1.8% 상승 마감 | 10/20 아침 브리핑"
+    assert render.subject(draft, "2026-10-20") == render.subject(draft, "2026-10-20", "pm")
+    assert render.subject(draft, "2026-10-20").endswith("| 10/20 마감 브리핑")
+    page = render.html(draft, day="2026-10-20", sender=SENDER, channel_url="https://example.com", kind="am")
+    text = render.text(draft, day="2026-10-20", sender=SENDER, channel_url="https://example.com", kind="am")
+    assert "10/20 아침 · 오늘의 증시story" in page and "장 마감 · 오늘의 증시story" not in page
+    assert text.startswith("뭐든story · 10/20 아침 · 오늘의 증시story\n") and "10/20 아침 브리핑</title>" in page
+    closing = render.html(draft, day="2026-10-20", sender=SENDER, channel_url="https://example.com")
+    assert "10/20 장 마감 · 오늘의 증시story" in closing
+    assert "아침과 장 마감 후" in render.INTRO and render.INTRO in page and render.INTRO in closing
+
+
+def test_the_morning_fallback_leads_with_the_first_index_line_and_passes_every_check():
+    source = contracts.source(am_row())
+    draft = checks.fallback(source)
+    assert checks.findings(draft, source) == []
+    assert (draft.headline, draft.accent, draft.market.swing) == ("S&P 500 1.92% 상승,", "5,300 마감", None)
+    assert render.subject(draft, source["day"], "am") == "S&P 500 1.92% 상승, 5,300 마감 | 09/22 아침 브리핑"
+    assert draft.market.numbers == ["S&P 500 5,300 pt · +1.92%", "나스닥 종합 17,100 pt · +0.59%"]
+    # Whatever index comes first; the previous Korean session and VIX never lead, and without one the summary does.
+    board = ["한국 전일장 10/19 · 코스피 5,768.01 pt · 보도상 +1.76%", "VIX 17.2 pt · +3.10%",
+             "나스닥 종합 26,430.89 pt · +1.11%", "S&P 500 6,700 pt · +0.50%"]
+    assert checks.morning_title(board, []) == ("나스닥 종합 1.11% 상승,", "26,430.89 마감")
+    assert checks.morning_title(["다우 46,190.61 pt · -0.40%"], []) == ("다우 0.40% 하락,", "46,190.61 마감")
+    assert checks.morning_title(["다우 46,190.61 pt"], []) == ("다우 46,190.61", "마감")
+    assert checks.morning_title(["미 국채 10년 4.1 %"], ["밤사이 미국 증시는 엇갈렸습니다."]) == (
+        "밤사이 미국 증시는 엇갈렸습니다.", "")
+    bare = {**source, "summary": [], "lines": [line for line in source["lines"] if line["section"] != "오늘의 핵심"]}
+    assert checks.fallback(bare).preview == "오늘 아침 브리핑의 주요 내용입니다."
+
+
+@pytest.mark.integration
+async def test_a_morning_edition_is_written_with_its_guide_and_mailed_as_the_morning_brief(mail, brief):  # noqa: F811
+    store, clock = mail
+    recipient(store, OWNER_MAIL)
+    edition = commit_am(brief)
+    deliver_root(store, edition.id)
+    issue = issue_of(store, edition)
+    assert issue["state"] == "writing" and issue["fallback_at"] == datetime(2026, 9, 22, 8, 40, tzinfo=KST)
+    writer, provider = await write(store, v5_draft())  # the closing mockup: its numbers are not in this body
+    assert (await writer.tick())["outcome"] == "check_failed"
+    assert provider.calls[0].prompt.startswith(contracts.GUIDE_AM)
+    smtp = SimulatedSmtp()
+    clock["at"] = issue["fallback_at"] - timedelta(minutes=1)
+    dispatcher(store, smtp).tick()
+    assert issue_of(store, edition)["state"] == "writing" and not smtp.accepted
+    clock["at"] = issue["fallback_at"]
+    dispatcher(store, smtp).tick()
+    assert issue_of(store, edition)["origin"] == "fallback" and len(smtp.to(OWNER_MAIL)) == 1
+    sent = email.message_from_bytes(smtp.to(OWNER_MAIL)[0], policy=default)
+    assert sent["Subject"] == "S&P 500 1.92% 상승, 5,300 마감 | 09/22 아침 브리핑"
+    plain, related = sent.get_payload()
+    assert plain.get_content().startswith("뭐든story · 09/22 아침 · 오늘의 증시story")
+    assert "09/22 아침 · 오늘의 증시story" in related.get_payload()[0].get_content()
+    notices = [n["text"] for n in outbox(store, "newsletter_status")]
+    assert len(notices) == 1 and notices[0].startswith("아침 브리핑 메일 · 09/22 · 1명 발송 · 정해진 시간 안에")
+
+
+@pytest.mark.integration
+def test_a_late_morning_commit_still_waits_45_minutes(mail, brief):  # noqa: F811
+    store, _ = mail
+    edition = commit_am(brief, late=timedelta(minutes=25))  # committed 08:10 KST
+    issue = issue_of(store, edition)
+    assert issue["fallback_at"] == datetime(2026, 9, 22, 8, 55, tzinfo=KST)
+    assert issue["fallback_at"] - issue["created_at"] == TEST_FALLBACK_AFTER
+
+
+@pytest.mark.integration
+def test_morning_skips_use_the_same_fallback_time_and_name_the_morning(mail, brief):  # noqa: F811
+    from quant_company.briefing.contracts import BriefProposal
+
+    store, _ = mail
+    empty = BriefProposal.model_validate({**am_proposal().model_dump(mode="json"), "issues": []})
+    edition = commit_am(brief, empty)
+    issue = issue_of(store, edition)
+    assert issue["state"] == "skipped" and issue["reason"] == "no_issues"
+    assert issue["fallback_at"] == datetime(2026, 9, 22, 8, 40, tzinfo=KST)
+    deliver_root(store, edition.id)
+    dispatcher(store).tick()
+    notices = [n["text"] for n in outbox(store, "newsletter_status")]
+    assert notices == ["아침 브리핑 메일 보내지 않음 · 09/22 · 이번 아침 브리핑에는 주요 이슈 분석이 없어 메일을 만들지 "
+                       "않았습니다."]
+
+
+@pytest.mark.integration
+def test_a_morning_enqueue_failure_is_recorded_with_the_morning_fallback_time(mail, brief, monkeypatch):  # noqa: F811
+    store, _ = mail
+
+    def broken(self, conn, edition, at, *, auto):
+        conn.execute("SELECT 1 FROM no_such_newsletter_table")
+
+    monkeypatch.setattr(NewsletterStore, "ensure_issue", broken)
+    edition = commit_am(brief)
+    issue = issue_of(store, edition)
+    assert issue["state"] == "skipped" and issue["reason"] == "enqueue_failed"
+    assert issue["fallback_at"] == datetime(2026, 9, 22, 8, 40, tzinfo=KST)
+    deliver_root(store, edition.id)
+    dispatcher(store).tick()
+    notices = [n["text"] for n in outbox(store, "newsletter_status")]
+    assert len(notices) == 1 and notices[0].startswith("아침 브리핑 메일 보내지 않음 · 09/22 · 메일 작업을 만드는 중 서버 오류")
+
+
+@pytest.mark.integration
+def test_a_test_send_takes_the_latest_edition_of_either_kind(mail, brief):  # noqa: F811
+    store, clock = mail
+    store.settings.newsletter_enabled = False
+    command(store, f"이메일 시험 발송 {OWNER_MAIL}", "test-none")
+    am = commit_am(brief)
+    command(store, f"이메일 시험 발송 {OWNER_MAIL}", "test-am")
+    issue = issue_of(store, am)
+    assert not issue["auto"] and issue["fallback_at"] - issue["created_at"] == TEST_FALLBACK_AFTER
+    clock["at"] = issue["fallback_at"]
+    smtp = SimulatedSmtp()
+    dispatcher(store, smtp).tick()
+    sent = email.message_from_bytes(smtp.to(OWNER_MAIL)[0], policy=default)
+    assert sent["Subject"].endswith("| 09/22 아침 브리핑")
+    pm = commit_pm(brief)
+    command(store, f"이메일 시험 발송 {OWNER_MAIL}", "test-pm")
+    assert not issue_of(store, pm)["auto"]
+    replies = [n["text"] for n in outbox(store, "control")]
+    assert replies[0] == "보낼 브리핑이 아직 없습니다. 다음 브리핑이 발송된 뒤 다시 요청해 주세요."
+    assert "· 09/22 아침 브리핑 메일 · 이 주소에만" in replies[1] and "· 10/19 마감 브리핑 메일 · 이 주소에만" in replies[2]
+    done = [n["text"] for n in outbox(store) if "시험 발송 완료" in n["text"]]
+    assert done == ["이메일 시험 발송 완료 · ow***@example.com · 09/22 아침 브리핑 메일 (대체본)"]

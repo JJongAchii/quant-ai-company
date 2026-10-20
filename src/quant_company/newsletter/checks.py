@@ -10,8 +10,19 @@ import re
 from dataclasses import dataclass
 from decimal import ROUND_DOWN, ROUND_HALF_UP, Decimal
 
+from ..briefing.contracts import INSTRUMENTS
 from ..video.upload import TOOL_WORDING
-from .contracts import CalendarRow, IssueBlock, Market, NewsletterDraft, Swing, body_text, plain, sentences
+from .contracts import (
+    CalendarRow,
+    IssueBlock,
+    Market,
+    NewsletterDraft,
+    Swing,
+    body_text,
+    edition_kind,
+    plain,
+    sentences,
+)
 
 PART = r"\d+(?:\.\d+)?\s*천(?:\s*\d{1,3}(?!\d))?|\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?"
 SCALES = {"조": 12, "억": 8, "만": 4}
@@ -221,6 +232,10 @@ def findings(draft, source):
 # ---- Fallback -------------------------------------------------------------------------------------------------
 
 KOSPI = re.compile(r"^코스피 (\d{1,3}(?:,\d{3})*(?:\.\d+)?) pt(?: · (?:보도상 )?([+-])(\d+(?:\.\d+)?)%)?")
+# Any stock index line of the board ('나스닥 종합 26,430.89 pt · +1.11%'), as the brief labels it; VIX is not a market move.
+INDEX = re.compile("^(" + "|".join(re.escape(label) for key, (label, unit, _) in INSTRUMENTS.items()
+                                   if unit == "pt" and key != "vix")
+                   + r") (\d{1,3}(?:,\d{3})*(?:\.\d+)?) pt(?: · (?:보도상 )?([+-])(\d+(?:\.\d+)?)%)?")
 BOARD_TRAILER = re.compile(r" · (?:정규장 종가|관측값|시간외|잠정|최근 24시간) \d{2}/\d{2} \d{2}:\d{2} KST(?: · [^·]+)?$")
 
 
@@ -251,9 +266,24 @@ def first(text, limit):
     return clip((sentences(text) or [text])[0], limit)
 
 
+def move(sign, change):
+    return "상승" if sign == "+" and float(change) else "하락" if float(change) else "보합"
+
+
+def morning_title(board, summary):
+    """Headline and accent of the morning fallback: the board's first index line (the US close), else the summary."""
+    index = next((INDEX.match(t) for t in board if INDEX.match(t)), None)
+    if index and index[4]:
+        return f"{index[1]} {index[4]}% {move(index[3], index[4])},", f"{index[2]} 마감"
+    if index:
+        return f"{index[1]} {index[2]}", "마감"
+    return (first(summary[0], 40) if summary else "오늘 아침 증시"), ""
+
+
 def fallback(source):
     """The same layout from the body's own text: 30-second summary, numbers board, each issue's headline with the
     first fact sentence and its next check, and the calendar (design §3.2)."""
+    morning = edition_kind(source) == "am"
     sections = {}
     for line in source["lines"]:
         sections.setdefault(line["section"], []).append(line["text"])
@@ -261,10 +291,13 @@ def fallback(source):
     board = [BOARD_TRAILER.sub("", t) for t in sections.get("주요 숫자", []) if not t.startswith("주요 숫자")]
     kospi = next((KOSPI.match(t) for t in board if KOSPI.match(t)), None)
     summary = source["summary"] or sections.get("오늘의 핵심", [])
-    opening = first(summary[0], 120) if summary else "오늘 장 마감 브리핑의 주요 내용입니다."
-    if kospi and kospi[3]:
-        move = "상승" if kospi[2] == "+" and float(kospi[3]) else "하락" if float(kospi[3]) else "보합"
-        headline, accent = f"코스피 {kospi[3]}% {move},", f"{kospi[1]} 마감"
+    opening = first(summary[0], 120) if summary else (
+        "오늘 아침 브리핑의 주요 내용입니다." if morning else "오늘 장 마감 브리핑의 주요 내용입니다.")
+    if morning:
+        # The swing box is a Korean index's session; the morning leads with the overnight close instead.
+        (headline, accent), swing = morning_title(board, summary), None
+    elif kospi and kospi[3]:
+        headline, accent = f"코스피 {kospi[3]}% {move(kospi[2], kospi[3])},", f"{kospi[1]} 마감"
         swing = Swing(close_level=kospi[1], close_change=f"{kospi[2]}{kospi[3]}%")
     elif kospi:
         headline, accent, swing = f"코스피 {kospi[1]}", "마감", None

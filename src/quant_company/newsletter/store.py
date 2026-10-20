@@ -1,27 +1,33 @@
-"""PostgreSQL records of the evening brief email: recipients, one issue per PM edition, per-recipient send receipts.
+"""PostgreSQL records of the brief email: recipients, one issue per AM or PM edition, per-recipient send receipts.
 
 Only masked addresses leave this module through logs, receipts and Slack text."""
 
 import logging
 import re
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, time, timedelta
+from zoneinfo import ZoneInfo
 
 from psycopg.types.json import Jsonb
 
 from ..company import as_json, fingerprint, stable
 from . import checks, contracts
+from .contracts import KIND_NAMES
 
 LOG = logging.getLogger(__name__)
-# A checked draft is due this long after the PM commit; then the deterministic fallback goes out (design §3.3). The
-# episode starts in the same minute as the commit and takes the model first for 1.5-2 hours (10/19 PM 16:46-18:31,
+KST = ZoneInfo("Asia/Seoul")
+# A checked draft is due this long after the edition's commit; then the deterministic fallback goes out (design §3.3).
+# The episode starts in the same minute as the commit and takes the model first for 1.5-2 hours (10/19 PM 16:46-18:31,
 # 10/16 PM 18:14-20:04), so a shorter wait sent the fallback every day. A test send waits only the short time.
 FALLBACK_AFTER = timedelta(hours=2, minutes=30)
 TEST_FALLBACK_AFTER = timedelta(minutes=45)
+# The morning email goes out before the 09:00 KRX open, so an AM edition waits until 08:40 KST at the latest; a late
+# commit still gets the short wait.
+AM_FALLBACK_BY = time(8, 40)
 # Regular sends of an edition start within this window; a flag switched on later never mails an old edition.
 SEND_WINDOW = timedelta(hours=12)
 AUTO_ATTEMPTS, TEST_ATTEMPTS = 3, 1
-# claude-runtime runs one turn at a time and the PM video comes first: no email turn starts while an episode of the last
-# day is in a stage that calls the model (video/store.py LOGIN_STAGES).
+# claude-runtime runs one turn at a time and the edition's video comes first: no email turn starts while an episode of
+# the last day is in a stage that calls the model (video/store.py LOGIN_STAGES).
 VIDEO_MODEL_STATES = ("queued", "reviewing", "synthesizing", "inspecting")
 VIDEO_NEEDS_MODEL = """EXISTS (SELECT 1 FROM video_jobs v WHERE v.state=ANY(%(video_states)s)
     AND v.created_at>%(video_since)s)"""
@@ -35,10 +41,21 @@ ANY_ADDRESS = re.compile(r"[^\s<>|@:]+@[^\s<>|]+")
 STATE_NAMES = {"active": "수신 중", "removed": "삭제됨", "unsubscribed": "본인 수신 거부"}
 SKIPPED = {"fallback_failed": "메일을 만드는 중 오류가 나서 보내지 못했습니다",
            "enqueue_failed": "메일 작업을 만드는 중 서버 오류가 나서 메일을 만들지 않았습니다. 브리핑 본문은 그대로 발송됐습니다"}
+NO_ISSUES = "이번 {name} 브리핑에는 주요 이슈 분석이 없어 메일을 만들지 않았습니다"
 
 
 def utcnow():
     return datetime.now(UTC)
+
+
+def fallback_at(edition, at, *, auto):
+    """When the deterministic fallback replaces a draft that is not ready (see FALLBACK_AFTER, AM_FALLBACK_BY)."""
+    if not auto:
+        return at + TEST_FALLBACK_AFTER
+    due = at + FALLBACK_AFTER
+    if edition["kind"] == "am":
+        due = min(due, datetime.combine(date.fromisoformat(str(edition["day"])), AM_FALLBACK_BY, KST))
+    return max(due, at + TEST_FALLBACK_AFTER)
 
 
 def video_window(at):
@@ -69,7 +86,7 @@ class NewsletterStore:
     # ---- Issues --------------------------------------------------------------------------------------------
 
     def enqueue_isolated(self, conn, edition, at):
-        """Called inside the PM edition's commit: a failure here never holds back the brief body. The email is then
+        """Called inside the edition's commit: a failure here never holds back the brief body. The email is then
         recorded as skipped, so the brief's thread says once that there is no email today."""
         try:
             with conn.transaction():
@@ -87,11 +104,11 @@ class NewsletterStore:
     def skip(self, conn, edition, at, reason):
         conn.execute("""INSERT INTO newsletter_issues(id,edition_id,state,auto,reason,max_attempts,fallback_at,expires_at,
             next_at,created_at) VALUES(%s,%s,'skipped',true,%s,%s,%s,%s,%s,%s) ON CONFLICT(edition_id) DO NOTHING""",
-                     (stable(f"newsletter:{edition['id']}"), edition["id"], reason, AUTO_ATTEMPTS, at + FALLBACK_AFTER,
-                      at + SEND_WINDOW, at, at))
+                     (stable(f"newsletter:{edition['id']}"), edition["id"], reason, AUTO_ATTEMPTS,
+                      fallback_at(edition, at, auto=True), at + SEND_WINDOW, at, at))
 
     def enqueue(self, conn, edition, at):
-        if not self.settings.newsletter_enabled or edition["kind"] != "pm" or not edition["publish"]:
+        if not self.settings.newsletter_enabled or edition["kind"] not in KIND_NAMES or not edition["publish"]:
             return None
         return self.ensure_issue(conn, edition, at, auto=True)
 
@@ -108,8 +125,8 @@ class NewsletterStore:
             ON CONFLICT(edition_id) DO NOTHING""",
                      (identity, edition["id"], "skipped" if reason else "writing", auto,
                       Jsonb(source) if source else None, fingerprint(source) if source else None, reason,
-                      AUTO_ATTEMPTS if auto else TEST_ATTEMPTS, at + (FALLBACK_AFTER if auto else TEST_FALLBACK_AFTER),
-                      at + SEND_WINDOW, at, at))
+                      AUTO_ATTEMPTS if auto else TEST_ATTEMPTS, fallback_at(edition, at, auto=auto), at + SEND_WINDOW,
+                      at, at))
         return conn.execute("SELECT * FROM newsletter_issues WHERE edition_id=%s", (edition["id"],)).fetchone()
 
     def has_writing(self):
@@ -230,14 +247,14 @@ class NewsletterStore:
                      (state, state, recipient_id))
 
     def latest_edition(self, conn):
-        return conn.execute("""SELECT * FROM brief_editions WHERE kind='pm' AND publish AND state='committed'
+        return conn.execute("""SELECT * FROM brief_editions WHERE kind IN ('am','pm') AND publish AND state='committed'
             AND channel=%s AND owner_user=%s ORDER BY day DESC,committed_at DESC LIMIT 1""",
                             (self.settings.briefing_channel_id, self.settings.briefing_owner_user)).fetchone()
 
     def brief_thread(self, conn, edition_id=None):
-        """The PM brief's Slack thread (the edition's, or the latest one) once its root post is delivered."""
+        """The brief's Slack thread (the edition's, or the latest AM or PM one) once its root post is delivered."""
         return conn.execute("""SELECT p.* FROM brief_editions e JOIN projects p ON p.id=e.project_id
-            WHERE e.kind='pm' AND e.state='committed' AND p.thread_ts IS NOT NULL AND p.status='active'
+            WHERE e.kind IN ('am','pm') AND e.state='committed' AND p.thread_ts IS NOT NULL AND p.status='active'
             AND (%s::uuid IS NULL OR e.id=%s::uuid) ORDER BY e.day DESC,e.committed_at DESC LIMIT 1""",
                             (edition_id, edition_id)).fetchone()
 
@@ -250,7 +267,7 @@ class NewsletterStore:
 
     def unsubscribe(self, address, mail_digest):
         """An unsubscribe mail from a recipient: the state the owner cannot undo with 이메일 추가. Returns True when it
-        changed the recipient (and posted one masked line in the latest PM brief thread)."""
+        changed the recipient (and posted one masked line in the latest brief thread)."""
         with self.db.transaction() as conn:
             row = self.recipient(conn, address, lock=True)
             if not row:
@@ -264,7 +281,7 @@ class NewsletterStore:
                 project = self.brief_thread(conn)
                 if project:
                     notice = self.notice(conn, project, "unsubscribe:" + mail_digest,
-                                         f"이메일 수신 거부 · {mask(address)} · 이후 저녁 브리핑 메일에서 제외했습니다.")
+                                         f"이메일 수신 거부 · {mask(address)} · 이후 브리핑 메일에서 제외했습니다.")
             conn.execute("INSERT INTO newsletter_unsubscribes(mail_digest,recipient_id,notice_message_id) VALUES(%s,%s,%s)",
                          (mail_digest, row["id"], notice))
             self.company._event(conn, "newsletter_unsubscribed", {"recipient": mask(address), "changed": changed})
@@ -374,7 +391,8 @@ class NewsletterStore:
         at = at or utcnow()
         posted = 0
         with self.db.transaction() as conn:
-            for issue in conn.execute("""SELECT i.*,e.day FROM newsletter_issues i JOIN brief_editions e ON e.id=i.edition_id
+            for issue in conn.execute("""SELECT i.*,e.day,e.kind FROM newsletter_issues i
+                JOIN brief_editions e ON e.id=i.edition_id
                 WHERE i.notice_message_id IS NULL AND i.auto AND i.created_at>%s
                 AND (i.state='skipped' OR (i.state='sending' AND NOT EXISTS (SELECT 1 FROM newsletter_sends s
                      WHERE s.issue_id=i.id AND s.kind='regular' AND s.state IN ('pending','sending'))))
@@ -383,8 +401,9 @@ class NewsletterStore:
                 if not project:
                     continue
                 if issue["state"] == "skipped":
-                    why = SKIPPED.get(issue["reason"], "이번 마감 브리핑에는 주요 이슈 분석이 없어 메일을 만들지 않았습니다")
-                    key, text = f"skip:{issue['id']}", f"저녁 브리핑 메일 보내지 않음 · {issue['day']:%m/%d} · {why}."
+                    name = KIND_NAMES[issue["kind"]]
+                    why = SKIPPED.get(issue["reason"], NO_ISSUES.format(name=name))
+                    key, text = f"skip:{issue['id']}", f"{name} 브리핑 메일 보내지 않음 · {issue['day']:%m/%d} · {why}."
                 else:
                     key, text = f"result:{issue['id']}", self.result_text(conn, issue)
                 mid = self.notice(conn, project, key, text)
@@ -392,7 +411,8 @@ class NewsletterStore:
                     state=CASE WHEN state='sending' THEN 'sent' ELSE state END,updated_at=now() WHERE id=%s""",
                              (mid, issue["id"]))
                 posted += 1
-            for row in conn.execute("""SELECT s.*,e.day,i.origin FROM newsletter_sends s JOIN newsletter_issues i ON i.id=s.issue_id
+            for row in conn.execute("""SELECT s.*,e.day,e.kind AS edition_kind,i.origin FROM newsletter_sends s
+                JOIN newsletter_issues i ON i.id=s.issue_id
                 JOIN brief_editions e ON e.id=i.edition_id WHERE s.kind='test' AND s.state=ANY(%s)
                 AND s.notice_message_id IS NULL FOR UPDATE OF s SKIP LOCKED""", (list(TERMINAL),)).fetchall():
                 project = self.company._project(conn, row["project_id"])
@@ -407,15 +427,16 @@ class NewsletterStore:
         at = at or utcnow()
         posted = 0
         with self.db.transaction() as conn:
-            for issue in conn.execute("""SELECT i.id,i.edition_id,e.day FROM newsletter_issues i
+            for issue in conn.execute("""SELECT i.id,i.edition_id,e.day,e.kind FROM newsletter_issues i
                 JOIN brief_editions e ON e.id=i.edition_id WHERE i.auto AND i.state='ready' AND i.expires_at>%s""",
                                       (at,)).fetchall():
                 project = self.brief_thread(conn, issue["edition_id"])
                 if project and not conn.execute("SELECT 1 FROM messages WHERE id=%s",
                                                 (stable(f"newsletter-notice:unconfigured:{issue['id']}"),)).fetchone():
                     self.notice(conn, project, f"unconfigured:{issue['id']}",
-                                f"저녁 브리핑 메일 보내지 못함 · {issue['day']:%m/%d} · 발신 Gmail 주소나 앱 비밀번호가 아직 설정되지 "
-                                "않았습니다(docs/newsletter.md). 설정되면 커밋 후 12시간 안에는 이어서 보냅니다.")
+                                f"{KIND_NAMES[issue['kind']]} 브리핑 메일 보내지 못함 · {issue['day']:%m/%d} · 발신 Gmail "
+                                "주소나 앱 비밀번호가 아직 설정되지 않았습니다(docs/newsletter.md). 설정되면 커밋 후 12시간 "
+                                "안에는 이어서 보냅니다.")
                     posted += 1
         return posted
 
@@ -429,7 +450,7 @@ class NewsletterStore:
     def result_text(conn, issue):
         counts = {row["state"]: row["n"] for row in conn.execute("""SELECT state,count(*) AS n FROM newsletter_sends
             WHERE issue_id=%s AND kind='regular' GROUP BY state""", (issue["id"],)).fetchall()}
-        head = f"저녁 브리핑 메일 · {issue['day']:%m/%d}"
+        head = f"{KIND_NAMES[issue['kind']]} 브리핑 메일 · {issue['day']:%m/%d}"
         if not counts:
             return f"{head} · 수신 중인 주소가 없어 보내지 않았습니다."
         parts = [f"{counts.get('sent', 0)}명 발송"]
@@ -446,7 +467,8 @@ class NewsletterStore:
 
     @staticmethod
     def test_text(row):
-        what = f"{row['day']:%m/%d} 마감 브리핑 메일" + (" (대체본)" if row["origin"] == "fallback" else "")
+        what = f"{row['day']:%m/%d} {KIND_NAMES[row['edition_kind']]} 브리핑 메일" + (
+            " (대체본)" if row["origin"] == "fallback" else "")
         if row["state"] == "sent":
             return f"이메일 시험 발송 완료 · {mask(row['address'])} · {what}"
         reasons = {"sender_not_configured": "발신 Gmail 주소나 앱 비밀번호가 아직 설정되지 않았습니다(docs/newsletter.md)",
