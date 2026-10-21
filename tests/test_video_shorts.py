@@ -23,6 +23,7 @@ from quant_company.video.shorts import (
     OUTRO,
     QA_JS,
     SAFE,
+    SIGNUP,
     ShortsPlan,
     ShortsRenderer,
     agenda_line,
@@ -124,10 +125,11 @@ def test_the_hook_is_one_breath_after_the_date_line():
     old = ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': OLD_HOOK}})
     assert 'Hook narration is 45 characters, over 32: one sentence in one breath after the date line' in ' '.join(
         shorts_violations(old, body_source(), episode().model_dump(mode='json')))
-    # So is a total over the 400-character budget that still fits the schema's 420.
-    raw = cut(signals_narration='가' * (405 - 5 * 66 - len(plan['hook']['narration'])))
+    # So is a total over the 400-character budget that still fits the schema's 420 (the five labels read in the list
+    # count too: 5 x 6 characters).
+    raw = cut(signals_narration='가' * (405 - 5 * 66 - 5 * 6 - len(plan['hook']['narration'])))
     raw['issues'] = [{**plan['issues'][0], 'id': f'long-{n}', 'narration': '가' * 66} for n in range(5)]
-    assert 'Narration is 405 characters in all, over 400: shorten the narrations' in violations(raw)
+    assert 'Narration and labels are 405 characters in all, over 400: shorten the narrations or the labels' in violations(raw)
     # The length estimate counts the hook with the date line at the voice's pace.
     short, long = (ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': '가' * n}}) for n in (10, 32))
     assert estimated_seconds(long) - estimated_seconds(short) == pytest.approx(22 / CHARS_PER_SECOND)
@@ -138,7 +140,9 @@ def test_the_hook_is_one_breath_after_the_date_line():
 def test_fixed_lines():
     assert date_line({'source': {'day': '2026-10-20', 'edition_kind': 'am'}}) == '10월 20일 아침 브리핑입니다.'
     assert date_line({'source': {'day': '2026-10-20', 'edition_kind': 'close'}}).endswith('마감 브리핑입니다.')
-    assert agenda_line(5) == '오늘 볼 이슈는 다섯 가지입니다.' and agenda_line(2) == '오늘 볼 이슈는 두 가지입니다.'
+    # Owner, 10/21: the list scene reads each issue once, not only the count.
+    assert agenda_line(['한국장 수급', '방산 제재']) == '오늘 볼 이슈는 한국장 수급, 방산 제재, 두 가지입니다.'
+    assert agenda_line(['a', 'b', 'c', 'd', 'e']).endswith(', e, 다섯 가지입니다.')
     assert [KO_COUNT[n] for n in (3, 4)] == ['세', '네']
 
 
@@ -169,6 +173,22 @@ def test_only_visible_episode_text_counts_as_in_the_episode():
         raw = cut(issue=1, big=big, claim_ids=ids, dir=None)
         assert any('not in the delivered episode' in f for f in violations(raw)), big
     assert 'not in the delivered episode' not in ' '.join(violations(cut()))
+
+
+def test_the_labels_share_the_narration_budget_and_have_no_comma(monkeypatch):
+    from quant_company.video import shorts as shorts_module
+
+    # Owner, 10/21: the labels are read aloud in the issue list, so they count toward the length.
+    plan = ShortsPlan.model_validate(cut())
+    spoken_total, labels = sum(len(x) for x in plan.narrations()), sum(len(i.label) for i in plan.issues)
+    monkeypatch.setattr(shorts_module, 'NARRATION_BUDGET', spoken_total + labels - 1)
+    assert any(f.startswith('Narration and labels are') for f in violations(cut()))
+    monkeypatch.setattr(shorts_module, 'NARRATION_BUDGET', spoken_total + labels)
+    assert not any(f.startswith('Narration and labels are') for f in violations(cut()))
+    raw = cut()
+    raw['issues'][0]['label'] = '금리, 환율'
+    assert any('A label has a comma' in f for f in violations(raw))
+    assert not any('A label has a comma' in f for f in violations(cut()))
 
 
 def test_an_over_long_plan_is_found_before_any_speech_is_paid(monkeypatch):
@@ -272,7 +292,7 @@ def render_fixture(tmp_path, assets=True):
 
 
 # A short agenda take is held for the list; the outro is held for its button.
-TAKES = [4, 1, 6, 6, 3]
+TAKES = [4, 1, 6, 6, 3, 3]
 
 
 def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
@@ -282,11 +302,11 @@ def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
     manifest = ShortsRenderer(settings, WordAligner()).render(job, plan, episode().model_dump(mode='json'), tmp_path / 'out', paths)
     assert manifest['size'] == [1080, 1920] and manifest['fps'] == 30
     scenes = manifest['scenes']
-    assert [s['id'] for s in scenes] == ['opener', 'agenda', 'semis', 'check', 'outro']
-    assert [s['type'] for s in scenes] == ['opener', 'agenda', 'issue', 'issue', 'outro']
+    assert [s['id'] for s in scenes] == ['opener', 'agenda', 'semis', 'check', 'outro', 'signup']
+    assert [s['type'] for s in scenes] == ['opener', 'agenda', 'issue', 'issue', 'outro', 'signup']
     assert not any(k in f for f in manifest['findings'] for k in ('outside-safe-area', 'overlap', 'covered')), manifest['findings']
     assert scenes[1]['t1'] - scenes[1]['t0'] >= 1.0 + 0.9 * len(plan.issues) - 1e-6
-    assert scenes[-1]['t1'] - scenes[-1]['t0'] >= 6.0 - 1e-6
+    assert scenes[-2]['t1'] - scenes[-2]['t0'] >= 6.0 - 1e-6 and scenes[-1]['t1'] - scenes[-1]['t0'] >= 5.0 - 1e-6
     assert scenes[0]['t0'] == 0 and manifest['duration'] == pytest.approx(scenes[-1]['t1'], abs=.5)
     assert manifest['music'] is None
     pictures = {p['scene']: p for p in manifest['pictures']}
@@ -297,7 +317,8 @@ def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
     assert plan.title in upload and '#Shorts' in upload and '관련 동영상' in upload and '|' not in upload.split('\n')[1]
     assert '[사진 출처]\n자료사진 · Fixture Author · CC BY 4.0\n' in upload
     srt = (tmp_path / 'out' / 'shorts.srt').read_text()
-    assert '9월 22일 아침 브리핑입니다.' in srt and '오늘 볼 이슈는 두 가지입니다.' in srt and '본편에서 확인하세요.' in srt
+    assert '9월 22일 아침 브리핑입니다.' in srt and '반도체 주도, 다르게 볼 점, 두 가지입니다.' in srt and '본편에서 확인하세요.' in srt
+    assert '채널 프로필 링크에서 하세요.' in srt  # owner, 10/21: the cut ends inviting subscribers to the report mail
     assert [f['scene'] for f in manifest['review']['frames']] == [s['id'] for s in scenes]
     assert all((tmp_path / 'out' / f['file']).stat().st_size for f in manifest['review']['frames'])
     assert not (tmp_path / 'out' / 'page').exists() and not list((tmp_path / 'out').glob('aud-*.wav'))
@@ -355,7 +376,7 @@ def test_build_keeps_a_minus_without_an_arrow(tmp_path):
 
 def test_a_long_total_is_a_finding_not_a_raise(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
-    takes = tones(tmp_path, [20, 20, 20, 20, 20], ffmpeg)  # ~100 s of paid speech
+    takes = tones(tmp_path, [20, 20, 20, 20, 20, 5], ffmpeg)  # ~105 s of paid speech
     built = ShortsRenderer(settings, WordAligner()).build(job, shorts(), episode().model_dump(mode='json'), tmp_path / 'out', takes)
     assert 90 < built['total'] < 180
     assert any('at most 90 s' in f for f in built['findings'])
@@ -387,7 +408,7 @@ def test_every_scene_has_a_picture(tmp_path):
     # each one the scene before does not show.
     assert {i: (bg, blur) for i, (bg, blur, _) in shown.items()} == {
         'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'semis': ('img/photo.png', True),
-        'check': ('img/illu.png', True), 'outro': ('img/illu.png', True)}
+        'check': ('img/illu.png', True), 'outro': ('img/illu.png', True), 'signup': ('img/illu.png', True)}
     assert (built['page'] / 'img' / 'illu.png').is_file() and (built['page'] / 'img' / 'photo.png').is_file()
     assert not any('nophoto' in cls for *_, cls in shown.values()) and not any('picture' in f for f in built['findings'])
     # No picture anywhere (no reviewed library, no episode picture): a gradient, never a bare frame, and a finding.
@@ -396,7 +417,7 @@ def test_every_scene_has_a_picture(tmp_path):
     shown = scene_classes(built['page'])
     assert all(bg is None and 'nophoto' in cls for bg, _, cls in shown.values()), shown
     assert [f for f in built['findings'] if 'picture' in f] == [
-        f'Shorts scene without a picture: {i}' for i in ('opener', 'agenda', 'semis', 'check', 'outro')]
+        f'Shorts scene without a picture: {i}' for i in ('opener', 'agenda', 'semis', 'check', 'outro', 'signup')]
 
 
 def test_an_issue_without_a_picture_takes_one_from_its_chapter_before_the_cover(tmp_path):
@@ -417,11 +438,11 @@ def test_an_issue_without_a_picture_takes_one_from_its_chapter_before_the_cover(
     # its own credit. counter: nothing else in its chapter, so the cover.
     assert {i: (bg, blur) for i, (bg, blur, _) in shown.items()} == {
         'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'semis': ('img/photo.png', True),
-        'check': ('img/illu.png', True), 'outro': ('img/illu.png', True)}
+        'check': ('img/illu.png', True), 'outro': ('img/illu.png', True), 'signup': ('img/illu.png', True)}
     credits = {p['scene']: p['credit'] for p in built['pictures']}
     assert credits['semis'] == '자료사진 · Fixture Author · CC BY 4.0' and credits['check'] == '' and credits['agenda'] == ''
     [drawn] = on_page(built['page'], ["[...document.querySelectorAll('.scene')].map(e => e.querySelector('.credit')?.textContent || '')"])
-    assert drawn == ['', '', '자료사진 · Fixture Author · CC BY 4.0', '', '']
+    assert drawn == ['', '', '자료사진 · Fixture Author · CC BY 4.0', '', '', '']
     # The chapter's picture is taken even when the scene before shows it: the cover comes only after the chapter.
     raw['scenes'][5]['chapter'] = '함께 볼 이슈'  # photo and counter
     plan = shorts().model_dump(mode='json')
@@ -459,6 +480,19 @@ def test_the_headline_breaks_after_its_first_comma(tmp_path):
     # 10/21: a second part too long for one line wraps below the break, and 'LIG D&A' stays on one line.
     assert shown['long'] == ['다우 1.02% 올랐지만,\n반대매매에 LIG\u00a0D&A 제재까지', 1, False, 1]
     assert '<br class="comma">' in fullwidth and '반도체 주도，</span>' in fullwidth
+
+
+def test_each_issue_leads_with_its_line_and_the_list_rows_come_in_as_they_are_read(tmp_path):
+    # Owner, 10/21: an issue led with a bare number; its one-line takeaway (its row in the list) now heads it.
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    plan = shorts()
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode().model_dump(mode='json'), tmp_path / 'out',
+                                                          tones(tmp_path, TAKES, ffmpeg))
+    agenda = built['ep']['scenes'][1]
+    at = agenda['data']['at']
+    assert len(at) == len(plan.issues) and 0 < at[0] < at[1] < agenda['t1'] - agenda['t0']
+    [heads] = on_page(built['page'], ["[...document.querySelectorAll('.issue .ih')].map(e => e.innerText)"])
+    assert heads == [i.agenda for i in plan.issues]
 
 
 def test_music_is_optional(tmp_path):
@@ -583,9 +617,10 @@ async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, vid
     assert row['state'] == 'delivering', row['error']
     request = next(c for c in provider.calls if c.output_contract == 'video_shorts_v1')
     assert request.request_id == f"video-{job['id']}-shorts-1" and episode().upload.title in request.prompt
-    count = 2 + len(shorts().issues) + 1
-    assert len(speech.calls) - takes == count == 5
-    assert speech.calls[-count]['text'].startswith('9월 22일 아침 브리핑입니다.') and speech.calls[-1]['text'].endswith(OUTRO['say'])
+    count = 2 + len(shorts().issues) + 2
+    assert len(speech.calls) - takes == count == 6
+    assert speech.calls[-count]['text'].startswith('9월 22일 아침 브리핑입니다.') and speech.calls[-2]['text'].endswith(OUTRO['say'])
+    assert speech.calls[-1]['text'] == SIGNUP['say']
     assert renderer.calls == [(count, renderer.calls[0][1])]
     with store.db.transaction() as conn:
         message = conn.execute("SELECT o.text,o.thread_ts FROM outbox o WHERE o.id=%s", (row['delivery_message_id'],)).fetchone()
@@ -618,6 +653,27 @@ async def test_a_plan_stored_under_the_old_limits_is_still_voiced_and_rendered(b
     row = await shorts_ticks(store, provider, speech, renderer, job)
     assert row['state'] == 'delivering', row['error']
     assert speech.calls[takes]['text'] == '9월 22일 아침 브리핑입니다. ' + OLD_HOOK and len(renderer.calls) == 1
+
+
+async def test_a_cut_voiced_before_new_fixed_lines_voices_them_before_it_renders(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    # A release between ticks (10/21: the read list, the mail invitation): the rendering step finds a take it lacks.
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
+    for _ in range(12):
+        if row['state'] == 'rendering':
+            break
+        row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
+    assert row['state'] == 'rendering', row['error']
+    with store.db.transaction() as conn:
+        conn.execute("DELETE FROM video_effects WHERE job_id=%s AND id LIKE %s", (job['id'], '%:shorts-speech-5-%'))
+    renderer, takes = ShortsFileRenderer(), len(speech.calls)
+    row = await shorts_ticks(store, provider, speech, renderer, job, limit=1)
+    assert row['state'] == 'synthesizing' and not renderer.calls
+    row = await shorts_ticks(store, provider, speech, renderer, job)
+    assert row['state'] == 'delivering', row['error']
+    assert [c['text'] for c in speech.calls[takes:]] == [SIGNUP['say']] and len(renderer.calls) == 1
 
 
 async def test_an_episode_with_under_two_issue_scenes_spends_no_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811
@@ -679,7 +735,7 @@ async def test_the_reserve_is_kept_in_the_month_not_in_the_episode_cap(brief, vi
     store.settings.video_shorts_enabled = True
     with store.db.transaction() as conn:
         spent = conn.execute('SELECT COALESCE(sum(credits),0) AS n FROM video_effects').fetchone()['n']
-    store.settings.video_episode_credit_limit = spent + 5  # room for the cut's five takes, not for another 80
+    store.settings.video_episode_credit_limit = spent + 6  # room for the cut's six takes, not for another 80
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
     assert row['state'] == 'delivering', row['error']
 
@@ -891,9 +947,9 @@ def test_takes_open_with_the_date_and_close_with_the_outro():
     plan = shorts()
     takes = VideoRunner.shorts_takes(None, job, plan)
     texts = [request['text'] for _, request in takes]
-    assert len(takes) == 2 + len(plan.issues) + 1
-    assert texts[0].startswith('9월 22일 아침 브리핑입니다. ') and texts[1] == '오늘 볼 이슈는 두 가지입니다.'
-    assert texts[-1].endswith(OUTRO['say'])
+    assert len(takes) == 2 + len(plan.issues) + 2
+    assert texts[0].startswith('9월 22일 아침 브리핑입니다. ') and texts[1] == '오늘 볼 이슈는 반도체 주도, 다르게 볼 점, 두 가지입니다.'
+    assert texts[-2].endswith(OUTRO['say']) and texts[-1] == SIGNUP['say']
     assert all(key.startswith(f'shorts-speech-{i}-') for i, (key, _) in enumerate(takes))
 
 

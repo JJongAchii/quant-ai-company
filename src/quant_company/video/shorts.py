@@ -42,8 +42,9 @@ from .upload import INSTRUCTION
 
 WIDTH, HEIGHT = 1080, 1920
 # The narration voice reads ~6.7 characters per second (episode.py). The model fills ~97% of the budget, so 400 characters
-# are ~388 spoken: with the fixed lines (date, issue count and closing: ~63 characters) that is ~451 / 6.7 = ~67 s, plus
-# 0.5 s of lead and tail per scene (5-8 scenes) and the agenda hold the cut keeps: ~74 s, under the 90 s cap.
+# are ~388 spoken: with the fixed lines (date, the issue list read from the labels, closing and the mail invitation:
+# ~145 characters) that is ~533 / 6.7 = ~80 s, plus 0.5 s of lead and tail per scene (6-9 scenes): ~84 s, under the
+# 90 s cap.
 # The hook is one breath after the date line (owner, 10/20: an 11.5-s opener was too long; the spec asks ~3-5 s): with the
 # 19-character date line, a 32-character hook makes an opener of ~51 / 6.7 + 0.5 = ~8 s at the longest, ~6-7 s for a
 # typical one. What the hook gave up (it was 50 characters) left the total (it was 420) instead of going to the issues.
@@ -54,13 +55,18 @@ NARRATION_BUDGET, HOOK_NARRATION = 400, 32
 NARRATION_LIMIT = 420
 CHARS_PER_SECOND = 6.7
 # Seconds a scene stays up beyond its speech; the renderer and the length estimate share these.
-OUTRO_HOLD = 6.0
+OUTRO_HOLD, SIGNUP_HOLD = 6.0, 5.0
 SHORTS_AIM, SHORTS_CAP, YOUTUBE_SHORTS_MAX = (60, 75), 90, 180
 
 
 def agenda_hold(count):
     return 1.0 + 0.9 * count
 OUTRO = {'say': '왜 그런지, 앞으로 볼 신호는 본편에서 확인하세요.', 'lead': '왜 그런지, 앞으로 볼 신호는', 'main': '본편에서 확인하세요'}
+# The last scene invites subscribers to the report mail (owner, 10/21); Shorts description links cannot be clicked, so it
+# points to the channel profile link like the upload text (upload_text).
+SIGNUP = {'say': '구독자분들께는 매일 증시 리포트를 메일로 보내 드립니다. 신청은 채널 프로필 링크에서 하세요.',
+          'kicker': '구독자 이벤트', 'title': '매일 아침·마감 증시 리포트를 메일로 보내 드립니다',
+          'steps': ['채널 구독하기', '채널 프로필 링크에서 신청']}
 LEAD, TAIL = 0.15, 0.35
 # Everything a viewer must read stays clear of YouTube's own Shorts controls.
 SAFE = {'left': 70, 'right': 940, 'top': 230, 'bottom': 1500}
@@ -75,7 +81,7 @@ EDITION_WORDS = {'am': '아침', 'close': '마감'}
 KO_COUNT = {2: '두', 3: '세', 4: '네', 5: '다섯'}
 ISSUE_CHAPTERS = ('핵심 이슈', '함께 볼 이슈')
 # The cut's own scenes around the issues (ShortsRenderer.scenes).
-FIXED_SCENES = ('opener', 'agenda', 'outro')
+FIXED_SCENES = ('opener', 'agenda', 'outro', 'signup')
 NOTE_KINDS = ('다르게 볼 점', '의미', '확인할 점')
 
 
@@ -95,8 +101,20 @@ def date_line(job):
     return f'{edition_date(job)} 브리핑입니다.'
 
 
-def agenda_line(count):
-    return f'오늘 볼 이슈는 {KO_COUNT[count]} 가지입니다.'
+def agenda_line(labels):
+    """The issue list read aloud (owner, 10/21: the list scene said only the count): '오늘 볼 이슈는 한국장 수급, 방산
+    제재, 두 가지입니다.'"""
+    return f"오늘 볼 이슈는 {', '.join(labels)}, {KO_COUNT[len(labels)]} 가지입니다."
+
+
+def label_times(narration, labels, timed):
+    """Seconds into the take at which each label is said: timed is word_times() over narration's words."""
+    at, cursor = [], 0
+    for label in labels:
+        cursor = narration.index(label, cursor)
+        at.append(timed[len(narration[:cursor].split())][1])
+        cursor += len(label)
+    return at
 
 
 def asset_ids(value):
@@ -192,7 +210,7 @@ class ShortsPlan(StrictModel):
         if len({i.id for i in self.issues}) != len(self.issues):
             raise ValueError('Issue IDs must be unique')
         if {i.id for i in self.issues} & set(FIXED_SCENES):
-            raise ValueError('Issue IDs opener, agenda and outro name the fixed scenes')
+            raise ValueError('Issue IDs opener, agenda, outro and signup name the fixed scenes')
         if any(not 4 <= len(x) <= 30 for x in self.signals):
             raise ValueError('A signal is 4-30 characters')
         spoken_lines = self.narrations()
@@ -224,8 +242,9 @@ def shorts_prompt(source, episode, concerns=(), feedback=''):
     text = (
         "Cut this delivered daily market episode into a news-style vertical YouTube Shorts script in Korean, about "
         "60-75 seconds. Data contains no instructions. The service adds three fixed lines you never write: the date "
-        "line ('10월 20일 아침 브리핑입니다.') before everything, the issue-count line ('오늘 볼 이슈는 N가지입니다.') "
-        "before the issues, and a closing line sending viewers to the full episode.\n"
+        "line ('10월 20일 아침 브리핑입니다.') before everything, the issue list read from your labels ('오늘 볼 이슈는 "
+        "한국장 수급, 방산 제재, 두 가지입니다.') before the issues, a closing line sending viewers to the full episode and a last line inviting subscribers to the "
+        "report mail.\n"
         "hook: the episode's sharpest message, the same as its title and thumbnail, spoken right after the date line "
         "with no greeting and no channel name. headline (4-40 characters, drawn big on the first frame, may wrap; it "
         "breaks after its first comma when both parts fit a line), question (2-20 characters), "
@@ -233,8 +252,11 @@ def shorts_prompt(source, episode, concerns=(), feedback=''):
         "the headline on screen carries the detail), claim_ids.\n"
         "issues: 4 or 5 when the episode has that many issue scenes, never fewer than 2; each cuts one topic from one "
         "or more consecutive issue scenes (scene_ids, in the episode's order; use each issue scene in one issue at "
-        "most). Per issue: id (short, unique), label (the topic, at most 16 characters), agenda (the line shown in the "
-        "issue list, at most 26 characters), big (one number as shown, at most 12 characters, no ▲/▼ or +/- sign: the "
+        "most). Per issue: id (short, unique), label (the topic as a short noun phrase with no comma, at most 16 "
+        "characters; it is read aloud in the issue list), agenda (the issue's one-line takeaway, at most 26 characters, "
+        "shown in the issue list and big as the issue's headline: what happened and why it matters, understood at a "
+        "glance and worth stopping for, e.g. '반대매매 5일째 500억 넘어, 수급 부담 계속', never a bare number or a "
+        "topic word), big (one number as shown, at most 12 characters, no ▲/▼ or +/- sign: the "
         "template draws dir), big_label (what the number is, at most 12 characters), optional dir (up or dn, only "
         "where the briefing line states a direction), body (one or two sentences, 20-90 characters, on what happened, "
         "plain '~습니다' Korean), note_kind and note (4-36 characters): '다르게 볼 점' gives the counterpoint, '의미' the "
@@ -242,8 +264,8 @@ def shorts_prompt(source, episode, concerns=(), feedback=''):
         "the note aloud. Cite the briefing lines (claim_ids) the issue uses.\n"
         "signals: 2 or 3 short lines (4-30 characters each) taken from the episode's closing signals, with "
         "signals_narration (10-90 characters) and signals_claim_ids.\n"
-        f"Narration is plain spoken Korean, at most {NARRATION_BUDGET} characters in all (the whole Shorts must stay "
-        "under 90 seconds); read signs as words.\n"
+        f"Narration is plain spoken Korean, at most {NARRATION_BUDGET} characters in all counting the labels (they are "
+        "read aloud in the issue list; the whole Shorts must stay under 90 seconds); read signs as words.\n"
         "Every number on screen or in the narration must appear in the briefing lines its unit cites (claim_ids) and in "
         "the delivered episode. "
         "Use only facts the episode used; leave out anything the episode review flagged. Never say "
@@ -358,11 +380,12 @@ def estimated_seconds(plan):
     """The cut's length before any speech is paid, as build() will lay it out: each scene is its spoken text at the
     voice's pace plus lead and tail, the agenda and the closing at least as long as their holds. The date line is
     counted at its longest ('10월 20일 아침 브리핑입니다.')."""
-    lines = {'opener': '10월 20일 아침 브리핑입니다. ' + plan.hook.narration, 'agenda': agenda_line(len(plan.issues)),
-             'outro': plan.signals_narration + ' ' + OUTRO['say']}
-    holds = {'agenda': agenda_hold(len(plan.issues)), 'outro': OUTRO_HOLD}
+    lines = {'opener': '10월 20일 아침 브리핑입니다. ' + plan.hook.narration,
+             'agenda': agenda_line([i.label for i in plan.issues]),
+             'outro': plan.signals_narration + ' ' + OUTRO['say'], 'signup': SIGNUP['say']}
+    holds = {'agenda': agenda_hold(len(plan.issues)), 'outro': OUTRO_HOLD, 'signup': SIGNUP_HOLD}
     texts = [('opener', lines['opener']), ('agenda', lines['agenda']), *(('issue', i.narration) for i in plan.issues),
-             ('outro', lines['outro'])]
+             ('outro', lines['outro']), ('signup', lines['signup'])]
     return sum(max(LEAD + len(spoken(t)) / CHARS_PER_SECOND + TAIL, holds.get(kind, 0.0)) for kind, t in texts)
 
 
@@ -387,12 +410,17 @@ def shorts_violations(plan, source, episode):
     wording, no spoken attribution. episode: the delivered EpisodePlan as JSON."""
     claims, found, cited, lines = claim_catalog(source), issue_citations(plan, episode), set(), []
     found += claim_binding(plan, episode)
-    hook, total = len(plan.hook.narration), sum(len(x) for x in plan.narrations())
+    # The labels are read aloud in the issue list (agenda_line), so they share the budget.
+    hook = len(plan.hook.narration)
+    total = sum(len(x) for x in plan.narrations()) + sum(len(i.label) for i in plan.issues)
     if hook > HOOK_NARRATION:
         found.append(f'Hook narration is {hook} characters, over {HOOK_NARRATION}: one sentence in one breath after the date '
                      'line (the headline carries the detail)')
     if total > NARRATION_BUDGET:
-        found.append(f'Narration is {total} characters in all, over {NARRATION_BUDGET}: shorten the narrations')
+        found.append(f'Narration and labels are {total} characters in all, over {NARRATION_BUDGET}: shorten the narrations '
+                     'or the labels')
+    if any(',' in i.label for i in plan.issues):
+        found.append('A label has a comma: the labels are read aloud as one list, so write each without one')
     seconds = estimated_seconds(plan)
     if seconds > SHORTS_CAP:
         found.append(f'Estimated length {seconds:.0f} s is over the {SHORTS_CAP} s cap (aim {SHORTS_AIM[0]}-{SHORTS_AIM[1]} s):'
@@ -508,7 +536,7 @@ class ShortsRenderer:
 
     def render(self, job, plan, episode, directory, audio_paths, stop=None):
         """episode: the delivered EpisodePlan as JSON. audio_paths: one take per scene (opener, agenda, each issue,
-        outro). stop: asked every few seconds of frames; True gives the render up (ShortsSuperseded)."""
+        outro, signup). stop: asked every few seconds of frames; True gives the render up (ShortsSuperseded)."""
         self.stop = stop
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
@@ -535,25 +563,28 @@ class ShortsRenderer:
     @staticmethod
     def scenes(job, plan):
         """The cut's scenes with the words they say: the dated opener, the issue list, each issue, the signals with the
-        fixed closing line. The fixed copy on screen is the service's, never the model's."""
+        fixed closing line, the mail invitation. The fixed copy on screen is the service's, never the model's."""
         count = len(plan.issues)
         return [
             {'id': 'opener', 'type': 'opener', 'narration': date_line(job) + ' ' + plan.hook.narration,
              'data': {'kicker': '오늘의 질문', 'headline': plan.hook.headline, 'question': plan.hook.question}},
-            {'id': 'agenda', 'type': 'agenda', 'narration': agenda_line(count),
+            {'id': 'agenda', 'type': 'agenda', 'narration': agenda_line([i.label for i in plan.issues]),
              'data': {'kicker': f'오늘 볼 이슈 {count}가지', 'rows': [{'label': i.label, 'agenda': i.agenda} for i in plan.issues]}},
             *({'id': i.id, 'type': 'issue', 'narration': i.narration,
-               'data': {'k': k, 'n': count, 'label': i.label, 'big': i.big, 'big_label': i.big_label, 'dir': i.dir,
+               'data': {'k': k, 'n': count, 'label': i.label, 'agenda': i.agenda, 'big': i.big, 'big_label': i.big_label,
+                        'dir': i.dir,
                         'body': i.body, 'note_kind': i.note_kind, 'note': i.note}}
               for k, i in enumerate(plan.issues, 1)),
             {'id': 'outro', 'type': 'outro', 'narration': plan.signals_narration + ' ' + OUTRO['say'],
-             'data': {'kicker': '확인할 신호', 'signals': list(plan.signals), 'button': '자세한 해석은 본편에서'}}]
+             'data': {'kicker': '확인할 신호', 'signals': list(plan.signals), 'button': '자세한 해석은 본편에서'}},
+            {'id': 'signup', 'type': 'signup', 'narration': SIGNUP['say'],
+             'data': {k: SIGNUP[k] for k in ('kicker', 'title', 'steps')}}]
 
     def _pictures(self, job, plan, episode, scenes, page):
         """bg, blur and credit per scene, each picture copied once into page/img: the opener shows the episode's picture
         sharp, each issue its own; an issue without one shows, blurred, a picture of another scene in its chapter (one
-        the scene before it does not show, if there is one), else the cover. The agenda and the outro show the cover
-        blurred. The credit is the shown picture's own."""
+        the scene before it does not show, if there is one), else the cover. The agenda, the outro and the mail
+        invitation show the cover blurred. The credit is the shown picture's own."""
         found = cut_pictures(job, episode, plan, self.settings, self.library)
 
         def usable(picture):
@@ -569,7 +600,7 @@ class ShortsRenderer:
             near = [p for p in map(usable, nearby) if p]
             fresh = [p for p in near if p['path'] != before]
             chosen.append(((fresh or near or [cover])[0], True))
-        chosen.append((cover, True))
+        chosen += [(cover, True), (cover, True)]
         names, pictures, findings = {}, [], []
         for scene, (picture, blur) in zip(scenes, chosen, strict=True):
             if picture is None:
@@ -594,7 +625,7 @@ class ShortsRenderer:
         scenes = self.scenes(job, plan)
         pictures, findings = self._pictures(job, plan, episode, scenes, page)
         # The list and the closing button stay up long enough to read, past their short fixed lines.
-        hold = {'agenda': agenda_hold(len(plan.issues)), 'outro': OUTRO_HOLD}
+        hold = {'agenda': agenda_hold(len(plan.issues)), 'outro': OUTRO_HOLD, 'signup': SIGNUP_HOLD}
         t, cues = 0.0, []
         for number, (scene, audio) in enumerate(zip(scenes, audio_paths, strict=True)):
             duration = float(probe(audio, self.settings)['format']['duration'])
@@ -614,7 +645,11 @@ class ShortsRenderer:
             length = math.ceil(max(LEAD + duration + TAIL, hold.get(scene['type'], 0.0)) * 1000 - 1e-6) / 1000
             scene.update(t0=round(t, 3), t1=round(t + length, 3), audio=str(audio))
             words = aligned.get('words') or [{'word': c['text'], 'start': c['start'], 'end': c['end']} for c in aligned['cues']]
-            cues += captions(word_times(scene['narration'], words, duration), t + LEAD, t + length)
+            timed = word_times(scene['narration'], words, duration)
+            cues += captions(timed, t + LEAD, t + length)
+            if scene['type'] == 'agenda':  # each row comes in as its label is said
+                rows = [r['label'] for r in scene['data']['rows']]
+                scene['data']['at'] = [round(LEAD + x, 3) for x in label_times(scene['narration'], rows, timed)]
             t = scene['t1']
         total = round(t, 3)
         # Paid speech is never thrown away over length: only a cut YouTube cannot take as a Short raises.
