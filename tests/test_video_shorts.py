@@ -444,7 +444,8 @@ def test_the_headline_breaks_after_its_first_comma(tmp_path):
     shown = {}
     # The owner's 10/20 headline broke mid-phrase ('나스닥 1.11% 반등, AI 칩 / 살 돈엔 금리 10% 이상').
     for name, headline in (('comma', '나스닥 1.11% 반등, AI 칩 살 돈엔 금리 10% 이상'), ('fixture', raw['hook']['headline']),
-                           ('wide', '반도체, 미국 증시를 이끌었지만 비기술 업종 확산은 아직 혼조였다'), ('plain', '반도체가 이끈 미국 증시')):
+                           ('wide', '반도체, 미국 증시를 이끌었지만 비기술 업종 확산은 아직 혼조였다'), ('plain', '반도체가 이끈 미국 증시'),
+                           ('long', '다우 1.02% 올랐지만, 반대매매에 LIG D&A 제재까지')):
         raw['hook']['headline'] = headline
         built = ShortsRenderer(settings, WordAligner()).build(job, ShortsPlan.model_validate(raw), episode().model_dump(mode='json'),
                                                               tmp_path / name, takes)
@@ -455,6 +456,8 @@ def test_the_headline_breaks_after_its_first_comma(tmp_path):
     # A second part that cannot fit one line even 15% smaller: the headline wraps as written, at its size.
     assert shown['wide'] == ['반도체, 미국 증시를 이끌었지만 비기술 업종 확산은 아직 혼조였다', 0, True, 1]
     assert shown['plain'] == ['반도체가 이끈 미국 증시', 0, True, 1]
+    # 10/21: a second part too long for one line wraps below the break, and 'LIG D&A' stays on one line.
+    assert shown['long'] == ['다우 1.02% 올랐지만,\n반대매매에 LIG\u00a0D&A 제재까지', 1, False, 1]
     assert '<br class="comma">' in fullwidth and '반도체 주도，</span>' in fullwidth
 
 

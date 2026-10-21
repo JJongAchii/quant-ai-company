@@ -10,8 +10,10 @@ const KINDS = ['다르게 볼 점', '의미', '확인할 점'];
 const ORIGINS = ['50% 30%', '32% 50%', '68% 45%', '45% 68%', '60% 35%', '38% 40%'];
 const FADE = 0.35;
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+// A short run of Latin words stays on one line ('LIG D&A', 'S&P 500'); a longer one keeps its breaks to fit the width.
+const tie = s => String(s ?? '').replace(/[A-Za-z][\w&.]*(?: [A-Za-z\d][\w&.]*)+/g, r => r.length > 16 ? r : r.replace(/ /g, '\u00a0'));
 // Numbers in a line are drawn gold, like the episode captions.
-const gold = s => esc(s).replace(/(\d(?:[\d,.]*\d)?\s?(?:%p|%|bp|조원|억원|억달러|달러|원|포인트|배)?)/g, '<em>$1</em>');
+const gold = s => esc(tie(s)).replace(/(\d(?:[\d,.]*\d)?\s?(?:%p|%|bp|조원|억원|억달러|달러|원|포인트|배)?)/g, '<em>$1</em>');
 // The arrow comes from the direction field only: an arrow the script wrote is never drawn, and a +/- sign is dropped
 // only where the arrow replaces it (a level of -0.2% keeps its minus).
 const bare = (s, dir) => String(s).replace(dir ? /^\s*[▲▼+\-]\s*/ : /^\s*[▲▼]\s*/, '');
@@ -59,17 +61,20 @@ function fit() {
   for (const scn of $$('.scene')) {
     const shown = scn.style.display; scn.style.display = 'block';
     const box = $('.box', scn), inner = $('.inner', scn);
-    // A headline broken at its comma keeps the break only where each part fits one line: at the headline size, or at
-    // most 15% smaller (the owner's 10/20 headline needs 13%). Otherwise it wraps as written.
+    // A headline broken at its comma fits each part on one line at the headline size, or at most 15% smaller (the
+    // owner's 10/20 headline needs 13%). A longer second part wraps below the break when the first part fills half a
+    // line ('다우 1.02% 올랐지만, / 반대매매에 / LIG D&A 제재까지', 10/21); after a short one it wraps as written.
     for (const h of $$('.h1', scn)) {
       const parts = $$('.part', h);
       if (!parts.length) continue;
       parts.forEach(p => { p.style.whiteSpace = 'nowrap'; });
-      const scale = inner.clientWidth / Math.max(...parts.map(p => p.getBoundingClientRect().width));
+      const widths = parts.map(p => p.getBoundingClientRect().width), line = inner.clientWidth;
       parts.forEach(p => { p.style.whiteSpace = ''; });
-      const em = parseFloat(getComputedStyle(h).fontSize) / parseFloat(getComputedStyle(box).fontSize);
-      if (scale < 0.85) h.innerHTML = gold(h.dataset.text);
-      else if (scale < 1) h.style.fontSize = (em * scale * 0.99).toFixed(3) + 'em';
+      const scale = line / Math.max(...widths), em = parseFloat(getComputedStyle(h).fontSize) / parseFloat(getComputedStyle(box).fontSize);
+      const size = s => { h.style.fontSize = (em * s * 0.99).toFixed(3) + 'em'; };
+      if (scale >= 0.85) { if (scale < 1) size(scale); }
+      else if (widths[0] < line / 2) h.innerHTML = gold(h.dataset.text);
+      else if (widths[0] > line) size(Math.max(line / widths[0], 0.85));
     }
     // The whole text shrinks until it fits between the header and the captions.
     let base = 10;
