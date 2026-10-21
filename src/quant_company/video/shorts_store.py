@@ -15,13 +15,19 @@ from .store import EDITION_NAMES, KST, LOCK, VideoStore
 
 ACTIVE = ('writing', 'synthesizing', 'rendering')
 # The next episode is usually in production then (briefs at about 07:45 and 16:10-17:25, then about 1.5 hours of
-# script, speech and render): a cut takes no step that would hold the video worker or the Claude lane.
-QUIET = ((time(6, 30), time(9, 30)), (time(15, 30), time(19, 0)))
+# script, speech and render): a cut takes no step that would hold the video worker or the Claude lane. A window
+# (its edition kind is the third value) ends early once that day's episode of its kind is delivered (claim).
+QUIET = ((time(6, 30), time(9, 30), 'am'), (time(15, 30), time(19, 0), 'close'))
 
 
-def quiet(at):
-    now = at.astimezone(KST).time()
-    return any(start <= now < end for start, end in QUIET)
+def quiet(at, delivered=None):
+    """delivered: the source of the newest episode when it is delivered."""
+    local = at.astimezone(KST)
+    for start, end, kind in QUIET:
+        if start <= local.time() < end:
+            return not (delivered and str(delivered.get('day')) == local.date().isoformat()
+                        and delivered.get('edition_kind') == kind)
+    return False
 # Owner file names in the thread: the episode's stem with a Shorts suffix.
 FILES = (('shorts.mp4', '_쇼츠.mp4', '쇼츠 영상'), ('shorts.srt', '_쇼츠.srt', '쇼츠 자막'),
          ('shorts-upload.txt', '_쇼츠_업로드문안.txt', '쇼츠 업로드 문안'))
@@ -63,9 +69,14 @@ class ShortsStore:
                 updated_at=now() FROM video_jobs j WHERE j.id=s.job_id AND s.state=ANY(%s)
                 AND EXISTS (SELECT 1 FROM video_jobs n WHERE n.created_at>j.created_at) RETURNING s.job_id""",
                                     (list(ACTIVE),)).fetchall()
+            latest = conn.execute('SELECT state,source FROM video_jobs ORDER BY created_at DESC LIMIT 1').fetchone()
+            delivered = latest['source'] if latest and latest['state'] == 'delivered' else None
             # An episode in production goes first; one stuck for a day (a lost brief post) does not stop the cuts.
-            if quiet(video_store.utcnow()) or conn.execute("""SELECT 1 FROM video_jobs WHERE state=ANY(%s)
-                    AND created_at>now()-interval '24 hours' LIMIT 1""", (list(EPISODE_ACTIVE),)).fetchone():
+            # So does the mail of the edition while it still waits for the model (newsletter/store.py, fallback_at).
+            if quiet(video_store.utcnow(), delivered) or conn.execute("""SELECT 1 FROM video_jobs WHERE state=ANY(%s)
+                    AND created_at>now()-interval '24 hours' LIMIT 1""", (list(EPISODE_ACTIVE),)).fetchone() \
+                    or conn.execute("""SELECT 1 FROM newsletter_issues WHERE state='writing' AND fallback_at>now()
+                    LIMIT 1""").fetchone():
                 row = None
             else:
                 # A cut given up on older checks gets one more look at what it already wrote (Runner.shorts_step).
