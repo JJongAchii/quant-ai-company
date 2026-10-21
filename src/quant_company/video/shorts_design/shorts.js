@@ -18,6 +18,7 @@ const gold = s => esc(tie(s)).replace(/(\d(?:[\d,.]*\d)?\s?(?:%p|%|bp|조원|억
 // only where the arrow replaces it (a level of -0.2% keeps its minus).
 const bare = (s, dir) => String(s).replace(dir ? /^\s*[▲▼+\-]\s*/ : /^\s*[▲▼]\s*/, '');
 const PLAY = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M6 3.5v17l14.5-8.5z"/></svg>';
+const MAIL = '<svg viewBox="0 0 24 24" fill="none" stroke="#FDC749" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.2"/><path d="M3.6 6.6 12 13l8.4-6.4"/></svg>';
 // A headline with a comma breaks after its first one, where its first phrase ends ('나스닥 1.11% 반등, / AI 칩 살 돈엔
 // 금리 10% 이상', not '… 반등, AI 칩 / 살 돈엔 …'); fit() keeps the break only where both parts fit a line each.
 const headline = s => {
@@ -32,20 +33,22 @@ const CARDS = {
       <div class="ask" data-in="0.35,0.45,24">${esc(d.question)}</div></div>`;
   },
   agenda(d, sc) {
-    // The rows come in one by one over the first ~60% of the scene.
+    // Each row comes in as its label is said (d.at, from the take's word times), else one by one over ~60% of the scene.
     const n = d.rows.length, span = Math.max(0.6 * (sc.t1 - sc.t0) - 0.15, 0.3);
     return `<div class="inner"><div class="kicker" data-in="0,0.3,20">${esc(d.kicker)}</div><div class="list">`
-      + d.rows.map((r, i) => `<div class="row" data-in="${(0.15 + i * span / n).toFixed(2)},0.4,0,70"><b>${i + 1}</b>`
+      + d.rows.map((r, i) => `<div class="row" data-in="${(d.at?.[i] ?? 0.15 + i * span / n).toFixed(2)},0.4,0,70"><b>${i + 1}</b>`
         + `<div><strong data-fit>${esc(r.label)}</strong><small>${esc(r.agenda)}</small></div></div>`).join('')
       + '</div></div>';
   },
   issue(d) {
+    // The issue's one-line takeaway (its line in the list) leads; the number backs it up (owner, 10/21).
     const dir = ARROW[d.dir] || '';
     return `<div class="inner"><div class="pill" data-in="0,0.3,0,-50" data-fit><b>${d.k}</b>${esc(d.label)}<i>${d.k}/${d.n}</i></div>
-      <div class="num"><span class="v ${d.dir || ''}" data-pop="0.15,0.45" data-fit>${dir}${esc(bare(d.big, ARROW[d.dir]))}</span>`
-      + `<span class="l" data-in="0.4,0.4,0,-24">${esc(d.big_label)}</span></div>
-      <div class="card" data-in="0.5,0.45,40"><p>${gold(d.body)}</p>`
-      + `<span class="tag k${Math.max(0, KINDS.indexOf(d.note_kind))}" data-in="0.95,0.4,14"><strong>${esc(d.note_kind)}</strong> · ${esc(d.note)}</span></div></div>`;
+      <div class="ih" data-in="0.1,0.4,24" data-text="${esc(d.agenda)}">${headline(d.agenda)}</div>
+      <div class="num"><span class="v ${d.dir || ''}" data-pop="0.35,0.45" data-fit>${dir}${esc(bare(d.big, ARROW[d.dir]))}</span>`
+      + `<span class="l" data-in="0.55,0.4,0,-24">${esc(d.big_label)}</span></div>
+      <div class="card" data-in="0.7,0.45,40"><p>${gold(d.body)}</p>`
+      + `<span class="tag k${Math.max(0, KINDS.indexOf(d.note_kind))}" data-in="1.1,0.4,14"><strong>${esc(d.note_kind)}</strong> · ${esc(d.note)}</span></div></div>`;
   },
   outro(d, sc) {
     // The button comes in as the closing line is spoken (its caption), else halfway through.
@@ -55,16 +58,23 @@ const CARDS = {
       + d.signals.map((s, i) => `<div class="sig" data-in="${(0.3 + i * 0.35).toFixed(2)},0.4,0,50"><b>${'①②③④'[i]}</b><span>${gold(s)}</span></div>`).join('')
       + `</div><div class="play" data-pop="${Math.max(0.4, pop).toFixed(2)},0.45">${PLAY}${esc(d.button)}</div></div>`;
   },
+  signup(d) {
+    // The report mail for subscribers (owner, 10/21): the service's own copy, the steps in the order they are said.
+    return `<div class="inner"><div class="kicker" data-in="0,0.3,20">${esc(d.kicker)}</div><div class="su" data-in="0.15,0.45,30">`
+      + `<i class="mail" data-pop="0.4,0.45">${MAIL}</i><div class="st">${gold(d.title)}</div><ol>`
+      + d.steps.map((s, i) => `<li data-in="${(0.9 + i * 0.6).toFixed(2)},0.4,0,50"><b>${i + 1}</b>${esc(s)}</li>`).join('')
+      + '</ol></div></div>';
+  },
 };
 
 function fit() {
   for (const scn of $$('.scene')) {
     const shown = scn.style.display; scn.style.display = 'block';
     const box = $('.box', scn), inner = $('.inner', scn);
-    // A headline broken at its comma fits each part on one line at the headline size, or at most 15% smaller (the
+    // A headline (the opener's, an issue's) broken at its comma fits each part on one line at the headline size, or at most 15% smaller (the
     // owner's 10/20 headline needs 13%). A longer second part wraps below the break when the first part fills half a
     // line ('다우 1.02% 올랐지만, / 반대매매에 / LIG D&A 제재까지', 10/21); after a short one it wraps as written.
-    for (const h of $$('.h1', scn)) {
+    for (const h of $$('.h1, .ih', scn)) {
       const parts = $$('.part', h);
       if (!parts.length) continue;
       parts.forEach(p => { p.style.whiteSpace = 'nowrap'; });

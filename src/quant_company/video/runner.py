@@ -41,6 +41,7 @@ from .render import Renderer, RenderInProgress, korean_numbers, probe, spoken, v
 from .runway import RETAKE_RESERVE, RunwaySpeech, download_audio, speech_credits
 from .shorts import CHECKS as SHORTS_CHECKS
 from .shorts import OUTRO as SHORTS_OUTRO
+from .shorts import SIGNUP as SHORTS_SIGNUP
 from .shorts import (
     ShortsPlan,
     ShortsRenderer,
@@ -544,6 +545,11 @@ class VideoRunner:
         elif row['state'] == 'rendering':
             plan = ShortsPlan.model_validate(row['plan'])
             takes = self.shorts_takes(job, plan)
+            # A cut voiced before a release changed its fixed lines (10/21: the read list, the mail invitation) voices
+            # the new ones first.
+            if not all([await asyncio.to_thread(self.store.effect_receipt, job, k, 'completed') for k, _ in takes]):
+                await asyncio.to_thread(self.shorts.save, row, 'synthesizing')
+                return
             directory = self.settings.video_artifact_dir / str(job['id']) / ('shorts-' + digest(
                 {'plan': row['plan'], 'takes': [k for k, _ in takes]})[:16])
             directory.mkdir(parents=True, exist_ok=True)
@@ -576,10 +582,10 @@ class VideoRunner:
 
     def shorts_takes(self, job, plan):
         """(effect key, Runway request) per Shorts take, keyed apart from the episode's takes: the dated hook, the agenda,
-        each issue, then the signals with the fixed closing line."""
-        texts = [date_line(job) + ' ' + spoken(plan.hook.narration), agenda_line(len(plan.issues)),
+        each issue, the signals with the fixed closing line, then the mail invitation."""
+        texts = [date_line(job) + ' ' + spoken(plan.hook.narration), spoken(agenda_line([i.label for i in plan.issues])),
                  *(spoken(i.narration) for i in plan.issues),
-                 spoken(plan.signals_narration) + ' ' + SHORTS_OUTRO['say']]
+                 spoken(plan.signals_narration) + ' ' + SHORTS_OUTRO['say'], SHORTS_SIGNUP['say']]
         return [(f"shorts-speech-{i}-{digest(text)[:12]}",
                  {"text": text, "voice": job["policy"]["voice"], "model": job["policy"]["speech_model"]})
                 for i, text in enumerate(texts)]
