@@ -700,6 +700,46 @@ async def test_no_cut_starts_while_the_next_episode_is_due_or_after_a_stuck_one(
     assert shorts_store.claim()['state'] == 'writing'
 
 
+async def test_the_morning_cut_starts_once_its_episode_and_mail_are_out(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    shorts_store = ShortsStore(store.company)
+    assert job['source']['day'] == '2026-09-22' and job['source']['edition_kind'] == 'am'
+    clock['at'] = datetime(2026, 9, 23, 8, 0, tzinfo=ZoneInfo('Asia/Seoul'))  # the next morning's brief is due
+    assert shorts_store.claim() is None
+    clock['at'] = datetime(2026, 9, 22, 16, 30, tzinfo=ZoneInfo('Asia/Seoul'))  # an AM episode leaves the close window
+    assert shorts_store.claim() is None
+    clock['at'] = datetime(2026, 9, 22, 8, 0, tzinfo=ZoneInfo('Asia/Seoul'))  # that morning's episode is out
+    with store.db.transaction() as conn:  # its mail still waits for the model
+        conn.execute("""INSERT INTO newsletter_issues(id,edition_id,state,auto,max_attempts,fallback_at,expires_at)
+            VALUES(%s,%s,'writing',true,2,now()+interval '30 minutes',now()+interval '12 hours')""",
+                     ('00000000-0000-0000-0000-000000000004', job['edition_id']))
+    assert shorts_store.claim() is None and shorts_store.get(job['id']) is None
+    with store.db.transaction() as conn:  # past its fallback time the mail no longer needs the model
+        conn.execute("UPDATE newsletter_issues SET fallback_at=now()-interval '1 minute'")
+    assert shorts_store.claim()['state'] == 'writing'
+
+
+async def test_the_close_cut_starts_once_the_close_episode_is_out(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    with store.db.transaction() as conn:
+        conn.execute("""UPDATE video_jobs SET source=jsonb_set(source,'{edition_kind}','"close"') WHERE id=%s""",
+                     (job['id'],))
+    clock['at'] = datetime(2026, 9, 23, 7, 0, tzinfo=ZoneInfo('Asia/Seoul'))  # a close episode leaves the morning window
+    assert ShortsStore(store.company).claim() is None
+    clock['at'] = datetime(2026, 9, 22, 18, 30, tzinfo=ZoneInfo('Asia/Seoul'))
+    assert ShortsStore(store.company).claim()['state'] == 'writing'
+
+
 async def test_a_lost_completion_keeps_the_file_receipt(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
