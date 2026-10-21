@@ -724,6 +724,22 @@ async def test_the_morning_cut_starts_once_its_episode_and_mail_are_out(brief, v
     assert shorts_store.claim()['state'] == 'writing'
 
 
+async def test_the_close_cut_starts_once_the_close_episode_is_out(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    with store.db.transaction() as conn:
+        conn.execute("""UPDATE video_jobs SET source=jsonb_set(source,'{edition_kind}','"close"') WHERE id=%s""",
+                     (job['id'],))
+    clock['at'] = datetime(2026, 9, 23, 7, 0, tzinfo=ZoneInfo('Asia/Seoul'))  # a close episode leaves the morning window
+    assert ShortsStore(store.company).claim() is None
+    clock['at'] = datetime(2026, 9, 22, 18, 30, tzinfo=ZoneInfo('Asia/Seoul'))
+    assert ShortsStore(store.company).claim()['state'] == 'writing'
+
+
 async def test_a_lost_completion_keeps_the_file_receipt(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)

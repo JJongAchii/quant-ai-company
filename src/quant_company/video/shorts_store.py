@@ -72,11 +72,11 @@ class ShortsStore:
             latest = conn.execute('SELECT state,source FROM video_jobs ORDER BY created_at DESC LIMIT 1').fetchone()
             delivered = latest['source'] if latest and latest['state'] == 'delivered' else None
             # An episode in production goes first; one stuck for a day (a lost brief post) does not stop the cuts.
-            # So does the mail of the edition while it still waits for the model (newsletter/store.py, fallback_at).
-            if quiet(video_store.utcnow(), delivered) or conn.execute("""SELECT 1 FROM video_jobs WHERE state=ANY(%s)
-                    AND created_at>now()-interval '24 hours' LIMIT 1""", (list(EPISODE_ACTIVE),)).fetchone() \
+            # So does any mail that still waits for the model (newsletter/store.py, at most until its fallback_at).
+            if (quiet(video_store.utcnow(), delivered) or conn.execute("""SELECT 1 FROM video_jobs WHERE state=ANY(%s)
+                    AND created_at>now()-interval '24 hours' LIMIT 1""", (list(EPISODE_ACTIVE),)).fetchone()
                     or conn.execute("""SELECT 1 FROM newsletter_issues WHERE state='writing' AND fallback_at>now()
-                    LIMIT 1""").fetchone():
+                    LIMIT 1""").fetchone()):
                 row = None
             else:
                 # A cut given up on older checks gets one more look at what it already wrote (Runner.shorts_step).
