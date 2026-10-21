@@ -10,8 +10,8 @@ const KINDS = ['다르게 볼 점', '의미', '확인할 점'];
 const ORIGINS = ['50% 30%', '32% 50%', '68% 45%', '45% 68%', '60% 35%', '38% 40%'];
 const FADE = 0.35;
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-// Latin words in a row stay on one line ('LIG D&A', 'S&P 500' never breaks between its words).
-const tie = s => String(s ?? '').replace(/([A-Za-z][\w&.]*) (?=[A-Za-z\d])/g, '$1\u00a0');
+// A short run of Latin words stays on one line ('LIG D&A', 'S&P 500'); a longer one keeps its breaks to fit the width.
+const tie = s => String(s ?? '').replace(/[A-Za-z][\w&.]*(?: [A-Za-z\d][\w&.]*)+/g, r => r.length > 16 ? r : r.replace(/ /g, '\u00a0'));
 // Numbers in a line are drawn gold, like the episode captions.
 const gold = s => esc(tie(s)).replace(/(\d(?:[\d,.]*\d)?\s?(?:%p|%|bp|조원|억원|억달러|달러|원|포인트|배)?)/g, '<em>$1</em>');
 // The arrow comes from the direction field only: an arrow the script wrote is never drawn, and a +/- sign is dropped
