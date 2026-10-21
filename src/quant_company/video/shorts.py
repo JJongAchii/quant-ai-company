@@ -210,7 +210,7 @@ class ShortsPlan(StrictModel):
         if len({i.id for i in self.issues}) != len(self.issues):
             raise ValueError('Issue IDs must be unique')
         if {i.id for i in self.issues} & set(FIXED_SCENES):
-            raise ValueError('Issue IDs opener, agenda and outro name the fixed scenes')
+            raise ValueError('Issue IDs opener, agenda, outro and signup name the fixed scenes')
         if any(not 4 <= len(x) <= 30 for x in self.signals):
             raise ValueError('A signal is 4-30 characters')
         spoken_lines = self.narrations()
@@ -264,8 +264,8 @@ def shorts_prompt(source, episode, concerns=(), feedback=''):
         "the note aloud. Cite the briefing lines (claim_ids) the issue uses.\n"
         "signals: 2 or 3 short lines (4-30 characters each) taken from the episode's closing signals, with "
         "signals_narration (10-90 characters) and signals_claim_ids.\n"
-        f"Narration is plain spoken Korean, at most {NARRATION_BUDGET} characters in all (the whole Shorts must stay "
-        "under 90 seconds); read signs as words.\n"
+        f"Narration is plain spoken Korean, at most {NARRATION_BUDGET} characters in all counting the labels (they are "
+        "read aloud in the issue list; the whole Shorts must stay under 90 seconds); read signs as words.\n"
         "Every number on screen or in the narration must appear in the briefing lines its unit cites (claim_ids) and in "
         "the delivered episode. "
         "Use only facts the episode used; leave out anything the episode review flagged. Never say "
@@ -410,12 +410,17 @@ def shorts_violations(plan, source, episode):
     wording, no spoken attribution. episode: the delivered EpisodePlan as JSON."""
     claims, found, cited, lines = claim_catalog(source), issue_citations(plan, episode), set(), []
     found += claim_binding(plan, episode)
-    hook, total = len(plan.hook.narration), sum(len(x) for x in plan.narrations())
+    # The labels are read aloud in the issue list (agenda_line), so they share the budget.
+    hook = len(plan.hook.narration)
+    total = sum(len(x) for x in plan.narrations()) + sum(len(i.label) for i in plan.issues)
     if hook > HOOK_NARRATION:
         found.append(f'Hook narration is {hook} characters, over {HOOK_NARRATION}: one sentence in one breath after the date '
                      'line (the headline carries the detail)')
     if total > NARRATION_BUDGET:
-        found.append(f'Narration is {total} characters in all, over {NARRATION_BUDGET}: shorten the narrations')
+        found.append(f'Narration and labels are {total} characters in all, over {NARRATION_BUDGET}: shorten the narrations '
+                     'or the labels')
+    if any(',' in i.label for i in plan.issues):
+        found.append('A label has a comma: the labels are read aloud as one list, so write each without one')
     seconds = estimated_seconds(plan)
     if seconds > SHORTS_CAP:
         found.append(f'Estimated length {seconds:.0f} s is over the {SHORTS_CAP} s cap (aim {SHORTS_AIM[0]}-{SHORTS_AIM[1]} s):'
@@ -531,7 +536,7 @@ class ShortsRenderer:
 
     def render(self, job, plan, episode, directory, audio_paths, stop=None):
         """episode: the delivered EpisodePlan as JSON. audio_paths: one take per scene (opener, agenda, each issue,
-        outro). stop: asked every few seconds of frames; True gives the render up (ShortsSuperseded)."""
+        outro, signup). stop: asked every few seconds of frames; True gives the render up (ShortsSuperseded)."""
         self.stop = stop
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)

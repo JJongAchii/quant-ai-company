@@ -174,6 +174,22 @@ def test_only_visible_episode_text_counts_as_in_the_episode():
     assert 'not in the delivered episode' not in ' '.join(violations(cut()))
 
 
+def test_the_labels_share_the_narration_budget_and_have_no_comma(monkeypatch):
+    from quant_company.video import shorts as shorts_module
+
+    # Owner, 10/21: the labels are read aloud in the issue list, so they count toward the length.
+    plan = ShortsPlan.model_validate(cut())
+    spoken_total, labels = sum(len(x) for x in plan.narrations()), sum(len(i.label) for i in plan.issues)
+    monkeypatch.setattr(shorts_module, 'NARRATION_BUDGET', spoken_total + labels - 1)
+    assert any(f.startswith('Narration and labels are') for f in violations(cut()))
+    monkeypatch.setattr(shorts_module, 'NARRATION_BUDGET', spoken_total + labels)
+    assert not any(f.startswith('Narration and labels are') for f in violations(cut()))
+    raw = cut()
+    raw['issues'][0]['label'] = '금리, 환율'
+    assert any('A label has a comma' in f for f in violations(raw))
+    assert not any('A label has a comma' in f for f in violations(cut()))
+
+
 def test_an_over_long_plan_is_found_before_any_speech_is_paid(monkeypatch):
     from quant_company.video import shorts as shorts_module
 
