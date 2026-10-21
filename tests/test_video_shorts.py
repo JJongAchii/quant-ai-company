@@ -125,10 +125,11 @@ def test_the_hook_is_one_breath_after_the_date_line():
     old = ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': OLD_HOOK}})
     assert 'Hook narration is 45 characters, over 32: one sentence in one breath after the date line' in ' '.join(
         shorts_violations(old, body_source(), episode().model_dump(mode='json')))
-    # So is a total over the 400-character budget that still fits the schema's 420.
-    raw = cut(signals_narration='가' * (405 - 5 * 66 - len(plan['hook']['narration'])))
+    # So is a total over the 400-character budget that still fits the schema's 420 (the five labels read in the list
+    # count too: 5 x 6 characters).
+    raw = cut(signals_narration='가' * (405 - 5 * 66 - 5 * 6 - len(plan['hook']['narration'])))
     raw['issues'] = [{**plan['issues'][0], 'id': f'long-{n}', 'narration': '가' * 66} for n in range(5)]
-    assert 'Narration is 405 characters in all, over 400: shorten the narrations' in violations(raw)
+    assert 'Narration and labels are 405 characters in all, over 400: shorten the narrations or the labels' in violations(raw)
     # The length estimate counts the hook with the date line at the voice's pace.
     short, long = (ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': '가' * n}}) for n in (10, 32))
     assert estimated_seconds(long) - estimated_seconds(short) == pytest.approx(22 / CHARS_PER_SECOND)
