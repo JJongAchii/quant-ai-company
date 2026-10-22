@@ -15,6 +15,7 @@ from .test_briefing import brief  # noqa: F401
 from .test_video import video  # noqa: F401
 from .test_video_analytics_runner import (
     AFTER_D3,
+    AT_REPLY,
     CREDENTIAL,
     NEW_TITLE,
     SimulatedProvider,
@@ -169,7 +170,7 @@ async def test_an_instruction_comes_back_as_a_lesson_with_owner_buttons(brief, v
     [proposed] = analytics.lessons(["proposed"])
     assert proposed["text"] == lesson["text"]
     answer = outbox(analytics)[-1]
-    assert "교훈 제안" in answer["text"]
+    assert "전략 제안" in answer["text"]
     rendered = blocks(analytics.company, answer)
     actions = [e["action_id"] for b in rendered if b["type"] == "actions" for e in b["elements"]]
     assert actions == ["video_lesson_adopt", "video_lesson_reject"]
@@ -177,6 +178,10 @@ async def test_an_instruction_comes_back_as_a_lesson_with_owner_buttons(brief, v
     result = lesson_click(analytics, str(proposed["id"]), str(answer["id"]))
     assert result["outcome"] == "active" and analytics.active_lessons()[-1]["text"] == lesson["text"]
     assert outbox(analytics)[-1]["thread_ts"] == "300.001" and "채택" in outbox(analytics)[-1]["text"]
+    adoption = outbox(analytics)[-1]
+    deliver(analytics, adoption, "450.001")  # its 채택 해제 answers in the card's thread too
+    assert lesson_click(analytics, str(proposed["id"]), str(adoption["id"]), "retire", **AT_REPLY)["outcome"] == "retired"
+    assert outbox(analytics)[-1]["thread_ts"] == "300.001" and analytics.lessons(["retired"])
 
 
 async def test_a_lesson_citing_an_unknown_video_is_dropped(brief, video, analytics):  # noqa: F811
@@ -185,7 +190,7 @@ async def test_a_lesson_citing_an_unknown_video_is_dropped(brief, video, analyti
     provider = AnsweringProvider(answer_output(lesson=lesson))
     _, runner = await card_delivered(brief, video, analytics, provider)
     await runner.answer(reply(analytics)["video_question"])
-    assert analytics.lessons(["proposed"]) == [] and "교훈 제안" not in outbox(analytics)[-1]["text"]
+    assert analytics.lessons(["proposed"]) == [] and "전략 제안" not in outbox(analytics)[-1]["text"]
 
 
 async def test_a_question_under_the_weekly_review_is_answered_from_the_review(brief, video, analytics):  # noqa: F811
