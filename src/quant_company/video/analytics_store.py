@@ -366,6 +366,12 @@ class AnalyticsStore:
         with self.db.transaction() as conn:
             return conn.execute("SELECT * FROM video_analyses WHERE request_id=%s", (request_id,)).fetchone()
 
+    def report_analysis(self, day):
+        """The strategy report of `day` that was posted: the first ask, or its -r2 retry when the first failed."""
+        with self.db.transaction() as conn:
+            return conn.execute("""SELECT * FROM video_analyses WHERE kind='weekly' AND week=%s
+                AND message_id IS NOT NULL ORDER BY created_at DESC LIMIT 1""", (day,)).fetchone()
+
     def analyses(self, kind, since):
         with self.db.transaction() as conn:
             return conn.execute("""SELECT * FROM video_analyses WHERE kind=%s AND state='completed' AND created_at>=%s
@@ -399,7 +405,7 @@ class AnalyticsStore:
         return ids
 
     def bound(self, lesson_id, message_id, ts, channel, action):
-        """The thread ('weekly:<monday>' or a video ID) of the delivered message a button was rendered in, or None.
+        """The thread ('weekly:<report day>' or a video ID) of the delivered message a button was rendered in, or None.
         adopt/reject: the lesson was proposed by that review or answer; retire: any active lesson, from a review
         (each review lists them)."""
         with self.db.transaction() as conn:
@@ -476,7 +482,7 @@ class AnalyticsStore:
         return conn.execute("SELECT * FROM projects WHERE id=%s", (identity,)).fetchone()
 
     def post(self, thread, key, title, text, *, reply_to=None, analysis_request=None):
-        """One message per key (stable ID) in the project of `thread` (a video ID or 'weekly:<monday>'). reply_to: the
+        """One message per key (stable ID) in the project of `thread` (a video ID or 'weekly:<day>'). reply_to: the
         key of the thread's root post; the reply waits until that root has a Slack receipt. Returns the message ID,
         or None while waiting."""
         identity = stable("video-analytics-message:" + key)
@@ -498,7 +504,7 @@ class AnalyticsStore:
     # ---- The owner's questions in analytics threads ----------------------------------------------------------
 
     def ask(self, *, event_key, channel, thread_ts, message_ts, user, text):
-        """The owner's reply under a delivered card or weekly review becomes one question; a Slack retry of the same
+        """The owner's reply under a delivered card or strategy report becomes one question; a Slack retry of the same
         event is the same question. Other messages in the channel are not questions."""
         text = text.strip()[:2000]
         if (not self.enabled() or user != self.settings.briefing_owner_user or not text

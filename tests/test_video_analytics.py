@@ -191,6 +191,14 @@ def test_report_figures_split_episodes_and_shorts_and_compare_periods():
     import json
 
     json.dumps(stats)  # frozen with the request as it is
+    from quant_company.video.analytics_slack import figure_lines
+
+    assert figure_lines(stats)[1:] == [
+        "본편 2편 · 조회 800 (200) · 구독 +5 (+1) · 노출 4,000 (–) · CTR 3.5% (–) · 30초 유지 70% (–) · 평균 시청 45% (–)",
+        "Shorts 1편 · 조회 900 (–) · 구독 +4 (–)"]  # a metric measured in neither period is left out
+    empty = {"episodes": {"n": 0}, "shorts": {"n": 0}}
+    assert figure_lines({"this": empty, "previous": empty})[1:] == [
+        "본편 · 이번 기간 새로 측정한 영상 없음", "Shorts · 이번 기간 새로 측정한 영상 없음"]
 
 
 def test_search_terms_and_traffic_shares_add_up_across_videos():
@@ -214,11 +222,12 @@ def test_shorts_pair_with_the_episode_of_their_job():
                                                                     {"source": "SUBSCRIBER", "views": 270}]),
             report_row("sssssssssss", "반도체 5% 급등, 이유는 하나", kind="shorts", job="j1",
                        published=at(2026, 9, 22, 10), views=900, subscribers=4),
-            report_row("bbbbbbbbbbb", job="j2", published=at(2026, 9, 23, 7), views=500)]
+            report_row("bbbbbbbbbbb", job="j2", published=at(2026, 9, 23, 7), views=500),
+            report_row("ccccccccccc", published=at(2026, 9, 24, 7), views=700)]  # unlinked: no Shorts known either
     assert shorts_pairs(rows) == {
         "pairs": [{"day": "2026-09-22", "shorts": "sssssssssss", "episode": "aaaaaaaaaaa", "shorts_views": 900,
                    "shorts_subscribers": 4, "episode_views": 300, "episode_traffic": {"SUBSCRIBER": 0.9, "SHORTS": 0.1}}],
-        "with_shorts": {"n": 1, "views": 300}, "without": {"n": 1, "views": 500}}
+        "with_shorts": {"n": 1, "views": 300}, "without": {"n": 2, "views": 600}}
     assert shorts_pairs(rows[:1]) == {"pairs": [], "with_shorts": {"n": 0, "views": None},
                                       "without": {"n": 0, "views": None}}
 
@@ -366,28 +375,6 @@ LESSON = {"text": "썸네일 문구는 제목에 없는 숫자 하나와 질문�
           "expected": "CTR", "confidence": "low"}
 
 
-def test_lesson_proposals_cite_episodes_and_stay_in_packaging_scope():
-    from pydantic import ValidationError
-
-    from quant_company.video.analytics_contracts import WeeklyReview
-
-    proposal = LESSON
-    review = {"summary": "이번 주는 아침 회차 노출이 늘었습니다.", "patterns": [], "top": [], "bottom": [],
-              "proposals": [proposal], "verdicts": []}
-    assert WeeklyReview.model_validate(review).proposals[0].scope == "thumbnail"
-    for change in ({"scope": "facts"}, {"videos": []}, {"videos": ["no video id"]}, {"text": "짧음"}):
-        with pytest.raises(ValidationError):
-            WeeklyReview.model_validate({**review, "proposals": [{**proposal, **change}]})
-    with pytest.raises(ValidationError):
-        WeeklyReview.model_validate({**review, "proposals": [proposal] * 4})
-
-
-def test_a_lesson_may_target_the_shorts():
-    from quant_company.video.analytics_contracts import LessonProposal
-
-    assert LessonProposal.model_validate({**LESSON, "scope": "shorts"}).scope == "shorts"
-
-
 STRATEGY = {"headline": "아침 회차는 검색 유입이 늘었고 질문형 제목이 앞섰습니다",
             "findings": [{"factor": "title", "text": "질문형 제목이 사실형보다 30초 유지가 높았습니다", "effect": "worked",
                           "n": 6, "confidence": "low"}],
@@ -397,6 +384,28 @@ STRATEGY = {"headline": "아침 회차는 검색 유입이 늘었고 질문형 �
                            "metric": "CTR"},
             "verdicts": [], "benchmark": [{"youtube_id": "ccccccccccc", "why": "첫 장면에서 질문을 던졌습니다",
                                           "transfer": ["첫 문장을 질문으로 연다"]}]}
+
+
+def test_lesson_proposals_cite_episodes_and_stay_in_packaging_scope():
+    from pydantic import ValidationError
+
+    from quant_company.video.analytics_contracts import StrategyReport
+
+    proposal = LESSON
+    report = {**STRATEGY, "strategies": [proposal]}
+    assert StrategyReport.model_validate(report).strategies[0].scope == "thumbnail"
+    for change in ({"scope": "facts"}, {"videos": []}, {"videos": ["no video id"]}, {"text": "짧음"},
+                   {"text": "가" * 201}):
+        with pytest.raises(ValidationError):
+            StrategyReport.model_validate({**report, "strategies": [{**proposal, **change}]})
+    with pytest.raises(ValidationError):
+        StrategyReport.model_validate({**report, "strategies": [proposal] * 4})
+
+
+def test_a_lesson_may_target_the_shorts():
+    from quant_company.video.analytics_contracts import LessonProposal
+
+    assert LessonProposal.model_validate({**LESSON, "scope": "shorts"}).scope == "shorts"
 
 
 def test_the_strategy_report_allows_500_character_items_and_shorts_strategies():
@@ -497,9 +506,9 @@ def test_the_answer_prompt_keeps_replies_short_and_says_the_edits_once():
 def test_claude_runtime_schema_covers_the_analysis_contracts():
     from quant_company.contracts import ProviderRequest
     from quant_company.providers.claude_runner import output_schema
-    from quant_company.video.analytics_contracts import VideoAnswer, VideoPerformance, WeeklyReview
+    from quant_company.video.analytics_contracts import StrategyReport, VideoAnswer, VideoPerformance
 
-    for contract, cls in (("video_performance_v1", VideoPerformance), ("video_weekly_v1", WeeklyReview),
+    for contract, cls in (("video_performance_v1", VideoPerformance), ("video_weekly_v1", StrategyReport),
                           ("video_answer_v1", VideoAnswer)):
         request = ProviderRequest(request_id="video-analytics-weekly-2026-10-12", model="claude-opus-5-5",
                                   prompt="p", output_contract=contract)
@@ -584,3 +593,19 @@ def test_a_suggested_title_must_still_name_the_uploads_own_edition():
         assert usable_changes(legacy, [{**same, "text": title}, tags]) == [tags], title
     current = {**legacy, "title": same["text"]}
     assert usable_changes(current, [same]) == []  # no change at all
+
+
+def test_a_report_root_keeps_its_decision_line_within_the_post_limit():
+    from quant_company.video.analytics_slack import REPORT_LIMIT, report_texts
+
+    stats = report_stats([report_row("aaaaaaaaaaa")], START, PREVIOUS, BEFORE)
+    output = {**STRATEGY, "findings": [{**STRATEGY["findings"][0], "text": "가" * 500}] * 8}
+    verdicts = [{"lesson_id": "x", "verdict": "keep", "reason": "나" * 500, "text": "다" * 200}] * 8
+    root, detail = report_texts(date(2026, 9, 28), output, {"stats": stats, "unlinked": 0}, verdicts, 3)
+    assert len(root) <= REPORT_LIMIT and root.endswith("반영됩니다.") and "글자 수 제한으로 일부 생략" in root
+    assert "*효과가 있었던 것과 없었던 것*" in root and "*시청자가 좋아한 것*" in detail
+    _, detail = report_texts(date(2026, 9, 28), {**output, "viewers": ["가" * 500] * 4, "keywords": ["나" * 500] * 5},
+                             {"stats": stats, "unlinked": 0}, [], 3)
+    assert len(detail) <= REPORT_LIMIT and detail.endswith("일부 생략)") and "*키워드 전략*" in detail
+    root, detail = report_texts(date(2026, 9, 28), STRATEGY, {"stats": stats, "unlinked": 0}, [], 1)
+    assert detail is None and "*시청자가 좋아한 것*" in root and "생략" not in root

@@ -1,7 +1,7 @@
 """Performance analytics of the owner's public uploads (VIDEO_ANALYTICS_ENABLED). Each tick: sync uploads, apply new
 reach reports, take due fixed-window snapshots, then (only while no episode is in production) the three-day card
-with a Claude diagnosis for an outlier of its kind, its seven-day update and the Monday review whose lessons the
-owner adopts in Slack."""
+with a Claude diagnosis for an outlier of its kind, its seven-day update and the Monday/Thursday channel strategy
+report whose strategies the owner adopts in Slack."""
 
 import asyncio
 import base64
@@ -13,16 +13,17 @@ import httpx
 from pydantic import ValidationError
 from temporalio import activity
 
-from ..company import PolicyError
+from ..company import PolicyError, as_json
 from ..contracts import ProviderAttachment, ProviderFault, ProviderRequest
 from ..providers.client import RuntimeClient
 from .analytics_contracts import (
+    RETRY_NOTE,
+    StrategyReport,
     VideoAnswer,
     VideoPerformance,
-    WeeklyReview,
     answer_prompt,
     performance_prompt,
-    weekly_prompt,
+    strategy_prompt,
 )
 from .analytics_metrics import (
     KST,
@@ -34,7 +35,9 @@ from .analytics_metrics import (
     medians,
     outlier,
     parse_title,
+    report_stats,
     scene_drops,
+    title_hook,
     window,
 )
 from .analytics_slack import (
@@ -45,23 +48,24 @@ from .analytics_slack import (
     card_text,
     detail_text,
     failed_answer_text,
-    failed_weekly_text,
+    failed_report_text,
+    report_detail_text,
+    report_texts,
     update_text,
-    weekly_text,
 )
 from .analytics_store import REACH_GRACE_DAYS, REPORT_TYPES, AnalyticsStore
 
 LOG = logging.getLogger(__name__)
 BASELINE_KEYS = ("impressions", "ctr", "views", "avg_view_pct", "hook_30s", "subscribers", "relative_retention")
-# A snapshot taken this many days after its window (a backfill) feeds baselines and the review, but posts no card.
+# A snapshot taken this many days after its window (a backfill) feeds baselines and the report, but posts no card nor
+# counts as new in a report period.
 REPORT_DAYS = REACH_GRACE_DAYS + 2
 SNAPSHOTS_PER_TICK = 20
 MODEL_WAIT_SECONDS = 120
-# Monday review: from 09:00 KST, caught up within two days if the worker was down.
-WEEKLY_HOUR, WEEKLY_CATCH_UP = 9, timedelta(hours=48)
-REVIEW_DAYS = 28
 MAX_THUMBNAILS = 12
 PROMPT_LIMIT = 85000
+# The newest measured videos a question under a report sees beside the report, within ProviderRequest's 90,000.
+THREAD_VIDEOS = 40
 # The channel strategy report: Monday and Thursday from 09:00 KST, caught up within two days if the worker was down
 # (a catch-up ends before the next report starts, so two never overlap).
 STRATEGY_WEEKDAYS, STRATEGY_HOUR, STRATEGY_CATCH_UP = (0, 3), 9, timedelta(hours=48)
@@ -88,16 +92,6 @@ def previous_report_day(day) -> date:
 
 def next_report_day(day) -> date:
     return day + timedelta(days=3 if day.weekday() == 0 else 4)
-
-
-def monday_of(at):
-    """The Monday whose review is due at `at`, or None."""
-    local = at.astimezone(KST)
-    start = datetime.combine(local.date() - timedelta(days=local.weekday()), datetime.min.time(), KST).replace(
-        hour=WEEKLY_HOUR)
-    if local < start:
-        start -= timedelta(days=7)
-    return start.date() if local - start < WEEKLY_CATCH_UP else None
 
 
 def compact(metrics):
@@ -132,6 +126,23 @@ def shorts_summary(plan):
     hook = plan.get("hook") or {}
     return {"hook": hook.get("headline"), "question": hook.get("question"), "hook_narration": hook.get("narration"),
             "issues": [i.get("label") for i in plan.get("issues") or []]}
+
+
+def report_video(row, diagnosis):
+    """One measured upload as the strategy report reads it: its three-day figures (and the latest when later), how it
+    was packaged (title hook, thumbnail text and cold open, or a Shorts' hook) and what it was made with."""
+    video = {"youtube_id": row["youtube_id"], "title": row["title"], "hook": title_hook(row["title"]),
+             "edition": EDITIONS.get(row["edition_kind"], "기타"),
+             "published_kst": row["published_at"].astimezone(KST).isoformat(), "duration_s": row["duration_s"],
+             "d3": compact(row["d3"]), "diagnosis": diagnosis, "craft": row["craft"], "lessons": row["lessons"]}
+    if row["horizon"] != "d3":
+        video["latest"] = {"horizon": row["horizon"], **compact(row["metrics"])}
+    if row["edition_kind"] == "shorts":
+        video["shorts"] = shorts_summary(row["plan"])
+    else:
+        summary = plan_summary(row)
+        video["thumbnail_text"], video["cold_open"] = summary["thumbnail_text"], (summary["cold_open"] or "")[:200]
+    return video
 
 
 def usable_changes(publication, changes):
@@ -329,8 +340,12 @@ class AnalyticsRunner:
             raise ValueError("Video analytics response identity mismatch")
         try:
             output = cls.model_validate_json(decision.artifacts[0].content)
-        except ValidationError:
-            receipt = {"code": "invalid_output", "detail": "output contract"}
+        except ValidationError as error:
+            # Locations and rules only, never the rejected text (as claude-runtime reports them): a report's retry
+            # hands them back to the model.
+            receipt = {"code": "invalid_output", "detail": ("output contract: " + "; ".join(
+                ".".join(map(str, e["loc"])) + ": " + e["msg"]
+                for e in error.errors(include_url=False, include_input=False)))[:500]}
             await asyncio.to_thread(self.store.fail_analysis, request_id, receipt)
             return receipt, frozen
         receipt = {"output": output.model_dump(mode="json"), "usage": response.usage, "provider": response.provider,
@@ -352,7 +367,7 @@ class AnalyticsRunner:
             ref = await asyncio.to_thread(self.store.baselines, row, "d3", tuple(OUTLIER), OUTLIER_MIN)
             reasons = outlier(row["metrics"], ref)
             if not reasons:
-                continue  # Close to its own kind: no diagnosis, no card; the weekly review covers it.
+                continue  # Close to its own kind: no diagnosis, no card; the strategy report covers it.
 
             def build(row=row, youtube_id=youtube_id, reasons=reasons, compared=ref["n"]):
                 base = self.store.baselines(row, "d3", BASELINE_KEYS)
@@ -408,7 +423,7 @@ class AnalyticsRunner:
         for row in await asyncio.to_thread(self.store.unposted, "d7"):
             youtube_id = row["youtube_id"]
             if not await asyncio.to_thread(self.store.posted, f"{youtube_id}:d3"):
-                continue  # No card (a backfilled upload): the weekly review covers it.
+                continue  # No card (a backfilled upload or not an outlier): the strategy report covers it.
             base = await asyncio.to_thread(self.store.baselines, row, "d7", BASELINE_KEYS)
             if await asyncio.to_thread(self.store.post, youtube_id, f"{youtube_id}:d7", f"영상 성과 {youtube_id}",
                                        update_text(row, base), reply_to=f"{youtube_id}:d3"):
@@ -416,57 +431,69 @@ class AnalyticsRunner:
         return posted
 
     async def weekly(self, at):
-        monday = monday_of(at)
-        if monday is None or await asyncio.to_thread(self.store.posted, f"weekly:{monday}"):
+        """The channel strategy report (kind 'weekly', post weekly:<day>) on Monday and Thursday mornings over every
+        measured upload, the ones measured since the previous report first. An answer failing its output contract is
+        asked once more (-r2) with the contract errors; failing again, the numbers go out with the failure code."""
+        day = report_day(at)
+        if day is None:
             return 0
-        start = datetime.combine(monday, datetime.min.time(), KST).replace(hour=WEEKLY_HOUR)
-        episodes = [e for e in await asyncio.to_thread(self.store.episodes, start - timedelta(days=REVIEW_DAYS))
-                    if e["metrics"] and e["published_at"] < start]
-        if not episodes or await asyncio.to_thread(self.store.producing):
+        if await asyncio.to_thread(self.store.posted, f"weekly:{day}"):
+            return await self.report_detail(day)
+        start = report_start(day)
+        rows = [e for e in await asyncio.to_thread(self.store.episodes) if e["metrics"] and e["published_at"] < start]
+        if not rows or await asyncio.to_thread(self.store.producing):
             return 0
+        previous = report_start(previous_report_day(day))
+        stats = report_stats(rows, start, previous, report_start(previous_report_day(previous_report_day(day))))
         active = await asyncio.to_thread(self.store.lessons, ["active"])
+        unlinked = sum(e["job_id"] is None for e in rows)
 
         def build():
             diagnoses = {a["youtube_id"]: a["output"]["summary"]
-                         for a in self.store.analyses("video", start - timedelta(days=REVIEW_DAYS))}
-            this_week = [e["youtube_id"] for e in episodes if e["published_at"] >= start - timedelta(days=7)]
-            order = this_week + [e["youtube_id"] for e in reversed(episodes) if e["youtube_id"] not in this_week]
-            by_id = {e["youtube_id"]: e for e in episodes}
+                         for a in self.store.analyses("video", rows[0]["published_at"])}
+            order = stats["new"] + [e["youtube_id"] for e in reversed(rows) if e["youtube_id"] not in stats["new"]]
+            by_id = {e["youtube_id"]: e for e in rows}
             refs = [r for r in (self.kept(i, by_id[i]["metrics"]) for i in order) if r][:MAX_THUMBNAILS]
             lessons = []
             for lesson in active:
                 adopted = lesson["decided_at"] or lesson["created_at"]
-                with_it = [e for e in episodes if str(lesson["id"]) in e["lessons"]]
-                before = [e for e in episodes if e["published_at"] < adopted
+                with_it = [e for e in rows if str(lesson["id"]) in e["lessons"]]
+                before = [e for e in rows if e["published_at"] < adopted
                           and e["edition_kind"] in {x["edition_kind"] for x in with_it}]
                 lessons.append({"id": str(lesson["id"]), "scope": lesson["scope"], "text": lesson["text"],
-                                "adopted": adopted, "with": medians(with_it), "before": medians(before)})
-            rows = [{"youtube_id": e["youtube_id"], "title": e["title"], "proposed_title": e["proposed_title"],
-                     "edition": EDITIONS.get(e["edition_kind"], "기타"),
-                     "published_kst": e["published_at"].astimezone(KST), "horizon": e["horizon"],
-                     "metrics": compact(e["metrics"]), "diagnosis": diagnoses.get(e["youtube_id"]),
-                     "thumbnail_text": plan_summary(e).get("thumbnail_text"), "lessons": e["lessons"]}
-                    for e in episodes]
-            context = {"week_of": monday, "this_week": this_week,
-                       "thumbnail_attachments": [r["youtube_id"] for r in refs], "active_lessons": lessons,
-                       "unlinked_uploads": sum(e["job_id"] is None for e in episodes), "episodes": rows}
-            prompt = weekly_prompt(context)
-            while len(prompt) > PROMPT_LIMIT and len(context["episodes"]) > 1:
-                context["episodes"] = context["episodes"][1:]  # oldest first
-                prompt = weekly_prompt(context)
-            return self.frozen(prompt, refs, self.settings.video_review_effort)
+                                "adopted": adopted, "with": medians([{"metrics": e["d3"]} for e in with_it]),
+                                "before": medians([{"metrics": e["d3"]} for e in before])})
+            context = {"report_day": day, "data_day": stats["data_day"], "period": {"from": previous, "to": start},
+                       "new_videos": stats["new"],
+                       "figures": {k: v for k, v in stats.items() if k not in {"data_day", "new"}},
+                       "active_lessons": lessons, "unlinked_uploads": unlinked,
+                       "thumbnail_attachments": [r["youtube_id"] for r in refs], "benchmark": None,
+                       "videos": [report_video(by_id[i], diagnoses.get(i)) for i in order]}
+            prompt = strategy_prompt(context)
+            while len(prompt) > PROMPT_LIMIT and len(context["videos"]) > 1:
+                context["videos"] = context["videos"][:-1]  # the oldest of the earlier videos first
+                prompt = strategy_prompt(context)
+            return self.frozen(prompt, refs, self.settings.video_review_effort, stats=as_json(stats), benchmark=None,
+                               unlinked=unlinked)
 
-        request_id = f"video-analytics-weekly-{monday}"
-        receipt, _ = await self.analyze(request_id, "weekly", build, WeeklyReview, "video_weekly_v1", week=monday)
+        request_id = f"video-analytics-weekly-{day}"
+        receipt, frozen = await self.analyze(request_id, "weekly", build, StrategyReport, "video_weekly_v1", week=day)
+        if receipt and receipt.get("code") == "invalid_output":
+            # The frozen first request with its stored contract errors appended (same model, effort and thumbnails);
+            # a re-ask of the retry reads its own frozen row back.
+            request_id, first = request_id + "-r2", frozen
+            note = RETRY_NOTE.format(detail=(receipt.get("detail") or "")[:500])
+            receipt, frozen = await self.analyze(request_id, "weekly", lambda: {**first, "prompt": first["prompt"] + note},
+                                                 StrategyReport, "video_weekly_v1", week=day)
         if receipt is None:
             return 0
         output = receipt.get("output")
         if not output:
-            text = failed_weekly_text(monday, receipt.get("code", "unknown"))
+            text = failed_report_text(day, receipt.get("code", "unknown"), frozen["extra"])
         else:
             known = {p["youtube_id"] for p in await asyncio.to_thread(self.store.publications)}
             texts = {x["text"] for x in active}
-            proposals = [p for p in output["proposals"] if set(p["videos"]) <= known and p["text"] not in texts]
+            proposals = [p for p in output["strategies"] if set(p["videos"]) <= known and p["text"] not in texts]
             current = {str(x["id"]): x["text"] for x in active}
             verdicts = [{**v, "text": current[v["lesson_id"]]} for v in output["verdicts"] if v["lesson_id"] in current]
             analysis = await asyncio.to_thread(self.store.analysis, request_id)
@@ -476,11 +503,24 @@ class AnalyticsRunner:
                     return self.store.propose(conn, analysis["id"], proposals)
 
             await asyncio.to_thread(propose)
-            text = weekly_text(monday, output, episodes, verdicts, sum(e["job_id"] is None for e in episodes),
-                               len(proposals))
-        await asyncio.to_thread(self.store.post, f"weekly:{monday}", f"weekly:{monday}", f"주간 성과 리뷰 {monday}", text,
+            text, _ = report_texts(day, output, frozen["extra"], verdicts, len(proposals))
+        await asyncio.to_thread(self.store.post, f"weekly:{day}", f"weekly:{day}", f"채널 전략 리포트 {day}", text,
                                 analysis_request=request_id)
         return 1
+
+    async def report_detail(self, day):
+        """The details of a report too long for one post, as the first reply under it once Slack confirmed it; nothing
+        when the report failed, the root already holds them, or the posted review predates the strategy report."""
+        report = await asyncio.to_thread(self.store.report_analysis, day)
+        output = (report or {}).get("output")
+        if not output or "headline" not in output or await asyncio.to_thread(self.store.posted, f"weekly:{day}:detail"):
+            return 0
+        detail = report_detail_text(output, report["request"]["extra"])
+        root = await asyncio.to_thread(self.store.posted, f"weekly:{day}")
+        if not detail or detail in root["text"]:
+            return 0
+        return int(bool(await asyncio.to_thread(self.store.post, f"weekly:{day}", f"weekly:{day}:detail",
+                                                f"채널 전략 리포트 {day}", detail, reply_to=f"weekly:{day}")))
 
     # ---- The owner's questions in analytics threads -----------------------------------------------------------
 
@@ -489,7 +529,7 @@ class AnalyticsRunner:
         """(project key, root post key, project title) of the thread a question was asked in."""
         if question["youtube_id"]:
             return question["youtube_id"], f"{question['youtube_id']}:d3", f"영상 성과 {question['youtube_id']}"
-        return question["thread_key"], question["thread_key"], f"주간 성과 리뷰 {question['week']}"
+        return question["thread_key"], question["thread_key"], f"채널 전략 리포트 {question['week']}"
 
     def answer_context(self, question):
         """What the answer is built on: the thread's report and its inputs, the earlier exchange, the new message.
@@ -510,12 +550,13 @@ class AnalyticsRunner:
                       "baselines": ((report or {}).get("request") or {}).get("extra", {}).get("baselines"),
                       "report": (report or {}).get("output")}
         else:
-            report = self.store.analysis(f"video-analytics-weekly-{question['week']}")
-            start = datetime.combine(question["week"], datetime.min.time(), KST).replace(hour=WEEKLY_HOUR)
-            episodes = [{"youtube_id": e["youtube_id"], "title": e["title"], "edition": EDITIONS.get(e["edition_kind"], "기타"),
-                         "horizon": e["horizon"], "metrics": compact(e["metrics"])}
-                        for e in self.store.episodes(start - timedelta(days=REVIEW_DAYS)) if e["published_at"] < start]
-            thread = {"weekly_review": (report or {}).get("output"), "week_of": question["week"], "episodes": episodes}
+            report = self.store.report_analysis(question["week"])
+            start = report_start(question["week"])
+            videos = [{"youtube_id": e["youtube_id"], "title": e["title"], "edition": EDITIONS.get(e["edition_kind"], "기타"),
+                       "horizon": e["horizon"], "metrics": compact(e["metrics"])}
+                      for e in self.store.episodes() if e["metrics"] and e["published_at"] < start][-THREAD_VIDEOS:]
+            thread = {"strategy_report": (report or {}).get("output"), "report_day": question["week"],
+                      "figures": ((report or {}).get("request") or {}).get("extra", {}).get("stats"), "videos": videos}
         refs = ((report or {}).get("request") or {}).get("attachments") or []
         return {"thread": thread, "earlier": history, "owner_message": question["text"]}, refs
 
@@ -537,7 +578,11 @@ class AnalyticsRunner:
 
         def build():
             context, refs = self.answer_context(question)
-            return self.frozen(answer_prompt(context), refs, self.settings.video_reasoning_effort)
+            prompt = answer_prompt(context)
+            while len(prompt) > PROMPT_LIMIT and context["thread"].get("videos"):
+                context["thread"]["videos"] = context["thread"]["videos"][1:]  # oldest first
+                prompt = answer_prompt(context)
+            return self.frozen(prompt, refs, self.settings.video_reasoning_effort)
 
         request_id = f"video-analytics-answer-{question_id}"
         try:

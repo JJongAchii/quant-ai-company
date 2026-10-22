@@ -62,11 +62,6 @@ class VideoPerformance(StrictModel):
         return _short_items(values, 200)
 
 
-class VideoNote(StrictModel):
-    youtube_id: str = Field(pattern=VIDEO_ID)
-    reason: str = Field(min_length=5, max_length=300)
-
-
 class LessonProposal(StrictModel):
     text: str = Field(min_length=10, max_length=200)
     scope: LessonScope
@@ -97,20 +92,6 @@ class LessonVerdict(StrictModel):
     lesson_id: str = Field(pattern=r"^[0-9a-f-]{36}$")
     verdict: Literal["keep", "retire", "too_early"]
     reason: str = Field(min_length=5, max_length=ITEM)
-
-
-class WeeklyReview(StrictModel):
-    summary: str = Field(min_length=10, max_length=800)
-    patterns: list[str] = Field(max_length=6)
-    top: list[VideoNote] = Field(max_length=3)
-    bottom: list[VideoNote] = Field(max_length=3)
-    proposals: list[LessonProposal] = Field(max_length=3)
-    verdicts: list[LessonVerdict] = Field(max_length=8)
-
-    @field_validator("patterns")
-    @classmethod
-    def bounded(cls, values):
-        return _short_items(values, 300)
 
 
 class Finding(StrictModel):
@@ -196,23 +177,6 @@ def performance_prompt(context):
             "Return only the required JSON.\n" + json.dumps(context, ensure_ascii=False, default=str))
 
 
-def weekly_prompt(context):
-    """context: per-episode metrics with baselines and earlier per-video diagnoses, active lessons with the episodes
-    produced before and after each, and unlinked uploads. Attached images: thumbnails named in the context."""
-    return ("You write the weekly performance review of a Korean daily market-briefing YouTube channel for its owner. "
-            + FUNNEL + HONESTY +
-            "Find patterns that repeat across episodes (thumbnail wording, title hooks, cold opens, scene types, "
-            "length, search terms), not one-off news effects. Propose at most three lessons the owner can adopt as "
-            "standing production instructions for future episodes. A lesson is one concrete instruction in Korean "
-            "(scope: title, thumbnail, opening, structure, length, keywords or shorts; shorts is an instruction for "
-            "the Shorts script only, every other scope is for the main episode only) that cites the episodes behind "
-            "it and the metric it should move; it may never touch the source lines, facts, numbers, labels or the "
-            "owner's fixed title rules, and never asks for buy/sell wording. Do not repeat an active lesson. For "
-            "every active lesson compare the episodes made with it to those before it (same edition kind, give n): "
-            "keep, retire when ten or more episodes show no improvement, or too_early. Return only the required JSON.\n"
-            + json.dumps(context, ensure_ascii=False, default=str))
-
-
 def strategy_prompt(context):
     """context: report and data days, the period, the videos new in it, figures (this and the previous period for
     episodes and Shorts, traffic shares, search terms, Shorts-episode pairs, feature comparisons), active lessons with
@@ -257,9 +221,9 @@ RETRY_NOTE = ("\n\nYour previous answer to this same request failed the output c
 
 
 def answer_prompt(context):
-    """context: the thread (a card's episode with its metrics, plan, diagnosis and Studio edits, or a weekly review
-    with its episodes), the earlier questions and answers there, and the owner's new message. Attached images: the
-    thumbnails the original analysis saw."""
+    """context: the thread (a card's episode with its metrics, plan, diagnosis and Studio edits, or a strategy report
+    with its figures and videos), the earlier questions and answers there, and the owner's new message. Attached
+    images: the thumbnails the original analysis saw."""
     return ("You answer the owner of a Korean daily market-briefing YouTube channel in the Slack thread of a "
             "performance report you wrote. answer is Korean plain text that gives what the owner asked for first, "
             "then at most one line of evidence with its numbers; aim for 600 characters or fewer (never over 1500). "

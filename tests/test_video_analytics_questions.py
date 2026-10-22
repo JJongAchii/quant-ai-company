@@ -174,6 +174,7 @@ async def test_a_question_under_the_weekly_review_is_answered_from_the_review(br
     assert await runner.answer(question) == "answered"
     request = answering.calls[-1]
     assert "아침 회차는 검색 유입이 늘었고" in request.prompt and request.attachments
+    assert '"report_day": "2026-09-28"' in request.prompt and '"figures": {' in request.prompt
     answer = outbox(analytics)[-1]
     # A title is pasted into one upload; the weekly thread names no single upload, so no Studio edits there.
     assert answer["thread_ts"] == "500.001" and "✏️" not in answer["text"]

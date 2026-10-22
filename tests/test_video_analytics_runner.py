@@ -26,8 +26,10 @@ from .test_video_analytics_store import (  # noqa: F401
     upload,
 )
 
-AFTER_D3 = datetime(2026, 9, 25, 12, tzinfo=UTC)  # Pacific 25 September; the d3 window ended on the 23rd
+# Saturday 21:00 KST, after the d3 window of 21-23 September: no strategy report is due (Thursday's caught up by 09:00).
+AFTER_D3 = datetime(2026, 9, 26, 12, tzinfo=UTC)
 MONDAY = datetime(2026, 9, 28, 0, 30, tzinfo=UTC)  # 09:30 KST, Monday 28 September
+THURSDAY = datetime(2026, 10, 1, 0, 30, tzinfo=UTC)  # 09:30 KST, Thursday 1 October
 METRICS = {"totals": {"views": 820, "watch_minutes": 2200.5, "avg_view_s": 161, "avg_view_pct": 55.2, "subscribers": 8,
                       "likes": 30, "comments": 4, "shares": 2},
            "curve": [[0.0, 1.0], [0.25, 0.6], [1.0, 0.45]], "relative_retention": 0.5,
@@ -258,8 +260,8 @@ async def test_no_analysis_is_requested_while_an_episode_is_in_production(brief,
 async def test_old_uploads_are_measured_for_baselines_without_cards(analytics):  # noqa: F811
     client = SimulatedClient([upload()])
     provider = SimulatedProvider()
-    # Friday 23 October (KST): no weekly review is due; d28 (21 Sep - 18 Oct) still waits for reach data.
-    await AnalyticsRunner(analytics.company, client=client, provider=provider).tick(datetime(2026, 10, 23, tzinfo=UTC))
+    # Wednesday 21 October 10:00 KST: no report is due; d28 (21 Sep - 18 Oct) still waits for reach data.
+    await AnalyticsRunner(analytics.company, client=client, provider=provider).tick(datetime(2026, 10, 21, 1, tzinfo=UTC))
     assert {h for h in ("d3", "d7", "d28") if analytics.snapshot("aaaaaaaaaaa", h)} == {"d3", "d7"}
     assert not provider.calls and not outbox(analytics)
 
@@ -347,42 +349,148 @@ async def test_a_card_whose_analysis_failed_has_no_detail_thread(brief, video, a
     assert "유입:" in card["text"] and "\"엔비디아 실적\" 120" in card["text"]  # the numbers stay in the card
 
 
-def weekly_output(active_id):
-    return {"summary": "아침 회차는 검색 유입이 늘었고 CTR은 기준 부족입니다.", "patterns": ["질문형 썸네일이 반복됨"],
-            "top": [{"youtube_id": "aaaaaaaaaaa", "reason": "검색어와 제목이 일치"}], "bottom": [],
-            "proposals": [{"text": "썸네일 문구는 제목에 없는 숫자 하나와 질문으로 쓴다", "scope": "thumbnail",
-                           "evidence": "검색 유입이 높은 회차의 공통점", "videos": ["aaaaaaaaaaa"], "expected": "CTR",
-                           "confidence": "low"},
-                          {"text": "존재하지 않는 영상을 근거로 든 제안입니다", "scope": "title",
-                           "evidence": "채널에 없는 영상을 근거로 들었음", "videos": ["zzzzzzzzzzz"], "expected": "CTR", "confidence": "low"}],
+def strategy_output(active_id, **extra):
+    return {"headline": "아침 회차는 검색 유입이 늘었고 CTR은 기준 부족입니다.",
+            "findings": [{"factor": "title", "text": "질문형 제목이 사실형보다 30초 유지가 높았습니다", "effect": "worked",
+                          "n": 6, "confidence": "low"},
+                         {"factor": "length", "text": "길이 차이는 아직 비교할 편수가 적습니다", "effect": "worked", "n": 2,
+                          "confidence": "low"}],
+            "viewers": ["시장판 장면에서 이탈이 가장 적었습니다"], "traffic": "탐색(홈·구독) 비중이 가장 컸습니다",
+            "keywords": ["엔비디아 실적을 제목 앞에"], "shorts": "아직 본편과 짝지은 Shorts가 없습니다",
+            "strategies": [{"text": "썸네일 문구는 제목에 없는 숫자 하나와 질문으로 쓴다", "scope": "thumbnail",
+                            "evidence": "검색 유입이 높은 회차의 공통점", "videos": ["aaaaaaaaaaa"], "expected": "CTR",
+                            "confidence": "low"},
+                           {"text": "존재하지 않는 영상을 근거로 든 제안입니다", "scope": "title",
+                            "evidence": "채널에 없는 영상을 근거로 들었음", "videos": ["zzzzzzzzzzz"], "expected": "CTR",
+                            "confidence": "low"},
+                           {"text": "쇼츠 첫 문장은 질문으로 열고 숫자를 먼저 보여 준다", "scope": "shorts",
+                            "evidence": "질문형 훅 회차의 30초 유지가 높았음", "videos": ["aaaaaaaaaaa"],
+                            "expected": "30초 유지", "confidence": "low"}],
+            "experiment": {"change": "썸네일 문구를 질문형으로 쓴다", "compare": "사실형 문구 회차", "episodes": 6,
+                           "metric": "CTR"},
             "verdicts": [{"lesson_id": active_id, "verdict": "too_early", "reason": "적용 회차가 1편"},
                          {"lesson_id": "00000000-0000-0000-0000-000000000000", "verdict": "retire",
-                          "reason": "없는 교훈"}]}
+                          "reason": "없는 교훈"}],
+            "benchmark": [], **extra}
 
 
-async def weekly_posted(brief, video, analytics):  # noqa: F811
+CONTRACT_ERROR = "Video output failed its contract: findings.0.text: String should have at most 500 characters"
+
+
+class InvalidReportProvider(SimulatedProvider):
+    """claude-runtime refusing the report's output contract: the first ask only, or every ask."""
+
+    def __init__(self, weekly=None, every=False):
+        super().__init__(weekly=weekly)
+        self.every = every
+
+    async def run(self, request):
+        if request.output_contract == "video_weekly_v1" and (self.every or not request.request_id.endswith("-r2")):
+            self.calls.append(request)
+            raise ProviderFault("invalid_output", CONTRACT_ERROR)
+        return await super().run(request)
+
+
+async def weekly_posted(brief, video, analytics, provider=None, **extra):  # noqa: F811
+    """The card on Saturday, then the Monday report with one active lesson."""
     _, client = linked_upload(brief, video)
     [active] = seed_lessons(analytics, ["active"])
-    provider = SimulatedProvider(weekly=weekly_output(active))
+    provider = provider or SimulatedProvider()
+    provider.weekly = strategy_output(active, **extra)
     runner = AnalyticsRunner(analytics.company, client=client, provider=provider)
+    await runner.tick(AFTER_D3)
     await runner.tick(MONDAY)
     return runner, provider, active
 
 
-async def test_the_monday_review_proposes_cited_lessons_with_owner_buttons(brief, video, analytics):  # noqa: F811
+def report_calls(provider):
+    return [c for c in provider.calls if c.output_contract == "video_weekly_v1"]
+
+
+async def test_the_monday_report_measures_both_kinds_and_proposes_strategies_with_buttons(brief, video, analytics):  # noqa: F811
     runner, provider, active = await weekly_posted(brief, video, analytics)
-    weekly = next(c for c in provider.calls if c.output_contract == "video_weekly_v1")
-    assert weekly.request_id == "video-analytics-weekly-2026-09-28" and weekly.attachments
-    assert "aaaaaaaaaaa" in weekly.prompt and active in weekly.prompt
-    [proposed] = analytics.lessons(["proposed"])
-    assert proposed["text"] == "썸네일 문구는 제목에 없는 숫자 하나와 질문으로 쓴다"
-    review = outbox(analytics)[-1]
-    assert "주간 성과 리뷰" in review["text"] and "판단 이르음" in review["text"] and "없는 교훈" not in review["text"]
-    rendered = blocks(analytics.company, review)
-    actions = [e["action_id"] for b in rendered if b["type"] == "actions" for e in b["elements"]]
-    assert actions == ["video_lesson_adopt", "video_lesson_reject", "video_lesson_retire"]
+    report = next(c for c in provider.calls if c.output_contract == "video_weekly_v1")
+    assert report.request_id == "video-analytics-weekly-2026-09-28" and report.attachments
+    assert "aaaaaaaaaaa" in report.prompt and active in report.prompt and '"new_videos": ["aaaaaaaaaaa"]' in report.prompt
+    text = outbox(analytics)[-1]["text"]
+    for piece in ("채널 전략 리포트 · 09/28(월)", "데이터 기준 09/23", "본편 1편 · 조회 820", "[효과 있음 · n=6",
+                  "[아직 판단 이름 · n=2", "판단 이르음", "다음 전략 2가지"):
+        assert piece in text, piece
+    assert "없는 교훈" not in text and len(text) <= 2900
+    assert "*시청자가 좋아한 것*" in text and "*검색어 상위*" in text  # short enough to carry the details itself
+    assert {p["scope"] for p in analytics.lessons(["proposed"])} == {"thumbnail", "shorts"}
+    actions = [e["action_id"] for b in blocks(analytics.company, outbox(analytics)[-1]) if b["type"] == "actions"
+               for e in b["elements"]]
+    assert actions == ["video_lesson_adopt", "video_lesson_reject"] * 2 + ["video_lesson_retire"]
+    extra = analytics.analysis("video-analytics-weekly-2026-09-28")["request"]["extra"]
+    assert extra["stats"]["this"]["episodes"]["views"] == 820 and extra["benchmark"] is None
     await runner.tick(MONDAY)
+    deliver(analytics, outbox(analytics)[-1], "600.001")
+    await runner.tick(MONDAY + timedelta(minutes=30))  # the root holds the details: no thread reply
     assert sum(c.output_contract == "video_weekly_v1" for c in provider.calls) == 1
+    assert not [r for r in outbox(analytics) if r["thread_ts"] == "600.001"]
+
+
+async def test_an_invalid_report_is_asked_once_more_with_the_contract_errors(brief, video, analytics):  # noqa: F811
+    runner, provider, _ = await weekly_posted(brief, video, analytics, InvalidReportProvider())
+    first, again = report_calls(provider)
+    assert (first.request_id, again.request_id) == ("video-analytics-weekly-2026-09-28",
+                                                    "video-analytics-weekly-2026-09-28-r2")
+    assert again.prompt.startswith(first.prompt) and "findings.0.text" in again.prompt
+    assert (again.attachments, again.reasoning_effort, again.model) == (first.attachments, first.reasoning_effort,
+                                                                        first.model)
+    r2 = analytics.analysis("video-analytics-weekly-2026-09-28-r2")
+    assert r2["message_id"] and analytics.analysis("video-analytics-weekly-2026-09-28")["message_id"] is None
+    assert {p["analysis_id"] for p in analytics.lessons(["proposed"])} == {r2["id"]}
+    assert "다음 전략 2가지" in outbox(analytics)[-1]["text"]
+    await runner.tick(MONDAY)
+    assert len(report_calls(provider)) == 2
+
+
+async def test_a_pending_retry_is_asked_again_with_the_same_request(brief, video, analytics):  # noqa: F811
+    class PendingRetry(InvalidReportProvider):
+        async def run(self, request):
+            if request.request_id.endswith("-r2"):
+                self.calls.append(request)
+                raise ProviderFault("pending", "simulated pending")
+            return await super().run(request)
+
+    runner, provider, _ = await weekly_posted(brief, video, analytics, PendingRetry())
+    _, retry = report_calls(provider)
+    assert "채널 전략 리포트" not in outbox(analytics)[-1]["text"]
+    analytics.settings.video_review_effort = "max"  # inputs move on while claude-runtime still runs the retry
+    finished = SimulatedProvider(weekly=provider.weekly)
+    await AnalyticsRunner(analytics.company, client=runner.client, provider=finished).tick(MONDAY)
+    [again] = report_calls(finished)  # the failed first ask is not asked again
+    assert (again.request_id, again.prompt, again.reasoning_effort, again.attachments) == (
+        retry.request_id, retry.prompt, retry.reasoning_effort, retry.attachments)
+    assert "채널 전략 리포트" in outbox(analytics)[-1]["text"]
+
+
+async def test_a_report_failing_twice_posts_its_code_numbers_and_next_date(brief, video, analytics):  # noqa: F811
+    runner, provider, _ = await weekly_posted(brief, video, analytics, InvalidReportProvider(every=True))
+    text = outbox(analytics)[-1]["text"]
+    assert "분석 실행 실패(invalid_output)" in text and "다음 리포트: 10/01(목) 09:00" in text and "본편 1편 · 조회 820" in text
+    assert analytics.lessons(["proposed"]) == []
+    deliver(analytics, outbox(analytics)[-1], "600.001")
+    await runner.tick(MONDAY)
+    assert sum(c.output_contract == "video_weekly_v1" for c in provider.calls) == 2
+    assert outbox(analytics)[-1]["thread_ts"] is None  # no detail without a report
+
+
+async def test_a_long_report_moves_details_to_the_first_thread_reply(brief, video, analytics):  # noqa: F811
+    runner, _, _ = await weekly_posted(brief, video, analytics, viewers=["가" * 480] * 4, keywords=["나" * 480] * 5)
+    root = outbox(analytics)[-1]
+    assert len(root["text"]) <= 2900 and "*시청자가 좋아한 것*" not in root["text"] and "다음 전략" in root["text"]
+    await runner.tick(MONDAY + timedelta(minutes=10))
+    assert outbox(analytics)[-1]["id"] == root["id"]  # the reply waits for the root's Slack receipt
+    deliver(analytics, root, "600.001")
+    await runner.tick(MONDAY + timedelta(minutes=30))
+    detail = outbox(analytics)[-1]
+    assert detail["thread_ts"] == "600.001" and "*시청자가 좋아한 것*" in detail["text"] and "*검색어 상위*" in detail["text"]
+    assert "\"엔비디아 실적\" 120" in detail["text"] and "탐색(홈·구독)" in detail["text"]
+    await runner.tick(MONDAY + timedelta(minutes=60))
+    assert outbox(analytics)[-1]["id"] == detail["id"]
 
 
 def lesson_click(analytics, lesson_id, message_id, action="adopt", **changes):  # noqa: F811
@@ -410,12 +518,16 @@ async def test_the_owner_adopts_a_lesson_from_the_delivered_review(brief, video,
     await weekly_posted(brief, video, analytics)
     review = outbox(analytics)[-1]
     deliver(analytics, review, "400.001")
-    [proposed] = analytics.lessons(["proposed"])
+    proposed = analytics.lessons(["proposed"])[0]
     result = lesson_click(analytics, str(proposed["id"]), str(review["id"]))
     assert result["outcome"] == "active" and len(analytics.active_lessons()) == 2
     assert lesson_click(analytics, str(proposed["id"]), str(review["id"]))["outcome"] == "active"  # Slack retry
     reply = outbox(analytics)[-1]
     assert reply["thread_ts"] == "400.001" and "채택" in reply["text"]
+    with analytics.db.transaction() as conn:
+        project = conn.execute("SELECT p.title FROM projects p JOIN messages m ON m.project_id=p.id WHERE m.id=%s",
+                               (reply["id"],)).fetchone()
+    assert project["title"] == "채널 전략 리포트 2026-09-28"
     assert len([r for r in outbox(analytics) if r["thread_ts"] == "400.001"]) == 1
 
 
@@ -427,7 +539,7 @@ async def test_forged_lesson_clicks_are_refused(brief, video, analytics, change)
     await weekly_posted(brief, video, analytics)
     review = outbox(analytics)[-1]
     deliver(analytics, review, "400.001")
-    [proposed] = analytics.lessons(["proposed"])
+    proposed = analytics.lessons(["proposed"])[0]
     with pytest.raises(PolicyError):
         lesson_click(analytics, str(proposed["id"]), str(review["id"]), **change)
     assert analytics.lessons(["proposed"])
@@ -436,7 +548,7 @@ async def test_forged_lesson_clicks_are_refused(brief, video, analytics, change)
 async def test_a_click_on_an_undelivered_or_foreign_message_is_refused(brief, video, analytics):  # noqa: F811
     await weekly_posted(brief, video, analytics)
     review = outbox(analytics)[-1]
-    [proposed] = analytics.lessons(["proposed"])
+    proposed = analytics.lessons(["proposed"])[0]
     with pytest.raises(PolicyError):  # no Slack receipt yet
         lesson_click(analytics, str(proposed["id"]), str(review["id"]))
     deliver(analytics, review, "400.001")
@@ -473,7 +585,7 @@ async def test_the_outbox_sends_the_review_with_its_buttons_and_stops_when_switc
     assert await slack.send_one() and await slack.send_one()
     assert [s["channel"] for s in sent] == ["CPERF", "CPERF"] and "blocks" not in sent[0]
     actions = [e["action_id"] for b in sent[1]["blocks"] if b["type"] == "actions" for e in b["elements"]]
-    assert actions == ["video_lesson_adopt", "video_lesson_reject", "video_lesson_retire"]
+    assert actions == ["video_lesson_adopt", "video_lesson_reject"] * 2 + ["video_lesson_retire"]
     analytics.post("aaaaaaaaaaa", "aaaaaaaaaaa:extra", "카드", "추가 글")
     analytics.settings.video_analytics_enabled = False
     assert not await slack.send_one()
@@ -505,7 +617,7 @@ async def test_status_counts_links_reports_snapshots_and_lessons(brief, video, a
     assert status["publications"] == {"total": 4, "linked": 1, "other_series": 0, "unlinked": [
         {"youtube_id": f"amcmp00000{i}", "title": f"훅 {i} | 9월 {18 + i}일 아침 · 오늘의 증시story"} for i in (2, 1, 0)]}
     assert status["latest_reach_day"] == "2026-09-23" and status["snapshots"] == {"d3": 4}
-    assert status["lessons"] == {"active": 1, "proposed": 1}
+    assert status["lessons"] == {"active": 1, "proposed": 2}
     assert status["report_jobs"] == ["channel_reach_basic_a1", "channel_reach_combined_a1"]
 
 

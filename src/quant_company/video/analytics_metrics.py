@@ -197,9 +197,10 @@ def _median_views(rows):
 def shorts_pairs(rows):
     """Each Shorts beside the episode of its job (both with a d3), and the episodes with and without a Shorts since
     the first pair; a job's first measured episode stands for it (a re-upload shares the job)."""
+    measured = [r for r in rows if r["edition_kind"] in {"am", "close"} and r["d3"]]
     episodes = {}
-    for row in rows:
-        if row["edition_kind"] in {"am", "close"} and row["d3"] and row["job_id"]:
+    for row in measured:
+        if row["job_id"]:
             episodes.setdefault(row["job_id"], row)
     pairs, paired = [], {}
     for cut in rows:
@@ -211,7 +212,7 @@ def shorts_pairs(rows):
                           "shorts_subscribers": cut["d3"].get("subscribers"),
                           "episode_views": episode["d3"].get("views"), "episode_traffic": traffic_shares([episode])})
     first = min((e["published_at"] for e in paired.values()), default=None)
-    without = [e for e in episodes.values() if first and e["published_at"] >= first and e["youtube_id"] not in paired]
+    without = [e for e in measured if first and e["published_at"] >= first and e["youtube_id"] not in paired]
     return {"pairs": pairs, "with_shorts": {"n": len(paired), "views": _median_views(list(paired.values()))},
             "without": {"n": len(without), "views": _median_views(without)}}
 
