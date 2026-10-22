@@ -129,10 +129,7 @@ class Store:
                 rows = safe_rows(rows + events + maintenance_observations(conn, owners, unseen=True))
             if not rows:
                 return None
-            if self.company.settings.company_improvements_enabled and (ongoing := self.recurring(conn, rows, owners)):
-                for row in rows:
-                    conn.execute("INSERT INTO maintenance_observations(key,job_id,body) VALUES (%s,%s,%s)",
-                                 (row["key"], ongoing, Jsonb(row)))
+            if self.company.settings.company_improvements_enabled and self.recurring(conn, rows, owners):
                 return None
             review, replay_inputs, review_digest = review_snapshot(
                 conn, self.company, owners, datetime.now(UTC))
@@ -156,19 +153,54 @@ class Store:
                 attach(conn, self.company, job_id, source)
             return job_id
 
+    @staticmethod
+    def reconcilable(conn, rows, owners):
+        """Unconfirmed reviews whose frozen request, grade and owner are intact, or None: those need diagnosis."""
+        if not rows or any(row.get("kind") != "staff_independent_review_failure"
+                           or row.get("detail", {}).get("error") != "uncertain"
+                           or row.get("detail", {}).get("operator_reconciliation_required") is not True for row in rows):
+            return None
+        reviews = []
+        for row in rows:
+            review = conn.execute("""SELECT v.id,v.state,v.error,v.request,v.input_digest,v.response,
+                r.id AS run_id,r.state AS source_state,r.owner_user,r.employee
+                FROM staff_independent_reviews v JOIN staff_runs r ON r.id=v.run_id WHERE v.id=%s""",
+                (row["detail"].get("review_id"),)).fetchone()
+            if (not review or review["state"] != "blocked" or review["error"] != "uncertain"
+                    or review["response"] is not None or review["source_state"] != "completed"
+                    or review["owner_user"] not in owners or review["employee"] != row.get("author")
+                    or str(review["run_id"]) != row["detail"].get("run_id")
+                    or fingerprint(review["request"]) != review["input_digest"]):
+                return None
+            reviews.append(review)
+        return reviews
+
     def recurring(self, conn, rows, owners):
-        """A repeat of an unconfirmed review joins the open case seen within 7 days: no new case or ping."""
-        if any(row.get("kind") != "staff_independent_review_failure" or row.get("detail", {}).get("error") != "uncertain"
-               for row in rows):
+        """A repeat of an intact unconfirmed review joins the case that last saw one within 7 days.
+
+        No new case or owner ping; the case keeps every review that awaits reconciliation."""
+        reviews = self.reconcilable(conn, rows, owners)
+        if not reviews:
             return None
         from .cases import allowed
 
-        cases = conn.execute("""SELECT c.* FROM maintenance_cases c JOIN maintenance_jobs j ON j.id=c.request_id
+        case = conn.execute("""SELECT c.* FROM maintenance_cases c JOIN maintenance_jobs j ON j.id=c.request_id
             WHERE j.kind='triage' AND j.state='blocked' AND j.error='review_reconciliation_required'
               AND j.payload->'owners'=%s AND (SELECT max((o.body->>'created_at')::timestamptz)
                 FROM maintenance_observations o WHERE o.job_id=j.id) >= now()-interval '7 days'
-            ORDER BY j.created_at DESC,j.id DESC LIMIT 1""", (Jsonb(owners),)).fetchall()
-        return next((case["request_id"] for case in cases if allowed(conn, self.company, case)), None)
+            ORDER BY j.created_at DESC,j.id DESC LIMIT 1""", (Jsonb(owners),)).fetchone()
+        if not case or not allowed(conn, self.company, case):
+            return None
+        job = conn.execute("SELECT receipt FROM maintenance_jobs WHERE id=%s FOR UPDATE", (case["request_id"],)).fetchone()
+        receipt = job["receipt"]
+        receipt.update(review_ids=sorted(set(receipt.get("review_ids", [])) | {review["id"] for review in reviews}),
+                       input_digests={**receipt.get("input_digests", {}),
+                                      **{review["id"]: review["input_digest"] for review in reviews}})
+        conn.execute("UPDATE maintenance_jobs SET receipt=%s WHERE id=%s", (Jsonb(receipt), case["request_id"]))
+        for row in rows:
+            conn.execute("INSERT INTO maintenance_observations(key,job_id,body) VALUES (%s,%s,%s)",
+                         (row["key"], case["request_id"], Jsonb(row)))
+        return case["request_id"]
 
     def next_job(self):
         with self.db.transaction() as conn:
@@ -220,22 +252,12 @@ class Store:
                        for row in observations)):
             return False
         owners = set(job["payload"].get("owners", []))
-        reviews = []
         with self.db.transaction() as conn:
             if conn.execute("SELECT 1 FROM maintenance_calls WHERE job_id=%s LIMIT 1", (job["id"],)).fetchone():
                 return False
-            for row in observations:
-                review = conn.execute("""SELECT v.id,v.state,v.error,v.request,v.input_digest,v.response,
-                    r.id AS run_id,r.state AS source_state,r.owner_user,r.employee
-                    FROM staff_independent_reviews v JOIN staff_runs r ON r.id=v.run_id WHERE v.id=%s""",
-                    (row["detail"].get("review_id"),)).fetchone()
-                if (not review or review["state"] != "blocked" or review["error"] != "uncertain"
-                        or review["response"] is not None or review["source_state"] != "completed"
-                        or review["owner_user"] not in owners or review["employee"] != row.get("author")
-                        or str(review["run_id"]) != row["detail"].get("run_id")
-                        or fingerprint(review["request"]) != review["input_digest"]):
-                    return False
-                reviews.append(review)
+            reviews = self.reconcilable(conn, observations, owners)
+            if not reviews:
+                return False
             receipt = {**job["receipt"], "outcome": "operator_action_required",
                        "review_ids": sorted({review["id"] for review in reviews}),
                        "input_digests": {review["id"]: review["input_digest"] for review in reviews},

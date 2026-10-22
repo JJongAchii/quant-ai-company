@@ -153,6 +153,26 @@ def code(value, pattern=r"[a-z_]{1,40}"):
     return value if isinstance(value, str) and re.fullmatch(pattern, value) else "other"
 
 
+def refused(events, item, offered):
+    """The CLI's own refusal of a call to a tool this session never offered (CLI 2.1.x wording).
+
+    Anything else, including an error from a tool that ran, is not proof that nothing executed."""
+    name = item.get("name")
+    if not isinstance(offered, list) or not isinstance(name, str) or not item.get("id"):
+        return False
+    for event in events:
+        content = event.get("message", {}).get("content", []) if event.get("type") == "user" else []
+        for result in content if isinstance(content, list) else []:
+            if not isinstance(result, dict) or result.get("type") != "tool_result" or result.get("tool_use_id") != item["id"]:
+                continue
+            text = result.get("content")
+            if isinstance(text, list):
+                text = "".join(part.get("text", "") for part in text if isinstance(part, dict))
+            return result.get("is_error") is True and isinstance(text, str) and bool(re.match(
+                r"<tool_use_error>Error: No such tool available: " + re.escape(name) + r"(?:[.<\s]|$)", text))
+    return False
+
+
 def parse_result(request, output):
     try:
         events = [strict_json(line) for line in output.stdout.splitlines() if line.strip()]
@@ -176,22 +196,20 @@ def parse_result(request, output):
         if (start.get("model") != request.model or start.get("mcp_servers")
                 or set(start.get("tools", [])) - {"StructuredOutput"}):
             raise ProviderFault("uncertain", "Claude reported an unexpected model or tool configuration.")
-        refused = {item.get("tool_use_id") for event in events if event.get("type") == "user"
-                   for item in event.get("message", {}).get("content", [])
-                   if isinstance(item, dict) and item.get("type") == "tool_result" and item.get("is_error") is True}
         attempts = []
         for message in messages:
             for item in message.get("message", {}).get("content", []):
                 if item.get("type") == "tool_use" and item.get("name") != "StructuredOutput":
-                    # The session offered no other tool (checked above), so the CLI must have refused this call.
-                    name = code(item.get("name"), r"[A-Za-z0-9_:.-]{1,64}")
-                    if not item.get("id") or item["id"] not in refused:
+                    name = code(item.get("name"), r"[A-Za-z0-9_]{1,40}")
+                    if not refused(events, item, start.get("tools")):
                         raise ProviderFault("uncertain", f"Claude reported a disallowed tool action ({name}).")
                     attempts.append(name)
+        # After a refused call, any other failure stays uncertain, as it was before refused calls were accepted.
         if result.get("is_error") is not False or result.get("subtype") != "success" or errors:
-            raise ProviderFault("invalid_output", "Claude did not return a successful structured review.")
+            raise ProviderFault("uncertain" if attempts else "invalid_output",
+                                "Claude did not return a successful structured review.")
         if result.get("permission_denials"):
-            raise ProviderFault("invalid_output", "Claude attempted a prohibited action.")
+            raise ProviderFault("uncertain" if attempts else "invalid_output", "Claude attempted a prohibited action.")
         models = result.get("modelUsage")
         if not isinstance(models, dict) or set(models) != {request.model}:
             raise ProviderFault("uncertain", "The actual review model could not be verified.")

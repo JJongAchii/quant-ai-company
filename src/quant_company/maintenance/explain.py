@@ -37,8 +37,19 @@ WORKING = {"design": "설계 문서를 쓰고 있습니다.", "patch": "고칠 �
            "ci": "수정안을 GitHub에서 시험(CI)하고 있습니다.", "pr": "PR을 만들고 있습니다."}
 APPLYING = {"approved": "승인을 받아 반영을 준비하고 있습니다.", "merging": "PR을 병합하고 있습니다.",
             "merged": "PR을 병합했습니다.", "deploy_pending": "병합했습니다. 운영에는 다음 자동 배포 때 반영됩니다.",
-            "complete": "반영을 마쳤습니다.", "blocked": "반영하다 확인이 필요한 문제가 생겨 멈췄습니다."}
+            "complete": "반영을 마쳤습니다.", "blocked": "반영하다 확인이 필요한 문제가 생겨 멈췄습니다.",
+            "rolled_back": "반영했다가 서버 확인에 실패해 이전 버전으로 되돌렸습니다."}
+# Why a case is waiting without having stopped; the case resumes by itself.
+WAITS = {"company_work_has_priority": "다른 업무가 먼저라 잠시 기다립니다.",
+         "quota": "모델 구독 사용 한도에 걸려 기다립니다.", "subscription_paused": "모델 구독 사용 한도에 걸려 기다립니다.",
+         "busy": "모델이 다른 작업을 하고 있어 기다립니다.", "model_retry_due": "모델이 다른 작업을 하고 있어 기다립니다.",
+         "pending": "모델 응답을 기다리고 있습니다.", "unavailable": "모델 실행기에 연결되지 않아 다시 시도하고 있습니다."}
 GROUPS = ("승인 대기", "진행 중", "멈춤", "끝남")
+
+
+def applying(value):
+    application = value.get("application")
+    return application.get("state") if isinstance(application, dict) else None
 
 
 def uuid(value):
@@ -64,8 +75,13 @@ def facts(conn, company, request_id, value):
     else:
         rows = [row for row in job["payload"].get("observations", []) if isinstance(row, dict)]
         first = rows[0] if rows else {}
+        # Rows arrive newest first and repeats join later; the latest occurrence describes the problem.
+        latest = conn.execute("""SELECT body FROM maintenance_observations WHERE job_id=%s AND body->>'kind'=%s
+            ORDER BY body->>'created_at' DESC NULLS LAST LIMIT 1""", (job["id"], first.get("kind"))).fetchone()
+        if latest and isinstance(latest["body"], dict):
+            first = latest["body"]
         detail = first.get("detail") if isinstance(first.get("detail"), dict) else {}
-        employee = first.get("author")
+        employee = first.get("author") if isinstance(first.get("author"), str) else None
         if first.get("kind") == "turn_blocked" and uuid(detail.get("turn_id")):
             row = conn.execute("SELECT k.agent FROM turns t JOIN tasks k ON k.id=t.task_id WHERE t.id=%s",
                                (uuid(detail["turn_id"]),)).fetchone()
@@ -83,14 +99,16 @@ def facts(conn, company, request_id, value):
             FROM maintenance_observations WHERE job_id=%s AND body->>'kind'=%s""",
                             (job["id"], first.get("kind"))).fetchone()
         role = company.roles.get(employee) if employee else None
-        result = {"kind": first.get("kind"), "employee": role.name if role else employee, "at": first.get("created_at"),
+        result = {"kind": first.get("kind"), "employee": role.name if role else employee,
+                  "at": str(first["created_at"]) if first.get("created_at") else None,
                   "others": sum(row.get("kind") != first.get("kind") for row in rows), "label": label, "count": seen["n"],
                   "first_at": seen["first"], "last_at": seen["last"],
-                  "detail": {key: detail[key] for key in ("stage", "attempt", "reason", "problem") if key in detail}}
+                  "detail": {key: str(detail[key]) for key in ("stage", "attempt", "reason", "problem")
+                             if detail.get(key) is not None}}
     finding = conn.execute("SELECT payload->'finding' AS finding FROM maintenance_jobs WHERE id=%s",
                            (uuid(value.get("case_id")) or job["id"],)).fetchone()
-    if finding and isinstance(finding["finding"], dict):
-        result["expected"] = finding["finding"].get("expected")
+    if finding and isinstance(finding["finding"], dict) and finding["finding"].get("expected"):
+        result["expected"] = str(finding["finding"]["expected"])
     return result
 
 
@@ -134,10 +152,10 @@ def progress(value, runtime):
     state, error = value["state"], value.get("error")
     pr = value.get("pr") if isinstance(value.get("pr"), dict) else {}
     waiting = "없음. 진행되면 이 카드가 바뀝니다."
-    application = (value.get("application") or {}).get("state")
+    application = applying(value)
     if application:
-        return (APPLYING.get(application, "반영 상태를 확인하고 있습니다."),
-                "반영 기록 확인이 필요합니다. 개발 작업으로 확인해 주세요." if application == "blocked"
+        return (APPLYING.get(str(application), "반영 상태를 확인하고 있습니다."),
+                "반영 기록 확인이 필요합니다. 개발 작업으로 확인해 주세요." if application in {"blocked", "rolled_back"}
                 else "없음. 결과를 이 스레드에 알립니다.")
     if state == "blocked":
         happened, action = STOPS.get(error, (f"개선봇이 더 진행할 수 없는 상태입니다(기록: {error}).",
@@ -149,8 +167,11 @@ def progress(value, runtime):
         resets = runtime.get("budget_resets_at")
         return ("오늘 모델 사용 한도에 걸려 기다립니다. " + (f"{kst(resets)} 이후 이어갑니다." if resets
                                                        else "한도가 풀리면 이어갑니다."), waiting)
+    if str(error or "").startswith("current_repository_"):
+        return ("GitHub에서 최신 코드를 읽지 못해 다시 시도하고 있습니다.",
+                "없음. 하루 넘게 이대로면 GitHub 연결 확인이 필요합니다.")
     if error:
-        return "다른 업무가 먼저라 잠시 기다립니다. 차례가 오면 이어서 진행합니다.", waiting
+        return WAITS.get(str(error), f"잠시 기다리고 있습니다(기록: {error}).") + " 조건이 풀리면 이어서 진행합니다.", waiting
     if state == "pr_open":
         number = pr.get("number")
         status = (f"설계 PR #{number}이 준비됐습니다. 효과는 아직 검증 전입니다."
@@ -173,7 +194,7 @@ def summary(value, runtime):
     about = value.get("facts") or {}
     headline, problem, impact, improvement = subject(about)
     cause = None
-    old = value.get("historical_finding") or {}
+    old = value.get("historical_finding") if isinstance(value.get("historical_finding"), dict) else {}
     if value.get("title"):
         headline = clip(value["title"], 120)
         problem = clip(value.get("problem") or old.get("problem") or problem, 280)
@@ -185,7 +206,7 @@ def summary(value, runtime):
     if about.get("kind") == "request" and not value.get("title") and value["state"] in {"blocked", "done"}:
         improvement = "정해지지 않았습니다. 개선봇이 고칠 내용을 확정하지 못했습니다."
     status, action = progress(value, runtime)
-    disposition = (value.get("assessment") or {}).get("disposition")
+    disposition = value.get("assessment").get("disposition") if isinstance(value.get("assessment"), dict) else None
     if disposition == "resolved":
         status += " 이후 해결된 것으로 확인됐습니다."
     elif disposition == "invalidated":
@@ -217,13 +238,15 @@ def text(value, runtime):
 def notice(value, runtime):
     """A thread reply that pings the owner; the card above it keeps the full description."""
     plain = summary(value, runtime)
-    return f"*{plain['headline']}*\n지금: {plain['status']}\n할 일: {plain['action']}"
+    return (f"*{plain['headline']}*\n필요한 개선: {plain['improvement']}\n"
+            f"지금: {plain['status']}\n할 일: {plain['action']}")
 
 
 def group(value):
-    application = (value.get("application") or {}).get("state")
+    application = applying(value)
     if application:
-        return "멈춤" if application == "blocked" else "끝남" if application == "complete" else "진행 중"
+        return ("멈춤" if application in {"blocked", "rolled_back"} else "끝남" if application == "complete"
+                else "진행 중")
     if value["state"] == "pr_open" and not value.get("error"):
         return "승인 대기"
     if value["state"] == "blocked":
@@ -239,13 +262,14 @@ def list_text(rows):
     for value, link in rows:
         name, plain = group(value), summary(value, {})
         counts[name] += 1
-        entry = entries.setdefault((name, plain["headline"]), {"count": 0, "link": link, "note": {
+        # Cases that need a different owner action keep their own line.
+        entry = entries.setdefault((name, plain["headline"], plain["action"]), {"count": 0, "link": link, "note": {
             "승인 대기": plain["action"], "멈춤": plain["status"].removeprefix("멈췄습니다. "),
             "끝남": plain["status"]}.get(name, "")})
         entry["count"] += 1
     out = [f"개선 케이스 목록 · 최근 {len(rows)}건 · " + " · ".join(f"{name} {counts[name]}" for name in GROUPS)]
     for name in GROUPS:
-        for (group_name, headline), entry in entries.items():
+        for (group_name, headline, _), entry in entries.items():
             if group_name == name:
                 repeat = f" ×{entry['count']}" if entry["count"] > 1 else ""
                 note = f" — {clip(entry['note'], 90)}" if entry["note"] else ""

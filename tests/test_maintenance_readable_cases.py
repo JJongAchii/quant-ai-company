@@ -2,10 +2,11 @@
 
 from uuid import uuid4
 
+import pytest
 from psycopg.types.json import Jsonb
 
 from quant_company.company import fingerprint
-from quant_company.maintenance import cases
+from quant_company.maintenance import cases, explain
 from quant_company.maintenance.reporting import Reporter
 from quant_company.maintenance.requests import status
 from quant_company.maintenance.store import Store
@@ -69,15 +70,17 @@ async def test_review_failure_card_names_problem_improvement_and_who_acts(improv
     assert "영향" in card and "실제 서비스에는 영향이 없습니다" in card
     assert not [word for word in JARGON if word in card]
     [notice] = owner_notices(calls)
-    assert "할 일:" in notice and not [word for word in JARGON if word in notice]
+    assert "필요한 개선:" in notice and "할 일:" in notice, "A phone push shows the ping without the card"
+    assert not [word for word in JARGON if word in notice]
 
 
 async def test_repeated_review_failure_joins_the_open_case_without_a_new_case_or_ping(improvements):  # noqa: F811
     company, credentials = improvements
-    blocked_review(company)
+    company.roles["researcher_kr"] = company.roles["researcher_kr"].model_copy(update={"name": "국내시장 연구"})
+    original = blocked_review(company)
     box, calls = delivery(company, credentials)
     first = await observe_review_case(company, credentials, box)
-    blocked_review(company, employee="researcher_kr")
+    repeat = blocked_review(company, employee="researcher_kr")
     assert Store(company, config()).collect() is None
     await Reporter(company, config()).tick()
     await drain(box)
@@ -85,8 +88,30 @@ async def test_repeated_review_failure_joins_the_open_case_without_a_new_case_or
         assert conn.execute("SELECT count(*) AS n FROM maintenance_cases").fetchone()["n"] == 1
         assert conn.execute("""SELECT count(*) AS n FROM maintenance_observations
             WHERE job_id=%s AND body->>'kind'='staff_independent_review_failure'""", (first,)).fetchone()["n"] == 2
-    assert "2번" in latest_card(calls)
+        receipt = conn.execute("SELECT receipt FROM maintenance_jobs WHERE id=%s", (first,)).fetchone()["receipt"]
+    assert receipt["review_ids"] == sorted([original, repeat]), "Every grouped review stays listed for reconciliation"
+    assert set(receipt["input_digests"]) == {original, repeat}
+    card = latest_card(calls)
+    assert "2번" in card
+    assert "국내시장 연구" in next(line for line in card.splitlines() if line.startswith("무슨 문제:")), \
+        "The problem line describes the latest occurrence"
     assert len(owner_notices(calls)) == 1, "A repeat of the same problem must not ping the owner again"
+
+
+@pytest.mark.parametrize("change", ["has_response", "changed_request"])
+async def test_a_repeat_whose_review_record_changed_is_diagnosed_not_grouped(improvements, change):  # noqa: F811
+    company, credentials = improvements
+    blocked_review(company)
+    box, _ = delivery(company, credentials)
+    first = await observe_review_case(company, credentials, box)
+    review_id = blocked_review(company)
+    with company.db.transaction() as conn:
+        if change == "has_response":
+            conn.execute("UPDATE staff_independent_reviews SET response=%s WHERE id=%s", (Jsonb({"kept": True}), review_id))
+        else:
+            conn.execute("UPDATE staff_independent_reviews SET request=%s WHERE id=%s", (Jsonb({"changed": True}), review_id))
+    second = Store(company, config()).collect()
+    assert second and second != first, "Only an intact unconfirmed review may join the open reconciliation case"
 
 
 async def test_review_failure_after_a_quiet_week_opens_a_new_case(improvements):  # noqa: F811
@@ -143,24 +168,43 @@ async def test_ready_pr_card_and_notice_tell_the_owner_the_exact_reply(improveme
 
 async def test_case_list_counts_by_owner_action_and_collapses_repeats(improvements):  # noqa: F811
     company, credentials = improvements
-    blocked_review(company)
     box, _ = delivery(company, credentials)
-    first = await observe_review_case(company, credentials, box)
-    with company.db.transaction() as conn:
-        conn.execute("""UPDATE maintenance_observations SET body=jsonb_set(body,'{created_at}',
-            to_jsonb((now()-interval '8 days')::text)) WHERE job_id=%s""", (first,))
-    blocked_review(company)
-    await observe_review_case(company, credentials, box)
+    jobs = []
+    for _ in range(3):
+        blocked_review(company)
+        jobs.append(await observe_review_case(company, credentials, box))
+        with company.db.transaction() as conn:
+            conn.execute("""UPDATE maintenance_observations SET body=jsonb_set(body,'{created_at}',
+                to_jsonb((now()-interval '8 days')::text)) WHERE job_id=%s""", (jobs[-1],))
+    Store(company, config()).save(jobs[0], "blocked", error="investigation_budget_exhausted")
     submit(company, channel="CIMPROVE", thread="9.1", text="뉴스 요약이 너무 늦게 와. 원인을 찾아줘")
     with company.db.transaction() as conn:
         channel = conn.execute("""INSERT INTO projects(id,title,instruction,owner_user,channel)
             VALUES (%s,'목록','목록','UHUMAN','CIMPROVE') RETURNING *""", (uuid4(),)).fetchone()
         text = cases.status_text(conn, company, channel)
     lines = text.splitlines()
-    assert "진행 중 1" in lines[0] and "멈춤 2" in lines[0]
+    assert "진행 중 1" in lines[0] and "멈춤 3" in lines[0]
     review_lines = [line for line in lines if "직원 교육 채점" in line]
-    assert len(review_lines) == 1 and "×2" in review_lines[0], "Repeats of one problem collapse into one line"
+    assert len(review_lines) == 2, "Cases that need a different owner action keep their own line"
+    assert sum("×2" in line for line in review_lines) == 1, "Repeats of one problem collapse into one line"
     assert lines.index(next(line for line in lines if "뉴스 요약이 너무 늦게" in line)) < lines.index(review_lines[0])
+
+
+@pytest.mark.parametrize("error,expected", [
+    ("company_work_has_priority", "다른 업무가 먼저"), ("quota", "사용 한도"), ("subscription_paused", "사용 한도"),
+    ("busy", "모델"), ("current_repository_GitHubError", "GitHub"), ("synthetic_wait", "synthetic_wait"),
+])
+def test_wait_status_names_what_the_case_is_waiting_for(error, expected):
+    status = explain.summary({"state": "triage", "error": error}, {})["status"]
+    assert expected in status
+    assert error == "company_work_has_priority" or "다른 업무가 먼저" not in status
+
+
+def test_a_rolled_back_application_is_a_stopped_case_for_the_owner():
+    value = {"state": "pr_open", "application": {"state": "rolled_back"}}
+    plain = explain.summary(value, {})
+    assert "되돌렸습니다" in plain["status"] and plain["action"] != "없음. 결과를 이 스레드에 알립니다."
+    assert explain.group(value) == "멈춤"
 
 
 async def test_maintainer_status_tool_returns_the_plain_problem_and_owner_action(improvements):  # noqa: F811
