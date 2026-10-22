@@ -271,8 +271,9 @@ def shorts_prompt(source, episode, concerns=(), feedback=''):
         "Use only facts the episode used; leave out anything the episode review flagged. Never say "
         f"'{REPORT_LABEL}' or name an outlet; no buy/sell advice; never mention AI, models, tools or how the video was "
         "made.\n"
-        "title: the hook as a Shorts title, at most 60 characters, without the series name or '|'. description: one or "
-        "two sentences on what the Shorts covers.\n\n"
+        "title: the hook as a Shorts title, at most 60 characters, without the series name or '|': one number or name "
+        "plus one tension in the viewer's words, about 40 characters at most, never two or three facts packed together "
+        "(owner, 2026-10-22). description: one or two sentences on what the Shorts covers.\n\n"
         "Episode as delivered:\n" + json.dumps(cut, ensure_ascii=False)
         + "\n\nBriefing body lines (the only source):\n" + json.dumps(prompt_claims(source), ensure_ascii=False))
     if concerns:

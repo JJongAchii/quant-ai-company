@@ -716,6 +716,38 @@ async def produce_inspected(store, tmp_path, monkeypatch, provider, renderer, br
     return store.get(job['id']), speech
 
 
+async def test_a_new_job_carries_the_owner_craft_rules_in_its_script_and_review_prompts(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    # Owner, 2026-10-22: hook, one metaphor, short thumbnail text, a closing question (video/craft.py), frozen per job.
+    from quant_company.video.contracts import VisualReview
+    from quant_company.video.craft import CRAFT_GUIDE, CRAFT_VERSION
+
+    store, _ = video
+    store.settings.video_upload_enabled = store.settings.video_publish_enabled = False
+    provider = InspectingProvider(visual=[VisualReview(passed=True, issues=[])])
+    job, _speech = await produce_inspected(store, tmp_path, monkeypatch, provider, InspectedRenderer(), brief)
+    assert job['state'] == 'delivering', job['error']
+    assert job['policy']['craft'] == CRAFT_VERSION
+    script = next(c for c in provider.calls if c.output_contract == 'video_episode_v1').prompt
+    rules, data = script.rsplit('\n', 1)
+    assert rules.endswith(CRAFT_GUIDE) and json.loads(data)['lines']  # the data stays the last line
+    review = next(c for c in provider.calls if c.output_contract == 'video_review_v1').prompt
+    plan = episode()  # the lengths are measured by the service, not counted by the reviewer
+    assert f'the title hook is {len(plan.upload.title)} characters, the thumbnail text {len(plan.thumbnail)})' in review
+
+
+async def test_a_job_created_before_the_craft_rules_keeps_its_prompts(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video.contracts import VisualReview
+
+    monkeypatch.setattr('quant_company.video.store.CRAFT_VERSION', None)  # what an older job's policy holds
+    store, _ = video
+    store.settings.video_upload_enabled = store.settings.video_publish_enabled = False
+    provider = InspectingProvider(visual=[VisualReview(passed=True, issues=[])])
+    job, _speech = await produce_inspected(store, tmp_path, monkeypatch, provider, InspectedRenderer(), brief)
+    assert job['state'] == 'delivering', job['error']
+    prompts = [c.prompt for c in provider.calls if c.output_contract in {'video_episode_v1', 'video_review_v1'}]
+    assert len(prompts) >= 2 and not any('Craft rules' in p or 'Craft (owner' in p for p in prompts)
+
+
 async def test_final_visual_review_fixes_cards_rerenders_and_delivers(brief, video, tmp_path, monkeypatch):  # noqa: F811
     from quant_company.video.contracts import VisualReview
     from quant_company.video.episode import ScreenFix
