@@ -1,5 +1,6 @@
 """Posts in the analytics channel: the three-day card, the seven-day update, the Monday/Thursday channel strategy
-report with the owner's lesson buttons, and the binding checks for those buttons."""
+report with the owner's lesson buttons and its thread replies (what did not fit, Monday's benchmark), and the binding
+checks for those buttons."""
 
 import json
 from datetime import date

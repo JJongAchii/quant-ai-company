@@ -1,7 +1,7 @@
 """Performance analytics of the owner's public uploads (VIDEO_ANALYTICS_ENABLED). Each tick: sync uploads, apply new
 reach reports, take due fixed-window snapshots, then (only while no episode is in production) the three-day card
 with a Claude diagnosis for an outlier of its kind, its seven-day update and the Monday/Thursday channel strategy
-report whose strategies the owner adopts in Slack."""
+report whose strategies the owner adopts in Slack (on Mondays with a benchmark of other channels' public videos)."""
 
 import asyncio
 import base64
