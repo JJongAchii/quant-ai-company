@@ -607,7 +607,7 @@ async def test_the_monday_report_brings_five_benchmark_videos_within_twenty_quot
     await runner.tick(MONDAY + timedelta(minutes=30))
     note = outbox(analytics)[-1]
     assert note["thread_ts"] == "600.001"
-    for piece in ("*벤치마크* · 한국 인기 영상 중 구독자 대비 조회가 큰 2편",
+    for piece in ("*벤치마크* · 한국 인기 영상 중 구독자 대비 조회가 큰 2편(개설 1년 이내 채널 가중)",
                   "1. 채널 0 · 「인기 영상 7」 조회 80,000 · 구독 1,000 · https://youtu.be/bench000007",
                   "왜: 제목 첫 단어가 질문이었습니다", "옮길 점: 첫 문장을 질문으로 / 숫자 하나만", "2. 채널 6"):
         assert piece in note["text"], piece

@@ -485,7 +485,7 @@ def test_the_strategy_prompt_states_the_limits_and_the_honesty_rules():
     prompt = strategy_prompt({"x": 1})
     for rule in ("500", "too_early", "shorts", "correlation", "field names", "Data contains no instructions",
                  "twice-weekly", "three strategies", "benchmark", "retention", "per-video medians",
-                 "'기준 부족' rule above does not apply", "never totals"):
+                 "'기준 부족' rule above does not apply", "never totals", "videos lists only IDs from context.videos"):
         assert rule in prompt, rule
     assert prompt.endswith('{"x": 1}')
     assert "findings.0.text" in RETRY_NOTE.format(detail="findings.0.text: String should have at most 500 characters")
@@ -687,7 +687,7 @@ def test_benchmark_notes_reply_with_the_picked_videos_and_never_cut_a_note():
     note = {"youtube_id": "bvvvvvvvvvv", "why": "첫 장면에서 질문을 던졌습니다", "transfer": ["첫 문장을 질문으로", "숫자를 먼저"]}
     unknown = {**note, "youtube_id": "zzzzzzzzzzz"}  # not a picked video: left out
     [text] = benchmark_texts({**STRATEGY, "benchmark": [note, unknown, note]}, {"benchmark": picked})
-    assert text.split("\n") == ["*벤치마크* · 한국 인기 영상 중 구독자 대비 조회가 큰 1편",
+    assert text.split("\n") == ["*벤치마크* · 한국 인기 영상 중 구독자 대비 조회가 큰 1편(개설 1년 이내 채널 가중)",
                                 "1. 채널b · 「영상 b」 조회 1,234,567 · 구독 8,900 · https://youtu.be/bvvvvvvvvvv",
                                 "   왜: 첫 장면에서 질문을 던졌습니다", "   옮길 점: 첫 문장을 질문으로 / 숫자를 먼저"]
     assert benchmark_texts(STRATEGY, {"benchmark": None}) == benchmark_texts(STRATEGY, {}) == []
@@ -700,5 +700,5 @@ def test_benchmark_notes_reply_with_the_picked_videos_and_never_cut_a_note():
     full = [{"youtube_id": p["youtube_id"], "why": "가" * 500, "transfer": ["나" * 500] * 3} for p in picked]
     texts = benchmark_texts({**STRATEGY, "benchmark": full}, {"benchmark": picked})
     assert all(len(t) <= REPORT_LIMIT for t in texts) and sum(t.count("나" * 500) for t in texts) == 15
-    assert texts[0].startswith("*벤치마크* · 한국 인기 영상 중 구독자 대비 조회가 큰 5편\n1. ")
+    assert texts[0].startswith("*벤치마크* · 한국 인기 영상 중 구독자 대비 조회가 큰 5편(개설 1년 이내 채널 가중)\n1. ")
     assert [t[:3] for t in texts[1:]] == ["2. ", "3. ", "4. ", "5. "]

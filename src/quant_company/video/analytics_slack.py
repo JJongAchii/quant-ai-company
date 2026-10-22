@@ -314,7 +314,7 @@ def benchmark_texts(output, extra):
         if note["youtube_id"] in picked:
             notes.setdefault(note["youtube_id"], note)
     items = [(picked[i], n) for i, n in notes.items()] or [(v, None) for v in bench]
-    texts, lines = [], [f"*벤치마크* · 한국 인기 영상 중 구독자 대비 조회가 큰 {len(items)}편"]
+    texts, lines = [], [f"*벤치마크* · 한국 인기 영상 중 구독자 대비 조회가 큰 {len(items)}편(개설 1년 이내 채널 가중)"]
     for n, (video, note) in enumerate(items, 1):
         block = [f"{n}. {video['channel']} · 「{video['title']}」 조회 {video['views']:,} · 구독 {video['subscribers']:,} · "
                  f"https://youtu.be/{video['youtube_id']}"]
