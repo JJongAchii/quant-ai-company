@@ -407,12 +407,20 @@ class AnalyticsStore:
     def bound(self, lesson_id, message_id, ts, channel, action):
         """The thread ('weekly:<report day>' or a video ID) of the delivered message a button was rendered in, or None.
         adopt/reject: the lesson was proposed by that review or answer; retire: any active lesson, from a review
-        (each review lists them)."""
+        (each review lists them), or the lesson an adoption reply adopted, from that reply (in the thread where the
+        lesson was proposed)."""
         with self.db.transaction() as conn:
             source = conn.execute("""SELECT a.id,a.kind,a.youtube_id,a.week FROM video_analyses a
                 JOIN outbox o ON o.id=a.message_id WHERE a.message_id=%s AND a.kind IN ('weekly','answer')
                 AND o.status='delivered' AND o.sent_ts=%s AND o.channel=%s""", (message_id, ts, channel)).fetchone()
             lesson = conn.execute("SELECT * FROM video_lessons WHERE id=%s", (lesson_id,)).fetchone()
+            reply = not source and lesson and action == "retire" and conn.execute(
+                """SELECT a.youtube_id,a.week FROM video_lesson_actions d JOIN outbox o ON o.id=d.message_id
+                JOIN video_analyses a ON a.id=%s WHERE d.message_id=%s AND d.lesson_id=%s AND d.outcome='active'
+                AND o.status='delivered' AND o.sent_ts=%s AND o.channel=%s""",
+                (lesson["analysis_id"], message_id, lesson_id, ts, channel)).fetchone()
+        if reply:
+            return reply["youtube_id"] or f"weekly:{reply['week']}"
         if not source or not lesson or (action == "retire" and source["kind"] != "weekly") or (
                 action != "retire" and lesson["analysis_id"] != source["id"]):
             return None
@@ -481,10 +489,11 @@ class AnalyticsStore:
                      (identity, title[:300], self.settings.briefing_owner_user, self.settings.video_analytics_channel_id))
         return conn.execute("SELECT * FROM projects WHERE id=%s", (identity,)).fetchone()
 
-    def post(self, thread, key, title, text, *, reply_to=None, analysis_request=None):
+    def post(self, thread, key, title, text, *, reply_to=None, analysis_request=None, decision=None):
         """One message per key (stable ID) in the project of `thread` (a video ID or 'weekly:<day>'). reply_to: the
-        key of the thread's root post; the reply waits until that root has a Slack receipt. Returns the message ID,
-        or None while waiting."""
+        key of the thread's root post; the reply waits until that root has a Slack receipt. decision: the event key of
+        the owner's lesson decision this message answers, recorded with the message so its buttons render on the first
+        send. Returns the message ID, or None while waiting."""
         identity = stable("video-analytics-message:" + key)
         with self.db.transaction() as conn:
             if conn.execute("SELECT 1 FROM messages WHERE id=%s", (identity,)).fetchone():
@@ -499,6 +508,8 @@ class AnalyticsStore:
             self.company._message(conn, project, None, BRIEFER, "video_analytics", text[:2900], message_id=identity)
             if analysis_request:
                 conn.execute("UPDATE video_analyses SET message_id=%s WHERE request_id=%s", (identity, analysis_request))
+            if decision:
+                conn.execute("UPDATE video_lesson_actions SET message_id=%s WHERE event_key=%s", (identity, decision))
         return str(identity)
 
     # ---- The owner's questions in analytics threads ----------------------------------------------------------

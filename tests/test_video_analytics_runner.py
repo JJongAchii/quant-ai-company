@@ -668,7 +668,7 @@ async def test_a_failed_benchmark_fetch_leaves_a_note_and_the_report_goes_on(bri
 
 
 def lesson_click(analytics, lesson_id, message_id, action="adopt", **changes):  # noqa: F811
-    labels = {"adopt": "채택", "reject": "거절", "retire": "은퇴"}
+    labels = {"adopt": "채택", "reject": "거절", "retire": "채택 해제"}
     payload = {"type": "block_actions", "team": {"id": "TTEST"}, "api_app_id": "AVIDEO", "user": {"id": "UHUMAN"},
                "channel": {"id": "CPERF"}, "message": {"user": "UBRIEF", "app_id": "AVIDEO", "ts": "400.001"},
                "container": {"type": "message", "message_ts": "400.001", "channel_id": "CPERF"},
@@ -703,6 +703,39 @@ async def test_the_owner_adopts_a_lesson_from_the_delivered_review(brief, video,
                                (reply["id"],)).fetchone()
     assert project["title"] == "채널 전략 리포트 2026-09-28"
     assert len([r for r in outbox(analytics) if r["thread_ts"] == "400.001"]) == 1
+
+
+# A click on the adoption reply (delivered at 450.001), a later click than the adoption's.
+AT_REPLY = {"message.ts": "450.001", "container.message_ts": "450.001", "actions.0.action_ts": "450.002"}
+
+
+async def test_the_owner_unadopts_a_lesson_from_its_adoption_reply(brief, video, analytics):  # noqa: F811
+    await weekly_posted(brief, video, analytics)
+    review = outbox(analytics)[-1]
+    deliver(analytics, review, "400.001")
+    proposed = str(analytics.lessons(["proposed"])[0]["id"])
+    earlier = [x["id"] for x in analytics.active_lessons()]
+    lesson_click(analytics, proposed, str(review["id"]))
+    reply = outbox(analytics)[-1]
+    assert reply["text"].startswith("채택: ") and "적용 중인 전략 2/8" in reply["text"]
+    [actions] = [b for b in blocks(analytics.company, reply) if b["type"] == "actions"]
+    assert [(e["action_id"], e["text"]["text"]) for e in actions["elements"]] == [("video_lesson_retire", "채택 해제")]
+    assert json.loads(actions["elements"][0]["value"]) == {"id": proposed, "message": str(reply["id"])}
+    with pytest.raises(PolicyError):  # no Slack receipt for the reply yet
+        lesson_click(analytics, proposed, str(reply["id"]), "retire", **AT_REPLY)
+    deliver(analytics, reply, "450.001")
+    with pytest.raises(PolicyError):  # adopt and reject stay on the review
+        lesson_click(analytics, proposed, str(reply["id"]), "reject", **AT_REPLY)
+    with pytest.raises(PolicyError):  # the reply unadopts only the lesson it adopted
+        lesson_click(analytics, earlier[0], str(reply["id"]), "retire",
+                     **{**AT_REPLY, "actions.0.block_id": "video-lesson:" + earlier[0]})
+    assert lesson_click(analytics, proposed, str(reply["id"]), "retire", **AT_REPLY)["outcome"] == "retired"
+    assert [x["id"] for x in analytics.active_lessons()] == earlier
+    note = outbox(analytics)[-1]
+    assert note["thread_ts"] == "400.001" and note["text"].startswith("채택 해제: ")
+    assert blocks(analytics.company, note) is None and blocks(analytics.company, reply) is None  # nothing left to undo
+    again = lesson_click(analytics, proposed, str(reply["id"]), "retire", **{**AT_REPLY, "actions.0.action_ts": "450.003"})
+    assert again["outcome"] == "unchanged" and outbox(analytics)[-1]["text"] == "이미 처리된 전략입니다(현재 상태: 채택 해제)."
 
 
 @pytest.mark.parametrize("change", [{"user.id": "UOTHER"}, {"channel.id": "CQUANT"}, {"container.channel_id": "CQUANT"},

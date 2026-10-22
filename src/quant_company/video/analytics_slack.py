@@ -20,14 +20,16 @@ STAGES = {"impressions": "노출", "ctr": "클릭", "hook": "초반 30초", "sce
 CONFIDENCE = {"low": "낮음", "medium": "중간", "high": "높음"}
 SCOPES = {"title": "제목", "thumbnail": "썸네일", "opening": "오프닝", "structure": "구성", "length": "길이",
           "keywords": "키워드", "shorts": "쇼츠"}
-VERDICTS = {"keep": "유지", "retire": "은퇴 제안", "too_early": "아직 판단 이름"}
-LABELS = {"adopt": "채택", "reject": "거절", "retire": "은퇴"}
+VERDICTS = {"keep": "유지", "retire": "해제 권고", "too_early": "아직 판단 이름"}
+# The owner reads lessons as strategies (owner, 2026-10-23): retiring one is 채택 해제.
+LABELS = {"adopt": "채택", "reject": "거절", "retire": "채택 해제"}
+STATES = {"proposed": "제안", "active": "적용 중", "rejected": "거절", "retired": "채택 해제"}
 TARGETS = {"title": "제목", "description": "설명 첫 줄", "tags": "태그 추가"}
 OUTLIER_NAMES = {"views": "조회", "ctr": "CTR", "hook_30s": "30초 유지"}
 THREAD_HINT = "자세한 진단은 이 스레드에 이어집니다. 스레드에 질문이나 지시를 남기면 답합니다."
 WAIT_TEXT = "지금 영상을 만드는 중이라, 제작이 끝나면 이 스레드에 답할게요."
 EXPIRED_TEXT = "영상 제작이 길어져 이 질문에 답하지 못했어요. 다시 물어봐 주세요."
-LESSON_HINT = "아래 버튼으로 채택하거나 거절해 주세요. 채택한 교훈은 다음에 만드는 회차부터 반영됩니다."
+LESSON_HINT = "아래 버튼으로 채택하거나 거절해 주세요. 채택한 전략은 다음에 만드는 회차부터 반영됩니다."
 # The report's root post: AnalyticsStore.post keeps 2,900 characters and one Slack section block takes 3,000.
 REPORT_LIMIT = 2900
 EFFECTS = {"worked": "효과 있음", "did_not_work": "효과 없음", "too_early": "아직 판단 이름"}
@@ -152,12 +154,13 @@ def detail_text(row, base, output):
 
 
 def answer_text(output, changes, lesson):
-    """The reply to the owner's message: the answer, then what to paste into Studio and a proposed lesson."""
+    """The reply to the owner's message: the answer, then what to paste into Studio and a proposed lesson (shown as a
+    strategy)."""
     lines = [output["answer"]]
     if changes:
         lines += ["", *change_lines(changes)]
     if lesson:
-        lines += ["", f"💡 교훈 제안 · {SCOPES[lesson['scope']]}: {lesson['text']}", LESSON_HINT]
+        lines += ["", f"💡 전략 제안 · {SCOPES[lesson['scope']]}: {lesson['text']}", LESSON_HINT]
     return "\n".join(lines)
 
 
@@ -242,7 +245,7 @@ def report_texts(day, output, extra, verdicts, proposals):
     findings = "*효과가 있었던 것과 없었던 것*"
     items = [(findings, f"• [{EFFECTS['too_early' if f['n'] < JUDGE_MIN else f['effect']]} · n={f['n']} · "
                         f"확신 {CONFIDENCE[f['confidence']]}] {f['text']}") for f in output["findings"]]
-    items += [("*활성 교훈 평가*", f"• [{VERDICTS[v['verdict']]}] {v['text']} — {v['reason']}") for v in verdicts]
+    items += [("*적용 중인 전략 평가*", f"• [{VERDICTS[v['verdict']]}] {v['text']} — {v['reason']}") for v in verdicts]
     if extra.get("unlinked"):
         items.append((None, f"최근 28일 업로드 중 제작 작업과 연결 안 된 {extra['unlinked']}편: quant-company "
                             "video-analytics link 로 연결할 수 있습니다."))
@@ -336,54 +339,59 @@ def failed_report_text(day, code, extra):
     return "\n".join(lines + (["", *figure_lines(extra["stats"])] if extra.get("stats") else []))
 
 
+def _buttons(row, lesson, actions):
+    value = json.dumps({"id": str(lesson["id"]), "message": str(row["id"])}, separators=(",", ":"))
+    return {"type": "actions", "block_id": "video-lesson:" + str(lesson["id"]), "elements": [
+        {"type": "button", "action_id": "video_lesson_" + a, "text": {"type": "plain_text", "text": LABELS[a]},
+         "value": value, **({"style": "primary"} if a == "adopt" else {})} for a in actions]}
+
+
 def blocks(company, row):
     """A strategy report: its text, then adopt/reject for each strategy it proposed and retire for every active lesson.
-    An answer that proposed a lesson: its text and adopt/reject. Rendered when sent, so the states shown are current."""
+    An answer that proposed a lesson: its text and adopt/reject. An adoption reply: its text and retire while that
+    lesson is active. Rendered when sent, so the states shown are current."""
     with company.db.transaction() as conn:
         review = conn.execute("""SELECT id,kind FROM video_analyses WHERE message_id=%s AND kind IN ('weekly','answer')""",
                               (row["id"],)).fetchone()
         if not review:
-            return None
+            adopted = conn.execute("""SELECT l.id FROM video_lesson_actions d JOIN video_lessons l ON l.id=d.lesson_id
+                WHERE d.message_id=%s AND d.outcome='active' AND l.state='active'""", (row["id"],)).fetchone()
+            return [{"type": "section", "text": {"type": "mrkdwn", "text": row["text"][:3000]}},
+                    _buttons(row, adopted, ("retire",))] if adopted else None
         proposed = conn.execute("""SELECT * FROM video_lessons WHERE analysis_id=%s AND state='proposed'
             ORDER BY id""", (review["id"],)).fetchall()
     if review["kind"] == "answer" and not proposed:
         return None
     active = AnalyticsStore(company).lessons(["active"]) if review["kind"] == "weekly" else []
     result = [{"type": "section", "text": {"type": "mrkdwn", "text": row["text"][:3000]}}]
-
-    def buttons(lesson, actions):
-        value = json.dumps({"id": str(lesson["id"]), "message": str(row["id"])}, separators=(",", ":"))
-        return {"type": "actions", "block_id": "video-lesson:" + str(lesson["id"]), "elements": [
-            {"type": "button", "action_id": "video_lesson_" + a, "text": {"type": "plain_text", "text": LABELS[a]},
-             "value": value, **({"style": "primary"} if a == "adopt" else {})} for a in actions]}
-
     if review["kind"] == "answer":
-        return result + [buttons(lesson, ("adopt", "reject")) for lesson in proposed]
+        return result + [_buttons(row, lesson, ("adopt", "reject")) for lesson in proposed]
     for n, lesson in enumerate(proposed, 1):
         evidence = lesson["evidence"]
         result.append({"type": "section", "text": {"type": "mrkdwn", "text": (
             f"*전략 {n}* · {SCOPES[lesson['scope']]}\n{lesson['text']}\n근거: {evidence['evidence']} "
             f"(영상 {len(evidence['videos'])}편) · 움직일 지표: {evidence['expected']} · "
             f"확신 {CONFIDENCE[evidence['confidence']]}")[:3000]}})
-        result.append(buttons(lesson, ("adopt", "reject")))
+        result.append(_buttons(row, lesson, ("adopt", "reject")))
     for lesson in active:
         result.append({"type": "section", "text": {"type": "mrkdwn",
-                                                   "text": f"*활성 교훈* · {SCOPES[lesson['scope']]}\n{lesson['text']}"}})
-        result.append(buttons(lesson, ("retire",)))
+                                                   "text": f"*적용 중인 전략* · {SCOPES[lesson['scope']]}\n{lesson['text']}"}})
+        result.append(_buttons(row, lesson, ("retire",)))
     return result
 
 
 def reply_text(outcome, lesson, active, limit):
-    return {"active": f"채택: {lesson['text']}\n활성 교훈 {active}/{limit} · 다음에 만드는 회차부터 대본 작성 지시에 들어갑니다.",
-            "full": f"활성 교훈이 {limit}개라 채택하지 않았습니다. '은퇴' 버튼으로 하나를 내린 뒤 다시 눌러 주세요.",
+    return {"active": f"채택: {lesson['text']}\n적용 중인 전략 {active}/{limit} · 다음에 만드는 회차부터 대본 작성 지시에 "
+                      "들어갑니다.",
+            "full": f"적용 중인 전략이 {limit}개라 채택하지 않았습니다. '채택 해제' 버튼으로 하나를 뺀 뒤 다시 눌러 주세요.",
             "rejected": f"거절: {lesson['text']}",
-            "retired": f"은퇴: {lesson['text']}\n다음에 만드는 회차부터 빠집니다.",
-            "unchanged": f"이미 처리된 교훈입니다(현재 상태: {lesson['state']})."}[outcome]
+            "retired": f"채택 해제: {lesson['text']}\n다음에 만드는 회차부터 빠집니다.",
+            "unchanged": f"이미 처리된 전략입니다(현재 상태: {STATES[lesson['state']]})."}[outcome]
 
 
 def accept(ingress, role, payload, credential):
-    """Owner's adopt/reject/retire click on a delivered strategy report, or adopt/reject on a delivered answer, in the
-    analytics channel. The outcome is said in that message's thread."""
+    """Owner's adopt/reject/retire click on a delivered strategy report, adopt/reject on a delivered answer, or retire
+    on a delivered adoption reply, in the analytics channel. The outcome is said in that message's thread."""
     settings = ingress.settings
     try:
         if (role != BRIEFER or payload["type"] != "block_actions" or payload["team"]["id"] != settings.slack_team_id
@@ -414,5 +422,5 @@ def accept(ingress, role, payload, credential):
     store.post(thread, "lesson-action:" + event_key,
                f"채널 전략 리포트 {thread.removeprefix('weekly:')}" if weekly else f"영상 성과 {thread}",
                reply_text(outcome, lesson, len(store.active_lessons()), settings.video_analytics_max_lessons),
-               reply_to=thread if weekly else f"{thread}:d3")
+               reply_to=thread if weekly else f"{thread}:d3", decision=event_key)
     return {"ok": True, "lesson_action": True, "outcome": outcome}

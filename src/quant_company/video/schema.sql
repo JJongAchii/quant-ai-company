@@ -133,3 +133,6 @@ ALTER TABLE video_publications ADD CONSTRAINT video_publications_edition_kind_ch
 ALTER TABLE video_publications DROP CONSTRAINT IF EXISTS video_publications_matched_by_check;
 ALTER TABLE video_publications ADD CONSTRAINT video_publications_matched_by_check
  CHECK(matched_by IN ('title_suffix','exact_title','manual','shorts_title'));
+-- v7: the thread reply that said each owner decision; an adoption reply carries that lesson's 채택 해제 button
+-- (owner, 2026-10-23).
+ALTER TABLE video_lesson_actions ADD COLUMN IF NOT EXISTS message_id uuid REFERENCES messages(id);
