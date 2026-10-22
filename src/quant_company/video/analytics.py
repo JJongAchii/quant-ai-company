@@ -7,8 +7,7 @@ import asyncio
 import base64
 import hashlib
 import logging
-import statistics
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 
 import httpx
 from pydantic import ValidationError
@@ -32,6 +31,7 @@ from .analytics_metrics import (
     PT,
     hook_retention,
     in_series,
+    medians,
     outlier,
     parse_title,
     scene_drops,
@@ -62,10 +62,32 @@ WEEKLY_HOUR, WEEKLY_CATCH_UP = 9, timedelta(hours=48)
 REVIEW_DAYS = 28
 MAX_THUMBNAILS = 12
 PROMPT_LIMIT = 85000
+# The channel strategy report: Monday and Thursday from 09:00 KST, caught up within two days if the worker was down
+# (a catch-up ends before the next report starts, so two never overlap).
+STRATEGY_WEEKDAYS, STRATEGY_HOUR, STRATEGY_CATCH_UP = (0, 3), 9, timedelta(hours=48)
 
 
 def utcnow():
     return datetime.now(UTC)
+
+
+def report_start(day) -> datetime:
+    return datetime.combine(day, time(STRATEGY_HOUR), KST)
+
+
+def report_day(at) -> date | None:
+    """The newest report day whose start is at or before `at`, while it can still be caught up; else None."""
+    days = (at.astimezone(KST).date() - timedelta(days=n) for n in range(7))
+    day = next(d for d in days if d.weekday() in STRATEGY_WEEKDAYS and report_start(d) <= at)
+    return day if at - report_start(day) < STRATEGY_CATCH_UP else None
+
+
+def previous_report_day(day) -> date:
+    return day - timedelta(days=3 if day.weekday() == 3 else 4)
+
+
+def next_report_day(day) -> date:
+    return day + timedelta(days=3 if day.weekday() == 0 else 4)
 
 
 def monday_of(at):
@@ -86,8 +108,10 @@ def compact(metrics):
     keep["traffic"] = (metrics.get("traffic") or [])[:4]
     keep["search_terms"] = (metrics.get("search_terms") or [])[:5]
     keep["ctr_by_source"] = (metrics.get("ctr_by_source") or [])[:4]
-    drops = sorted(metrics.get("scene_drops") or [], key=lambda d: -d["per_minute"])[:3]
-    keep["steepest_scenes"] = [{k: d[k] for k in ("heading", "type", "start", "end", "per_minute")} for d in drops]
+    drops = metrics.get("scene_drops") or []
+    for name, order in (("steepest_scenes", -1), ("gentlest_scenes", 1)):
+        keep[name] = [{k: d[k] for k in ("heading", "type", "start", "end", "per_minute")}
+                      for d in sorted(drops, key=lambda d, order=order: order * d["per_minute"])[:3]]
     return keep
 
 
@@ -123,14 +147,6 @@ def usable_changes(publication, changes):
                 continue
         keep.append(change)
     return keep
-
-
-def medians(rows, keys=("ctr", "hook_30s", "avg_view_pct", "views")):
-    result = {"n": len(rows)}
-    for key in keys:
-        values = [r["metrics"].get(key) for r in rows if r["metrics"] and r["metrics"].get(key) is not None]
-        result[key] = statistics.median(values) if values else None
-    return result
 
 
 class AnalyticsRunner:

@@ -1,5 +1,6 @@
 """Deterministic performance figures for published episodes: title → edition, fixed metric windows, the retention
-curve mapped onto the rendered scenes, channel baselines and the YouTube Reporting API reach CSV."""
+curve mapped onto the rendered scenes, channel baselines, the strategy report's figures and the YouTube Reporting API
+reach CSV."""
 
 import csv
 import io
@@ -129,6 +130,135 @@ def outlier(metrics, base):
         if ratio >= high - 1e-9 or ratio <= low + 1e-9:
             reasons.append({"metric": key, "ratio": round(ratio, 2)})
     return reasons
+
+
+def medians(rows, keys=("ctr", "hook_30s", "avg_view_pct", "views")):
+    result = {"n": len(rows)}
+    for key in keys:
+        values = [r["metrics"].get(key) for r in rows if r["metrics"] and r["metrics"].get(key) is not None]
+        result[key] = statistics.median(values) if values else None
+    return result
+
+
+# ---- The channel strategy report: the figures the service computes and freezes with the request -----------------
+# Rows are AnalyticsStore.episodes() rows; every figure reads the three-day snapshot (d3), the one window all
+# uploads share, except the search terms (the latest snapshot holds the most). The output is JSON-native.
+
+def title_hook(title):
+    """The hook of a title without the series suffix or the older series tag."""
+    return re.split(r"\s*\|\s*", (title or "").replace("[오늘의 증시story]", ""))[0].strip()
+
+
+def group_stats(rows):
+    """Totals of views, subscribers and impressions, impression-weighted CTR and the median hold and view share."""
+    metrics = [r["d3"] for r in rows]
+
+    def known(key):
+        return [m[key] for m in metrics if m.get(key) is not None]
+
+    result = {"n": len(rows)}
+    for key in ("views", "subscribers", "impressions"):
+        result[key] = sum(known(key)) if known(key) else None
+    shown = [(m["ctr"], m["impressions"]) for m in metrics if m.get("ctr") is not None and m.get("impressions")]
+    result["ctr"] = sum(c * i for c, i in shown) / sum(i for _, i in shown) if shown else None
+    for key in ("hook_30s", "avg_view_pct"):
+        result[key] = statistics.median(known(key)) if known(key) else None
+    return result
+
+
+def traffic_shares(rows):
+    """{Analytics traffic source: share of the rows' views}, largest first."""
+    views = {}
+    for row in rows:
+        for item in (row["d3"] or {}).get("traffic") or []:
+            views[item["source"]] = views.get(item["source"], 0) + (item.get("views") or 0)
+    total = sum(views.values())
+    if not total:
+        return {}
+    return {k: round(v / total, 3) for k, v in sorted(views.items(), key=lambda kv: (-kv[1], kv[0]))}
+
+
+def search_terms(rows, limit=15):
+    """The viewers' search terms added up over the videos: [{term, views, videos}]."""
+    terms = {}
+    for row in rows:
+        for item in (row["metrics"] or {}).get("search_terms") or []:
+            entry = terms.setdefault(item["term"], {"term": item["term"], "views": 0, "videos": 0})
+            entry["views"] += item.get("views") or 0
+            entry["videos"] += 1
+    return sorted(terms.values(), key=lambda t: (-t["views"], t["term"]))[:limit]
+
+
+def _median_views(rows):
+    views = [r["d3"].get("views") for r in rows if r["d3"].get("views") is not None]
+    return statistics.median(views) if views else None
+
+
+def shorts_pairs(rows):
+    """Each Shorts beside the episode of its job (both with a d3), and the episodes with and without a Shorts since
+    the first pair; a job's first measured episode stands for it (a re-upload shares the job)."""
+    episodes = {}
+    for row in rows:
+        if row["edition_kind"] in {"am", "close"} and row["d3"] and row["job_id"]:
+            episodes.setdefault(row["job_id"], row)
+    pairs, paired = [], {}
+    for cut in rows:
+        episode = episodes.get(cut["job_id"]) if cut["edition_kind"] == "shorts" and cut["d3"] else None
+        if episode:
+            paired[episode["youtube_id"]] = episode
+            pairs.append({"day": episode["published_at"].astimezone(KST).date().isoformat(), "shorts": cut["youtube_id"],
+                          "episode": episode["youtube_id"], "shorts_views": cut["d3"].get("views"),
+                          "shorts_subscribers": cut["d3"].get("subscribers"),
+                          "episode_views": episode["d3"].get("views"), "episode_traffic": traffic_shares([episode])})
+    first = min((e["published_at"] for e in paired.values()), default=None)
+    without = [e for e in episodes.values() if first and e["published_at"] >= first and e["youtube_id"] not in paired]
+    return {"pairs": pairs, "with_shorts": {"n": len(paired), "views": _median_views(list(paired.values()))},
+            "without": {"n": len(without), "views": _median_views(without)}}
+
+
+def _features(rows):
+    """(name, row → True | False | None) in report order; None leaves a row out of that comparison."""
+    durations = [r["duration_s"] for r in rows if r["duration_s"]]
+    middle = statistics.median(durations) if durations else None
+    return (("question_title", lambda r: title_hook(r["title"]).endswith("?")),
+            ("number_in_title", lambda r: bool(re.search(r"\d", title_hook(r["title"])))),
+            ("short_thumbnail", lambda r: len(r["plan"]["thumbnail"]) <= 14 if (r["plan"] or {}).get("thumbnail")
+             else None),
+            ("close_edition", lambda r: r["edition_kind"] == "close"),
+            ("long", lambda r: r["duration_s"] >= middle if r["duration_s"] and middle else None),
+            ("craft", lambda r: (r["craft"] or 0) >= 1),
+            ("lessons", lambda r: bool(r["lessons"])))
+
+
+def comparisons(rows):
+    """Median d3 figures of the episodes with and without each feature; Shorts are left to their own section."""
+    rows = [r for r in rows if r["edition_kind"] != "shorts" and r["d3"]]
+    keys = ("views", "ctr", "hook_30s", "avg_view_pct")
+    result = []
+    for name, has in _features(rows):
+        marks = [(has(r), r) for r in rows]
+        result.append({"feature": name,
+                       "with": medians([{"metrics": r["d3"]} for mark, r in marks if mark is True], keys),
+                       "without": medians([{"metrics": r["d3"]} for mark, r in marks if mark is False], keys)})
+    return result
+
+
+def report_stats(rows, start, previous_start, before_start):
+    """Everything the report states as a number. A period holds the uploads whose d3 snapshot was taken in it as a
+    reportable one (not a backfill): this period from the previous report to this one, the previous before it."""
+    def period(lo, hi):
+        return [r for r in rows if r["d3"] and r["d3"].get("report") and lo <= r["d3_taken"] < hi]
+
+    def kinds(found, figure):
+        return {"episodes": figure([r for r in found if r["edition_kind"] != "shorts"]),
+                "shorts": figure([r for r in found if r["edition_kind"] == "shorts"])}
+
+    this, previous = period(previous_start, start), period(before_start, previous_start)
+    data_day = max((r["window_end"] for r in rows if r["window_end"]), default=None)
+    return {"data_day": data_day.isoformat() if data_day else None, "new": [r["youtube_id"] for r in this],
+            "this": kinds(this, group_stats), "previous": kinds(previous, group_stats),
+            "traffic": {"this": kinds(this, traffic_shares), "previous": kinds(previous, traffic_shares)},
+            "search_terms": search_terms(rows), "shorts_pairs": shorts_pairs(rows), "comparisons": comparisons(rows)}
 
 
 def _day(text):

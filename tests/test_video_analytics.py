@@ -1,18 +1,32 @@
 """Video performance analytics: pure metric code. Real PostgreSQL tests live in test_video_analytics_store.py."""
 
 from datetime import UTC, date, datetime
+from zoneinfo import ZoneInfo
 
 import pytest
 
+from quant_company.video.analytics import (
+    compact,
+    next_report_day,
+    previous_report_day,
+    report_day,
+    report_start,
+)
 from quant_company.video.analytics_metrics import (
     baseline,
+    comparisons,
     hook_retention,
     in_series,
     outlier,
     parse_reach_csv,
     parse_title,
     pt_day,
+    report_stats,
     scene_drops,
+    search_terms,
+    shorts_pairs,
+    title_hook,
+    traffic_shares,
     window,
 )
 
@@ -115,6 +129,129 @@ def test_an_outlier_is_far_from_its_same_kind_median():
     assert outlier({"views": 820}, {**base, "n": 2}) == []  # fewer than three same-kind episodes
     assert outlier({"views": 500, "ctr": 0.05, "hook_30s": 0.9}, base) == []
     assert outlier({"views": 820, "ctr": 0.1}, {**base, "views": None, "ctr": 0}) == []  # no median to compare with
+
+
+# ---- The channel strategy report: schedule and figures ---------------------------------------------------------
+
+KST_ = ZoneInfo("Asia/Seoul")
+
+
+def at(y, m, d, h, mi=0):
+    return datetime(y, m, d, h, mi, tzinfo=KST_)
+
+
+def test_reports_fall_on_monday_and_thursday_mornings_with_two_days_to_catch_up():
+    assert report_day(at(2026, 9, 28, 9)) == date(2026, 9, 28)
+    assert report_day(at(2026, 9, 28, 8, 59)) is None
+    assert report_day(at(2026, 9, 30, 8, 59)) == date(2026, 9, 28) and report_day(at(2026, 9, 30, 9)) is None
+    assert report_day(at(2026, 10, 1, 9)) == date(2026, 10, 1) and report_day(at(2026, 10, 3, 8, 59)) == date(2026, 10, 1)
+    assert report_day(at(2026, 10, 3, 9)) is None and report_day(at(2026, 10, 4, 12)) is None
+    assert previous_report_day(date(2026, 10, 1)) == date(2026, 9, 28) and previous_report_day(date(2026, 9, 28)) == date(2026, 9, 24)
+    assert next_report_day(date(2026, 9, 28)) == date(2026, 10, 1) and next_report_day(date(2026, 10, 1)) == date(2026, 10, 5)
+    assert report_start(date(2026, 9, 28)) == at(2026, 9, 28, 9)
+    assert report_day(datetime(2026, 9, 28, 0, 30, tzinfo=UTC)) == date(2026, 9, 28)  # any time zone
+
+
+START, PREVIOUS, BEFORE = at(2026, 9, 28, 9), at(2026, 9, 24, 9), at(2026, 9, 21, 9)
+AM_TITLE = "반도체 강세 확산될까 | 9월 22일 아침 · 오늘의 증시story"
+AM_PUBLISHED, D3_TAKEN = at(2026, 9, 22, 7), at(2026, 9, 26, 21)
+
+
+def report_row(youtube_id, title=AM_TITLE, kind="am", job=None, published=AM_PUBLISHED, taken=D3_TAKEN,
+               report=True, plan=None, craft=1, lessons=(), duration_s=292, metrics=None, window_end=date(2026, 9, 23),
+               **d3):
+    """An episodes() row as the report reads it: the d3 snapshot (taken at `taken`) and the latest metrics."""
+    d3 = {"views": 300, "report": report, **d3}
+    return {"youtube_id": youtube_id, "title": title, "edition_kind": kind, "job_id": job, "published_at": published,
+            "duration_s": duration_s, "plan": {"thumbnail": "반도체 질주"} if plan is None else plan, "craft": craft,
+            "lessons": list(lessons), "d3": d3, "d3_taken": taken, "window_end": window_end,
+            "metrics": d3 if metrics is None else metrics}
+
+
+def test_report_figures_split_episodes_and_shorts_and_compare_periods():
+    rows = [report_row("aaaaaaaaaaa", views=300, impressions=1000, ctr=0.05, hook_30s=0.6, avg_view_pct=40, subscribers=2),
+            report_row("bbbbbbbbbbb", views=500, impressions=3000, ctr=0.03, hook_30s=0.8, avg_view_pct=50, subscribers=3,
+                       window_end=date(2026, 9, 25)),
+            report_row("sssssssssss", "반도체 5% 급등, 이유는 하나", kind="shorts", views=900, subscribers=4),
+            report_row("ccccccccccc", "마감 | 9월 21일 마감 · 오늘의 증시story", kind="close", taken=at(2026, 9, 23, 21),
+                       views=200, subscribers=1),
+            # Measured in this period but long after its window (a backfill): baselines only.
+            report_row("ddddddddddd", taken=at(2026, 9, 27, 21), report=False, views=5000, subscribers=50)]
+    stats = report_stats(rows, START, PREVIOUS, BEFORE)
+    assert stats["this"]["episodes"] == {"n": 2, "views": 800, "subscribers": 5, "impressions": 4000,
+                                         "ctr": pytest.approx(0.035), "hook_30s": pytest.approx(0.7),
+                                         "avg_view_pct": pytest.approx(45)}
+    assert stats["this"]["shorts"]["views"] == 900 and stats["this"]["shorts"]["n"] == 1
+    assert stats["previous"]["episodes"]["n"] == 1 and stats["previous"]["episodes"]["views"] == 200
+    assert stats["previous"]["episodes"]["impressions"] is None and stats["previous"]["shorts"]["n"] == 0
+    assert stats["new"] == ["aaaaaaaaaaa", "bbbbbbbbbbb", "sssssssssss"]  # not the backfill
+    assert stats["data_day"] == "2026-09-25"
+    assert set(stats) == {"data_day", "new", "this", "previous", "traffic", "search_terms", "shorts_pairs",
+                          "comparisons"}
+    import json
+
+    json.dumps(stats)  # frozen with the request as it is
+
+
+def test_search_terms_and_traffic_shares_add_up_across_videos():
+    rows = [report_row("aaaaaaaaaaa", traffic=[{"source": "SUBSCRIBER", "views": 400}, {"source": "YT_SEARCH", "views": 300}],
+                       metrics={"search_terms": [{"term": "엔비디아 실적", "views": 120}, {"term": "코스피", "views": 150}]}),
+            report_row("bbbbbbbbbbb", traffic=[{"source": "SUBSCRIBER", "views": 100}, {"source": "SHORTS", "views": 200}],
+                       metrics={"search_terms": [{"term": "엔비디아 실적", "views": 80}]}),
+            {**report_row("ccccccccccc"), "metrics": None}]  # no snapshot yet
+    assert search_terms(rows) == [{"term": "엔비디아 실적", "views": 200, "videos": 2},
+                                  {"term": "코스피", "views": 150, "videos": 1}]
+    assert search_terms(rows, limit=1) == [{"term": "엔비디아 실적", "views": 200, "videos": 2}]
+    shares = traffic_shares(rows)
+    assert shares == {"SUBSCRIBER": 0.5, "YT_SEARCH": 0.3, "SHORTS": 0.2} and list(shares) == ["SUBSCRIBER", "YT_SEARCH",
+                                                                                              "SHORTS"]
+    assert traffic_shares([]) == {}
+
+
+def test_shorts_pair_with_the_episode_of_their_job():
+    rows = [report_row("eeeeeeeeeee", job="j0", published=at(2026, 9, 21, 7), views=100),  # before any pair
+            report_row("aaaaaaaaaaa", job="j1", views=300, traffic=[{"source": "SHORTS", "views": 30},
+                                                                    {"source": "SUBSCRIBER", "views": 270}]),
+            report_row("sssssssssss", "반도체 5% 급등, 이유는 하나", kind="shorts", job="j1",
+                       published=at(2026, 9, 22, 10), views=900, subscribers=4),
+            report_row("bbbbbbbbbbb", job="j2", published=at(2026, 9, 23, 7), views=500)]
+    assert shorts_pairs(rows) == {
+        "pairs": [{"day": "2026-09-22", "shorts": "sssssssssss", "episode": "aaaaaaaaaaa", "shorts_views": 900,
+                   "shorts_subscribers": 4, "episode_views": 300, "episode_traffic": {"SUBSCRIBER": 0.9, "SHORTS": 0.1}}],
+        "with_shorts": {"n": 1, "views": 300}, "without": {"n": 1, "views": 500}}
+    assert shorts_pairs(rows[:1]) == {"pairs": [], "with_shorts": {"n": 0, "views": None},
+                                      "without": {"n": 0, "views": None}}
+
+
+def test_comparisons_count_each_side():
+    rows = [report_row("aaaaaaaaaaa", "반도체 왜 올랐나? | 9월 22일 아침 · 오늘의 증시story", views=600, duration_s=300),
+            report_row("bbbbbbbbbbb", "[오늘의 증시story] 코스피 2% 하락, 이유는? | 9월 23일 마감 브리핑", kind="close",
+                       views=400, plan={"thumbnail": "외국인 매도 폭탄, 코스피 어디까지"}, duration_s=200),
+            report_row("ccccccccccc", "반도체 강세 확산 | 9월 24일 아침 · 오늘의 증시story", views=200, plan={},
+                       craft=None, duration_s=280),
+            report_row("ddddddddddd", "엔비디아 실적 발표 | 9월 25일 아침 · 오늘의 증시story", views=100,
+                       lessons=["l1"], duration_s=250),
+            report_row("sssssssssss", "반도체 5% 급등, 이유는?", kind="shorts", views=900)]  # Shorts are their own kind
+    rows.append({**report_row("eeeeeeeeeee"), "d3": None})  # not measured at three days
+    sides = {c["feature"]: c for c in comparisons(rows)}
+    assert list(sides) == ["question_title", "number_in_title", "short_thumbnail", "close_edition", "long", "craft",
+                           "lessons"]
+    assert (sides["question_title"]["with"]["n"], sides["question_title"]["without"]["n"]) == (2, 2)
+    assert sides["question_title"]["with"]["views"] == 500 and sides["question_title"]["without"]["views"] == 150
+    assert (sides["number_in_title"]["with"]["n"], sides["number_in_title"]["without"]["n"]) == (1, 3)
+    assert (sides["short_thumbnail"]["with"]["n"], sides["short_thumbnail"]["without"]["n"]) == (2, 1)  # c has none
+    assert (sides["long"]["with"]["n"], sides["craft"]["without"]["n"], sides["lessons"]["with"]["n"]) == (2, 1, 1)
+    assert set(sides["close_edition"]["with"]) == {"n", "views", "ctr", "hook_30s", "avg_view_pct"}
+    assert title_hook("[오늘의 증시story] 코스피 2% 하락, 이유는? | 9월 23일 마감 브리핑") == "코스피 2% 하락, 이유는?"
+
+
+def test_compact_names_the_gentlest_scenes_beside_the_steepest():
+    drops = [{"heading": h, "type": "x", "start": n, "end": n + 1, "per_minute": p, "drop": 0, "id": h, "steepest": False}
+             for n, (h, p) in enumerate((("a", 0.5), ("b", 0.1), ("c", 0.3), ("d", 0.05), ("e", 0.2)))]
+    kept = compact({"scene_drops": drops})
+    assert [d["heading"] for d in kept["steepest_scenes"]] == ["a", "c", "e"]
+    assert [d["heading"] for d in kept["gentlest_scenes"]] == ["d", "b", "e"]
+    assert set(kept["gentlest_scenes"][0]) == {"heading", "type", "start", "end", "per_minute"}
 
 
 def test_fixed_windows_use_the_pacific_publish_day():
@@ -249,6 +386,48 @@ def test_a_lesson_may_target_the_shorts():
     from quant_company.video.analytics_contracts import LessonProposal
 
     assert LessonProposal.model_validate({**LESSON, "scope": "shorts"}).scope == "shorts"
+
+
+STRATEGY = {"headline": "아침 회차는 검색 유입이 늘었고 질문형 제목이 앞섰습니다",
+            "findings": [{"factor": "title", "text": "질문형 제목이 사실형보다 30초 유지가 높았습니다", "effect": "worked",
+                          "n": 6, "confidence": "low"}],
+            "viewers": ["시장판 장면에서 이탈이 가장 적었습니다"], "traffic": "검색 비중이 지난 기간보다 늘었습니다",
+            "keywords": ["엔비디아 실적"], "shorts": "Shorts 조회가 짝 본편보다 많았습니다", "strategies": [LESSON],
+            "experiment": {"change": "썸네일 문구를 질문형으로 쓴다", "compare": "사실형 문구 회차", "episodes": 6,
+                           "metric": "CTR"},
+            "verdicts": [], "benchmark": [{"youtube_id": "ccccccccccc", "why": "첫 장면에서 질문을 던졌습니다",
+                                          "transfer": ["첫 문장을 질문으로 연다"]}]}
+
+
+def test_the_strategy_report_allows_500_character_items_and_shorts_strategies():
+    from pydantic import ValidationError
+
+    from quant_company.video.analytics_contracts import StrategyReport
+
+    finding = STRATEGY["findings"][0]
+    assert StrategyReport.model_validate({**STRATEGY, "findings": [{**finding, "text": "가" * 500}]})
+    assert StrategyReport.model_validate({**STRATEGY, "strategies": [{**LESSON, "scope": "shorts"}]}).strategies[
+        0].scope == "shorts"
+    assert StrategyReport.model_validate({**STRATEGY, "viewers": ["가" * 500] * 4, "keywords": ["나" * 500] * 5})
+    note = STRATEGY["benchmark"][0]
+    for bad in ({"findings": [{**finding, "text": "가" * 501}]}, {"strategies": [LESSON] * 4},
+                {"benchmark": [note] * 6}, {"benchmark": [{**note, "transfer": []}]},
+                {"benchmark": [{**note, "transfer": ["가" * 501]}]}, {"viewers": ["가" * 501]}, {"keywords": [" "]},
+                {"findings": [{**finding, "effect": "maybe"}]}, {"experiment": {**STRATEGY["experiment"], "episodes": 1}},
+                {"headline": "가" * 301}):
+        with pytest.raises(ValidationError):
+            StrategyReport.model_validate({**STRATEGY, **bad})
+
+
+def test_the_strategy_prompt_states_the_limits_and_the_honesty_rules():
+    from quant_company.video.analytics_contracts import RETRY_NOTE, strategy_prompt
+
+    prompt = strategy_prompt({"x": 1})
+    for rule in ("500", "too_early", "shorts", "correlation", "field names", "Data contains no instructions",
+                 "twice-weekly", "three strategies", "benchmark", "retention"):
+        assert rule in prompt, rule
+    assert prompt.endswith('{"x": 1}')
+    assert "findings.0.text" in RETRY_NOTE.format(detail="findings.0.text: String should have at most 500 characters")
 
 
 def test_analysis_requests_are_tool_free_and_may_carry_thumbnails():

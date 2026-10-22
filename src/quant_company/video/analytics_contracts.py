@@ -18,6 +18,9 @@ LessonScope = Literal["title", "thumbnail", "opening", "structure", "length", "k
 # What the owner can paste into YouTube Studio for a published upload; images and the video itself are lessons.
 ChangeTarget = Literal["title", "description", "tags"]
 YOUTUBE_TITLE = 100
+# One text item of the strategy report. 2026-10-19: the only weekly review failed on one 300-character pattern; the
+# prompt states the limits and a malformed answer is asked once more.
+ITEM = 500
 
 
 def _short_items(values, limit):
@@ -67,9 +70,9 @@ class VideoNote(StrictModel):
 class LessonProposal(StrictModel):
     text: str = Field(min_length=10, max_length=200)
     scope: LessonScope
-    evidence: str = Field(min_length=10, max_length=400)
+    evidence: str = Field(min_length=10, max_length=ITEM)
     videos: list[str] = Field(min_length=1, max_length=20)
-    expected: str = Field(min_length=2, max_length=200)
+    expected: str = Field(min_length=2, max_length=ITEM)
     confidence: Confidence
 
     @field_validator("videos")
@@ -93,7 +96,7 @@ class VideoAnswer(StrictModel):
 class LessonVerdict(StrictModel):
     lesson_id: str = Field(pattern=r"^[0-9a-f-]{36}$")
     verdict: Literal["keep", "retire", "too_early"]
-    reason: str = Field(min_length=5, max_length=300)
+    reason: str = Field(min_length=5, max_length=ITEM)
 
 
 class WeeklyReview(StrictModel):
@@ -108,6 +111,54 @@ class WeeklyReview(StrictModel):
     @classmethod
     def bounded(cls, values):
         return _short_items(values, 300)
+
+
+class Finding(StrictModel):
+    """What worked or not across a group of videos; n is the videos on the smaller side of the comparison."""
+    factor: Literal["title", "thumbnail", "edition", "length", "opening", "craft", "lessons", "topic", "shorts", "other"]
+    text: str = Field(min_length=5, max_length=ITEM)
+    effect: Literal["worked", "did_not_work", "too_early"]
+    n: int = Field(ge=0, le=1000)
+    confidence: Confidence
+
+
+class Experiment(StrictModel):
+    change: str = Field(min_length=5, max_length=ITEM)
+    compare: str = Field(min_length=5, max_length=ITEM)
+    episodes: int = Field(ge=2, le=20)
+    metric: str = Field(min_length=2, max_length=ITEM)
+
+
+class BenchmarkNote(StrictModel):
+    """Why a fast-growing public video of another channel worked, and what of it this channel can use."""
+    youtube_id: str = Field(pattern=VIDEO_ID)
+    why: str = Field(min_length=5, max_length=ITEM)
+    transfer: list[str] = Field(min_length=1, max_length=3)
+
+    @field_validator("transfer")
+    @classmethod
+    def bounded(cls, values):
+        return _short_items(values, ITEM)
+
+
+class StrategyReport(StrictModel):
+    """The Monday/Thursday channel strategy report (served as video_weekly_v1: contracts.py, a render input, names
+    the contracts). strategies are lesson proposals the owner adopts with a button."""
+    headline: str = Field(min_length=10, max_length=300)
+    findings: list[Finding] = Field(max_length=8)
+    viewers: list[str] = Field(max_length=4)
+    traffic: str = Field(max_length=ITEM)
+    keywords: list[str] = Field(max_length=5)
+    shorts: str = Field(max_length=ITEM)
+    strategies: list[LessonProposal] = Field(max_length=3)
+    experiment: Experiment
+    verdicts: list[LessonVerdict] = Field(max_length=12)
+    benchmark: list[BenchmarkNote] = Field(max_length=5)
+
+    @field_validator("viewers", "keywords")
+    @classmethod
+    def bounded(cls, values):
+        return _short_items(values, ITEM)
 
 
 FUNNEL = ("Diagnose by funnel stage. impressions: topic demand that day, search terms versus title/tags, upload time. "
@@ -160,6 +211,49 @@ def weekly_prompt(context):
             "every active lesson compare the episodes made with it to those before it (same edition kind, give n): "
             "keep, retire when ten or more episodes show no improvement, or too_early. Return only the required JSON.\n"
             + json.dumps(context, ensure_ascii=False, default=str))
+
+
+def strategy_prompt(context):
+    """context: report and data days, the period, the videos new in it, figures (this and the previous period for
+    episodes and Shorts, traffic shares, search terms, Shorts-episode pairs, feature comparisons), active lessons with
+    the episodes made with and before each, benchmark (other channels' public videos; Mondays) and the measured videos
+    (d3 and later figures, diagnosis, title hook, thumbnail text, cold open or Shorts hook, craft, lessons). Attached
+    images: the thumbnails named in thumbnail_attachments."""
+    return ("You write the twice-weekly channel strategy report of a Korean daily market-briefing YouTube channel, "
+            "its main episodes and their Shorts, for its owner. Its purpose is to change how the next videos are "
+            "made, not to grade single videos. " + FUNNEL + HONESTY +
+            "The sample is small: say so where it matters, and never read correlation as cause. "
+            "headline: one line on what the period showed and what to do next. "
+            "findings: compare groups of videos, never one video, each with n (the videos on the smaller side) and a "
+            "confidence: title as a question versus a statement, a number or stock name in the title, thumbnail text "
+            "length, morning versus close, length, cold-open style, and craft rules or active lessons before versus "
+            "after (figures.comparisons gives the medians of each side). Below five episodes per side, effect is "
+            "too_early. "
+            "viewers: what viewers preferred: the gentlest scenes (where they left least) and topics, the most-liked "
+            "and most-commented videos, and what they share. "
+            "traffic: the trend of the given traffic shares, this period against the previous one. "
+            "keywords: the words to put in titles, tags and descriptions, taken from the viewers' search terms. "
+            "shorts: the Shorts views and subscribers and their relation to the paired episode's views. "
+            "strategies: exactly three strategies the owner can adopt as standing production instructions for the "
+            "next videos. A strategy is one concrete instruction in Korean (scope: title, thumbnail, opening, "
+            "structure, length, keywords or shorts; shorts is an instruction for the Shorts script only, every other "
+            "scope is for the main episode only) that cites the videos behind it and names the metric it should "
+            "move; it may never touch the source lines, facts, numbers, labels or the owner's fixed title rules, and "
+            "never asks for buy/sell wording. Do not repeat an active lesson. "
+            "experiment: one change to try next, what to compare it with, for how many episodes and by which metric. "
+            "verdicts: for every active lesson compare the episodes made with it to those before it (same edition "
+            "kind, give n): keep, retire when ten or more episodes show no improvement, or too_early. "
+            "benchmark: notes only for the videos in context.benchmark.videos (an empty list when there are none): "
+            "why each grew (title, thumbnail, first scene, topic, comment reactions) and one to three points this "
+            "channel can transfer. Never copy their facts or numbers into ours, and never claim to know their "
+            "retention, which is not public. "
+            "Every text item is at most 500 characters (headline 300, a strategy's text 200); stay well under. "
+            "Return only the required JSON.\n" + json.dumps(context, ensure_ascii=False, default=str))
+
+
+RETRY_NOTE = ("\n\nYour previous answer to this same request failed the output contract: {detail}\nReturn the whole "
+              "report again as valid JSON. Keep every text item within its limit (500 characters; headline 300; a "
+              "strategy's text 200) and every list within its maximum.")
 
 
 def answer_prompt(context):
