@@ -9,6 +9,7 @@ const KINDS = ['다르게 볼 점', '의미', '확인할 점'];
 // Each picture zooms toward its own point, so consecutive scenes do not move alike.
 const ORIGINS = ['50% 30%', '32% 50%', '68% 45%', '45% 68%', '60% 35%', '38% 40%'];
 const FADE = 0.35;
+const QBAR = ['agenda', 'issue'];
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // A short run of Latin words stays on one line ('LIG D&A', 'S&P 500'); a longer one keeps its breaks to fit the width.
 const tie = s => String(s ?? '').replace(/[A-Za-z][\w&.]*(?: [A-Za-z\d][\w&.]*)+/g, r => r.length > 16 ? r : r.replace(/ /g, '\u00a0'));
@@ -19,6 +20,7 @@ const gold = s => esc(tie(s)).replace(/(\d(?:[\d,.]*\d)?\s?(?:%p|%|bp|조원|억
 const bare = (s, dir) => String(s).replace(dir ? /^\s*[▲▼+\-]\s*/ : /^\s*[▲▼]\s*/, '');
 const PLAY = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M6 3.5v17l14.5-8.5z"/></svg>';
 const MAIL = '<svg viewBox="0 0 24 24" fill="none" stroke="#FDC749" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.2"/><path d="M3.6 6.6 12 13l8.4-6.4"/></svg>';
+const DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15M5.5 12.5 12 19l6.5-6.5"/></svg>';
 // A headline with a comma breaks after its first one, where its first phrase ends ('나스닥 1.11% 반등, / AI 칩 살 돈엔
 // 금리 10% 이상', not '… 반등, AI 칩 / 살 돈엔 …'); fit() keeps the break only where both parts fit a line each.
 const headline = s => {
@@ -51,19 +53,16 @@ const CARDS = {
       + `<span class="tag k${Math.max(0, KINDS.indexOf(d.note_kind))}" data-in="1.1,0.4,14"><strong>${esc(d.note_kind)}</strong> · ${esc(d.note)}</span></div></div>`;
   },
   outro(d, sc) {
-    // The button comes in as the closing line is spoken (its caption), else halfway through.
+    // One end screen (owner, 10/22): the signals, the cut's question left for the full episode with a button pointing
+    // down to the related video, and the report mail line. The button comes in as '본편' is said, else halfway through.
     const said = EP.captions.find(c => c[0] >= sc.t0 && c[0] < sc.t1 && c[2].includes('본편'));
     const pop = said ? Math.min(said[0] - sc.t0, sc.t1 - sc.t0 - 1.2) : 0.5 * (sc.t1 - sc.t0);
     return `<div class="inner"><div class="kicker" data-in="0,0.3,20">${esc(d.kicker)}</div><div class="sigs" data-in="0.1,0.4,30">`
       + d.signals.map((s, i) => `<div class="sig" data-in="${(0.3 + i * 0.35).toFixed(2)},0.4,0,50"><b>${'①②③④'[i]}</b><span>${gold(s)}</span></div>`).join('')
-      + `</div><div class="play" data-pop="${Math.max(0.4, pop).toFixed(2)},0.45">${PLAY}${esc(d.button)}</div></div>`;
-  },
-  signup(d) {
-    // The report mail for subscribers (owner, 10/21): the service's own copy, the steps in the order they are said.
-    return `<div class="inner"><div class="kicker" data-in="0,0.3,20">${esc(d.kicker)}</div><div class="su" data-in="0.15,0.45,30">`
-      + `<i class="mail" data-pop="0.4,0.45">${MAIL}</i><div class="st">${gold(d.title)}</div><ol>`
-      + d.steps.map((s, i) => `<li data-in="${(0.9 + i * 0.6).toFixed(2)},0.4,0,50"><b>${i + 1}</b>${esc(s)}</li>`).join('')
-      + '</ol></div></div>';
+      + `</div>` + (d.question ? `<div class="oq" data-in="${Math.max(0.3, pop - 0.5).toFixed(2)},0.4,20">${gold(d.question)}</div>` : '')
+      + `<div class="play" data-pop="${Math.max(0.4, pop).toFixed(2)},0.45">${PLAY}${esc(d.button)}<i class="down">${DOWN}</i></div>`
+      + (d.mail ? `<div class="mailrow" data-in="${(Math.max(0.4, pop) + 0.8).toFixed(2)},0.4,14">${MAIL}<span>${esc(d.mail)}</span></div>` : '')
+      + '</div>';
   },
 };
 
@@ -98,6 +97,19 @@ function fit() {
   }
 }
 
+// The bar always shows the whole question (a clipped one would still measure full width in the layout check): smaller
+// type first, then without its label, beside a credit (width 520) or alone (870).
+function fitBar(q, width) {
+  if (q.dataset.width === String(width)) return;
+  q.dataset.width = String(width); q.style.maxWidth = width + 'px';
+  const label = $('b', q); if (label) label.style.display = '';
+  for (let size = 30; size >= 20; size--) {
+    q.style.fontSize = size + 'px';
+    if (q.scrollWidth <= q.clientWidth) return;
+    if (size === 24 && label && label.style.display !== 'none') { label.style.display = 'none'; size = 31; }
+  }
+}
+
 function fitCaption(cb) {
   let size = 44; cb.style.fontSize = size + 'px';
   while (cb.offsetHeight > 160 && size > 30) { size -= 2; cb.style.fontSize = size + 'px'; }
@@ -107,6 +119,8 @@ function boot() {
   for (const w of [500, 600, 700, 800]) document.fonts.load(`${w} 40px Pretendard`);
   document.title = EP.label;
   $('#badge').textContent = EP.date_badge;
+  // The cut's question stays up over the list and the issues (owner, 10/22), so the reason to keep watching shows.
+  if (EP.question) $('#qbar').innerHTML = `<b>오늘의 질문</b>${esc(EP.question)}`;
   $('#segs').innerHTML = EP.scenes.map(() => '<div><i></i></div>').join('');
   EP.scenes.forEach((sc, i) => {
     const bg = document.createElement('div');
@@ -115,7 +129,7 @@ function boot() {
     if (sc.bg) bg.innerHTML = `<img src="${esc(sc.bg)}" alt="" style="transform-origin:${ORIGINS[i % ORIGINS.length]}"><div class="shade"></div>`;
     $('#bgs').appendChild(bg);
     const d = document.createElement('div');
-    d.className = `scene ${sc.type}` + (sc.bg ? '' : ' nophoto');
+    d.className = `scene ${sc.type}` + (sc.bg ? '' : ' nophoto') + (EP.question && QBAR.includes(sc.type) ? ' withq' : '');
     d.dataset.id = sc.id; d.dataset.t0 = sc.t0; d.dataset.t1 = sc.t1;
     d.innerHTML = `<div class="box">${CARDS[sc.type](sc.data, sc)}</div>` + (sc.credit ? `<div class="credit">${esc(sc.credit)}</div>` : '');
     $('#stage').appendChild(d);
@@ -159,6 +173,10 @@ function seek(t) {
       e.style.opacity = p > 0 ? Math.min(1, p * 3) : 0; e.style.transform = `scale(${p > 0 ? back(p) : 0.001})`;
     }
   });
+  const q = $('#qbar'), shown = EP.question && QBAR.includes(EP.scenes[cur].type);
+  // Hidden, it is out of the way of the opener's and the outro's credit; beside a credit it leaves it the right third.
+  q.style.visibility = shown ? 'visible' : 'hidden'; fitBar(q, EP.scenes[cur].credit ? 520 : 870);
+  q.style.opacity = shown ? Math.min(1, (t - EP.scenes[cur].t0) / FADE + (cur > 0 && QBAR.includes(EP.scenes[cur - 1].type) ? 1 : 0)) : 0;
   const cb = $('#capbox'), c = EP.captions.find(c => t >= c[0] && t < c[1]);
   if (c) {
     if (cb.dataset.k !== String(c[0])) { cb.innerHTML = c[2]; cb.dataset.k = String(c[0]); fitCaption(cb); }
