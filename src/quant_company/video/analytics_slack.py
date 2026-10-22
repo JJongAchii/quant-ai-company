@@ -8,7 +8,7 @@ from ..company import PolicyError
 from .analytics_metrics import KST
 from .analytics_store import AnalyticsStore
 
-EDITIONS = {"am": "아침", "close": "마감", None: "기타"}
+EDITIONS = {"am": "아침", "close": "마감", "shorts": "Shorts", None: "기타"}
 # Analytics API insightTrafficSourceType names as Studio shows them.
 TRAFFIC = {"SUBSCRIBER": "탐색(홈·구독)", "YT_SEARCH": "검색", "RELATED_VIDEO": "추천 영상", "YT_CHANNEL": "채널 페이지",
            "EXT_URL": "외부", "NOTIFICATION": "알림", "PLAYLIST": "재생목록", "NO_LINK_OTHER": "직접·기타",

@@ -90,6 +90,14 @@ def plan_summary(job):
             or [{"chapter": c["title"], "start": c["start"]} for c in artifacts.get("chapters") or []]}
 
 
+def shorts_summary(plan):
+    """What a reader needs from a Shorts cut (ShortsPlan JSON): its hook and the issues it lists."""
+    plan = plan or {}
+    hook = plan.get("hook") or {}
+    return {"hook": hook.get("headline"), "question": hook.get("question"), "hook_narration": hook.get("narration"),
+            "issues": [i.get("label") for i in plan.get("issues") or []]}
+
+
 def usable_changes(publication, changes):
     """Studio edits the owner can paste as given. A new title must still read as this upload's own edition (the same
     day and kind as its current title, else its kind), so the upload stays linked and measured after the change."""
@@ -196,8 +204,14 @@ class AnalyticsRunner:
                             error.response.status_code)
                 continue
             reach = await asyncio.to_thread(self.store.reach, publication["youtube_id"], start, end)
-            job = await asyncio.to_thread(self.store.job, publication["job_id"])
-            artifacts = (job or {}).get("artifacts") or {}
+            if publication["edition_kind"] == "shorts":
+                # Measured on the cut's own scenes; its manifest names no heading, so the scene type stands in.
+                cut = ((await asyncio.to_thread(self.store.shorts, publication["job_id"])) or {}).get("artifacts") or {}
+                artifacts = {**cut, "scenes": [{**s, "heading": s.get("heading") or s["type"]}
+                                               for s in cut.get("scenes") or [] if "t0" in s and "t1" in s]}
+            else:
+                job = await asyncio.to_thread(self.store.job, publication["job_id"])
+                artifacts = (job or {}).get("artifacts") or {}
             duration = publication["duration_s"] or artifacts.get("duration")
             curve = api["curve"]
             drops = []
@@ -211,7 +225,8 @@ class AnalyticsRunner:
                        "search_terms": api["search_terms"], "scene_drops": drops, "curve": curve,
                        "report": today <= end + timedelta(days=REPORT_DAYS),
                        "thumbnail": await self.keep_thumbnail(publication)}
-            await asyncio.to_thread(self.store.save_snapshot, publication["youtube_id"], horizon, start, end, metrics)
+            await asyncio.to_thread(self.store.save_snapshot, publication["youtube_id"], horizon, start, end, metrics,
+                                    taken_at=at)
             taken += 1
         return taken
 

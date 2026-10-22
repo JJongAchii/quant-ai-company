@@ -1,14 +1,16 @@
 """Real PostgreSQL; YouTube reads, claude-runtime and Slack are explicitly simulated fixtures."""
 
 import json
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 
 import pytest
+from psycopg.types.json import Jsonb
 
 from quant_company.company import PolicyError
 from quant_company.contracts import AgentDecision, ProviderFault, ProviderResponse
 from quant_company.slack import SlackIngress
-from quant_company.video.analytics import AnalyticsRunner
+from quant_company.video.analytics import AnalyticsRunner, shorts_summary
+from quant_company.video.analytics_metrics import watch_ratio
 from quant_company.video.analytics_slack import blocks
 from quant_company.video.analytics_store import AnalyticsStore
 
@@ -16,8 +18,10 @@ from .test_briefing import brief  # noqa: F401
 from .test_video import video  # noqa: F401
 from .test_video_analytics_store import (  # noqa: F401
     PUBLISHED,
+    SHORTS_TITLE,
     analytics,
     delivered_job,
+    delivered_shorts_for,
     seed_lessons,
     upload,
 )
@@ -158,6 +162,33 @@ async def test_the_three_day_card_carries_reach_retention_search_and_the_diagnos
     # Nothing is asked or posted twice.
     await AnalyticsRunner(analytics.company, client=client, provider=provider).tick(AFTER_D3)
     assert len(provider.calls) == 1 and len(outbox(analytics)) == 1
+
+
+async def test_shorts_are_measured_on_their_own_scenes(brief, video, analytics):  # noqa: F811
+    store, _ = video
+    job, client = linked_upload(brief, video)
+    delivered_shorts_for(video, job)
+    lessons = [{"id": "l-episode", "scope": "thumbnail", "text": "본편 교훈"},
+               {"id": "l-shorts", "scope": "shorts", "text": "쇼츠 교훈"}]
+    with store.db.transaction() as conn:
+        conn.execute("UPDATE video_jobs SET policy=policy||%s WHERE id=%s", (Jsonb({"lessons": lessons}), job["id"]))
+    client.items.append(upload("sssssssssss", SHORTS_TITLE, PUBLISHED + timedelta(hours=3), duration_s=46))
+    await AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider()).tick(AFTER_D3)
+    snap = analytics.snapshot("sssssssssss", "d3")
+    assert [d["id"] for d in snap["metrics"]["scene_drops"]] == ["opener", "agenda", "chip", "outro"]
+    assert snap["metrics"]["scene_drops"][2]["heading"] == "issue"  # a Shorts manifest names its scenes by type
+    assert snap["metrics"]["hook_30s"] == pytest.approx(watch_ratio(METRICS["curve"], 30 / 46))
+    assert snap["taken_at"] == AFTER_D3
+    rows = {e["youtube_id"]: e for e in analytics.episodes()}
+    cut, episode = rows["sssssssssss"], rows["aaaaaaaaaaa"]
+    assert cut["edition_kind"] == "shorts" and cut["plan"]["hook"]["headline"] == "반도체 5% 급등"
+    assert cut["artifacts"]["duration"] == 46.0 and episode["artifacts"]["duration"] == 292.0
+    assert (cut["lessons"], episode["lessons"]) == (["l-shorts"], ["l-episode"])  # each kind is judged on its own
+    assert cut["d3_taken"] == AFTER_D3 and cut["d3"]["views"] == 820 and cut["window_end"] == date(2026, 9, 23)
+    assert cut["craft"] == episode["craft"] == 1
+    assert shorts_summary(cut["plan"]) == {"hook": "반도체 5% 급등", "question": "이유는?",
+                                           "hook_narration": "반도체가 5% 올랐습니다.", "issues": ["반도체"]}
+    assert shorts_summary({}) == {"hook": None, "question": None, "hook_narration": None, "issues": []}
 
 
 async def test_no_analysis_is_requested_while_an_episode_is_in_production(brief, video, analytics):  # noqa: F811

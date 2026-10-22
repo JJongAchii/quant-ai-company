@@ -37,6 +37,11 @@ def in_series(title):
     return SERIES in (title or "")
 
 
+def shorts_key(title):
+    """A Shorts title as the cut wrote it: an owner-added hashtag (#Shorts) still matches its cut."""
+    return re.sub(r"\s*#\S+", "", title or "").strip()
+
+
 def parse_title(title, published_at):
     """(edition day, 'am'|'close') from the series suffix (or the older series-tag format), or None for any other
     title. The year is the KST publish year, one earlier when the title names a later month (a 31 December close

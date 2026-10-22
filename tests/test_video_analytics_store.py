@@ -4,6 +4,7 @@ from datetime import UTC, date, datetime, timedelta
 from uuid import uuid4
 
 import pytest
+from psycopg.types.json import Jsonb
 
 from quant_company.company import PolicyError
 from quant_company.video.analytics_store import AnalyticsStore
@@ -36,6 +37,28 @@ def delivered_job(brief, video, title="반도체가 이끈 상승 | 9월 22일 �
     return store.get(job["id"])
 
 
+SHORTS_TITLE = "반도체 5% 급등, 이유는 하나"
+
+
+def delivered_shorts_for(video, job, title=SHORTS_TITLE):  # noqa: F811
+    """The delivered Shorts cut of `job` (video_shorts row as the runner leaves it; plan and manifest trimmed)."""
+    store, _ = video
+    plan = {"title": title, "hook": {"headline": "반도체 5% 급등", "question": "이유는?", "narration": "반도체가 5% 올랐습니다."},
+            "issues": [{"label": "반도체"}]}
+    artifacts = {"title": title, "duration": 46.0, "scenes": [
+        {"id": "opener", "type": "opener", "t0": 0, "t1": 8}, {"id": "agenda", "type": "agenda", "t0": 8, "t1": 14},
+        {"id": "chip", "type": "issue", "t0": 14, "t1": 38}, {"id": "outro", "type": "outro", "t0": 38, "t1": 46}]}
+    with store.db.transaction() as conn:
+        conn.execute("INSERT INTO video_shorts(job_id,state,plan,artifacts) VALUES(%s,'delivered',%s,%s)",
+                     (job["id"], Jsonb(plan), Jsonb(artifacts)))
+
+
+def delivered_shorts(brief, video, title=SHORTS_TITLE):  # noqa: F811
+    job = delivered_job(brief, video)
+    delivered_shorts_for(video, job, title)
+    return job
+
+
 def publication(analytics, youtube_id="aaaaaaaaaaa"):
     with analytics.db.transaction() as conn:
         return conn.execute("SELECT * FROM video_publications WHERE youtube_id=%s", (youtube_id,)).fetchone()
@@ -50,6 +73,24 @@ def test_public_upload_links_to_its_job_by_the_title_suffix(brief, video, analyt
     assert row["proposed_title"] == "반도체가 이끈 상승 | 9월 22일 아침 · 오늘의 증시story"
     hand_made = publication(analytics, "bbbbbbbbbbb")
     assert hand_made["job_id"] is None and hand_made["matched_by"] is None
+
+
+def test_a_shorts_upload_links_to_its_cut_by_its_title(brief, video, analytics):  # noqa: F811
+    job = delivered_shorts(brief, video)
+    # The owner may add a hashtag; a retitled Shorts stays unlinked like any other upload.
+    later = PUBLISHED + timedelta(hours=3)
+    analytics.upsert_publications([upload("sssssssssss", SHORTS_TITLE + " #Shorts", later, duration_s=46),
+                                   upload("ttttttttttt", "제목을 바꾼 쇼츠", later, duration_s=46)])
+    row = publication(analytics, "sssssssssss")
+    assert (row["job_id"], row["edition_kind"], row["matched_by"], row["proposed_title"]) == (
+        job["id"], "shorts", "shorts_title", SHORTS_TITLE)
+    assert row["edition_id"] == job["edition_id"]
+    assert publication(analytics, "ttttttttttt")["job_id"] is None
+    analytics.upsert_publications([upload("sssssssssss", SHORTS_TITLE, later, duration_s=46)])
+    assert publication(analytics, "sssssssssss")["edition_kind"] == "shorts"  # a later sync keeps the link
+    due = analytics.due_snapshots(datetime(2026, 9, 28, 12, tzinfo=UTC))
+    assert ("sssssssssss", "d3") in [(p["youtube_id"], h) for p, h in due]
+    assert "ttttttttttt" not in {p["youtube_id"] for p, _ in due}
 
 
 def test_exact_title_links_when_the_suffix_names_no_edition(brief, video, analytics):  # noqa: F811
