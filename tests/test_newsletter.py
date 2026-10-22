@@ -236,6 +236,19 @@ def test_a_number_the_body_does_not_have_is_rejected(field, text, number):
     assert any(f"'{number}'" in f and "없는 숫자" in f for f in found), found
 
 
+@pytest.mark.parametrize("text, label", [
+    ("외국인 매수가 이어지면 코스피는 확실히 반등할 것입니다.", "단정 표현 '확실히'"),
+    ("지금은 저가 매수 기회가 될 가능성이 있습니다.", "매수·매도 권유 표현"),
+    ("반도체 비중을 늘릴 만합니다.", "매수·매도 권유 표현"),
+])
+def test_an_outlook_with_certainty_or_advice_is_rejected(text, label):
+    # Owner, 2026-10-22: the outlook says conditions and direction; the email has no model review, so the checks hold it.
+    found = checks.findings(v5_draft(outlook=text), contracts.source(pm_row()))
+    assert any(f.startswith("outlook:") and label in f for f in found), found
+    assert checks.findings(v5_draft(outlook="외국인 매수가 이어지면 반등이 넓어질 가능성이 있습니다."),
+                           contracts.source(pm_row())) == []
+
+
 def test_advice_production_wording_citations_and_register_are_rejected_but_topics_pass():
     source = contracts.source(pm_row())
     bad = v5_draft(company="지금 매수하세요. AI가 정리한 내용이며 Claude로 작성했습니다[1]. 출처: https://example.com",
@@ -1019,13 +1032,13 @@ def test_the_morning_prompt_has_its_own_guide_and_the_closing_prompt_is_unchange
     # The PM guide as PM requests were frozen with before the morning email (bcc60ab).
     assert hashlib.sha256(contracts.GUIDE.encode()).hexdigest() == (
         "5a0b7421693056bfbffc66b1efa134c291282c2d065880d72162313d7624634a")
-    pm = contracts.source(pm_row())
+    pm = {key: value for key, value in contracts.source(pm_row()).items() if key != "outlook"}  # frozen before 10/22
     assert pm["kind"] == "pm" and contracts.prompt(pm).startswith(contracts.GUIDE + "\nDATA:\n")
     legacy = {key: value for key, value in pm.items() if key != "kind"}  # frozen before the morning email
     assert contracts.prompt(legacy) == contracts.prompt(pm)
     am = contracts.source(am_row())
     text = contracts.prompt(am)
-    assert am["kind"] == "am" and text.startswith(contracts.GUIDE_AM + "\nDATA:\n") and contracts.GUIDE not in text
+    assert am["kind"] == "am" and text.startswith(contracts.GUIDE_AM.removesuffix(contracts.END) + contracts.OUTLOOK_RULE) and contracts.GUIDE not in text
     for rule in ("morning email", "overnight", "today's Korean session", "has not started", "previous Korean session",
                  "'나스닥 1.1% 반등,'", "'오늘 한국장 관건은'", "~습니다", "round within the same unit", "footnote"):
         assert rule in text, rule
@@ -1043,6 +1056,26 @@ def test_the_morning_subject_and_header_name_the_morning():
     closing = render.html(draft, day="2026-10-20", sender=SENDER, channel_url="https://example.com")
     assert "10/20 장 마감 · 오늘의 증시story" in closing
     assert "아침과 장 마감 후" in render.INTRO and render.INTRO in page and render.INTRO in closing
+
+
+def test_the_outlook_closes_the_email_in_conditions_and_direction():
+    # Owner, 2026-10-22: the email ends with the brief's outlook; no new numbers, targets or advice.
+    assert "no index or price" in contracts.OUTLOOK_RULE and "never a certainty" in contracts.OUTLOOK_RULE
+    for row in (am_row(), pm_row()):
+        fresh = contracts.source(row)
+        assert fresh["outlook"] == 1 and contracts.OUTLOOK_RULE + contracts.END + "\nDATA:\n" in contracts.prompt(fresh)
+        frozen = {key: value for key, value in fresh.items() if key != "outlook"}  # an issue made before 10/22
+        assert "- outlook:" not in contracts.prompt(frozen)
+        assert contracts.prompt(frozen).startswith(contracts.GUIDES[fresh["kind"]] + "\nDATA:\n")
+    plain = v5_draft()
+    assert plain.outlook == "" and "앞으로의 전망" not in render.html(plain, day="2026-10-20", sender=SENDER,
+                                                                     channel_url="https://example.com")
+    draft = plain.model_copy(update={"outlook": "외국인 매수가 이어지면 반등이 코스닥으로 번질 가능성이 큽니다."})
+    page = render.html(draft, day="2026-10-20", sender=SENDER, channel_url="https://example.com")
+    text = render.text(draft, day="2026-10-20", sender=SENDER, channel_url="https://example.com")
+    assert "앞으로의 전망" in page and "코스닥으로 번질 가능성이 큽니다" in page
+    assert "[앞으로의 전망]\n외국인 매수가 이어지면" in text
+    assert ("outlook", draft.outlook) in list(draft.texts())  # checked like every other written field
 
 
 def test_the_morning_fallback_leads_with_the_first_index_line_and_passes_every_check():
@@ -1074,7 +1107,7 @@ async def test_a_morning_edition_is_written_with_its_guide_and_mailed_as_the_mor
     assert issue["state"] == "writing" and issue["fallback_at"] == datetime(2026, 9, 22, 8, 40, tzinfo=KST)
     writer, provider = await write(store, v5_draft())  # the closing mockup: its numbers are not in this body
     assert (await writer.tick())["outcome"] == "check_failed"
-    assert provider.calls[0].prompt.startswith(contracts.GUIDE_AM)
+    assert provider.calls[0].prompt.startswith(contracts.GUIDE_AM.removesuffix(contracts.END))
     smtp = SimulatedSmtp()
     clock["at"] = issue["fallback_at"] - timedelta(minutes=1)
     dispatcher(store, smtp).tick()

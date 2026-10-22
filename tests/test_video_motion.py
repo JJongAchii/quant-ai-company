@@ -719,7 +719,7 @@ async def produce_inspected(store, tmp_path, monkeypatch, provider, renderer, br
 async def test_a_new_job_carries_the_owner_craft_rules_in_its_script_and_review_prompts(brief, video, tmp_path, monkeypatch):  # noqa: F811
     # Owner, 2026-10-22: hook, one metaphor, short thumbnail text, a closing question (video/craft.py), frozen per job.
     from quant_company.video.contracts import VisualReview
-    from quant_company.video.craft import CRAFT_GUIDE, CRAFT_VERSION
+    from quant_company.video.craft import CRAFT_GUIDE, CRAFT_VERSION, OUTLOOK, VERSIONS, with_craft
 
     store, _ = video
     store.settings.video_upload_enabled = store.settings.video_publish_enabled = False
@@ -729,10 +729,17 @@ async def test_a_new_job_carries_the_owner_craft_rules_in_its_script_and_review_
     assert job['policy']['craft'] == CRAFT_VERSION
     script = next(c for c in provider.calls if c.output_contract == 'video_episode_v1').prompt
     rules, data = script.rsplit('\n', 1)
-    assert rules.endswith(CRAFT_GUIDE) and json.loads(data)['lines']  # the data stays the last line
+    assert rules.endswith(VERSIONS[CRAFT_VERSION][0]) and json.loads(data)['lines']  # the data stays the last line
+    # Version 2 (owner, 10/22): the close states the outlook, conditions and direction only.
+    assert rules.endswith(CRAFT_GUIDE + OUTLOOK) and 'never a level, size or timed move' in OUTLOOK
+    assert 'Leave the base case out when the lines give no basis' in OUTLOOK and "line's own strength" in OUTLOOK
     review = next(c for c in provider.calls if c.output_contract == 'video_review_v1').prompt
     plan = episode()  # the lengths are measured by the service, not counted by the reviewer
     assert f'the title hook is {len(plan.upload.title)} characters, the thumbnail text {len(plan.thumbnail)})' in review
+    assert review.endswith('or a view the lines do not give.')
+    # A job frozen with version 1 keeps version 1's text after the change.
+    plain = rules[:-len(CRAFT_GUIDE + OUTLOOK) - 1] + '\n' + data
+    assert with_craft(plain, {'craft': 1}) == rules[:-len(OUTLOOK)] + '\n' + data
 
 
 async def test_a_job_created_before_the_craft_rules_keeps_its_prompts(brief, video, tmp_path, monkeypatch):  # noqa: F811
