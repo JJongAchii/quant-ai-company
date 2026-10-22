@@ -41,8 +41,6 @@ from .motion import FPS as MOTION_FPS
 from .render import Renderer, RenderInProgress, korean_numbers, probe, spoken, verify_artifacts
 from .runway import RETAKE_RESERVE, RunwaySpeech, download_audio, speech_credits
 from .shorts import CHECKS as SHORTS_CHECKS
-from .shorts import OUTRO as SHORTS_OUTRO
-from .shorts import SIGNUP as SHORTS_SIGNUP
 from .shorts import (
     ShortsPlan,
     ShortsRenderer,
@@ -50,6 +48,8 @@ from .shorts import (
     agenda_line,
     date_line,
     issue_scenes,
+    opener_line,
+    outro_line,
     settle,
     shorts_prompt,
     shorts_violations,
@@ -582,11 +582,11 @@ class VideoRunner:
         return best
 
     def shorts_takes(self, job, plan):
-        """(effect key, Runway request) per Shorts take, keyed apart from the episode's takes: the dated hook, the agenda,
-        each issue, the signals with the fixed closing line, then the mail invitation."""
-        texts = [date_line(job) + ' ' + spoken(plan.hook.narration), spoken(agenda_line([i.label for i in plan.issues])),
+        """(effect key, Runway request) per Shorts take, keyed apart from the episode's takes: the hook then the date,
+        the agenda, each issue, then the signals with the question left for the full episode and the mail invitation."""
+        texts = [opener_line(date_line(job), spoken(plan.hook.narration)), spoken(agenda_line([i.label for i in plan.issues])),
                  *(spoken(i.narration) for i in plan.issues),
-                 spoken(plan.signals_narration) + ' ' + SHORTS_OUTRO['say'], SHORTS_SIGNUP['say']]
+                 spoken(plan.signals_narration) + ' ' + spoken(outro_line(plan.hook.question))]
         return [(f"shorts-speech-{i}-{digest(text)[:12]}",
                  {"text": text, "voice": job["policy"]["voice"], "model": job["policy"]["speech_model"]})
                 for i, text in enumerate(texts)]
