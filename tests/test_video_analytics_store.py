@@ -4,6 +4,7 @@ from datetime import UTC, date, datetime, timedelta
 from uuid import uuid4
 
 import pytest
+from psycopg.types.json import Jsonb
 
 from quant_company.company import PolicyError
 from quant_company.video.analytics_store import AnalyticsStore
@@ -36,6 +37,29 @@ def delivered_job(brief, video, title="반도체가 이끈 상승 | 9월 22일 �
     return store.get(job["id"])
 
 
+SHORTS_TITLE = "반도체 5% 급등, 이유는 하나"
+
+
+def delivered_shorts_for(video, job, title=SHORTS_TITLE, made=PUBLISHED + timedelta(hours=1)):  # noqa: F811
+    """The delivered Shorts cut of `job` (video_shorts row as the runner leaves it; plan and manifest trimmed), made
+    after its episode's upload and before its own."""
+    store, _ = video
+    plan = {"title": title, "hook": {"headline": "반도체 5% 급등", "question": "이유는?", "narration": "반도체가 5% 올랐습니다."},
+            "issues": [{"label": "반도체"}]}
+    artifacts = {"title": title, "duration": 46.0, "scenes": [
+        {"id": "opener", "type": "opener", "t0": 0, "t1": 8}, {"id": "agenda", "type": "agenda", "t0": 8, "t1": 14},
+        {"id": "chip", "type": "issue", "t0": 14, "t1": 38}, {"id": "outro", "type": "outro", "t0": 38, "t1": 46}]}
+    with store.db.transaction() as conn:
+        conn.execute("INSERT INTO video_shorts(job_id,state,plan,artifacts,created_at) VALUES(%s,'delivered',%s,%s,%s)",
+                     (job["id"], Jsonb(plan), Jsonb(artifacts), made))
+
+
+def delivered_shorts(brief, video, title=SHORTS_TITLE):  # noqa: F811
+    job = delivered_job(brief, video)
+    delivered_shorts_for(video, job, title)
+    return job
+
+
 def publication(analytics, youtube_id="aaaaaaaaaaa"):
     with analytics.db.transaction() as conn:
         return conn.execute("SELECT * FROM video_publications WHERE youtube_id=%s", (youtube_id,)).fetchone()
@@ -50,6 +74,47 @@ def test_public_upload_links_to_its_job_by_the_title_suffix(brief, video, analyt
     assert row["proposed_title"] == "반도체가 이끈 상승 | 9월 22일 아침 · 오늘의 증시story"
     hand_made = publication(analytics, "bbbbbbbbbbb")
     assert hand_made["job_id"] is None and hand_made["matched_by"] is None
+
+
+def test_a_shorts_upload_links_to_its_cut_by_its_title(brief, video, analytics):  # noqa: F811
+    job = delivered_shorts(brief, video)
+    # The owner may add a hashtag; a retitled Shorts stays unlinked like any other upload.
+    later = PUBLISHED + timedelta(hours=3)
+    analytics.upsert_publications([upload("sssssssssss", SHORTS_TITLE + " #Shorts", later, duration_s=46),
+                                   upload("ttttttttttt", "제목을 바꾼 쇼츠", later, duration_s=46)])
+    row = publication(analytics, "sssssssssss")
+    assert (row["job_id"], row["edition_kind"], row["matched_by"], row["proposed_title"]) == (
+        job["id"], "shorts", "shorts_title", SHORTS_TITLE)
+    assert row["edition_id"] == job["edition_id"]
+    assert publication(analytics, "ttttttttttt")["job_id"] is None
+    analytics.upsert_publications([upload("sssssssssss", SHORTS_TITLE, later, duration_s=46)])
+    assert publication(analytics, "sssssssssss")["edition_kind"] == "shorts"  # a later sync keeps the link
+    due = analytics.due_snapshots(datetime(2026, 9, 28, 12, tzinfo=UTC))
+    assert ("sssssssssss", "d3") in [(p["youtube_id"], h) for p, h in due]
+    assert "ttttttttttt" not in {p["youtube_id"] for p, _ in due}
+
+
+def test_a_shorts_upload_links_only_to_an_unclaimed_cut_made_before_it(brief, video, analytics):  # noqa: F811
+    # The morning and close cuts of one day may share a title.
+    store, _ = video
+    morning = delivered_job(brief, video)
+    evening = {**morning, "id": uuid4()}
+    with store.db.transaction() as conn:
+        conn.execute("""INSERT INTO video_jobs(id,edition_id,version,source_digest,source,policy,state,publish_deadline)
+            VALUES(%s,%s,2,%s,%s,%s,'delivered',%s)""", (evening["id"], morning["edition_id"], morning["source_digest"],
+                                                         Jsonb(morning["source"]), Jsonb(morning["policy"]),
+                                                         morning["publish_deadline"]))
+    delivered_shorts_for(video, morning, made=PUBLISHED + timedelta(hours=1))
+    delivered_shorts_for(video, evening, made=PUBLISHED + timedelta(hours=10))
+    first = upload("sssssssssss", SHORTS_TITLE, PUBLISHED + timedelta(hours=3), duration_s=46)
+    second = upload("ttttttttttt", SHORTS_TITLE, PUBLISHED + timedelta(hours=12), duration_s=46)
+    # Uploaded twice before the evening cut existed: the morning cut is already claimed.
+    again = upload("uuuuuuuuuuu", SHORTS_TITLE + " #Shorts", PUBLISHED + timedelta(hours=5), duration_s=46)
+    analytics.upsert_publications([first])  # synced before the evening cut was made
+    analytics.upsert_publications([second, again, first])  # newest first, as YouTube lists them
+    analytics.upsert_publications([second, again, first])  # a later sync keeps every link
+    links = {y: publication(analytics, y)["job_id"] for y in ("sssssssssss", "ttttttttttt", "uuuuuuuuuuu")}
+    assert links == {"sssssssssss": morning["id"], "ttttttttttt": evening["id"], "uuuuuuuuuuu": None}
 
 
 def test_exact_title_links_when_the_suffix_names_no_edition(brief, video, analytics):  # noqa: F811
@@ -190,7 +255,7 @@ def test_baseline_uses_the_same_edition_kind_over_the_previous_28_days(analytics
     assert result == {"ctr": pytest.approx(0.035), "views": None, "n": 6}
 
 
-def seed_lessons(analytics, states):
+def seed_lessons(analytics, states, scope="thumbnail", text="교훈 {n}: 썸네일 문구는 질문으로"):
     identity = uuid4()
     with analytics.db.transaction() as conn:
         conn.execute("""INSERT INTO video_analyses(id,kind,request_id,week,request_digest,state)
@@ -199,7 +264,7 @@ def seed_lessons(analytics, states):
         for n, state in enumerate(states):
             lesson = uuid4()
             conn.execute("""INSERT INTO video_lessons(id,analysis_id,text,scope,evidence,state)
-                VALUES(%s,%s,%s,'thumbnail','{}',%s)""", (lesson, identity, f"교훈 {n}: 썸네일 문구는 질문으로", state))
+                VALUES(%s,%s,%s,%s,'{}',%s)""", (lesson, identity, text.format(n=n), scope, state))
             ids.append(str(lesson))
     return ids
 
@@ -255,30 +320,50 @@ def test_busy_runtime_refunds_the_allowance_and_allows_the_same_request_later(an
                                     week=date(2026, 9, 21)) is None
 
 
-async def test_the_episode_writer_receives_the_lessons_frozen_at_job_creation(brief, video, analytics, tmp_path):  # noqa: F811
+def motion_episodes(video, tmp_path):  # noqa: F811
     import json
-
-    from quant_company.video.runner import VideoRunner
-
-    from .test_video_motion import EpisodeProvider
 
     store, _ = video
     store.settings.video_template = "motion-v2"
     store.settings.video_asset_dir = tmp_path / "assets"
     (tmp_path / "assets").mkdir()
     (tmp_path / "assets" / "manifest.json").write_text(json.dumps({"fixture-photo": {"tags": [], "kind": "자료사진"}}))
+    return store
+
+
+async def episode_prompt_of(store):
+    from quant_company.video.runner import VideoRunner
+
+    from .test_video_motion import EpisodeProvider
+
+    provider = EpisodeProvider()
+    await VideoRunner(store.company, provider=provider).tick()
+    return provider.calls[0].prompt
+
+
+async def test_the_episode_writer_receives_the_lessons_frozen_at_job_creation(brief, video, analytics, tmp_path):  # noqa: F811
+    store = motion_episodes(video, tmp_path)
     seed_lessons(analytics, ["active"])
     job = new_job(brief, video)
     # Adopted after the job was created: this episode's prompt must not change.
     later = seed_lessons(analytics, ["active"])
     with analytics.db.transaction() as conn:
         conn.execute("UPDATE video_lessons SET text='나중에 채택한 교훈은 다음 회차부터' WHERE id=%s", (later[0],))
-    provider = EpisodeProvider()
-    await VideoRunner(store.company, provider=provider).tick()
-    prompt = provider.calls[0].prompt
+    prompt = await episode_prompt_of(store)
     assert "[thumbnail] 교훈 0: 썸네일 문구는 질문으로" in prompt
     assert "나중에 채택한 교훈" not in prompt
     assert job["policy"]["lessons"][0]["text"] == "교훈 0: 썸네일 문구는 질문으로"
+
+
+async def test_shorts_lessons_stay_out_of_the_episode_prompt(brief, video, analytics, tmp_path):  # noqa: F811
+    store = motion_episodes(video, tmp_path)
+    seed_lessons(analytics, ["active"])
+    seed_lessons(analytics, ["active"], scope="shorts", text="쇼츠 교훈 {n}: 첫 문장은 숫자 하나로")
+    job = new_job(brief, video)
+    # Both are frozen with the job; the Shorts cut reads its own (test_video_shorts).
+    assert {x["scope"] for x in job["policy"]["lessons"]} == {"thumbnail", "shorts"}
+    prompt = await episode_prompt_of(store)
+    assert "[thumbnail] 교훈 0: 썸네일 문구는 질문으로" in prompt and "쇼츠 교훈" not in prompt
 
 
 def test_uploads_older_than_sixty_days_are_not_measured(analytics):

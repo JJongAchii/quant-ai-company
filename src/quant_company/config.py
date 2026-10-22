@@ -142,8 +142,8 @@ class Settings(BaseSettings):
     # New episodes do not start below this free space on the artifact volume.
     video_min_free_gb: float = Field(default=10, ge=1, le=500)
     # Performance of the owner's public uploads (docs/daily-video.md "성과 분석"): YouTube Analytics/Reporting reads,
-    # a Claude diagnosis per episode three days after upload and a Monday review in a dedicated Slack channel. A
-    # proposed lesson reaches the episode prompt only after the owner adopts it there.
+    # a Claude diagnosis three days after upload for an outlier of its kind and a Monday/Thursday strategy report in a
+    # dedicated Slack channel. A proposed lesson reaches the episode or Shorts prompt only after the owner adopts it.
     video_analytics_enabled: bool = False
     video_analytics_channel_id: str = ""
     video_analytics_max_lessons: int = Field(default=8, ge=1, le=12)

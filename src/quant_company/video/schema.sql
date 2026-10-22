@@ -123,3 +123,13 @@ CREATE TABLE IF NOT EXISTS video_shorts (
  delivery_message_id uuid REFERENCES messages(id), lease_until timestamptz,
  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
 );
+-- v6: channel strategy report (2026-10-22): Shorts lessons, measured Shorts uploads linked to their cut.
+ALTER TABLE video_lessons DROP CONSTRAINT IF EXISTS video_lessons_scope_check;
+ALTER TABLE video_lessons ADD CONSTRAINT video_lessons_scope_check
+ CHECK(scope IN ('title','thumbnail','opening','structure','length','keywords','shorts'));
+ALTER TABLE video_publications DROP CONSTRAINT IF EXISTS video_publications_edition_kind_check;
+ALTER TABLE video_publications ADD CONSTRAINT video_publications_edition_kind_check
+ CHECK(edition_kind IN ('am','close','shorts'));
+ALTER TABLE video_publications DROP CONSTRAINT IF EXISTS video_publications_matched_by_check;
+ALTER TABLE video_publications ADD CONSTRAINT video_publications_matched_by_check
+ CHECK(matched_by IN ('title_suffix','exact_title','manual','shorts_title'));

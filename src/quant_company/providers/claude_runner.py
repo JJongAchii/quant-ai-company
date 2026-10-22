@@ -111,10 +111,10 @@ def output_schema(request):
                 "video_screen_fix_v1": (ScreenFix, "Video screen fix", "영상 화면 수정 완료"),
                 "video_shorts_v1": (ShortsPlan, "Video Shorts cut", "쇼츠 대본 작성 완료")}[request.output_contract]
     if request.output_contract in {"video_performance_v1", "video_weekly_v1", "video_answer_v1"}:
-        from ..video.analytics_contracts import VideoAnswer, VideoPerformance, WeeklyReview
+        from ..video.analytics_contracts import StrategyReport, VideoAnswer, VideoPerformance
 
         return {"video_performance_v1": (VideoPerformance, "Video performance analysis", "영상 성과 분석 완료"),
-                "video_weekly_v1": (WeeklyReview, "Weekly video performance review", "주간 성과 분석 완료"),
+                "video_weekly_v1": (StrategyReport, "Channel strategy report", "채널 전략 리포트 작성 완료"),
                 "video_answer_v1": (VideoAnswer, "Video performance answer", "영상 성과 답변 완료")}[
             request.output_contract]
     if request.output_contract == "newsletter_v1":

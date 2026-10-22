@@ -8,7 +8,17 @@ from psycopg.types.json import Jsonb
 
 from ..briefing.contracts import BRIEFER
 from ..company import PolicyError, as_json, stable
-from .analytics_metrics import HORIZONS, PT, baseline, in_series, parse_reach_csv, parse_title, window
+from .analytics_metrics import (
+    HORIZONS,
+    MIN_BASELINE,
+    PT,
+    baseline,
+    in_series,
+    parse_reach_csv,
+    parse_title,
+    shorts_key,
+    window,
+)
 from .contracts import digest
 
 BASIC = "channel_reach_basic_a1"
@@ -41,7 +51,8 @@ class AnalyticsStore:
 
     def upsert_publications(self, items):
         """Public uploads of the channel. A new or still unlinked upload is linked to the newest produced job of the
-        edition its title suffix names, else to a job with exactly the same title; a manual link is kept."""
+        edition its title suffix names, else to a job with exactly the same title, else (no suffix) to the newest
+        Shorts cut with its title made before it and not linked to another upload; a manual link is kept."""
         with self.db.transaction() as conn:
             for item in items:
                 parsed = parse_title(item["title"], item["published_at"])
@@ -69,6 +80,20 @@ class AnalyticsStore:
             job = conn.execute("""SELECT * FROM video_jobs WHERE artifacts->>'title'=%s
                 ORDER BY created_at DESC LIMIT 1""", (row["title"],)).fetchone()
             how = "exact_title"
+        if not job and not parsed:
+            # A Shorts title carries no series suffix (ShortsPlan): linked to its cut, measured as its own kind. The
+            # morning and close cuts of a day may share a title, and a backfill sees cuts made after an old upload.
+            key = shorts_key(row["title"])
+            cuts = conn.execute("""SELECT s.job_id,s.artifacts->>'title' AS title,j.edition_id FROM video_shorts s
+                JOIN video_jobs j ON j.id=s.job_id WHERE s.artifacts ? 'title' AND s.created_at<=%s
+                AND NOT EXISTS (SELECT 1 FROM video_publications q WHERE q.job_id=s.job_id AND q.edition_kind='shorts'
+                AND q.youtube_id<>%s) ORDER BY s.created_at DESC""", (row["published_at"], row["youtube_id"])).fetchall()
+            cut = next((c for c in cuts if key and shorts_key(c["title"]) == key), None)
+            if cut:
+                conn.execute("""UPDATE video_publications SET job_id=%s,edition_id=%s,edition_kind='shorts',
+                    proposed_title=%s,matched_by='shorts_title',updated_at=now() WHERE youtube_id=%s""",
+                             (cut["job_id"], cut["edition_id"], cut["title"], row["youtube_id"]))
+            return
         if job:
             conn.execute("""UPDATE video_publications SET job_id=%s,edition_id=%s,edition_kind=%s,proposed_title=%s,
                 matched_by=%s,updated_at=now() WHERE youtube_id=%s""",
@@ -178,11 +203,11 @@ class AnalyticsStore:
                     due.append((row, horizon))
         return due
 
-    def save_snapshot(self, youtube_id, horizon, start, end, metrics):
+    def save_snapshot(self, youtube_id, horizon, start, end, metrics, taken_at=None):
         with self.db.transaction() as conn:
-            conn.execute("""INSERT INTO video_snapshots(youtube_id,horizon,window_start,window_end,metrics)
-                VALUES(%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING""",
-                         (youtube_id, horizon, start, end, Jsonb(as_json(metrics))))
+            conn.execute("""INSERT INTO video_snapshots(youtube_id,horizon,window_start,window_end,metrics,taken_at)
+                VALUES(%s,%s,%s,%s,%s,COALESCE(%s,now())) ON CONFLICT DO NOTHING""",
+                         (youtube_id, horizon, start, end, Jsonb(as_json(metrics)), taken_at))
 
     def snapshot(self, youtube_id, horizon):
         with self.db.transaction() as conn:
@@ -221,33 +246,48 @@ class AnalyticsStore:
                 [stable(f"video-analytics-message:{r['youtube_id']}:d3:detail") for r in rows],)).fetchall()}
         return [r for r in rows if stable(f"video-analytics-message:{r['youtube_id']}:d3:detail") not in posted]
 
-    def episodes(self, since):
-        """Publications since `since` with their latest snapshot (d28, else d7, else d3) and the lessons frozen in
-        their job's policy."""
+    def episodes(self, since=None):
+        """Publications since `since` (all when None) with their latest snapshot (d28, else d7, else d3), the d3 one
+        and the craft version and lessons frozen in their job's policy. A Shorts row carries the cut's own plan and
+        manifest and only the shorts lessons; an episode row only the others (runner.write_plan, shorts_step)."""
         with self.db.transaction() as conn:
-            rows = conn.execute("""SELECT p.*,j.policy->'lessons' AS lessons,j.plan,j.artifacts
+            rows = conn.execute("""SELECT p.*,j.policy->'lessons' AS lessons,j.policy->>'craft' AS craft,
+                CASE WHEN p.edition_kind='shorts' THEN sh.plan ELSE j.plan END AS plan,
+                CASE WHEN p.edition_kind='shorts' THEN sh.artifacts ELSE j.artifacts END AS artifacts
                 FROM video_publications p LEFT JOIN video_jobs j ON j.id=p.job_id
-                WHERE p.published_at>=%s ORDER BY p.published_at""", (since,)).fetchall()
-            snaps = conn.execute("SELECT youtube_id,horizon,metrics FROM video_snapshots WHERE youtube_id=ANY(%s)",
-                                 ([r["youtube_id"] for r in rows],)).fetchall()
-        best = {}
+                LEFT JOIN video_shorts sh ON sh.job_id=p.job_id
+                WHERE %s::timestamptz IS NULL OR p.published_at>=%s ORDER BY p.published_at""",
+                                (since, since)).fetchall()
+            snaps = conn.execute("""SELECT youtube_id,horizon,window_end,metrics,taken_at FROM video_snapshots
+                WHERE youtube_id=ANY(%s)""", ([r["youtube_id"] for r in rows],)).fetchall()
+        best, d3 = {}, {}
         for snap in snaps:
             rank = ("d3", "d7", "d28").index(snap["horizon"])
             if snap["youtube_id"] not in best or rank > best[snap["youtube_id"]][0]:
                 best[snap["youtube_id"]] = (rank, snap)
+            if snap["horizon"] == "d3":
+                d3[snap["youtube_id"]] = snap
         for row in rows:
-            snap = best.get(row["youtube_id"], (None, None))[1]
+            snap, first = best.get(row["youtube_id"], (None, None))[1], d3.get(row["youtube_id"])
             row["horizon"], row["metrics"] = (snap["horizon"], snap["metrics"]) if snap else (None, None)
-            row["lessons"] = [x["id"] for x in row["lessons"] or []]
+            row["window_end"] = snap["window_end"] if snap else None
+            row["d3"], row["d3_taken"] = (first["metrics"], first["taken_at"]) if first else (None, None)
+            row["craft"] = int(row["craft"]) if row["craft"] is not None else None
+            shorts = row["edition_kind"] == "shorts"
+            row["lessons"] = [x["id"] for x in row["lessons"] or [] if (x["scope"] == "shorts") == shorts]
         return rows
 
     def job(self, job_id):
         with self.db.transaction() as conn:
             return conn.execute("SELECT * FROM video_jobs WHERE id=%s", (job_id,)).fetchone() if job_id else None
 
-    def baselines(self, publication, horizon, keys):
+    def shorts(self, job_id):
+        with self.db.transaction() as conn:
+            return conn.execute("SELECT plan,artifacts FROM video_shorts WHERE job_id=%s", (job_id,)).fetchone()
+
+    def baselines(self, publication, horizon, keys, minimum=MIN_BASELINE):
         """Median of each metric over episodes of the same edition kind published in the 28 days before this one;
-        None for a metric with fewer than five such episodes."""
+        None for a metric with fewer than `minimum` such episodes."""
         with self.db.transaction() as conn:
             rows = conn.execute("""SELECT s.metrics FROM video_snapshots s JOIN video_publications p USING(youtube_id)
                 WHERE s.horizon=%s AND p.youtube_id<>%s AND p.edition_kind IS NOT DISTINCT FROM %s
@@ -255,7 +295,7 @@ class AnalyticsStore:
                                 (horizon, publication["youtube_id"], publication["edition_kind"],
                                  publication["published_at"],
                                  publication["published_at"] - timedelta(days=BASELINE_DAYS))).fetchall()
-        return {**{key: baseline([r["metrics"].get(key) for r in rows]) for key in keys}, "n": len(rows)}
+        return {**{key: baseline([r["metrics"].get(key) for r in rows], minimum) for key in keys}, "n": len(rows)}
 
     def producing(self):
         """An episode is being made now. A job left in a production state for hours (production switched off, an
@@ -326,6 +366,12 @@ class AnalyticsStore:
         with self.db.transaction() as conn:
             return conn.execute("SELECT * FROM video_analyses WHERE request_id=%s", (request_id,)).fetchone()
 
+    def report_analysis(self, day):
+        """The strategy report of `day` that was posted: the first ask, or its -r2 retry when the first failed."""
+        with self.db.transaction() as conn:
+            return conn.execute("""SELECT * FROM video_analyses WHERE kind='weekly' AND week=%s
+                AND message_id IS NOT NULL ORDER BY created_at DESC LIMIT 1""", (day,)).fetchone()
+
     def analyses(self, kind, since):
         with self.db.transaction() as conn:
             return conn.execute("""SELECT * FROM video_analyses WHERE kind=%s AND state='completed' AND created_at>=%s
@@ -359,7 +405,7 @@ class AnalyticsStore:
         return ids
 
     def bound(self, lesson_id, message_id, ts, channel, action):
-        """The thread ('weekly:<monday>' or a video ID) of the delivered message a button was rendered in, or None.
+        """The thread ('weekly:<report day>' or a video ID) of the delivered message a button was rendered in, or None.
         adopt/reject: the lesson was proposed by that review or answer; retire: any active lesson, from a review
         (each review lists them)."""
         with self.db.transaction() as conn:
@@ -436,7 +482,7 @@ class AnalyticsStore:
         return conn.execute("SELECT * FROM projects WHERE id=%s", (identity,)).fetchone()
 
     def post(self, thread, key, title, text, *, reply_to=None, analysis_request=None):
-        """One message per key (stable ID) in the project of `thread` (a video ID or 'weekly:<monday>'). reply_to: the
+        """One message per key (stable ID) in the project of `thread` (a video ID or 'weekly:<day>'). reply_to: the
         key of the thread's root post; the reply waits until that root has a Slack receipt. Returns the message ID,
         or None while waiting."""
         identity = stable("video-analytics-message:" + key)
@@ -458,7 +504,7 @@ class AnalyticsStore:
     # ---- The owner's questions in analytics threads ----------------------------------------------------------
 
     def ask(self, *, event_key, channel, thread_ts, message_ts, user, text):
-        """The owner's reply under a delivered card or weekly review becomes one question; a Slack retry of the same
+        """The owner's reply under a delivered card or strategy report becomes one question; a Slack retry of the same
         event is the same question. Other messages in the channel are not questions."""
         text = text.strip()[:2000]
         if (not self.enabled() or user != self.settings.briefing_owner_user or not text

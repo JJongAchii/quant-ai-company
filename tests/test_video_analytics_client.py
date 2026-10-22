@@ -186,3 +186,74 @@ def test_youtube_login_adds_analytics_read_access_to_the_upload_scopes(tmp_path,
     assert seen["scopes"] == ["https://www.googleapis.com/auth/youtube.upload",
                               "https://www.googleapis.com/auth/youtube.force-ssl",
                               "https://www.googleapis.com/auth/yt-analytics.readonly"]
+
+
+def popular_item(youtube_id, channel, views="2000", **statistics):
+    return {"id": youtube_id, "contentDetails": {"duration": "PT8M3S"},
+            "statistics": {"viewCount": views, "likeCount": "120", "commentCount": "15", **statistics},
+            "snippet": {"channelId": channel, "channelTitle": "채널 " + channel, "title": f"인기 {youtube_id}",
+                        "description": "가" * 400, "publishedAt": "2026-09-27T10:00:00Z",
+                        "thumbnails": {"high": {"url": f"https://i.ytimg.com/vi/{youtube_id}/hqdefault.jpg"}}}}
+
+
+async def test_benchmark_candidates_come_from_three_public_reads():
+    seen = []
+
+    def handler(request):
+        path, params = request.url.path, dict(request.url.params)
+        seen.append((path, params))
+        assert request.method == "GET" and request.url.host == "www.googleapis.com"
+        assert request.headers["authorization"] == "Bearer fixture-token"
+        if path.endswith("/videos"):
+            assert (params["part"], params["chart"], params["regionCode"], params["maxResults"]) == (
+                "snippet,statistics,contentDetails", "mostPopular", "KR", "50")
+            if params.get("videoCategoryId") == "28":
+                return httpx.Response(400, json={"error": {"errors": [{"reason": "invalidCategoryId"}]}})
+            return httpx.Response(200, json={"items": [
+                popular_item("aaaaaaaaaaa", "UCa"),
+                popular_item("bbbbbbbbbbb", "UCb", likeCount=None, commentCount=None),  # hidden counts
+                popular_item("../../evil", "UCa")]})  # not a video ID: never a file name or link
+        if path.endswith("/channels"):
+            assert (params["part"], params["id"]) == ("snippet,statistics", "UCa,UCb")
+            return httpx.Response(200, json={"items": [
+                {"id": "UCa", "snippet": {"publishedAt": "2026-06-20T00:00:00Z"},
+                 "statistics": {"subscriberCount": "1000", "hiddenSubscriberCount": False}},
+                {"id": "UCb", "snippet": {"publishedAt": "2020-01-01T00:00:00Z"},
+                 "statistics": {"hiddenSubscriberCount": True}}]})
+        if path.endswith("/commentThreads"):
+            assert (params["part"], params["order"], params["maxResults"], params["textFormat"]) == (
+                "snippet", "relevance", "5", "plainText")
+            if params["videoId"] == "ddddddddddd":
+                return httpx.Response(403, json={"error": {"errors": [{"reason": "commentsDisabled"}]}})
+            return httpx.Response(200, json={"items": [
+                {"snippet": {"topLevelComment": {"snippet": {"textDisplay": "좋은 정리"}}}}]})
+        raise AssertionError(request.url)
+
+    c = client(handler)
+    all_videos = await c.popular()
+    assert all_videos[0] == {"youtube_id": "aaaaaaaaaaa", "channel_id": "UCa", "channel_title": "채널 UCa",
+                             "title": "인기 aaaaaaaaaaa", "description": "가" * 300,
+                             "published_at": datetime(2026, 9, 27, 10, tzinfo=UTC), "duration_s": 483, "views": 2000,
+                             "likes": 120, "comments": 15,
+                             "thumbnail_url": "https://i.ytimg.com/vi/aaaaaaaaaaa/hqdefault.jpg"}
+    assert [v["youtube_id"] for v in all_videos] == ["aaaaaaaaaaa", "bbbbbbbbbbb"]
+    assert (all_videos[1]["likes"], all_videos[1]["comments"]) == (None, None)
+    assert len(await c.popular("27")) == 2 and seen[-1][1]["videoCategoryId"] == "27"
+    assert "videoCategoryId" not in seen[0][1]
+    assert await c.popular("28") == []
+    channels = await c.channel_stats(["UCa", "UCb"])
+    assert channels["UCa"] == {"subscribers": 1000, "created": datetime(2026, 6, 20, tzinfo=UTC)}
+    assert channels["UCb"]["subscribers"] is None  # hiddenSubscriberCount
+    assert await c.channel_stats([]) == {}
+    assert await c.top_comments("ccccccccccc") == ["좋은 정리"]
+    assert await c.top_comments("ddddddddddd") == []  # 403 commentsDisabled
+    # Each read is one quota unit: three video lists (one refused), one channel page, two comment threads.
+    assert [p.rsplit("/", 1)[1] for p, _ in seen] == ["videos"] * 3 + ["channels"] + ["commentThreads"] * 2
+
+
+async def test_a_refused_popular_list_other_than_a_category_is_an_error():
+    def handler(request):
+        return httpx.Response(403, json={"error": {"errors": [{"reason": "quotaExceeded"}]}})
+
+    with pytest.raises(httpx.HTTPStatusError):
+        await client(handler).popular()
