@@ -13,7 +13,11 @@ from quant_company.video.analytics import (
     report_start,
 )
 from quant_company.video.analytics_metrics import (
+    BENCHMARK_CATEGORIES,
+    BENCHMARK_PICK,
+    YOUNG_CHANNEL_DAYS,
     baseline,
+    benchmark_pick,
     comparisons,
     hook_retention,
     in_series,
@@ -261,6 +265,41 @@ def test_compact_names_the_gentlest_scenes_beside_the_steepest():
     assert [d["heading"] for d in kept["steepest_scenes"]] == ["a", "c", "e"]
     assert [d["heading"] for d in kept["gentlest_scenes"]] == ["d", "b", "e"]
     assert set(kept["gentlest_scenes"][0]) == {"heading", "type", "start", "end", "per_minute"}
+
+
+def candidate(youtube_id, channel, views):
+    return {"youtube_id": youtube_id, "channel_id": channel, "channel_title": "채널 " + channel, "title": "인기 영상",
+            "views": views, "likes": None, "comments": 3}
+
+
+def test_benchmark_picks_views_per_subscriber_and_young_channels_first():
+    a, b, c, c2, d, own, gone, unknown = (f"{x}{'v' * 10}" for x in "abcCdoxu")
+    at_ = datetime(2026, 9, 28, tzinfo=UTC)
+    old, young = datetime(2015, 1, 1, tzinfo=UTC), datetime(2026, 6, 20, tzinfo=UTC)  # 100 days before
+    channels = {"UCa": {"subscribers": 1_000_000, "created": old}, "UCb": {"subscribers": 10_000, "created": young},
+                "UCc": {"subscribers": 1_000, "created": old}, "UCd": {"subscribers": None, "created": young},
+                "UCown": {"subscribers": 10, "created": old}, "UCx": {"subscribers": 0, "created": old}}
+    videos = [candidate(a, "UCa", 2_000_000), candidate(b, "UCb", 50_000), candidate(c2, "UCc", 10_000),
+              candidate(c, "UCc", 30_000), candidate(d, "UCd", 9_000_000), candidate(own, "UCown", 5_000_000),
+              candidate(gone, "UCx", None), candidate(unknown, "UCnone", 1_000),
+              {**candidate(b, "UCb", 1), "title": "같은 영상, 다른 카테고리"}]
+    picks = benchmark_pick(videos, channels, "UCown", at_)
+    assert [p["youtube_id"] for p in picks] == [c, b, a]  # 30, 5 doubled to 10, 2; one video per channel
+    assert picks[1]["title"] == "인기 영상" and picks[1]["views"] == 50_000  # the first occurrence of a video
+    assert {k: picks[1][k] for k in ("subscribers", "channel_age_days", "views_per_subscriber", "score")} == {
+        "subscribers": 10_000, "channel_age_days": 100, "views_per_subscriber": 5.0, "score": 10.0}
+    assert picks[0]["score"] == picks[0]["views_per_subscriber"] == 30.0
+    assert [p["youtube_id"] for p in benchmark_pick(videos, channels, "UCown", at_, limit=2)] == [c, b]
+    # A channel exactly a year old still counts as young; a day older does not. Ties go to views, then the ID.
+    year = {"UCa": {"subscribers": 100, "created": datetime(2025, 9, 28, tzinfo=UTC)},
+            "UCb": {"subscribers": 100, "created": datetime(2025, 9, 27, tzinfo=UTC)}}
+    assert [p["score"] for p in benchmark_pick([candidate(a, "UCa", 100), candidate(b, "UCb", 100)], year, "UCown",
+                                               at_)] == [2.0, 1.0]
+    tie = {"UCa": {"subscribers": 10, "created": old}, "UCb": {"subscribers": 20, "created": old}}
+    assert [p["youtube_id"] for p in benchmark_pick([candidate(a, "UCa", 100), candidate(b, "UCb", 200)], tie, "UCown",
+                                                    at_)] == [b, a]
+    assert BENCHMARK_CATEGORIES == (None, "22", "27", "28") and (BENCHMARK_PICK, YOUNG_CHANNEL_DAYS) == (5, 365)
+    assert benchmark_pick([], {}, "UCown", at_) == []
 
 
 def test_fixed_windows_use_the_pacific_publish_day():
@@ -609,3 +648,28 @@ def test_a_report_root_keeps_its_decision_line_within_the_post_limit():
     assert len(detail) <= REPORT_LIMIT and detail.endswith("일부 생략)") and "*키워드 전략*" in detail
     root, detail = report_texts(date(2026, 9, 28), STRATEGY, {"stats": stats, "unlinked": 0}, [], 1)
     assert detail is None and "*시청자가 좋아한 것*" in root and "생략" not in root
+
+
+def test_benchmark_notes_reply_with_the_picked_videos_and_never_cut_a_note():
+    from quant_company.video.analytics_slack import REPORT_LIMIT, benchmark_texts
+
+    picked = [{"youtube_id": f"{x}{'v' * 10}", "channel": f"채널{x}", "title": f"영상 {x}", "views": 1_234_567,
+               "subscribers": 8_900} for x in "abcde"]
+    note = {"youtube_id": "bvvvvvvvvvv", "why": "첫 장면에서 질문을 던졌습니다", "transfer": ["첫 문장을 질문으로", "숫자를 먼저"]}
+    unknown = {**note, "youtube_id": "zzzzzzzzzzz"}  # not a picked video: left out
+    [text] = benchmark_texts({**STRATEGY, "benchmark": [note, unknown, note]}, {"benchmark": picked})
+    assert text.split("\n") == ["*벤치마크* · 한국 인기 영상 중 구독자 대비 조회가 큰 1편",
+                                "1. 채널b · 「영상 b」 조회 1,234,567 · 구독 8,900 · https://youtu.be/bvvvvvvvvvv",
+                                "   왜: 첫 장면에서 질문을 던졌습니다", "   옮길 점: 첫 문장을 질문으로 / 숫자를 먼저"]
+    assert benchmark_texts(STRATEGY, {"benchmark": None}) == benchmark_texts(STRATEGY, {}) == []
+    assert benchmark_texts(STRATEGY, {"benchmark": {"skipped": "HTTPStatusError"}}) == [
+        "*벤치마크*: 이번에는 후보를 가져오지 못했습니다(HTTPStatusError)."]
+    # No usable note: the picked videos alone, so the owner still sees what was picked.
+    [bare] = benchmark_texts({**STRATEGY, "benchmark": []}, {"benchmark": picked})
+    assert "5편" in bare and "https://youtu.be/evvvvvvvvvv" in bare and "왜:" not in bare
+    # Five notes at their limits do not fit one post: whole notes continue in the next reply.
+    full = [{"youtube_id": p["youtube_id"], "why": "가" * 500, "transfer": ["나" * 500] * 3} for p in picked]
+    texts = benchmark_texts({**STRATEGY, "benchmark": full}, {"benchmark": picked})
+    assert all(len(t) <= REPORT_LIMIT for t in texts) and sum(t.count("나" * 500) for t in texts) == 15
+    assert texts[0].startswith("*벤치마크* · 한국 인기 영상 중 구독자 대비 조회가 큰 5편\n1. ")
+    assert [t[:3] for t in texts[1:]] == ["2. ", "3. ", "4. ", "5. "]

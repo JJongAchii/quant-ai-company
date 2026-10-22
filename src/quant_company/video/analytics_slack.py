@@ -278,6 +278,33 @@ def report_texts(day, output, extra, verdicts, proposals):
     return (full, None) if len(full) <= REPORT_LIMIT else (core, detail)
 
 
+def benchmark_texts(output, extra):
+    """Monday's benchmark replies: each picked video the model wrote a note on (the picked videos alone when it wrote
+    none), with why it grew and what this channel can use; a note is never cut, the next one starts a further reply
+    when it does not fit. A skipped fetch is one line; [] for a report without a benchmark (Thursday)."""
+    bench = extra.get("benchmark")
+    if bench is None:
+        return []
+    if isinstance(bench, dict):
+        return [f"*벤치마크*: 이번에는 후보를 가져오지 못했습니다({bench.get('skipped', 'unknown')})."]
+    picked, notes = {v["youtube_id"]: v for v in bench}, {}
+    for note in output.get("benchmark") or []:
+        if note["youtube_id"] in picked:
+            notes.setdefault(note["youtube_id"], note)
+    items = [(picked[i], n) for i, n in notes.items()] or [(v, None) for v in bench]
+    texts, lines = [], [f"*벤치마크* · 한국 인기 영상 중 구독자 대비 조회가 큰 {len(items)}편"]
+    for n, (video, note) in enumerate(items, 1):
+        block = [f"{n}. {video['channel']} · 「{video['title']}」 조회 {video['views']:,} · 구독 {video['subscribers']:,} · "
+                 f"https://youtu.be/{video['youtube_id']}"]
+        if note:
+            block += [f"   왜: {note['why']}", f"   옮길 점: {' / '.join(note['transfer'])}"]
+        if n > 1 and len("\n".join(lines + block)) > REPORT_LIMIT:
+            texts.append("\n".join(lines))
+            lines = []
+        lines += block
+    return texts + ["\n".join(lines)]
+
+
 def failed_report_text(day, code, extra):
     from .analytics import STRATEGY_HOUR, next_report_day  # analytics imports this module
 

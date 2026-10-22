@@ -262,6 +262,36 @@ def report_stats(rows, start, previous_start, before_start):
             "search_terms": search_terms(rows), "shorts_pairs": shorts_pairs(rows), "comparisons": comparisons(rows)}
 
 
+# ---- Monday's benchmark: other channels' public videos that grew fast for their size -----------------------------
+# Korea's most popular videos of all categories and of People & Blogs (22), Education (27) and Science & Technology
+# (28): any field, as the owner asked (2026-10-22).
+BENCHMARK_CATEGORIES = (None, "22", "27", "28")
+BENCHMARK_PICK = 5
+YOUNG_CHANNEL_DAYS = 365
+
+
+def benchmark_pick(videos, channels, own_channel, at, limit=BENCHMARK_PICK):
+    """The best video of each other channel by views per subscriber, doubled for a channel at most a year old; a
+    hidden subscriber count or view count leaves the video out. Ties go to views, then the ID."""
+    seen, best = set(), {}
+    for video in videos:
+        if video["youtube_id"] in seen:
+            continue
+        seen.add(video["youtube_id"])
+        channel = channels.get(video["channel_id"])
+        if video["channel_id"] == own_channel or not channel or channel["subscribers"] is None or video["views"] is None:
+            continue
+        age = (at - channel["created"]).days
+        ratio = video["views"] / max(channel["subscribers"], 1)
+        item = {**video, "subscribers": channel["subscribers"], "channel_age_days": age, "views_per_subscriber": ratio,
+                "score": ratio * (2.0 if age <= YOUNG_CHANNEL_DAYS else 1.0)}
+        held = best.get(video["channel_id"])
+        if held is None or (-item["score"], -item["views"], item["youtube_id"]) < (-held["score"], -held["views"],
+                                                                                    held["youtube_id"]):
+            best[video["channel_id"]] = item
+    return sorted(best.values(), key=lambda v: (-v["score"], -v["views"], v["youtube_id"]))[:limit]
+
+
 def _day(text):
     return date.fromisoformat(text if "-" in text else f"{text[:4]}-{text[4:6]}-{text[6:8]}")
 

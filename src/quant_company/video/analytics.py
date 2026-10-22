@@ -26,10 +26,12 @@ from .analytics_contracts import (
     strategy_prompt,
 )
 from .analytics_metrics import (
+    BENCHMARK_CATEGORIES,
     KST,
     OUTLIER,
     OUTLIER_MIN,
     PT,
+    benchmark_pick,
     hook_retention,
     in_series,
     medians,
@@ -45,6 +47,7 @@ from .analytics_slack import (
     EXPIRED_TEXT,
     WAIT_TEXT,
     answer_text,
+    benchmark_texts,
     card_text,
     detail_text,
     failed_answer_text,
@@ -69,6 +72,8 @@ THREAD_VIDEOS = 40
 # The channel strategy report: Monday and Thursday from 09:00 KST, caught up within two days if the worker was down
 # (a catch-up ends before the next report starts, so two never overlap).
 STRATEGY_WEEKDAYS, STRATEGY_HOUR, STRATEGY_CATCH_UP = (0, 3), 9, timedelta(hours=48)
+BENCHMARK_NOTE = ("KR mostPopular, all + categories 22/27/28, scored by views per subscriber, doubled for channels "
+                  "under a year")
 
 
 def utcnow():
@@ -143,6 +148,22 @@ def report_video(row, diagnosis):
         summary = plan_summary(row)
         video["thumbnail_text"], video["cold_open"] = summary["thumbnail_text"], (summary["cold_open"] or "")[:200]
     return video
+
+
+def benchmark_parts(bench):
+    """(prompt context, frozen extra for the Slack reply, thumbnail references) of Monday's benchmark; None, None, []
+    on Thursday. A skipped fetch is {'skipped': reason} in both."""
+    if bench is None:
+        return None, None, []
+    picks = bench["videos"]
+    if not picks:
+        return {"skipped": bench["skipped"]}, {"skipped": bench["skipped"]}, []
+    context = {"videos": [{**{k: v for k, v in p.items() if k not in {"kept", "thumbnail_url"}},
+                           "thumbnail": f"thumb-{p['youtube_id']}" if p["kept"] else None} for p in picks],
+               "note": BENCHMARK_NOTE}
+    extra = [{"youtube_id": p["youtube_id"], "channel": p["channel_title"], "title": p["title"], "views": p["views"],
+              "subscribers": p["subscribers"]} for p in picks]
+    return context, extra, [{"youtube_id": p["youtube_id"], **p["kept"]} for p in picks if p["kept"]]
 
 
 def usable_changes(publication, changes):
@@ -441,7 +462,7 @@ class AnalyticsRunner:
         if day is None:
             return 0
         if await asyncio.to_thread(self.store.posted, f"weekly:{day}"):
-            return await self.report_detail(day)
+            return await self.report_detail(day) + await self.report_benchmark(day)
         start = report_start(day)
         rows = [e for e in await asyncio.to_thread(self.store.episodes) if e["metrics"] and e["published_at"] < start]
         if not rows or await asyncio.to_thread(self.store.producing):
@@ -450,6 +471,12 @@ class AnalyticsRunner:
         stats = report_stats(rows, start, previous, report_start(previous_report_day(previous_report_day(day))))
         active = await asyncio.to_thread(self.store.lessons, ["active"])
         unlinked = sum(e["job_id"] is None for e in rows)
+        request_id = f"video-analytics-weekly-{day}"
+        bench = None
+        if day.weekday() == 0 and await asyncio.to_thread(self.store.analysis, request_id) is None:
+            # Monday's candidates are read once, for the first ask; a re-ask and the -r2 retry send the frozen ones.
+            bench = await self.benchmark(start)
+        benchmark, benchmark_extra, benchmark_refs = benchmark_parts(bench)
 
         def build():
             diagnoses = {a["youtube_id"]: a["output"]["summary"]
@@ -470,16 +497,16 @@ class AnalyticsRunner:
                        "new_videos": stats["new"],
                        "figures": {k: v for k, v in stats.items() if k not in {"data_day", "new"}},
                        "active_lessons": lessons, "unlinked_uploads": unlinked,
-                       "thumbnail_attachments": [r["youtube_id"] for r in refs], "benchmark": None,
+                       "thumbnail_attachments": [r["youtube_id"] for r in refs], "benchmark": benchmark,
                        "videos": [report_video(by_id[i], diagnoses.get(i)) for i in order]}
             prompt = strategy_prompt(context)
             while len(prompt) > PROMPT_LIMIT and len(context["videos"]) > 1:
                 context["videos"] = context["videos"][:-1]  # the oldest of the earlier videos first
                 prompt = strategy_prompt(context)
-            return self.frozen(prompt, refs, self.settings.video_review_effort, stats=as_json(stats), benchmark=None,
-                               unlinked=unlinked)
+            # The benchmark's thumbnails follow the own ones: at most 12 + 5 attachments.
+            return self.frozen(prompt, refs + benchmark_refs, self.settings.video_review_effort, stats=as_json(stats),
+                               benchmark=benchmark_extra, unlinked=unlinked)
 
-        request_id = f"video-analytics-weekly-{day}"
         receipt, frozen = await self.analyze(request_id, "weekly", build, StrategyReport, "video_weekly_v1", week=day)
         if receipt and receipt.get("code") == "invalid_output":
             # The frozen first request with its stored contract errors appended (same model, effort and thumbnails);
@@ -524,6 +551,45 @@ class AnalyticsRunner:
             return 0
         return int(bool(await asyncio.to_thread(self.store.post, f"weekly:{day}", f"weekly:{day}:detail",
                                                 f"채널 전략 리포트 {day}", detail, reply_to=f"weekly:{day}")))
+
+    async def report_benchmark(self, day):
+        """Monday's benchmark as its own reply under the report, after the details, once Slack confirmed the report:
+        the picked videos with the model's notes, continued in a further reply only when whole notes do not fit one
+        post, or the one line saying the candidates could not be read. Nothing on Thursday or for a failed report."""
+        report = await asyncio.to_thread(self.store.report_analysis, day)
+        output = (report or {}).get("output")
+        if not output or "headline" not in output:
+            return 0
+        posted = 0
+        for n, text in enumerate(benchmark_texts(output, report["request"]["extra"]), 1):
+            key = f"weekly:{day}:benchmark" + (f":{n}" if n > 1 else "")
+            if await asyncio.to_thread(self.store.posted, key):
+                continue
+            if not await asyncio.to_thread(self.store.post, f"weekly:{day}", key, f"채널 전략 리포트 {day}", text,
+                                           reply_to=f"weekly:{day}"):
+                break  # waiting for the root's Slack receipt
+            posted += 1
+        return posted
+
+    async def benchmark(self, start):
+        """Monday's benchmark candidates: Korea's most popular videos (all categories and three of them), their
+        channels' subscribers and age, then for the five picked their top comments and thumbnail. Read-only Data API
+        GETs with the channel's own token: 4 lists, at most 4 channel pages and 5 comment threads, 13 quota units at
+        most (never search.list). A failed read skips the benchmark, never the report."""
+        try:
+            videos = []
+            for category in BENCHMARK_CATEGORIES:
+                videos += await self.client.popular(category)
+            channels = await self.client.channel_stats(sorted({v["channel_id"] for v in videos})) if videos else {}
+            picks = benchmark_pick(videos, channels, self.settings.video_youtube_channel_id, start)
+            for pick in picks:
+                pick["top_comments"] = await self.client.top_comments(pick["youtube_id"])
+                pick["kept"] = await self.keep_thumbnail({"youtube_id": pick["youtube_id"],
+                                                          "thumbnail_url": pick["thumbnail_url"]})
+        except (httpx.HTTPError, ValueError) as error:
+            LOG.warning("video analytics benchmark skipped: %s", type(error).__name__)
+            return {"skipped": type(error).__name__, "videos": []}
+        return {"videos": picks} if picks else {"skipped": "no_candidates", "videos": []}
 
     # ---- The owner's questions in analytics threads -----------------------------------------------------------
 

@@ -1,5 +1,7 @@
 """Reads for the performance analytics: Data API uploads, Analytics API per-video reports and Reporting API reach
-reports (thumbnail impressions and CTR exist only there). The one write is creating a reporting job once."""
+reports (thumbnail impressions and CTR exist only there), and for Monday's benchmark the public most-popular videos,
+their channels and top comments (GETs with the same token, one quota unit each; never search.list). The one write is
+creating a reporting job once."""
 
 import re
 from datetime import datetime
@@ -7,7 +9,7 @@ from urllib.parse import urlsplit
 
 import httpx
 
-from .analytics_metrics import PT
+from .analytics_metrics import PT, VIDEO_ID
 from .youtube import API, YouTube
 
 ANALYTICS = "https://youtubeanalytics.googleapis.com/v2/reports"
@@ -36,6 +38,18 @@ def instant(value):
 def table(payload):
     names = [h["name"] for h in payload.get("columnHeaders", [])]
     return [dict(zip(names, row, strict=True)) for row in payload.get("rows") or []]
+
+
+def best_thumbnail(thumbs):
+    """The largest thumbnail YouTube lists, or None."""
+    thumbs = thumbs or {}
+    return next((thumbs[k]["url"] for k in ("maxres", "standard", "high", "medium", "default") if k in thumbs), None)
+
+
+def public_count(statistics, key):
+    """A public count (the Data API sends strings), or None where the owner hides it."""
+    value = statistics.get(key)
+    return int(value) if value is not None else None
 
 
 class AnalyticsClient:
@@ -77,13 +91,62 @@ class AnalyticsClient:
                     raise ValueError("Upload belongs to another channel")
                 if video["status"]["privacyStatus"] != "public":
                     continue
-                thumbs = video["snippet"].get("thumbnails", {})
-                best = next((thumbs[k]["url"] for k in ("maxres", "standard", "high", "medium", "default") if k in thumbs),
-                            None)
                 result.append({"youtube_id": identity, "title": video["snippet"]["title"],
                                "published_at": instant(video["snippet"]["publishedAt"]),
-                               "duration_s": iso_seconds(video["contentDetails"]["duration"]), "thumbnail_url": best})
+                               "duration_s": iso_seconds(video["contentDetails"]["duration"]),
+                               "thumbnail_url": best_thumbnail(video["snippet"].get("thumbnails"))})
         return result
+
+    async def popular(self, category=None):
+        """Korea's most popular public videos now, all categories or one, with their public counts. A category
+        YouTube does not chart in Korea gives none; an item whose ID is not a video ID is left out."""
+        try:
+            page = await self.get(API + "/videos", part="snippet,statistics,contentDetails", chart="mostPopular",
+                                  regionCode="KR", maxResults=50, **({"videoCategoryId": category} if category else {}))
+        except httpx.HTTPStatusError as error:
+            if error.response.status_code not in {400, 404}:
+                raise
+            return []
+        result = []
+        for video in page.get("items", []):
+            if not VIDEO_ID.match(video.get("id") or ""):
+                continue
+            snippet, statistics = video["snippet"], video.get("statistics", {})
+            try:
+                duration = iso_seconds(video.get("contentDetails", {}).get("duration"))
+            except ValueError:
+                duration = None  # one odd duration (a live stream) does not drop the benchmark
+            result.append({"youtube_id": video["id"], "channel_id": snippet["channelId"],
+                           "channel_title": snippet.get("channelTitle", ""), "title": snippet["title"],
+                           "description": (snippet.get("description") or "")[:300],
+                           "published_at": instant(snippet["publishedAt"]), "duration_s": duration,
+                           "views": public_count(statistics, "viewCount"), "likes": public_count(statistics, "likeCount"),
+                           "comments": public_count(statistics, "commentCount"),
+                           "thumbnail_url": best_thumbnail(snippet.get("thumbnails"))})
+        return result
+
+    async def channel_stats(self, ids):
+        """{channel ID: {subscribers (None when hidden), created}} of public channels, 50 to a call."""
+        result = {}
+        for start in range(0, len(ids), 50):
+            page = await self.get(API + "/channels", part="snippet,statistics", id=",".join(ids[start:start + 50]))
+            for channel in page.get("items", []):
+                statistics = channel.get("statistics", {})
+                result[channel["id"]] = {"subscribers": None if statistics.get("hiddenSubscriberCount")
+                                         else public_count(statistics, "subscriberCount"),
+                                         "created": instant(channel["snippet"]["publishedAt"])}
+        return result
+
+    async def top_comments(self, youtube_id, limit=5):
+        """The most relevant top-level comments of a public video; none where comments are turned off."""
+        try:
+            page = await self.get(API + "/commentThreads", part="snippet", videoId=youtube_id, order="relevance",
+                                  maxResults=limit, textFormat="plainText")
+        except httpx.HTTPStatusError as error:
+            if error.response.status_code not in {403, 404}:
+                raise
+            return []
+        return [t["snippet"]["topLevelComment"]["snippet"]["textDisplay"][:200] for t in page.get("items", [])][:limit]
 
     async def thumbnail(self, url):
         parsed = urlsplit(url or "")

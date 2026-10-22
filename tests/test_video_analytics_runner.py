@@ -45,6 +45,9 @@ class SimulatedClient:
     def __init__(self, uploads=(), jobs=None):
         self.items, self.jobs, self.created, self.metric_calls = list(uploads), dict(jobs or {}), [], []
         self.reports_by_job, self.files = {}, {}
+        # The Monday benchmark's public reads: none listed unless a test lists them.
+        self.popular_by_category, self.channel_info, self.comments = {}, {}, {}
+        self.popular_calls, self.channel_calls, self.comment_calls = [], [], []
 
     async def uploads(self):
         return self.items
@@ -69,6 +72,18 @@ class SimulatedClient:
 
     async def thumbnail(self, url):
         return b"\xff\xd8fixture-thumbnail", "image/jpeg"
+
+    async def popular(self, category=None):
+        self.popular_calls.append(category)
+        return self.popular_by_category.get(category, [])
+
+    async def channel_stats(self, ids):
+        self.channel_calls.append(list(ids))
+        return {i: self.channel_info[i] for i in ids if i in self.channel_info}
+
+    async def top_comments(self, youtube_id, limit=5):
+        self.comment_calls.append(youtube_id)
+        return self.comments.get(youtube_id, [])
 
     def report(self, report_id, day, text, report_type="channel_reach_basic_a1"):
         self.reports_by_job.setdefault("job-" + report_type, []).append(
@@ -406,9 +421,11 @@ class InvalidReportProvider(SimulatedProvider):
         return await super().run(request)
 
 
-async def weekly_posted(brief, video, analytics, provider=None, **extra):  # noqa: F811
-    """The card on Saturday, then the Monday report with one active lesson."""
+async def weekly_posted(brief, video, analytics, provider=None, prepare=None, **extra):  # noqa: F811
+    """The card on Saturday, then the Monday report with one active lesson; `prepare` sets up the client first."""
     _, client = linked_upload(brief, video)
+    if prepare:
+        prepare(client)
     [active] = seed_lessons(analytics, ["active"])
     provider = provider or SimulatedProvider()
     provider.weekly = strategy_output(active, **extra)
@@ -438,12 +455,13 @@ async def test_the_monday_report_measures_both_kinds_and_proposes_strategies_wit
                for e in b["elements"]]
     assert actions == ["video_lesson_adopt", "video_lesson_reject"] * 2 + ["video_lesson_retire"]
     extra = analytics.analysis("video-analytics-weekly-2026-09-28")["request"]["extra"]
-    assert extra["stats"]["this"]["episodes"]["views"] == 820 and extra["benchmark"] is None
+    assert extra["stats"]["this"]["episodes"]["views"] == 820 and extra["benchmark"] == {"skipped": "no_candidates"}
     await runner.tick(MONDAY)
     deliver(analytics, outbox(analytics)[-1], "600.001")
-    await runner.tick(MONDAY + timedelta(minutes=30))  # the root holds the details: no thread reply
+    await runner.tick(MONDAY + timedelta(minutes=30))  # the root holds the details: the benchmark note alone follows
     assert sum(c.output_contract == "video_weekly_v1" for c in provider.calls) == 1
-    assert not [r for r in outbox(analytics) if r["thread_ts"] == "600.001"]
+    assert [r["text"] for r in outbox(analytics) if r["thread_ts"] == "600.001"] == [
+        "*벤치마크*: 이번에는 후보를 가져오지 못했습니다(no_candidates)."]
 
 
 async def test_an_invalid_report_is_asked_once_more_with_the_contract_errors(brief, video, analytics):  # noqa: F811
@@ -501,11 +519,115 @@ async def test_a_long_report_moves_details_to_the_first_thread_reply(brief, vide
     assert outbox(analytics)[-1]["id"] == root["id"]  # the reply waits for the root's Slack receipt
     deliver(analytics, root, "600.001")
     await runner.tick(MONDAY + timedelta(minutes=30))
-    detail = outbox(analytics)[-1]
+    detail, note = outbox(analytics)[-2:]  # the details first, then Monday's benchmark reply
     assert detail["thread_ts"] == "600.001" and "*시청자가 좋아한 것*" in detail["text"] and "*검색어 상위*" in detail["text"]
     assert "\"엔비디아 실적\" 120" in detail["text"] and "탐색(홈·구독)" in detail["text"]
+    assert note["thread_ts"] == "600.001" and note["text"].startswith("*벤치마크*")
     await runner.tick(MONDAY + timedelta(minutes=60))
-    assert outbox(analytics)[-1]["id"] == detail["id"]
+    assert outbox(analytics)[-1]["id"] == note["id"]
+
+
+def benchmark_candidates(client):
+    """Eight public candidates over seven channels (channel 0 twice, one video listed in two categories)."""
+    videos = [{"youtube_id": f"bench{n:06d}", "channel_id": f"UCb{n % 7}", "channel_title": f"채널 {n % 7}",
+               "title": f"인기 영상 {n}", "description": "설명 앞부분", "published_at": datetime(2026, 9, 27, tzinfo=UTC),
+               "duration_s": 300, "views": 10_000 * (n + 1), "likes": 100, "comments": 10,
+               "thumbnail_url": f"https://i.ytimg.com/vi/bench{n:06d}/hqdefault.jpg"} for n in range(8)]
+    client.popular_by_category = {None: videos[:4], "22": videos[4:6], "27": [videos[6], videos[0]], "28": [videos[7]]}
+    client.channel_info = {f"UCb{n}": {"subscribers": 1_000 * (n + 1), "created": datetime(2015, 1, 1, tzinfo=UTC)}
+                           for n in range(7)}
+    client.comments = {v["youtube_id"]: ["댓글 반응: 정리가 깔끔해요"] for v in videos}
+
+
+BENCHMARK_NOTES = [{"youtube_id": "bench000007", "why": "제목 첫 단어가 질문이었습니다", "transfer": ["첫 문장을 질문으로", "숫자 하나만"]},
+                   {"youtube_id": "bench000006", "why": "첫 장면에 결론을 보여 줬습니다", "transfer": ["결론부터 보여 준다"]},
+                   {"youtube_id": "bench000000", "why": "고르지 않은 영상입니다", "transfer": ["무시된다"]}]
+
+
+async def test_the_monday_report_brings_five_benchmark_videos_within_twenty_quota_units(brief, video, analytics):  # noqa: F811
+    runner, provider, _ = await weekly_posted(brief, video, analytics, prepare=benchmark_candidates,
+                                              benchmark=BENCHMARK_NOTES)
+    client = runner.client
+    assert client.popular_calls == [None, "22", "27", "28"]
+    assert client.channel_calls == [[f"UCb{n}" for n in range(7)]]
+    units = len(client.popular_calls) + sum(-(-len(ids) // 50) for ids in client.channel_calls) + len(client.comment_calls)
+    assert units <= 20 and len(client.comment_calls) == 5
+    # Views per subscriber: channel 0's second video (80) leads, then the ties by views.
+    assert client.comment_calls == [f"bench00000{n}" for n in (7, 6, 5, 4, 3)]
+    report = next(c for c in provider.calls if c.output_contract == "video_weekly_v1")
+    assert sum(a.name.startswith("thumb-") for a in report.attachments) == 1 + 5 and "댓글 " in report.prompt
+    assert [a.name for a in report.attachments][1:] == [f"thumb-bench00000{n}.jpg" for n in (7, 6, 5, 4, 3)]
+    for piece in ('"thumbnail": "thumb-bench000007"', "KR mostPopular", '"views_per_subscriber": 80.0',
+                  '"thumbnail_attachments": ["aaaaaaaaaaa"]'):
+        assert piece in report.prompt, piece
+    extra = analytics.analysis("video-analytics-weekly-2026-09-28")["request"]["extra"]
+    assert extra["benchmark"][0] == {"youtube_id": "bench000007", "channel": "채널 0", "title": "인기 영상 7",
+                                     "views": 80_000, "subscribers": 1_000} and len(extra["benchmark"]) == 5
+    root = outbox(analytics)[-1]
+    assert "벤치마크" not in root["text"]
+    await runner.tick(MONDAY + timedelta(minutes=10))
+    assert outbox(analytics)[-1]["id"] == root["id"]  # waits for the root's Slack receipt
+    deliver(analytics, root, "600.001")
+    await runner.tick(MONDAY + timedelta(minutes=30))
+    note = outbox(analytics)[-1]
+    assert note["thread_ts"] == "600.001"
+    for piece in ("*벤치마크* · 한국 인기 영상 중 구독자 대비 조회가 큰 2편",
+                  "1. 채널 0 · 「인기 영상 7」 조회 80,000 · 구독 1,000 · https://youtu.be/bench000007",
+                  "왜: 제목 첫 단어가 질문이었습니다", "옮길 점: 첫 문장을 질문으로 / 숫자 하나만", "2. 채널 6"):
+        assert piece in note["text"], piece
+    assert "bench000000" not in note["text"]
+    await runner.tick(MONDAY + timedelta(minutes=60))
+    assert outbox(analytics)[-1]["id"] == note["id"] and len(client.popular_calls) == 4
+
+
+async def test_thursday_reports_and_re_asks_fetch_no_benchmark(brief, video, analytics):  # noqa: F811
+    _, client = linked_upload(brief, video)
+    benchmark_candidates(client)
+    [active] = seed_lessons(analytics, ["active"])
+    await AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider()).tick(AFTER_D3)
+    assert client.popular_calls == []
+    pending = SimulatedProvider(fault="pending")
+    await AnalyticsRunner(analytics.company, client=client, provider=pending).tick(MONDAY)
+    [first] = report_calls(pending)
+    assert len(client.popular_calls) == 4 and "채널 전략 리포트" not in outbox(analytics)[-1]["text"]
+    finished = SimulatedProvider(weekly=strategy_output(active))
+    runner = AnalyticsRunner(analytics.company, client=client, provider=finished)
+    await runner.tick(MONDAY + timedelta(minutes=30))
+    [again] = report_calls(finished)
+    assert (again.prompt, again.attachments) == (first.prompt, first.attachments)
+    assert len(client.popular_calls) == 4 and len(client.comment_calls) == 5  # the first ask's candidates
+    assert "채널 전략 리포트 · 09/28(월)" in outbox(analytics)[-1]["text"]
+    await runner.tick(THURSDAY)
+    thursday = report_calls(finished)[-1]
+    assert thursday.request_id == "video-analytics-weekly-2026-10-01" and '"benchmark": null' in thursday.prompt
+    assert len(client.popular_calls) == 4 and not [a for a in thursday.attachments if "bench" in a.name]
+    assert analytics.analysis("video-analytics-weekly-2026-10-01")["request"]["extra"]["benchmark"] is None
+    deliver(analytics, outbox(analytics)[-1], "700.001")
+    await runner.tick(THURSDAY + timedelta(minutes=30))
+    assert not [r for r in outbox(analytics) if r["thread_ts"] == "700.001"]  # no benchmark reply on Thursday
+
+
+async def test_a_failed_benchmark_fetch_leaves_a_note_and_the_report_goes_on(brief, video, analytics):  # noqa: F811
+    import httpx
+
+    async def refused(category=None):
+        request = httpx.Request("GET", "https://www.googleapis.com/youtube/v3/videos")
+        raise httpx.HTTPStatusError("forbidden", request=request, response=httpx.Response(403, request=request))
+
+    def prepare(client):
+        benchmark_candidates(client)
+        client.popular = refused
+
+    runner, provider, _ = await weekly_posted(brief, video, analytics, prepare=prepare, benchmark=BENCHMARK_NOTES)
+    report = report_calls(provider)[0]
+    assert '"benchmark": {"skipped": "HTTPStatusError"}' in report.prompt and len(report.attachments) == 1
+    assert runner.client.comment_calls == [] and "다음 전략 2가지" in outbox(analytics)[-1]["text"]
+    extra = analytics.analysis("video-analytics-weekly-2026-09-28")["request"]["extra"]
+    assert extra["benchmark"] == {"skipped": "HTTPStatusError"}
+    deliver(analytics, outbox(analytics)[-1], "600.001")
+    await runner.tick(MONDAY + timedelta(minutes=30))
+    note = outbox(analytics)[-1]
+    assert note["thread_ts"] == "600.001" and note["text"] == "*벤치마크*: 이번에는 후보를 가져오지 못했습니다(HTTPStatusError)."
 
 
 def lesson_click(analytics, lesson_id, message_id, action="adopt", **changes):  # noqa: F811
