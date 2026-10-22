@@ -348,14 +348,15 @@ def _buttons(row, lesson, actions):
 
 def blocks(company, row):
     """A strategy report: its text, then adopt/reject for each strategy it proposed and retire for every active lesson.
-    An answer that proposed a lesson: its text and adopt/reject. An adoption reply: its text and retire while that
-    lesson is active. Rendered when sent, so the states shown are current."""
+    An answer that proposed a lesson: its text and adopt/reject. A reply to the owner's decision: its text and retire
+    while that lesson is active, so an adoption (or a repeated 채택 on an adopted lesson) can be undone in place.
+    Rendered when sent, so the states shown are current."""
     with company.db.transaction() as conn:
         review = conn.execute("""SELECT id,kind FROM video_analyses WHERE message_id=%s AND kind IN ('weekly','answer')""",
                               (row["id"],)).fetchone()
         if not review:
             adopted = conn.execute("""SELECT l.id FROM video_lesson_actions d JOIN video_lessons l ON l.id=d.lesson_id
-                WHERE d.message_id=%s AND d.outcome='active' AND l.state='active'""", (row["id"],)).fetchone()
+                WHERE d.message_id=%s AND l.state='active'""", (row["id"],)).fetchone()
             return [{"type": "section", "text": {"type": "mrkdwn", "text": row["text"][:3000]}},
                     _buttons(row, adopted, ("retire",))] if adopted else None
         proposed = conn.execute("""SELECT * FROM video_lessons WHERE analysis_id=%s AND state='proposed'
@@ -391,7 +392,7 @@ def reply_text(outcome, lesson, active, limit):
 
 def accept(ingress, role, payload, credential):
     """Owner's adopt/reject/retire click on a delivered strategy report, adopt/reject on a delivered answer, or retire
-    on a delivered adoption reply, in the analytics channel. The outcome is said in that message's thread."""
+    on a delivered reply to an earlier decision, in the analytics channel. The outcome is said in that message's thread."""
     settings = ingress.settings
     try:
         if (role != BRIEFER or payload["type"] != "block_actions" or payload["team"]["id"] != settings.slack_team_id

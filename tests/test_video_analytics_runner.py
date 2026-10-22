@@ -727,8 +727,7 @@ async def test_the_owner_unadopts_a_lesson_from_its_adoption_reply(brief, video,
     with pytest.raises(PolicyError):  # adopt and reject stay on the review
         lesson_click(analytics, proposed, str(reply["id"]), "reject", **AT_REPLY)
     with pytest.raises(PolicyError):  # the reply unadopts only the lesson it adopted
-        lesson_click(analytics, earlier[0], str(reply["id"]), "retire",
-                     **{**AT_REPLY, "actions.0.block_id": "video-lesson:" + earlier[0]})
+        lesson_click(analytics, earlier[0], str(reply["id"]), "retire", **AT_REPLY)
     assert lesson_click(analytics, proposed, str(reply["id"]), "retire", **AT_REPLY)["outcome"] == "retired"
     assert [x["id"] for x in analytics.active_lessons()] == earlier
     note = outbox(analytics)[-1]
@@ -736,6 +735,30 @@ async def test_the_owner_unadopts_a_lesson_from_its_adoption_reply(brief, video,
     assert blocks(analytics.company, note) is None and blocks(analytics.company, reply) is None  # nothing left to undo
     again = lesson_click(analytics, proposed, str(reply["id"]), "retire", **{**AT_REPLY, "actions.0.action_ts": "450.003"})
     assert again["outcome"] == "unchanged" and outbox(analytics)[-1]["text"] == "이미 처리된 전략입니다(현재 상태: 채택 해제)."
+
+
+async def test_a_repeated_adoption_answers_with_the_unadopt_button(brief, video, analytics):  # noqa: F811
+    """A lesson adopted before replies carried the button (schema v7) is undone by pressing 채택 on the report again."""
+    await weekly_posted(brief, video, analytics)
+    review = outbox(analytics)[-1]
+    deliver(analytics, review, "400.001")
+    proposed = str(analytics.lessons(["proposed"])[0]["id"])
+    lesson_click(analytics, proposed, str(review["id"]))
+    deliver(analytics, outbox(analytics)[-1], "410.001")
+    with analytics.db.transaction() as conn:  # as an adoption recorded before v7: no reply on the decision
+        conn.execute("UPDATE video_lesson_actions SET message_id=NULL WHERE lesson_id=%s", (proposed,))
+    assert blocks(analytics.company, outbox(analytics)[-1]) is None
+    assert lesson_click(analytics, proposed, str(review["id"]), **{"actions.0.action_ts": "420.002"})["outcome"] == "unchanged"
+    again = outbox(analytics)[-1]
+    assert again["text"] == "이미 처리된 전략입니다(현재 상태: 적용 중)."
+    [actions] = [b for b in blocks(analytics.company, again) if b["type"] == "actions"]
+    assert [e["action_id"] for e in actions["elements"]] == ["video_lesson_retire"]
+    deliver(analytics, again, "450.001")
+    with pytest.raises(PolicyError):  # bound to that reply's Slack receipt
+        lesson_click(analytics, proposed, str(again["id"]), "retire",
+                     **{**AT_REPLY, "message.ts": "999.001", "container.message_ts": "999.001"})
+    assert lesson_click(analytics, proposed, str(again["id"]), "retire", **AT_REPLY)["outcome"] == "retired"
+    assert outbox(analytics)[-1]["thread_ts"] == "400.001"
 
 
 @pytest.mark.parametrize("change", [{"user.id": "UOTHER"}, {"channel.id": "CQUANT"}, {"container.channel_id": "CQUANT"},

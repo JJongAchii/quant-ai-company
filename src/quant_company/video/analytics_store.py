@@ -407,8 +407,8 @@ class AnalyticsStore:
     def bound(self, lesson_id, message_id, ts, channel, action):
         """The thread ('weekly:<report day>' or a video ID) of the delivered message a button was rendered in, or None.
         adopt/reject: the lesson was proposed by that review or answer; retire: any active lesson, from a review
-        (each review lists them), or the lesson an adoption reply adopted, from that reply (in the thread where the
-        lesson was proposed)."""
+        (each review lists them), or the lesson a decision reply answered about, from that reply (in the thread where
+        the lesson was proposed)."""
         with self.db.transaction() as conn:
             source = conn.execute("""SELECT a.id,a.kind,a.youtube_id,a.week FROM video_analyses a
                 JOIN outbox o ON o.id=a.message_id WHERE a.message_id=%s AND a.kind IN ('weekly','answer')
@@ -416,7 +416,7 @@ class AnalyticsStore:
             lesson = conn.execute("SELECT * FROM video_lessons WHERE id=%s", (lesson_id,)).fetchone()
             reply = not source and lesson and action == "retire" and conn.execute(
                 """SELECT a.youtube_id,a.week FROM video_lesson_actions d JOIN outbox o ON o.id=d.message_id
-                JOIN video_analyses a ON a.id=%s WHERE d.message_id=%s AND d.lesson_id=%s AND d.outcome='active'
+                JOIN video_analyses a ON a.id=%s WHERE d.message_id=%s AND d.lesson_id=%s
                 AND o.status='delivered' AND o.sent_ts=%s AND o.channel=%s""",
                 (lesson["analysis_id"], message_id, lesson_id, ts, channel)).fetchone()
         if reply:
