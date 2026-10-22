@@ -181,6 +181,8 @@ def progress(value, runtime):
     if state == "applied":
         return "반영을 마쳤습니다.", "없음."
     if state == "closed":
+        if pr.get("merged_at"):
+            return "PR이 GitHub에서 병합됐습니다. 운영에는 다음 자동 배포 때 반영됩니다.", "없음."
         return "PR이 반영되지 않고 닫혔습니다.", "없음."
     if state == "done":
         reason = clip(value.get("reason"), 160)

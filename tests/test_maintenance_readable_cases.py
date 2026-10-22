@@ -7,12 +7,14 @@ from psycopg.types.json import Jsonb
 
 from quant_company.company import fingerprint
 from quant_company.maintenance import cases, explain
+from quant_company.maintenance.applications import accept_approval
 from quant_company.maintenance.reporting import Reporter
 from quant_company.maintenance.requests import status
+from quant_company.maintenance.runner import Maintainer
 from quant_company.maintenance.store import Store
 from quant_company.staff.store import StaffStore
 
-from .test_maintenance import config
+from .test_maintenance import GitHubFixture, ModelFixture, config
 from .test_maintenance_cases import delivery, drain, improvements, submit  # noqa: F401
 
 JARGON = ("대사", "영수증", "runtime", "review_reconciliation_required", "blocked", "triage", "진단 요청")
@@ -164,6 +166,43 @@ async def test_ready_pr_card_and_notice_tell_the_owner_the_exact_reply(improveme
     assert "할 일:" in card and "PR 31 반영해" in card
     [notice] = owner_notices(calls)
     assert "PR 31 반영해" in notice and "https://github.com/example/pull/31" in notice
+
+
+@pytest.mark.parametrize("pull,shown,approvable", [
+    ({"state": "closed", "merged_at": None}, "닫혔습니다", False),
+    ({"state": "closed", "merged_at": "2026-10-22T09:00:00Z"}, "병합됐습니다", False),
+    ({"state": "open", "merged_at": None}, "PR 31 반영해", True),
+])
+async def test_a_bot_pr_closed_on_github_stops_asking_for_approval(improvements, pull, shown, approvable):  # noqa: F811
+    company, credentials = improvements
+    source, receipt, _ = submit(company)
+    box, calls = delivery(company, credentials)
+    await drain(box)
+    repair_id = str(uuid4())
+    with company.db.transaction() as conn:
+        conn.execute("""INSERT INTO maintenance_jobs(id,kind,state,payload,receipt)
+            VALUES (%s,'repair','pr_open',%s,%s)""", (repair_id,
+            Jsonb({"owners": ["UHUMAN"], "finding": {"title": "브리핑 메일 제목을 40자 안으로 줄임"},
+                   "observations": [{"project_id": source["project_id"]}]}),
+            Jsonb({"head": "c" * 40, "pr": {"number": 31, "url": "https://github.com/example/pull/31", "state": "open"}})))
+        conn.execute("UPDATE maintenance_jobs SET state='done',receipt=%s WHERE id=%s",
+                     (Jsonb({"case_id": repair_id}), receipt["request_id"]))
+    await Reporter(company, config()).tick()
+    await drain(box)
+    github = GitHubFixture()
+    github.current_metadata = lambda snapshot: {"repository": "test-only-fixture", "ci": [], "pull_requests": [
+        {"number": 31, "title": "fixture", "head": "c" * 40, "merge_commit": None, "url": "https://github.com/example/pull/31",
+         **pull}]}
+    Maintainer(company, config(), github=github, provider=ModelFixture()).refresh_repository()
+    await Reporter(company, config()).tick()
+    await drain(box)
+    card = latest_card(calls)
+    assert shown in card
+    assert ("PR 31 반영해" in card) == approvable, "A PR closed on GitHub can no longer be approved from the card"
+    command = dict(text="PR 31 반영해", owner="UHUMAN", channel="CIMPROVE", thread_ts="50.000001",
+                   event_key="late-approval", event_ts="99.9")
+    result = accept_approval(company, **command)
+    assert (result["maintenance_approval"] == "approved") == approvable
 
 
 async def test_case_list_counts_by_owner_action_and_collapses_repeats(improvements):  # noqa: F811

@@ -570,6 +570,21 @@ class Store:
             conn.execute("UPDATE maintenance_jobs SET state=%s,receipt=%s,error=NULL,updated_at=now() WHERE id=%s",
                          (state, Jsonb(receipt), job["id"]))
 
+    def sync_pull_requests(self, pulls):
+        """A bot PR closed or merged on GitHub can no longer be approved here; its case says so."""
+        closed = {p["number"]: p for p in pulls if p.get("state") == "closed"}
+        if not closed:
+            return
+        with self.db.transaction() as conn:
+            conn.execute("SELECT pg_advisory_xact_lock(71350223)")  # Serialized with Slack approvals.
+            for job in conn.execute("""SELECT * FROM maintenance_jobs j WHERE kind='repair' AND state='pr_open'
+                AND NOT EXISTS (SELECT 1 FROM maintenance_applications a WHERE a.job_id=j.id) FOR UPDATE""").fetchall():
+                pull = closed.get(job["receipt"].get("pr", {}).get("number"))
+                if pull:
+                    pr = {**job["receipt"]["pr"], "state": "closed", "merged_at": pull.get("merged_at")}
+                    conn.execute("UPDATE maintenance_jobs SET state='closed',receipt=receipt || %s,updated_at=now() WHERE id=%s",
+                                 (Jsonb({"pr": pr}), job["id"]))
+
     def report_reviews(self):
         from .explain import facts
         from .requests import permitted, progress_text, report, service

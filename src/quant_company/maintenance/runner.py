@@ -797,6 +797,7 @@ class Maintainer:
         metadata["coverage"] = coverage
         with self.company.db.transaction() as conn:
             record_repository(conn, snapshot, files, metadata)
+        self.store.sync_pull_requests(metadata.get("pull_requests", []))
         return snapshot
 
     @activity.defn(name="company_maintenance_tick")
