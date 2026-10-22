@@ -24,6 +24,7 @@ from .contracts import (
     review_prompt,
     visual_review_prompt,
 )
+from .craft import craft_review, with_craft
 from .episode import (
     ScreenFix,
     apply_screen_fix,
@@ -627,11 +628,11 @@ class VideoRunner:
             illustrations, lessons = qa.get('illustrations_offered', False), job['policy'].get('lessons', ())
             recent = qa.get('recent_thumbnails') or []
             previous = await asyncio.to_thread(self.last_version, job, attempts)
-            prompt = episode_prompt(job['source'], feedback, library, illustrations=illustrations, lessons=lessons,
-                                    previous=previous, recent_thumbnails=recent)
+            prompt = with_craft(episode_prompt(job['source'], feedback, library, illustrations=illustrations,
+                                               lessons=lessons, previous=previous, recent_thumbnails=recent), job['policy'])
             if len(prompt) > PROMPT_LIMIT:
-                prompt = episode_prompt(job['source'], feedback, library, illustrations=illustrations, lessons=lessons,
-                                        recent_thumbnails=recent)
+                prompt = with_craft(episode_prompt(job['source'], feedback, library, illustrations=illustrations,
+                                                   lessons=lessons, recent_thumbnails=recent), job['policy'])
             contract = 'video_episode_v1'
         else:
             prompt, contract = production_prompt(job['source'], feedback), None
@@ -674,7 +675,7 @@ class VideoRunner:
         key = attempt_key('review', len(rounds) + 1)
         plan = plan_class(job).model_validate(job['plan'])
         try:
-            review = await self.model(job, key, review_prompt(job['source'], plan), VideoReview)
+            review = await self.model(job, key, review_prompt(job['source'], plan) + craft_review(job['policy'], plan), VideoReview)
             concerns = list(review.concerns) + [f'{name} check failed' for name in REVIEW_CHECKS if not getattr(review, name)]
         except ModelRejected as rejected:
             lost = sum(r.get('outcome') in RUNTIME_OUTCOMES for r in rounds)

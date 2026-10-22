@@ -9,6 +9,7 @@ from psycopg.types.json import Jsonb
 
 from ..company import PolicyError, as_json, stable
 from .contracts import POLICY_VERSION, VideoAction, VideoReview, digest
+from .craft import CRAFT_VERSION
 
 KST = ZoneInfo("Asia/Seoul")
 NY = ZoneInfo("America/New_York")
@@ -198,7 +199,9 @@ class VideoStore:
                   "publish_at": publish_time(edition, self.settings).isoformat(),
                   # YouTube private upload + Slack approval only when explicitly enabled; otherwise the owner gets the
                   # files in the brief thread and uploads them himself.
-                  "delivery": "youtube" if self.settings.video_upload_enabled else "slack"}
+                  "delivery": "youtube" if self.settings.video_upload_enabled else "slack",
+                  # The owner's craft rules this job's prompts carry (video/craft.py), frozen like the lessons.
+                  "craft": CRAFT_VERSION}
         if self.settings.video_analytics_enabled:
             from .analytics_store import AnalyticsStore
 
