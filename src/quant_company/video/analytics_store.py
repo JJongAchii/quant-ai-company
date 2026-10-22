@@ -10,6 +10,7 @@ from ..briefing.contracts import BRIEFER
 from ..company import PolicyError, as_json, stable
 from .analytics_metrics import (
     HORIZONS,
+    MIN_BASELINE,
     PT,
     baseline,
     in_series,
@@ -281,9 +282,9 @@ class AnalyticsStore:
         with self.db.transaction() as conn:
             return conn.execute("SELECT plan,artifacts FROM video_shorts WHERE job_id=%s", (job_id,)).fetchone()
 
-    def baselines(self, publication, horizon, keys):
+    def baselines(self, publication, horizon, keys, minimum=MIN_BASELINE):
         """Median of each metric over episodes of the same edition kind published in the 28 days before this one;
-        None for a metric with fewer than five such episodes."""
+        None for a metric with fewer than `minimum` such episodes."""
         with self.db.transaction() as conn:
             rows = conn.execute("""SELECT s.metrics FROM video_snapshots s JOIN video_publications p USING(youtube_id)
                 WHERE s.horizon=%s AND p.youtube_id<>%s AND p.edition_kind IS NOT DISTINCT FROM %s
@@ -291,7 +292,7 @@ class AnalyticsStore:
                                 (horizon, publication["youtube_id"], publication["edition_kind"],
                                  publication["published_at"],
                                  publication["published_at"] - timedelta(days=BASELINE_DAYS))).fetchall()
-        return {**{key: baseline([r["metrics"].get(key) for r in rows]) for key in keys}, "n": len(rows)}
+        return {**{key: baseline([r["metrics"].get(key) for r in rows], minimum) for key in keys}, "n": len(rows)}
 
     def producing(self):
         """An episode is being made now. A job left in a production state for hours (production switched off, an

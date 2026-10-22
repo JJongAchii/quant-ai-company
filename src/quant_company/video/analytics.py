@@ -1,6 +1,7 @@
 """Performance analytics of the owner's public uploads (VIDEO_ANALYTICS_ENABLED). Each tick: sync uploads, apply new
 reach reports, take due fixed-window snapshots, then (only while no episode is in production) the three-day card
-with a Claude diagnosis, the seven-day update and the Monday review whose lessons the owner adopts in Slack."""
+with a Claude diagnosis for an outlier of its kind, its seven-day update and the Monday review whose lessons the
+owner adopts in Slack."""
 
 import asyncio
 import base64
@@ -24,7 +25,18 @@ from .analytics_contracts import (
     performance_prompt,
     weekly_prompt,
 )
-from .analytics_metrics import KST, PT, hook_retention, in_series, parse_title, scene_drops, window
+from .analytics_metrics import (
+    KST,
+    OUTLIER,
+    OUTLIER_MIN,
+    PT,
+    hook_retention,
+    in_series,
+    outlier,
+    parse_title,
+    scene_drops,
+    window,
+)
 from .analytics_slack import (
     EDITIONS,
     EXPIRED_TEXT,
@@ -321,21 +333,27 @@ class AnalyticsRunner:
         posted = 0
         for row in pending:
             youtube_id = row["youtube_id"]
+            ref = await asyncio.to_thread(self.store.baselines, row, "d3", tuple(OUTLIER), OUTLIER_MIN)
+            reasons = outlier(row["metrics"], ref)
+            if not reasons:
+                continue  # Close to its own kind: no diagnosis, no card; the weekly review covers it.
 
-            def build(row=row, youtube_id=youtube_id):
+            def build(row=row, youtube_id=youtube_id, reasons=reasons, compared=ref["n"]):
                 base = self.store.baselines(row, "d3", BASELINE_KEYS)
-                job = self.store.job(row["job_id"])
+                summary = (shorts_summary((self.store.shorts(row["job_id"]) or {}).get("plan"))
+                           if row["edition_kind"] == "shorts" else plan_summary(self.store.job(row["job_id"])))
                 context = {"video": {"youtube_id": youtube_id, "title": row["title"],
                                      "proposed_title": row["proposed_title"],
                                      "edition": EDITIONS.get(row["edition_kind"], "기타"),
                                      "published_kst": row["published_at"].astimezone(KST).isoformat(),
-                                     "duration_s": row["duration_s"], **plan_summary(job)},
+                                     "duration_s": row["duration_s"], **summary},
                            "window": {"horizon": "d3", "start": row["window_start"], "end": row["window_end"]},
                            "metrics": {k: v for k, v in row["metrics"].items()
                                        if k not in {"curve", "thumbnail", "report"}},
-                           "baselines": base}
+                           "baselines": base, "outlier": {"reasons": reasons, "compared_with": compared}}
                 return self.frozen(performance_prompt(context), [self.kept(youtube_id, row["metrics"])],
-                                   self.settings.video_reasoning_effort, baselines=base)
+                                   self.settings.video_reasoning_effort, baselines=base, outlier=reasons,
+                                   outlier_n=compared)
 
             request_id = f"video-analytics-{youtube_id}-d3"
             try:
@@ -350,9 +368,12 @@ class AnalyticsRunner:
             if receipt.get("output"):
                 receipt = {**receipt, "output": {**receipt["output"],
                                                  "changes": usable_changes(row, receipt["output"]["changes"])}}
-            # The card shows the baselines the diagnosis was given.
+            # The card shows the baselines and outlying metrics the diagnosis was given (none in a request frozen
+            # before cards were limited to outliers).
+            extra = frozen["extra"]
             await asyncio.to_thread(self.store.post, youtube_id, f"{youtube_id}:d3", f"영상 성과 {youtube_id}",
-                                    card_text(row, frozen["extra"]["baselines"], receipt), analysis_request=request_id)
+                                    card_text(row, extra["baselines"], receipt, extra.get("outlier", ()),
+                                              extra.get("outlier_n", 0)), analysis_request=request_id)
             posted += 1
         return posted
 

@@ -21,6 +21,7 @@ SCOPES = {"title": "제목", "thumbnail": "썸네일", "opening": "오프닝", "
 VERDICTS = {"keep": "유지", "retire": "은퇴 제안", "too_early": "판단 이르음"}
 LABELS = {"adopt": "채택", "reject": "거절", "retire": "은퇴"}
 TARGETS = {"title": "제목", "description": "설명 첫 줄", "tags": "태그 추가"}
+OUTLIER_NAMES = {"views": "조회", "ctr": "CTR", "hook_30s": "30초 유지"}
 THREAD_HINT = "자세한 진단은 이 스레드에 이어집니다. 스레드에 질문이나 지시를 남기면 답합니다."
 WAIT_TEXT = "지금 영상을 만드는 중이라, 제작이 끝나면 이 스레드에 답할게요."
 EXPIRED_TEXT = "영상 제작이 길어져 이 질문에 답하지 못했어요. 다시 물어봐 주세요."
@@ -104,16 +105,26 @@ def change_lines(changes):
     return lines
 
 
-def card_text(row, base, receipt):
-    """Three-day card: the numbers against the same-edition baseline, what to change in YouTube Studio and the
-    one-line diagnosis; the full diagnosis follows in the thread. When the analysis turn failed, the numbers alone
-    with where viewers came from."""
+def outlier_lines(row, reasons, compared):
+    """The metrics that made this upload an outlier of its kind; none for a request frozen before that rule."""
+    if not reasons:
+        return []
+    kind = EDITIONS.get(row["edition_kind"], "기타")
+    return ["튄 지표: " + " · ".join(f"{OUTLIER_NAMES[r['metric']]} {r['ratio']:.1f}배" for r in reasons)
+            + f" (같은 {kind} 최근 28일 {compared}편 중앙값 대비)"]
+
+
+def card_text(row, base, receipt, reasons=(), compared=0):
+    """Three-day card: the metrics that made it an outlier of its kind, the numbers against the same-edition
+    baseline, what to change in YouTube Studio and the one-line diagnosis; the full diagnosis follows in the thread.
+    When the analysis turn failed, the numbers alone with where viewers came from."""
     metrics = row["metrics"]
     output = (receipt or {}).get("output")
+    top = [f"📊 {headline(row)}", *outlier_lines(row, reasons, compared)]
     if output:
-        return "\n".join([f"📊 {headline(row)}", *metric_lines(metrics, base), "", *change_lines(output["changes"]),
+        return "\n".join([*top, *metric_lines(metrics, base), "", *change_lines(output["changes"]),
                           "", f"진단: {output['summary']}", THREAD_HINT])
-    return "\n".join([f"📊 {headline(row)}", window_line(row, base), *metric_lines(metrics, base), *source_lines(metrics),
+    return "\n".join([*top, window_line(row, base), *metric_lines(metrics, base), *source_lines(metrics),
                       "", f"진단: 분석 실행 실패({(receipt or {}).get('code', 'unknown')}). 수치만 전달합니다."])
 
 

@@ -8,6 +8,7 @@ from quant_company.video.analytics_metrics import (
     baseline,
     hook_retention,
     in_series,
+    outlier,
     parse_reach_csv,
     parse_title,
     pt_day,
@@ -101,6 +102,19 @@ def test_baseline_needs_five_comparable_videos():
     assert baseline([0.05, 0.04, 0.06, 0.07, None]) is None
     assert baseline([0.05, 0.04, 0.06, 0.07, 0.30]) == pytest.approx(0.06)
     assert baseline([1, 2, 3, 4, 5, 6]) == pytest.approx(3.5)
+    assert baseline([1, 2, 3], minimum=3) == 2 and baseline([1, 2, None], minimum=3) is None
+
+
+def test_an_outlier_is_far_from_its_same_kind_median():
+    base = {"views": 300, "ctr": 0.04, "hook_30s": 0.8, "n": 3}
+    assert outlier({"views": 820, "ctr": 0.04, "hook_30s": 0.8}, base) == [{"metric": "views", "ratio": 2.73}]
+    assert outlier({"views": 150}, base) == [{"metric": "views", "ratio": 0.5}]
+    assert outlier({"views": 160, "ctr": 0.06}, base) == [{"metric": "ctr", "ratio": 1.5}]
+    assert outlier({"ctr": 0.02}, {**base, "ctr": 0.03}) == [{"metric": "ctr", "ratio": 0.67}]  # 2/3 in floats
+    assert outlier({"hook_30s": 0.616}, base) == [{"metric": "hook_30s", "ratio": 0.77}]
+    assert outlier({"views": 820}, {**base, "n": 2}) == []  # fewer than three same-kind episodes
+    assert outlier({"views": 500, "ctr": 0.05, "hook_30s": 0.9}, base) == []
+    assert outlier({"views": 820, "ctr": 0.1}, {**base, "views": None, "ctr": 0}) == []  # no median to compare with
 
 
 def test_fixed_windows_use_the_pacific_publish_day():
@@ -193,7 +207,7 @@ def test_the_performance_prompt_asks_for_studio_edits_in_plain_words():
     from quant_company.video.analytics_contracts import performance_prompt
 
     prompt = performance_prompt({"video": {"title": "t"}})
-    for rule in ("changes", "YouTube Studio", "100", "· 오늘의 증시story", "field names"):
+    for rule in ("changes", "YouTube Studio", "100", "· 오늘의 증시story", "field names", "median of its own kind"):
         assert rule in prompt, rule
 
 

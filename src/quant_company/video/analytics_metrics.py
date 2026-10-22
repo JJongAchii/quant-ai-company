@@ -15,6 +15,10 @@ HORIZONS = {"d3": 3, "d7": 7, "d28": 28}
 HOOK_SECONDS = 30
 # Fewer comparable episodes than this and a baseline would only describe one or two news days.
 MIN_BASELINE = 5
+# A three-day card goes only to an upload this far from the d3 median of its own kind (am, close, shorts) over the
+# previous 28 days: (at or above, at or below) that median times the factor, for each metric.
+OUTLIER = {"views": (2.0, 0.5), "ctr": (1.5, 2 / 3), "hook_30s": (1.3, 0.77)}
+OUTLIER_MIN = 3
 VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
 # upload.compose: "<hook> | {M}월 {D}일 {아침|마감} · 오늘의 증시story" (series name last since 2026-10-10).
 SERIES = "오늘의 증시story"
@@ -105,10 +109,26 @@ def scene_drops(curve, duration, scenes=None, chapters=None):
     return rows
 
 
-def baseline(values):
-    """Median of the comparable episodes, or None below MIN_BASELINE of them."""
+def baseline(values, minimum=MIN_BASELINE):
+    """Median of the comparable episodes, or None below `minimum` of them."""
     known = [v for v in values if v is not None]
-    return statistics.median(known) if len(known) >= MIN_BASELINE else None
+    return statistics.median(known) if len(known) >= minimum else None
+
+
+def outlier(metrics, base):
+    """[{'metric', 'ratio'}] far from the same-kind median; [] below OUTLIER_MIN comparable episodes. A metric without
+    a value or a median is skipped; the bounds hold with a float tolerance (0.02 / 0.03 is a ratio of 2/3)."""
+    if base["n"] < OUTLIER_MIN:
+        return []
+    reasons = []
+    for key, (high, low) in OUTLIER.items():
+        value, median = metrics.get(key), base.get(key)
+        if value is None or not median:
+            continue
+        ratio = value / median
+        if ratio >= high - 1e-9 or ratio <= low + 1e-9:
+            reasons.append({"metric": key, "ratio": round(ratio, 2)})
+    return reasons
 
 
 def _day(text):

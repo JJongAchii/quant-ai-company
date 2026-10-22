@@ -10,7 +10,7 @@ from quant_company.company import PolicyError
 from quant_company.contracts import AgentDecision, ProviderFault, ProviderResponse
 from quant_company.slack import SlackIngress
 from quant_company.video.analytics import AnalyticsRunner, shorts_summary
-from quant_company.video.analytics_metrics import watch_ratio
+from quant_company.video.analytics_metrics import watch_ratio, window
 from quant_company.video.analytics_slack import blocks
 from quant_company.video.analytics_store import AnalyticsStore
 
@@ -102,7 +102,22 @@ class SimulatedProvider:
                                     {"title": "Simulated", "content": json.dumps(value, ensure_ascii=False)}]))
 
 
-def linked_upload(brief, video):  # noqa: F811
+def comparables(analytics, kind="am", n=3, views=300, before=PUBLISHED):  # noqa: F811
+    """`n` earlier uploads of `kind` ('am' or 'shorts') with their three-day numbers: what a card is compared with."""
+    ids = [f"{kind[:2]}cmp{i:06d}" for i in range(n)]
+    analytics.upsert_publications([upload(youtube_id, f"쇼츠 {i}" if kind == "shorts"
+                                          else f"훅 {i} | 9월 {18 + i}일 아침 · 오늘의 증시story",
+                                          before - timedelta(days=4 - i)) for i, youtube_id in enumerate(ids)])
+    if kind == "shorts":
+        with analytics.db.transaction() as conn:
+            conn.execute("UPDATE video_publications SET edition_kind='shorts' WHERE youtube_id=ANY(%s)", (ids,))
+    for i, youtube_id in enumerate(ids):
+        analytics.save_snapshot(youtube_id, "d3", *window(before - timedelta(days=4 - i), "d3"),
+                                {"views": views, "ctr": 0.04, "hook_30s": 0.84, "avg_view_pct": 50.0})
+
+
+def linked_upload(brief, video, comparable=3):  # noqa: F811
+    """The delivered AM episode and its upload, with `comparable` earlier AM uploads so its 820 views stand out."""
     store, _ = video
     job = delivered_job(brief, video)
     artifacts = {**job["artifacts"], "scenes": [
@@ -115,6 +130,8 @@ def linked_upload(brief, video):  # noqa: F811
         client.report(f"b{day.day}", day, BASIC + f"{day:%Y%m%d},UCfixture,aaaaaaaaaaa,{rows}\n")
         client.report(f"c{day.day}", day, COMBINED + f"{day:%Y%m%d},UCfixture,aaaaaaaaaaa,3,,1,1,{rows}\n",
                       "channel_reach_combined_a1")
+    if comparable:
+        comparables(AnalyticsStore(store.company), n=comparable)
     return job, client
 
 
@@ -189,6 +206,40 @@ async def test_shorts_are_measured_on_their_own_scenes(brief, video, analytics):
     assert shorts_summary(cut["plan"]) == {"hook": "반도체 5% 급등", "question": "이유는?",
                                            "hook_narration": "반도체가 5% 올랐습니다.", "issues": ["반도체"]}
     assert shorts_summary({}) == {"hook": None, "question": None, "hook_narration": None, "issues": []}
+
+
+@pytest.mark.parametrize("count,views,cards", [(3, 300, 1), (3, 600, 0), (2, 300, 0)])
+async def test_only_an_outlier_gets_a_card_and_a_diagnosis(brief, video, analytics, count, views, cards):  # noqa: F811
+    _, client = linked_upload(brief, video, comparable=0)
+    comparables(analytics, n=count, views=views)
+    provider = SimulatedProvider()
+    runner = AnalyticsRunner(analytics.company, client=client, provider=provider)
+    result = await runner.tick(AFTER_D3)
+    assert result["cards"] == cards and len(provider.calls) == cards and len(outbox(analytics)) == cards
+    if cards:
+        assert "튄 지표: 조회 2.7배 (같은 아침 최근 28일 3편 중앙값 대비)" in outbox(analytics)[0]["text"]
+        assert '"compared_with": 3' in provider.calls[0].prompt
+        extra = analytics.analysis("video-analytics-aaaaaaaaaaa-d3")["request"]["extra"]
+        assert (extra["outlier"], extra["outlier_n"]) == ([{"metric": "views", "ratio": 2.73}], 3)
+    else:  # no card, so no seven-day update in its thread either
+        await runner.tick(datetime(2026, 10, 3, 12, tzinfo=UTC))
+        assert analytics.snapshot("aaaaaaaaaaa", "d7") and not provider.calls and not outbox(analytics)
+
+
+async def test_an_outlier_shorts_card_reads_the_shorts_plan(brief, video, analytics):  # noqa: F811
+    job, client = linked_upload(brief, video, comparable=0)
+    delivered_shorts_for(video, job)
+    client.items.append(upload("sssssssssss", SHORTS_TITLE, PUBLISHED + timedelta(hours=3), duration_s=46))
+    comparables(analytics, kind="shorts")
+    provider = SimulatedProvider()
+    result = await AnalyticsRunner(analytics.company, client=client, provider=provider).tick(AFTER_D3)
+    [request] = provider.calls
+    assert result["cards"] == 1 and request.request_id == "video-analytics-sssssssssss-d3"
+    assert "반도체 5% 급등" in request.prompt and '"question": "이유는?"' in request.prompt
+    assert '"cold_open"' not in request.prompt  # not the episode's plan
+    [card] = outbox(analytics)
+    assert "Shorts" in card["text"]
+    assert "튄 지표: 조회 2.7배 · 30초 유지 0.6배 (같은 Shorts 최근 28일 3편 중앙값 대비)" in card["text"]
 
 
 async def test_no_analysis_is_requested_while_an_episode_is_in_production(brief, video, analytics):  # noqa: F811
@@ -430,7 +481,7 @@ async def test_the_outbox_sends_the_review_with_its_buttons_and_stops_when_switc
 
 
 async def test_dry_run_sync_reads_youtube_and_writes_nothing(brief, video, analytics):  # noqa: F811
-    _, client = linked_upload(brief, video)
+    _, client = linked_upload(brief, video, comparable=0)
     client.jobs = {}
     preview = await AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider()).preview(AFTER_D3)
     assert preview["report_jobs"] == {} and client.created == []
@@ -441,7 +492,7 @@ async def test_dry_run_sync_reads_youtube_and_writes_nothing(brief, video, analy
 
 
 async def test_dry_run_skips_other_series_for_the_latest_window(brief, video, analytics):  # noqa: F811
-    _, client = linked_upload(brief, video)
+    _, client = linked_upload(brief, video, comparable=0)
     client.items.insert(0, upload("hhhhhhhhhhh", "[역사story] 한글날은 왜 10월 9일일까?", PUBLISHED.replace(day=22)))
     preview = await AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider()).preview(AFTER_D3)
     assert [(i["youtube_id"], i["series"]) for i in preview["uploads"]] == [("hhhhhhhhhhh", False), ("aaaaaaaaaaa", True)]
@@ -451,8 +502,9 @@ async def test_dry_run_skips_other_series_for_the_latest_window(brief, video, an
 async def test_status_counts_links_reports_snapshots_and_lessons(brief, video, analytics):  # noqa: F811
     await weekly_posted(brief, video, analytics)
     status = analytics.status()
-    assert status["publications"] == {"total": 1, "linked": 1, "other_series": 0, "unlinked": []}
-    assert status["latest_reach_day"] == "2026-09-23" and status["snapshots"] == {"d3": 1}
+    assert status["publications"] == {"total": 4, "linked": 1, "other_series": 0, "unlinked": [
+        {"youtube_id": f"amcmp00000{i}", "title": f"훅 {i} | 9월 {18 + i}일 아침 · 오늘의 증시story"} for i in (2, 1, 0)]}
+    assert status["latest_reach_day"] == "2026-09-23" and status["snapshots"] == {"d3": 4}
     assert status["lessons"] == {"active": 1, "proposed": 1}
     assert status["report_jobs"] == ["channel_reach_basic_a1", "channel_reach_combined_a1"]
 

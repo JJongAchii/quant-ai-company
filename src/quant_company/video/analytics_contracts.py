@@ -133,10 +133,13 @@ STUDIO = ("changes: at most three edits the owner can make to this published upl
 
 
 def performance_prompt(context):
-    """context: video (title as published, proposed title, thumbnail text, cold open, scenes), brief headlines,
-    horizon window, metrics, baselines and scene drops. The attached image is the thumbnail viewers saw."""
+    """context: video (title as published, proposed title, thumbnail text, cold open, scenes; a Shorts names its hook
+    and issues), brief headlines, horizon window, metrics, baselines, scene drops and outlier (the metrics far from
+    the same-kind median). The attached image is the thumbnail viewers saw."""
     return ("You analyse one published episode of a Korean daily market-briefing YouTube channel for its owner. "
             + FUNNEL + HONESTY +
+            "outlier names the metrics where this episode is far from the median of its own kind; explain what made "
+            "it differ. "
             "Name what worked as well as what did not. summary is one line the owner can act on. " + STUDIO +
             "Never suggest buy/sell wording, price predictions or numbers that are not in the briefing. "
             "Return only the required JSON.\n" + json.dumps(context, ensure_ascii=False, default=str))
