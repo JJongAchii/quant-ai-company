@@ -52,8 +52,8 @@ from .analytics_slack import (
     detail_text,
     failed_answer_text,
     failed_report_text,
-    report_detail_text,
     report_texts,
+    report_verdicts,
     update_text,
 )
 from .analytics_store import BASELINE_DAYS, REACH_GRACE_DAYS, REPORT_TYPES, AnalyticsStore
@@ -67,6 +67,10 @@ SNAPSHOTS_PER_TICK = 20
 MODEL_WAIT_SECONDS = 120
 MAX_THUMBNAILS = 12
 PROMPT_LIMIT = 85000
+# ProviderRequest's prompt bound: a frozen request over it fails as prompt_too_long instead of raising every tick.
+PROVIDER_PROMPT = 90000
+# The report names the uploads of the last four weeks it could not link to a production job.
+UNLINKED_DAYS = 28
 # The newest measured videos a question under a report sees beside the report, within ProviderRequest's 90,000.
 THREAD_VIDEOS = 40
 # The channel strategy report: Monday and Thursday from 09:00 KST, caught up within two days if the worker was down
@@ -334,6 +338,10 @@ class AnalyticsRunner:
         done = await asyncio.to_thread(self.store.begin_analysis, request_id, kind, frozen, **ids)
         if done is not None:
             return done, frozen
+        if len(frozen["prompt"]) > PROVIDER_PROMPT:
+            receipt = {"code": "prompt_too_long", "detail": f"{len(frozen['prompt'])} characters"}
+            await asyncio.to_thread(self.store.fail_analysis, request_id, receipt)
+            return receipt, frozen
         if any(image is None for image in images):
             receipt = {"code": "thumbnail_missing", "detail": "a frozen thumbnail file is gone"}
             await asyncio.to_thread(self.store.fail_analysis, request_id, receipt)
@@ -462,7 +470,7 @@ class AnalyticsRunner:
         if day is None:
             return 0
         if await asyncio.to_thread(self.store.posted, f"weekly:{day}"):
-            return await self.report_detail(day) + await self.report_benchmark(day)
+            return await self.report_replies(day)
         start = report_start(day)
         rows = [e for e in await asyncio.to_thread(self.store.episodes) if e["metrics"] and e["published_at"] < start]
         if not rows or await asyncio.to_thread(self.store.producing):
@@ -470,7 +478,7 @@ class AnalyticsRunner:
         previous = report_start(previous_report_day(day))
         stats = report_stats(rows, start, previous, report_start(previous_report_day(previous_report_day(day))))
         active = await asyncio.to_thread(self.store.lessons, ["active"])
-        unlinked = sum(e["job_id"] is None for e in rows)
+        unlinked = sum(e["job_id"] is None for e in rows if e["published_at"] >= start - timedelta(days=UNLINKED_DAYS))
         request_id = f"video-analytics-weekly-{day}"
         bench = None
         if day.weekday() == 0 and await asyncio.to_thread(self.store.analysis, request_id) is None:
@@ -504,8 +512,10 @@ class AnalyticsRunner:
                 context["videos"] = context["videos"][:-1]  # the oldest of the earlier videos first
                 prompt = strategy_prompt(context)
             # The benchmark's thumbnails follow the own ones: at most 12 + 5 attachments.
+            # lessons: the active lessons the verdicts are about, so the post and its replies read the same texts.
             return self.frozen(prompt, refs + benchmark_refs, self.settings.video_review_effort, stats=as_json(stats),
-                               benchmark=benchmark_extra, unlinked=unlinked)
+                               benchmark=benchmark_extra, unlinked=unlinked,
+                               lessons={str(x["id"]): x["text"] for x in active})
 
         receipt, frozen = await self.analyze(request_id, "weekly", build, StrategyReport, "video_weekly_v1", week=day)
         if receipt and receipt.get("code") == "invalid_output":
@@ -524,8 +534,6 @@ class AnalyticsRunner:
             known = {p["youtube_id"] for p in await asyncio.to_thread(self.store.publications)}
             texts = {x["text"] for x in active}
             proposals = [p for p in output["strategies"] if set(p["videos"]) <= known and p["text"] not in texts]
-            current = {str(x["id"]): x["text"] for x in active}
-            verdicts = [{**v, "text": current[v["lesson_id"]]} for v in output["verdicts"] if v["lesson_id"] in current]
             analysis = await asyncio.to_thread(self.store.analysis, request_id)
 
             def propose():
@@ -533,42 +541,35 @@ class AnalyticsRunner:
                     return self.store.propose(conn, analysis["id"], proposals)
 
             await asyncio.to_thread(propose)
-            text, _ = report_texts(day, output, frozen["extra"], verdicts, len(proposals))
+            text, _ = report_texts(day, output, frozen["extra"], report_verdicts(output, frozen["extra"]),
+                                   len(proposals))
         await asyncio.to_thread(self.store.post, f"weekly:{day}", f"weekly:{day}", f"채널 전략 리포트 {day}", text,
                                 analysis_request=request_id)
         return 1
 
-    async def report_detail(self, day):
-        """The details of a report too long for one post, as the first reply under it once Slack confirmed it; nothing
-        when the report failed, the root already holds them, or the posted review predates the strategy report."""
-        report = await asyncio.to_thread(self.store.report_analysis, day)
-        output = (report or {}).get("output")
-        if not output or "headline" not in output or await asyncio.to_thread(self.store.posted, f"weekly:{day}:detail"):
-            return 0
-        detail = report_detail_text(output, report["request"]["extra"])
-        root = await asyncio.to_thread(self.store.posted, f"weekly:{day}")
-        if not detail or detail in root["text"]:
-            return 0
-        return int(bool(await asyncio.to_thread(self.store.post, f"weekly:{day}", f"weekly:{day}:detail",
-                                                f"채널 전략 리포트 {day}", detail, reply_to=f"weekly:{day}")))
-
-    async def report_benchmark(self, day):
-        """Monday's benchmark as its own reply under the report, after the details, once Slack confirmed the report:
-        the picked videos with the model's notes, continued in a further reply only when whole notes do not fit one
-        post, or the one line saying the candidates could not be read. Nothing on Thursday or for a failed report."""
+    async def report_replies(self, day):
+        """The thread under a posted report, once Slack confirmed it: what did not fit the root (findings and verdicts
+        first, then the details), then Monday's benchmark, each as replies within one post. Rebuilt from the stored
+        report, its frozen request and the strategies proposed under it, so every tick derives the same replies.
+        Nothing when the report failed or the posted review predates the strategy report."""
         report = await asyncio.to_thread(self.store.report_analysis, day)
         output = (report or {}).get("output")
         if not output or "headline" not in output:
             return 0
+        extra = report["request"]["extra"]
+        proposed = sum(x["analysis_id"] == report["id"]
+                       for x in await asyncio.to_thread(self.store.lessons, ["proposed", "active", "rejected", "retired"]))
+        _, details = report_texts(day, output, extra, report_verdicts(output, extra), proposed)
         posted = 0
-        for n, text in enumerate(benchmark_texts(output, report["request"]["extra"]), 1):
-            key = f"weekly:{day}:benchmark" + (f":{n}" if n > 1 else "")
-            if await asyncio.to_thread(self.store.posted, key):
-                continue
-            if not await asyncio.to_thread(self.store.post, f"weekly:{day}", key, f"채널 전략 리포트 {day}", text,
-                                           reply_to=f"weekly:{day}"):
-                break  # waiting for the root's Slack receipt
-            posted += 1
+        for name, texts in (("detail", details), ("benchmark", benchmark_texts(output, extra))):
+            for n, text in enumerate(texts, 1):
+                key = f"weekly:{day}:{name}" + (f":{n}" if n > 1 else "")
+                if await asyncio.to_thread(self.store.posted, key):
+                    continue
+                if not await asyncio.to_thread(self.store.post, f"weekly:{day}", key, f"채널 전략 리포트 {day}", text,
+                                               reply_to=f"weekly:{day}"):
+                    return posted  # waiting for the root's Slack receipt
+                posted += 1
         return posted
 
     async def benchmark(self, start):

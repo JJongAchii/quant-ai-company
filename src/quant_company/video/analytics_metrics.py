@@ -150,7 +150,8 @@ def title_hook(title):
 
 
 def group_stats(rows):
-    """Totals of views, subscribers and impressions, impression-weighted CTR and the median hold and view share."""
+    """Per-video medians of views, impressions, hold and view share, the impression-weighted CTR and the subscribers
+    gained in total. Medians, not totals: a report period is three or four days long."""
     metrics = [r["d3"] for r in rows]
 
     def known(key):
@@ -158,7 +159,8 @@ def group_stats(rows):
 
     result = {"n": len(rows)}
     for key in ("views", "subscribers", "impressions"):
-        result[key] = sum(known(key)) if known(key) else None
+        values = known(key)
+        result[key] = (sum(values) if key == "subscribers" else statistics.median(values)) if values else None
     shown = [(m["ctr"], m["impressions"]) for m in metrics if m.get("ctr") is not None and m.get("impressions")]
     result["ctr"] = sum(c * i for c, i in shown) / sum(i for _, i in shown) if shown else None
     for key in ("hook_30s", "avg_view_pct"):
@@ -194,9 +196,14 @@ def _median_views(rows):
     return statistics.median(views) if views else None
 
 
+# The newest Shorts-episode pairs listed in the report's prompt; the counts and medians cover every pair.
+SHORTS_PAIRS = 30
+
+
 def shorts_pairs(rows):
-    """Each Shorts beside the episode of its job (both with a d3), and the episodes with and without a Shorts since
-    the first pair; a job's first measured episode stands for it (a re-upload shares the job)."""
+    """Each Shorts beside the episode of its job (both with a d3; the newest SHORTS_PAIRS listed), how many pairs and
+    the median Shorts views, and the episodes with and without a Shorts since the first pair; a job's first measured
+    episode stands for it (a re-upload shares the job)."""
     measured = [r for r in rows if r["edition_kind"] in {"am", "close"} and r["d3"]]
     episodes = {}
     for row in measured:
@@ -213,7 +220,10 @@ def shorts_pairs(rows):
                           "episode_views": episode["d3"].get("views"), "episode_traffic": traffic_shares([episode])})
     first = min((e["published_at"] for e in paired.values()), default=None)
     without = [e for e in measured if first and e["published_at"] >= first and e["youtube_id"] not in paired]
-    return {"pairs": pairs, "with_shorts": {"n": len(paired), "views": _median_views(list(paired.values()))},
+    views = [p["shorts_views"] for p in pairs if p["shorts_views"] is not None]
+    return {"pairs": sorted(pairs, key=lambda p: (p["day"], p["shorts"]))[-SHORTS_PAIRS:], "count": len(pairs),
+            "shorts_views": statistics.median(views) if views else None,
+            "with_shorts": {"n": len(paired), "views": _median_views(list(paired.values()))},
             "without": {"n": len(without), "views": _median_views(without)}}
 
 

@@ -186,6 +186,11 @@ def strategy_prompt(context):
     return ("You write the twice-weekly channel strategy report of a Korean daily market-briefing YouTube channel, "
             "its main episodes and their Shorts, for its owner. Its purpose is to change how the next videos are "
             "made, not to grade single videos. " + FUNNEL + HONESTY +
+            "This report has no per-video baselines, so the baseline and '기준 부족' rule above does not apply here: "
+            "figures.this and figures.previous give per-video medians (views, impressions, 30-second hold, view "
+            "percentage), the impression-weighted CTR and the subscribers gained in total, each with its n; a period "
+            "is three or four days long, so compare per-video values, never totals. Where a side has too few videos, "
+            "say so in plain words. "
             "The sample is small: say so where it matters, and never read correlation as cause. "
             "headline: one line on what the period showed and what to do next. "
             "findings: compare groups of videos, never one video, each with n (the videos on the smaller side) and a "

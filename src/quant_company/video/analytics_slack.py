@@ -2,7 +2,6 @@
 report with the owner's lesson buttons, and the binding checks for those buttons."""
 
 import json
-import statistics
 from datetime import date
 
 from ..briefing.contracts import BRIEFER
@@ -20,7 +19,7 @@ STAGES = {"impressions": "노출", "ctr": "클릭", "hook": "초반 30초", "sce
 CONFIDENCE = {"low": "낮음", "medium": "중간", "high": "높음"}
 SCOPES = {"title": "제목", "thumbnail": "썸네일", "opening": "오프닝", "structure": "구성", "length": "길이",
           "keywords": "키워드", "shorts": "쇼츠"}
-VERDICTS = {"keep": "유지", "retire": "은퇴 제안", "too_early": "판단 이르음"}
+VERDICTS = {"keep": "유지", "retire": "은퇴 제안", "too_early": "아직 판단 이름"}
 LABELS = {"adopt": "채택", "reject": "거절", "retire": "은퇴"}
 TARGETS = {"title": "제목", "description": "설명 첫 줄", "tags": "태그 추가"}
 OUTLIER_NAMES = {"views": "조회", "ctr": "CTR", "hook_30s": "30초 유지"}
@@ -34,10 +33,11 @@ EFFECTS = {"worked": "효과 있음", "did_not_work": "효과 없음", "too_earl
 # A finding compared on fewer videos than this a side reads as too early, whatever the model called it.
 JUDGE_MIN = 5
 WEEKDAYS = "월화수목금토일"
-TRIMMED = "… (글자 수 제한으로 일부 생략)"
+# Where findings or verdicts that did not fit the root were moved to the thread.
+MOVED = "… (글자 수 제한으로 나머지는 스레드에 이어집니다)"
 KINDS = (("episodes", "본편"), ("shorts", "Shorts"))
-FIGURES = (("views", "조회"), ("subscribers", "구독"), ("impressions", "노출"), ("ctr", "CTR"), ("hook_30s", "30초 유지"),
-           ("avg_view_pct", "평균 시청"))
+FIGURES = (("views", "편당 조회"), ("subscribers", "구독"), ("impressions", "편당 노출"), ("ctr", "CTR"),
+           ("hook_30s", "30초 유지"), ("avg_view_pct", "평균 시청"))
 
 
 def _pct(value, digits=1):
@@ -186,46 +186,81 @@ def _figure(key, value):
 
 
 def figure_lines(stats):
-    """The period's numbers for episodes and Shorts apart, the previous period's in brackets; a metric measured in
-    neither period (a Shorts' reach) is left out."""
-    lines = ["*이번 기간 숫자* · 직전 리포트 이후 측정한 영상, 괄호는 지난 기간"]
+    """The period's numbers for episodes and Shorts apart, the previous period's in brackets with both counts: values
+    per video (medians; CTR weighted by impressions) and subscribers in total, since a period is three or four days
+    long. A metric measured in neither period (a Shorts' reach) is left out."""
+    lines = ["*이번 기간 숫자* · 직전 리포트 이후 측정한 영상, 괄호는 지난 기간 · 편당 값은 중앙값, 구독은 합계"]
     for kind, name in KINDS:
         this, before = stats["this"][kind], stats["previous"][kind]
-        lines.append(f"{name} {this['n']}편 · " + " · ".join(f"{label} {_figure(k, this[k])} ({_figure(k, before[k])})"
-                                                          for k, label in FIGURES
-                                                          if this[k] is not None or before[k] is not None)
-                     if this["n"] else f"{name} · 이번 기간 새로 측정한 영상 없음")
+        lines.append(f"{name} {this['n']}편(지난 {before['n']}편) · " + " · ".join(
+            f"{label} {_figure(k, this[k])} ({_figure(k, before[k])})" for k, label in FIGURES
+            if this[k] is not None or before[k] is not None) if this["n"] else f"{name} · 이번 기간 새로 측정한 영상 없음")
     return lines
 
 
-def core_text(day, output, extra, verdicts, proposals):
-    """The report's root: the conclusion, the period's numbers, what worked and what did not, the experiment, the
-    active lessons' verdicts and the strategies to decide with the buttons below. Over the post limit, the closing
-    lines give way from the end (the unlinked note, then verdicts) so the decision line stays."""
+def report_verdicts(output, extra):
+    """The verdicts on the lessons the report was asked about (frozen with its request), with their texts."""
+    lessons = extra.get("lessons") or {}
+    return [{**v, "text": lessons[v["lesson_id"]]} for v in output["verdicts"] if v["lesson_id"] in lessons]
+
+
+def _sections(items, continued=None):
+    """Lines of (section heading, line) items, each section under its heading; `continued` marks a heading whose
+    section began in an earlier post."""
+    lines, heading = [], object()
+    for title, line in items:
+        if title != heading:
+            heading = title
+            lines += [""] + ([title + (" (이어서)" if title == continued else "")] if title else [])
+        lines.append(line)
+    return lines
+
+
+def _posts(lines):
+    """Lines packed into posts of at most REPORT_LIMIT characters, cut only between lines and never dropped."""
+    posts, current = [], []
+    for line in lines:
+        if current and len("\n".join(current + [line])) > REPORT_LIMIT:
+            posts.append(current)
+            current = []
+        if current or line:
+            current.append(line)
+    return ["\n".join(p).rstrip("\n") for p in posts + [current] if p]
+
+
+def report_texts(day, output, extra, verdicts, proposals):
+    """(root, replies): the whole report in one post when it fits REPORT_LIMIT. Otherwise the root keeps the
+    conclusion, the period's numbers, the experiment and the strategy line with as many findings and verdicts as fit;
+    the rest of them open the details (viewers, traffic, search, keywords, Shorts), which follow as thread replies,
+    each within REPORT_LIMIT. Nothing the report wrote is left out."""
     # A request frozen before the strategy report (a weekly review re-asked across the release) has no stats.
     stats = extra.get("stats") or {}
     data = f" · 데이터 기준 {date.fromisoformat(stats['data_day']):%m/%d}(태평양 시간)" if stats.get("data_day") else ""
     head = [f"📈 채널 전략 리포트 · {_report_day(day)}{data}", output["headline"],
             *(["", *figure_lines(stats)] if stats else [])]
-    body = []
-    if output["findings"]:
-        body += ["", "*효과가 있었던 것과 없었던 것*"] + [
-            f"• [{EFFECTS['too_early' if f['n'] < JUDGE_MIN else f['effect']]} · n={f['n']} · "
-            f"확신 {CONFIDENCE[f['confidence']]}] {f['text']}" for f in output["findings"]]
-    trial = output["experiment"]
-    body += ["", f"*실험* {trial['change']} — 비교: {trial['compare']} · {trial['episodes']}편 · 지표: {trial['metric']}"]
-    if verdicts:
-        body += ["", "*활성 교훈 평가*"] + [f"• [{VERDICTS[v['verdict']]}] {v['text']} — {v['reason']}" for v in verdicts]
+    findings = "*효과가 있었던 것과 없었던 것*"
+    items = [(findings, f"• [{EFFECTS['too_early' if f['n'] < JUDGE_MIN else f['effect']]} · n={f['n']} · "
+                        f"확신 {CONFIDENCE[f['confidence']]}] {f['text']}") for f in output["findings"]]
+    items += [("*활성 교훈 평가*", f"• [{VERDICTS[v['verdict']]}] {v['text']} — {v['reason']}") for v in verdicts]
     if extra.get("unlinked"):
-        body += ["", f"제작 작업과 연결 안 된 업로드 {extra['unlinked']}편: quant-company video-analytics link 로 연결할 수 "
-                     "있습니다."]
-    tail = ["", f"다음 전략 {proposals}가지는 아래 버튼으로 채택하거나 거절해 주세요. 채택한 전략은 다음에 만드는 회차부터 "
-                "반영됩니다."] if proposals else []
-    cut = []
-    while body and len("\n".join(head + body + cut + tail)) > REPORT_LIMIT:
-        body.pop()
-        cut = [TRIMMED]
-    return "\n".join(head + body + cut + tail)
+        items.append((None, f"최근 28일 업로드 중 제작 작업과 연결 안 된 {extra['unlinked']}편: quant-company "
+                            "video-analytics link 로 연결할 수 있습니다."))
+    trial = output["experiment"]
+    tail = ["", f"*실험* {trial['change']} — 비교: {trial['compare']} · {trial['episodes']}편 · 지표: {trial['metric']}"]
+    if proposals:
+        tail += ["", f"다음 전략 {proposals}가지는 아래 버튼으로 채택하거나 거절해 주세요. 채택한 전략은 다음에 만드는 회차부터 "
+                     "반영됩니다."]
+    detail = report_detail_lines(output, extra)
+    full = "\n".join(head + _sections(items) + tail + detail)
+    if len(full) <= REPORT_LIMIT:
+        return full, []
+    kept = len(items)
+    while kept and len("\n".join(head + _sections(items[:kept]) + [MOVED] + tail)) > REPORT_LIMIT:
+        kept -= 1
+    moved = items[kept:]
+    continued = moved[0][0] if moved and kept and items[kept - 1][0] == moved[0][0] else None
+    root = head + _sections(items[:kept]) + ([MOVED] if moved else []) + tail
+    return "\n".join(root), _posts(_sections(moved, continued) + detail)
 
 
 def _shares(shares, before):
@@ -234,10 +269,10 @@ def _shares(shares, before):
     return " · ".join(f"{TRAFFIC.get(k, k)} {v:.0%}(" + (f"{before[k]:.0%}" if k in before else "–") + ")" for k, v in top)
 
 
-def report_detail_text(output, extra):
-    """The report's details: what viewers preferred, where they came from, what they searched, the keywords to use
-    and how the Shorts relate to their episodes; each section only when it has something to say, cut at a line to
-    fit one post."""
+def report_detail_lines(output, extra):
+    """The report's details, each section after a blank line: what viewers preferred, where they came from, what they
+    searched (all measured uploads), the keywords to use and how the Shorts relate to their episodes (every pair);
+    each section only when it has something to say."""
     stats, lines = extra.get("stats") or {}, []
     if output["viewers"]:
         lines += ["", "*시청자가 좋아한 것*"] + [f"• {v}" for v in output["viewers"]]
@@ -248,34 +283,20 @@ def report_detail_text(output, extra):
         lines += ["", "*유입 경로* · 이번 기간(지난 기간)", *shares] + ([output["traffic"]] if output["traffic"] else [])
     terms = (stats.get("search_terms") or [])[:8]
     if terms:
-        lines += ["", "*검색어 상위*", " · ".join(f"\"{t['term']}\" {t['views']:,}회({t['videos']}편)" for t in terms)]
+        lines += ["", "*검색어 상위(누적)*", " · ".join(f"\"{t['term']}\" {t['views']:,}회({t['videos']}편)" for t in terms)]
     if output["keywords"]:
         lines += ["", "*키워드 전략*"] + [f"• {k}" for k in output["keywords"]]
     pairs = stats.get("shorts_pairs") or {}
-    found = [p["shorts_views"] for p in pairs.get("pairs") or [] if p["shorts_views"] is not None]
-    if pairs.get("pairs") or output["shorts"]:
-        lines += ["", "*Shorts → 본편*"]
-        if pairs.get("pairs"):
+    if pairs.get("count") or output["shorts"]:
+        lines += ["", "*Shorts → 본편(누적)*"]
+        if pairs.get("count"):
             paired, alone = pairs["with_shorts"], pairs["without"]
-            lines.append(f"짝 {len(pairs['pairs'])}쌍 · Shorts 조회 중앙값 "
-                         f"{_figure('views', statistics.median(found) if found else None)} · Shorts가 있던 본편 "
-                         f"{paired['n']}편 조회 중앙값 {_figure('views', paired['views'])} · 없던 본편 {alone['n']}편 "
-                         f"조회 중앙값 {_figure('views', alone['views'])}")
+            lines.append(f"짝 {pairs['count']}쌍 · Shorts 조회 중앙값 {_figure('views', pairs['shorts_views'])} · "
+                         f"Shorts가 있던 본편 {paired['n']}편 조회 중앙값 {_figure('views', paired['views'])} · 없던 본편 "
+                         f"{alone['n']}편 조회 중앙값 {_figure('views', alone['views'])}")
         if output["shorts"]:
             lines.append(output["shorts"])
-    lines, cut = lines[1:], []
-    while lines and len("\n".join(lines + cut)) > REPORT_LIMIT:
-        lines.pop()
-        cut = [TRIMMED]
-    return "\n".join(lines + cut)
-
-
-def report_texts(day, output, extra, verdicts, proposals):
-    """(root, detail or None): the whole report in one post when it fits REPORT_LIMIT, else the core with the details
-    as the first reply in its thread."""
-    core, detail = core_text(day, output, extra, verdicts, proposals), report_detail_text(output, extra)
-    full = core + "\n\n" + detail if detail else core
-    return (full, None) if len(full) <= REPORT_LIMIT else (core, detail)
+    return lines
 
 
 def benchmark_texts(output, extra):

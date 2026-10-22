@@ -445,17 +445,18 @@ async def test_the_monday_report_measures_both_kinds_and_proposes_strategies_wit
     assert report.request_id == "video-analytics-weekly-2026-09-28" and report.attachments
     assert "aaaaaaaaaaa" in report.prompt and active in report.prompt and '"new_videos": ["aaaaaaaaaaa"]' in report.prompt
     text = outbox(analytics)[-1]["text"]
-    for piece in ("채널 전략 리포트 · 09/28(월)", "데이터 기준 09/23", "본편 1편 · 조회 820", "[효과 있음 · n=6",
-                  "[아직 판단 이름 · n=2", "판단 이르음", "다음 전략 2가지"):
+    for piece in ("채널 전략 리포트 · 09/28(월)", "데이터 기준 09/23", "본편 1편(지난 0편) · 편당 조회 820", "[효과 있음 · n=6",
+                  "[아직 판단 이름 · n=2", "[아직 판단 이름] ", "다음 전략 2가지"):
         assert piece in text, piece
     assert "없는 교훈" not in text and len(text) <= 2900
-    assert "*시청자가 좋아한 것*" in text and "*검색어 상위*" in text  # short enough to carry the details itself
+    assert "*시청자가 좋아한 것*" in text and "*검색어 상위(누적)*" in text  # short enough to carry the details itself
     assert {p["scope"] for p in analytics.lessons(["proposed"])} == {"thumbnail", "shorts"}
     actions = [e["action_id"] for b in blocks(analytics.company, outbox(analytics)[-1]) if b["type"] == "actions"
                for e in b["elements"]]
     assert actions == ["video_lesson_adopt", "video_lesson_reject"] * 2 + ["video_lesson_retire"]
     extra = analytics.analysis("video-analytics-weekly-2026-09-28")["request"]["extra"]
     assert extra["stats"]["this"]["episodes"]["views"] == 820 and extra["benchmark"] == {"skipped": "no_candidates"}
+    assert extra["lessons"] == {active: "교훈 0: 썸네일 문구는 질문으로"}  # what the verdicts are about
     await runner.tick(MONDAY)
     deliver(analytics, outbox(analytics)[-1], "600.001")
     await runner.tick(MONDAY + timedelta(minutes=30))  # the root holds the details: the benchmark note alone follows
@@ -503,7 +504,8 @@ async def test_a_pending_retry_is_asked_again_with_the_same_request(brief, video
 async def test_a_report_failing_twice_posts_its_code_numbers_and_next_date(brief, video, analytics):  # noqa: F811
     runner, provider, _ = await weekly_posted(brief, video, analytics, InvalidReportProvider(every=True))
     text = outbox(analytics)[-1]["text"]
-    assert "분석 실행 실패(invalid_output)" in text and "다음 리포트: 10/01(목) 09:00" in text and "본편 1편 · 조회 820" in text
+    assert "분석 실행 실패(invalid_output)" in text and "다음 리포트: 10/01(목) 09:00" in text
+    assert "본편 1편(지난 0편) · 편당 조회 820" in text
     assert analytics.lessons(["proposed"]) == []
     deliver(analytics, outbox(analytics)[-1], "600.001")
     await runner.tick(MONDAY)
@@ -512,19 +514,53 @@ async def test_a_report_failing_twice_posts_its_code_numbers_and_next_date(brief
 
 
 async def test_a_long_report_moves_details_to_the_first_thread_reply(brief, video, analytics):  # noqa: F811
-    runner, _, _ = await weekly_posted(brief, video, analytics, viewers=["가" * 480] * 4, keywords=["나" * 480] * 5)
+    findings = [{"factor": "title", "text": f"{n}번 비교 " + "다" * 350, "effect": "worked", "n": 6, "confidence": "low"}
+                for n in range(7)]
+    runner, _, _ = await weekly_posted(brief, video, analytics, viewers=["가" * 480] * 4, keywords=["나" * 480] * 5,
+                                       findings=findings)
     root = outbox(analytics)[-1]
     assert len(root["text"]) <= 2900 and "*시청자가 좋아한 것*" not in root["text"] and "다음 전략" in root["text"]
+    assert "*실험* 썸네일 문구를 질문형으로 쓴다" in root["text"] and "나머지는 스레드에 이어집니다" in root["text"]
     await runner.tick(MONDAY + timedelta(minutes=10))
-    assert outbox(analytics)[-1]["id"] == root["id"]  # the reply waits for the root's Slack receipt
+    assert outbox(analytics)[-1]["id"] == root["id"]  # the replies wait for the root's Slack receipt
     deliver(analytics, root, "600.001")
     await runner.tick(MONDAY + timedelta(minutes=30))
-    detail, note = outbox(analytics)[-2:]  # the details first, then Monday's benchmark reply
-    assert detail["thread_ts"] == "600.001" and "*시청자가 좋아한 것*" in detail["text"] and "*검색어 상위*" in detail["text"]
-    assert "\"엔비디아 실적\" 120" in detail["text"] and "탐색(홈·구독)" in detail["text"]
-    assert note["thread_ts"] == "600.001" and note["text"].startswith("*벤치마크*")
+    *details, note = [r for r in outbox(analytics) if r["thread_ts"] == "600.001"]  # then Monday's benchmark reply
+    assert len(details) >= 2 and all(len(r["text"]) <= 2900 for r in details)
+    assert details[0]["text"].startswith("*효과가 있었던 것과 없었던 것* (이어서)\n")
+    thread = "\n".join([root["text"], *(r["text"] for r in details)])
+    assert all(f"{n}번 비교 " + "다" * 350 in thread for n in range(7))  # nothing the report wrote is left out
+    assert thread.count("가" * 480) == 4 and thread.count("나" * 480) == 5 and "생략" not in thread
+    assert "*검색어 상위(누적)*" in thread and "\"엔비디아 실적\" 120" in thread and "탐색(홈·구독)" in thread
+    assert note["text"].startswith("*벤치마크*")
     await runner.tick(MONDAY + timedelta(minutes=60))
     assert outbox(analytics)[-1]["id"] == note["id"]
+
+
+async def test_a_report_over_the_request_bound_posts_its_failure_once(brief, video, analytics, monkeypatch):  # noqa: F811
+    from quant_company.video import analytics as module
+
+    monkeypatch.setattr(module, "PROVIDER_PROMPT", 2000)  # every analytics prompt is longer
+    runner, provider, _ = await weekly_posted(brief, video, analytics)
+    assert not report_calls(provider)
+    text = outbox(analytics)[-1]["text"]
+    assert "분석 실행 실패(prompt_too_long)" in text and "본편 1편(지난 0편)" in text
+    receipt = analytics.analysis("video-analytics-weekly-2026-09-28")["receipt"]
+    assert receipt["code"] == "prompt_too_long" and receipt["detail"].endswith(" characters")
+    result = await runner.tick(MONDAY + timedelta(minutes=30))
+    assert result["weekly"] == 0 and not report_calls(provider)  # neither raised nor asked again
+
+
+async def test_the_report_names_only_the_last_four_weeks_unlinked_uploads(brief, video, analytics):  # noqa: F811
+    def prepare(client):
+        old = PUBLISHED - timedelta(days=40)
+        client.items.append(upload("oldoldoldol", "옛 회차 | 8월 13일 아침 · 오늘의 증시story", old))
+
+    await weekly_posted(brief, video, analytics, prepare=prepare)
+    assert analytics.snapshot("oldoldoldol", "d3")  # measured and in the report's figures
+    extra = analytics.analysis("video-analytics-weekly-2026-09-28")["request"]["extra"]
+    assert extra["unlinked"] == 3  # the three comparables, not the upload from August
+    assert "최근 28일 업로드 중 제작 작업과 연결 안 된 3편" in outbox(analytics)[-1]["text"]
 
 
 def benchmark_candidates(client):
