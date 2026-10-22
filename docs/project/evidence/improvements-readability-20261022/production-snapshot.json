@@ -1,0 +1,42 @@
+{
+  "captured_at": "2026-10-22 KST, read-only SQL on the production database and read-only reads of claude/jobs receipts",
+  "production_commit": "89929f1c0620207aa685beda8d0d010a6fd5ce72",
+  "maintenance_jobs_since_2026_09_16": {
+    "total": 92,
+    "by_kind": {"triage": 75, "review": 10, "repair": 7},
+    "applied": 1,
+    "done": 22,
+    "blocked": 66,
+    "pr_open": 1,
+    "closed": 1,
+    "superseded": 1,
+    "blocked_by_error": {
+      "maintenance_proposal_context_too_large": 30,
+      "evidence_churn_requires_review": 15,
+      "review_reconciliation_required": 10,
+      "investigation_budget_exhausted": 6,
+      "pr_ref_moved": 2,
+      "prompt_replay_cannot_validate_runtime_code_changes": 1,
+      "model_uncertain": 1,
+      "protected_or_unknown_path": 1
+    }
+  },
+  "maintainer_pull_requests": [
+    {"number": 3, "state": "merged", "date": "2026-09-17", "title": "유지보수 문서의 현재 상태가 실제 운영 활성화 상태와 불일치"},
+    {"number": 16, "state": "closed", "date": "2026-09-17", "title": "직원이 최신 인터넷 자료를 검색·검증·인용할 수 없음"},
+    {"number": 150, "state": "open draft", "date": "2026-10-14", "title": "개선 진행 단계·담당·다음 행동을 일관되게 전달"}
+  ],
+  "merged_pull_requests_since_2026_09_16": {"total": 187, "maintainer_app": 1},
+  "improvements_cases": {"total_since_2026_10_06": 21, "review_reconciliation_required_since_2026_10_08": 10,
+                         "new_cases_2026_10_15_to_10_22": 7, "all_new_cases_kind": "staff_independent_review_failure"},
+  "maintenance_model_calls_after_2026_10_14": 0,
+  "staff_independent_reviews_three_weeks_to_2026_10_22": {"total": 40, "blocked_uncertain": 19},
+  "claude_review_receipts_failed_since_2026_10_09": {
+    "total": 13,
+    "disallowed_tool_action_exit_0": 7,
+    "did_not_confirm_exit_1": 5,
+    "auth_login_lapsed_2026_10_19": 1,
+    "note": "Raw CLI output is not retained, so the attempted tool name is unknown. Exit-1 runs were 8-10 s with ~3.2 KB stdout except one 49 s run with 26 KB."
+  },
+  "claude_video_receipts_did_not_confirm_all_time": 21
+}

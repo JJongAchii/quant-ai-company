@@ -129,6 +129,11 @@ class Store:
                 rows = safe_rows(rows + events + maintenance_observations(conn, owners, unseen=True))
             if not rows:
                 return None
+            if self.company.settings.company_improvements_enabled and (ongoing := self.recurring(conn, rows, owners)):
+                for row in rows:
+                    conn.execute("INSERT INTO maintenance_observations(key,job_id,body) VALUES (%s,%s,%s)",
+                                 (row["key"], ongoing, Jsonb(row)))
+                return None
             review, replay_inputs, review_digest = review_snapshot(
                 conn, self.company, owners, datetime.now(UTC))
             payload = {"observations": rows, "review": review, "review_digest": review_digest,
@@ -150,6 +155,20 @@ class Store:
                      self.company.settings.improvements_channel_id)).fetchone())
                 attach(conn, self.company, job_id, source)
             return job_id
+
+    def recurring(self, conn, rows, owners):
+        """A repeat of an unconfirmed review joins the open case seen within 7 days: no new case or ping."""
+        if any(row.get("kind") != "staff_independent_review_failure" or row.get("detail", {}).get("error") != "uncertain"
+               for row in rows):
+            return None
+        from .cases import allowed
+
+        cases = conn.execute("""SELECT c.* FROM maintenance_cases c JOIN maintenance_jobs j ON j.id=c.request_id
+            WHERE j.kind='triage' AND j.state='blocked' AND j.error='review_reconciliation_required'
+              AND j.payload->'owners'=%s AND (SELECT max((o.body->>'created_at')::timestamptz)
+                FROM maintenance_observations o WHERE o.job_id=j.id) >= now()-interval '7 days'
+            ORDER BY j.created_at DESC,j.id DESC LIMIT 1""", (Jsonb(owners),)).fetchall()
+        return next((case["request_id"] for case in cases if allowed(conn, self.company, case)), None)
 
     def next_job(self):
         with self.db.transaction() as conn:
@@ -530,6 +549,7 @@ class Store:
                          (state, Jsonb(receipt), job["id"]))
 
     def report_reviews(self):
+        from .explain import facts
         from .requests import permitted, progress_text, report, service
 
         # One notice per distinct durable state, including terminal failure/no-finding and budget waits.
@@ -552,8 +572,9 @@ class Store:
                 identity = str(uuid5(NAMESPACE_URL, "maintenance-review-notice:" + digest(value)))
                 if conn.execute("SELECT 1 FROM messages WHERE id=%s", (identity,)).fetchone():
                     continue
+                described = {**value, "facts": facts(conn, self.company, job["id"], value)}
                 self.company._message(conn, project, None, "director", "maintenance",
-                                      "[개선 담당] " + progress_text(value, service(conn, self.company, owner)),
+                                      "[개선 담당] " + progress_text(described, service(conn, self.company, owner)),
                                       message_id=identity,
                                       notify_owner=(value['state'] == 'blocked' or
                                                     (value['state'] in {'done', 'applied', 'closed'}

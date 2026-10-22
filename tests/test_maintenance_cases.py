@@ -199,7 +199,7 @@ async def test_uncertain_update_blocks_later_updates_and_revoked_case_stops_deli
     box, calls = delivery(company, credentials)
     await drain(box)
     store = Store(company, config())
-    store.save(receipt["request_id"], "triage")
+    store.save(receipt["request_id"], "patch")
     await Reporter(company, config()).tick()
     failing, failures = delivery(company, credentials, fail=True)
     await drain(failing)
@@ -281,7 +281,7 @@ async def test_card_sender_requires_own_receipted_target_and_handles_missing_rec
         assert cases.destination(conn, case)["delivery"] == "uncertain"
         # Operator reconciliation of a synthetic fixture, not an automatic retry.
         conn.execute("UPDATE outbox SET status='delivered',sent_ts='3.7' WHERE id=%s", (case["root_message_id"],))
-    Store(company, config()).save(receipt["request_id"], "triage")
+    Store(company, config()).save(receipt["request_id"], "patch")
     await Reporter(company, config()).tick()
     with company.db.transaction() as conn:
         conn.execute("UPDATE outbox SET update_ts='9.9' WHERE update_ts IS NOT NULL")
@@ -339,7 +339,7 @@ async def test_typed_conversation_to_existing_engine_and_final_case_result(impro
         assert cases.current(conn, case)["state"] == "done"
         assert conn.execute("SELECT count(*) AS n FROM maintenance_calls").fetchone()["n"] == 1
         assert conn.execute("SELECT count(*) AS n FROM maintenance_cases").fetchone()["n"] == 1
-    assert any(path.endswith("chat.update") and "점검을 마쳤습니다" in body["text"] for path, body in calls)
+    assert any(path.endswith("chat.update") and "고칠 곳은 찾지 못했습니다" in body["text"] for path, body in calls)
 
 
 async def test_real_temporal_reporting_runs_while_maintenance_is_busy_and_replays(improvements, tmp_path):

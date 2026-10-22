@@ -85,8 +85,8 @@ async def test_human_tool_to_durable_review_to_same_thread_result_and_duplicate(
         notices = conn.execute("SELECT * FROM outbox WHERE project_id=%s AND text LIKE '%%[개선 담당]%%'",
                                (project["project_id"],)).fetchall()
         assert len(notices) == 2 and all(n["channel"] == "CQUANT" and n["thread_ts"] == "22.33" for n in notices)
-        assert sum("점검을 마쳤습니다" in n["text"] for n in notices) == 1
-        assert [n['text'].startswith('<@UHUMAN>') for n in notices if '점검을 마쳤습니다' in n['text']] == [True]
+        assert sum("고칠 곳은 찾지 못했습니다" in n["text"] for n in notices) == 1
+        assert [n['text'].startswith('<@UHUMAN>') for n in notices if '고칠 곳은 찾지 못했습니다' in n['text']] == [True]
         assert conn.execute("SELECT count(*) AS n FROM maintenance_jobs WHERE kind='review'").fetchone()["n"] == 1
         assert conn.execute("SELECT count(*) AS n FROM maintenance_calls").fetchone()["n"] == 1
     assert len(maintenance.provider.requests) == 1 and maintenance.github.published == 0
@@ -126,7 +126,7 @@ async def test_budget_wait_is_reported_once_without_increasing_the_cap(company):
     assert await maintenance.tick() == {"state": "deferred", "reason": "daily_model_budget"}
     with company.db.transaction() as conn:
         notices = conn.execute("SELECT text FROM outbox WHERE project_id=%s", (project["project_id"],)).fetchall()
-        assert sum("모델 호출 한도로 대기" in n["text"] for n in notices) == 1
+        assert sum("모델 사용 한도" in n["text"] for n in notices) == 1
         assert all('<@' not in n['text'] for n in notices)
         assert conn.execute("SELECT count(*) AS n FROM maintenance_calls").fetchone()["n"] == 0
         assert conn.execute("SELECT state FROM maintenance_jobs WHERE id=%s", (receipt["request_id"],)).fetchone()["state"] == "triage"
@@ -160,8 +160,8 @@ async def test_resumed_review_reports_completion_instead_of_its_previous_wait(co
         assert value['state'] == 'done' and value['error'] is None
         notices = conn.execute("SELECT text FROM outbox WHERE project_id=%s AND text LIKE '%%[개선 담당]%%'",
                                (project['project_id'],)).fetchall()
-        assert sum('점검을 마쳤습니다' in n['text'] for n in notices) == 1
-        assert any('대기' in n['text'] for n in notices)  # Earlier wait notice remains historical evidence.
+        assert sum('고칠 곳은 찾지 못했습니다' in n['text'] for n in notices) == 1
+        assert any('기다립니다' in n['text'] for n in notices)  # Earlier wait notice remains historical evidence.
         assert conn.execute('SELECT count(*) AS n FROM maintenance_calls WHERE job_id=%s',
                             (receipt['request_id'],)).fetchone()['n'] == 1
 
@@ -176,8 +176,8 @@ async def test_validation_failure_and_revision_change_are_not_silent(company):
     maintenance.store.report_reviews()
     with company.db.transaction() as conn:
         notices = conn.execute("SELECT text FROM outbox WHERE project_id=%s", (project["project_id"],)).fetchall()
-        assert sum("검증에서 멈췄습니다" in n["text"] for n in notices) == 1
-        assert [n['text'].startswith('<@UHUMAN>') for n in notices if '검증에서 멈췄습니다' in n['text']] == [True]
+        assert sum("멈췄습니다" in n["text"] for n in notices) == 1
+        assert [n['text'].startswith('<@UHUMAN>') for n in notices if '멈췄습니다' in n['text']] == [True]
     # New revision cancels pending analysis rather than running under superseded instructions.
     project2, receipt2, _, _ = invoke(company, "maintenance_review", thread="44.55")
     with company.db.transaction() as conn:
