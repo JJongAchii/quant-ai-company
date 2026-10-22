@@ -210,14 +210,17 @@ def test_performance_output_requires_a_staged_hypothesis():
             hypotheses=[{**performance_output()["hypotheses"][0], "stage": "revenue"}]))
 
 
+LESSON = {"text": "썸네일 문구는 제목에 없는 숫자 하나와 질문으로 쓴다", "scope": "thumbnail",
+          "evidence": "CTR 상위 3편 모두 제목과 다른 썸네일 문구", "videos": ["aaaaaaaaaaa", "bbbbbbbbbbb"],
+          "expected": "CTR", "confidence": "low"}
+
+
 def test_lesson_proposals_cite_episodes_and_stay_in_packaging_scope():
     from pydantic import ValidationError
 
     from quant_company.video.analytics_contracts import WeeklyReview
 
-    proposal = {"text": "썸네일 문구는 제목에 없는 숫자 하나와 질문으로 쓴다", "scope": "thumbnail",
-                "evidence": "CTR 상위 3편 모두 제목과 다른 썸네일 문구", "videos": ["aaaaaaaaaaa", "bbbbbbbbbbb"],
-                "expected": "CTR", "confidence": "low"}
+    proposal = LESSON
     review = {"summary": "이번 주는 아침 회차 노출이 늘었습니다.", "patterns": [], "top": [], "bottom": [],
               "proposals": [proposal], "verdicts": []}
     assert WeeklyReview.model_validate(review).proposals[0].scope == "thumbnail"
@@ -226,6 +229,12 @@ def test_lesson_proposals_cite_episodes_and_stay_in_packaging_scope():
             WeeklyReview.model_validate({**review, "proposals": [{**proposal, **change}]})
     with pytest.raises(ValidationError):
         WeeklyReview.model_validate({**review, "proposals": [proposal] * 4})
+
+
+def test_a_lesson_may_target_the_shorts():
+    from quant_company.video.analytics_contracts import LessonProposal
+
+    assert LessonProposal.model_validate({**LESSON, "scope": "shorts"}).scope == "shorts"
 
 
 def test_analysis_requests_are_tool_free_and_may_carry_thumbnails():

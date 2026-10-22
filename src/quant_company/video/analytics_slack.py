@@ -17,7 +17,7 @@ TRAFFIC = {"SUBSCRIBER": "탐색(홈·구독)", "YT_SEARCH": "검색", "RELATED_
 STAGES = {"impressions": "노출", "ctr": "클릭", "hook": "초반 30초", "scenes": "장면", "value": "가치", "search": "검색"}
 CONFIDENCE = {"low": "낮음", "medium": "중간", "high": "높음"}
 SCOPES = {"title": "제목", "thumbnail": "썸네일", "opening": "오프닝", "structure": "구성", "length": "길이",
-          "keywords": "키워드"}
+          "keywords": "키워드", "shorts": "쇼츠"}
 VERDICTS = {"keep": "유지", "retire": "은퇴 제안", "too_early": "판단 이르음"}
 LABELS = {"adopt": "채택", "reject": "거절", "retire": "은퇴"}
 TARGETS = {"title": "제목", "description": "설명 첫 줄", "tags": "태그 추가"}

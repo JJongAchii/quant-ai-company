@@ -249,8 +249,15 @@ class ShortsPlan(StrictModel):
         return [self.hook.narration, *(i.narration for i in self.issues), self.signals_narration]
 
 
-def shorts_prompt(source, episode, concerns=(), feedback=''):
-    """episode: the delivered EpisodePlan as JSON. concerns: the episode review's open findings, kept out of the cut."""
+SHORTS_LESSON_RULE = ("channel_lessons are standing lessons the owner adopted for the Shorts from the performance "
+                      "of earlier videos. Apply each where today's episode allows it. Every rule above (the episode's "
+                      "facts, cited numbers, fixed lines, title rules) takes precedence; a lesson never justifies a "
+                      "fact, number or wording outside the episode.")
+
+
+def shorts_prompt(source, episode, concerns=(), feedback='', lessons=()):
+    """episode: the delivered EpisodePlan as JSON. concerns: the episode review's open findings, kept out of the cut.
+    lessons: the episode job's frozen lessons of scope shorts; none leaves the prompt as before (frozen request IDs)."""
     opening = next((s for s in episode['scenes'] if s.get('type') == 'cold_open'), episode['scenes'][0])
     cut = {'title': episode['upload']['title'], 'thumbnail': episode['thumbnail'],
            'thumbnail_stat': episode.get('thumbnail_stat', ''), 'cold_open': opening['narration'],
@@ -296,6 +303,9 @@ def shorts_prompt(source, episode, concerns=(), feedback=''):
         "(owner, 2026-10-22). description: one or two sentences on what the Shorts covers.\n\n"
         "Episode as delivered:\n" + json.dumps(cut, ensure_ascii=False)
         + "\n\nBriefing body lines (the only source):\n" + json.dumps(prompt_claims(source), ensure_ascii=False))
+    if lessons:
+        text += ('\n\n' + SHORTS_LESSON_RULE + '\n'
+                 + json.dumps({'channel_lessons': [x['text'] for x in lessons]}, ensure_ascii=False))
     if concerns:
         text += '\n\nThe episode review flagged these; do not repeat them:\n' + '\n'.join(f'- {c}' for c in concerns[:20])
     if feedback:

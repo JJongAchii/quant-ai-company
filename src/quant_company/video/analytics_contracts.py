@@ -13,7 +13,8 @@ VIDEO_ID = r"^[A-Za-z0-9_-]{11}$"
 Stage = Literal["impressions", "ctr", "hook", "scenes", "value", "search"]
 Confidence = Literal["low", "medium", "high"]
 # Packaging and structure only: the source lines, number binding and owner rules are never a lesson's to change.
-LessonScope = Literal["title", "thumbnail", "opening", "structure", "length", "keywords"]
+# shorts goes to the Shorts script alone; every other scope to the episode alone (runner.write_plan, shorts_step).
+LessonScope = Literal["title", "thumbnail", "opening", "structure", "length", "keywords", "shorts"]
 # What the owner can paste into YouTube Studio for a published upload; images and the video itself are lessons.
 ChangeTarget = Literal["title", "description", "tags"]
 YOUTUBE_TITLE = 100
@@ -149,11 +150,12 @@ def weekly_prompt(context):
             "Find patterns that repeat across episodes (thumbnail wording, title hooks, cold opens, scene types, "
             "length, search terms), not one-off news effects. Propose at most three lessons the owner can adopt as "
             "standing production instructions for future episodes. A lesson is one concrete instruction in Korean "
-            "(scope: title, thumbnail, opening, structure, length or keywords) that cites the episodes behind it and "
-            "the metric it should move; it may never touch the source lines, facts, numbers, labels or the owner's "
-            "fixed title rules, and never asks for buy/sell wording. Do not repeat an active lesson. For every active "
-            "lesson compare the episodes made with it to those before it (same edition kind, give n): keep, retire "
-            "when ten or more episodes show no improvement, or too_early. Return only the required JSON.\n"
+            "(scope: title, thumbnail, opening, structure, length, keywords or shorts; shorts is an instruction for "
+            "the Shorts script only, every other scope is for the main episode only) that cites the episodes behind "
+            "it and the metric it should move; it may never touch the source lines, facts, numbers, labels or the "
+            "owner's fixed title rules, and never asks for buy/sell wording. Do not repeat an active lesson. For "
+            "every active lesson compare the episodes made with it to those before it (same edition kind, give n): "
+            "keep, retire when ten or more episodes show no improvement, or too_early. Return only the required JSON.\n"
             + json.dumps(context, ensure_ascii=False, default=str))
 
 
@@ -171,8 +173,9 @@ def answer_prompt(context):
             + HONESTY + STUDIO.replace("changes: at most", "changes (only in a card thread, else empty): at most") +
             "When the owner gives a standing instruction for future episodes (for example how to write thumbnails or "
             "titles from now on), do not claim it is applied: return it as lesson, one concrete Korean instruction "
-            "(scope: title, thumbnail, opening, structure, length or keywords) citing this thread's video IDs as "
-            "videos, which the owner then adopts or rejects with a button; it may never touch the source lines, "
+            "(scope: title, thumbnail, opening, structure, length, keywords or shorts; shorts is an instruction for "
+            "the Shorts script only, every other scope is for the main episode only) citing this thread's video IDs "
+            "as videos, which the owner then adopts or rejects with a button; it may never touch the source lines, "
             "facts, numbers, labels or the owner's fixed title rules, and never asks for buy/sell wording. Otherwise "
             "lesson is null. You cannot change YouTube, the channel or production yourself; say what the owner can "
             "do. Return only the required JSON.\n" + json.dumps(context, ensure_ascii=False, default=str))

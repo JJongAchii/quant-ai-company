@@ -501,8 +501,10 @@ class VideoRunner:
                     await asyncio.to_thread(self.shorts.wait, row, SHORTS_RETRY, 'no_valid_version')
                     return
             last = attempts[-1].get('findings', []) if attempts else []
+            # The cut takes the shorts lessons frozen with its episode's job; the episode prompt never sees them.
             prompt = shorts_prompt(job['source'], job['plan'], (job.get('qa') or {}).get('review_findings', []),
-                                   '\n'.join(f'- {f}' for f in last[:30]))
+                                   '\n'.join(f'- {f}' for f in last[:30]),
+                                   lessons=[x for x in job['policy'].get('lessons', ()) if x.get('scope') == 'shorts'])
             try:
                 # A short cut of a checked episode: a lighter turn keeps the Claude lane free for the next episode.
                 plan = await self.model(job, f'shorts-{len(attempts) + 1}', prompt, ShortsPlan, contract='video_shorts_v1',
@@ -625,7 +627,9 @@ class VideoRunner:
                 if 'recent_thumbnails' not in qa:  # frozen once, so every attempt and re-ask sends the same list
                     qa['recent_thumbnails'] = await asyncio.to_thread(self.store.thumbnail_history, job)
                 await asyncio.to_thread(self.store.update_qa, job, qa)
-            illustrations, lessons = qa.get('illustrations_offered', False), job['policy'].get('lessons', ())
+            illustrations = qa.get('illustrations_offered', False)
+            # shorts lessons belong to the cut (shorts_step): left out, an older job's prompt stays byte-identical.
+            lessons = [x for x in job['policy'].get('lessons', ()) if x.get('scope') != 'shorts']
             recent = qa.get('recent_thumbnails') or []
             previous = await asyncio.to_thread(self.last_version, job, attempts)
             prompt = with_craft(episode_prompt(job['source'], feedback, library, illustrations=illustrations,

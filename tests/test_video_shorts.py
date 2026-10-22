@@ -8,6 +8,7 @@ import subprocess
 from datetime import date
 
 import pytest
+from psycopg.types.json import Jsonb
 
 from quant_company.config import Settings
 from quant_company.contracts import ProviderFault
@@ -272,6 +273,15 @@ def test_the_prompt_cuts_the_delivered_episode_and_leaves_flagged_claims_out():
     prompt = shorts_prompt(body_source(), episode().model_dump(mode='json'), ['나스닥 수치 해석이 과장됨'], '- Unbound number')
     assert episode().upload.title in prompt and 'no greeting' in prompt and "Never say '보도에 따르면'" in prompt
     assert '나스닥 수치 해석이 과장됨' in prompt and 'Unbound number' in prompt and 'b013' in prompt
+
+
+def test_the_shorts_prompt_carries_only_given_lessons():
+    plain = shorts_prompt(body_source(), episode().model_dump(mode='json'))
+    assert shorts_prompt(body_source(), episode().model_dump(mode='json'), lessons=()) == plain  # older cuts unchanged
+    taught = shorts_prompt(body_source(), episode().model_dump(mode='json'), ['나스닥 수치 해석이 과장됨'],
+                           lessons=[{'id': 'x', 'scope': 'shorts', 'text': '첫 문장은 숫자 하나로 시작한다'}])
+    assert 'channel_lessons' in taught and '첫 문장은 숫자 하나로 시작한다' in taught and 'channel_lessons' not in plain
+    assert taught.index('Briefing body lines') < taught.index('channel_lessons') < taught.index('나스닥 수치 해석이 과장됨')
 
 
 def tones(folder, seconds, ffmpeg):
@@ -677,6 +687,19 @@ async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, vid
     calls = len(provider.calls)
     await VideoRunner(store.company, provider, speech).tick()
     assert len(provider.calls) == calls
+
+
+async def test_a_cut_receives_the_shorts_lessons_frozen_in_its_episode_job(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    lessons = [{'id': '1', 'scope': 'thumbnail', 'text': '썸네일 교훈 본편 전용'},
+               {'id': '2', 'scope': 'shorts', 'text': '쇼츠 첫 문장은 숫자 하나로'}]
+    with store.db.transaction() as conn:
+        conn.execute("UPDATE video_jobs SET policy=policy||%s WHERE id=%s", (Jsonb({'lessons': lessons}), job['id']))
+    store.settings.video_shorts_enabled = True
+    await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    request = next(c for c in provider.calls if c.output_contract == 'video_shorts_v1')
+    assert '쇼츠 첫 문장은 숫자 하나로' in request.prompt and '썸네일 교훈 본편 전용' not in request.prompt
 
 
 async def test_a_plan_stored_under_the_old_limits_is_still_voiced_and_rendered(brief, video, tmp_path, monkeypatch):  # noqa: F811
