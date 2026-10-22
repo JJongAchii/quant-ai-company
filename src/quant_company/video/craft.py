@@ -7,7 +7,7 @@ render image. A job freezes the version it was created with (VideoStore.enqueue,
 version's text; a job without one keeps its prompts exactly as before, so a still-running turn is asked again with the
 identical request."""
 
-CRAFT_VERSION = 1
+CRAFT_VERSION = 2
 
 CRAFT_GUIDE = (
     "Craft rules (owner, 2026-10-22), on top of every rule above; the source lines, cited numbers, size words, title "
@@ -42,8 +42,24 @@ CRAFT_REVIEW = (
     "choice or a number. The opening still starts answering the title's question. Never ask for a metaphor that does "
     "not fit.")
 
+# Version 2 (owner, 2026-10-22: "어떤 신호나 어떤 현상이 나타나면 어떻게 될거 같다 … 현재는 이렇기 때문에 오늘 당장이나
+# 당분간은 이럴거 같다"): the close states the outlook, conditions and direction only (owner: no new numbers, no trades).
+OUTLOOK = (
+    "\n7. Outlook in the closing signals scene, only from the lines the scene cites: for each signal, then says what it "
+    "could mean for the market, a sector or the flows, keeping the line's own strength ('…할 수 있습니다', '…가능성이 "
+    "있습니다'; never stronger than the line). Then, when the cited lines give one, one base case for today's session "
+    "(morning edition) or the next session and the coming days (closing edition): what today's evidence makes more "
+    "likely, said as the brief's view, and what would prove it wrong. Leave the base case out when the lines give no "
+    "basis, and never credit the brief with a view it does not state. This is not the price prediction ruled out "
+    "above: never a level, size or timed move of an index or price ('3,000선 회복', '내일 2% 반등'), only a direction "
+    "for the market, a sector or the flows under a named condition. No number that is not in the cited lines, no buy, "
+    "sell or weighting advice, never a certainty ('반드시', '확실히').")
+OUTLOOK_REVIEW = (
+    " Also add a concern when the cited lines give a base case but the closing states none, or when an outlook states "
+    "a certainty, a target level or timed move, advice, or a view the lines do not give.")
+
 # Each version's text stays here, so a job keeps the rules it was created with after a later version.
-VERSIONS = {1: (CRAFT_GUIDE, CRAFT_REVIEW)}
+VERSIONS = {1: (CRAFT_GUIDE, CRAFT_REVIEW), 2: (CRAFT_GUIDE + OUTLOOK, CRAFT_REVIEW + OUTLOOK_REVIEW)}
 
 
 def with_craft(prompt, policy):

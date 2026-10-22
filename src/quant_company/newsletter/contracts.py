@@ -87,6 +87,8 @@ class NewsletterDraft(StrictModel):
     market: Market
     issues: list[IssueBlock] = Field(min_length=1, max_length=3)
     company: str = Field(default="", max_length=400)
+    # The brief's outlook in conditions and direction (owner, 2026-10-22); empty when the brief gives no basis.
+    outlook: str = Field(default="", max_length=300)
     calendar: list[CalendarRow] = Field(default_factory=list, max_length=7)
 
     def texts(self):
@@ -114,6 +116,7 @@ class NewsletterDraft(StrictModel):
             for key in ("headline", "body", "implication", "check"):
                 yield f"issues[{i}].{key}", getattr(issue, key)
         yield "company", self.company
+        yield "outlook", self.outlook
         for i, row in enumerate(self.calendar):
             yield f"calendar[{i}]", f"{row.when} {row.what} {row.note}"
 
@@ -173,7 +176,7 @@ def source(edition):
             "summary": [plain(c["text"]) for c in proposal.get("summary", []) if seen(c.get("text"))],
             "overview": [plain(c["text"]) for c in proposal.get("overview", []) if seen(c.get("text"))],
             "internals": [plain(c["text"]) for c in proposal.get("internals", []) if seen(c.get("text"))],
-            "issues": issues, "calendar": calendar, "issue_count": len(proposal.get("issues", [])),
+            "issues": issues, "calendar": calendar, "issue_count": len(proposal.get("issues", [])), "outlook": 1,
             "weekdays": {f"{d:%m/%d}": WEEKDAYS[d.weekday()] for d in (day + timedelta(days=n) for n in range(15))}}
 
 
@@ -239,6 +242,18 @@ GUIDE_AM = (
     "used in the email). Leave numbers empty.\n"
     + ISSUES)
 GUIDES = {"am": GUIDE_AM, "pm": GUIDE}
+# The outlook (owner, 2026-10-22: "어떤 신호나 어떤 현상이 나타나면 어떻게 될거 같다"), asked only of issues whose source
+# carries it (source()): an issue frozen before keeps its prompt byte for byte, so a running turn is re-asked unchanged.
+OUTLOOK_RULE = (
+    "- outlook: one or two sentences with the brief's outlook from its own interpretation and signal lines: what "
+    "could follow if a named signal appears, keeping each line's own strength ('…할 수 있습니다', '…가능성이 있습니다'), "
+    "and, when DATA gives one, what today's evidence makes more likely for today's session (morning) or the next "
+    "session and the coming days (evening), said as the brief's view, with what would prove it wrong. Conditions and "
+    "direction only: no number DATA does not give, never a level, size or timed move of an index or price, no index "
+    "or price target, no buy, sell or weighting advice, never a certainty, never a view the brief does not state. "
+    "Empty when DATA gives no basis.\n"
+)
+END = "Return only the required JSON."
 
 
 PROMPT_LIMIT = 88000
@@ -256,6 +271,8 @@ def prompt(source, previous=None, findings=()):
         if previous is not None:
             revision += "\nPREVIOUS VERSION:\n" + json.dumps(previous, ensure_ascii=False, sort_keys=True)
     guide = GUIDES[edition_kind(source)]
+    if source.get("outlook"):
+        guide = guide.removesuffix(END) + OUTLOOK_RULE + END
     text = guide + "\nDATA:\n" + json.dumps(data, ensure_ascii=False) + revision
     if len(text) > PROMPT_LIMIT:
         data["lines"] = [line for line in data["lines"] if not line["section"].startswith(DETAIL)]

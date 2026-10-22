@@ -54,7 +54,9 @@ ADVICE = re.compile(
     r"(?:매수|매도|매집|손절|익절|비중\s*(?:확대|축소))\s*(?:를|을)?\s*(?:추천|권유|권장|권합니다|하세요|하십시오|하시길|"
     r"해야\s*합니다|하는\s*것이\s*좋|할\s*때입니다|할\s*기회|기회입니다)"
     r"|사세요|파세요|사야\s*합니다|팔아야\s*합니다|담으세요|담아\s*두|올라타|추천\s*종목|유망\s*종목|투자\s*(?:추천|권유)|"
-    r"수익\s*보장|목표\s*수익률|목표\s*주가를\s*제시")
+    r"수익\s*보장|목표\s*수익률|목표\s*주가를\s*제시|매수\s*기회|비중\s*(?:을|를)?\s*(?:늘|줄|확대|축소)")
+# The outlook says conditions and direction (owner, 2026-10-22), never a certainty.
+CERTAIN = re.compile(r"반드시|확실히|틀림없이|무조건")
 TOOLS = re.compile(r"AI가\s*(?:쓴|작성|정리|분석|요약|만든)|인공지능|챗봇|ChatGPT|챗GPT|GPT|OpenAI|오픈AI|Anthropic|"
                    r"앤트로픽|언어\s*모델|LLM|자동\s*작성|자동으로\s*(?:작성|정리)|모델이\s*(?:쓴|작성|정리)")
 COLLOQUIAL = re.compile(r"(?:어요|아요|예요|에요|해요|네요|군요|래요|죠)(?=[.!?…\s]|$)")
@@ -202,6 +204,8 @@ def wording(draft, source_text):
             for match in pattern.finditer(text):
                 if match[0] not in shown:
                     findings.append(f"{field}: {label} '{match[0]}'")
+        if field == "outlook":
+            findings += [f"outlook: 단정 표현 '{m[0]}'" for m in CERTAIN.finditer(text)]
         for match in CITATION.finditer(text):
             findings.append(f"{field}: 출처·링크·각주 표시 '{match[0]}'는 넣지 않습니다")
     return findings

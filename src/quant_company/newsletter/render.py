@@ -146,6 +146,8 @@ def html(draft, *, day, sender, channel_url, kind="pm", logo_src=f"cid:{LOGO_CID
     issues = "".join(issue_html(issue, n) for n, issue in enumerate(draft.issues, 1))
     company = (section("기업 소식", f'<div style="font-size:14px;line-height:1.65;padding:9px 11px;border:1px solid {LINE};'
                                   f'border-radius:8px;color:{INK};">{e(draft.company)}</div>') if draft.company else "")
+    outlook = (section("앞으로의 전망", f'<div style="font-size:14px;line-height:1.65;padding:9px 11px;background:#F2F6FF;'
+                                       f'border-radius:8px;color:{INK};">{e(draft.outlook)}</div>') if draft.outlook else "")
     calendar = section("주요 일정", calendar_html(draft.calendar)) if draft.calendar else ""
     accent = f'<br><span style="color:{GOLD};">{e(draft.accent)}</span>' if draft.accent else ""
     unsubscribe = e(unsubscribe_url(sender))
@@ -167,7 +169,7 @@ def html(draft, *, day, sender, channel_url, kind="pm", logo_src=f"cid:{LOGO_CID
 </td></tr>
 {section("오늘의 시장", market)}
 {section("주요 이슈", issues)}
-{company}{calendar}
+{company}{outlook}{calendar}
 {section("", f'<a href="{e(channel_url)}" style="display:inline-block;background:#E62117;color:#FFFFFF;font-weight:800;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:14px;">▶ 영상으로 보기</a>', "text-align:center;")}
 <tr><td style="padding:16px 22px;font-size:11.5px;line-height:1.65;color:{MUTED};background:#F7F8FB;border-radius:0 0 10px 10px;">
 {e(INTRO)} {e(CONSENT)}<br>{e(DISCLAIMER)}<br>{e(SAFE_SENDER.format(sender=sender))}<br><a href="{unsubscribe}" style="color:{SOFT};">수신 거부</a>
@@ -201,6 +203,8 @@ def text(draft, *, day, sender, channel_url, kind="pm"):
         out += [f"▶ 확인할 {issue.check_kind}: {issue.check}", ""]
     if draft.company:
         out += ["[기업 소식]", draft.company, ""]
+    if draft.outlook:
+        out += ["[앞으로의 전망]", draft.outlook, ""]
     if draft.calendar:
         out.append("[주요 일정]")
         out += [f"{r.when}  {r.what}" + (f" ({r.note})" if r.note else "") for r in draft.calendar]

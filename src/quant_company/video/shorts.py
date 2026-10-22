@@ -253,11 +253,18 @@ SHORTS_LESSON_RULE = ("channel_lessons are standing lessons the owner adopted fo
                       "of earlier videos. Apply each where today's episode allows it. Every rule above (the episode's "
                       "facts, cited numbers, fixed lines, title rules) takes precedence; a lesson never justifies a "
                       "fact, number or wording outside the episode.")
+# The outlook in the signals (owner, 2026-10-22), asked only of a cut whose episode carried the outlook rule (craft 2):
+# an older episode's closing has none to give, and a turn written before keeps its request.
+OUTLOOK_SHORTS = (
+    "signals_narration names the signals and, in one clause, the outlook the episode's closing gives for them, keeping "
+    "its strength ('…할 수 있습니다', '…가능성이 있습니다'): conditions and direction only, no new number, no target "
+    "level, no advice, never a certainty; nothing when the closing gives none.\n")
 
 
-def shorts_prompt(source, episode, concerns=(), feedback='', lessons=()):
+def shorts_prompt(source, episode, concerns=(), feedback='', lessons=(), outlook=False):
     """episode: the delivered EpisodePlan as JSON. concerns: the episode review's open findings, kept out of the cut.
-    lessons: the episode job's frozen lessons of scope shorts; none leaves the prompt as before (frozen request IDs)."""
+    lessons: the episode job's frozen lessons of scope shorts; none leaves the prompt as before (frozen request IDs).
+    outlook: the episode carried the outlook rule (craft 2); False leaves the prompt as before."""
     opening = next((s for s in episode['scenes'] if s.get('type') == 'cold_open'), episode['scenes'][0])
     cut = {'title': episode['upload']['title'], 'thumbnail': episode['thumbnail'],
            'thumbnail_stat': episode.get('thumbnail_stat', ''), 'cold_open': opening['narration'],
@@ -290,7 +297,7 @@ def shorts_prompt(source, episode, concerns=(), feedback='', lessons=()):
         "meaning for the Korean market, '확인할 점' what to check next. narration (20-95 characters) says the body and "
         "the note aloud. Cite the briefing lines (claim_ids) the issue uses.\n"
         "signals: 2 or 3 short lines (4-30 characters each) taken from the episode's closing signals, with "
-        "signals_narration (10-90 characters) and signals_claim_ids.\n"
+        "signals_narration (10-90 characters) and signals_claim_ids.\n" + (OUTLOOK_SHORTS if outlook else "") +
         f"Narration is plain spoken Korean, at most {NARRATION_BUDGET} characters in all counting the labels (they are "
         "read aloud in the issue list; the whole Shorts must stay under 90 seconds); read signs as words.\n"
         "Every number on screen or in the narration must appear in the briefing lines its unit cites (claim_ids) and in "

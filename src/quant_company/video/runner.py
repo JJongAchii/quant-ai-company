@@ -504,7 +504,8 @@ class VideoRunner:
             # The cut takes the shorts lessons frozen with its episode's job; the episode prompt never sees them.
             prompt = shorts_prompt(job['source'], job['plan'], (job.get('qa') or {}).get('review_findings', []),
                                    '\n'.join(f'- {f}' for f in last[:30]),
-                                   lessons=[x for x in job['policy'].get('lessons', ()) if x.get('scope') == 'shorts'])
+                                   lessons=[x for x in job['policy'].get('lessons', ()) if x.get('scope') == 'shorts'],
+                                   outlook=(job['policy'].get('craft') or 0) >= 2)
             try:
                 # A short cut of a checked episode: a lighter turn keeps the Claude lane free for the next episode.
                 plan = await self.model(job, f'shorts-{len(attempts) + 1}', prompt, ShortsPlan, contract='video_shorts_v1',

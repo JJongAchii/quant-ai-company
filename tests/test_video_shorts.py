@@ -21,6 +21,7 @@ from quant_company.video.shorts import (
     CHECKS,
     HOOK_NARRATION,
     KO_COUNT,
+    OUTLOOK_SHORTS,
     OUTRO,
     QA_JS,
     SAFE,
@@ -138,6 +139,21 @@ def test_the_hook_is_one_breath_after_the_date_line():
     assert estimated_seconds(long) - estimated_seconds(short) == pytest.approx(22 / CHARS_PER_SECOND)
     prompt = shorts_prompt(body_source(), episode().model_dump(mode='json'))
     assert f'narration (8-{HOOK_NARRATION} characters' in prompt and 'one breath' in prompt
+    # Owner, 10/22: the signals carry the episode's outlook, conditions and direction only.
+    assert 'the outlook the episode' not in prompt  # an episode made before the outlook rule has none to give
+    taught = shorts_prompt(body_source(), episode().model_dump(mode='json'), outlook=True)
+    assert 'the outlook the episode' in taught and 'no target level, no advice' in taught
+    assert taught.replace(OUTLOOK_SHORTS, '') == prompt
+
+
+async def test_a_cut_asks_for_the_outlook_only_when_its_episode_carried_the_rule(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    assert job['policy']['craft'] >= 2  # a new episode carries the outlook rule
+    store.settings.video_shorts_enabled = True
+    await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
+    request = next(c for c in provider.calls if c.output_contract == 'video_shorts_v1')
+    assert OUTLOOK_SHORTS in request.prompt
 
 
 def test_fixed_lines():
