@@ -2,6 +2,7 @@
 events, YouTube reads and claude-runtime are explicitly simulated fixtures."""
 
 import json
+from datetime import timedelta
 
 import pytest
 
@@ -17,13 +18,20 @@ from .test_video_analytics_runner import (
     CREDENTIAL,
     NEW_TITLE,
     SimulatedProvider,
+    comparables,
     deliver,
     lesson_click,
     linked_upload,
     outbox,
     weekly_posted,
 )
-from .test_video_analytics_store import analytics  # noqa: F401
+from .test_video_analytics_store import (  # noqa: F401
+    PUBLISHED,
+    SHORTS_TITLE,
+    analytics,
+    delivered_shorts_for,
+    upload,
+)
 
 QUESTION = "썸네일 문구 후보 3개만 더 줘"
 
@@ -85,6 +93,22 @@ async def test_an_owner_reply_under_a_card_is_answered_in_its_thread(brief, vide
     calls = len(provider.calls)
     assert await runner.answer(asked["video_question"]) == "closed" and len(provider.calls) == calls
     assert analytics.question(asked["video_question"])["state"] == "answered"
+
+
+async def test_a_question_under_a_shorts_card_reads_the_shorts_plan(brief, video, analytics):  # noqa: F811
+    job, client = linked_upload(brief, video, comparable=0)
+    delivered_shorts_for(video, job)
+    client.items.append(upload("sssssssssss", SHORTS_TITLE, PUBLISHED + timedelta(hours=3), duration_s=46))
+    comparables(analytics, kind="shorts")
+    provider = AnsweringProvider()
+    runner = AnalyticsRunner(analytics.company, client=client, provider=provider)
+    await runner.tick(AFTER_D3)
+    [card] = outbox(analytics)
+    deliver(analytics, card, "300.001")
+    assert await runner.answer(reply(analytics)["video_question"]) == "answered"
+    request = provider.calls[-1]
+    assert request.output_contract == "video_answer_v1" and '"question": "이유는?"' in request.prompt
+    assert '"cold_open"' not in request.prompt  # not the episode's plan
 
 
 async def test_a_follow_up_question_sees_the_earlier_answer(brief, video, analytics):  # noqa: F811

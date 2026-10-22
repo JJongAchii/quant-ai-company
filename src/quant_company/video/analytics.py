@@ -53,7 +53,7 @@ from .analytics_slack import (
     report_texts,
     update_text,
 )
-from .analytics_store import REACH_GRACE_DAYS, REPORT_TYPES, AnalyticsStore
+from .analytics_store import BASELINE_DAYS, REACH_GRACE_DAYS, REPORT_TYPES, AnalyticsStore
 
 LOG = logging.getLogger(__name__)
 BASELINE_KEYS = ("impressions", "ctr", "views", "avg_view_pct", "hook_30s", "subscribers", "relative_retention")
@@ -192,7 +192,7 @@ class AnalyticsRunner:
         at = at or utcnow()
         result = {"state": "ok"}
         for name, stage in (("uploads", self.sync_uploads), ("reports", self.sync_reports),
-                            ("snapshots", lambda: self.take_snapshots(at)), ("cards", self.cards),
+                            ("snapshots", lambda: self.take_snapshots(at)), ("cards", lambda: self.cards(at)),
                             ("details", self.details), ("updates", self.updates), ("weekly", lambda: self.weekly(at))):
             try:
                 result[name] = await stage()
@@ -357,8 +357,11 @@ class AnalyticsRunner:
         return {"model": self.settings.video_model, "effort": effort, "prompt": prompt,
                 "attachments": [r for r in refs if r], "extra": extra}
 
-    async def cards(self):
-        pending = await asyncio.to_thread(self.store.unposted, "d3")
+    async def cards(self, at=None):
+        # A non-outlier stays unposted for good: only the last 28 days are checked, so a tick's baseline queries do
+        # not grow with the channel's age (unposted() itself also feeds the seven-day updates).
+        since = (at or utcnow()) - timedelta(days=BASELINE_DAYS)
+        pending = [r for r in await asyncio.to_thread(self.store.unposted, "d3") if r["published_at"] >= since]
         if not pending or await asyncio.to_thread(self.store.producing):
             return 0
         posted = 0
@@ -540,12 +543,13 @@ class AnalyticsRunner:
             report = self.store.analysis(f"video-analytics-{youtube_id}-d3")
             publication = self.store.publication(youtube_id)
             snapshots = {h: self.store.snapshot(youtube_id, h) for h in ("d3", "d7", "d28")}
+            summary = (shorts_summary((self.store.shorts(publication["job_id"]) or {}).get("plan"))
+                       if publication["edition_kind"] == "shorts" else plan_summary(self.store.job(publication["job_id"])))
             thread = {"video": {"youtube_id": youtube_id, "title": publication["title"],
                                 "proposed_title": publication["proposed_title"],
                                 "edition": EDITIONS.get(publication["edition_kind"], "기타"),
                                 "published_kst": publication["published_at"].astimezone(KST).isoformat(),
-                                "duration_s": publication["duration_s"],
-                                **plan_summary(self.store.job(publication["job_id"]))},
+                                "duration_s": publication["duration_s"], **summary},
                       "metrics": {h: compact(snap["metrics"]) for h, snap in snapshots.items() if snap},
                       "baselines": ((report or {}).get("request") or {}).get("extra", {}).get("baselines"),
                       "report": (report or {}).get("output")}

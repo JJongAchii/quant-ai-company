@@ -228,6 +228,21 @@ async def test_only_an_outlier_gets_a_card_and_a_diagnosis(brief, video, analyti
         assert analytics.snapshot("aaaaaaaaaaa", "d7") and not provider.calls and not outbox(analytics)
 
 
+async def test_outlier_checks_look_only_at_the_last_28_days(brief, video, analytics):  # noqa: F811
+    _, client = linked_upload(brief, video)
+    # Reportable once but never a card: an upload like this stays unposted for good.
+    old = PUBLISHED - timedelta(days=29)
+    analytics.upsert_publications([upload("ooooooooooo", "옛 회차 | 8월 23일 아침 · 오늘의 증시story", old)])
+    analytics.save_snapshot("ooooooooooo", "d3", *window(old, "d3"), {"views": 300, "report": True})
+    runner = AnalyticsRunner(analytics.company, client=client, provider=SimulatedProvider())
+    asked, baselines = [], runner.store.baselines
+    runner.store.baselines = lambda row, *args, **kwargs: asked.append(row["youtube_id"]) or baselines(row, *args,
+                                                                                                         **kwargs)
+    result = await runner.tick(AFTER_D3)
+    assert result["cards"] == 1 and "aaaaaaaaaaa" in asked and "ooooooooooo" not in asked
+    assert analytics.posted("aaaaaaaaaaa:d3") and not analytics.posted("ooooooooooo:d3")
+
+
 async def test_an_outlier_shorts_card_reads_the_shorts_plan(brief, video, analytics):  # noqa: F811
     job, client = linked_upload(brief, video, comparable=0)
     delivered_shorts_for(video, job)
