@@ -13,6 +13,7 @@ from quant_company.video.analytics import AnalyticsRunner, shorts_summary
 from quant_company.video.analytics_metrics import watch_ratio, window
 from quant_company.video.analytics_slack import blocks
 from quant_company.video.analytics_store import AnalyticsStore
+from quant_company.video.craft import CRAFT_VERSION
 
 from .test_briefing import brief  # noqa: F401
 from .test_video import video  # noqa: F401
@@ -219,7 +220,7 @@ async def test_shorts_are_measured_on_their_own_scenes(brief, video, analytics):
     assert cut["artifacts"]["duration"] == 46.0 and episode["artifacts"]["duration"] == 292.0
     assert (cut["lessons"], episode["lessons"]) == (["l-shorts"], ["l-episode"])  # each kind is judged on its own
     assert cut["d3_taken"] == AFTER_D3 and cut["d3"]["views"] == 820 and cut["window_end"] == date(2026, 9, 23)
-    assert cut["craft"] == episode["craft"] == 1
+    assert cut["craft"] == episode["craft"] == CRAFT_VERSION
     assert shorts_summary(cut["plan"]) == {"hook": "반도체 5% 급등", "question": "이유는?",
                                            "hook_narration": "반도체가 5% 올랐습니다.", "issues": ["반도체"]}
     assert shorts_summary({}) == {"hook": None, "question": None, "hook_narration": None, "issues": []}
