@@ -51,8 +51,8 @@ class AnalyticsStore:
 
     def upsert_publications(self, items):
         """Public uploads of the channel. A new or still unlinked upload is linked to the newest produced job of the
-        edition its title suffix names, else to a job with exactly the same title, else (no suffix) to the Shorts cut
-        with its title; a manual link is kept."""
+        edition its title suffix names, else to a job with exactly the same title, else (no suffix) to the newest
+        Shorts cut with its title made before it and not linked to another upload; a manual link is kept."""
         with self.db.transaction() as conn:
             for item in items:
                 parsed = parse_title(item["title"], item["published_at"])
@@ -81,10 +81,13 @@ class AnalyticsStore:
                 ORDER BY created_at DESC LIMIT 1""", (row["title"],)).fetchone()
             how = "exact_title"
         if not job and not parsed:
-            # A Shorts title carries no series suffix (ShortsPlan): linked to its cut, measured as its own kind.
+            # A Shorts title carries no series suffix (ShortsPlan): linked to its cut, measured as its own kind. The
+            # morning and close cuts of a day may share a title, and a backfill sees cuts made after an old upload.
             key = shorts_key(row["title"])
             cuts = conn.execute("""SELECT s.job_id,s.artifacts->>'title' AS title,j.edition_id FROM video_shorts s
-                JOIN video_jobs j ON j.id=s.job_id WHERE s.artifacts ? 'title' ORDER BY s.created_at DESC""").fetchall()
+                JOIN video_jobs j ON j.id=s.job_id WHERE s.artifacts ? 'title' AND s.created_at<=%s
+                AND NOT EXISTS (SELECT 1 FROM video_publications q WHERE q.job_id=s.job_id AND q.edition_kind='shorts'
+                AND q.youtube_id<>%s) ORDER BY s.created_at DESC""", (row["published_at"], row["youtube_id"])).fetchall()
             cut = next((c for c in cuts if key and shorts_key(c["title"]) == key), None)
             if cut:
                 conn.execute("""UPDATE video_publications SET job_id=%s,edition_id=%s,edition_kind='shorts',

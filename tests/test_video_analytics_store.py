@@ -40,8 +40,9 @@ def delivered_job(brief, video, title="반도체가 이끈 상승 | 9월 22일 �
 SHORTS_TITLE = "반도체 5% 급등, 이유는 하나"
 
 
-def delivered_shorts_for(video, job, title=SHORTS_TITLE):  # noqa: F811
-    """The delivered Shorts cut of `job` (video_shorts row as the runner leaves it; plan and manifest trimmed)."""
+def delivered_shorts_for(video, job, title=SHORTS_TITLE, made=PUBLISHED + timedelta(hours=1)):  # noqa: F811
+    """The delivered Shorts cut of `job` (video_shorts row as the runner leaves it; plan and manifest trimmed), made
+    after its episode's upload and before its own."""
     store, _ = video
     plan = {"title": title, "hook": {"headline": "반도체 5% 급등", "question": "이유는?", "narration": "반도체가 5% 올랐습니다."},
             "issues": [{"label": "반도체"}]}
@@ -49,8 +50,8 @@ def delivered_shorts_for(video, job, title=SHORTS_TITLE):  # noqa: F811
         {"id": "opener", "type": "opener", "t0": 0, "t1": 8}, {"id": "agenda", "type": "agenda", "t0": 8, "t1": 14},
         {"id": "chip", "type": "issue", "t0": 14, "t1": 38}, {"id": "outro", "type": "outro", "t0": 38, "t1": 46}]}
     with store.db.transaction() as conn:
-        conn.execute("INSERT INTO video_shorts(job_id,state,plan,artifacts) VALUES(%s,'delivered',%s,%s)",
-                     (job["id"], Jsonb(plan), Jsonb(artifacts)))
+        conn.execute("INSERT INTO video_shorts(job_id,state,plan,artifacts,created_at) VALUES(%s,'delivered',%s,%s,%s)",
+                     (job["id"], Jsonb(plan), Jsonb(artifacts), made))
 
 
 def delivered_shorts(brief, video, title=SHORTS_TITLE):  # noqa: F811
@@ -91,6 +92,29 @@ def test_a_shorts_upload_links_to_its_cut_by_its_title(brief, video, analytics):
     due = analytics.due_snapshots(datetime(2026, 9, 28, 12, tzinfo=UTC))
     assert ("sssssssssss", "d3") in [(p["youtube_id"], h) for p, h in due]
     assert "ttttttttttt" not in {p["youtube_id"] for p, _ in due}
+
+
+def test_a_shorts_upload_links_only_to_an_unclaimed_cut_made_before_it(brief, video, analytics):  # noqa: F811
+    # The morning and close cuts of one day may share a title.
+    store, _ = video
+    morning = delivered_job(brief, video)
+    evening = {**morning, "id": uuid4()}
+    with store.db.transaction() as conn:
+        conn.execute("""INSERT INTO video_jobs(id,edition_id,version,source_digest,source,policy,state,publish_deadline)
+            VALUES(%s,%s,2,%s,%s,%s,'delivered',%s)""", (evening["id"], morning["edition_id"], morning["source_digest"],
+                                                         Jsonb(morning["source"]), Jsonb(morning["policy"]),
+                                                         morning["publish_deadline"]))
+    delivered_shorts_for(video, morning, made=PUBLISHED + timedelta(hours=1))
+    delivered_shorts_for(video, evening, made=PUBLISHED + timedelta(hours=10))
+    first = upload("sssssssssss", SHORTS_TITLE, PUBLISHED + timedelta(hours=3), duration_s=46)
+    second = upload("ttttttttttt", SHORTS_TITLE, PUBLISHED + timedelta(hours=12), duration_s=46)
+    # Uploaded twice before the evening cut existed: the morning cut is already claimed.
+    again = upload("uuuuuuuuuuu", SHORTS_TITLE + " #Shorts", PUBLISHED + timedelta(hours=5), duration_s=46)
+    analytics.upsert_publications([first])  # synced before the evening cut was made
+    analytics.upsert_publications([second, again, first])  # newest first, as YouTube lists them
+    analytics.upsert_publications([second, again, first])  # a later sync keeps every link
+    links = {y: publication(analytics, y)["job_id"] for y in ("sssssssssss", "ttttttttttt", "uuuuuuuuuuu")}
+    assert links == {"sssssssssss": morning["id"], "ttttttttttt": evening["id"], "uuuuuuuuuuu": None}
 
 
 def test_exact_title_links_when_the_suffix_names_no_edition(brief, video, analytics):  # noqa: F811
