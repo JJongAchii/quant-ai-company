@@ -4,9 +4,11 @@ from uuid import NAMESPACE_URL, uuid5
 
 from psycopg.types.json import Jsonb
 
+from ..data_watch.reporting import kst
+from . import explain
 from .identity import AGENT
 from .policy import digest
-from .requests import permitted, progress_text, report, service
+from .requests import permitted, report, service
 
 
 def identity(key):
@@ -72,20 +74,19 @@ def current(conn, case):
     return value
 
 
+def described(conn, company, case):
+    """current() plus what started the case, for the owner-facing text only."""
+    value = current(conn, case)
+    value["facts"] = explain.facts(conn, company, case["request_id"], value)
+    return value
+
+
 def card(case, value, runtime):
-    summary = ("승인이 기록된 변경의 반영 상태를 확인하고 있습니다." if value.get("application")
-               else progress_text(value, runtime))
-    text = f"*개선 케이스 {str(case['id'])[:8]}*\n" + summary
-    text += f"\n단계: {value['state']} · 최근 진행: {value['last_progress_at']}"
-    if value.get("model_wait"):
-        wait = value["model_wait"]
-        text += f"\n모델 요청: {wait['error'] or '응답 대기'} · 다음 확인 가능 시각: {wait['due_at']}"
-    if value.get("application"):
-        item = value["application"]
-        text += f"\n반영 상태: {item['state']}" + (f" ({item['error']})" if item['error'] else "")
+    text = explain.text(value, runtime)
     if value.get("pr"):
-        text += "\n" + value["pr"]["url"] + f" · 후보 {(value.get('head') or '미확인')[:12]}"
-    text += "\n후속 질문은 이 스레드에 남겨 주세요. ‘상태’로 현재 기록을 확인할 수 있습니다."
+        text += "\nPR: " + value["pr"]["url"]
+    text += f"\n개선 케이스 {str(case['id'])[:8]} · 최근 진행 {kst(value['last_progress_at'])}"
+    text += "\n궁금한 점은 이 스레드에 물어보세요. ‘상태’라고 쓰면 최신 기록을 다시 보여 줍니다."
     return text
 
 
@@ -107,7 +108,7 @@ def attach(conn, company, request_id, source):
     case = {"id": case_id, "request_id": request_id, "source_project_id": source["id"],
             "source_revision": source["revision"], "project_id": target["id"],
             "owner_user": source["owner_user"], "root_message_id": identity(case_id + ":root")}
-    text = card(case, current(conn, case), service(conn, company, case["owner_user"]))
+    text = card(case, described(conn, company, case), service(conn, company, case["owner_user"]))
     if source["id"] != target["id"]:
         text += f"\n원 요청: {url(source)}"
     company._message(conn, target, None, AGENT, "maintenance", text, message_id=case["root_message_id"])
@@ -153,14 +154,15 @@ def refresh(company):
             root = conn.execute("SELECT * FROM outbox WHERE id=%s", (case["root_message_id"],)).fetchone()
             if root["status"] != "delivered" or not root["sent_ts"] or not target["thread_ts"]:
                 continue
-            value = current(conn, case)
+            value = described(conn, company, case)
+            runtime = service(conn, company, case["owner_user"])
             source = company._project(conn, case["source_project_id"])
             link_id = identity(str(case["id"]) + ":source-link")
             if source["id"] != target["id"] and not conn.execute(
                 "SELECT 1 FROM messages WHERE id=%s", (link_id,)).fetchone():
                 company._message(conn, source, None, "director", "maintenance",
                     f"개선 케이스 {str(case['id'])[:8]}의 진행·질문·승인: {url(target)}", message_id=link_id)
-            text = card(case, value, service(conn, company, case["owner_user"]))
+            text = card(case, value, runtime)
             if source["id"] != target["id"]:
                 text += f"\n원 요청: {url(source)}"
             snapshot = digest(text)
@@ -177,11 +179,11 @@ def refresh(company):
             pr = value.get("pr")
             if pr and value["state"] == "pr_open" and not value.get("error"):
                 notice_id = str(uuid5(NAMESPACE_URL, f"maintenance-pr:{value['case_id']}:{target['id']}"))
-                notice = (f"검증 기록과 PR을 검토해 주세요: {pr['url']} · 후보 {(value.get('head') or '미확인')[:12]}\n"
-                          f"이 스레드에서 ‘PR {pr['number']} 반영해’로 승인할 수 있습니다.")
+                notice = (explain.notice(value, runtime) + f"\nPR: {pr['url']}"
+                          f" (검토 기준 커밋 {(value.get('head') or '미확인')[:12]})")
             elif value["state"] == "blocked":
                 notice_id = identity(str(case["id"]) + ":blocked:" + digest([value['case_id'], value.get('error')]))
-                notice = progress_text(value, service(conn, company, case["owner_user"]))
+                notice = explain.notice(value, runtime)
             else:
                 continue
             if not conn.execute("SELECT 1 FROM messages WHERE id=%s", (notice_id,)).fetchone():
@@ -199,13 +201,8 @@ def status_text(conn, company, project):
         return "개선 케이스 서비스가 아직 설치되지 않았습니다."
     case = lookup(conn, project["id"])
     if case and allowed(conn, company, case):
-        return card(case, current(conn, case), service(conn, company, project["owner_user"]))
+        return card(case, described(conn, company, case), service(conn, company, project["owner_user"]))
     rows = conn.execute("""SELECT * FROM maintenance_cases WHERE owner_user=%s
         ORDER BY created_at DESC,id DESC LIMIT 20""", (project["owner_user"],)).fetchall()
-    lines = []
-    for case in rows:
-        if allowed(conn, company, case):
-            value, target = current(conn, case), destination(conn, case)
-            lines.append(f"• {str(case['id'])[:8]} · {value['state']} · "
-                         f"{target['thread_url'] or '스레드 전달 ' + target['delivery']}")
-    return "개선 케이스 목록 (최근 20건)\n" + ("\n".join(lines) or "조회 가능한 케이스가 없습니다.")
+    return explain.list_text([(described(conn, company, case), destination(conn, case)["thread_url"])
+                              for case in rows if allowed(conn, company, case)])

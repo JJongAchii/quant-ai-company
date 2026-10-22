@@ -5,6 +5,7 @@
 회사 운영 검증 기록을 여기로 모았습니다. 이후 회사 기록은 quant-workspace에 추가하지 않습니다.
 
 - [현재 사용 범위와 로드맵](NEXT-STEPS.md)
+- [improvements 케이스 문구 · 같은 실패 묶기 · Claude 검토 거절 도구 처리 (2026-10-22)](IMPROVEMENTS-READABILITY-20261022.md)
 - [영상 렌더링 ECS Fargate 전환·실제 Spot 회수 복구 검증 (2026-10-12)](VIDEO-FARGATE-RENDER-20261012.md)
 - [영상 그림·썸네일 회차별 맞춤 설계안과 가능성 시험 (2026-10-12)](VIDEO-VISUALS-DESIGN-20261012.md)
 - [오후판 브리핑 멈춤 원인과 Codex 실행기 재시도 번호 수정 (2026-10-12)](BRIEFING-RETRY-BLOCK-20261012.md)

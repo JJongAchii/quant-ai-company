@@ -148,6 +148,31 @@ def command(config, request):
             ["--input-format", "stream-json"] if request.attachments else [])
 
 
+def code(value, pattern=r"[a-z_]{1,40}"):
+    """A CLI identifier for a private receipt; anything else could carry model text."""
+    return value if isinstance(value, str) and re.fullmatch(pattern, value) else "other"
+
+
+def refused(events, item, offered):
+    """The CLI's own refusal of a call to a tool this session never offered (CLI 2.1.x wording).
+
+    Anything else, including an error from a tool that ran, is not proof that nothing executed."""
+    name = item.get("name")
+    if not isinstance(offered, list) or not isinstance(name, str) or not item.get("id"):
+        return False
+    for event in events:
+        content = event.get("message", {}).get("content", []) if event.get("type") == "user" else []
+        for result in content if isinstance(content, list) else []:
+            if not isinstance(result, dict) or result.get("type") != "tool_result" or result.get("tool_use_id") != item["id"]:
+                continue
+            text = result.get("content")
+            if isinstance(text, list):
+                text = "".join(part.get("text", "") for part in text if isinstance(part, dict))
+            return result.get("is_error") is True and isinstance(text, str) and bool(re.match(
+                r"<tool_use_error>Error: No such tool available: " + re.escape(name) + r"(?:[.<\s]|$)", text))
+    return False
+
+
 def parse_result(request, output):
     try:
         events = [strict_json(line) for line in output.stdout.splitlines() if line.strip()]
@@ -163,19 +188,28 @@ def parse_result(request, output):
             if all(error == "authentication_failed" for error in errors):
                 raise ProviderFault("auth", "Renew the official Claude subscription login.")
         if output.returncode != 0 or len(results) != 1 or len(starts) != 1:
-            raise ProviderFault("uncertain", "Claude did not confirm a complete review; reconcile its original ID.")
+            kinds = ",".join(code(e.get("subtype")) for e in results) or "none"
+            causes = ",".join(sorted({code(error) for error in errors}))
+            raise ProviderFault("uncertain", f"Claude did not confirm a complete review (exit {output.returncode}, "
+                                f"result {kinds}" + (f", errors {causes}" if causes else "") + "); reconcile its original ID.")
         start, result = starts[0], results[0]
         if (start.get("model") != request.model or start.get("mcp_servers")
                 or set(start.get("tools", [])) - {"StructuredOutput"}):
             raise ProviderFault("uncertain", "Claude reported an unexpected model or tool configuration.")
+        attempts = []
         for message in messages:
             for item in message.get("message", {}).get("content", []):
                 if item.get("type") == "tool_use" and item.get("name") != "StructuredOutput":
-                    raise ProviderFault("uncertain", "Claude reported a disallowed tool action.")
+                    name = code(item.get("name"), r"[A-Za-z0-9_]{1,40}")
+                    if not refused(events, item, start.get("tools")):
+                        raise ProviderFault("uncertain", f"Claude reported a disallowed tool action ({name}).")
+                    attempts.append(name)
+        # After a refused call, any other failure stays uncertain, as it was before refused calls were accepted.
         if result.get("is_error") is not False or result.get("subtype") != "success" or errors:
-            raise ProviderFault("invalid_output", "Claude did not return a successful structured review.")
+            raise ProviderFault("uncertain" if attempts else "invalid_output",
+                                "Claude did not return a successful structured review.")
         if result.get("permission_denials"):
-            raise ProviderFault("invalid_output", "Claude attempted a prohibited action.")
+            raise ProviderFault("uncertain" if attempts else "invalid_output", "Claude attempted a prohibited action.")
         models = result.get("modelUsage")
         if not isinstance(models, dict) or set(models) != {request.model}:
             raise ProviderFault("uncertain", "The actual review model could not be verified.")
@@ -202,6 +236,8 @@ def parse_result(request, output):
         counts.update(actual_model=request.model, cli_version=CLI_VERSION, effort=request.reasoning_effort or "high",
                       effort_evidence="requested_cli_argument_not_provider_attested",
                       billing_mode="subscription", account_usage_credits_disabled_owner_confirmed=True)
+        if attempts:
+            counts["refused_tool_attempts"] = attempts
         return ProviderResponse(request_id=request.request_id, provider="claude", usage=counts,
                                 decision=AgentDecision(status="complete", say=say,
                                     artifacts=[ArtifactDraft(title=title, content=review.model_dump_json())]))

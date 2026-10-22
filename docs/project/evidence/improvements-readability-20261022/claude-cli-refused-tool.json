@@ -1,0 +1,126 @@
+{
+ "purpose": "How the Claude CLI reports a call to a tool the session never offered (local reproduction).",
+ "cli_version": "2.1.308 (local Mac); production pins 2.1.280",
+ "command_flags": [
+  "-p",
+  "--model haiku",
+  "--tools ''",
+  "--strict-mcp-config",
+  "--mcp-config {\"mcpServers\":{}}",
+  "--disable-slash-commands",
+  "--setting-sources ''",
+  "--permission-mode dontAsk",
+  "--no-session-persistence",
+  "--output-format stream-json",
+  "--verbose",
+  "--json-schema {ok:boolean}",
+  "--max-turns <per run>"
+ ],
+ "prompt": "Asked to call TodoWrite first, then answer ok=true (synthetic; no company data).",
+ "runs": [
+  {
+   "max_turns": 3,
+   "returncode": 0,
+   "events": [
+    {
+     "type": "system/init",
+     "tools": [
+      "StructuredOutput"
+     ],
+     "mcp_servers": []
+    },
+    {
+     "type": "assistant/tool_use",
+     "name": "TodoWrite",
+     "id": "toolu_01GXuT81g8ybj9161KCtTTmh"
+    },
+    {
+     "type": "user/tool_result",
+     "tool_use_id": "toolu_01GXuT81g8ybj9161KCtTTmh",
+     "is_error": true,
+     "content": "<tool_use_error>Error: No such tool available: TodoWrite. TodoWrite is disabled for this session, in subagents as well as here.</tool_use_error>"
+    },
+    {
+     "type": "assistant/tool_use",
+     "name": "StructuredOutput",
+     "id": "toolu_01MtiRajt1xV6iHP3pC8YSMv"
+    },
+    {
+     "type": "user/tool_result",
+     "tool_use_id": "toolu_01MtiRajt1xV6iHP3pC8YSMv",
+     "is_error": null,
+     "content": "Structured output provided successfully"
+    },
+    {
+     "type": "result",
+     "subtype": "success",
+     "is_error": false,
+     "num_turns": 3,
+     "permission_denials": [],
+     "models": [
+      "claude-haiku-5-5"
+     ]
+    }
+   ]
+  },
+  {
+   "max_turns": 1,
+   "returncode": 1,
+   "events": [
+    {
+     "type": "system/init",
+     "tools": [
+      "StructuredOutput"
+     ]
+    },
+    {
+     "type": "assistant/tool_use",
+     "name": "TodoWrite"
+    },
+    {
+     "type": "user/tool_result",
+     "is_error": true,
+     "content": "<tool_use_error>Error: No such tool available: TodoWrite. TodoWrite is disabled for this session, in subagents as well as here.</tool_use_error>"
+    },
+    {
+     "type": "result",
+     "subtype": "error_max_turns",
+     "is_error": true,
+     "num_turns": 2,
+     "permission_denials": []
+    }
+   ],
+   "note": "The refused call used the only turn: error_max_turns with exit 1, which the runtime keeps uncertain."
+  },
+  {
+   "max_turns": 2,
+   "returncode": 0,
+   "events": [
+    {
+     "type": "system/init",
+     "tools": [
+      "StructuredOutput"
+     ]
+    },
+    {
+     "type": "assistant/tool_use",
+     "name": "StructuredOutput"
+    },
+    {
+     "type": "user/tool_result",
+     "is_error": null,
+     "content": "Structured output provided successfully"
+    },
+    {
+     "type": "result",
+     "subtype": "success",
+     "is_error": false,
+     "num_turns": 2,
+     "permission_denials": []
+    }
+   ],
+   "note": "With production's limit the model went straight to StructuredOutput in 4 of 4 tries; the production 2-turn refused flow itself was not reproduced."
+  }
+ ],
+ "model": "haiku locally; production reviews use claude-opus-5"
+}

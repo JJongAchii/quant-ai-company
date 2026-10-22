@@ -129,6 +129,8 @@ class Store:
                 rows = safe_rows(rows + events + maintenance_observations(conn, owners, unseen=True))
             if not rows:
                 return None
+            if self.company.settings.company_improvements_enabled and self.recurring(conn, rows, owners):
+                return None
             review, replay_inputs, review_digest = review_snapshot(
                 conn, self.company, owners, datetime.now(UTC))
             payload = {"observations": rows, "review": review, "review_digest": review_digest,
@@ -150,6 +152,55 @@ class Store:
                      self.company.settings.improvements_channel_id)).fetchone())
                 attach(conn, self.company, job_id, source)
             return job_id
+
+    @staticmethod
+    def reconcilable(conn, rows, owners):
+        """Unconfirmed reviews whose frozen request, grade and owner are intact, or None: those need diagnosis."""
+        if not rows or any(row.get("kind") != "staff_independent_review_failure"
+                           or row.get("detail", {}).get("error") != "uncertain"
+                           or row.get("detail", {}).get("operator_reconciliation_required") is not True for row in rows):
+            return None
+        reviews = []
+        for row in rows:
+            review = conn.execute("""SELECT v.id,v.state,v.error,v.request,v.input_digest,v.response,
+                r.id AS run_id,r.state AS source_state,r.owner_user,r.employee
+                FROM staff_independent_reviews v JOIN staff_runs r ON r.id=v.run_id WHERE v.id=%s""",
+                (row["detail"].get("review_id"),)).fetchone()
+            if (not review or review["state"] != "blocked" or review["error"] != "uncertain"
+                    or review["response"] is not None or review["source_state"] != "completed"
+                    or review["owner_user"] not in owners or review["employee"] != row.get("author")
+                    or str(review["run_id"]) != row["detail"].get("run_id")
+                    or fingerprint(review["request"]) != review["input_digest"]):
+                return None
+            reviews.append(review)
+        return reviews
+
+    def recurring(self, conn, rows, owners):
+        """A repeat of an intact unconfirmed review joins the case that last saw one within 7 days.
+
+        No new case or owner ping; the case keeps every review that awaits reconciliation."""
+        reviews = self.reconcilable(conn, rows, owners)
+        if not reviews:
+            return None
+        from .cases import allowed
+
+        case = conn.execute("""SELECT c.* FROM maintenance_cases c JOIN maintenance_jobs j ON j.id=c.request_id
+            WHERE j.kind='triage' AND j.state='blocked' AND j.error='review_reconciliation_required'
+              AND j.payload->'owners'=%s AND (SELECT max((o.body->>'created_at')::timestamptz)
+                FROM maintenance_observations o WHERE o.job_id=j.id) >= now()-interval '7 days'
+            ORDER BY j.created_at DESC,j.id DESC LIMIT 1""", (Jsonb(owners),)).fetchone()
+        if not case or not allowed(conn, self.company, case):
+            return None
+        job = conn.execute("SELECT receipt FROM maintenance_jobs WHERE id=%s FOR UPDATE", (case["request_id"],)).fetchone()
+        receipt = job["receipt"]
+        receipt.update(review_ids=sorted(set(receipt.get("review_ids", [])) | {review["id"] for review in reviews}),
+                       input_digests={**receipt.get("input_digests", {}),
+                                      **{review["id"]: review["input_digest"] for review in reviews}})
+        conn.execute("UPDATE maintenance_jobs SET receipt=%s WHERE id=%s", (Jsonb(receipt), case["request_id"]))
+        for row in rows:
+            conn.execute("INSERT INTO maintenance_observations(key,job_id,body) VALUES (%s,%s,%s)",
+                         (row["key"], case["request_id"], Jsonb(row)))
+        return case["request_id"]
 
     def next_job(self):
         with self.db.transaction() as conn:
@@ -201,22 +252,12 @@ class Store:
                        for row in observations)):
             return False
         owners = set(job["payload"].get("owners", []))
-        reviews = []
         with self.db.transaction() as conn:
             if conn.execute("SELECT 1 FROM maintenance_calls WHERE job_id=%s LIMIT 1", (job["id"],)).fetchone():
                 return False
-            for row in observations:
-                review = conn.execute("""SELECT v.id,v.state,v.error,v.request,v.input_digest,v.response,
-                    r.id AS run_id,r.state AS source_state,r.owner_user,r.employee
-                    FROM staff_independent_reviews v JOIN staff_runs r ON r.id=v.run_id WHERE v.id=%s""",
-                    (row["detail"].get("review_id"),)).fetchone()
-                if (not review or review["state"] != "blocked" or review["error"] != "uncertain"
-                        or review["response"] is not None or review["source_state"] != "completed"
-                        or review["owner_user"] not in owners or review["employee"] != row.get("author")
-                        or str(review["run_id"]) != row["detail"].get("run_id")
-                        or fingerprint(review["request"]) != review["input_digest"]):
-                    return False
-                reviews.append(review)
+            reviews = self.reconcilable(conn, observations, owners)
+            if not reviews:
+                return False
             receipt = {**job["receipt"], "outcome": "operator_action_required",
                        "review_ids": sorted({review["id"] for review in reviews}),
                        "input_digests": {review["id"]: review["input_digest"] for review in reviews},
@@ -529,7 +570,23 @@ class Store:
             conn.execute("UPDATE maintenance_jobs SET state=%s,receipt=%s,error=NULL,updated_at=now() WHERE id=%s",
                          (state, Jsonb(receipt), job["id"]))
 
+    def sync_pull_requests(self, pulls):
+        """A bot PR closed or merged on GitHub can no longer be approved here; its case says so."""
+        closed = {p["number"]: p for p in pulls if p.get("state") == "closed"}
+        if not closed:
+            return
+        with self.db.transaction() as conn:
+            conn.execute("SELECT pg_advisory_xact_lock(71350223)")  # Serialized with Slack approvals.
+            for job in conn.execute("""SELECT * FROM maintenance_jobs j WHERE kind='repair' AND state='pr_open'
+                AND NOT EXISTS (SELECT 1 FROM maintenance_applications a WHERE a.job_id=j.id) FOR UPDATE""").fetchall():
+                pull = closed.get(job["receipt"].get("pr", {}).get("number"))
+                if pull:
+                    pr = {**job["receipt"]["pr"], "state": "closed", "merged_at": pull.get("merged_at")}
+                    conn.execute("UPDATE maintenance_jobs SET state='closed',receipt=receipt || %s,updated_at=now() WHERE id=%s",
+                                 (Jsonb({"pr": pr}), job["id"]))
+
     def report_reviews(self):
+        from .explain import facts
         from .requests import permitted, progress_text, report, service
 
         # One notice per distinct durable state, including terminal failure/no-finding and budget waits.
@@ -552,8 +609,9 @@ class Store:
                 identity = str(uuid5(NAMESPACE_URL, "maintenance-review-notice:" + digest(value)))
                 if conn.execute("SELECT 1 FROM messages WHERE id=%s", (identity,)).fetchone():
                     continue
+                described = {**value, "facts": facts(conn, self.company, job["id"], value)}
                 self.company._message(conn, project, None, "director", "maintenance",
-                                      "[개선 담당] " + progress_text(value, service(conn, self.company, owner)),
+                                      "[개선 담당] " + progress_text(described, service(conn, self.company, owner)),
                                       message_id=identity,
                                       notify_owner=(value['state'] == 'blocked' or
                                                     (value['state'] in {'done', 'applied', 'closed'}

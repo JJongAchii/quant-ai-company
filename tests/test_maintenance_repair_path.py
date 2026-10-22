@@ -154,13 +154,13 @@ async def test_uncertain_review_is_handed_off_before_spending_model_calls(comple
         assert conn.execute("SELECT to_jsonb(v) value FROM staff_independent_reviews v WHERE id=%s", (review_id,)).fetchone()["value"] == original_review
     assert not runner.provider.requests and runner.github.published == 0
     text = progress_text({"request_id": job_id, "state": job["state"], "error": job["error"]}, {})
-    assert "대사" in text and "직원 평가" in text
+    assert "자동으로 다룰 수 없습니다" in text and "개발 작업" in text
 
 
 def test_no_candidate_completion_explicitly_reports_no_repair():
     text = progress_text({"request_id": "a" * 36, "state": "done", "reason": "No supported candidate."}, {})
-    assert "수정 후보 없음" in text
-    assert "점검을 마쳤습니다" in text
+    assert "고칠 곳은 찾지 못했습니다" in text and "No supported candidate." in text
+    assert "반영을 마쳤습니다" not in text
 
 
 @pytest.mark.parametrize("change", ["foreign_owner", "changed_request", "has_response", "recorded_call", "explicit_review", "other_failure"])

@@ -56,13 +56,30 @@ if control.get('crash'):
     sys.exit(7)
 start = {'type': 'system', 'subtype': 'init', 'model': control.get('model', 'claude-opus-5'),
          'tools': control.get('tools', ['StructuredOutput']), 'mcp_servers': []}
+if control.get('no_tools_key'):
+    del start['tools']
 print(json.dumps(start))
 if control.get('error'):
     print(json.dumps({'type': 'assistant', 'error': control['error'], 'message': {'usage': {'output_tokens': 0}}}))
     sys.exit(1)
 if control.get('action'):
     print(json.dumps({'type': 'assistant', 'message': {'content': [{'type':'tool_use','name':control['action']}]}}))
-print(json.dumps({'type': 'result', 'subtype': 'success', 'is_error': False,
+if control.get('refused'):
+    # Real CLI shape (2.1.x): a call to a tool the session never offered comes back as an error result.
+    print(json.dumps({'type': 'assistant', 'message': {'content': [
+        {'type': 'tool_use', 'id': 'toolu_r1', 'name': control['refused'], 'input': {}}]}}))
+    print(json.dumps({'type': 'user', 'message': {'role': 'user', 'content': [
+        {'type': 'tool_result', 'tool_use_id': control.get('refusal_for', 'toolu_r1'), 'is_error': True,
+         'content': control.get('refusal_text', '<tool_use_error>Error: No such tool available: ' + control['refused']
+                                + '</tool_use_error>')}]}}))
+if control.get('incomplete'):
+    print(json.dumps({'type': 'assistant', 'message': {'content': [{'type': 'text', 'text': 'SECRET-MODEL-TEXT'}],
+                                                      'usage': {'output_tokens': 5}}}))
+    print(json.dumps({'type': 'result', 'subtype': control['incomplete'], 'is_error': True,
+                      'usage': {'input_tokens': 10, 'output_tokens': 5}}))
+    sys.exit(1)
+print(json.dumps({'type': 'result', 'subtype': control.get('result_subtype', 'success'),
+    'is_error': control.get('result_is_error', False), 'permission_denials': control.get('denials', []),
     'modelUsage': {control.get('used_model', 'claude-opus-5'): {'costUSD': 100}},
     'usage': {'input_tokens': 10, 'output_tokens': 20}, 'total_cost_usd': 100,
     'structured_output': control['review']}))
@@ -171,6 +188,16 @@ async def test_owner_billing_confirmation_is_required(fake_claude):
 @pytest.mark.parametrize("change,code", [
     ({"model": "claude-fable-5"}, "uncertain"), ({"used_model": "claude-sonnet-5"}, "uncertain"),
     ({"tools": ["Bash"]}, "uncertain"), ({"action": "WebSearch"}, "uncertain"),
+    ({"refused": "TodoWrite", "refusal_for": "toolu_other"}, "uncertain"),
+    ({"refused": "TodoWrite", "tools": ["StructuredOutput", "TodoWrite"]}, "uncertain"),
+    # Accepting a refused call needs the offered-tool list and the CLI's own "no such tool" refusal.
+    ({"refused": "TodoWrite", "no_tools_key": True}, "uncertain"),
+    ({"refused": "Bash", "refusal_text": "Exit code 1\nls: cannot access 'x'"}, "uncertain"),
+    ({"refused": "Todo", "refusal_text": "<tool_use_error>Error: No such tool available: TodoWrite</tool_use_error>"},
+     "uncertain"),
+    # A run with a refused call that then fails stays uncertain, as it was before refused calls were accepted.
+    ({"refused": "TodoWrite", "result_subtype": "error_during_execution", "result_is_error": True}, "uncertain"),
+    ({"refused": "TodoWrite", "denials": [{"tool_name": "TodoWrite"}]}, "uncertain"),
     ({"review": {"conclusion": "incomplete"}}, "invalid_output"), ({"crash": True}, "uncertain"),
 ])
 async def test_bad_results_never_repeat_inference(fake_claude, change, code):
@@ -184,6 +211,28 @@ async def test_bad_results_never_repeat_inference(fake_claude, change, code):
     # A definitive failure is reported again with its own code; anything ambiguous stays uncertain. No second run.
     assert cached.value.code == (code if code in {"invalid_output", "timeout"} else "uncertain") and len(calls()) == 1
     assert "SECRET" not in (config.jobs_dir / "review-001.json").read_text()
+
+
+async def test_a_refused_call_to_an_unoffered_tool_keeps_the_valid_review(fake_claude):
+    # Production 10/09-10/22: 7 of 13 failed reviews were these, discarded although nothing ran.
+    config, configure, calls = fake_claude
+    configure(refused="TodoWrite")
+    result = await runner(config).run(request())
+    assert result.usage["refused_tool_attempts"] == ["TodoWrite"]
+    assert json.loads(result.decision.artifacts[0].content)["conclusion"] == review_fixture()["conclusion"]
+    assert await runner(config).run(request()) == result and len(calls()) == 1
+
+
+async def test_an_incomplete_run_records_exit_and_result_kind_but_no_model_text(fake_claude):
+    config, configure, calls = fake_claude
+    configure(incomplete="error_max_turns")
+    with pytest.raises(ProviderFault) as fault:
+        await runner(config).run(request())
+    assert fault.value.code == "uncertain"
+    detail = json.loads((config.jobs_dir / "review-001.json").read_text())["fault_detail"]
+    assert "exit 1" in detail and "error_max_turns" in detail
+    assert "SECRET-MODEL-TEXT" not in (config.jobs_dir / "review-001.json").read_text()
+    assert len(calls()) == 1
 
 
 async def test_quota_waits_and_retries_only_the_same_bound_input(fake_claude):
@@ -212,7 +261,8 @@ async def test_failed_cli_preserves_execution_cause_without_output_leak_or_repla
     evidence = receipt.get("execution_evidence", {})
     assert evidence.get("returncode") == 7, "The original CLI exit must be retained to diagnose repeated uncertain outcomes"
     assert evidence["stderr_bytes"] > 0 and len(evidence["stderr_sha256"]) == 64
-    assert receipt["fault_detail"] == "Claude did not confirm a complete review; reconcile its original ID."
+    assert receipt["fault_detail"] == ("Claude did not confirm a complete review (exit 7, result none); "
+                                       "reconcile its original ID.")
     assert "SECRET" not in path.read_text() and path.stat().st_mode & 0o777 == 0o600
     before = path.read_bytes()
     with pytest.raises(ProviderFault):
