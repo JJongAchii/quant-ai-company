@@ -293,6 +293,8 @@ class ClaudeRunner:
         self.slots = asyncio.Semaphore(API_SLOTS)
         self.budget = None
         self.status_refreshed = False
+        # Request IDs inside run(), in any phase: a second ask of the same ID meanwhile is pending.
+        self.claims = set()
         # request ID -> (task, "cli" | "api")
         self.active = {}
 
@@ -423,11 +425,13 @@ class ClaudeRunner:
             atomic_json(path, {**receipt, "state": "failed", "fault": code, "fault_detail": detail,
                                "retry_at": time.time(), "attempts": attempts + [attempt("api", code, self.clock())]})
 
-        def spent(code, detail):
-            # It may have run: count the whole reservation, pause the lane and never repeat this ID (spec 9-2).
+        def spent(code, detail, pause=True):
+            # It may have run: count the whole reservation and never repeat this ID. An API-side uncertain outcome
+            # or a timeout also pauses the lane (spec 9-2); a deliberate cancel is not an API fault and does not.
             failed(code, detail)
             budget.settle(ledger_id, reserved)
-            budget.pause("uncertain", self.clock() + UNCERTAIN_PAUSE_SECONDS)
+            if pause:
+                budget.pause("uncertain", self.clock() + UNCERTAIN_PAUSE_SECONDS)
             self._status()
 
         started = False
@@ -483,7 +487,8 @@ class ClaudeRunner:
                 raise
             except asyncio.CancelledError:
                 if started:
-                    spent("uncertain", "The Claude API call was cancelled while it ran; its outcome is unknown.")
+                    spent("uncertain", "The Claude API call was cancelled while it ran; its outcome is unknown.",
+                          pause=False)
                 else:  # still waiting for a slot: nothing was sent
                     atomic_json(path, {**restore, "attempts": attempts + [
                         attempt("api", "not_executed", self.clock(), reason="cancelled")]})
@@ -510,6 +515,17 @@ class ClaudeRunner:
         if request.model not in allowed_models(request) or request.web_search:
             raise ProviderFault("invalid_output", "This runtime accepts only offline Opus 5 structured requests.")
         output_schema(request)
+        if request.request_id in self.claims:
+            # The API lane does not take the CLI lock, so this claim keeps one ask per ID in every phase
+            # (preflight, an API call, a fallback): a second ask can never start a second paid call.
+            raise ProviderFault("pending", "This request is still running; ask again with its ID.", 20)
+        self.claims.add(request.request_id)
+        try:
+            return await self._route(request)
+        finally:
+            self.claims.discard(request.request_id)
+
+    async def _route(self, request):
         directory = self.config.jobs_dir.resolve()
         directory.mkdir(parents=True, exist_ok=True, mode=0o700)
         path = directory / f"{request.request_id}.json"
@@ -527,11 +543,10 @@ class ClaudeRunner:
         receipt = self._receipt(path)
         if receipt is not None and receipt["state"] == "running":
             if receipt.get("backend") == "api":
-                if request.request_id in self.active:
-                    raise ProviderFault("pending", "This request is still running; ask again with its ID.", 20)
-                # The runtime restarted during the call: it may have run and been charged. Never replay it.
+                # Not claimed here (run() checked): the runtime restarted during the call, which may have run
+                # and been charged. Never replay it.
                 raise ProviderFault("uncertain", "A Claude API call was interrupted; it will not be repeated.")
-            return await self._run_cli(request, path, digest, attempts_of(receipt))
+            return await self._run_cli(request, path, digest)
         attempts = attempts_of(receipt)
         if request.output_contract in API_FIRST:
             lane = self._lane(request, attempts, "api_first")
@@ -541,24 +556,26 @@ class ClaudeRunner:
                 try:
                     return await self._run_api(request, path, digest, attempts, lane, restore)
                 except ApiNotExecuted:
-                    attempts = attempts_of(self._receipt(path))
-            return await self._run_cli(request, path, digest, attempts)
+                    pass
+            return await self._run_cli(request, path, digest)
         try:
-            return await self._run_cli(request, path, digest, attempts)
+            return await self._run_cli(request, path, digest)
         except ProviderFault as fault:
             stage = getattr(fault, "unexecuted", None)
             if stage is None:
                 raise
             after = self._receipt(path)
             if stage == "preflight":
+                if after is not None and after["state"] != "deferred":
+                    raise  # changed during the preflight (e.g. cancelled): the API must not take it
                 # The CLI recorded nothing. Keep the ID retryable, as with no receipt, while recording the API attempt.
                 base = after or {"provider": "claude", "request_id": request.request_id, "input_digest": digest}
                 after = {**base, "state": "deferred", "fault": fault.code, "fault_detail": str(fault),
                          "retry_at": time.time(), "backend": "subscription",
-                         "attempts": attempts + [attempt("subscription", fault.code, self.clock())]}
+                         "attempts": attempts_of(after) + [attempt("subscription", fault.code, self.clock())]}
             return await self._api_instead(request, path, digest, after, fault)
 
-    async def _run_cli(self, request, path, digest, attempts):
+    async def _run_cli(self, request, path, digest):
         directory = path.parent
         fd = os.open(directory / ".runtime.lock", os.O_CREAT | os.O_RDWR, 0o600)
         try:
@@ -576,8 +593,12 @@ class ClaudeRunner:
             with tempfile.TemporaryDirectory(prefix=".review-", dir=directory) as temporary:
                 cwd = Path(temporary)
                 await self._preflight(cwd, env)
-                # Cancellation can arrive during the asynchronous auth/version preflight.
-                self._cached(path, digest, request.request_id, locked=True)
+                # Cancellation, or an API turn of this ID from elsewhere, can arrive during the preflight.
+                cached = self._cached(path, digest, request.request_id, locked=True)
+                if cached:
+                    return cached
+                # Read the history now, so the running receipt never drops an attempt recorded meanwhile.
+                attempts = attempts_of(self._receipt(path))
                 receipt = {"provider": "claude", "request_id": request.request_id, "input_digest": digest,
                            "state": "running", "started_at": time.time(), "cli_version": CLI_VERSION,
                            "requested_execution": {"model": request.model,
@@ -643,6 +664,10 @@ class ClaudeRunner:
                 if receipt.get("state") == "complete":
                     return "completed"
                 if receipt.get("state") == "running":
+                    return "uncertain"
+                if lane == "api" and receipt.get("state") == "failed" and receipt.get("fault") == "uncertain":
+                    # The cancelled call had started and may have been charged: answer as for a started CLI turn,
+                    # keeping the receipt the API path wrote.
                     return "uncertain"
             except (ValueError, TypeError, AttributeError):
                 return "uncertain"

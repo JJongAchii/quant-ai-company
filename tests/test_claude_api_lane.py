@@ -28,6 +28,7 @@ from quant_company.providers.claude_runner import (
     ClaudeRunner,
     runner_from_environment,
 )
+from quant_company.providers.codex_runner import ProcessRunner
 
 from .newsletter_fixtures import v5_draft
 from .test_claude_runtime import fake_claude  # noqa: F401 - the fake CLI fixture drives the subscription path
@@ -627,12 +628,12 @@ async def test_restart_during_api_call_is_uncertain_and_keeps_reservation(lane):
         await make_runner(config, restarted).run(email())
     assert fault.value.code == "uncertain" and not restarted.seen and calls() == []
     assert Budget(config.jobs_dir / ".api", 190).spent() == pytest.approx(reservation_usd(email()))
-    # The interrupted call itself: cancelled mid-stream it counts in full and pauses the lane.
+    # The interrupted call itself: cancelled mid-stream it counts in full; a deliberate cancel pauses nothing.
     task.cancel()
     await asyncio.gather(task, return_exceptions=True)
     assert receipt(config, email())["fault"] == "uncertain"
     assert Budget(config.jobs_dir / ".api", 190).spent() == pytest.approx(reservation_usd(email()))
-    assert status(config)["paused"]["reason"] == "uncertain"
+    assert status(config)["paused"] is None
     assert len(api.seen) == 1
 
 
@@ -797,3 +798,107 @@ async def test_at_most_two_api_calls_run_at_once(lane):
     api.gate.set()
     assert all(r.usage["billing_mode"] == "api_credit" for r in await asyncio.gather(*turns))
     assert len(api.seen) == 3
+
+
+class GatedPreflight(ProcessRunner):
+    """The real process boundary, holding `claude --version` (the CLI preflight) until the gate opens."""
+
+    def __init__(self):
+        super().__init__()
+        self.gate = asyncio.Event()
+        self.entered = asyncio.Event()
+
+    async def run(self, argv, **options):
+        if argv[1:] == ["--version"] and not self.gate.is_set():
+            self.entered.set()
+            await self.gate.wait()
+        return await super().run(argv, **options)
+
+
+@pytest.mark.parametrize("second", ["complete", "consumed"])
+async def test_a_same_id_ask_during_the_cli_preflight_is_pending_and_never_loses_an_api_record(lane, second):
+    config, configure, calls = lane
+    cli_email(configure)
+    if second == "consumed":
+        configure(error="rate_limit")
+    # A 503 refuses without a pause, so the lane stays open while the first ask waits in the CLI preflight.
+    api = Api(refusal(503), ok(v5_draft().model_dump(mode="json")) if second == "complete" else refusal(500))
+    process = GatedPreflight()
+    first = ClaudeRunner(config, process_runner=process, source_environment={"PATH": os.environ["PATH"]},
+                         api_transport=api.transport())
+    task = asyncio.create_task(first.run(email()))
+    await process.entered.wait()
+    assert tried(config, email()) == [("api", "not_executed")]
+    for _ in range(2):
+        with pytest.raises(ProviderFault) as pending:
+            await first.run(email())
+        assert pending.value.code == "pending" and pending.value.retry_after_seconds == 20
+    assert len(api.seen) == 1
+    # Another runner on the same jobs directory may take the API turn meanwhile; the CLI must not erase it.
+    if second == "complete":
+        result = await make_runner(config, api).run(email())
+    else:
+        with pytest.raises(ProviderFault) as busy:
+            await make_runner(config, api).run(email())
+        assert busy.value.code == "busy"
+    process.gate.set()
+    if second == "complete":
+        assert await task == result and calls() == []
+        assert tried(config, email()) == [("api", "not_executed"), ("api", "complete")]
+    else:
+        with pytest.raises(ProviderFault) as quota:
+            await task
+        assert quota.value.code == "quota"
+        assert tried(config, email()) == [("api", "not_executed"), ("api", "consumed"), ("subscription", "quota")]
+        path = config.jobs_dir / f"{email().request_id}.json"
+        path.write_text(json.dumps({**json.loads(path.read_text()), "retry_at": time.time() - 1}))
+        with pytest.raises(ProviderFault) as again:
+            await first.run(email())
+        assert again.value.code == "quota" and len(calls()) == 2
+    assert len(api.seen) == 2  # the unpaid 503 and exactly one paid call
+
+
+async def test_cancel_of_a_started_api_turn_is_uncertain_and_a_waiting_one_is_cancelled(lane):
+    config, _, calls = lane
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    api.gate = asyncio.Event()
+    runner = make_runner(config, api)
+    turns = [asyncio.create_task(runner.run(email(n))) for n in (1, 2, 3)]
+    await until(lambda: len(api.seen) == 2)
+    # The third waits for a slot: nothing was sent, so it is released and simply cancelled.
+    assert await runner.cancel(email(3).request_id) == "cancelled"
+    assert turns[2].cancelled() and receipt(config, email(3))["state"] == "cancelled"
+    assert tried(config, email(3)) == [("api", "not_executed")]
+    # The first is in its call: it may have been charged, so the answer is uncertain and the receipt stays failed.
+    assert await runner.cancel(email(1).request_id) == "uncertain"
+    assert turns[0].cancelled()
+    saved = receipt(config, email(1))
+    assert saved["state"] == "failed" and saved["fault"] == "uncertain" and tried(config, email(1)) == [
+        ("api", "uncertain")]
+    entries = {e["request_id"]: e for e in ledger(config)["entries"]}
+    assert set(entries) == {"newsletter-lane-1#0", "newsletter-lane-2#0"}
+    assert entries["newsletter-lane-1#0"]["actual"] == pytest.approx(reservation_usd(email(1)))
+    assert status(config)["paused"] is None  # a deliberate cancel is not an API fault: the lane stays open
+    api.gate.set()
+    assert (await turns[1]).usage["billing_mode"] == "api_credit"
+    with pytest.raises(ProviderFault) as again:
+        await runner.run(email(1))
+    assert again.value.code == "uncertain" and len(api.seen) == 2 and calls() == []
+    assert await runner.cancel(email(2).request_id, shared_only=True) == "completed"
+
+
+async def test_a_turn_cancelled_during_the_cli_preflight_never_falls_back_to_the_api(lane):
+    config, configure, calls = lane
+    cli_video(configure, auth={"loggedIn": False})
+    api = Api(ok(VIDEO_REVIEW))
+    process = GatedPreflight()
+    runner = ClaudeRunner(config, process_runner=process, source_environment={"PATH": os.environ["PATH"]},
+                          api_transport=api.transport())
+    task = asyncio.create_task(runner.run(video()))
+    await process.entered.wait()
+    assert await runner.cancel(video().request_id) == "cancelled"
+    process.gate.set()
+    with pytest.raises(ProviderFault) as fault:
+        await task
+    assert fault.value.code == "auth" and not api.seen and not calls()
+    assert receipt(config, video())["state"] == "cancelled"
