@@ -1,13 +1,16 @@
 """Brief email (AM and PM editions). Real PostgreSQL; claude-runtime, Gmail SMTP/IMAP and Slack are simulated
 in-process (no network, no real mailbox, no Slack): nothing here stands for a deployed or sent email."""
 
+import asyncio
 import email
 import hashlib
+import os
 import smtplib
 from datetime import datetime, timedelta
 from email.message import EmailMessage
 from email.policy import default
 
+import httpx
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
@@ -27,6 +30,9 @@ from quant_company.newsletter.store import (
     masked,
 )
 from quant_company.newsletter.writer import NewsletterWriter
+from quant_company.providers.claude_runner import ClaudeRequest, ClaudeRunner
+from quant_company.providers.client import RuntimeClient
+from quant_company.providers.codex_runtime import create_app as runtime_app
 
 from .newsletter_fixtures import (
     KST,
@@ -42,6 +48,8 @@ from .newsletter_fixtures import (
     v5_draft,
 )
 from .test_briefing import brief, complete, definition  # noqa: F401
+from .test_claude_api_lane import Api, lane, ok  # noqa: F401 - real ClaudeRunner, simulated API
+from .test_claude_runtime import fake_claude  # noqa: F401 - the fake CLI behind the lane fixture
 from .test_maintenance_cases import improvements  # noqa: F401
 from .test_slack import event, signed
 from .test_temporal import temporal_environment  # noqa: F401
@@ -911,6 +919,60 @@ async def test_newsletter_still_yields_a_cancelled_turn(mail, brief):  # noqa: F
     assert provider.cancelled == [first] and provider.cancel_scopes == [True]
     issue = issue_of(store, edition)
     assert [a["outcome"] for a in issue["attempts"]] == ["yielded"] and issue["request"] is None
+
+
+class StoppedWaiting:
+    """The writer's claude-runtime client when its wait ends first: RuntimeClient answers pending on its timeout while
+    the runtime keeps the turn under its request ID. Here the HTTP request simply stays open in the background."""
+
+    def __init__(self, client, wait=0.5):
+        self.client, self.wait, self.open = client, wait, []
+
+    async def run(self, request):
+        call = asyncio.create_task(self.client.run(request))
+        done, _ = await asyncio.wait({call}, timeout=self.wait)
+        if not done:
+            self.open.append(call)
+            raise ProviderFault("pending", "simulated: the client stopped waiting", 30)
+        return call.result()
+
+    async def cancel(self, request_id, shared_only=False):
+        return await self.client.cancel(request_id, shared_only=shared_only)
+
+
+@pytest.mark.integration
+async def test_an_api_email_turn_kept_for_the_video_is_used_by_its_id_after_it_completes(mail, brief, lane):  # noqa: F811
+    # Real ClaudeRunner behind the runtime's HTTP app (in process); the Messages API is simulated (MockTransport).
+    store, clock = mail
+    config, _, calls = lane
+    edition = commit_pm(brief)
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    api.gate = asyncio.Event()
+    runner = ClaudeRunner(config, source_environment={"PATH": os.environ["PATH"]}, api_transport=api.transport())
+    client = RuntimeClient("http://runtime", "private", expected_provider="claude",
+                           transport=httpx.ASGITransport(app=runtime_app(runner=runner, token="private",
+                                                                          request_model=ClaudeRequest)))
+    provider = StoppedWaiting(client)
+    writer = NewsletterWriter(store.company, provider=provider)
+    assert (await writer.tick())["code"] == "pending" and len(api.seen) == 1
+    first = issue_of(store, edition)["request"]["request_id"]
+    video_job(store, edition, "inspecting")
+    clock["at"] += timedelta(seconds=30)
+    assert await writer.tick() == {"state": "idle"}  # kept: the API turn holds no shared slot
+    api.gate.set()
+    assert (await asyncio.gather(*provider.open))[0].usage["billing_mode"] == "api_credit"
+    clock["at"] += timedelta(seconds=30)
+    # The shared-only cancel now answers completed: the finished result waits under its ID, nothing is yielded.
+    assert await writer.tick() == {"state": "idle"}
+    issue = issue_of(store, edition)
+    assert issue["attempts"] == [] and issue["request"]["request_id"] == first
+    video_job(store, edition, "rendering")
+    clock["at"] += timedelta(minutes=2)
+    assert (await writer.tick())["state"] == "ready"
+    issue = issue_of(store, edition)
+    assert [(a["request_id"], a["outcome"]) for a in issue["attempts"]] == [(first, "passed")]
+    assert issue["attempts"][0]["usage"]["billing_mode"] == "api_credit"
+    assert len(api.seen) == 1 and calls() == []  # one paid call, read back by its ID; no second request
 
 
 @pytest.mark.integration

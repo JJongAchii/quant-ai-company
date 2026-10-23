@@ -91,8 +91,8 @@ Max 20x 구독자에게 주는 월 $200 API 크레딧(Console 조직에 들어�
 - 한 요청 ID는 한 번에 한 곳에서만 묻는다. 다른 경로가 같은 ID를 실행 중이면 `pending`을 돌려준다.
 - API 경로는 CLI 칸(`.runtime.lock`)을 쓰지 않는다. 자기 칸에서 최대 2건이 동시에 돈다. 마감 영상이 CLI 칸을 쓰는 동안에도
   메일, Shorts, 성과 분석은 기다리지 않는다.
-- 메일의 "영상에 칸 양보"(`NewsletterWriter.yield_to_video`)는 API로 도는 메일을 취소하지 않는다. 런타임이 `kept`를 돌려주면
-  양보하지 않는다. 대체 글로 바뀐 메일(`cancel_replaced`)과 오래된 turn의 취소는 API 요청도 끊는다. 이미 시작한 API 호출을
+- 메일의 "영상에 칸 양보"(`NewsletterWriter.yield_to_video`)는 API로 도는 메일을 취소하지 않는다. 런타임이 `kept`(API로 도는 중)나
+  `completed`(이미 끝나 결과가 같은 ID로 저장됨)를 돌려주면 양보하지 않고, 영상이 모델을 다 쓴 뒤 같은 ID로 물어 그 결과를 받는다. 대체 글로 바뀐 메일(`cancel_replaced`)과 오래된 turn의 취소는 API 요청도 끊는다. 이미 시작한 API 호출을
   끊으면 영수증은 `uncertain`이 되고(예약액을 쓴 것으로 친다) 취소 응답도 `uncertain`이다. 이 취소로는 레인을 쉬게 하지 않는다.
 
 ### 상한과 스위치

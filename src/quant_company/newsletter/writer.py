@@ -68,7 +68,8 @@ class NewsletterWriter:
             await asyncio.to_thread(self.store.cancelled, row)
 
     async def yield_to_video(self):
-        """An episode reached a model stage while an email turn may still run: cancel it, ask again afterwards."""
+        """An episode reached a model stage while an email turn may still run: cancel it, ask again afterwards. A turn
+        the runtime kept (API lane) or already completed is not given up."""
         for issue in await asyncio.to_thread(self.store.in_flight_while_video):
             request_id = issue["request"]["request_id"]
             try:
@@ -77,8 +78,10 @@ class NewsletterWriter:
                 LOG.warning("newsletter turn %s was not cancelled: %s", request_id,
                             getattr(error, "code", type(error).__name__))
             else:
-                if answer == "kept":
-                    # It runs on the API lane and holds no shared slot: let it finish (spec 9-1).
+                if answer in ("kept", "completed"):
+                    # Kept: it runs on the API lane and holds no shared slot, so let it finish (spec 9-1). Completed:
+                    # its result is already saved under this request ID. Either way the writer asks the same ID again
+                    # once the video is done and gets the result, instead of paying for a new request.
                     continue
             await asyncio.to_thread(self.store.yielded, issue, request_id)
 

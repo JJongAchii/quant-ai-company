@@ -43,7 +43,7 @@
   다른 도구·텍스트만 온 응답·`max_tokens`/`refusal` 종료·다른 모델은 `invalid_output`이다.
 - **새 라이브러리와 렌더 이미지 변경이 없다.** `httpx`로 부르고 `contracts.py`·`pyproject.toml`은 그대로라 렌더 이미지를 다시 만들지 않는다.
 - **메일은 API로 도는 동안 영상에 양보하지 않는다.** 취소하면 낸 돈을 버리고 같은 메일을 한 번 더 내게 된다. 런타임이 `kept`를 돌려주고
-  메일은 양보 처리를 하지 않는다. 대체 글로 바뀐 메일의 취소는 API 요청도 끊는다.
+  메일은 양보 처리를 하지 않는다. 그사이 끝나 `completed`가 와도 양보하지 않고, 영상이 끝난 뒤 같은 ID로 저장된 결과를 받는다. 대체 글로 바뀐 메일의 취소는 API 요청도 끊는다.
 - **보이기.** 상태 파일 `claude/jobs/.api/status.json`을 `deploy/ops_probe.py`가 읽어 `ops status`에 한 줄을 보이고, watch가
   #ops-alerts에 장부 읽기 실패, 키·지출 한도·uncertain 멈춤, 상한 80%, 구독 대체 시작을 알린다.
 
