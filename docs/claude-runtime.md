@@ -144,9 +144,11 @@ effort는 `output_config.effort`로 항상 명시한다(빠뜨리면 Opus 5.5는
 ### 상태와 알림
 
 런타임이 `/var/lib/quant-company/claude/jobs/.api/status.json`에 켜짐·꺼짐·쉼(이유와 풀리는 시각), 31일 사용액, 상한, 경로별 호출 수,
-마지막 구독 대체 시각을 쓴다. 새 HTTP 경로는 없다(`/healthz`는 자격 정보를 읽지 않는다). `deploy/ops_probe.py`가 이 파일을 읽는다.
+마지막 구독 대체 시각, 키 파일에 키가 있는지(`key_present`, 키 자체는 쓰지 않는다), 마지막 API 거절(`last_refusal`: 이유와 시각,
+런타임을 다시 띄우면 비어 있다)을 쓴다. 새 HTTP 경로는 없다(`/healthz`는 자격 정보를 읽지 않는다). `deploy/ops_probe.py`가 이 파일을 읽는다.
 
-- `ops status` 한 줄: `🤖 Claude API: 31일 $X / $190 · 켜짐|꺼짐|쉼(이유)`.
+- `ops status` 한 줄: `🤖 Claude API: 31일 $X / $190 · 켜짐|꺼짐|쉼(이유)`. 켜짐인데 키가 없으면 ` · 키 없음`,
+  최근 1시간 안에 API가 거절했으면 ` · 최근 거절: 이유`(예: `요청 거절`은 400 등)를 붙인다. 켜져 있어도 API가 아무 일도 하지 않는 경우가 보인다.
 - #ops-alerts(`ops/watch.py`): 장부를 읽지 못함(critical), 키 문제·지출 한도로 멈춤(critical), 30분 uncertain 쉼 등 그 밖의 멈춤(warning),
   31일 사용액이 상한의 80% 이상(warning), 최근 30분 안에 구독 우선 작업이 API로 대체됨(warning, 다시 로그인하라는 뜻).
   속도 제한과 과부하는 1분 안에 풀려 알리지 않는다. 레인이 꺼져 있으면(`off`) 장부 읽기 실패 외에는 알리지 않는다.

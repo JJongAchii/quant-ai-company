@@ -244,7 +244,8 @@ def test_probe_reads_the_lane_status_and_tolerates_absence(tmp_path):
     assert probe.claude_api(path) is None
     path.parent.mkdir(parents=True)
     status = {"state": "on", "enabled": True, "cap_usd": 190.0, "spent_31d_usd": 12.5,
-              "calls_31d": {"api_first": 3}, "last_fallback_at": None, "paused": None, "updated_at": 1.0}
+              "calls_31d": {"api_first": 3}, "last_fallback_at": None, "paused": None, "key_present": False,
+              "last_refusal": {"reason": "rejected", "at": 0.5}, "updated_at": 1.0}
     path.write_text(json.dumps(status))
     assert probe.claude_api(path) == status
     path.write_text("[]")

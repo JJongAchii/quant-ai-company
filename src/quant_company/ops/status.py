@@ -32,6 +32,10 @@ LOGIN_NEEDED = """authentication='needs_login'
     AND (last_fault='auth' OR last_success_at IS NULL OR checked_at>=last_success_at)"""
 API_PAUSES = {"key": "키 문제", "spend_limit": "Console 지출 한도", "uncertain": "결과 불확실(30분 쉼)",
               "ledger_unreadable": "장부 읽기 실패", "rate_limit": "요청 한도", "overloaded": "서버 과부하"}
+# ApiNotExecuted reasons (providers/claude_api.not_executed) in the status line.
+API_REFUSALS = {"key": "키 문제", "spend_limit": "Console 지출 한도", "rate_limit": "요청 한도", "overloaded": "서버 과부하",
+                "unreachable": "연결 실패", "server": "서버 오류", "rejected": "요청 거절"}
+RECENT_REFUSAL = timedelta(hours=1)
 RESEARCH_ACTIVE = ("queued", "claimed", "running", "cancel_requested", "received", "awaiting_audit")
 NOTES = {
     "times": "UTC ISO 8601. Convert to KST (+09:00) when answering.",
@@ -102,7 +106,8 @@ def host(conn, now=None):
         value["release"] = {key: release.get(key) for key in ("checked_at", "mode", "action", "current", "target",
                                                                "active", "behind_by", "detail")}
     if api := payload.get("claude_api"):
-        value["claude_api"] = {key: api.get(key) for key in ("state", "spent_31d_usd", "cap_usd", "paused")}
+        value["claude_api"] = {key: api.get(key) for key in ("state", "spent_31d_usd", "cap_usd", "paused",
+                                                             "key_present", "last_refusal")}
     return value
 
 
@@ -251,6 +256,14 @@ def status_text(value):
         state = api.get("state")
         reason = (api.get("paused") or {}).get("reason") or ("ledger_unreadable" if state == "ledger_unreadable" else None)
         label = ("꺼짐" if state == "off" else f"쉼({API_PAUSES.get(reason, reason)})" if reason else "켜짐")
+        # An 'on' lane can still do nothing: no key in its file, or every call refused.
+        if state == "on" and api.get("key_present") is False:
+            label += " · 키 없음"
+        refusal = api.get("last_refusal") if isinstance(api.get("last_refusal"), dict) else {}
+        checked, at = stamp(value["checked_at"]), refusal.get("at")
+        if (checked and isinstance(at, (int, float))
+                and checked.timestamp() - at <= RECENT_REFUSAL.total_seconds()):
+            label += f" · 최근 거절: {API_REFUSALS.get(refusal.get('reason'), refusal.get('reason'))}"
         lines.append(f"🤖 Claude API: 31일 ${api.get('spent_31d_usd') or 0:.2f} / ${api.get('cap_usd') or 0:.0f} · {label}")
     for item in value["briefings"][:2]:
         label = BRIEF_STATES.get(item["state"], item["state"])
