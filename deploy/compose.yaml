@@ -493,7 +493,11 @@ services:
       # The CLI is pinned by version and SHA-256 in the image; it must never update itself at runtime.
       DISABLE_AUTOUPDATER: '1'
       MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
-    secrets: [model_runtime_token]
+      # The API credit lane (docs/superpowers/specs/2026-10-23-claude-api-credit-lane-design.md): off while the cap is 0.
+      CLAUDE_API_ENABLED: ${CLAUDE_API_ENABLED:-false}
+      CLAUDE_API_CAP_USD: ${CLAUDE_API_CAP_USD:-0}
+      CLAUDE_API_KEY_FILE: /run/secrets/claude_api_key
+    secrets: [model_runtime_token, claude_api_key]
     volumes:
       - ${STATE_DIR:-/var/lib/quant-company}/claude/auth:/state/auth
       - ${STATE_DIR:-/var/lib/quant-company}/claude/jobs:/state/jobs
@@ -528,6 +532,8 @@ secrets:
     file: ${STATE_DIR:-/var/lib/quant-company}/secrets/operator_token
   model_runtime_token:
     file: ${STATE_DIR:-/var/lib/quant-company}/secrets/model_runtime_token
+  claude_api_key:
+    file: ${STATE_DIR:-/var/lib/quant-company}/secrets/claude_api_key
   temporal_api_key:
     file: ${STATE_DIR:-/var/lib/quant-company}/secrets/temporal_api_key
   slack_credentials:

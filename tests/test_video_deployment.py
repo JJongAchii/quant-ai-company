@@ -71,3 +71,23 @@ def test_render_overlay_gives_only_the_media_worker_the_fargate_settings_and_cre
         if name != 'video-worker':
             assert 'render_aws_credentials' not in str(service.get('secrets', []))
             assert not any(k.startswith('VIDEO_RENDER_') and k != 'VIDEO_RENDER_WORKERS' for k in service.get('environment', {}))
+
+
+def test_compose_gives_the_api_key_only_to_claude_runtime():
+    if not shutil.which('docker'):
+        pytest.skip('Docker Compose CLI required for configuration expansion')
+    root = Path(__file__).resolve().parents[1]
+    result = subprocess.run(['docker', 'compose', '--env-file', str(root/'deploy/.env.example'),
+        '-f', str(root/'deploy/compose.yaml'), '-f', str(root/'deploy/video.compose.yaml'), '--profile', 'video', '--profile', 'claude',
+        'config', '--format', 'json'], check=True, capture_output=True, text=True)
+    config = json.loads(result.stdout)
+    holders = [n for n, s in config['services'].items() if 'claude_api_key' in s.get('secrets', [])
+               or any(isinstance(x, dict) and x.get('source') == 'claude_api_key' for x in s.get('secrets', []))]
+    assert holders == ['claude-runtime']
+    env = config['services']['claude-runtime']['environment']
+    assert env['CLAUDE_API_ENABLED'] == 'false' and env['CLAUDE_API_CAP_USD'] == '0'
+    assert env['CLAUDE_API_KEY_FILE'] == '/run/secrets/claude_api_key'
+    assert config['secrets']['claude_api_key']['file'].endswith('/secrets/claude_api_key')
+    for name, service in config['services'].items():
+        if name != 'claude-runtime':
+            assert not any(k.startswith('CLAUDE_API') for k in service.get('environment', {}))

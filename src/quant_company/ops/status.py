@@ -30,6 +30,8 @@ VIDEO_LIVE = {"queued", "reviewing", "synthesizing", "rendering", "inspecting", 
 # both means the account works again (2026-10-15: primary still carried a 09-28 check while it answered calls).
 LOGIN_NEEDED = """authentication='needs_login'
     AND (last_fault='auth' OR last_success_at IS NULL OR checked_at>=last_success_at)"""
+API_PAUSES = {"key": "키 문제", "spend_limit": "Console 지출 한도", "uncertain": "결과 불확실(30분 쉼)",
+              "ledger_unreadable": "장부 읽기 실패", "rate_limit": "요청 한도", "overloaded": "서버 과부하"}
 RESEARCH_ACTIVE = ("queued", "claimed", "running", "cancel_requested", "received", "awaiting_audit")
 NOTES = {
     "times": "UTC ISO 8601. Convert to KST (+09:00) when answering.",
@@ -99,6 +101,8 @@ def host(conn, now=None):
     if release := payload.get("release"):
         value["release"] = {key: release.get(key) for key in ("checked_at", "mode", "action", "current", "target",
                                                                "active", "behind_by", "detail")}
+    if api := payload.get("claude_api"):
+        value["claude_api"] = {key: api.get(key) for key in ("state", "spent_31d_usd", "cap_usd", "paused")}
     return value
 
 
@@ -243,6 +247,11 @@ def status_text(value):
                 behind = f" · main보다 {release['behind_by']}커밋 뒤" if release.get("behind_by") else ""
                 lines.append(f"🚀 릴리스 {(current or '?')[:7]}{behind} · 판단 {release.get('action') or '?'}"
                              f" ({release.get('mode') or '?'}, {kst(release.get('checked_at'))} 점검)")
+    if api := facts.get("claude_api"):
+        state = api.get("state")
+        reason = (api.get("paused") or {}).get("reason") or ("ledger_unreadable" if state == "ledger_unreadable" else None)
+        label = ("꺼짐" if state == "off" else f"쉼({API_PAUSES.get(reason, reason)})" if reason else "켜짐")
+        lines.append(f"🤖 Claude API: 31일 ${api.get('spent_31d_usd') or 0:.2f} / ${api.get('cap_usd') or 0:.0f} · {label}")
     for item in value["briefings"][:2]:
         label = BRIEF_STATES.get(item["state"], item["state"])
         done = f" {kst(item['committed_at'])}" if item["committed_at"] else f" · 마감 {kst(item['due_at'])}"
