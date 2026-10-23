@@ -8,7 +8,7 @@ from datetime import timedelta
 from psycopg.types.json import Jsonb
 
 from ..company import as_json, stable
-from .status import KST, LOGIN_NEEDED, VIDEO_LIVE, edition_name, kst, stamp, utcnow
+from .status import API_PAUSES, KST, LOGIN_NEEDED, VIDEO_LIVE, edition_name, kst, stamp, utcnow
 
 LOCK = 71350301
 TICK_SECONDS = 60
@@ -135,7 +135,8 @@ def host_findings(row, now, since=None, paused=None):
                                  f"마지막 종료 {unit.get('exited_at') or '미상'}"))
     for error in snapshot.get("probe_errors") or []:
         found.append(finding("probe:" + error.split(":")[0], "condition", "warning", "호스트 수집 일부 실패", error))
-    return found + claude_login_findings(snapshot.get("claude_login"), now) + release_findings(snapshot.get("release"), now, paused)
+    return (found + claude_login_findings(snapshot.get("claude_login"), now) + claude_api_findings(snapshot.get("claude_api"), now)
+            + release_findings(snapshot.get("release"), now, paused))
 
 
 def claude_login_findings(login, now):
@@ -158,6 +159,35 @@ def claude_login_findings(login, now):
         found.append(finding("claude_login:lapsed", "condition", "critical", "Claude 로그인 풀림",
                              "영상 대본·검수와 정기 검토가 로그인을 기다립니다. 다시 로그인하면 기다리던 영상이 자동으로 이어집니다.",
                              CLAUDE_LOGIN, CLAUDE_CODE))
+    return found
+
+
+def claude_api_findings(api, now):
+    """deploy/ops_probe.claude_api. A disabled lane (state off) can carry a stale stored pause and raises nothing;
+    rate limits and overload clear themselves within a minute and are not alerts."""
+    if not api:
+        return []
+    if api.get("state") == "ledger_unreadable":
+        return [finding("claude_api:ledger", "condition", "critical", "Claude API 장부 읽기 실패",
+                        "API 호출 기록을 읽지 못해 API 레인이 멈췄습니다. 호출은 구독으로만 갑니다.")]
+    if api.get("state") == "off":
+        return []
+    found = []
+    pause = api.get("paused") or {}
+    reason = pause.get("reason")
+    if reason and reason not in ("rate_limit", "overloaded"):
+        found.append(finding("claude_api:paused:" + reason, "condition",
+                             "critical" if reason in ("key", "spend_limit") else "warning",
+                             f"Claude API 멈춤({API_PAUSES.get(reason, reason)})",
+                             "그동안 대본은 구독으로 씁니다."))
+    spent, cap = api.get("spent_31d_usd") or 0, api.get("cap_usd") or 0
+    if cap and spent >= 0.8 * cap:
+        found.append(finding("claude_api:cap80", "condition", "warning", f"Claude API 31일 사용 ${spent:.2f} / ${cap:.0f}",
+                             "상한에 가까워지면 API 레인이 멈추고 구독으로만 갑니다."))
+    fallback = api.get("last_fallback_at")
+    if fallback and now.timestamp() - fallback <= 1800:
+        found.append(finding("claude_api:fallback", "condition", "warning", "구독 대신 API로 대본을 쓰는 중",
+                             "구독 로그인이 막혔거나 한도에 걸려 API 크레딧을 쓰고 있습니다.", CLAUDE_LOGIN))
     return found
 
 

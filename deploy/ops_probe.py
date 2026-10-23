@@ -222,6 +222,17 @@ def claude_login(auth=CLAUDE_AUTH):
     return {'logged_in': bool(login.get('accessToken') or login.get('refreshToken')), 'refresh_expires_at': expires}
 
 
+def claude_api(path=STATE / 'claude/jobs/.api/status.json'):
+    """The Claude API credit lane's status file (written by claude-runtime, never holds the key); None when absent."""
+    try:
+        value = json.loads(path.read_text())
+    except FileNotFoundError:
+        return None
+    if not isinstance(value, dict):
+        raise ValueError('Claude API status is not an object')
+    return value
+
+
 def release_status(path=RELEASE_STATUS, link=CURRENT_RELEASE):
     """The release tool's last report (docs/adr/0045), reduced to what the ops watch alerts on; None until installed.
 
@@ -314,6 +325,10 @@ def snapshot(now=None, *, synthetic=False):
         value['claude_login'] = claude_login()
     except (OSError, ValueError) as error:
         value['probe_errors'].append('claude:' + type(error).__name__)
+    try:
+        value['claude_api'] = claude_api()
+    except (OSError, ValueError) as error:
+        value['probe_errors'].append('claude-api:' + type(error).__name__)
     return value
 
 

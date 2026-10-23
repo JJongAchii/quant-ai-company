@@ -466,3 +466,80 @@ async def test_the_claude_login_is_announced_a_week_and_two_days_ahead_and_when_
     assert login(27) == [] and watch.tick()["findings"] == []
     snapshot(ops)
     assert watch.tick()["findings"] == []  # a host without Claude has nothing to renew
+
+
+def api_status(**fields):
+    return {"state": "on", "enabled": True, "cap_usd": 190.0, "spent_31d_usd": 12.5, "calls_31d": {"api_first": 3},
+            "last_fallback_at": None, "paused": None, "key_present": True, "last_refusal": None,
+            "updated_at": now().timestamp(), **fields}
+
+
+def test_watch_alerts_on_key_spend_limit_cap80_fallback_and_ledger(ops):
+    watch = OpsWatch(ops)
+
+    def keys(**fields):
+        snapshot(ops, claude_api=api_status(**fields))
+        return sorted(watch.tick()["findings"])
+
+    def paused(reason):
+        return {"reason": reason, "until": None}
+
+    assert keys() == []
+    assert keys(paused=paused("key")) == ["claude_api:paused:key"]
+    assert keys(paused=paused("spend_limit")) == ["claude_api:paused:spend_limit"]
+    assert keys(paused=paused("uncertain")) == ["claude_api:paused:uncertain"]
+    assert keys(paused=paused("rate_limit")) == [] and keys(paused=paused("overloaded")) == []
+    assert keys(spent_31d_usd=151.9) == [] and keys(spent_31d_usd=152.0) == ["claude_api:cap80"]
+    assert keys(last_fallback_at=(now() - timedelta(minutes=10)).timestamp()) == ["claude_api:fallback"]
+    assert keys(last_fallback_at=(now() - timedelta(minutes=40)).timestamp()) == []
+    assert keys(state="ledger_unreadable") == ["claude_api:ledger"]
+    # a disabled lane keeps no alerts from a stale pause, a spent window or an old fallback; a broken ledger still does
+    stale = {"paused": paused("key"), "spent_31d_usd": 170.0, "last_fallback_at": now().timestamp()}
+    assert keys(state="off", enabled=False, **stale) == []
+    assert keys(state="ledger_unreadable", enabled=False, **stale) == ["claude_api:ledger"]
+    snapshot(ops, claude_api=None)
+    assert watch.tick()["findings"] == []
+
+
+def test_the_api_findings_say_what_to_do_in_korean(ops):
+    from quant_company.ops.watch import CLAUDE_LOGIN, claude_api_findings
+    at = now()
+    found = {item["key"]: item for item in claude_api_findings(
+        api_status(paused={"reason": "spend_limit", "until": None}, spent_31d_usd=160.0,
+                   last_fallback_at=at.timestamp()), at)}
+    assert found["claude_api:paused:spend_limit"]["severity"] == "critical"
+    assert found["claude_api:paused:spend_limit"]["title"] == "Claude API 멈춤(Console 지출 한도)"
+    assert found["claude_api:cap80"]["severity"] == "warning" and found["claude_api:cap80"]["title"] == "Claude API 31일 사용 $160.00 / $190"
+    assert found["claude_api:fallback"]["title"] == "구독 대신 API로 대본을 쓰는 중"
+    assert CLAUDE_LOGIN in found["claude_api:fallback"]["lines"]
+    assert claude_api_findings(api_status(paused={"reason": "key", "until": None}), at)[0]["severity"] == "critical"
+    assert claude_api_findings(api_status(paused={"reason": "uncertain", "until": None}), at)[0]["severity"] == "warning"
+    assert claude_api_findings(api_status(state="ledger_unreadable"), at)[0]["severity"] == "critical"
+
+
+def test_status_text_shows_the_api_line(ops):
+    def text(api):
+        snapshot(ops, claude_api=api)
+        with ops.db.transaction() as conn:
+            return status_text(live_status(conn, now=now()))
+
+    assert "🤖 Claude API: 31일 $12.50 / $190 · 켜짐" in text(api_status())
+    assert "🤖 Claude API: 31일 $12.50 / $190 · 꺼짐" in text(api_status(state="off", enabled=False))
+    paused = text(api_status(state="paused", paused={"reason": "spend_limit", "until": None}))
+    assert "🤖 Claude API: 31일 $12.50 / $190 · 쉼(Console 지출 한도)" in paused
+    assert "🤖" not in text(None)
+    # An 'on' lane that does nothing says why: no key in its file, or a refusal within the last hour.
+    assert "🤖 Claude API: 31일 $12.50 / $190 · 켜짐 · 키 없음\n" in text(api_status(key_present=False))
+    assert "키 없음" not in text(api_status(key_present=True)) + text(api_status(key_present=None))
+    assert "키 없음" not in text(api_status(state="off", enabled=False, key_present=False))
+    recent = {"reason": "rejected", "at": (now() - timedelta(minutes=50)).timestamp()}
+    assert "🤖 Claude API: 31일 $12.50 / $190 · 켜짐 · 최근 거절: 요청 거절\n" in text(api_status(last_refusal=recent))
+    assert "최근 거절" not in text(api_status(last_refusal={"reason": "rejected",
+                                                           "at": (now() - timedelta(minutes=70)).timestamp()}))
+    assert "최근 거절" not in text(api_status(last_refusal=None))
+    assert "· 켜짐 · 키 없음 · 최근 거절: unknown_reason\n" in text(api_status(
+        key_present=False, last_refusal={"reason": "unknown_reason", "at": now().timestamp()}))
+    snapshot(ops, claude_api=api_status(calls_31d={"api_first": 3}))
+    with ops.db.transaction() as conn:
+        assert set(live_status(conn, now=now())["host"]["claude_api"]) == {
+            "state", "spent_31d_usd", "cap_usd", "paused", "key_present", "last_refusal"}

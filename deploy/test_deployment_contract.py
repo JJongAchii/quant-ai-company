@@ -164,7 +164,7 @@ def test_claude_profile_is_private_separately_authenticated_and_off_by_default()
     claude = services["claude-runtime"]
     assert not claude.get("ports") and claude["read_only"] and claude["user"] == "10001:10001"
     assert set(claude["networks"]) == {"model", "model_egress"}
-    assert {s["source"] for s in claude["secrets"]} == {"model_runtime_token"}
+    assert {s["source"] for s in claude["secrets"]} == {"model_runtime_token", "claude_api_key"}
     assert all("/claude/" in v["source"] for v in claude["volumes"])
     assert claude["environment"]["CLAUDE_USAGE_CREDITS_DISABLED_CONFIRMED"] == "false"
     assert services["worker"]["environment"]["COMPANY_STAFF_REVIEW_ENABLED"] == "false"

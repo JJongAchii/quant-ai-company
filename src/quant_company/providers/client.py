@@ -38,19 +38,20 @@ class RuntimeClient:
             raise ValueError("Unknown runtime provider")
         self.expected_provider = expected_provider
 
-    async def cancel(self, request_id: str) -> str:
+    async def cancel(self, request_id: str, shared_only: bool = False) -> str:
         if not re.fullmatch(r"[a-zA-Z0-9_-]{1,80}", request_id):
             raise ValueError("Invalid cancellation request ID")
         try:
             async with httpx.AsyncClient(timeout=min(self.timeout_seconds, 15), transport=self.transport,
                                          follow_redirects=False, trust_env=False) as client:
                 response = await client.post(f"{self.base_url}/v1/turns/{request_id}/cancel",
+                                             params={"scope": "shared"} if shared_only else None,
                                              headers={"Authorization": f"Bearer {self.token}"})
                 if response.status_code != 200:
                     raise ProviderFault("uncertain", "Cancellation was not acknowledged by the runtime.")
                 data = strict_json(response.content)
                 if (not isinstance(data, dict) or data.get("request_id") != request_id
-                        or data.get("status") not in ("cancelled", "completed", "uncertain")):
+                        or data.get("status") not in ("cancelled", "completed", "uncertain", "kept")):
                     raise ValueError("Invalid cancellation response")
                 return data["status"]
         except (httpx.HTTPError, ValueError, TypeError):

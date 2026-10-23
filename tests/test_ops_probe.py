@@ -237,3 +237,20 @@ def test_the_claude_login_keeps_only_whether_it_is_logged_in_and_its_expiry(tmp_
     (auth / ".credentials.json").write_text("[]")
     with pytest.raises(ValueError):
         probe.claude_login(auth)
+
+
+def test_probe_reads_the_lane_status_and_tolerates_absence(tmp_path):
+    path = tmp_path / "claude/jobs/.api/status.json"
+    assert probe.claude_api(path) is None
+    path.parent.mkdir(parents=True)
+    status = {"state": "on", "enabled": True, "cap_usd": 190.0, "spent_31d_usd": 12.5,
+              "calls_31d": {"api_first": 3}, "last_fallback_at": None, "paused": None, "key_present": False,
+              "last_refusal": {"reason": "rejected", "at": 0.5}, "updated_at": 1.0}
+    path.write_text(json.dumps(status))
+    assert probe.claude_api(path) == status
+    path.write_text("[]")
+    with pytest.raises(ValueError):
+        probe.claude_api(path)
+    path.write_text("{")
+    with pytest.raises(ValueError):
+        probe.claude_api(path)

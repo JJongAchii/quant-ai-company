@@ -56,6 +56,8 @@ def main() -> None:
     create_file(state / "secrets/temporal_api_key", "REPLACE_TEMPORAL_API_KEY\n", 0o444)
     # Optional lake access is disabled until COMPANY_LAKE_URI and this read-only profile are set.
     create_file(state / "secrets/lake_read_credentials", "", 0o444)
+    # The Claude API lane stays off until the owner writes a key here; an empty file reads as no key.
+    create_file(state / "secrets/claude_api_key", "", 0o444)
     deploy = Path(__file__).parent
     create_file(state / "secrets/slack-credentials.json",
                 (deploy / "slack-credentials.example.json").read_text(), 0o444)

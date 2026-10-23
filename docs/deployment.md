@@ -381,3 +381,27 @@ Slack 허용 목록(`SLACK_ALLOWED_CHANNELS`, `SLACK_ALLOWED_USERS`)을 바꿀 �
 Claude 인증과 job 영수증은 Codex와 별도 디렉터리에 둔다. 백업은 활성 Claude도 정지하고
 `claude-jobs/` 영수증을 포함하며 인증은 제외한다. 위 2GB 기본 구성의 메모리 합계에는
 이 선택 기능을 포함하지 않으므로 실제 호출 중 용량을 확인한 뒤 활성화한다.
+
+## 선택: Claude API 크레딧 레인
+
+구독 크레딧으로 쓰는 API 경로의 동작은 [claude-runtime.md](claude-runtime.md)와 ADR 0048에 있다. 기본값은 꺼짐이다.
+
+1. **비밀 파일이 먼저 있어야 한다.** `deploy/compose.yaml`의 `claude_api_key` secret은
+   `/var/lib/quant-company/secrets/claude_api_key` 파일을 가리킨다. 파일이 없으면 claude-runtime을 만들지 못하므로,
+   이 secret을 추가하는 릴리스보다 먼저 있어야 한다. 새 호스트에서는 `deploy/prepare-state.py`가 빈 0444 자리 표시 파일을
+   (없을 때만, 덮어쓰지 않고) 만든다. 빈 파일은 키 없음이라 레인이 꺼진 채로 있다. 운영 호스트에서는 소유자가 **PR 병합 전에**
+   claude-runtime.md의 "키 파일" 명령으로 실제 키를 쓴다. 키를 채팅·Git·`runtime.env`에 두지 않는다.
+2. **릴리스는 레인을 켜지 않는다.** `CLAUDE_API_ENABLED`(기본 `false`), `CLAUDE_API_CAP_USD`(기본 `0`)는 compose 기본값이다.
+   `contracts.py`·`pyproject.toml`이 바뀌지 않으므로 렌더 이미지를 다시 만들지 않는다.
+3. **켜기.** 릴리스 운영자(deploy/release.py 운영자)가 `runtime.env`에 다음을 넣고 claude-runtime을 다시 만든다. main SHA와 함께 전달한다.
+   환경은 컨테이너를 만들 때 정해지므로 값만 바꾸고 다시 만들지 않으면 반영되지 않는다.
+
+   ```dotenv
+   CLAUDE_API_ENABLED=true
+   CLAUDE_API_CAP_USD=190
+   ```
+
+4. **끄기.** `CLAUDE_API_ENABLED=false`로 바꾸고 claude-runtime을 다시 만든다. 모든 요청이 구독 경로로 돌아간다.
+   진행 중이던 API 호출의 영수증은 그대로 남는다. 키 문제로 쉬는 중이면 키 파일을 고친 뒤 다시 만든다.
+5. **확인.** `ops status`의 `🤖 Claude API` 줄과 `/var/lib/quant-company/claude/jobs/.api/status.json`(읽기만)을 본다.
+   첫 실제 호출(다음 Shorts나 메일)의 영수증이 `billing_mode: "api_credit"`인지와 Console 크레딧 감소를 확인한다.
