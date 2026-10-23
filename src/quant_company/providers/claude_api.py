@@ -2,6 +2,7 @@
 
 import fcntl
 import json
+import math
 import time
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -23,6 +24,9 @@ SPEND_LIMIT_CODE = "enforced_spend_limit_reached"
 SHORT_CONTRACTS = ("newsletter_v1", "video_performance_v1", "video_answer_v1", "agent_decision")
 # A pause that is active hides the ones after it.
 PAUSE_ORDER = ("key", "spend_limit", "uncertain", "rate_limit", "overloaded")
+ROUTES = ("api_first", "fallback")
+RATE_LIMIT_WAIT = 60.0
+RATE_LIMIT_WAIT_MAX = 3600.0
 
 
 @dataclass(frozen=True)
@@ -58,6 +62,22 @@ def reservation_usd(request):
     return (tokens * price.input + max_tokens(request.output_contract) * price.output) / 1e6
 
 
+def number(value):
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+
+def amount(value):
+    return number(value) and value >= 0
+
+
+def well_formed(entry):
+    """One ledger entry with every field the budget reads, of the type it reads."""
+    return (isinstance(entry, dict) and isinstance(entry.get("request_id"), str)
+            and isinstance(entry.get("model"), str) and entry.get("route") in ROUTES and number(entry.get("at"))
+            and amount(entry.get("reserved")) and "actual" in entry
+            and (entry["actual"] is None or amount(entry["actual"])))
+
+
 class Budget:
     def __init__(self, directory, cap_usd, clock=time.time):
         self.directory = Path(directory)
@@ -73,16 +93,20 @@ class Budget:
             yield
 
     def load(self):
-        """The ledger, empty when absent; None when unreadable, so every caller fails closed."""
+        """The ledger, empty when absent; None when unreadable or of any other shape, so every caller fails closed."""
         try:
             data = json.loads((self.directory / "ledger.json").read_text())
-            if not isinstance(data.get("entries"), list) or not isinstance(data.get("pauses", {}), dict):
-                return None
-            return {"entries": data["entries"], "pauses": data.get("pauses", {})}
         except FileNotFoundError:
             return {"entries": [], "pauses": {}}
-        except (OSError, ValueError, AttributeError):
+        except (OSError, ValueError, RecursionError):
             return None
+        if not isinstance(data, dict):
+            return None
+        entries, pauses = data.get("entries"), data.get("pauses", {})
+        if (not isinstance(entries, list) or not all(map(well_formed, entries)) or not isinstance(pauses, dict)
+                or not all(until is None or number(until) for until in pauses.values())):
+            return None
+        return {"entries": entries, "pauses": pauses}
 
     def store(self, ledger):
         cutoff = self.clock() - WINDOW
@@ -150,7 +174,9 @@ class Budget:
                 return {"reason": reason, "until": pauses[reason]}
         return None
 
-    def write_status(self, enabled):
+    def write_status(self, enabled, key_present=None, last_refusal=None):
+        """key_present says whether the key file holds a key (never the key); last_refusal is the runner's latest API
+        refusal, {"reason", "at"} or None."""
         pause = self.paused()
         with self.locked():
             ledger = self.load()
@@ -166,7 +192,8 @@ class Budget:
                 state = "off" if not enabled or self.cap_usd <= 0 else "paused" if pause else "on"
             atomic_json(self.directory / "status.json", {
                 "state": state, "enabled": enabled, "cap_usd": self.cap_usd, "spent_31d_usd": spent,
-                "calls_31d": calls, "last_fallback_at": fallback, "paused": pause, "updated_at": self.clock()})
+                "calls_31d": calls, "last_fallback_at": fallback, "paused": pause, "key_present": key_present,
+                "last_refusal": last_refusal, "updated_at": self.clock()})
 
 
 # Part B: one streaming Messages API call.
@@ -177,7 +204,7 @@ def read_key(path):
         return None
     try:
         return Path(path).read_text().strip() or None
-    except OSError:
+    except (OSError, ValueError):  # ValueError: not text (UnicodeDecodeError)
         return None
 
 
@@ -219,15 +246,21 @@ def error_fields(raw):
         return None
 
 
+def retry_after(headers):
+    """Seconds to wait from a 429's retry-after: at most an hour; a minute when absent, not a positive finite number
+    of seconds (an HTTP date included) or unreadable."""
+    try:
+        wait = float(headers.get("retry-after", ""))
+    except ValueError:
+        return RATE_LIMIT_WAIT
+    return min(wait, RATE_LIMIT_WAIT_MAX) if math.isfinite(wait) and wait > 0 else RATE_LIMIT_WAIT
+
+
 def not_executed(status, headers, raw, now):
     if status == 429:
         if error_fields(raw) == SPEND_LIMIT_CODE:
             return ApiNotExecuted("spend_limit", False, ("spend_limit", next_month_start(now), True), status)
-        try:
-            wait = float(headers.get("retry-after", ""))
-        except ValueError:
-            wait = 60.0
-        return ApiNotExecuted("rate_limit", False, ("rate_limit", now + (wait if wait > 0 else 60.0), True), status)
+        return ApiNotExecuted("rate_limit", False, ("rate_limit", now + retry_after(headers), True), status)
     if status == 529:
         return ApiNotExecuted("overloaded", False, ("overloaded", now + 60, True), status)
     if status in (401, 403):

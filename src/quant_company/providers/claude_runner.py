@@ -293,6 +293,9 @@ class ClaudeRunner:
         self.slots = asyncio.Semaphore(API_SLOTS)
         self.budget = None
         self.status_refreshed = False
+        self.status_key = None
+        # The latest API refusal ({"reason", "at"}), for the status file.
+        self.last_refusal = None
         # Request IDs inside run(), in any phase: a second ask of the same ID meanwhile is pending.
         self.claims = set()
         # request ID -> (task, "cli" | "api")
@@ -377,17 +380,43 @@ class ClaudeRunner:
 
     def _status(self):
         try:
-            self._budget().write_status(enabled=self.config.api_enabled)
-        except OSError as error:
+            self._budget().write_status(enabled=self.config.api_enabled, key_present=self._key_present(),
+                                        last_refusal=self.last_refusal)
+        except Exception as error:  # noqa: BLE001 - logged by type only; the lane's own checks fail closed
             # The status file only informs operators; a failed write must not cost a result or a turn.
             LOG.warning("Claude API status file not written: %s", type(error).__name__)
 
+    def _key_present(self):
+        """Whether the key file holds a key (never the key itself), as the status file last said it."""
+        self.status_key = read_key(self.config.api_key_file) is not None
+        return self.status_key
+
     def _refresh_status(self):
         """The first turn after a start rewrites the status: a restart ends key pauses, a switch-off the lane."""
-        if not self.status_refreshed:
-            self.status_refreshed = True
-            if self._lane_on() or (self.config.jobs_dir.resolve() / ".api").is_dir():
-                self._status()
+        if self.status_refreshed:
+            return
+        self.status_refreshed = True
+        try:
+            wanted = self._lane_on() or (self.config.jobs_dir.resolve() / ".api").is_dir()
+        except OSError:
+            wanted = self._lane_on()
+        if wanted:
+            self._status()
+
+    @staticmethod
+    def _quietly(operation, *args):
+        """A ledger write after an API call. A failure is logged by type and never loses the receipt or the result;
+        an unsettled reservation keeps counting in full."""
+        try:
+            operation(*args)
+            return True
+        except Exception as error:  # noqa: BLE001
+            LOG.warning("Claude API ledger %s failed: %s", operation.__name__, type(error).__name__)
+            return False
+
+    def _pause(self, budget, reason, until, persist=True):
+        if not self._quietly(budget.pause, reason, until, persist):
+            budget.memory_pauses[reason] = until  # a ledger that cannot be written still pauses this runtime
 
     def _lane(self, request, attempts, route):
         """(key, ledger ID, reserved USD) for one API attempt, or None when the API may not take this request."""
@@ -396,18 +425,21 @@ class ClaudeRunner:
         if any(item.get("backend") == "api" and item.get("outcome") in API_SPENT for item in attempts):
             return None
         key = read_key(self.config.api_key_file)
+        if (key is not None) != self.status_key:
+            self._status()  # the key file was filled or emptied since the status file last said
         if key is None:
             return None
+        # Attempt-qualified, so settling or releasing one attempt never touches another of the same request.
+        ledger_id = f"{request.request_id}#{len(attempts)}"
+        amount = reservation_usd(request)
         try:
             budget = self._budget()
             if budget.paused() is not None:
                 return None
-            # Attempt-qualified, so settling or releasing one attempt never touches another of the same request.
-            ledger_id = f"{request.request_id}#{len(attempts)}"
-            amount = reservation_usd(request)
             reserved = budget.reserve(ledger_id, request.model, amount, route)
-        except OSError:
-            return None  # an unreadable lane is closed; subscription work goes on
+        except Exception as error:  # noqa: BLE001 - an unreadable or broken ledger closes the lane
+            LOG.warning("Claude API lane closed, ledger unavailable: %s", type(error).__name__)
+            return None  # subscription work goes on: API-first to the CLI, a fallback keeps the CLI's fault
         self._status()
         return (key, ledger_id, amount) if reserved else None
 
@@ -429,9 +461,9 @@ class ClaudeRunner:
             # It may have run: count the whole reservation and never repeat this ID. An API-side uncertain outcome
             # or a timeout also pauses the lane (spec 9-2); a deliberate cancel is not an API fault and does not.
             failed(code, detail)
-            budget.settle(ledger_id, reserved)
+            self._quietly(budget.settle, ledger_id, reserved)
             if pause:
-                budget.pause("uncertain", self.clock() + UNCERTAIN_PAUSE_SECONDS)
+                self._pause(budget, "uncertain", self.clock() + UNCERTAIN_PAUSE_SECONDS)
             self._status()
 
         started = False
@@ -458,19 +490,20 @@ class ClaudeRunner:
                 atomic_json(path, {**receipt, "state": "complete", "completed_at": time.time(),
                                    "result": result.model_dump(mode="json"),
                                    "attempts": attempts + [attempt("api", "complete", self.clock())]})
-                budget.settle(ledger_id, cost)
+                self._quietly(budget.settle, ledger_id, cost)
                 self._status()
                 return result
             except ApiNotExecuted as refusal:
                 detail = {"reason": refusal.reason} | ({"status": refusal.status} if refusal.status else {})
                 outcome = "consumed" if refusal.consumed else "not_executed"
                 atomic_json(path, {**restore, "attempts": attempts + [attempt("api", outcome, self.clock(), **detail)]})
+                self.last_refusal = {"reason": refusal.reason, "at": self.clock()}
                 if refusal.pause:
-                    budget.pause(*refusal.pause)
+                    self._pause(budget, *refusal.pause)
                 if refusal.consumed:
-                    budget.settle(ledger_id, reserved)  # a 500 or 504 may have run
+                    self._quietly(budget.settle, ledger_id, reserved)  # a 500 or 504 may have run
                 else:
-                    budget.release(ledger_id)
+                    self._quietly(budget.release, ledger_id)
                 self._status()
                 raise
             except TimeoutError:
@@ -482,7 +515,7 @@ class ClaudeRunner:
                     raise
                 failed("invalid_output", str(fault))
                 usage = getattr(fault, "usage", None)
-                budget.settle(ledger_id, cost_usd(request.model, usage) if usage else reserved)
+                self._quietly(budget.settle, ledger_id, cost_usd(request.model, usage) if usage else reserved)
                 self._status()
                 raise
             except asyncio.CancelledError:
@@ -492,7 +525,7 @@ class ClaudeRunner:
                 else:  # still waiting for a slot: nothing was sent
                     atomic_json(path, {**restore, "attempts": attempts + [
                         attempt("api", "not_executed", self.clock(), reason="cancelled")]})
-                    budget.release(ledger_id)
+                    self._quietly(budget.release, ledger_id)
                     self._status()
                 raise
             finally:

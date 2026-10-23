@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import os
 import time
 from dataclasses import replace
@@ -89,6 +90,52 @@ def test_corrupt_ledger_fails_closed(tmp_path):
     assert (tmp_path / "ledger.json").read_text() == "{not json"
 
 
+def entry(**changes):
+    return {"request_id": "x#0", "model": "claude-opus-5-5", "route": "api_first", "at": 1000.0, "reserved": 1.0,
+            "actual": None, **changes}
+
+
+@pytest.mark.parametrize("broken", [
+    {"entries": [{"request_id": "x"}]},
+    {"entries": [], "pauses": {"key": "soon"}},
+    {"entries": [entry(route="elsewhere")]},
+    {"entries": [entry(request_id=7)]},
+    {"entries": [entry(model=None)]},
+    {"entries": [entry(at="1000")]},
+    {"entries": [entry(at=float("nan"))]},
+    {"entries": [entry(reserved=True)]},
+    {"entries": [entry(reserved=-1.0)]},
+    {"entries": [entry(actual="0.5")]},
+    {"entries": [{k: v for k, v in entry().items() if k != "actual"}]},
+    {"entries": ["x#0"]},
+    {"entries": [], "pauses": {"uncertain": float("inf")}},
+    {"entries": [], "pauses": ["key"]},
+    ["entries"],
+])
+def test_a_ledger_of_the_wrong_shape_fails_closed(tmp_path, broken):
+    raw = json.dumps(broken)
+    (tmp_path / "ledger.json").write_text(raw)
+    budget = Budget(tmp_path, 190.0, clock=lambda: 2000.0)
+    assert budget.load() is None and budget.paused() is None and budget.spent() == 0
+    assert not budget.reserve("a#0", "claude-opus-5-5", 0.01, "api_first")
+    budget.settle("x#0", 0.5)
+    budget.release("x#0")
+    budget.pause("uncertain", 3800.0)  # held in memory; the unreadable file stays as it was
+    assert budget.paused() == {"reason": "uncertain", "until": 3800.0}
+    budget.write_status(enabled=True)
+    assert json.loads((tmp_path / "status.json").read_text())["state"] == "ledger_unreadable"
+    assert (tmp_path / "ledger.json").read_text() == raw
+
+
+def test_a_well_formed_ledger_loads(tmp_path):
+    kept = {"entries": [entry(), entry(request_id="y#0", route="fallback", at=1500, reserved=2, actual=0.5, extra=1)],
+            "pauses": {"uncertain": 3000, "key": None}}
+    (tmp_path / "ledger.json").write_text(json.dumps(kept))
+    budget = Budget(tmp_path, 190.0, clock=lambda: 2000.0)
+    assert budget.load() == kept and budget.spent() == pytest.approx(1.5)
+    assert budget.paused() == {"reason": "key", "until": None}
+
+
 def test_pauses_persist_except_key_pauses(tmp_path):
     now = [1000.0]
     budget = Budget(tmp_path, 190.0, clock=lambda: now[0])
@@ -113,6 +160,10 @@ def test_status_file_shows_spend_cap_pause_and_routes(tmp_path):
     assert status["spent_31d_usd"] == pytest.approx(0.75)
     assert status["calls_31d"] == {"api_first": 1, "fallback": 1}
     assert status["last_fallback_at"] == 5000.0 and status["paused"] is None
+    assert status["key_present"] is None and status["last_refusal"] is None  # only the runner knows these
+    budget.write_status(enabled=True, key_present=False, last_refusal={"reason": "rejected", "at": 4000.0})
+    status = json.loads((tmp_path / "status.json").read_text())
+    assert status["key_present"] is False and status["last_refusal"] == {"reason": "rejected", "at": 4000.0}
 
 
 def test_status_states_off_and_paused(tmp_path):
@@ -264,6 +315,17 @@ async def test_refusals_before_the_stream_are_not_executed(status, headers, payl
         assert error.pause is None
 
 
+@pytest.mark.parametrize("value,wait", [("7", 7), ("0.5", 0.5), (None, 60), ("0", 60), ("-5", 60), ("inf", 60),
+                                        ("-inf", 60), ("nan", 60), ("Fri, 23 Oct 2026 07:28:00 GMT", 60),
+                                        ("86400", 3600), ("1e308", 3600)])
+async def test_retry_after_waits_an_hour_at_most_and_a_bad_value_waits_a_minute(value, wait):
+    headers = {} if value is None else {"retry-after": value}
+    with pytest.raises(ApiNotExecuted) as caught:
+        await call(make_request(), SCHEMA, "T", KEY, clock=lambda: 1000.0, transport=transport_for(
+            status=429, headers=headers, payload={"error": {"type": "rate_limit_error"}}))
+    assert caught.value.pause == ("rate_limit", 1000.0 + wait, True)
+
+
 async def test_spend_limit_on_the_first_pauses_to_the_next_month_and_december_rolls_over():
     payload = {"error": {"details": {"error_code": "enforced_spend_limit_reached"}}}
     for day, until in ((datetime(2026, 11, 1, 5, tzinfo=UTC), datetime(2026, 12, 1, tzinfo=UTC)),
@@ -279,6 +341,8 @@ def test_key_file_is_trimmed_and_empty_means_no_key(tmp_path):
     path.write_text("sk-x\n")
     assert read_key(path) == "sk-x"
     path.write_text("  \n")
+    assert read_key(path) is None
+    path.write_bytes(b"\xff\xfe")  # not text: no key, never an exception
     assert read_key(path) is None
     assert read_key(tmp_path / "missing") is None and read_key(None) is None
 
@@ -902,3 +966,122 @@ async def test_a_turn_cancelled_during_the_cli_preflight_never_falls_back_to_the
         await task
     assert fault.value.code == "auth" and not api.seen and not calls()
     assert receipt(config, video())["state"] == "cancelled"
+
+
+# Part D: a broken ledger, budget or status file closes the lane; it never costs a turn, a receipt or a result.
+
+def failing(self, *args, **kwargs):
+    raise KeyError("SECRET-DETAIL")
+
+
+@pytest.mark.parametrize("broken", [{"entries": [{"request_id": "x"}]}, {"entries": [], "pauses": {"key": "soon"}}])
+async def test_a_malformed_ledger_sends_api_first_work_to_the_subscription(lane, broken):
+    config, configure, calls = lane
+    (config.jobs_dir / ".api").mkdir(parents=True)
+    (config.jobs_dir / ".api" / "ledger.json").write_text(json.dumps(broken))
+    cli_email(configure)
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    result = await make_runner(config, api).run(email())
+    assert result.usage["billing_mode"] == "subscription" and not api.seen and len(calls()) == 1
+    assert tried(config, email()) == [("subscription", "complete")]
+    assert status(config)["state"] == "ledger_unreadable" and ledger(config) == broken
+
+
+async def test_an_endless_retry_after_sends_the_work_to_the_subscription_and_pauses_an_hour_at_most(lane):
+    config, configure, calls = lane
+    now = [1_000_000.0]
+    cli_email(configure)
+    api = Api(lambda: httpx.Response(429, headers={"retry-after": "inf"}, json={"error": {"type": "rate_limit_error"}}))
+    runner = make_runner(config, api, clock=lambda: now[0])
+    result = await runner.run(email())
+    assert result.usage["billing_mode"] == "subscription" and len(api.seen) == 1 and len(calls()) == 1
+    assert tried(config, email()) == [("api", "not_executed"), ("subscription", "complete")]
+    pause = status(config)["paused"]
+    assert pause["reason"] == "rate_limit" and 0 < pause["until"] - now[0] <= 3600
+    assert ledger(config)["pauses"]["rate_limit"] == pause["until"]
+
+
+async def test_a_failing_status_write_never_costs_a_turn(lane, monkeypatch, caplog):
+    config, configure, calls = lane
+    monkeypatch.setattr(Budget, "write_status", failing)
+    cli_video(configure)
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    runner = make_runner(config, api)
+    with caplog.at_level(logging.WARNING, logger="quant_company.providers.claude_runner"):
+        # The first turn after a start refreshes the status; a CLI turn and an API turn both go on.
+        assert (await runner.run(video())).usage["billing_mode"] == "subscription"
+        assert (await runner.run(email())).usage["billing_mode"] == "api_credit"
+    assert len(api.seen) == 1 and len(calls()) == 1
+    assert ledger(config)["entries"][0]["actual"] == pytest.approx(STREAM_COST)
+    messages = [record.getMessage() for record in caplog.records]
+    assert messages and all("KeyError" in text and "SECRET-DETAIL" not in text for text in messages)
+
+
+@pytest.mark.parametrize("operation", ["paused", "reserve"])
+async def test_a_failing_budget_check_closes_the_lane(lane, monkeypatch, operation):
+    config, configure, calls = lane
+    monkeypatch.setattr(Budget, operation, failing)
+    cli_email(configure)
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    runner = make_runner(config, api)
+    assert (await runner.run(email())).usage["billing_mode"] == "subscription"  # API-first: the subscription
+    cli_video(configure, error="rate_limit")
+    with pytest.raises(ProviderFault) as fault:
+        await runner.run(video())
+    assert fault.value.code == "quota"  # a fallback: the CLI's own refusal stands
+    assert not api.seen and len(calls()) == 2
+
+
+@pytest.mark.parametrize("answer,outcome", [(None, "complete"), (broken(), "uncertain"),
+                                            (ok({"headline": "x"}), "invalid_output")])
+async def test_a_failing_settle_keeps_the_receipt_and_the_result(lane, monkeypatch, answer, outcome):
+    config, _, calls = lane
+    monkeypatch.setattr(Budget, "settle", failing)
+    api = Api(answer or ok(v5_draft().model_dump(mode="json")))
+    runner = make_runner(config, api)
+    if outcome == "complete":
+        result = await runner.run(email())
+        assert result.usage["billing_mode"] == "api_credit"
+        assert await make_runner(config, api).run(email()) == result
+    else:
+        for again in (runner, make_runner(config, api)):
+            with pytest.raises(ProviderFault) as fault:
+                await again.run(email())
+            assert fault.value.code == outcome
+    assert tried(config, email()) == [("api", outcome)]
+    assert ledger(config)["entries"][0]["actual"] is None  # unsettled: the whole reservation still counts
+    assert len(api.seen) == 1 and calls() == []
+
+
+@pytest.mark.parametrize("operation", ["release", "pause"])
+async def test_a_failing_ledger_write_after_a_refusal_still_sends_the_work_to_the_subscription(lane, monkeypatch,
+                                                                                               operation):
+    config, configure, calls = lane
+    monkeypatch.setattr(Budget, operation, failing)
+    cli_email(configure)
+    api = Api(refusal(529))
+    runner = make_runner(config, api)
+    assert (await runner.run(email())).usage["billing_mode"] == "subscription"
+    assert tried(config, email()) == [("api", "not_executed"), ("subscription", "complete")]
+    # The 529 pause holds even when the ledger cannot record it (in memory, for this runtime).
+    assert (await runner.run(email(2))).usage["billing_mode"] == "subscription"
+    assert len(api.seen) == 1 and len(calls()) == 2
+
+
+async def test_status_says_whether_the_key_is_there_and_the_latest_refusal(lane):
+    config, configure, calls = lane
+    now = [1_000_000.0]
+    cli_email(configure)
+    api = Api(refusal(400, {"error": {"type": "invalid_request_error"}}))
+    runner = make_runner(config, api, clock=lambda: now[0])
+    assert (await runner.run(email())).usage["billing_mode"] == "subscription"
+    saved = status(config)
+    assert saved["state"] == "on" and saved["key_present"] is True
+    assert saved["last_refusal"] == {"reason": "rejected", "at": now[0]}
+    config.api_key_file.write_text("\n")  # emptied: the lane does nothing, and the status file says so
+    now[0] += 60
+    assert (await runner.run(email(2))).usage["billing_mode"] == "subscription" and len(api.seen) == 1
+    saved = status(config)
+    assert saved["state"] == "on" and saved["key_present"] is False
+    assert saved["last_refusal"] == {"reason": "rejected", "at": now[0] - 60}
+    assert KEY not in json.dumps(saved) and len(calls()) == 2
