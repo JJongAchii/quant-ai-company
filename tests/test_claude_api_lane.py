@@ -1,5 +1,10 @@
+import asyncio
 import json
+import os
+import time
+from dataclasses import replace
 from datetime import UTC, datetime
+from pathlib import Path
 
 import httpx
 import pytest
@@ -16,6 +21,16 @@ from quant_company.providers.claude_api import (
     read_key,
     reservation_usd,
 )
+from quant_company.providers.claude_runner import (
+    API_FIRST,
+    ClaudeConfig,
+    ClaudeRequest,
+    ClaudeRunner,
+    runner_from_environment,
+)
+
+from .newsletter_fixtures import v5_draft
+from .test_claude_runtime import fake_claude  # noqa: F401 - the fake CLI fixture drives the subscription path
 
 
 def test_cost_uses_all_four_token_kinds():
@@ -307,3 +322,478 @@ async def test_unreadable_error_body_still_maps_by_status():
     with pytest.raises(ApiNotExecuted) as caught:
         await call(make_request(), SCHEMA, "T", KEY, clock=lambda: 1000.0, transport=transport)
     assert caught.value.reason == "overloaded" and caught.value.pause == ("overloaded", 1060.0, True)
+
+
+# Part C: routing, receipts, fallback and the shared-slot cancel in ClaudeRunner (simulated API, fake CLI).
+
+VIDEO_REVIEW = {"facts": True, "numbers": True, "conditions": True, "coverage": True, "readability": True,
+                "concerns": []}
+STREAM_USAGE = {"input_tokens": 11, "output_tokens": 1234, "cache_creation_input_tokens": 5,
+                "cache_read_input_tokens": 7}
+STREAM_COST = cost_usd("claude-opus-5-5", STREAM_USAGE)
+
+
+def email(n=1):
+    return ClaudeRequest(request_id=f"newsletter-lane-{n}", model="claude-opus-5-5", reasoning_effort="high",
+                         prompt="DATA: fixture", output_contract="newsletter_v1")
+
+
+def video(n=1):
+    return ProviderRequest(request_id=f"video-lane-{n}-review", model="claude-opus-5-5", reasoning_effort="max",
+                           prompt="Plan: fixture", output_contract="video_review_v1")
+
+
+def ok(tool_input, **changes):
+    content = stream_ok(parts=(json.dumps(tool_input)[:7], json.dumps(tool_input)[7:]), **changes)
+    return lambda: httpx.Response(200, content=content, headers={"content-type": "text/event-stream"})
+
+
+def refusal(status, payload=None):
+    return lambda: httpx.Response(status, json=payload or {"error": {"type": "api_error"}})
+
+
+def broken():
+    content = sse(message_start(), ("error", {"type": "error", "error": {"type": "overloaded_error"}}))
+    return lambda: httpx.Response(200, content=content, headers={"content-type": "text/event-stream"})
+
+
+class Api:
+    """A simulated Messages endpoint: answers in order (the last answer repeats); a gate holds calls open."""
+
+    def __init__(self, *answers):
+        self.answers = list(answers)
+        self.seen = []
+        self.gate = None
+
+    async def handler(self, request):
+        self.seen.append(request)
+        if self.gate is not None:
+            await self.gate.wait()
+        return (self.answers.pop(0) if len(self.answers) > 1 else self.answers[0])()
+
+    def transport(self):
+        return httpx.MockTransport(self.handler)
+
+
+@pytest.fixture
+def lane(fake_claude, tmp_path):  # noqa: F811 - pytest injects the imported fixture
+    config, configure, calls = fake_claude
+    key = tmp_path / "claude_api_key"
+    key.write_text(KEY + "\n")
+    return replace(config, api_enabled=True, api_cap_usd=190, api_key_file=key), configure, calls
+
+
+def make_runner(config, api, clock=time.time):
+    return ClaudeRunner(config, source_environment={"PATH": os.environ["PATH"]}, api_transport=api.transport(),
+                        clock=clock)
+
+
+def receipt(config, request):
+    return json.loads((config.jobs_dir / f"{request.request_id}.json").read_text())
+
+
+def tried(config, request):
+    return [(a["backend"], a["outcome"]) for a in receipt(config, request)["attempts"]]
+
+
+def ledger(config):
+    return json.loads((config.jobs_dir / ".api" / "ledger.json").read_text())
+
+
+def status(config):
+    return json.loads((config.jobs_dir / ".api" / "status.json").read_text())
+
+
+def cli_email(configure):
+    configure(model="claude-opus-5-5", used_model="claude-opus-5-5", review=v5_draft().model_dump(mode="json"))
+
+
+def cli_video(configure, **changes):
+    configure(model="claude-opus-5-5", used_model="claude-opus-5-5", review=VIDEO_REVIEW, **changes)
+
+
+async def until(condition):
+    for _ in range(500):
+        if condition():
+            return
+        await asyncio.sleep(0.01)
+    raise AssertionError("condition not reached")
+
+
+def test_routing_table_is_the_approved_list():
+    assert API_FIRST == frozenset({"video_shorts_v1", "newsletter_v1", "video_performance_v1", "video_weekly_v1",
+                                   "video_answer_v1", "agent_decision", "video_screen_fix_v1"})
+
+
+def test_lane_configuration_is_validated_and_read_from_the_environment(tmp_path, monkeypatch):
+    for cap in (-1, 1001, float("nan"), float("inf")):
+        with pytest.raises(ValueError):
+            ClaudeConfig(tmp_path / "a", tmp_path / "j", api_cap_usd=cap)
+    monkeypatch.setenv("CLAUDE_CONFIG_DIR", str(tmp_path / "auth"))
+    monkeypatch.setenv("CLAUDE_JOBS_DIR", str(tmp_path / "jobs"))
+    for name in ("CLAUDE_API_ENABLED", "CLAUDE_API_CAP_USD", "CLAUDE_API_KEY_FILE"):
+        monkeypatch.delenv(name, raising=False)
+    config = runner_from_environment().config
+    assert (config.api_enabled, config.api_cap_usd, config.api_key_file) == (False, 0.0, None)
+    monkeypatch.setenv("CLAUDE_API_ENABLED", "true")
+    monkeypatch.setenv("CLAUDE_API_CAP_USD", "190")
+    monkeypatch.setenv("CLAUDE_API_KEY_FILE", "/run/secrets/claude_api_key")
+    config = runner_from_environment().config
+    assert (config.api_enabled, config.api_cap_usd) == (True, 190.0)
+    assert config.api_key_file == Path("/run/secrets/claude_api_key")
+    monkeypatch.setenv("CLAUDE_API_CAP_USD", "lots")
+    with pytest.raises(ProviderFault) as fault:
+        runner_from_environment()
+    assert fault.value.code == "unavailable"
+
+
+async def test_api_first_contract_runs_on_the_api_and_receipt_says_so(lane):
+    from quant_company.newsletter.contracts import NewsletterDraft
+
+    config, _, calls = lane
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    runner = make_runner(config, api)
+    result = await runner.run(email())
+    assert len(api.seen) == 1 and calls() == []
+    sent = json.loads(api.seen[0].content)
+    assert sent["tools"][0]["input_schema"] == NewsletterDraft.model_json_schema()
+    assert sent["output_config"] == {"effort": "high"} and sent["max_tokens"] == 64000
+    assert NewsletterDraft.model_validate_json(result.decision.artifacts[0].content) == v5_draft()
+    assert result.decision.artifacts[0].title == "Evening brief email" and result.provider == "claude"
+    usage = result.usage
+    assert {name: usage[name] for name in STREAM_USAGE} == STREAM_USAGE
+    assert usage["billing_mode"] == "api_credit" and usage["backend"] == "api"
+    assert usage["actual_model"] == "claude-opus-5-5" and usage["effort"] == "high"
+    assert usage["effort_evidence"] == "requested_api_parameter" and usage["api_version"] == "2023-06-01"
+    assert usage["cost_usd"] == round(STREAM_COST, 6)
+    saved = receipt(config, email())
+    assert saved["backend"] == "api" and saved["state"] == "complete" and tried(config, email()) == [
+        ("api", "complete")]
+    assert await runner.run(email()) == result and await make_runner(config, api).run(email()) == result
+    assert len(api.seen) == 1 and calls() == []
+    entries = ledger(config)["entries"]
+    assert [(e["request_id"], e["route"]) for e in entries] == [("newsletter-lane-1#0", "api_first")]
+    assert entries[0]["actual"] == pytest.approx(STREAM_COST)
+    assert status(config)["state"] == "on" and status(config)["calls_31d"] == {"api_first": 1}
+
+
+async def test_subscription_first_contract_stays_on_the_cli_while_it_works(lane):
+    config, configure, calls = lane
+    cli_video(configure)
+    api = Api(ok(VIDEO_REVIEW))
+    result = await make_runner(config, api).run(video())
+    assert not api.seen and len(calls()) == 1
+    assert result.usage["billing_mode"] == "subscription" and "backend" not in result.usage
+    assert receipt(config, video())["backend"] == "subscription"
+    assert tried(config, video()) == [("subscription", "complete")]
+
+
+@pytest.mark.parametrize("change,outcome,cli_runs", [
+    ({"error": "rate_limit"}, "quota", 1),
+    ({"auth": {"loggedIn": False}}, "auth", 0),
+])
+async def test_cli_quota_or_auth_falls_back_to_the_api(lane, change, outcome, cli_runs):
+    config, configure, calls = lane
+    cli_video(configure, **change)
+    api = Api(ok(VIDEO_REVIEW))
+    result = await make_runner(config, api).run(video())
+    assert len(api.seen) == 1 and len(calls()) == cli_runs
+    assert result.usage["billing_mode"] == "api_credit"
+    assert result.decision.artifacts[0].title == "Video adaptation review"
+    assert tried(config, video()) == [("subscription", outcome), ("api", "complete")]
+    assert status(config)["calls_31d"] == {"fallback": 1} and status(config)["last_fallback_at"]
+
+
+@pytest.mark.parametrize("change", [{"crash": True}, {"incomplete": "error_max_turns"}, {"result_is_error": True}])
+async def test_cli_uncertain_or_invalid_never_reaches_the_api(lane, change):
+    config, configure, calls = lane
+    cli_video(configure, **change)
+    api = Api(ok(VIDEO_REVIEW))
+    with pytest.raises(ProviderFault) as fault:
+        await make_runner(config, api).run(video())
+    assert fault.value.code in {"uncertain", "invalid_output"}
+    with pytest.raises(ProviderFault):
+        await make_runner(config, api).run(video())
+    assert not api.seen and len(calls()) == 1
+
+
+@pytest.mark.parametrize("code,outcome,pause", [(529, "not_executed", "overloaded"), (401, "not_executed", "key"),
+                                               (500, "consumed", None)])
+async def test_api_refusal_sends_api_first_work_to_the_subscription(lane, code, outcome, pause):
+    config, configure, calls = lane
+    cli_email(configure)
+    api = Api(refusal(code))
+    runner = make_runner(config, api)
+    result = await runner.run(email())
+    assert result.usage["billing_mode"] == "subscription" and len(api.seen) == 1 and len(calls()) == 1
+    saved = receipt(config, email())
+    assert saved["backend"] == "subscription" and saved["state"] == "complete"
+    assert tried(config, email()) == [("api", outcome), ("subscription", "complete")]
+    assert saved["attempts"][0]["status"] == code
+    entries = ledger(config)["entries"]
+    if outcome == "consumed":  # a 500 may have run: its whole reservation counts
+        assert [e["actual"] for e in entries] == [pytest.approx(reservation_usd(email()))]
+    else:
+        assert entries == []
+    assert (status(config)["paused"] or {}).get("reason") == pause
+    assert await runner.run(email()) == result and len(api.seen) == 1
+
+
+async def test_api_uncertain_is_never_replayed_and_pauses_the_lane(lane):
+    config, configure, calls = lane
+    now = [1_000_000.0]
+    api = Api(broken(), ok(v5_draft().model_dump(mode="json")))
+    runner = make_runner(config, api, clock=lambda: now[0])
+    with pytest.raises(ProviderFault) as fault:
+        await runner.run(email())
+    assert fault.value.code == "uncertain"
+    saved = receipt(config, email())
+    assert saved["state"] == "failed" and saved["fault"] == "uncertain" and tried(config, email()) == [
+        ("api", "uncertain")]
+    assert ledger(config)["entries"][0]["actual"] == pytest.approx(reservation_usd(email()))
+    assert status(config)["paused"] == {"reason": "uncertain", "until": now[0] + 1800}
+    cli_email(configure)
+    for again in (runner, make_runner(config, api, clock=lambda: now[0])):
+        with pytest.raises(ProviderFault) as replay:
+            await again.run(email())
+        assert replay.value.code == "uncertain"
+    assert len(api.seen) == 1 and calls() == []
+    now[0] += 1799  # still paused: another email goes to the subscription
+    assert (await runner.run(email(2))).usage["billing_mode"] == "subscription"
+    assert len(api.seen) == 1 and len(calls()) == 1
+    now[0] += 2
+    assert (await runner.run(email(3))).usage["billing_mode"] == "api_credit"
+    assert len(api.seen) == 2
+
+
+@pytest.mark.parametrize("change", ["disabled", "zero_cap", "no_key_file", "missing_key", "empty_key"])
+async def test_disabled_lane_or_zero_cap_or_missing_key_changes_nothing(lane, change, tmp_path):
+    config, configure, calls = lane
+    config = {"disabled": replace(config, api_enabled=False), "zero_cap": replace(config, api_cap_usd=0),
+              "no_key_file": replace(config, api_key_file=None),
+              "missing_key": replace(config, api_key_file=tmp_path / "absent"),
+              "empty_key": config}[change]
+    if change == "empty_key":
+        config.api_key_file.write_text("\n")
+    cli_email(configure)
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    result = await make_runner(config, api).run(email())
+    assert result.usage["billing_mode"] == "subscription" and not api.seen and len(calls()) == 1
+    assert tried(config, email()) == [("subscription", "complete")]
+    if change in {"disabled", "zero_cap"}:
+        assert not (config.jobs_dir / ".api").exists()
+
+
+async def test_cap_reached_sends_api_first_work_to_the_subscription(lane):
+    config, configure, calls = lane
+    config = replace(config, api_cap_usd=1.0)
+    assert reservation_usd(email()) > 1.0
+    cli_email(configure)
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    result = await make_runner(config, api).run(email())
+    assert result.usage["billing_mode"] == "subscription" and not api.seen and len(calls()) == 1
+    assert not (config.jobs_dir / ".api" / "ledger.json").exists() or ledger(config)["entries"] == []
+    assert status(config)["spent_31d_usd"] == 0
+
+
+async def test_second_ask_during_api_call_is_pending_not_a_second_call(lane):
+    config, _, calls = lane
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    api.gate = asyncio.Event()
+    runner = make_runner(config, api)
+    task = asyncio.create_task(runner.run(email()))
+    await until(lambda: api.seen)
+    for _ in range(2):
+        with pytest.raises(ProviderFault) as pending:
+            await runner.run(email())
+        assert pending.value.code == "pending" and pending.value.retry_after_seconds == 20
+    api.gate.set()
+    result = await task
+    assert result.usage["billing_mode"] == "api_credit"
+    assert await runner.run(email()) == result
+    assert len(api.seen) == 1 and calls() == []
+
+
+async def test_restart_during_api_call_is_uncertain_and_keeps_reservation(lane):
+    config, _, calls = lane
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    api.gate = asyncio.Event()
+    task = asyncio.create_task(make_runner(config, api).run(email()))
+    await until(lambda: api.seen)
+    saved = receipt(config, email())
+    assert saved["state"] == "running" and saved["backend"] == "api"
+    restarted = Api(ok(v5_draft().model_dump(mode="json")))
+    with pytest.raises(ProviderFault) as fault:
+        await make_runner(config, restarted).run(email())
+    assert fault.value.code == "uncertain" and not restarted.seen and calls() == []
+    assert Budget(config.jobs_dir / ".api", 190).spent() == pytest.approx(reservation_usd(email()))
+    # The interrupted call itself: cancelled mid-stream it counts in full and pauses the lane.
+    task.cancel()
+    await asyncio.gather(task, return_exceptions=True)
+    assert receipt(config, email())["fault"] == "uncertain"
+    assert Budget(config.jobs_dir / ".api", 190).spent() == pytest.approx(reservation_usd(email()))
+    assert status(config)["paused"]["reason"] == "uncertain"
+    assert len(api.seen) == 1
+
+
+async def test_api_call_runs_while_the_cli_slot_is_busy(lane):
+    config, configure, calls = lane
+    cli_video(configure, delay=10)
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    runner = make_runner(config, api)
+    held = asyncio.create_task(runner.run(video()))
+    await until(calls)
+    with pytest.raises(ProviderFault) as busy:
+        await make_runner(config, api).run(video(2))
+    assert busy.value.code == "busy"  # the shared CLI slot is taken
+    result = await runner.run(email())
+    assert result.usage["billing_mode"] == "api_credit" and not held.done()
+    assert len(calls()) == 1
+    await runner.cancel(video().request_id)
+    assert held.cancelled()
+
+
+async def test_shared_only_cancel_keeps_an_api_turn_and_cancels_a_cli_turn(lane):
+    config, configure, calls = lane
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    api.gate = asyncio.Event()
+    runner = make_runner(config, api)
+    api_turn = asyncio.create_task(runner.run(email()))
+    await until(lambda: api.seen)
+    assert await runner.cancel(email().request_id, shared_only=True) == "kept"
+    api.gate.set()
+    assert (await api_turn).usage["billing_mode"] == "api_credit"
+    assert receipt(config, email())["state"] == "complete"
+    cli_video(configure, delay=10)
+    cli_turn = asyncio.create_task(runner.run(video()))
+    await until(calls)
+    # As a plain cancel answers for a CLI turn that already started: it is stopped, its outcome unknown.
+    assert await runner.cancel(video().request_id, shared_only=True) == "uncertain"
+    assert cli_turn.cancelled() and len(api.seen) == 1
+
+
+async def test_key_never_reaches_the_cli_environment_or_receipts(lane):
+    config, configure, calls = lane
+    faults = []
+    cli_email(configure)
+    runner = make_runner(config, Api(ok(v5_draft().model_dump(mode="json")), refusal(529)))
+    await runner.run(email())
+    await runner.run(email(2))  # refused with 529 -> the subscription
+    cli_video(configure, error="rate_limit")
+    now = [time.time() + 120]  # past the 529 pause
+    runner = make_runner(config, Api(broken()), clock=lambda: now[0])
+    with pytest.raises(ProviderFault) as fault:
+        await runner.run(video())
+    faults.append(str(fault.value) + repr(fault.value))
+    assert len(calls()) == 2
+    assert all(KEY not in json.dumps(call) for call in calls())
+    files = [path for path in config.jobs_dir.rglob("*") if path.is_file()]
+    assert len(files) >= 5 and all(KEY not in path.read_text() for path in files)
+    assert all(KEY not in text for text in faults)
+
+
+@pytest.mark.parametrize("answer", [ok({"headline": "x"}), ok(v5_draft().model_dump(mode="json"), stop="max_tokens")])
+async def test_invalid_api_output_is_definitive_and_costs_what_it_used(lane, answer):
+    config, _, calls = lane
+    api = Api(answer)
+    runner = make_runner(config, api)
+    with pytest.raises(ProviderFault) as fault:
+        await runner.run(email())
+    assert fault.value.code == "invalid_output"
+    with pytest.raises(ProviderFault) as again:
+        await make_runner(config, api).run(email())
+    assert again.value.code == "invalid_output" and again.value.message == fault.value.message
+    assert len(api.seen) == 1 and calls() == []
+    assert receipt(config, email())["state"] == "failed" and tried(config, email()) == [("api", "invalid_output")]
+    assert ledger(config)["entries"][0]["actual"] == pytest.approx(STREAM_COST)
+    assert status(config)["paused"] is None
+
+
+async def test_deferred_receipt_goes_to_the_api_when_the_lane_is_open(lane):
+    config, configure, calls = lane
+    now = [time.time()]
+    Budget(config.jobs_dir / ".api", 190, clock=lambda: now[0]).pause("rate_limit", now[0] + 60)
+    cli_video(configure, error="rate_limit")
+    api = Api(ok(VIDEO_REVIEW))
+    runner = make_runner(config, api, clock=lambda: now[0])
+    with pytest.raises(ProviderFault) as fault:
+        await runner.run(video())
+    assert fault.value.code == "quota" and receipt(config, video())["state"] == "deferred"
+    with pytest.raises(ProviderFault) as still:
+        await runner.run(video())
+    assert still.value.code == "quota" and not api.seen and len(calls()) == 1
+    now[0] += 61
+    result = await runner.run(video())
+    assert result.usage["billing_mode"] == "api_credit" and len(api.seen) == 1 and len(calls()) == 1
+    assert tried(config, video()) == [("subscription", "quota"), ("api", "complete")]
+
+
+async def test_api_timeout_counts_in_full_pauses_and_is_never_retried(lane):
+    config, configure, calls = lane
+    config = replace(config, newsletter_timeout_seconds=0.2)
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    api.gate = asyncio.Event()
+    runner = make_runner(config, api)
+    with pytest.raises(ProviderFault) as fault:
+        await runner.run(email())
+    assert fault.value.code == "timeout"
+    saved = receipt(config, email())
+    assert saved["state"] == "failed" and saved["fault"] == "timeout" and tried(config, email()) == [
+        ("api", "timeout")]
+    assert ledger(config)["entries"][0]["actual"] == pytest.approx(reservation_usd(email()))
+    assert status(config)["paused"]["reason"] == "uncertain"
+    cli_email(configure)
+    with pytest.raises(ProviderFault) as again:
+        await make_runner(config, api).run(email())
+    assert again.value.code == "timeout" and len(api.seen) == 1 and calls() == []
+
+
+async def test_a_server_error_keeps_the_id_off_the_api_for_good(lane):
+    config, configure, calls = lane
+    cli_video(configure, error="rate_limit")
+    api = Api(refusal(504), ok(VIDEO_REVIEW))
+    runner = make_runner(config, api)
+    with pytest.raises(ProviderFault) as fault:
+        await runner.run(video())
+    assert fault.value.code == "quota"  # the CLI's own refusal stands, with its deferred receipt
+    saved = receipt(config, video())
+    assert saved["state"] == "deferred" and tried(config, video()) == [("subscription", "quota"), ("api", "consumed")]
+    for again in range(2):
+        if again:
+            path = config.jobs_dir / f"{video().request_id}.json"
+            path.write_text(json.dumps({**json.loads(path.read_text()), "retry_at": time.time() - 1}))
+        with pytest.raises(ProviderFault) as wait:
+            await runner.run(video())
+        assert wait.value.code == "quota"
+    assert len(api.seen) == 1 and len(calls()) == 2
+
+
+async def test_preflight_auth_with_the_api_refusing_stays_retryable(lane):
+    config, configure, calls = lane
+    cli_video(configure, auth={"loggedIn": False})
+    api = Api(refusal(529))
+    runner = make_runner(config, api)
+    with pytest.raises(ProviderFault) as fault:
+        await runner.run(video())
+    assert fault.value.code == "auth" and not calls()
+    configure(auth={"loggedIn": True, "authMethod": "claude.ai", "subscriptionType": "max"})
+    result = await runner.run(video())  # the owner logged in again: the same ID runs on the subscription
+    assert result.usage["billing_mode"] == "subscription" and len(api.seen) == 1 and len(calls()) == 1
+    assert tried(config, video()) == [("subscription", "auth"), ("api", "not_executed"), ("subscription", "complete")]
+
+
+async def test_at_most_two_api_calls_run_at_once(lane):
+    config, _, _ = lane
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    api.gate = asyncio.Event()
+    runner = make_runner(config, api)
+    turns = [asyncio.create_task(runner.run(email(n))) for n in (1, 2, 3)]
+    await until(lambda: len(api.seen) == 2)
+    await asyncio.sleep(0.05)
+    assert len(api.seen) == 2
+    with pytest.raises(ProviderFault) as pending:
+        await runner.run(email(3))  # waiting for a slot is still this request's turn
+    assert pending.value.code == "pending"
+    api.gate.set()
+    assert all(r.usage["billing_mode"] == "api_credit" for r in await asyncio.gather(*turns))
+    assert len(api.seen) == 3

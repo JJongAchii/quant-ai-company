@@ -182,13 +182,14 @@ def read_key(path):
 
 
 class ApiNotExecuted(Exception):
-    """The API answered with a non-200 status. pause is (reason, until, persist) or None."""
+    """The API answered with a non-200 status (status; None when unreachable). pause is (reason, until, persist)."""
 
-    def __init__(self, reason, consumed, pause=None):
+    def __init__(self, reason, consumed, pause=None, status=None):
         super().__init__(f"Claude API not executed: {reason}")
         self.reason = reason
         self.consumed = consumed
         self.pause = pause
+        self.status = status
 
 
 def body(request, schema, title):
@@ -221,19 +222,19 @@ def error_fields(raw):
 def not_executed(status, headers, raw, now):
     if status == 429:
         if error_fields(raw) == SPEND_LIMIT_CODE:
-            return ApiNotExecuted("spend_limit", False, ("spend_limit", next_month_start(now), True))
+            return ApiNotExecuted("spend_limit", False, ("spend_limit", next_month_start(now), True), status)
         try:
             wait = float(headers.get("retry-after", ""))
         except ValueError:
             wait = 60.0
-        return ApiNotExecuted("rate_limit", False, ("rate_limit", now + (wait if wait > 0 else 60.0), True))
+        return ApiNotExecuted("rate_limit", False, ("rate_limit", now + (wait if wait > 0 else 60.0), True), status)
     if status == 529:
-        return ApiNotExecuted("overloaded", False, ("overloaded", now + 60, True))
+        return ApiNotExecuted("overloaded", False, ("overloaded", now + 60, True), status)
     if status in (401, 403):
-        return ApiNotExecuted("key", False, ("key", None, False))
+        return ApiNotExecuted("key", False, ("key", None, False), status)
     if status in (500, 504):
-        return ApiNotExecuted("server", True)
-    return ApiNotExecuted("rejected", False)
+        return ApiNotExecuted("server", True, status=status)
+    return ApiNotExecuted("rejected", False, status=status)
 
 
 def uncertain(why):

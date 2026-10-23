@@ -1,13 +1,16 @@
-"""Official Claude subscription CLI, with no model tools or paid-provider fallback.
+"""Official Claude subscription CLI, with no model tools, and the owner's opt-in API credit lane.
 
 The account owner must disable usage credits. CLI isolation prevents API-key and
 model/configuration fallback; it cannot change the account's billing preference.
+The API credit lane (claude_api, spec 2026-10-23) stays off unless enabled with a cap above 0. Its key is read from
+its own file only for the API request header; the CLI environment never carries it.
 """
 
 import asyncio
 import fcntl
 import hashlib
 import json
+import logging
 import math
 import os
 import re
@@ -21,7 +24,10 @@ from pydantic import ValidationError, model_validator
 
 from ..contracts import AgentDecision, ArtifactDraft, ProviderFault, ProviderRequest, ProviderResponse
 from ..staff.review_contract import REVIEW_MODEL, IndependentReview
+from .claude_api import API_VERSION, PRICES, ApiNotExecuted, Budget, call, cost_usd, read_key, reservation_usd
 from .codex_runner import ProcessRunner, atomic_json, request_digest, strict_json
+
+LOG = logging.getLogger(__name__)
 
 CLI_VERSION = "2.1.280"
 MAX_OUTPUT = 1024 * 1024
@@ -43,6 +49,10 @@ class ClaudeConfig:
     video_timeout_seconds: float = 7200
     # The evening brief email shares this one slot with the PM video: a short email never holds it for long.
     newsletter_timeout_seconds: float = 900
+    # The owner's API credit lane: off unless enabled with a cap above 0 (USD over a rolling 31 days).
+    api_enabled: bool = False
+    api_cap_usd: float = 0.0
+    api_key_file: Path | None = None
 
     def __post_init__(self):
         if not math.isfinite(self.timeout_seconds) or not 0 < self.timeout_seconds <= 600:
@@ -51,6 +61,8 @@ class ClaudeConfig:
             raise ValueError("Invalid Claude video timeout")
         if not math.isfinite(self.newsletter_timeout_seconds) or not 0 < self.newsletter_timeout_seconds <= 1800:
             raise ValueError("Invalid Claude newsletter timeout")
+        if not math.isfinite(self.api_cap_usd) or not 0 <= self.api_cap_usd <= 1000:
+            raise ValueError("Invalid Claude API cap")
 
     def process_limit(self, request):
         if request.output_contract == "agent_decision":
@@ -72,6 +84,17 @@ def environment(config, source):
 # Contracts only this runtime serves. contracts.py is also a render-task input (release.render_changes), so a contract
 # no other runtime knows is added here: the render image and codex-runtime stay as they are.
 CLAUDE_ONLY = ("newsletter_v1",)
+# Contracts the owner approved for the API credit lane first; every other contract uses the subscription first and
+# reaches the API only when the subscription refused before running anything (auth or quota).
+API_FIRST = frozenset({"video_shorts_v1", "newsletter_v1", "video_performance_v1", "video_weekly_v1",
+                       "video_answer_v1", "agent_decision", "video_screen_fix_v1"})
+API_SLOTS = 2
+UNCERTAIN_PAUSE_SECONDS = 1800
+# API outcomes that may have executed: the same request ID never goes to the API again (spec 9-3).
+API_SPENT = frozenset({"consumed", "uncertain", "timeout"})
+CLI_OUTCOMES = frozenset({"auth", "quota", "uncertain", "invalid_output", "timeout"})
+TOKENS = ("input_tokens", "output_tokens", "cache_read_input_tokens", "cache_creation_input_tokens")
+REVIEW_INVALID = "Claude output did not satisfy the independent review contract."
 
 
 class ClaudeRequest(ProviderRequest):
@@ -213,21 +236,11 @@ def parse_result(request, output):
         models = result.get("modelUsage")
         if not isinstance(models, dict) or set(models) != {request.model}:
             raise ProviderFault("uncertain", "The actual review model could not be verified.")
-        schema, title, say = output_schema(request)
-        try:
-            review = schema.model_validate(result["structured_output"])
-        except ValidationError as error:
-            if request.output_contract == "agent_decision":
-                raise
-            # Contract rules and locations only (no rejected text), kept in the private receipt's fault_detail.
-            reasons = "; ".join(".".join(map(str, e["loc"])) + ": " + e["msg"]
-                                for e in error.errors(include_url=False, include_input=False))
-            raise ProviderFault("invalid_output", "Video output failed its contract: " + reasons[:1500]) from None
         usage = result.get("usage", {})
         if not isinstance(usage, dict):
             raise ValueError("Invalid usage")
         counts = {}
-        for name in ("input_tokens", "output_tokens", "cache_read_input_tokens", "cache_creation_input_tokens"):
+        for name in TOKENS:
             value = usage.get(name, 0)
             if type(value) is not int or not 0 <= value <= 2**53:
                 raise ValueError("Invalid token count")
@@ -238,18 +251,49 @@ def parse_result(request, output):
                       billing_mode="subscription", account_usage_credits_disabled_owner_confirmed=True)
         if attempts:
             counts["refused_tool_attempts"] = attempts
-        return ProviderResponse(request_id=request.request_id, provider="claude", usage=counts,
-                                decision=AgentDecision(status="complete", say=say,
-                                    artifacts=[ArtifactDraft(title=title, content=review.model_dump_json())]))
+        return structured_response(request, result["structured_output"], counts)
     except (ValueError, TypeError, KeyError, AttributeError):
-        raise ProviderFault("invalid_output", "Claude output did not satisfy the independent review contract.") from None
+        raise ProviderFault("invalid_output", REVIEW_INVALID) from None
+
+
+def structured_response(request, structured, usage):
+    """The contract-checked response for one structured output, from the CLI or the API lane."""
+    schema, title, say = output_schema(request)
+    try:
+        review = schema.model_validate(structured)
+    except ValidationError as error:
+        if request.output_contract == "agent_decision":
+            raise ProviderFault("invalid_output", REVIEW_INVALID) from None
+        # Contract rules and locations only (no rejected text), kept in the private receipt's fault_detail.
+        reasons = "; ".join(".".join(map(str, e["loc"])) + ": " + e["msg"]
+                            for e in error.errors(include_url=False, include_input=False))
+        raise ProviderFault("invalid_output", "Video output failed its contract: " + reasons[:1500]) from None
+    return ProviderResponse(request_id=request.request_id, provider="claude", usage=usage,
+                            decision=AgentDecision(status="complete", say=say,
+                                artifacts=[ArtifactDraft(title=title, content=review.model_dump_json())]))
+
+
+def attempts_of(receipt):
+    return list(receipt.get("attempts", [])) if receipt else []
+
+
+def attempt(backend, outcome, at, **detail):
+    return {"backend": backend, "outcome": outcome, "at": at, **detail}
 
 
 class ClaudeRunner:
-    def __init__(self, config, *, process_runner=None, source_environment=None):
+    def __init__(self, config, *, process_runner=None, source_environment=None, api_transport=None,
+                 clock=time.time):
         self.config = config
         self.process = process_runner or ProcessRunner()
         self.source = dict(os.environ if source_environment is None else source_environment)
+        self.transport = api_transport
+        self.clock = clock
+        # API calls take their own slots and never the shared CLI lock (.runtime.lock).
+        self.slots = asyncio.Semaphore(API_SLOTS)
+        self.budget = None
+        self.status_refreshed = False
+        # request ID -> (task, "cli" | "api")
         self.active = {}
 
     @staticmethod
@@ -288,6 +332,20 @@ class ClaudeRunner:
         except (ValueError, TypeError, KeyError, AttributeError):
             raise ProviderFault("uncertain", "The durable Claude receipt could not be verified.") from None
 
+    @staticmethod
+    def _receipt(path):
+        """The receipt _cached has just verified (None when absent), with a well-formed attempts list."""
+        try:
+            receipt = strict_json(path.read_bytes())
+        except FileNotFoundError:
+            return None
+        except (OSError, ValueError):
+            raise ProviderFault("uncertain", "The durable Claude receipt could not be verified.") from None
+        attempts = receipt.get("attempts", []) if isinstance(receipt, dict) else None
+        if not isinstance(attempts, list) or not all(isinstance(item, dict) for item in attempts):
+            raise ProviderFault("uncertain", "The durable Claude receipt could not be verified.")
+        return receipt
+
     async def _preflight(self, cwd, env):
         options = dict(cwd=cwd, env=env, timeout_seconds=20, max_stdout_bytes=65536, max_stderr_bytes=65536)
         version = await self.process.run([self.config.binary, "--version"], **options)
@@ -301,7 +359,152 @@ class ClaudeRunner:
                     or status.get("subscriptionType") not in {"pro", "max"}):
                 raise ValueError("Not a subscription login")
         except (ValueError, TypeError, AttributeError):
-            raise ProviderFault("auth", "Authenticate the isolated runtime using its Pro/Max account.") from None
+            fault = ProviderFault("auth", "Authenticate the isolated runtime using its Pro/Max account.")
+            fault.unexecuted = "preflight"  # nothing ran and nothing was recorded
+            raise fault from None
+
+    # The API credit lane.
+
+    def _lane_on(self):
+        return self.config.api_enabled and self.config.api_cap_usd > 0
+
+    def _budget(self):
+        if self.budget is None:
+            self.budget = Budget(self.config.jobs_dir.resolve() / ".api", self.config.api_cap_usd, self.clock)
+        return self.budget
+
+    def _status(self):
+        try:
+            self._budget().write_status(enabled=self.config.api_enabled)
+        except OSError as error:
+            # The status file only informs operators; a failed write must not cost a result or a turn.
+            LOG.warning("Claude API status file not written: %s", type(error).__name__)
+
+    def _refresh_status(self):
+        """The first turn after a start rewrites the status: a restart ends key pauses, a switch-off the lane."""
+        if not self.status_refreshed:
+            self.status_refreshed = True
+            if self._lane_on() or (self.config.jobs_dir.resolve() / ".api").is_dir():
+                self._status()
+
+    def _lane(self, request, attempts, route):
+        """(key, ledger ID, reserved USD) for one API attempt, or None when the API may not take this request."""
+        if not self._lane_on() or request.model not in PRICES:
+            return None
+        if any(item.get("backend") == "api" and item.get("outcome") in API_SPENT for item in attempts):
+            return None
+        key = read_key(self.config.api_key_file)
+        if key is None:
+            return None
+        try:
+            budget = self._budget()
+            if budget.paused() is not None:
+                return None
+            # Attempt-qualified, so settling or releasing one attempt never touches another of the same request.
+            ledger_id = f"{request.request_id}#{len(attempts)}"
+            amount = reservation_usd(request)
+            reserved = budget.reserve(ledger_id, request.model, amount, route)
+        except OSError:
+            return None  # an unreadable lane is closed; subscription work goes on
+        self._status()
+        return (key, ledger_id, amount) if reserved else None
+
+    async def _run_api(self, request, path, digest, attempts, lane, restore):
+        """One API attempt. When it did not execute, `restore` plus this attempt becomes the receipt again."""
+        key, ledger_id, reserved = lane
+        budget = self._budget()
+        schema, title, _ = output_schema(request)
+        effort = request.reasoning_effort or "high"
+        receipt = {"provider": "claude", "request_id": request.request_id, "input_digest": digest,
+                   "state": "running", "started_at": time.time(), "backend": "api", "api_version": API_VERSION,
+                   "requested_execution": {"model": request.model, "reasoning_effort": effort}, "attempts": attempts}
+
+        def failed(code, detail):
+            atomic_json(path, {**receipt, "state": "failed", "fault": code, "fault_detail": detail,
+                               "retry_at": time.time(), "attempts": attempts + [attempt("api", code, self.clock())]})
+
+        def spent(code, detail):
+            # It may have run: count the whole reservation, pause the lane and never repeat this ID (spec 9-2).
+            failed(code, detail)
+            budget.settle(ledger_id, reserved)
+            budget.pause("uncertain", self.clock() + UNCERTAIN_PAUSE_SECONDS)
+            self._status()
+
+        started = False
+        try:
+            atomic_json(path, receipt)
+            self.active[request.request_id] = (asyncio.current_task(), "api")
+            try:
+                async with self.slots:
+                    started = True
+                    structured, usage = await asyncio.wait_for(
+                        call(request, schema.model_json_schema(), title, key, transport=self.transport,
+                             clock=self.clock),
+                        self.config.process_limit(request))
+                cost = cost_usd(request.model, usage)
+                counts = {name: usage[name] for name in TOKENS}
+                counts.update(actual_model=usage["model"], effort=effort, effort_evidence="requested_api_parameter",
+                              billing_mode="api_credit", backend="api", cost_usd=round(cost, 6),
+                              api_version=API_VERSION)
+                try:
+                    result = structured_response(request, structured, counts)
+                except ProviderFault as fault:
+                    fault.usage = usage
+                    raise
+                atomic_json(path, {**receipt, "state": "complete", "completed_at": time.time(),
+                                   "result": result.model_dump(mode="json"),
+                                   "attempts": attempts + [attempt("api", "complete", self.clock())]})
+                budget.settle(ledger_id, cost)
+                self._status()
+                return result
+            except ApiNotExecuted as refusal:
+                detail = {"reason": refusal.reason} | ({"status": refusal.status} if refusal.status else {})
+                outcome = "consumed" if refusal.consumed else "not_executed"
+                atomic_json(path, {**restore, "attempts": attempts + [attempt("api", outcome, self.clock(), **detail)]})
+                if refusal.pause:
+                    budget.pause(*refusal.pause)
+                if refusal.consumed:
+                    budget.settle(ledger_id, reserved)  # a 500 or 504 may have run
+                else:
+                    budget.release(ledger_id)
+                self._status()
+                raise
+            except TimeoutError:
+                spent("timeout", "The Claude API call exceeded its time limit; it will not be repeated.")
+                raise ProviderFault("timeout", "Claude API timed out; reconcile this request before replacing it.") from None
+            except ProviderFault as fault:
+                if fault.code != "invalid_output":
+                    spent("uncertain", str(fault))
+                    raise
+                failed("invalid_output", str(fault))
+                usage = getattr(fault, "usage", None)
+                budget.settle(ledger_id, cost_usd(request.model, usage) if usage else reserved)
+                self._status()
+                raise
+            except asyncio.CancelledError:
+                if started:
+                    spent("uncertain", "The Claude API call was cancelled while it ran; its outcome is unknown.")
+                else:  # still waiting for a slot: nothing was sent
+                    atomic_json(path, {**restore, "attempts": attempts + [
+                        attempt("api", "not_executed", self.clock(), reason="cancelled")]})
+                    budget.release(ledger_id)
+                    self._status()
+                raise
+            finally:
+                self.active.pop(request.request_id, None)
+        except OSError:
+            raise ProviderFault("unavailable", "Claude runtime storage is unavailable.") from None
+
+    async def _api_instead(self, request, path, digest, restore, fault):
+        """The API takes work the subscription refused before running it; otherwise that refusal stands."""
+        route = "api_first" if request.output_contract in API_FIRST else "fallback"
+        lane = self._lane(request, attempts_of(restore), route)
+        if lane is None:
+            raise fault
+        try:
+            return await self._run_api(request, path, digest, attempts_of(restore), lane, restore)
+        except ApiNotExecuted:
+            raise fault from None
 
     async def run(self, request: ProviderRequest):
         if request.model not in allowed_models(request) or request.web_search:
@@ -311,9 +514,52 @@ class ClaudeRunner:
         directory.mkdir(parents=True, exist_ok=True, mode=0o700)
         path = directory / f"{request.request_id}.json"
         digest = request_digest(request)
-        cached = self._cached(path, digest, request.request_id)
+        self._refresh_status()
+        try:
+            cached = self._cached(path, digest, request.request_id)
+        except ProviderFault as fault:
+            if fault.code != "quota":
+                raise
+            # Deferred and not yet due: the API may take it now (spec 9-3); otherwise it waits as today.
+            return await self._api_instead(request, path, digest, self._receipt(path), fault)
         if cached:
             return cached
+        receipt = self._receipt(path)
+        if receipt is not None and receipt["state"] == "running":
+            if receipt.get("backend") == "api":
+                if request.request_id in self.active:
+                    raise ProviderFault("pending", "This request is still running; ask again with its ID.", 20)
+                # The runtime restarted during the call: it may have run and been charged. Never replay it.
+                raise ProviderFault("uncertain", "A Claude API call was interrupted; it will not be repeated.")
+            return await self._run_cli(request, path, digest, attempts_of(receipt))
+        attempts = attempts_of(receipt)
+        if request.output_contract in API_FIRST:
+            lane = self._lane(request, attempts, "api_first")
+            if lane is not None:
+                restore = receipt or {"provider": "claude", "request_id": request.request_id, "input_digest": digest,
+                                      "state": "deferred", "retry_at": time.time(), "backend": "api"}
+                try:
+                    return await self._run_api(request, path, digest, attempts, lane, restore)
+                except ApiNotExecuted:
+                    attempts = attempts_of(self._receipt(path))
+            return await self._run_cli(request, path, digest, attempts)
+        try:
+            return await self._run_cli(request, path, digest, attempts)
+        except ProviderFault as fault:
+            stage = getattr(fault, "unexecuted", None)
+            if stage is None:
+                raise
+            after = self._receipt(path)
+            if stage == "preflight":
+                # The CLI recorded nothing. Keep the ID retryable, as with no receipt, while recording the API attempt.
+                base = after or {"provider": "claude", "request_id": request.request_id, "input_digest": digest}
+                after = {**base, "state": "deferred", "fault": fault.code, "fault_detail": str(fault),
+                         "retry_at": time.time(), "backend": "subscription",
+                         "attempts": attempts + [attempt("subscription", fault.code, self.clock())]}
+            return await self._api_instead(request, path, digest, after, fault)
+
+    async def _run_cli(self, request, path, digest, attempts):
+        directory = path.parent
         fd = os.open(directory / ".runtime.lock", os.O_CREAT | os.O_RDWR, 0o600)
         try:
             try:
@@ -335,9 +581,10 @@ class ClaudeRunner:
                 receipt = {"provider": "claude", "request_id": request.request_id, "input_digest": digest,
                            "state": "running", "started_at": time.time(), "cli_version": CLI_VERSION,
                            "requested_execution": {"model": request.model,
-                                                   "reasoning_effort": request.reasoning_effort or "high"}}
+                                                   "reasoning_effort": request.reasoning_effort or "high"},
+                           "backend": "subscription", "attempts": attempts}
                 atomic_json(path, receipt)
-                self.active[request.request_id] = asyncio.current_task()
+                self.active[request.request_id] = (asyncio.current_task(), "cli")
                 try:
                     output = await self.process.run(command(self.config, request), cwd=cwd, env=env,
                         stdin=stdin_payload(request), timeout_seconds=self.config.process_limit(request),
@@ -353,12 +600,17 @@ class ClaudeRunner:
                     atomic_json(path, receipt)
                     result = parse_result(request, output)
                     atomic_json(path, {**receipt, "state": "complete", "completed_at": time.time(),
-                                       "result": result.model_dump(mode="json")})
+                                       "result": result.model_dump(mode="json"),
+                                       "attempts": attempts + [attempt("subscription", "complete", self.clock())]})
                     return result
                 except ProviderFault as fault:
+                    outcome = fault.code if fault.code in CLI_OUTCOMES else "uncertain"
                     atomic_json(path, {**receipt, "state": "deferred" if fault.code == "quota" else "failed",
                                        "fault": fault.code, "fault_detail": str(fault),
-                                       "retry_at": time.time() + fault.retry_after_seconds})
+                                       "retry_at": time.time() + fault.retry_after_seconds,
+                                       "attempts": attempts + [attempt("subscription", outcome, self.clock())]})
+                    if fault.code in {"auth", "quota"}:
+                        fault.unexecuted = "run"  # zero output tokens: refused before running, already recorded
                     raise
                 finally:
                     # Cancellation/crash leaves the durable running marker and cannot trigger another inference.
@@ -368,10 +620,13 @@ class ClaudeRunner:
         finally:
             os.close(fd)
 
-    async def cancel(self, request_id):
+    async def cancel(self, request_id, shared_only=False):
         if not re.fullmatch(r"[a-zA-Z0-9_-]{1,80}", request_id):
             raise ProviderFault("uncertain", "Invalid cancellation request ID.")
-        task = self.active.get(request_id)
+        task, lane = self.active.get(request_id, (None, None))
+        if task and shared_only and lane == "api":
+            # An API turn holds no shared slot: cancelling it would only waste a paid call (spec 9-1).
+            return "kept"
         if task:
             task.cancel()
             await asyncio.gather(task, return_exceptions=True)
@@ -401,5 +656,13 @@ def runner_from_environment():
     auth, jobs = os.environ.get("CLAUDE_CONFIG_DIR"), os.environ.get("CLAUDE_JOBS_DIR")
     if not auth or not jobs:
         raise ProviderFault("unavailable", "Configure isolated Claude auth and jobs directories.")
-    return ClaudeRunner(ClaudeConfig(Path(auth), Path(jobs),
-        usage_credits_disabled_confirmed=os.environ.get("CLAUDE_USAGE_CREDITS_DISABLED_CONFIRMED") == "true"))
+    key_file = os.environ.get("CLAUDE_API_KEY_FILE")
+    try:
+        config = ClaudeConfig(Path(auth), Path(jobs),
+            usage_credits_disabled_confirmed=os.environ.get("CLAUDE_USAGE_CREDITS_DISABLED_CONFIRMED") == "true",
+            api_enabled=os.environ.get("CLAUDE_API_ENABLED") == "true",
+            api_cap_usd=float(os.environ.get("CLAUDE_API_CAP_USD") or 0),
+            api_key_file=Path(key_file) if key_file else None)
+    except ValueError:
+        raise ProviderFault("unavailable", "The Claude runtime configuration is invalid.") from None
+    return ClaudeRunner(config)
