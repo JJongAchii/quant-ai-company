@@ -125,7 +125,13 @@ def create_app(*, runner: CodexRunner | None = None, token: str | None = None,
     async def cancel(request_id: str, request: Request) -> JSONResponse:
         try:
             authorize(request)
-            status = await get_runner().cancel(request_id)
+            from .claude_runner import ClaudeRunner  # lazy: claude_runtime imports this module
+
+            runner = get_runner()
+            if isinstance(runner, ClaudeRunner) and request.query_params.get("scope") == "shared":
+                status = await runner.cancel(request_id, shared_only=True)
+            else:
+                status = await runner.cancel(request_id)
             return JSONResponse({"request_id": request_id, "status": status})
         except ProviderFault as fault:
             return fault_response(fault)

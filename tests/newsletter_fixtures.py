@@ -227,10 +227,12 @@ class SimulatedProvider:
 
     def __init__(self, *outputs):
         self.outputs, self.calls, self.cancelled = list(outputs), [], []
+        self.cancel_answer, self.cancel_scopes = "cancelled", []
 
-    async def cancel(self, request_id):
+    async def cancel(self, request_id, shared_only=False):
         self.cancelled.append(request_id)
-        return "cancelled"
+        self.cancel_scopes.append(shared_only)
+        return self.cancel_answer
 
     async def run(self, request):
         self.calls.append(request)

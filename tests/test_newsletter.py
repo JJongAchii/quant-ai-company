@@ -877,6 +877,43 @@ async def test_a_running_email_turn_yields_to_the_video_without_using_an_attempt
 
 
 @pytest.mark.integration
+async def test_newsletter_does_not_yield_a_turn_the_runtime_kept(mail, brief):  # noqa: F811
+    store, clock = mail
+    edition = commit_pm(brief)
+    pending = ProviderFault("pending", "simulated: still running", 20)
+    writer, provider = await write(store, pending, v5_draft())
+    provider.cancel_answer = "kept"
+    await writer.tick()
+    first = provider.calls[0].request_id
+    before = issue_of(store, edition)
+    video_job(store, edition, "inspecting")
+    clock["at"] += timedelta(seconds=30)
+    assert await writer.tick() == {"state": "idle"}
+    # The turn runs on the API lane and holds no shared slot: it is asked about, never given up.
+    assert provider.cancelled == [first] and provider.cancel_scopes == [True] and len(provider.calls) == 1
+    issue = issue_of(store, edition)
+    assert len(issue["attempts"]) == len(before["attempts"]) and issue["request"] is not None
+    assert issue["request"]["request_id"] == first
+    assert "yielded" not in [a["outcome"] for a in issue["attempts"]]
+
+
+@pytest.mark.integration
+async def test_newsletter_still_yields_a_cancelled_turn(mail, brief):  # noqa: F811
+    store, clock = mail
+    edition = commit_pm(brief)
+    pending = ProviderFault("pending", "simulated: still running", 20)
+    writer, provider = await write(store, pending, v5_draft())
+    await writer.tick()
+    first = provider.calls[0].request_id
+    video_job(store, edition, "inspecting")
+    clock["at"] += timedelta(seconds=30)
+    assert await writer.tick() == {"state": "idle"}
+    assert provider.cancelled == [first] and provider.cancel_scopes == [True]
+    issue = issue_of(store, edition)
+    assert [a["outcome"] for a in issue["attempts"]] == ["yielded"] and issue["request"] is None
+
+
+@pytest.mark.integration
 async def test_the_fallback_cancels_the_turn_it_replaced_and_never_uses_its_output(mail, brief):  # noqa: F811
     store, clock = mail
     recipient(store, OWNER_MAIL)

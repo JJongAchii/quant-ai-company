@@ -72,10 +72,14 @@ class NewsletterWriter:
         for issue in await asyncio.to_thread(self.store.in_flight_while_video):
             request_id = issue["request"]["request_id"]
             try:
-                await self.provider.cancel(request_id)
+                answer = await self.provider.cancel(request_id, shared_only=True)
             except (ProviderFault, ValueError) as error:
                 LOG.warning("newsletter turn %s was not cancelled: %s", request_id,
                             getattr(error, "code", type(error).__name__))
+            else:
+                if answer == "kept":
+                    # It runs on the API lane and holds no shared slot: let it finish (spec 9-1).
+                    continue
             await asyncio.to_thread(self.store.yielded, issue, request_id)
 
     async def tick(self):

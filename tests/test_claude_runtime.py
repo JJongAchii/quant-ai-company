@@ -452,3 +452,50 @@ async def test_video_turns_may_stream_more_than_a_review(fake_claude):
             await runner(config).run(request())
     finally:
         claude_runner.MAX_OUTPUT = original
+
+
+async def test_shared_scope_cancel_reports_kept_over_http(fake_claude, tmp_path):
+    from dataclasses import replace
+
+    from quant_company.providers.claude_runner import ClaudeRequest
+
+    from .newsletter_fixtures import v5_draft
+    from .test_claude_api_lane import KEY, Api, ok
+
+    config, _, _ = fake_claude
+    key = tmp_path / "claude_api_key"
+    key.write_text(KEY + "\n")
+    config = replace(config, api_enabled=True, api_cap_usd=190, api_key_file=key)
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    api.gate = asyncio.Event()
+    app = create_app(runner=ClaudeRunner(config, source_environment={"PATH": os.environ["PATH"]},
+                                         api_transport=api.transport()), token="private",
+                     request_model=ClaudeRequest)
+    client = RuntimeClient("http://runtime", "private", expected_provider="claude",
+                           transport=httpx.ASGITransport(app=app))
+    email = ClaudeRequest(request_id="newsletter-kept-1", model="claude-opus-5-5", reasoning_effort="high",
+                          prompt="DATA: fixture", output_contract="newsletter_v1")
+    turn = asyncio.create_task(client.run(email))
+    for _ in range(500):
+        if api.seen:
+            break
+        await asyncio.sleep(0.01)
+    assert api.seen
+    assert await client.cancel(email.request_id, shared_only=True) == "kept"
+    api.gate.set()
+    assert (await turn).usage["billing_mode"] == "api_credit"
+    assert await client.cancel(email.request_id, shared_only=True) == "completed"
+
+
+async def test_shared_scope_is_only_passed_to_a_claude_runner():
+    seen = []
+
+    class Other:
+        async def cancel(self, request_id):
+            seen.append(request_id)
+            return "cancelled"
+
+    app = create_app(runner=Other(), token="private")
+    client = RuntimeClient("http://runtime", "private", expected_provider="claude",
+                           transport=httpx.ASGITransport(app=app))
+    assert await client.cancel("some-turn", shared_only=True) == "cancelled" and seen == ["some-turn"]
