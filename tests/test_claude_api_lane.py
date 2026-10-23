@@ -295,7 +295,13 @@ async def test_model_mismatch_is_uncertain():
     (529, {}, {"error": {"type": "overloaded_error"}}, "overloaded", False),
     (401, {}, {"error": {"type": "authentication_error"}}, "key", False),
     (500, {}, {"error": {"type": "api_error"}}, "server", True),
-    (400, {}, {"error": {"type": "invalid_request_error"}}, "rejected", False)])
+    # Every other 5xx may have run as well (only 529 is a plain overload refusal): spent, never sent again.
+    (502, {}, {"error": {"type": "api_error"}}, "server", True),
+    (503, {}, {"error": {"type": "api_error"}}, "server", True),
+    (504, {}, {"error": {"type": "api_error"}}, "server", True),
+    (599, {}, {"error": {"type": "api_error"}}, "server", True),
+    (400, {}, {"error": {"type": "invalid_request_error"}}, "rejected", False),
+    (413, {}, {"error": {"type": "request_too_large"}}, "rejected", False)])
 async def test_refusals_before_the_stream_are_not_executed(status, headers, payload, reason, consumed):
     now = datetime(2026, 10, 23, 12, tzinfo=UTC).timestamp()
     with pytest.raises(ApiNotExecuted) as caught:
@@ -583,7 +589,7 @@ async def test_cli_uncertain_or_invalid_never_reaches_the_api(lane, change):
 
 
 @pytest.mark.parametrize("code,outcome,pause", [(529, "not_executed", "overloaded"), (401, "not_executed", "key"),
-                                               (500, "consumed", None)])
+                                               (500, "consumed", None), (503, "consumed", None)])
 async def test_api_refusal_sends_api_first_work_to_the_subscription(lane, code, outcome, pause):
     config, configure, calls = lane
     cli_email(configure)
@@ -596,7 +602,7 @@ async def test_api_refusal_sends_api_first_work_to_the_subscription(lane, code, 
     assert tried(config, email()) == [("api", outcome), ("subscription", "complete")]
     assert saved["attempts"][0]["status"] == code
     entries = ledger(config)["entries"]
-    if outcome == "consumed":  # a 500 may have run: its whole reservation counts
+    if outcome == "consumed":  # a 5xx other than 529 may have run: its whole reservation counts
         assert [e["actual"] for e in entries] == [pytest.approx(reservation_usd(email()))]
     else:
         assert entries == []
@@ -885,8 +891,8 @@ async def test_a_same_id_ask_during_the_cli_preflight_is_pending_and_never_loses
     cli_email(configure)
     if second == "consumed":
         configure(error="rate_limit")
-    # A 503 refuses without a pause, so the lane stays open while the first ask waits in the CLI preflight.
-    api = Api(refusal(503), ok(v5_draft().model_dump(mode="json")) if second == "complete" else refusal(500))
+    # A 400 refuses without a pause, so the lane stays open while the first ask waits in the CLI preflight.
+    api = Api(refusal(400), ok(v5_draft().model_dump(mode="json")) if second == "complete" else refusal(500))
     process = GatedPreflight()
     first = ClaudeRunner(config, process_runner=process, source_environment={"PATH": os.environ["PATH"]},
                          api_transport=api.transport())
@@ -919,7 +925,7 @@ async def test_a_same_id_ask_during_the_cli_preflight_is_pending_and_never_loses
         with pytest.raises(ProviderFault) as again:
             await first.run(email())
         assert again.value.code == "quota" and len(calls()) == 2
-    assert len(api.seen) == 2  # the unpaid 503 and exactly one paid call
+    assert len(api.seen) == 2  # the unpaid 400 and exactly one paid call
 
 
 async def test_cancel_of_a_started_api_turn_is_uncertain_and_a_waiting_one_is_cancelled(lane):

@@ -265,7 +265,8 @@ def not_executed(status, headers, raw, now):
         return ApiNotExecuted("overloaded", False, ("overloaded", now + 60, True), status)
     if status in (401, 403):
         return ApiNotExecuted("key", False, ("key", None, False), status)
-    if status in (500, 504):
+    if 500 <= status <= 599:
+        # Any 5xx but 529 may have run and been charged: count it as spent, and never send this ID again.
         return ApiNotExecuted("server", True, status=status)
     return ApiNotExecuted("rejected", False, status=status)
 

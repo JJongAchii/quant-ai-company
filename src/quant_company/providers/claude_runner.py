@@ -501,7 +501,7 @@ class ClaudeRunner:
                 if refusal.pause:
                     self._pause(budget, *refusal.pause)
                 if refusal.consumed:
-                    self._quietly(budget.settle, ledger_id, reserved)  # a 500 or 504 may have run
+                    self._quietly(budget.settle, ledger_id, reserved)  # a 5xx other than 529 may have run
                 else:
                     self._quietly(budget.release, ledger_id)
                 self._status()
