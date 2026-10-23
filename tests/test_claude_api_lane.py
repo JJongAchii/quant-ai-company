@@ -193,6 +193,7 @@ async def test_text_only_reply_is_invalid_output():
     with pytest.raises(ProviderFault) as caught:
         await call(make_request(), SCHEMA, "T", KEY, transport=transport_for(content))
     assert caught.value.code == "invalid_output"
+    assert caught.value.usage["output_tokens"] == 3 and caught.value.usage["model"] == "claude-opus-5-5"
 
 
 async def test_max_tokens_stop_is_invalid_output():
@@ -276,3 +277,33 @@ async def test_key_appears_only_in_the_header():
             texts.append(str(error) + repr(error))
     assert len(seen) == 3 and all(KEY.encode() not in r.content for r in seen)
     assert all(KEY not in text for text in texts)
+
+
+@pytest.mark.parametrize("error", [httpx.ConnectError("x"), httpx.ConnectTimeout("x"), httpx.PoolTimeout("x")])
+async def test_connect_phase_errors_are_not_executed(error):
+    def handler(request):
+        raise error
+    with pytest.raises(ApiNotExecuted) as caught:
+        await call(make_request(), SCHEMA, "T", KEY, clock=lambda: 1000.0, transport=httpx.MockTransport(handler))
+    assert caught.value.reason == "unreachable" and caught.value.consumed is False
+    assert caught.value.pause == ("overloaded", 1060.0, True)
+
+
+async def test_read_timeout_is_uncertain():
+    def handler(request):
+        raise httpx.ReadTimeout("x")
+    with pytest.raises(ProviderFault) as caught:
+        await call(make_request(), SCHEMA, "T", KEY, transport=httpx.MockTransport(handler))
+    assert caught.value.code == "uncertain"
+
+
+async def test_unreadable_error_body_still_maps_by_status():
+    class Broken(httpx.AsyncByteStream):
+        async def __aiter__(self):
+            raise httpx.ReadError("x")
+            yield b""
+
+    transport = httpx.MockTransport(lambda request: httpx.Response(529, stream=Broken()))
+    with pytest.raises(ApiNotExecuted) as caught:
+        await call(make_request(), SCHEMA, "T", KEY, clock=lambda: 1000.0, transport=transport)
+    assert caught.value.reason == "overloaded" and caught.value.pause == ("overloaded", 1060.0, True)

@@ -270,7 +270,12 @@ async def call(request, schema, title, key, *, transport=None, clock=time.time):
             async with client.stream("POST", API_URL, headers=headers,
                                      content=json.dumps(body(request, schema, title))) as response:
                 if response.status_code != 200:
-                    raw = await response.aread()
+                    raw = b""
+                    if response.status_code == 429:
+                        try:
+                            raw = await response.aread()
+                        except Exception:  # noqa: BLE001 - the status alone decides; the body is best effort
+                            raw = b""
                     raise not_executed(response.status_code, response.headers, raw, clock())
                 async for name, data in events(response):
                     kind = data.get("type", name) if isinstance(data, dict) else name
@@ -292,6 +297,9 @@ async def call(request, schema, title, key, *, transport=None, clock=time.time):
                             usage["output_tokens"] = data["usage"]["output_tokens"]
                     elif kind == "message_stop":
                         finished = True
+    except (httpx.ConnectError, httpx.ConnectTimeout, httpx.PoolTimeout):
+        # Nothing reached the API, so the work goes back to the subscription.
+        raise ApiNotExecuted("unreachable", False, ("overloaded", clock() + 60, True)) from None
     except (httpx.HTTPError, KeyError, TypeError, AttributeError):
         raise uncertain("the stream failed") from None
     if not finished:
@@ -301,15 +309,20 @@ async def call(request, schema, title, key, *, transport=None, clock=time.time):
     result = {"input_tokens": 0, "output_tokens": 0, "cache_creation_input_tokens": 0, "cache_read_input_tokens": 0}
     result.update({k: usage[k] for k in result if k in usage})
     result["model"] = model
+    def invalid(message):
+        fault = ProviderFault("invalid_output", message)
+        fault.usage = result  # the call was billed; the runner settles its cost from this
+        return fault
+
     if stop != "tool_use":
-        raise ProviderFault("invalid_output", f"Claude API stopped with {stop if isinstance(stop, str) else 'no reason'}")
+        raise invalid(f"Claude API stopped with {stop if isinstance(stop, str) else 'no reason'}")
     for item in blocks.values():
         if item["block"].get("type") == "tool_use" and item["block"].get("name") == TOOL:
             try:
                 tool_input = json.loads(item["json"] or "{}")
             except ValueError:
-                raise ProviderFault("invalid_output", "StructuredOutput input was not valid JSON") from None
+                raise invalid("StructuredOutput input was not valid JSON") from None
             if not isinstance(tool_input, dict):
-                raise ProviderFault("invalid_output", "StructuredOutput input was not an object")
+                raise invalid("StructuredOutput input was not an object")
             return tool_input, result
-    raise ProviderFault("invalid_output", "No StructuredOutput tool call arrived")
+    raise invalid("No StructuredOutput tool call arrived")
