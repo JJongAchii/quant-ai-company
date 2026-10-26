@@ -52,7 +52,6 @@ from .test_claude_api_lane import Api, lane, ok  # noqa: F401 - real ClaudeRunne
 from .test_claude_runtime import fake_claude  # noqa: F401 - the fake CLI behind the lane fixture
 from .test_maintenance_cases import improvements  # noqa: F401
 from .test_slack import event, signed
-from .test_temporal import temporal_environment  # noqa: F401
 
 SENDER = "anything.story.fixture@gmail.com"
 PASSWORD = "abcdefghijklmnop"
@@ -713,9 +712,9 @@ async def test_a_test_send_works_with_the_flag_off_and_reaches_only_the_named_ad
     issue = issue_of(store, edition)
     assert issue["state"] == "writing" and not issue["auto"] and issue["max_attempts"] == 1
     assert issue["fallback_at"] - issue["created_at"] == TEST_FALLBACK_AFTER < FALLBACK_AFTER  # no episode to wait for
-    assert NewsletterStore(store.company).has_writing()  # the dispatcher now starts the writer workflow
+    assert NewsletterStore(store.company).has_writing()  # so the writer loop writes it with the flag off
     writer, provider = await write(store, v5_draft())
-    assert (await writer.tick())["state"] == "ready" and len(provider.calls) == 1
+    assert (await writer_loop(store, writer).tick())["state"] == "ready" and len(provider.calls) == 1
     smtp = SimulatedSmtp()
     dispatcher(store, smtp).tick()
     assert [r for r, _ in smtp.accepted] == [OWNER_MAIL]
@@ -736,64 +735,44 @@ async def test_a_test_send_works_with_the_flag_off_and_reaches_only_the_named_ad
     assert any("시험 메일도 보내지 않습니다" in n["text"] for n in outbox(store, "control"))
 
 
+def writer_loop(store, writer):
+    from quant_company.runtime import video_loops
+
+    store.settings.video_enabled = store.settings.video_analytics_enabled = False
+    [loop] = video_loops(store.company, writer=writer)
+    assert loop.name == "newsletter"
+    return loop
+
+
 @pytest.mark.integration
-async def test_newsletter_workflow_survives_a_worker_restart(mail, brief, temporal_environment):  # noqa: F811
-    import asyncio
-    from uuid import uuid4
-
-    from temporalio.worker import Replayer
-
-    from quant_company.newsletter.workflow import NewsletterWorkflow
-    from quant_company.runtime import make_newsletter_worker
-
+async def test_the_writer_loop_survives_a_restart_without_asking_again(mail, brief):  # noqa: F811
     store, _ = mail
     edition = commit_pm(brief)
-    store.settings.temporal_task_queue = "newsletter-" + uuid4().hex
     provider = SimulatedProvider(v5_draft())
-    client = temporal_environment.client
-    async with make_newsletter_worker(client, store.company, NewsletterWriter(store.company, provider=provider)):
-        handle = await client.start_workflow(NewsletterWorkflow.run, id=store.settings.temporal_task_queue,
-                                             task_queue=store.settings.temporal_task_queue + "-newsletter")
-        async with asyncio.timeout(15):
-            while issue_of(store, edition)["state"] == "writing":
-                await asyncio.sleep(.1)
-    async with make_newsletter_worker(client, store.company, NewsletterWriter(store.company, provider=provider)):
-        try:
-            await asyncio.sleep(2)
-            await Replayer(workflows=[NewsletterWorkflow]).replay_workflow(await handle.fetch_history())
-            assert len(provider.calls) == 1 and issue_of(store, edition)["origin"] == "model"
-        finally:
-            await handle.cancel()
-
+    first = writer_loop(store, NewsletterWriter(store.company, provider=provider))
+    assert first.wait(await first.tick()) == 15  # written: look again soon
+    assert issue_of(store, edition)["state"] != "writing"
+    restarted = writer_loop(store, NewsletterWriter(store.company, provider=provider))
+    assert restarted.wait(await restarted.tick()) == 60
+    assert len(provider.calls) == 1 and issue_of(store, edition)["origin"] == "model"
 
 
 @pytest.mark.integration
-async def test_dispatch_starts_the_writer_only_when_there_is_something_to_write(mail, brief):  # noqa: F811
-    from quant_company.runtime import start_newsletter
-
-    class Client:
-        """Simulated Temporal client: records workflow starts only."""
-
-        def __init__(self):
-            self.started = []
-
-        async def start_workflow(self, run, id, task_queue, id_reuse_policy):
-            self.started.append((id, task_queue))
+async def test_the_writer_loop_writes_only_when_there_is_something_to_write(mail, brief):  # noqa: F811
+    from quant_company.runtime import send_newsletter
 
     store, _ = mail
     store.settings.newsletter_enabled = False
     store.company._newsletter = dispatcher(store)
-    client = Client()
-    await start_newsletter(client, store.company)
+    writer, provider = await write(store, v5_draft())
+    loop = writer_loop(store, writer)
+    await send_newsletter(store.company)  # the dispatcher only sends now
     await store.company._newsletter_tick
-    assert client.started == []
-    commit_pm(brief)
+    assert await loop.tick() == {"state": "idle"} and not provider.calls
+    edition = commit_pm(brief)
+    deliver_root(store, edition.id)
     command(store, f"이메일 시험 발송 {OWNER_MAIL}", "test-start")
-    store.company._newsletter.next_tick = 0
-    await start_newsletter(client, store.company)
-    await start_newsletter(client, store.company)
-    assert client.started == [("company-newsletter-v1", store.settings.temporal_task_queue + "-newsletter")]
-    await store.company._newsletter_tick
+    assert (await loop.tick())["state"] == "ready" and len(provider.calls) == 1
 
 
 def test_the_fallback_holds_for_a_thin_edition():
@@ -1072,23 +1051,22 @@ def test_the_maintainer_answers_recipient_text_with_the_usage_line(improvements)
 
 
 @pytest.mark.integration
-async def test_the_writer_check_runs_at_the_tick_pace(mail, monkeypatch):
-    from quant_company.runtime import start_newsletter
-
-    class Client:
-        async def start_workflow(self, *args, **kwargs):
-            raise AssertionError("nothing to write")
+async def test_dispatch_sends_at_its_tick_pace_and_the_writer_checks_once_a_minute(mail, monkeypatch):
+    from quant_company.runtime import send_newsletter
 
     store, _ = mail
     store.settings.newsletter_enabled = False
-    calls = []
-    monkeypatch.setattr(NewsletterStore, "has_writing", lambda self: calls.append(1) or False)
+    checks, ticks = [], []
+    monkeypatch.setattr(NewsletterStore, "has_writing", lambda self: checks.append(1) or False)
     store.company._newsletter = dispatcher(store)
+    monkeypatch.setattr(store.company._newsletter, "tick", lambda at=None: ticks.append(1) or {"state": "idle"})
     for _ in range(5):
-        await start_newsletter(Client(), store.company)
+        await send_newsletter(store.company)
         if store.company._newsletter_tick:
             await store.company._newsletter_tick
-    assert len(calls) == 1
+    assert len(ticks) == 1 and checks == []  # the sending tick paces itself; writing is not its business
+    loop = writer_loop(store, NewsletterWriter(store.company, provider=SimulatedProvider()))
+    assert loop.wait(await loop.tick()) == 60 and len(checks) == 1
 
 
 def test_gmails_authentication_results_are_read_for_the_sender_domain():

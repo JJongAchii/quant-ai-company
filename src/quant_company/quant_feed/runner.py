@@ -1,14 +1,28 @@
 import asyncio
 import contextlib
 
-from temporalio import activity
-
 from ..contracts import ProviderFault, ProviderRequest, ProviderResponse
 from ..execution import provider_for
 from .contracts import QuantSource
 from .feeds import collect
 from .originals import fetch_original
 from .store import QuantFeedStore
+
+# Waits between ticks: sources are read every five minutes; the editor follows up quickly on a ready document.
+COLLECTION_DELAY_SECONDS = 300
+EDITORIAL_IDLE_DELAY_SECONDS = 300
+EDITORIAL_CANDIDATE_DELAY_SECONDS = 1800
+EDITORIAL_FOLLOWUP_DELAY_SECONDS = 20
+
+
+def editorial_delay(result):
+    if result.get("state") == "held" and result.get("reason") == "quant_context_limit":
+        return EDITORIAL_FOLLOWUP_DELAY_SECONDS
+    if result.get("document_state") == "ready":
+        return EDITORIAL_FOLLOWUP_DELAY_SECONDS
+    if result.get("state") in {"idle", "defer"}:
+        return EDITORIAL_IDLE_DELAY_SECONDS
+    return EDITORIAL_CANDIDATE_DELAY_SECONDS
 
 
 class QuantFeedCollector:
@@ -31,17 +45,13 @@ class QuantFeedCollector:
             result["original"] = await asyncio.to_thread(self.store.save_original, candidate, receipt)
         return result
 
-    @activity.defn(name="company_quant_feed_collect")
-    async def activity_tick(self):
-        return await self.tick()
-
 
 class QuantFeedEditor:
     def __init__(self, company, provider=None):
         self.store = QuantFeedStore(company)
         self.provider = provider if provider is not None else provider_for(company)
 
-    async def tick(self, heartbeat=False):
+    async def tick(self):
         ready = await asyncio.to_thread(self.store.prepare)
         if ready["state"] != "ready":
             return ready
@@ -50,8 +60,6 @@ class QuantFeedEditor:
         try:
             while not task.done():
                 await asyncio.wait({task}, timeout=5)
-                if heartbeat:
-                    activity.heartbeat({"request_id": request.request_id})
             response = ProviderResponse.model_validate(await task)
             if response.request_id != request.request_id:
                 raise ValueError("quant_response_identity_mismatch")
@@ -67,7 +75,3 @@ class QuantFeedEditor:
                 task.cancel()
                 with contextlib.suppress(asyncio.CancelledError):
                     await task
-
-    @activity.defn(name="company_quant_feed_review")
-    async def activity_tick(self):
-        return await self.tick(heartbeat=True)

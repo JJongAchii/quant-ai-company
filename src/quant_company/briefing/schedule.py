@@ -1,4 +1,4 @@
-"""Calendar calculation stays in activities; Temporal workflows only use recorded results."""
+"""Calendar calculation stays in the ticks; loops only use recorded results."""
 
 import json
 from datetime import UTC, datetime, time, timedelta

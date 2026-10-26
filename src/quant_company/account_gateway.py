@@ -1,18 +1,17 @@
 """Private account routing for workers whose research code must stay pinned.
 
-Only the application gateway has database/Temporal credentials. The isolated
+Only the application gateway has database credentials. The isolated
 Codex runtime still receives just a frozen model request and a profile selection.
 """
 
 from contextlib import asynccontextmanager
 
-from .accounts import AccountControl, AccountProvider
+from .accounts import AccountProvider
 from .company import Company
 from .config import Settings
 from .contracts import ProviderFault
 from .providers.client import RuntimeClient
 from .providers.codex_runtime import create_app as private_app
-from .runtime import connect, make_accounts_worker
 
 
 class PinnedWorkerProvider(AccountProvider):
@@ -43,11 +42,9 @@ def create_app(*, company=None, client=None, token=None):
 
     @asynccontextmanager
     async def lifespan(app):
+        # Owner account commands run in the worker's accounts loop (runtime.worker_loops), next to the turns they wake.
         app.state.runner = provider()
-        office = app.state.runner.company
-        temporal = await connect(office.settings)
-        control = AccountControl(office, app.state.runner.client, temporal)
-        async with transport_lifespan(app), make_accounts_worker(temporal, office, control):
+        async with transport_lifespan(app):
             yield
 
     app.router.lifespan_context = lifespan

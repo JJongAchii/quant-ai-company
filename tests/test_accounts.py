@@ -1,4 +1,4 @@
-"""Real PostgreSQL/Temporal and subprocess receipts; simulated Slack and Codex output."""
+"""Real PostgreSQL and subprocess receipts; simulated Slack and Codex output."""
 
 import asyncio
 import json
@@ -9,30 +9,24 @@ from uuid import uuid4
 import httpx
 import pytest
 from fastapi.testclient import TestClient
-from temporalio import activity
-from temporalio.worker import Replayer, Worker
 
 from quant_company.account_gateway import create_app as gateway_app
-from quant_company.account_workflow import AccountControlWorkflow
 from quant_company.accounts import AccountControl, AccountProvider, parse_command
 from quant_company.api import create_app
 from quant_company.company import Company, PolicyError
 from quant_company.config import Settings
 from quant_company.contracts import ProviderFault
 from quant_company.execution import TurnExecutor
+from quant_company.loops import TurnLoop
 from quant_company.providers.client import RuntimeClient
 from quant_company.providers.codex_runner import atomic_json, request_digest
 from quant_company.providers.codex_runtime import create_app as runtime_app
-from quant_company.runtime import dispatch_once, make_accounts_worker, make_worker
-from quant_company.workflow import CompanyTurnWorkflow
 
 from .conftest import queued_turns
-from .legacy_turn_workflow import LegacyCompanyTurnWorkflow
 from .test_codex_runtime import fake_codex as fake_codex
 from .test_codex_runtime import request_model as request_model
 from .test_codex_runtime import runner_for
 from .test_slack import event, signed
-from .test_temporal import temporal_environment as temporal_environment
 
 
 @pytest.fixture
@@ -445,67 +439,23 @@ async def test_runtime_requires_newer_selection_and_explicit_quota(accounts, req
 
 
 @pytest.mark.integration
-async def test_pre_upgrade_timer_history_replays_and_adopts_wake_on_next_iteration(temporal_environment):
-    client = temporal_environment.client
-    queue = "account-upgrade-" + uuid4().hex
-    calls = 0
-    second_iteration = asyncio.Event()
-
-    @activity.defn(name="company_execute_turn")
-    async def execute(turn_id: str):
-        nonlocal calls
-        calls += 1
-        if calls == 1:
-            return {"state": "defer", "seconds": 2}
-        if calls == 2:
-            second_iteration.set()
-            return {"state": "defer", "seconds": 900}
-        return {"state": "completed"}
-
-    async with Worker(client, task_queue=queue, workflows=[LegacyCompanyTurnWorkflow], activities=[execute]):
-        handle = await client.start_workflow(LegacyCompanyTurnWorkflow.run, "upgrade-turn", id=queue, task_queue=queue)
-        async with asyncio.timeout(10):
-            while True:
-                history = await handle.fetch_history()
-                if any(event.HasField("timer_started_event_attributes") for event in history.events):
-                    break
-                await asyncio.sleep(0.05)
-        await Replayer(workflows=[CompanyTurnWorkflow]).replay_workflow(history)
-    async with Worker(client, task_queue=queue, workflows=[CompanyTurnWorkflow], activities=[execute]):
-        await asyncio.wait_for(second_iteration.wait(), timeout=10)
-        await handle.signal("model_account_changed", 1)
-        assert await asyncio.wait_for(handle.result(), timeout=10) == {"state": "completed"}
-        await Replayer(workflows=[CompanyTurnWorkflow]).replay_workflow(await handle.fetch_history())
-
-
-@pytest.mark.integration
-async def test_real_temporal_switch_wakes_quota_wait_and_replays_history(accounts, temporal_environment):
+async def test_account_switch_wakes_a_quota_wait_in_the_turn_loop(accounts):
     company, control, provider, runner, configure, calls = accounts
-    client = temporal_environment.client
-    company.settings.temporal_task_queue = "accounts-" + uuid4().hex
-    control.temporal = client
     configure(mode="quota")
     result = company.ingest(event_key="quota-turn", text="Synthetic task", owner="UHUMAN", agent="data")
     turn = queued_turns(company, result["project_id"])[0]
-    async with (make_worker(client, company, TurnExecutor(company, provider)),
-                make_accounts_worker(client, company, control)):
-        await dispatch_once(client, company)
-        handle = client.get_workflow_handle("company-turn-" + turn)
-        async with asyncio.timeout(20):
-            while True:
-                state = await asyncio.to_thread(company.project_state, result["project_id"])
-                if state["turns"][0]["status"] == "waiting":
-                    break
-                await asyncio.sleep(0.1)
-        configure()
-        command(company)
-        configure(decision={"say": "Synthetic task complete", "status": "complete"})
-        outcome = await asyncio.wait_for(handle.result(), timeout=20)
-        assert outcome["state"] == "completed", company.project_state(result["project_id"])
-        history = await handle.fetch_history()
-        await Replayer(workflows=[CompanyTurnWorkflow]).replay_workflow(history)
-        account_history = await client.get_workflow_handle("company-model-accounts-v1").fetch_history()
-        await Replayer(workflows=[AccountControlWorkflow]).replay_workflow(account_history)
+    turns = TurnLoop(company, TurnExecutor(company, provider), asyncio.Semaphore(1))
+    control.wake = turns.wake
+    assert (await turns.tick())["result"] == "defer"
+    assert company.project_state(result["project_id"])["turns"][0]["status"] == "waiting"
+    assert await turns.tick() == {"state": "idle"}  # the quota wait is a database due time
+    configure()
+    command(company)
+    configure(decision={"say": "Synthetic task complete", "status": "complete"})
+    await control.tick()  # switches, moves the quota wait's due time to now and wakes the turn
+    outcome = await turns.tick()
+    assert outcome == {"state": "ran", "turn_id": turn, "result": "completed"}, company.project_state(
+        result["project_id"])
     assert len(calls()) == 2
     assert calls()[1]["environment"]["CODEX_HOME"] == str(runner.config.backup_codex_home)
     assert company.project_state(result["project_id"])["turns"][0]["id"] == turn

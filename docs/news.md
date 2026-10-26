@@ -22,7 +22,7 @@ flowchart LR
     V --> O[(발송 대기 · 결과 영수증)]
     O --> G[KST 06~24시 발송 · 야간분은 아침 모음]
     G --> S[hot-news 새 글 · 사건별 후속 스레드]
-    T[Temporal 재시도 · 예약 · 복구] --> C
+    T[news-worker 루프 · 재시도 · 예약] --> C
     T --> E
 ```
 
@@ -32,8 +32,8 @@ flowchart LR
   추가 검색은 낮 60분 간격으로 6개 분야를 순환하고, 최근 보류 기사 최대 2건의 독립 보도도 찾는다.
   검색 결과·스니펫은 근거로 쓰지 않고 등록된 매체의 실제 원문과 발행 시각을 확인한다.
   확인을 통과하면 기존 dispatcher가 발송한다. 모델 사용량·뉴스 검토 대기·원문 장애 때문에 늦어질 수 있다.
-- 수집은 별도 Temporal task queue에서 실행한다. 선별·편집·검색은 `-news-model` 전용 queue의
-  실행 자리 1개를 공유하며, 일반 연구/직원 업무 1개와 동시에 진행할 수 있다. Codex 실행기도
+- 수집은 별도 루프에서 실행한다. 선별·편집·검색은 news-worker의 모델 레인
+  자리 1개를 공유하며, 일반 연구/직원 업무 1개와 동시에 진행할 수 있다. Codex 실행기도
   회사 1개·뉴스 1개의 파일 잠금을 사용한다. 연구가 대기·실행 중이라는 이유로 뉴스를 미루지 않는다.
   회사 공통 일일 한도·실제 구독 한도·전역 일시정지·기존 뉴스 주기와 발송 시간은 그대로 적용한다.
   수집과 모델 작업은 별도 `news-worker` 프로세스에서 실행하므로 연구 `worker` 정지에 묶이지 않는다.
@@ -174,7 +174,7 @@ uv run --frozen quant-company news probe --output .local/news-sources.json
 `probe`는 활성화된 공개 피드만 검사하며 DB·모델·Slack은 사용하지 않는다. 비활성 소스는 조회하지 않는다. manifest 생성 역시 앱을
 설치하지 않는다. 아래 명령은 설정된 DB에 연결하므로 개발용 DB 또는 확인한 운영 환경에서 사용한다.
 `collect`는 피드 1개와 원문 최대 1개, `review`는 편집 검토 최대 1회를 수행한다.
-일상적인 상시 실행은 `worker`·`dispatch`의 Temporal 워크플로가 담당한다.
+일상적인 상시 실행은 `news-worker`의 루프가 담당한다.
 
 ```bash
 uv run --frozen quant-company migrate
@@ -201,7 +201,7 @@ outbox의 `pending`은 발송 대기, `delivered`는 Slack 성공 영수증 확�
 
 ```bash
 uv run --frozen python scripts/qualify_news.py --live --output .local/news-live.json
-uv run --frozen pytest -q tests/test_news.py tests/test_news_temporal.py
+uv run --frozen pytest -q tests/test_news.py tests/test_news_loops.py
 ```
 
 DB와 Codex 실행 영수증은 기존 백업 절차에 포함한다. 장기 데이터 보관·삭제 자동화,

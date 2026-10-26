@@ -11,7 +11,6 @@ from datetime import UTC, date, datetime, time, timedelta
 
 import httpx
 from pydantic import ValidationError
-from temporalio import activity
 
 from ..company import PolicyError, as_json
 from ..contracts import ProviderAttachment, ProviderFault, ProviderRequest
@@ -703,13 +702,6 @@ class AnalyticsRunner:
         await asyncio.to_thread(self.store.close_question, question_id, "expired")
         return "expired"
 
-    @activity.defn(name="company_video_analytics_answer")
-    async def activity_answer(self, question_id: str) -> str:
-        return await self.answer(question_id)
-
-    @activity.defn(name="company_video_analytics_give_up")
-    async def activity_give_up(self, question_id: str) -> str:
-        return await self.give_up(question_id)
 
     async def preview(self, at=None):
         """sync --dry-run: the YouTube side only (uploads, reporting jobs, the latest finished d3 window) so the
@@ -734,7 +726,3 @@ class AnalyticsRunner:
                           "metrics": await self.client.video_metrics(item["youtube_id"], start, end)}
                 break
         return {"uploads": rows, "report_jobs": await self.client.report_jobs(), "latest_window": latest}
-
-    @activity.defn(name="company_video_analytics_tick")
-    async def activity_tick(self):
-        return await self.tick()

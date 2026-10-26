@@ -1,4 +1,4 @@
-"""Real PostgreSQL/Temporal and subprocesses; Slack events and model catalogs are synthetic."""
+"""Real PostgreSQL and subprocesses; Slack events and model catalogs are synthetic."""
 
 import asyncio
 import json
@@ -6,18 +6,17 @@ from uuid import UUID, uuid4
 
 import pytest
 from fastapi.testclient import TestClient
-from temporalio.worker import Replayer
 
-from quant_company.account_workflow import AccountControlWorkflow
 from quant_company.api import create_app
 from quant_company.company import Company, PolicyError, fingerprint
 from quant_company.contracts import AgentDecision, ProviderRequest, ProviderResponse, ProviderSession, Role
+from quant_company.loops import attempt
 from quant_company.model_control import ModelControl
 from quant_company.model_policy import bind, effective_role, parse_command, policy, selection
 from quant_company.quant_feed import schedule
 from quant_company.quant_feed.contracts import QuantSource
 from quant_company.quant_feed.store import QuantFeedStore
-from quant_company.runtime import make_accounts_worker
+from quant_company.runtime import worker_loops
 from quant_company.web_tools import prepare as web_prepare
 
 from .conftest import queued_turns
@@ -32,7 +31,6 @@ from .test_research_controller import active as active_audit
 from .test_research_controller import mission as mission
 from .test_slack import event, signed
 from .test_staff_development import staff_company as staff_company
-from .test_temporal import temporal_environment as temporal_environment
 
 
 @pytest.fixture
@@ -431,19 +429,13 @@ def test_direct_ingress_cannot_forge_selection(office):
 
 
 @pytest.mark.integration
-async def test_real_temporal_applies_durable_command_and_replays_history(office, temporal_environment):
+async def test_accounts_loop_applies_a_durable_command_once(office):
     company, control, _, _, _, calls = office
-    client = temporal_environment.client
-    company.settings.temporal_task_queue = "model-policy-" + uuid4().hex
     result = submit(company, "모델 지정 data candidate-a high")
-    async with make_accounts_worker(client, company, control):
-        handle = await client.start_workflow(AccountControlWorkflow.run, id="models-" + uuid4().hex,
-            task_queue=company.settings.temporal_task_queue + "-accounts")
-        async with asyncio.timeout(15):
-            while receipt(company, result) is None:
-                await asyncio.sleep(0.05)
-        await Replayer(workflows=[AccountControlWorkflow]).replay_workflow(await handle.fetch_history())
-        await handle.cancel()
+    accounts = next(loop for loop in worker_loops(company, control=control)[0] if loop.name == "accounts")
+    for _ in range(2):  # the loop's next tick finds nothing left to apply
+        await attempt(accounts.name, accounts.tick, timeout=accounts.timeout, attempts=accounts.attempts,
+                      retry_seconds=accounts.retry_seconds)
     assert receipt(company, result)["outcome"] == "applied"
     assert current(Company(company.settings, company.roles))["revision"] == 1
     assert calls() == []

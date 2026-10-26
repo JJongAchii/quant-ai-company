@@ -1,8 +1,6 @@
 import asyncio
 from datetime import timedelta
 
-from temporalio import activity
-
 from ..company import as_json, fingerprint
 from ..contracts import ProviderFault, ProviderRequest, ProviderResponse
 from ..execution import provider_for
@@ -109,20 +107,7 @@ class TrendFeedCollector:
         await asyncio.gather(*(enrich_candidate(c) for c in candidates))
         await asyncio.to_thread(self.store.save_enrichment, digest, bundle)
 
-    @activity.defn(name="company_trend_feed_collect")
-    async def activity_tick(self):
-        task = asyncio.create_task(self.tick())
-        try:
-            while not task.done():
-                await asyncio.wait({task}, timeout=10)
-                activity.heartbeat()
-            return await task
-        finally:
-            task.cancel()
-            await asyncio.gather(task, return_exceptions=True)
-
-    @activity.defn(name="company_trend_feed_finalize")
-    async def activity_finalize(self):
+    async def finalize(self):
         result = await asyncio.to_thread(self.store.finalize)
         await asyncio.to_thread(self.store.cleanup)
         return result
@@ -141,10 +126,6 @@ class TrendFeedEditor:
         task = None
         try:
             task = asyncio.create_task(self.provider.run(request))
-            while not task.done():
-                await asyncio.wait({task}, timeout=10)
-                if activity.in_activity():
-                    activity.heartbeat({"request_id": request.request_id})
             response = ProviderResponse.model_validate(await task)
             await asyncio.to_thread(self.store.finish_call, call, response)
         except ProviderFault as exc:
@@ -159,7 +140,3 @@ class TrendFeedEditor:
                 task.cancel()
                 await asyncio.gather(task, return_exceptions=True)
         return {"state": "reviewed", "id": call["id"]}
-
-    @activity.defn(name="company_trend_feed_edit")
-    async def activity_tick(self):
-        return await self.tick()

@@ -1,4 +1,4 @@
-"""Durable owner commands, run on the existing inference-independent Temporal queue."""
+"""Durable owner commands, run in the worker's inference-independent accounts loop."""
 
 import asyncio
 

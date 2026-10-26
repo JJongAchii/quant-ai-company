@@ -35,11 +35,6 @@ class Settings(BaseSettings):
     ops_watch_enabled: bool = False
     ops_alert_channel_id: str = ""
     ops_watch_owner_user: str = ""
-    temporal_address: str = "localhost:7233"
-    temporal_namespace: str = "default"
-    temporal_api_key: SecretStr = SecretStr("")
-    temporal_tls: bool = False
-    temporal_task_queue: str = "quant-company"
     # Zero disables our daily quota; provider quotas and bounded task execution remain.
     company_max_daily_turns: int = Field(default=0, ge=0, le=10000)
     company_code_commit: str = "unknown"

@@ -3,12 +3,12 @@
 개발·연구에 유용한 한국어·영어 RSS/Atom을 원문 제목, 링크, 피드에 있는 짧은 설명으로 전달한다.
 공식 발표뿐 아니라 실무 기술 블로그와 커뮤니티를 포함해 보안·인프라·데이터·개발 도구의 변화를 다룬다.
 수집·선별·발송·댓글에 모델 호출을 사용하지 않는다. 정기 요약, 자동 번역, 본문 크롤링도 없다.
-발송 전용 Slack 앱 **Tech Scout**, 기존 회사 서버, PostgreSQL, Temporal 및 발송 영수증을 사용한다.
+발송 전용 Slack 앱 **Tech Scout**, 기존 회사 서버, PostgreSQL 및 발송 영수증을 사용한다.
 새 AI/API/피드 구독 비용은 없으며 기존 인프라 사용량은 증가한다.
 
 ## 발송 정책
 
-- 전용 Temporal 워크플로가 10분 대기 간격으로 최대 12개 피드를 수집한다. HTTP 처리 시간과 장애에 따라 지연될 수 있다.
+- 전용 `tech-feed` 루프가 10분 대기 간격으로 최대 12개 피드를 수집한다. HTTP 처리 시간과 장애에 따라 지연될 수 있다.
 - 한국 시간 06:00 이상 24:00 미만에만 자동 발송한다. 밤에는 수집을 계속하며 06시부터 개별 링크를 보낸다.
 - 채널 전체에서 실제 HTTP 전송 시도 사이에 최소 60초를 둔다. 재시작 후에도 DB의 발송 간격을 유지한다.
 - 처음 성공적으로 연결한 소스의 기존 글은 기준점으로만 등록한다. 이후 처음 본 글 중 최근 72시간 자료만 발송한다.
@@ -70,12 +70,12 @@ uv run --frozen quant-company tech-feed status
 ## 검증과 복구
 
 ```bash
-uv run --frozen pytest -q tests/test_tech_feed.py tests/test_tech_feed_temporal.py
+uv run --frozen pytest -q tests/test_tech_feed.py tests/test_tech_feed_loops.py
 uv run --frozen ruff check .
 ```
 
 DB 테스트는 기존 pytest 규약에 따라 임시 DB를 생성·삭제할 수 있는 전용 PostgreSQL을 사용한다.
-Temporal 검사는 실제 로컬 서버를 시작해 worker 재시작·activity 재시도·history 재생을 확인한다.
+루프 검사는 재시도·재시작 뒤에도 발송이 한 번만 기록되는지 확인한다.
 Slack은 이 자동 검사에서 모의 HTTP이며 실제 Slack 검사로 해석하지 않는다. AI 자격검사도 실행하지 않는다.
 
 HTTP 429는 같은 메시지 ID로 지연 재시도한다. 타임아웃·서버 5xx·성공 응답의 ts 누락·전송 중 프로세스
@@ -91,16 +91,10 @@ DB 테이블과 발송 영수증은 기존 회사 DB 백업에 포함된다.
 Tech 채널/소유자 권한 철회, interactive identity, 소스 변경 및 72시간 만료 검사는 유지한다.
 
 `TECH_FEED_DEDICATED_WORKER=true`와 Compose `--profile tech-feed`는 모델 호출 없는 전용 수집
-프로세스를 활성화한다. 큐는 회사 queue의 `-tech-feed-dedicated` 접미사다. 기존 shared worker를
-중단하지 않고 전환하려면 collection이 timer 경계에 있을 때만 아래 운영 도구로 Tech workflow를
-새 큐에 재시작한다. workflow ID는 유지하고 이전 run ID·이력·DB 체크포인트는 보존한다.
-다른 뉴스·Quant·연구 workflow를 재시작하지 않는다. 전용 모드의 기본값은 false로 기존 설정을 보존한다.
-
-`deploy/tech_feed_recovery_release.py`는 root 전용, 공유 배포 잠금 및 단계별 영수증을 사용한다.
-현재 발송 이미지 위에 Tech 모듈 3개만 적용한 별도 이미지를 만들고, 원본 shared worker는 보존한다.
-전용 수집기는 DB·Temporal secret만 받으며 Slack·모델 자격증명을 받지 않는다.
-`deploy` → `handoff` → `plan` → `apply --apply-digest <검토한 지문>` 순서로 실행한다.
-기존 영수증이 있으면 무조건 재실행하지 않고 실제 상태와 대조한다.
+프로세스에서 `tech-feed` 루프를 돌린다. false(기본값)면 shared worker가 같은 루프를 돌리고 전용
+프로세스는 아무것도 하지 않는다. 두 곳이 동시에 수집하지 않는다. 전용 수집기는 DB secret만 받으며
+Slack·모델 자격증명을 받지 않는다. 당시 Temporal workflow를 새 큐로 옮기던 일회성 도구
+`deploy/tech_feed_recovery_release.py`는 Temporal을 걷어내며 지웠다([ADR 0049](adr/0049-in-process-loops-instead-of-temporal.md)).
 
 복구는 당시 정책을 재구성할 수 있고 아직 72시간 안인, 전송 시도 0회·sent_ts/started_at 없음이
 확인된 `stale` 행만 대상으로 한다. 원문 소스·본문·발송 identity·프로젝트 revision을 재검증하고

@@ -1,18 +1,16 @@
-"""Real PostgreSQL and Temporal; synthetic Slack/model/GitHub, no external writes."""
+"""Real PostgreSQL; synthetic Slack/model/GitHub, no external writes."""
 
 import asyncio
 import copy
+import dataclasses
 import json
-from pathlib import Path
 from uuid import uuid4
 
 import httpx
 import pytest
 from psycopg.types.json import Jsonb
-from temporalio import activity
-from temporalio.testing import WorkflowEnvironment
-from temporalio.worker import Replayer, Worker
 
+from quant_company import loops
 from quant_company.company import Company, PolicyError, load_roles
 from quant_company.config import Settings
 from quant_company.contracts import AgentDecision, ProviderResponse, ToolRequest
@@ -22,9 +20,8 @@ from quant_company.maintenance.applications import accept_approval
 from quant_company.maintenance.identity import role
 from quant_company.maintenance.reporting import Reporter
 from quant_company.maintenance.requests import status
-from quant_company.maintenance.runner import Maintainer
+from quant_company.maintenance.runner import Maintainer, run_maintenance
 from quant_company.maintenance.store import Store
-from quant_company.maintenance.workflow import MaintenanceReportingWorkflow, MaintenanceWorkflow
 from quant_company.slack import SlackIngress, SlackOutbox
 
 from .conftest import queued_turns
@@ -342,50 +339,47 @@ async def test_typed_conversation_to_existing_engine_and_final_case_result(impro
     assert any(path.endswith("chat.update") and "고칠 곳은 찾지 못했습니다" in body["text"] for path, body in calls)
 
 
-async def test_real_temporal_reporting_runs_while_maintenance_is_busy_and_replays(improvements, tmp_path):
+async def test_reporting_runs_while_maintenance_is_busy(improvements, monkeypatch):
     company, credentials = improvements
     _, receipt, _ = submit(company)
     box, _ = delivery(company, credentials)
     await drain(box)
     started, finish = asyncio.Event(), asyncio.Event()
 
-    @activity.defn(name="company_maintenance_tick")
     async def blocked_model():
         started.set()
         await finish.wait()
 
-    cache = Path(".local/temporal")
-    cache.mkdir(parents=True, exist_ok=True)
-    async with await WorkflowEnvironment.start_local(download_dest_dir=str(cache.resolve()), ui=False) as env:
-        queue = "case-test-" + uuid4().hex
-        reporter = Reporter(company, config())
-        async with (
-            Worker(env.client, task_queue=queue, workflows=[MaintenanceWorkflow], activities=[blocked_model],
-                   max_concurrent_activities=1),
-            Worker(env.client, task_queue=queue + "-report", workflows=[MaintenanceReportingWorkflow],
-                   activities=[reporter.tick], max_concurrent_activities=1),
-        ):
-            work = await env.client.start_workflow(MaintenanceWorkflow.run, 300, id=queue, task_queue=queue)
-            await asyncio.wait_for(started.wait(), 10)
-            Store(company, config()).save(receipt["request_id"], "blocked", error="synthetic_long_call")
-            report = await env.client.start_workflow(MaintenanceReportingWorkflow.run, 60,
-                                                     id=queue + "-report", task_queue=queue + "-report")
-            async with asyncio.timeout(15):
-                while True:
-                    with company.db.transaction() as conn:
-                        count = conn.execute("SELECT count(*) AS n FROM outbox WHERE update_ts IS NOT NULL").fetchone()["n"]
-                    if count:
-                        break
-                    await asyncio.sleep(0.1)
-            assert not finish.is_set()
-            history = await report.fetch_history()
-            await Replayer(workflows=[MaintenanceReportingWorkflow]).replay_workflow(history)
-            finish.set()
-            await work.cancel()
-            await report.cancel()
-        # A new company process reads the same case and queues no duplicate card.
-        restarted = Company(company.settings, company.roles)
-        await Reporter(restarted, config()).tick()
-        with company.db.transaction() as conn:
-            assert conn.execute("SELECT count(*) AS n FROM maintenance_cases").fetchone()["n"] == 1
-            assert conn.execute("SELECT count(*) AS n FROM outbox WHERE update_ts IS NOT NULL").fetchone()["n"] == 1
+    captured = []
+
+    async def capture(found):
+        captured.extend(found)
+
+    # The service's own two loops, with the maintenance tick held inside a long model call.
+    monkeypatch.setattr(loops, "run_all", capture)
+    await run_maintenance(company, config())
+    work, report = captured
+    tasks = [asyncio.create_task(loops.run(dataclasses.replace(work, tick=blocked_model)))]
+    try:
+        await asyncio.wait_for(started.wait(), 10)
+        Store(company, config()).save(receipt["request_id"], "blocked", error="synthetic_long_call")
+        tasks.append(asyncio.create_task(loops.run(report)))
+        async with asyncio.timeout(15):
+            while True:
+                with company.db.transaction() as conn:
+                    count = conn.execute("SELECT count(*) AS n FROM outbox WHERE update_ts IS NOT NULL").fetchone()["n"]
+                if count:
+                    break
+                await asyncio.sleep(0.1)
+        assert not finish.is_set()
+    finally:
+        finish.set()
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+    # A new company process reads the same case and queues no duplicate card.
+    restarted = Company(company.settings, company.roles)
+    await Reporter(restarted, config()).tick()
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) AS n FROM maintenance_cases").fetchone()["n"] == 1
+        assert conn.execute("SELECT count(*) AS n FROM outbox WHERE update_ts IS NOT NULL").fetchone()["n"] == 1

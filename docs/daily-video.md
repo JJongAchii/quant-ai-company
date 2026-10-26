@@ -254,8 +254,8 @@ digest로 스택의 `ImageUri`를 바꾸면 새 태스크 정의 revision이 생
 `deploy/video.compose.yaml`은 선택 프로필이다. media worker만 OAuth 파일·영상 파일에 접근하고,
 Slack 토큰은 기존 API/socket/dispatcher에만 있다.
 [영상 설정 예제](../deploy/video.env.example)는 기존 private runtime.env에 필요한 값만 추가할 때 사용한다.
-DB와 Temporal을 기존 서비스와 공유하며
-media worker의 작업 큐는 `${TEMPORAL_TASK_QUEUE}-video`다. 모든 프로세스가 같은 버전의
+DB를 기존 서비스와 공유하며
+media worker는 영상·메일 작성·영상 분석 루프를 자기 프로세스에서 돌린다. 모든 프로세스가 같은 버전의
 코드·영상 플래그·brief owner/channel 설정을 사용해야 한다.
 
 먼저 기존 app 이미지를 만들고 video 이미지를 만든다. 아래 명령은 템플릿이며 운영 서버에서
@@ -415,7 +415,7 @@ uv run --extra video quant-company video-worker
 ```
 
 운영 API `GET /v1/videos`는 operator 인증을 요구한다. 상태와 공개용 영상 ID만 보여 주며
-토큰·signed media URL·resumable session은 출력하지 않는다. Temporal은 실행·타이머를,
+토큰·signed media URL·resumable session은 출력하지 않는다. video-worker의 루프는 실행·대기를,
 PostgreSQL은 버전·예산 예약·task ID·승인·효과 영수증을 보존한다.
 
 진행 중인 효과에 결과가 없으면 `uncertain`이다. Runway history의 기존 task를 확인하고
@@ -492,7 +492,7 @@ flowchart LR
     L -->|범위 shorts만| SV[다음 Shorts 대본 지시]
 ```
 
-- 수집: video worker 프로세스 안의 별도 Temporal 큐 `${TEMPORAL_TASK_QUEUE}-video-analytics`가 30분마다 돈다.
+- 수집: video worker 프로세스 안의 별도 루프(`video-analytics` 레인)가 30분마다 돈다.
   YouTube 토큰은 이 컨테이너(media-auth)에만 있다. 외부 쓰기는 Reporting API 작업 생성뿐이며, 보고서 종류마다
   한 번 만들고 영수증(`video_report_jobs`)을 남긴다. 나머지는 모두 읽기다(월요일 벤치마크 읽기 포함).
 - 측정 대상: 제목에 `오늘의 증시story`가 들어간 본편과 그 회차의 Shorts다.
@@ -636,5 +636,5 @@ uv run ruff check .
 
 데모는 합성 문안과 macOS 음성/제공 음원을 사용한다. Runway 과금과 YouTube 업로드를 하지 않는다.
 Chromium/FFmpeg 실제 렌더링, 실제 오디오 시간과 로컬 ASR를 확인한다. 자동 테스트의 cloud/Slack/model은
-명시적 fixture이며 PostgreSQL·Temporal·Chromium·FFmpeg 확인과 구분한다.
+명시적 fixture이며 PostgreSQL·Chromium·FFmpeg 확인과 구분한다.
 [구현 검증 기록](project/DAILY-VIDEO-VALIDATION.md)에 최종 검사와 남은 운영 연결을 기록한다.

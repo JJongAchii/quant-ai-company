@@ -1,7 +1,5 @@
 import asyncio
 
-from temporalio import activity
-
 from ..lake_tools import query_lake
 from .core import CoreChecks
 from .store import DataWatchStore
@@ -25,7 +23,3 @@ class DataWatchRunner:
             await asyncio.to_thread(self.store.save_description, item, receipt)
         await asyncio.to_thread(CoreChecks(self.store).plan)
         return await asyncio.to_thread(self.store.report)
-
-    @activity.defn(name="company_data_watch_tick")
-    async def activity_tick(self):
-        return await self.tick()

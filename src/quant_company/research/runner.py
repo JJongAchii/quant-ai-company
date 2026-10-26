@@ -1,13 +1,11 @@
 """Short, repeatable server reconciliation; never executes a backtest or an LLM here."""
 
-import asyncio
 import hashlib
 import json
 from datetime import timedelta
 from pathlib import Path
 
 from psycopg.types.json import Jsonb
-from temporalio import activity
 
 from ..company import as_json, fingerprint, now, stable
 from ..task_control import waiting_router
@@ -187,11 +185,3 @@ class ResearchRunner:
                                 "artifact_sha256": row["artifact_sha256"], "html_sha256": published["html_sha256"],
                                 "director_task_id": str(task["id"]), "scientific_trials_added": 0}, project["id"])
         return {"state": "completed", "job_id": row["id"]}
-
-    @activity.defn(name="company_research_tick")
-    async def activity_tick(self):
-        task = asyncio.create_task(asyncio.to_thread(self.tick))
-        while not task.done():
-            activity.heartbeat("research_reconciliation")
-            await asyncio.wait({task}, timeout=5)
-        return task.result()

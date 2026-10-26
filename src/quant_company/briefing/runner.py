@@ -1,8 +1,6 @@
 import asyncio
 import contextlib
 
-from temporalio import activity
-
 from ..contracts import ProviderFault, ProviderRequest, ProviderResponse
 from ..execution import provider_for
 from . import schedule
@@ -25,17 +23,13 @@ class BriefCollector:
         await asyncio.to_thread(self.store.save_collection, row, bundle)
         return {"state": "collected", "edition_id": str(row["id"])}
 
-    @activity.defn(name="company_brief_collect")
-    async def activity_tick(self):
-        return await self.tick()
-
 
 class BriefEditor:
     def __init__(self, company, provider=None):
         self.store = BriefStore(company)
         self.provider = provider if provider is not None else provider_for(company)
 
-    async def tick(self, heartbeat=False):
+    async def tick(self):
         ready = await asyncio.to_thread(self.store.prepare)
         if ready["state"] != "ready":
             return ready
@@ -45,8 +39,6 @@ class BriefEditor:
         try:
             while not task.done():
                 await asyncio.wait({task}, timeout=5)
-                if heartbeat:
-                    activity.heartbeat({"request_id": request.request_id})
             response = ProviderResponse.model_validate(await task)
             if response.request_id != request.request_id:
                 raise ValueError("brief_response_identity_mismatch")
@@ -65,7 +57,3 @@ class BriefEditor:
                 task.cancel()
                 with contextlib.suppress(asyncio.CancelledError):
                     await task
-
-    @activity.defn(name="company_brief_review")
-    async def activity_tick(self):
-        return await self.tick(heartbeat=True)

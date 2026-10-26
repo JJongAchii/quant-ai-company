@@ -1,4 +1,4 @@
-"""Credential-isolated data activity for the lake-enabled briefing worker."""
+"""Credential-isolated data collection for the lake-enabled briefing worker."""
 
 import asyncio
 import json
@@ -6,8 +6,6 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-
-from temporalio import activity
 
 from ..lake_tools import _query_lock
 from . import schedule
@@ -68,7 +66,3 @@ class BriefDataCollector:
         result = await asyncio.to_thread(summarize, snapshot, edition, schedule.overrides(self.store.company.settings))
         await asyncio.to_thread(self.store.save_data, row, result)
         return {"state": "collected", "edition_id": str(row["id"]), "observations": len(result["observations"]), **extra}
-
-    @activity.defn(name="company_brief_data")
-    async def activity_tick(self):
-        return await self.tick()

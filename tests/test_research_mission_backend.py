@@ -400,4 +400,5 @@ def test_qualification_real_git_pg_restart_audit_report_and_no_duplicate_experim
                "renamed_duplicate_experiment_rejected": True,
                "report_archive_sha256": job["report"]["report_archive_sha256"],
                "audit_scope_digest": source["metadata"]["audit_scope_digest"]}
+    Path(".local").mkdir(exist_ok=True)
     Path(".local/mission-backend-qualification.json").write_text(json.dumps(receipt, indent=2) + "\n")

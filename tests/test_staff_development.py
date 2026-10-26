@@ -54,8 +54,7 @@ def test_family_factory_is_reproducible_fresh_and_rejects_false_confidence(emplo
 def test_pack_loaded_into_real_employee_request_and_tools_enforced(staff_company):
     company = staff_company
     task = company.ingest(event_key="staff-integration", text="데이터 품질을 검사해줘", owner="UHUMAN", agent="data")
-    turns = company.pending_starts()
-    prepared = company.prepare_turn(turns[0]["id"])
+    prepared = company.prepare_turn(company.due_turns()[0])
     assert pack("data")["digest"] in prepared["request"]["prompt"]
     assert pack("risk")["procedure"] not in prepared["request"]["prompt"]
     with company.db.transaction() as conn:
@@ -190,8 +189,10 @@ def test_budget_and_forbidden_action_do_not_spill_into_normal_work(staff_company
 
 def test_maintainer_can_improve_procedures_but_cannot_edit_its_examination():
     assert writable("src/quant_company/staff/playbooks/financial_strategist.md")
-    for name in ["cases.py", "store.py", "runner.py", "workflow.py", "schema.sql"]:
+    for name in ["cases.py", "store.py", "runner.py", "schema.sql"]:
         assert not writable("src/quant_company/staff/" + name)
+    # The practice schedule now lives in the worker's loops.
+    assert not writable("src/quant_company/runtime.py") and not writable("src/quant_company/loops.py")
     assert not writable("src/quant_company/staff/playbooks/../../cases.py")
 
 
@@ -222,7 +223,7 @@ def test_specialist_procedure_replay_binds_original_digest_and_changes_only_cand
     from quant_company.maintenance.evaluation import PACK_PREFIX, replay_pack
 
     task = company.ingest(event_key='replay-pack', owner='UHUMAN', text='합성 질문', agent='data')
-    request = company.prepare_turn(company.pending_starts()[0]['id'])['request']
+    request = company.prepare_turn(company.due_turns()[0])['request']
     path = PACK_PREFIX + 'data.md'
     before = pack('data')['procedure']
     payload = {'originals': {path: before}, 'changes': {path: before + '\n추가 수치 검증 절차.\n'},

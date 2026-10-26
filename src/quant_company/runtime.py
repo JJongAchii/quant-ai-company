@@ -1,210 +1,241 @@
+"""Each service runs its own loops in-process (docs/adr/0049-in-process-loops-instead-of-temporal.md).
+
+Timeouts, retries and waits are those of the former Temporal workflows. Loops that shared a task queue share a lane,
+so they still never tick at the same time. A loop exists only while its feature is enabled."""
+
 import asyncio
-import contextlib
 import logging
-from datetime import timedelta
+import sys
+from datetime import UTC, datetime, timedelta
 
-from temporalio.client import Client
-from temporalio.common import WorkflowIDReusePolicy
-from temporalio.exceptions import WorkflowAlreadyStartedError
-from temporalio.worker import Worker
-
-from .account_workflow import AccountControlWorkflow
 from .accounts import AccountControl
 from .briefing.runner import BriefCollector, BriefEditor
-from .briefing.workflow import BriefCollectionWorkflow, BriefDataWorkflow, BriefEditorialWorkflow
 from .company import Company
 from .config import Settings
 from .data_watch.runner import DataWatchRunner
-from .data_watch.workflow import DataWatchWorkflow
 from .execution import TurnExecutor
 from .housing_feed.runner import HousingFeedCollector
-from .housing_feed.workflow import HousingFeedWorkflow
+from .loops import Loop, QuestionLoop, TurnLoop, run_all
 from .news.runner import NewsCollector, NewsDiscovery, NewsEditor
-from .news.workflow import NewsCollectionWorkflow, NewsDiscoveryWorkflow, NewsEditorialWorkflow
-from .quant_feed.runner import QuantFeedCollector, QuantFeedEditor
-from .quant_feed.workflow import QuantFeedCollectionWorkflow, QuantFeedEditorialWorkflow
+from .quant_feed.runner import COLLECTION_DELAY_SECONDS, QuantFeedCollector, QuantFeedEditor, editorial_delay
 from .research.runner import ResearchRunner
-from .research.workflow import ResearchWorkflow
 from .slack import SlackIngress, SlackOutbox
 from .staff.runner import StaffRunner
-from .staff.workflow import StaffDevelopmentWorkflow
 from .tech_feed.runner import TechFeedCollector
-from .tech_feed.workflow import TechFeedCollectionWorkflow
 from .trend_feed.runner import TrendFeedCollector, TrendFeedEditor
-from .trend_feed.workflow import (
-    TrendFeedCollectionWorkflow,
-    TrendFeedDigestWorkflow,
-    TrendFeedEditorialWorkflow,
-    TrendFeedPublicationWorkflow,
-)
-from .workflow import CompanyTurnWorkflow
+from .trend_feed.schedule import next_publication
+
+# Video analytics: every 30 minutes, or 2 minutes after cards went out so their diagnosis follows in the thread.
+ANALYTICS_TICK, ANALYTICS_FOLLOW_UP = timedelta(minutes=30), timedelta(minutes=2)
 
 
-async def connect(settings: Settings):
-    return await Client.connect(settings.temporal_address, namespace=settings.temporal_namespace,
-                                api_key=settings.temporal_api_key.get_secret_value() or None,
-                                tls=settings.temporal_tls)
+def state(result):
+    return (result or {}).get("state")
 
 
-def make_worker(client, company, executor=None):
+def worker_loops(company, executor=None, control=None):
+    """Owner turns, staff practice, model accounts, research reconciliation and (shared) tech feed collection."""
+    settings = company.settings
     executor = executor or TurnExecutor(company)
-    staff = StaffRunner(company, executor.provider)
-    # Legacy registrations drain pre-lane histories until a safe tick boundary
-    # continues each news workflow onto the dedicated news process/queue.
-    news = NewsEditor(company, executor.provider)
-    discovery = NewsDiscovery(company, executor.provider)
-    return Worker(client, task_queue=company.settings.temporal_task_queue,
-                  workflows=[CompanyTurnWorkflow, StaffDevelopmentWorkflow, NewsEditorialWorkflow, NewsDiscoveryWorkflow],
-                  activities=[executor.activity_execute, executor.activity_block, staff.activity_tick, news.activity_tick,
-                              discovery.activity_tick],
-                  max_concurrent_activities=1, max_cached_workflows=100,
-                  graceful_shutdown_timeout=timedelta(seconds=10))
+    # Turns and staff practice take one model call at a time, as the worker's shared queue did.
+    main = asyncio.Semaphore(1)
+    turns = TurnLoop(company, executor, main)
+    # Each turn has its own 20-minute limit once it holds the lane (TurnLoop); waiting for the lane is not limited.
+    loops = [Loop("turns", turns.tick, timeout=None,
+                  delay=lambda result: 1 if state(result) in {None, "idle"} else 0)]
+    if settings.company_staff_development_enabled:
+        staff = StaffRunner(company, executor.provider)
+        loops.append(Loop("staff", staff.tick, timeout=480, attempts=3, retry_seconds=5, lane=main,
+                          delay=lambda result: 3 if state(result) in {"running", "completed"} else 60))
+    if settings.model_accounts_enabled:
+        # Its own lane: owner account commands never wait behind model inference.
+        control = control or AccountControl(company, wake=turns.wake)
+        loops.append(Loop("accounts", control.tick, timeout=60, attempts=3, retry_seconds=2, delay=2))
+    if settings.company_research_enabled:
+        research = ResearchRunner(company)
+        loops.append(Loop("research", lambda: asyncio.to_thread(research.tick), timeout=300, attempts=3,
+                          retry_seconds=5, delay=lambda result: (
+                              60 if result is None else 2 if result["state"] in {"completed", "awaiting_audit"} else 30)))
+    if settings.tech_feed_enabled and not settings.tech_feed_dedicated_worker:
+        loops.append(tech_feed_loop(company))
+    return loops, turns
 
 
-def make_accounts_worker(client, company, control=None):
-    control = control or AccountControl(company, temporal=client)
-    return Worker(client, task_queue=company.settings.temporal_task_queue + "-accounts",
-                  workflows=[AccountControlWorkflow], activities=[control.activity_tick],
-                  max_concurrent_activities=1, max_cached_workflows=10,
-                  graceful_shutdown_timeout=timedelta(seconds=10))
+def tech_feed_loop(company, collector=None):
+    collector = collector or TechFeedCollector(company)
+    return Loop("tech-feed", collector.tick, timeout=480, attempts=3, retry_seconds=5, delay=600)
 
 
-def make_news_collector(client, company, collector=None):
-    collector = collector or NewsCollector(company)
-    return Worker(client, task_queue=company.settings.temporal_task_queue + "-news-collection",
-                  workflows=[NewsCollectionWorkflow], activities=[collector.activity_tick],
-                  max_concurrent_activities=1, max_cached_workflows=10,
-                  graceful_shutdown_timeout=timedelta(seconds=10))
+def data_watch_loops(company, runner=None):
+    if not company.settings.data_watch_enabled:
+        return []
+    runner = runner or DataWatchRunner(company)
+    return [Loop("data-watch", runner.tick, timeout=120, attempts=3, delay=60)]
 
 
-def make_news_model_worker(client, company, provider=None):
-    editor = NewsEditor(company, provider)
-    discovery = NewsDiscovery(company, editor.provider)
-    brief = BriefEditor(company, editor.provider)
-    trends = TrendFeedEditor(company, editor.provider)
-    return Worker(client, task_queue=company.settings.temporal_task_queue + "-news-model",
-                  workflows=[NewsEditorialWorkflow, NewsDiscoveryWorkflow, BriefEditorialWorkflow, TrendFeedEditorialWorkflow],
-                  activities=[editor.activity_tick, discovery.activity_tick, brief.activity_tick, trends.activity_tick],
-                  max_concurrent_activities=1, max_cached_workflows=10,
-                  graceful_shutdown_timeout=timedelta(seconds=10))
-
-
-def make_brief_collector(client, company, collector=None):
-    collector = collector or BriefCollector(company)
-    return Worker(client, task_queue=company.settings.temporal_task_queue + "-brief-collection",
-                  workflows=[BriefCollectionWorkflow], activities=[collector.activity_tick],
-                  max_concurrent_activities=1, max_cached_workflows=10,
-                  graceful_shutdown_timeout=timedelta(seconds=10))
-
-
-def make_brief_data_worker(client, company, collector=None):
+def brief_data_loops(company, collector=None):
+    if not company.settings.briefing_enabled:
+        return []
     from .briefing.data import BriefDataCollector
 
     collector = collector or BriefDataCollector(company)
-    return Worker(client, task_queue=company.settings.temporal_task_queue+"-brief-data",
-                  workflows=[BriefDataWorkflow], activities=[collector.activity_tick],
-                  max_concurrent_activities=1, max_cached_workflows=2,
-                  graceful_shutdown_timeout=timedelta(seconds=10))
+    # A failed read keeps explicit coverage gaps for the edition.
+    return [Loop("brief-data", collector.tick, timeout=90, attempts=2, retry_seconds=5, delay=30)]
 
 
-def make_trend_collector(client, company, collector=None):
-    collector = collector or TrendFeedCollector(company)
-    return Worker(client, task_queue=company.settings.temporal_task_queue + "-trend-collection",
-                  workflows=[TrendFeedCollectionWorkflow, TrendFeedDigestWorkflow, TrendFeedPublicationWorkflow],
-                  activities=[collector.activity_tick, collector.activity_finalize],
-                  max_concurrent_activities=2, max_cached_workflows=10,
-                  graceful_shutdown_timeout=timedelta(seconds=10))
-
-
-def make_research_worker(client, company, runner=None):
-    runner = runner or ResearchRunner(company)
-    return Worker(client, task_queue=company.settings.temporal_task_queue + "-research",
-                  workflows=[ResearchWorkflow], activities=[runner.activity_tick],
-                  max_concurrent_activities=1, max_cached_workflows=10,
-                  graceful_shutdown_timeout=timedelta(seconds=10))
-
-
-def make_tech_feed_collector(client, company, collector=None):
-    collector = collector or TechFeedCollector(company)
-    return Worker(client, task_queue=company.settings.temporal_task_queue + "-tech-feed",
-                  workflows=[TechFeedCollectionWorkflow], activities=[collector.activity_tick],
-                  max_concurrent_activities=1, max_cached_workflows=10,
-                  graceful_shutdown_timeout=timedelta(seconds=10))
-
-
-def make_data_watch_worker(client, company, runner=None):
-    runner = runner or DataWatchRunner(company)
-    return Worker(client, task_queue=company.settings.temporal_task_queue + "-data-watch",
-                  workflows=[DataWatchWorkflow], activities=[runner.activity_tick],
-                  max_concurrent_activities=1, max_cached_workflows=10,
-                  graceful_shutdown_timeout=timedelta(seconds=10))
-
-
-def make_housing_feed_worker(client, company, collector=None):
+def housing_feed_loops(company, collector=None):
+    if not company.settings.housing_feed_enabled:
+        return []
     collector = collector or HousingFeedCollector(company)
-    return Worker(client, task_queue=company.settings.temporal_task_queue + "-housing-feed",
-                  workflows=[HousingFeedWorkflow], activities=[collector.activity_tick],
-                  max_concurrent_activities=1, max_cached_workflows=5,
-                  graceful_shutdown_timeout=timedelta(seconds=10))
+    return [Loop("housing-feed", collector.tick, timeout=720, attempts=3, retry_seconds=5, delay=300)]
 
 
-async def dispatch_once(client, company):
-    if getattr(company.settings, 'video_enabled', False) and not getattr(company, "_video_started", False):
-        from .video.workflow import VideoWorkflow
+def digest_wait(result, now=None):
+    """The legacy 08:00-only trend digest: poll during the catch-up hour, then wait for the next morning slot."""
+    after = (now or datetime.now(UTC)) + timedelta(seconds=60)
+    return 60 + max(0.0, (next_publication(after) - after).total_seconds())
 
-        try:
-            await client.start_workflow(VideoWorkflow.run, id="company-video-v1",
-                task_queue=company.settings.temporal_task_queue+"-video",
-                id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-            company._video_started = True
-        except WorkflowAlreadyStartedError:
-            company._video_started = True
-        except Exception as exc:
-            # Retried next loop; the brief below must still be flushed and sent.
-            logging.getLogger(__name__).error("Video workflow start failed: %s", type(exc).__name__)
-    if getattr(company.settings, 'video_analytics_enabled', False) and not getattr(company, "_video_analytics_started", False):
-        from .video.analytics_workflow import VideoAnalyticsWorkflow
 
-        try:
-            await client.start_workflow(VideoAnalyticsWorkflow.run, id="company-video-analytics-v1",
-                task_queue=company.settings.temporal_task_queue+"-video-analytics",
-                id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-            company._video_analytics_started = True
-        except WorkflowAlreadyStartedError:
-            company._video_analytics_started = True
-        except Exception as exc:
-            logging.getLogger(__name__).error("Video analytics workflow start failed: %s", type(exc).__name__)
-    if getattr(company.settings, 'video_analytics_enabled', False):
-        try:
-            await start_video_questions(client, company)
-        except Exception as exc:
-            # Retried next loop; the outbox below must still be flushed.
-            logging.getLogger(__name__).error("Video question workflow start failed: %s", type(exc).__name__)
+def news_loops(company, provider=None):
+    """News, briefing editions and trend feed: collectors on their own, every model call in one news-model lane."""
+    settings = company.settings
+    model = asyncio.Semaphore(1)
+    editor = NewsEditor(company, provider)
+    loops = []
+    if settings.company_news_enabled:
+        collector = NewsCollector(company)
+        loops += [
+            Loop("news-collection", collector.tick, timeout=120, attempts=3, retry_seconds=5, delay=lambda result: (
+                60 if result is None else 2 if result.get("article_fetched") or result["state"] == "collected" else 30)),
+            Loop("news-editorial", editor.tick, timeout=480, attempts=3, retry_seconds=5, lane=model,
+                 delay=lambda result: max(1, min(300, (result or {}).get("next_delay", 300)))),
+        ]
+        if settings.news_search_enabled:
+            discovery = NewsDiscovery(company, editor.provider)
+            loops.append(Loop("news-discovery", discovery.tick, timeout=480, attempts=3, retry_seconds=5, lane=model,
+                              delay=300))
+    if settings.briefing_enabled:
+        brief = BriefEditor(company, editor.provider)
+        loops += [
+            Loop("brief-collection", BriefCollector(company).tick, timeout=300, attempts=3, retry_seconds=5, delay=30),
+            # The request/runtime deadline owns the edition window; this outer limit must not truncate it.
+            Loop("brief-editorial", brief.tick, timeout=87 * 60, attempts=3, retry_seconds=5, lane=model,
+                 delay=lambda result: 1 if state(result) == "completed" else 30),
+        ]
+    if settings.trend_feed_enabled:
+        collection = asyncio.Semaphore(2)
+        trends = TrendFeedCollector(company)
+        recurring = settings.trend_feed_publication_hours != [8] or settings.trend_feed_on_demand_enabled
+        loops += [
+            Loop("trend-collection", trends.tick, timeout=540, attempts=3, retry_seconds=5, lane=collection, delay=30),
+            Loop("trend-publication" if recurring else "trend-digest", trends.finalize, timeout=60, attempts=3,
+                 retry_seconds=5, lane=collection, delay=30 if recurring else digest_wait),
+            Loop("trend-editorial", TrendFeedEditor(company, editor.provider).tick, timeout=480, attempts=3,
+                 retry_seconds=5, lane=model, delay=60),
+        ]
+    return loops
+
+
+def quant_feed_loops(company, provider=None):
+    if not company.settings.quant_feed_enabled:
+        return []
+    return [
+        Loop("quant-collection", QuantFeedCollector(company).tick, timeout=480, attempts=3,
+             delay=COLLECTION_DELAY_SECONDS),
+        Loop("quant-editorial", QuantFeedEditor(company, provider).tick, timeout=1080, attempts=3,
+             delay=lambda result: editorial_delay(result or {})),
+    ]
+
+
+def video_loops(company, runner=None, writer=None, analytics=None):
+    """The video, the evening email writer and the analytics reads, each in its own lane."""
+    from .newsletter.store import NewsletterStore
+    from .newsletter.writer import NewsletterWriter
+
+    settings = company.settings
+    loops = []
+    if settings.video_enabled:
+        from .video.runner import VideoRunner
+
+        runner = runner or VideoRunner(company)
+        # Rendering an 8-9 minute episode on two cores takes most of an hour.
+        loops.append(Loop("video", runner.tick, timeout=3 * 3600, attempts=2, retry_seconds=30, delay=lambda result: (
+            2 if state(result) not in {None, "idle", "blocked", "uncertain"} else 30)))
+    writer = writer or NewsletterWriter(company)
+
+    async def write():
+        if not settings.newsletter_enabled and not await asyncio.to_thread(NewsletterStore(company).has_writing):
+            return {"state": "idle"}
+        return await writer.tick()
+
+    # One attempt: the dispatcher's fallback covers a writer that keeps failing.
+    loops.append(Loop("newsletter", write, timeout=600, delay=lambda result: (
+        60 if state(result) in {None, "idle", "failed"} else 15)))
+    if settings.video_analytics_enabled:
+        from .video.analytics import AnalyticsRunner
+
+        analytics = analytics or AnalyticsRunner(company)
+        lane = asyncio.Semaphore(1)
+        questions = QuestionLoop(analytics, lane)
+        loops += [
+            Loop("video-analytics", analytics.tick, timeout=1800, attempts=2, retry_seconds=30, lane=lane,
+                 delay=lambda result: (ANALYTICS_FOLLOW_UP if isinstance((result or {}).get("cards"), int)
+                                       and result["cards"] > 0 else ANALYTICS_TICK).total_seconds()),
+            # Each answer has its own limit once it holds the analytics lane (QuestionLoop).
+            Loop("video-questions", questions.tick, timeout=None, delay=5),
+        ]
+    return loops
+
+
+async def serve(loops_for, settings=None):
+    settings = settings or Settings()
+    loops = loops_for(Company(settings))
+    # The operator's check that a service started the loops it should (docs/adr/0049).
+    print("Running loops:", ", ".join(loop.name for loop in loops) or "none", file=sys.stderr, flush=True)
+    await run_all(loops)
+
+
+async def worker_main(settings=None):
+    await serve(lambda company: worker_loops(company)[0], settings)
+
+
+async def data_watch_worker_main(settings=None):
+    await serve(data_watch_loops, settings)
+
+
+async def brief_data_worker_main(settings=None):
+    await serve(brief_data_loops, settings)
+
+
+async def housing_feed_worker_main(settings=None):
+    await serve(housing_feed_loops, settings)
+
+
+async def news_worker_main(settings=None):
+    await serve(news_loops, settings)
+
+
+async def quant_feed_worker_main(settings=None):
+    await serve(quant_feed_loops, settings)
+
+
+async def video_worker_main(settings=None):
+    await serve(video_loops, settings)
+
+
+async def dispatch_once(company):
     if getattr(company.settings, "briefing_enabled", False):
         from .briefing.store import BriefStore
 
-        if not getattr(company, "_brief_workflows_started", False):
-            for workflow, identity, queue in (
-                (BriefCollectionWorkflow.run, "company-brief-collection-v1", "-brief-collection"),
-                (BriefEditorialWorkflow.run, "company-brief-editorial-v1", "-news-model"),
-                (BriefDataWorkflow.run, "company-brief-data-v1", "-brief-data"),
-            ):
-                try:
-                    await client.start_workflow(workflow, id=identity,
-                        task_queue=company.settings.temporal_task_queue+queue,
-                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-                except WorkflowAlreadyStartedError:
-                    pass
-            company._brief_workflows_started = True
         try:
             await asyncio.to_thread(BriefStore(company).flush)
         except (ValueError, OSError) as exc:
             logging.getLogger(__name__).error("Briefing configuration unavailable: %s", type(exc).__name__)
         try:
-            await start_newsletter(client, company)
+            await send_newsletter(company)
         except Exception as exc:
             # Retried next loop; the email never holds back the brief or its Slack posts.
-            logging.getLogger(__name__).error("Newsletter workflow start failed: %s", type(exc).__name__)
+            logging.getLogger(__name__).error("Newsletter sending failed: %s", type(exc).__name__)
     if getattr(company.settings, "ops_watch_enabled", False):
         from .ops.watch import OpsWatch
 
@@ -215,284 +246,31 @@ async def dispatch_once(client, company):
         except Exception as exc:
             # The watch must never stop replies; the host probe reports a watch that stops ticking.
             logging.getLogger(__name__).error("Ops watch tick failed: %s", type(exc).__name__)
-    if getattr(company.settings, "trend_feed_enabled", False) and not getattr(company, "_trend_feed_started", False):
-        recurring = (company.settings.trend_feed_publication_hours != [8]
-                     or company.settings.trend_feed_on_demand_enabled)
-        for definition, identity, suffix in (
-            (TrendFeedCollectionWorkflow, "company-trend-feed-collection-v1", "-trend-collection"),
-            (TrendFeedPublicationWorkflow if recurring else TrendFeedDigestWorkflow,
-             "company-trend-feed-publication-v2" if recurring else "company-trend-feed-digest-v1", "-trend-collection"),
-            (TrendFeedEditorialWorkflow, "company-trend-feed-editorial-v1", "-news-model"),
-        ):
-            try:
-                await client.start_workflow(definition.run, id=identity,
-                    task_queue=company.settings.temporal_task_queue + suffix,
-                    id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-            except WorkflowAlreadyStartedError:
-                pass
-        company._trend_feed_started = True
-    if getattr(company.settings, "housing_feed_enabled", False) and not getattr(company, "_housing_feed_started", False):
-        try:
-            await client.start_workflow(HousingFeedWorkflow.run, id="company-housing-feed-v1",
-                                        task_queue=company.settings.temporal_task_queue + "-housing-feed",
-                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-        except WorkflowAlreadyStartedError:
-            pass
-        company._housing_feed_started = True
-    if company.settings.quant_feed_enabled and not getattr(company, "_quant_feed_started", False):
-        for workflow, identity, suffix in (
-            (QuantFeedCollectionWorkflow.run, "company-quant-feed-collection-v1", "-quant-collection"),
-            (QuantFeedEditorialWorkflow.run, "company-quant-feed-editorial-v1", "-quant-model"),
-        ):
-            try:
-                await client.start_workflow(workflow, id=identity, task_queue=company.settings.temporal_task_queue + suffix,
-                                            id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-            except WorkflowAlreadyStartedError:
-                pass
-        company._quant_feed_started = True
-    if company.settings.model_accounts_enabled and not getattr(company, "_accounts_started", False):
-        try:
-            await client.start_workflow(AccountControlWorkflow.run, id="company-model-accounts-v1",
-                                        task_queue=company.settings.temporal_task_queue + "-accounts",
-                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-        except WorkflowAlreadyStartedError:
-            pass
-        company._accounts_started = True
-    if company.settings.data_watch_enabled and not getattr(company, "_data_watch_started", False):
-        try:
-            await client.start_workflow(DataWatchWorkflow.run, id="company-data-watch-v1",
-                                        task_queue=company.settings.temporal_task_queue + "-data-watch",
-                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-        except WorkflowAlreadyStartedError:
-            pass
-        company._data_watch_started = True
-    if company.settings.tech_feed_enabled and not getattr(company, "_tech_feed_started", False):
-        try:
-            tech_queue = ("-tech-feed-dedicated" if company.settings.tech_feed_dedicated_worker else "-tech-feed")
-            await client.start_workflow(TechFeedCollectionWorkflow.run, id="company-tech-feed-collection-v1",
-                                        task_queue=company.settings.temporal_task_queue + tech_queue,
-                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-        except WorkflowAlreadyStartedError:
-            pass
-        company._tech_feed_started = True
-    if company.settings.company_research_enabled and not getattr(company, "_research_workflow_started", False):
-        try:
-            await client.start_workflow(ResearchWorkflow.run, id="company-research-reconciliation-v1",
-                                        task_queue=company.settings.temporal_task_queue + "-research",
-                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-        except WorkflowAlreadyStartedError:
-            pass
-        company._research_workflow_started = True
-    if company.settings.company_news_enabled and not getattr(company, "_news_workflows_started", False):
-        for workflow, identity, queue in (
-            (NewsCollectionWorkflow.run, "company-news-collection-v1", company.settings.temporal_task_queue + "-news-collection"),
-            (NewsEditorialWorkflow.run, "company-news-editorial-v1", company.settings.temporal_task_queue + "-news-model"),
-        ):
-            try:
-                await client.start_workflow(workflow, id=identity, task_queue=queue,
-                                            id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-            except WorkflowAlreadyStartedError:
-                pass
-        company._news_workflows_started = True
-    if (company.settings.company_news_enabled and company.settings.news_search_enabled
-            and not getattr(company, "_news_search_started", False)):
-        try:
-            await client.start_workflow(NewsDiscoveryWorkflow.run, id="company-news-discovery-v1",
-                                        task_queue=company.settings.temporal_task_queue + "-news-model",
-                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-        except WorkflowAlreadyStartedError:
-            pass
-        company._news_search_started = True
-    if company.settings.company_staff_development_enabled and not getattr(company, "_staff_workflow_started", False):
-        try:
-            await client.start_workflow(StaffDevelopmentWorkflow.run, id="company-staff-development-v1",
-                                        task_queue=company.settings.temporal_task_queue,
-                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-        except WorkflowAlreadyStartedError:
-            pass
-        company._staff_workflow_started = True
-    turns = await asyncio.to_thread(company.pending_starts)
-    for turn in turns:
-        try:
-            await client.start_workflow(CompanyTurnWorkflow.run, turn["id"], id="company-turn-" + turn["id"],
-                                        task_queue=company.settings.temporal_task_queue,
-                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-        except WorkflowAlreadyStartedError:
-            pass
-        await asyncio.to_thread(company.mark_started, turn["id"])
-    return len(turns)
-
-
-async def worker_main(settings=None):
-    settings = settings or Settings()
-    company = Company(settings)
-    client = await connect(settings)
-    async with (make_worker(client, company), make_research_worker(client, company),
-                make_tech_feed_collector(client, company), make_data_watch_worker(client, company),
-                make_accounts_worker(client, company), make_brief_data_worker(client, company)):
-        await asyncio.Event().wait()
-
-
-async def data_watch_worker_main(settings=None):
-    settings = settings or Settings()
-    company = Company(settings)
-    client = await connect(settings)
-    async with make_data_watch_worker(client, company):
-        await asyncio.Event().wait()
-
-
-async def brief_data_worker_main(settings=None):
-    settings = settings or Settings()
-    company = Company(settings)
-    client = await connect(settings)
-    async with make_brief_data_worker(client, company):
-        await asyncio.Event().wait()
-
-
-async def housing_feed_worker_main(settings=None):
-    settings = settings or Settings()
-    company = Company(settings)
-    client = await connect(settings)
-    async with make_housing_feed_worker(client, company):
-        await asyncio.Event().wait()
-
-
-async def news_worker_main(settings=None):
-    settings = settings or Settings()
-    company = Company(settings)
-    client = await connect(settings)
-    async with (make_news_model_worker(client, company), make_news_collector(client, company),
-                make_brief_collector(client, company),
-                make_trend_collector(client, company)):
-        await asyncio.Event().wait()
-
-
-def make_quant_collector(client, company, collector=None):
-    collector = collector or QuantFeedCollector(company)
-    return Worker(client, task_queue=company.settings.temporal_task_queue + "-quant-collection",
-                  workflows=[QuantFeedCollectionWorkflow], activities=[collector.activity_tick],
-                  max_concurrent_activities=1, max_cached_workflows=5,
-                  graceful_shutdown_timeout=timedelta(seconds=10))
-
-
-def make_quant_model_worker(client, company, provider=None):
-    editor = QuantFeedEditor(company, provider)
-    return Worker(client, task_queue=company.settings.temporal_task_queue + "-quant-model",
-                  workflows=[QuantFeedEditorialWorkflow], activities=[editor.activity_tick],
-                  max_concurrent_activities=1, max_cached_workflows=5,
-                  graceful_shutdown_timeout=timedelta(seconds=10))
-
-
-async def quant_feed_worker_main(settings=None):
-    settings = settings or Settings()
-    company = Company(settings)
-    client = await connect(settings)
-    async with make_quant_collector(client, company), make_quant_model_worker(client, company):
-        await asyncio.Event().wait()
 
 
 async def dispatch_main(settings=None):
     settings = settings or Settings()
     company = Company(settings)
-    client = await connect(settings)
     outbox = SlackOutbox(company, SlackIngress(settings, company).credentials)
     from .housing_feed.panel import HousingMapPanel
 
     panel = HousingMapPanel(company, outbox.credentials)
     while True:
-        await dispatch_once(client, company)
+        await dispatch_once(company)
         await panel.send_one()
         await outbox.send_one()
         await asyncio.sleep(1.1)
 
 
-async def start_newsletter(client, company):
-    """The writer workflow (video-worker queue) once there is something to write, and the sending tick in a thread of
-    its own so a slow SMTP or IMAP server never delays a Slack post."""
+async def send_newsletter(company):
+    """The sending tick in a thread of its own, so a slow SMTP or IMAP server never delays a Slack post. The writer
+    loop runs in the video worker (video_loops)."""
     from .newsletter.delivery import NewsletterDispatcher
-    from .newsletter.store import NewsletterStore
-    from .newsletter.workflow import NewsletterWorkflow
 
     if not hasattr(company, "_newsletter"):
         company._newsletter = NewsletterDispatcher(company)
     task = getattr(company, "_newsletter_tick", None)
-    # Both checks run at the sending tick's pace (10 s), not on every dispatch loop.
+    # It runs at the sending tick's pace (10 s), not on every dispatch loop.
     if (task is not None and not task.done()) or not company._newsletter.due():
         return
-    if not getattr(company, "_newsletter_started", False) and (
-            company.settings.newsletter_enabled or await asyncio.to_thread(NewsletterStore(company).has_writing)):
-        try:
-            await client.start_workflow(NewsletterWorkflow.run, id="company-newsletter-v1",
-                                        task_queue=company.settings.temporal_task_queue+"-newsletter",
-                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-        except WorkflowAlreadyStartedError:
-            pass
-        company._newsletter_started = True
     company._newsletter_tick = asyncio.create_task(asyncio.to_thread(company._newsletter.tick_if_due))
-
-
-def make_newsletter_worker(client, company, writer=None):
-    from .newsletter.workflow import NewsletterWorkflow
-    from .newsletter.writer import NewsletterWriter
-
-    writer = writer or NewsletterWriter(company)
-    return Worker(client, task_queue=company.settings.temporal_task_queue+"-newsletter",
-                  workflows=[NewsletterWorkflow], activities=[writer.activity_tick],
-                  max_concurrent_activities=1, max_cached_workflows=2,
-                  graceful_shutdown_timeout=timedelta(seconds=30))
-
-
-def make_video_worker(client, company, runner=None):
-    from .video.runner import VideoRunner
-    from .video.workflow import VideoWorkflow
-
-    runner = runner or VideoRunner(company)
-    return Worker(client, task_queue=company.settings.temporal_task_queue+"-video",
-                  workflows=[VideoWorkflow], activities=[runner.activity_tick],
-                  max_concurrent_activities=1, max_cached_workflows=2,
-                  graceful_shutdown_timeout=timedelta(seconds=30))
-
-
-async def start_video_questions(client, company):
-    """One answering workflow per new owner question in an analytics thread; returns how many were started."""
-    from .video.analytics_store import AnalyticsStore
-    from .video.analytics_workflow import VideoQuestionWorkflow
-
-    store, started = AnalyticsStore(company), 0
-    for question_id in await asyncio.to_thread(store.unstarted_questions):
-        try:
-            await client.start_workflow(VideoQuestionWorkflow.run, question_id,
-                                        id=f"company-video-question-{question_id}",
-                                        task_queue=company.settings.temporal_task_queue+"-video-analytics",
-                                        id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-            started += 1
-        except WorkflowAlreadyStartedError:
-            pass
-        await asyncio.to_thread(store.question_started, question_id)
-    return started
-
-
-def make_video_analytics_worker(client, company, runner=None):
-    from .video.analytics import AnalyticsRunner
-    from .video.analytics_workflow import VideoAnalyticsWorkflow, VideoQuestionWorkflow
-
-    runner = runner or AnalyticsRunner(company)
-    return Worker(client, task_queue=company.settings.temporal_task_queue+"-video-analytics",
-                  workflows=[VideoAnalyticsWorkflow, VideoQuestionWorkflow],
-                  activities=[runner.activity_tick, runner.activity_answer, runner.activity_give_up],
-                  max_concurrent_activities=1, max_cached_workflows=2,
-                  graceful_shutdown_timeout=timedelta(seconds=30))
-
-
-async def video_worker_main(settings=None):
-    settings = settings or Settings()
-    company = Company(settings)
-    client = await connect(settings)
-    # The analytics reads use the same media-auth mount (YouTube token) as the video worker, on their own queue.
-    async with contextlib.AsyncExitStack() as stack:
-        await stack.enter_async_context(make_video_worker(client, company))
-        # The evening brief email is written here too (same claude-runtime), on its own queue and records.
-        await stack.enter_async_context(make_newsletter_worker(client, company))
-        if settings.video_analytics_enabled:
-            await stack.enter_async_context(make_video_analytics_worker(client, company))
-        await asyncio.Event().wait()

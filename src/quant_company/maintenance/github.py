@@ -249,7 +249,7 @@ class GitHub:
         if len(service) != 1 or service[0]["conclusion"] != "success":
             raise ValueError("expected_ci_job_not_successful")
         required = {"Install core dependencies", "Lint", "Regression reproduces on base",
-                    "PostgreSQL, Temporal and service regression tests"}
+                    "PostgreSQL and service regression tests"}
         steps = {step["name"] for step in service[0]["steps"] if step["conclusion"] == "success"}
         if not required <= steps:
             raise ValueError("required_ci_steps_missing_or_skipped")

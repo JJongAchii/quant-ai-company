@@ -37,7 +37,7 @@ def query_lake(root, name, arguments):
     arguments = validate_arguments(name, arguments)
     if not root:
         return {"ok": False, "error": "lake_not_connected"}
-    # Keep company DB, Slack, Temporal and model secrets out of the data reader.
+    # Keep company DB, Slack and model secrets out of the data reader.
     env = {key: os.environ[key] for key in ("PATH", "LANG", "LC_ALL", "SSL_CERT_FILE",
            "AWS_SHARED_CREDENTIALS_FILE", "AWS_PROFILE", "AWS_DEFAULT_REGION", "QDATA_CODE_COMMIT")
            if key in os.environ}

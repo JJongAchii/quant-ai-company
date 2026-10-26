@@ -21,7 +21,7 @@ def test_runtime_context_uses_loaded_roles_and_excludes_private_settings(tmp_pat
     settings = Settings(
         roles_file=role_file, database_url="postgresql://user:database-canary@localhost/company",
         operator_token="operator-canary", model_runtime_token="runtime-canary",
-        temporal_api_key="temporal-canary", slack_credentials_file=tmp_path / "slack-canary.json",
+        slack_credentials_file=tmp_path / "slack-canary.json",
         company_max_daily_turns=7, fixture_mode=True,
     )
     context = Company(settings).runtime_context()
@@ -33,7 +33,7 @@ def test_runtime_context_uses_loaded_roles_and_excludes_private_settings(tmp_pat
     assert not context["capabilities"]["external_web_search"]
     assert not context["capabilities"]["research_worker_submission"]
     encoded = json.dumps(context)
-    for private in ["database-canary", "operator-canary", "runtime-canary", "temporal-canary", "slack-canary"]:
+    for private in ["database-canary", "operator-canary", "runtime-canary", "slack-canary"]:
         assert private not in encoded
 
 

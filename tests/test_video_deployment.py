@@ -65,7 +65,7 @@ def test_render_overlay_gives_only_the_media_worker_the_fargate_settings_and_cre
     assert media['environment']['VIDEO_RENDER_BACKEND'] == 'remote'
     assert media['environment']['VIDEO_RENDER_SUBNETS'] == '["subnet-a","subnet-b"]'
     assert media['environment']['AWS_SHARED_CREDENTIALS_FILE'] == '/run/secrets/render_aws_credentials'
-    assert {s['source'] for s in media['secrets']} == {'database_password', 'temporal_api_key', 'model_runtime_token',
+    assert {s['source'] for s in media['secrets']} == {'database_password', 'model_runtime_token',
                                                         'render_aws_credentials'}
     for name, service in services.items():
         if name != 'video-worker':

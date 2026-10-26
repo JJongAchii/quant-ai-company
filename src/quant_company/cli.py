@@ -83,7 +83,7 @@ async def demo(settings):
         for row in rows:
             await executor.execute(str(row["id"]))
     state = company.project_state(request["project_id"])
-    print(json.dumps({"mode": "fixture-direct-executor", "temporal_used": False, "slack_connected": False,
+    print(json.dumps({"mode": "fixture-direct-executor", "slack_connected": False,
                       "real_model_used": False, **state}, ensure_ascii=False, indent=2))
 
 

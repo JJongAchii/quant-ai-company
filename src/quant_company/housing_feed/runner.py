@@ -1,7 +1,5 @@
 import asyncio
 
-from temporalio import activity
-
 from . import schedule
 from .maps import enrich
 from .sources import collect_source
@@ -28,7 +26,3 @@ class HousingFeedCollector:
             results.append({"source": row["id"], **result})
         reminders = await asyncio.to_thread(self.store.reminders)
         return {"state": "collected" if claimed else "idle", "sources": results, "reminders": reminders}
-
-    @activity.defn(name="company_housing_feed_collect")
-    async def activity_tick(self):
-        return await self.tick()

@@ -5,14 +5,12 @@ from pathlib import Path
 from uuid import uuid4
 
 import pytest
-from temporalio.testing import WorkflowEnvironment
-from temporalio.worker import Replayer, Worker
 
+from quant_company import loops
 from quant_company.contracts import AgentDecision, ProviderResponse, Role
 from quant_company.maintenance.policy import MaintenanceConfig, Patch, Triage, apply_patch, writable
-from quant_company.maintenance.runner import Maintainer
+from quant_company.maintenance.runner import Maintainer, run_maintenance
 from quant_company.maintenance.store import Deferred, Store
-from quant_company.maintenance.workflow import MaintenanceWorkflow
 
 SOURCE = "src/quant_company/tools.py"
 ORIGINAL = "def bounded_sum(left, right):\n    return left - right\n"
@@ -251,19 +249,30 @@ def test_patch_requires_exact_context_and_independent_regression():
 
 
 @pytest.mark.integration
-async def test_temporal_maintenance_workflow_history_replays(company):
+async def test_maintenance_loop_drives_the_pipeline_to_one_pr(company):
     runner = make_maintainer(company)
-    # Reuse only the executable, as the company workflow tests do; each server/history remains isolated.
-    cache = Path(".local/temporal")
-    cache.mkdir(parents=True, exist_ok=True)
-    async with await WorkflowEnvironment.start_local(download_dest_dir=str(cache.resolve()), ui=False) as env:
-        queue = "maintenance-test-" + uuid4().hex
-        async with Worker(env.client, task_queue=queue, workflows=[MaintenanceWorkflow], activities=[runner.tick]):
-            handle = await env.client.start_workflow(MaintenanceWorkflow.run, 0.05, id=queue, task_queue=queue)
-            async with asyncio.timeout(30):
-                while runner.github.prs != 1:
-                    await asyncio.sleep(0.1)
-            history = await handle.fetch_history()
-            await Replayer(workflows=[MaintenanceWorkflow]).replay_workflow(history)
-            await handle.cancel()
-    assert runner.github.prs == 1
+    task = asyncio.create_task(loops.run(loops.Loop("maintenance", runner.tick, timeout=600, delay=0.05)))
+    try:
+        async with asyncio.timeout(30):
+            while runner.github.prs != 1:
+                await asyncio.sleep(0.1)
+    finally:
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
+    assert runner.github.prs == runner.github.published == 1
+
+
+@pytest.mark.integration
+async def test_maintenance_service_runs_its_work_and_reporting_loops_apart(company, monkeypatch):
+    captured = []
+
+    async def run_all(found):
+        captured.extend(found)
+
+    monkeypatch.setattr(loops, "run_all", run_all)
+    await run_maintenance(company, config(poll_seconds=120))
+    work, report = captured
+    assert (work.name, work.timeout, work.attempts, work.wait(None)) == ("maintenance", 600, 1, 120)
+    assert (report.name, report.timeout, report.attempts, report.wait(None)) == ("maintenance-report", 45, 1, 60)
+    # Separate lanes: a long model call never holds up case cards.
+    assert work.lane is None and report.lane is None

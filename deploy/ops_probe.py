@@ -33,7 +33,7 @@ BACKUP_SERVICES = ('slack-socket', 'maintenance', 'worker', 'news-worker', 'quan
 SHARED_KEYS = ('SLACK_TEAM_ID', 'SLACK_ALLOWED_USERS', 'SLACK_ALLOWED_CHANNELS', 'BRIEFING_ENABLED',
                'BRIEFING_CHANNEL_ID', 'BRIEFING_OWNER_USER', 'NEWS_CHANNEL_ID', 'IMPROVEMENTS_CHANNEL_ID',
                'DATA_WATCH_CHANNEL_ID', 'MODEL_ACCOUNTS_CHANNEL_ID', 'OPS_ALERT_CHANNEL_ID', 'OPS_WATCH_OWNER_USER',
-               'DATABASE_NAME', 'TEMPORAL_ADDRESS', 'TEMPORAL_NAMESPACE')
+               'DATABASE_NAME')
 TRACEBACK = 'Traceback (most recent call last)'
 EXCEPTION = re.compile(r'^(?:[A-Za-z_][\w]*\.)*([A-Z]\w*(?:Error|Exception|Detected|Timeout|Exit|Interrupt))\b')
 WATCH_STALE = timedelta(minutes=10)

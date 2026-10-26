@@ -6,7 +6,6 @@ from datetime import UTC, datetime
 from zoneinfo import ZoneInfo
 
 from psycopg.types.json import Jsonb
-from temporalio import activity
 
 from ..company import fingerprint
 from ..contracts import ProviderFault, ProviderRequest
@@ -147,7 +146,7 @@ class IndependentReviewRunner:
         self.store = IndependentReviewStore(company)
         self.provider = provider
 
-    async def tick(self, heartbeat=False):
+    async def tick(self):
         ready = await asyncio.to_thread(self.store.prepare)
         if ready["state"] != "ready":
             return ready
@@ -159,8 +158,6 @@ class IndependentReviewRunner:
         try:
             while not task.done():
                 await asyncio.wait({task}, timeout=5)
-                if heartbeat:
-                    activity.heartbeat({"review_id": request.request_id})
             return await asyncio.to_thread(self.store.commit, await task)
         except ProviderFault as exc:
             await asyncio.to_thread(self.store.fault, request.request_id, exc.code, exc.retry_after_seconds)

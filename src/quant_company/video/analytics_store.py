@@ -541,15 +541,11 @@ class AnalyticsStore:
         with self.db.transaction() as conn:
             return conn.execute("SELECT * FROM video_questions WHERE id=%s", (question_id,)).fetchone()
 
-    def unstarted_questions(self):
-        """Open questions whose answering workflow dispatch has not started yet, oldest first."""
+    def pending_questions(self):
+        """Open questions, oldest first (loops.QuestionLoop answers them and closes the ones that waited too long)."""
         with self.db.transaction() as conn:
-            return [str(r["id"]) for r in conn.execute("""SELECT id FROM video_questions WHERE state='pending'
-                AND NOT workflow_started ORDER BY created_at LIMIT 10""").fetchall()]
-
-    def question_started(self, question_id):
-        with self.db.transaction() as conn:
-            conn.execute("UPDATE video_questions SET workflow_started=true WHERE id=%s", (question_id,))
+            return conn.execute("""SELECT id,created_at FROM video_questions WHERE state='pending'
+                ORDER BY created_at LIMIT 10""").fetchall()
 
     def notice_waiting(self, question_id):
         """True the first time only: the 'answer after production' notice is said once per question."""

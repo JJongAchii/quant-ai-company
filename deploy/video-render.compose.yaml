@@ -14,7 +14,7 @@ services:
       VIDEO_RENDER_ATTEMPTS: ${VIDEO_RENDER_ATTEMPTS:-3}
       VIDEO_RENDER_TIMEOUT_MINUTES: ${VIDEO_RENDER_TIMEOUT_MINUTES:-90}
       AWS_SHARED_CREDENTIALS_FILE: /run/secrets/render_aws_credentials
-    secrets: [database_password, temporal_api_key, model_runtime_token, render_aws_credentials]
+    secrets: [database_password, model_runtime_token, render_aws_credentials]
 secrets:
   render_aws_credentials:
     # [default] profile of the quant-company-render-worker access key; root:10001 0440. Never commit it.
