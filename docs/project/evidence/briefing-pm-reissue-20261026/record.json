@@ -1,0 +1,122 @@
+{
+ "recorded_at": "2026-10-26T19:20:00+09:00",
+ "owner_request": "오늘 마감 브리핑 왜 제대로 안된거야? 파악해주고 다시 제대로 돌려줘. 그리고 재발 하지 않게 해줘 → 운영 DB 직접 작업 허용",
+ "original_edition": {
+  "id": "e346a707-99f3-5db3-b058-748c13e7831d",
+  "committed_kst": "17:05",
+  "quality": {
+   "issue_count": 0,
+   "source_count": 7,
+   "substantive": false,
+   "verdict": "reduce",
+   "repair_skipped": "brief_context_limit"
+  },
+  "write_calls": [
+   {
+    "id": "news-brief-e346a707-99f3-5db3-b058-748c13e7831d-write",
+    "kst": "16:33:49-16:45:32",
+    "rejected": "inventory_placement_accounting",
+    "usage": {
+     "input_tokens": 47898,
+     "output_tokens": 14678,
+     "reasoning_output_tokens": 13535
+    },
+    "draft_chars": 2093,
+    "draft_nonempty": [
+     "calendar"
+    ]
+   },
+   {
+    "id": "news-brief-e346a707-99f3-5db3-b058-748c13e7831d-write-r1",
+    "kst": "16:46:03-16:48:48",
+    "mode": "in-place repair",
+    "rejected": "inventory_placement_accounting",
+    "usage": {
+     "output_tokens": 3680
+    },
+    "draft_chars": 1878
+   },
+   {
+    "id": "news-brief-e346a707-99f3-5db3-b058-748c13e7831d-write-r2",
+    "kst": "16:49:20-16:52:35",
+    "mode": "in-place repair",
+    "accepted": true,
+    "usage": {
+     "output_tokens": 7435
+    }
+   }
+  ],
+  "newsletter": {
+   "state": "skipped",
+   "reason": "no_issues"
+  }
+ },
+ "video_v1": {
+  "job": "86ec3db6-4a38-5961-b712-02c89bbea7a2",
+  "state": "blocked",
+  "error": "video_stage_failed:inspecting",
+  "blocked_kst": "18:09:47",
+  "cause": "brief project b1efee3a revision 1 -> 2 at 18:08:26 after the owner's thread message at 18:07:29",
+  "fix_call": {
+   "backend": "api",
+   "billing_mode": "api_credit",
+   "cost_usd": 0.38878,
+   "completed_kst": "18:09:28"
+  }
+ },
+ "reissue_copy": {
+  "id": "8fd3182a-6168-5eb2-a2ff-45638399218a",
+  "channel_marker": "C0C2E59B1AA:reissue-1",
+  "inserted_kst": "18:46",
+  "inputs": "original frozen bundle (16:10) minus pre_review_source_notes_violations; plan and inventory reused",
+  "calls_kst": [
+   {
+    "phase": "write",
+    "requested": "18:47",
+    "completed": "19:03",
+    "rejected_items": [
+     "obs-kospi",
+     "obs-kosdaq",
+     "internals-close"
+    ]
+   },
+   {
+    "phase": "review",
+    "requested": "19:03",
+    "completed": "19:14",
+    "verdict": "reduce"
+   }
+  ],
+  "previewed_kst": "19:14",
+  "quality": {
+   "issue_count": 6,
+   "source_count": 25,
+   "missing_core": [
+    "kosdaq",
+    "kospi"
+   ],
+   "repair_skipped": "brief_context_limit"
+  }
+ },
+ "slack_delivery": {
+  "published_kst": "19:16",
+  "project_id": "334bf8e3-99ee-5a69-a562-0cc35ddccce0",
+  "root_ts": "1793009787.951869",
+  "parts_chars": [
+   11846,
+   3413,
+   695
+  ],
+  "outbox": "3/3 delivered",
+  "presentation_changes": [
+   "reissue label line on part 0"
+  ],
+  "method": "one-off script calling BriefStore._message, sources insert, VideoStore.enqueue; DRY_RUN first"
+ },
+ "video_v2": {
+  "job": "b8cf45b9-abbf-568b-a7a5-5550847e834d",
+  "format": "full",
+  "queued_kst": "19:16:47"
+ },
+ "email": "not enqueued (awaiting owner confirmation)"
+}
