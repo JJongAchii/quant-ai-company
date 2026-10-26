@@ -419,6 +419,25 @@ def test_a_retry_is_told_which_server_check_rejected_the_draft(brief):
     assert calls and all(c["state"] == "retry" for c in calls.values())
 
 
+def test_a_hollow_write_draft_is_asked_again_with_the_full_phase_prompt(brief):
+    """2026-10-26 PM: a write draft with an empty body was repaired in place twice and the edition shipped thin."""
+    from quant_company.briefing.repair import EMPTY_DRAFT
+    from quant_company.briefing.store import retry_note
+
+    store, clock = brief
+    seed(brief)
+    first = store.prepare()["request"]
+    assert first["request_id"].endswith("-write")
+    hollow = proposal().model_dump(mode="json") | {"summary": [], "overview": [], "observations": [], "issues": []}
+    store.fault(first["request_id"], "invalid_brief_response", 0, "inventory_placement_accounting",
+                json.dumps(hollow, ensure_ascii=False))
+    retry = store.prepare()["request"]
+    assert retry["request_id"] == first["request_id"] + "-r1"
+    # The full write prompt again (the frozen bundle's key order may differ after the database round trip).
+    assert retry["prompt"].endswith(retry_note(EMPTY_DRAFT)) and retry["prompt"][:5000] == first["prompt"][:5000]
+    assert "PREVIOUS_DRAFT" not in retry["prompt"]
+
+
 def test_the_tenth_invalid_response_is_final_and_the_draft_ships_at_due(brief):
     from quant_company.briefing.store import MAX_PHASE_ATTEMPTS
 
