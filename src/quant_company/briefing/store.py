@@ -76,7 +76,7 @@ from .inventory import INVENTORY, compose, freeze_inventory, inventory_model, in
 from .planning import PLAN, apply_plan, plan_prompt
 from .quality import reconcile
 from .quotations import QUOTE_REFERENCE_VERSION
-from .repair import repair_prompt, retry_note
+from .repair import EMPTY_DRAFT, hollow, repair_prompt, retry_note
 
 LOCK = 71350241
 TERMINAL = {"committed", "previewed", "missed", "stale"}
@@ -436,10 +436,11 @@ class BriefStore:
             last = (previous[-1]["result"] or {}) if previous else {}
             rejected = last.get("rejected")
             repair = repair_prompt(bundle, phase, last.get("draft"), rejected, last.get("detail")) if rejected else None
+            note = retry_note(EMPTY_DRAFT if hollow(phase, last.get("draft")) else rejected) if rejected else ""
             if repair:
                 model_prompt = repair
-            elif rejected and len(model_prompt) + len(retry_note(rejected)) <= 90000:  # ProviderRequest prompt limit
-                model_prompt += retry_note(rejected)
+            elif rejected and len(model_prompt) + len(note) <= 90000:  # ProviderRequest prompt limit
+                model_prompt += note
             attempt = len(previous)
             identity = f"news-brief-{row['id']}-{phase}" + (f"-r{attempt}" if attempt else "")
             conn.execute("INSERT INTO daily_usage(day,reserved) VALUES(CURRENT_DATE,0) ON CONFLICT DO NOTHING")

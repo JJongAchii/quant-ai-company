@@ -6,7 +6,7 @@ import pytest
 from pydantic import ValidationError
 
 from quant_company.briefing.contracts import BriefReview
-from quant_company.briefing.repair import PROMPT_LIMIT, failure, repair_prompt, retry_note
+from quant_company.briefing.repair import EMPTY_DRAFT, PROMPT_LIMIT, failure, repair_prompt, retry_note
 from quant_company.contracts import AgentDecision, ProviderResponse
 
 from .test_briefing import brief  # noqa: F401
@@ -30,6 +30,20 @@ def test_a_placement_failure_is_repaired_from_the_draft_with_the_missing_facts()
     assert detail["missing_facts"][0]["quote"].startswith("Semiconductor shares led the advance")
     assert detail["missing_facts"][0]["qualifiers"] == ["기술주 밖의 참여는 혼조"]
     assert "Change only what the check requires" in text and text.endswith("PREVIOUS_DRAFT:\n" + draft)
+
+
+def test_a_hollow_draft_is_written_again_instead_of_repaired_in_place():
+    """2026-10-26 PM: the write draft filled only the calendar; two in-place repairs kept the empty body and the
+    edition shipped without issues."""
+    bundle = frozen()
+    hollow = composition().model_dump(mode="json") | {"summary": [], "overview": [], "observations": [], "issues": [],
+                                                      "fact_placements": []}
+    draft = json.dumps(hollow, ensure_ascii=False)
+    assert repair_prompt(bundle, "write", draft, "inventory_placement_accounting") is None
+    assert repair_prompt(bundle, "revise", draft, "inventory_placement_accounting") is None
+    assert "summary, overview, observations and issues" in retry_note(EMPTY_DRAFT)
+    kept = composition().model_dump(mode="json") | {"fact_placements": []}
+    assert repair_prompt(bundle, "write", json.dumps(kept, ensure_ascii=False), "inventory_placement_accounting")
 
 
 def test_only_draft_local_failures_that_fit_get_a_repair_prompt():
