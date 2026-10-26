@@ -4,7 +4,7 @@
 매일 **08:00·14:00·20:00 KST, 회당 10개 목표**로 전달하도록 운영 설정을 활성화했다.
 `#search-trends`에서 소유자가 `실시간 검색어` 또는 `@Trend Scout 실시간 검색어`를 보내면
 요청한 메시지의 스레드로도 응답한다. **Trend Scout** 앱과 기존 회사의
-PostgreSQL·Temporal·Codex 구독을 사용한다. 설치 기본값은 수집·발송 모두 꺼짐이다.
+PostgreSQL·Codex 구독을 사용한다. 설치 기본값은 수집·발송 모두 꺼짐이다.
 세 슬롯·요청 응답의 실제 운영 검증은 [현재 검증 기록](project/TREND-FEED-RECURRING.md),
 최초 수집·편집 검증은 [초기 검증 기록](project/TREND-FEED-VALIDATION.md)에 구분한다.
 
@@ -86,7 +86,7 @@ flowchart LR
     D --> O[(영속 outbox)] --> S[Trend Scout · Slack]
 ```
 
-정기·요청 확정 작업은 수집·AI 편집과 독립된 Temporal 작업이다. 자료 보강이 늦어도 분류가 검증된
+정기·요청 확정 작업은 수집·AI 편집과 독립된 루프다. 자료 보강이 늦어도 분류가 검증된
 주제는 배경 없이 숫자·검색 링크로 제공한다. AI 분류가 늦으면 주제 생략 안내로 확정한다.
 실제 Slack 도착은 인프라·Slack 상태에 따라 지연될 수 있다.
 정기 발송은 날짜·시간·한국·채널의 ID, 수시 요청은 Slack workspace·채널·메시지 시각의
@@ -192,12 +192,12 @@ HTTP 수신은 기존 timestamp·HMAC 서명 검증을 유지한다. 두 경로 
 ## 검증 명령과 외부 계약
 
 ```bash
-uv run --frozen pytest -q tests/test_trend_feed.py tests/test_trend_feed_recurring.py tests/test_trend_feed_temporal.py
+uv run --frozen pytest -q tests/test_trend_feed.py tests/test_trend_feed_recurring.py tests/test_trend_feed_loops.py
 uv run --frozen ruff check .
 uv run --frozen python scripts/qualify_trend_feed.py --live --output .local/trend-feed-live.json
 ```
 
-자동 검사는 실제 임시 PostgreSQL과 로컬 Temporal을 사용하지만 HTTP 자료·모델·Slack은 모의다.
+자동 검사는 실제 임시 PostgreSQL을 사용하지만 HTTP 자료·모델·Slack은 모의다.
 마지막 opt-in 명령은 실제 공개 자료와 기존 공식 Codex 인증으로 최대 2회 실행하며, 기능 시계를
 다음 날 아침으로 옮긴 임시 DB를 사용한다. 네이버·Slack에 연결하지 않고 3일 관측을 대신하지 않는다.
 전역 CLI와 서비스의 고정 버전이 다르면 `--codex-bin /absolute/path/to/pinned/codex`를 지정한다.

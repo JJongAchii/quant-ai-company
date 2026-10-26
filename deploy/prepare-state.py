@@ -53,7 +53,6 @@ def main() -> None:
         create_file(state / "secrets" / name, secrets.token_hex(32) + "\n", 0o444)
     # File bind-mounts preserve host ownership/mode. Files are readable inside only the
     # explicitly authorized containers; the host secrets directory itself is root-only.
-    create_file(state / "secrets/temporal_api_key", "REPLACE_TEMPORAL_API_KEY\n", 0o444)
     # Optional lake access is disabled until COMPANY_LAKE_URI and this read-only profile are set.
     create_file(state / "secrets/lake_read_credentials", "", 0o444)
     # The Claude API lane stays off until the owner writes a key here; an empty file reads as no key.
@@ -64,7 +63,7 @@ def main() -> None:
     create_file(state / "config/runtime.env", (deploy / ".env.example").read_text(), 0o444)
     create_file(state / "config/roles.json",
                 (deploy.parent / "src/quant_company/roles.json").read_text(), 0o444)
-    print("Prepared state without printing credentials. Configure Temporal and Slack before startup.")
+    print("Prepared state without printing credentials. Configure Slack before startup.")
 
 
 if __name__ == "__main__":

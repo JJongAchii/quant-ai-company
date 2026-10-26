@@ -4,8 +4,9 @@
 기존 `quant-workspace`에서 코드 이력을 보존해 분리했습니다. [이관 기록](docs/REPOSITORY-MIGRATION.json).
 
 **Slack에서 일하고, 업무·담당자·기억을 서버에 보존하는 퀀트 연구 조직의 첫 서비스입니다.**
-사용자의 기존 Codex 구독으로 모델을 실행합니다. AWS 단일 서버와 Temporal Cloud에 배치하는
-구성이며, 기본 Slack 연결은 도메인이 필요 없는 Socket Mode입니다.
+사용자의 기존 Codex 구독으로 모델을 실행합니다. AWS 단일 서버에 배치하는 구성이며,
+기본 Slack 연결은 도메인이 필요 없는 Socket Mode입니다. 2026-10-26부터 Temporal을 쓰지 않고
+각 서비스가 PostgreSQL 상태를 이어 받는 자기 루프를 돌립니다([ADR 0049](docs/adr/0049-in-process-loops-instead-of-temporal.md)).
 
 현재는 **AWS 서울 Lightsail 2GB에 배포한 첫 운영 서비스**입니다. 서버의 공식 Codex 구독 인증,
 실제 모델을 사용한 네 직원의 합성 협업, 예약 업무의 호스트 재부팅 복구, S3 백업 복원을 확인했습니다.
@@ -14,7 +15,7 @@ Codex 인증은 AWS에 있어 맥북 전원과 무관하게 동작합니다. 장
 [AWS 배포 검증](docs/project/AWS-DEPLOYMENT-VALIDATION.json),
 [구현 검증](docs/project/IMPLEMENTATION-VALIDATION.json),
 [Slack 연결](docs/project/SLACK-CONNECTION.json),
-[Temporal 연결](docs/project/TEMPORAL-CONNECTION.json)에 증거를 구분합니다.
+[Temporal 연결(2026-10-26까지)](docs/project/TEMPORAL-CONNECTION.json)에 증거를 구분합니다.
 배포 후 운영 정보 전달 보완은 [추가 검증](docs/project/RUNTIME-CONTEXT-VALIDATION.json)에,
 현재 업무 범위와 후속 구현 순서는 [다음 단계](docs/project/NEXT-STEPS.md)에 기록합니다.
 자연어 지시 변경·공식자료 읽기는 운영에 반영했습니다. 별도 운영자 테스트 스레드에서 실제
@@ -54,7 +55,7 @@ KRX 거래일마다 커밋된 아침(AM)·마감(PM) 브리핑으로 읽기 쉬�
 
 `tech-feed`에는 **AI 호출 없이** 국내외 기술 RSS·Atom의 원문 제목·링크·짧은 발췌를 전달하는
 별도 구독 기능을 추가했습니다. 12개 소스를 10분 대기 간격으로 수집하고 KST 06~24시에 한 건씩
-발송하며, 발송 전용 **Tech Scout** Slack 앱과 기존 DB·Temporal을 사용합니다. Tech Scout는
+발송하며, 발송 전용 **Tech Scout** Slack 앱과 기존 DB를 사용합니다. Tech Scout는
 대화형 직원이나 AI 봇이 아니며 `chat:write`만 갖습니다. 초기 활성화 기본값은 꺼짐입니다.
 [설정·데모·복구](docs/tech-feed.md), [검증 및 운영 상태](docs/project/TECH-FEED-VALIDATION.md)를 참고하세요.
 
@@ -91,9 +92,8 @@ flowchart LR
     U[사용자 · 휴대폰 Slack] <--> S[직원별 Slack 앱 4개]
     S <-->|인증된 WebSocket · Web API| C[회사 서비스]
     C --> TS[Tech Scout · 발송 전용] --> U
-    C <--> P[(PostgreSQL 업무 · 대화 · 기억)]
-    C <--> TM[Temporal 작업 · 재시도 · 예약]
-    TM --> WK[회사 worker]
+    C <--> P[(PostgreSQL 업무 · 대화 · 기억 · 예약)]
+    P <--> WK[서비스별 루프 · 재시도 · 예약]
     WK <--> R[격리된 Codex 실행기]
     R <--> M[기존 Codex 구독]
 ```
@@ -132,7 +132,7 @@ flowchart LR
 ### 지속형 자율 연구 — 첫 프로그램 승인 대기
 
 승인한 상위 목표 안에서 가설 → 독립 반론 → 실행 선택 → 격리 구현 → 3070 실험 → 해석 →
-독립 감사·보고 → 다음 가설을 PostgreSQL과 Temporal에 보존합니다. 가설과 핵심 반론은 해당
+독립 감사·보고 → 다음 가설을 PostgreSQL에 보존합니다. 가설과 핵심 반론은 해당
 연구 스레드에 게시하고, 최종 보고·필수 결정에는 요청자를 태그합니다. 새 결과가 나빠도 이번
 연구의 최선은 보존하며, 기존 기준선은 별도 출처로 유지합니다.
 
@@ -218,7 +218,6 @@ uv run quant-company slack-manifests --output .local/slack-manifests
 
 Python 3.11+가 필요합니다. 통합 검사는 **임시 DB를 생성·삭제할 수 있는 전용 PostgreSQL**의
 접속 문자열을 `TEST_DATABASE_URL`로 받습니다. 실제 사용자 데이터를 가진 DB를 지정하지 마세요.
-Temporal 검사는 로컬 개발 서버를 띄워 실행하고 종료합니다.
 
 ```bash
 uv sync --frozen
@@ -235,10 +234,10 @@ DB가 없으면 해당 통합 검사는 건너뜁니다. `CODEX_CONFIG_PROBE=1`�
 
 ```bash
 uv run python scripts/smoke_codex.py --request-id unique-connection-check
-REAL_CODEX_COMPANY=1 uv run pytest -q tests/test_temporal.py::test_live_codex_company_producer_consumer
+REAL_CODEX_COMPANY=1 uv run pytest -q tests/test_loops_live.py::test_live_codex_company_producer_consumer
 ```
 
-두 번째 검사는 합성 자료·실제 PostgreSQL·로컬 Temporal·실제 Codex를 사용합니다. 최대 12회,
+두 번째 검사는 합성 자료·실제 PostgreSQL·실제 Codex를 사용합니다. 최대 12회,
 모든 역할에 작은 공통 모델을 적용하는 통신 검사이며 금융 전문성 평가는 아닙니다.
 결과는 `.local/live-company.json`, 호출 영수증은 `.local/live-company-jobs/`에 남습니다.
 

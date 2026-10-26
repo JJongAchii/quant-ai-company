@@ -1,6 +1,6 @@
 """Durable company research stages; model output is a proposal, never an approval.
 
-The regular Temporal turn worker performs inference. This controller schedules and
+The worker's turn loop performs inference. This controller schedules and
 consumes those turns. Large file/Git/validation work belongs outside transactions.
 Unverified development evidence is confined to these stage contexts.
 """

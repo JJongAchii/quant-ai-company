@@ -1,21 +1,15 @@
-"""Real PostgreSQL/Temporal program original reads and selection; scripted employees."""
+"""Real PostgreSQL program original reads and selection through the turn loop; scripted employees."""
 
-import asyncio
 import json
-from uuid import uuid4
 
 import pytest
-from temporalio.worker import Replayer
 
 from quant_company.company import Company
 from quant_company.contracts import AgentDecision, ProviderResponse
-from quant_company.execution import TurnExecutor
 from quant_company.research.program_controller import ProgramController
-from quant_company.runtime import dispatch_once, make_worker
-from quant_company.workflow import CompanyTurnWorkflow
 
+from .test_research_loop import finish_turn, oldest_queued, turn_loop
 from .test_research_programs import program, ready, task_proposal  # noqa: F401
-from .test_temporal import temporal_environment  # noqa: F401
 
 
 class ProgramFixture:
@@ -35,40 +29,27 @@ class ProgramFixture:
 
 
 @pytest.mark.integration
-async def test_program_original_reads_survive_temporal_restart_and_replay(program, temporal_environment):  # noqa: F811
+async def test_program_original_reads_survive_worker_restart(program):  # noqa: F811
     company = program.company
-    company.settings.temporal_task_queue = "program-restart-" + uuid4().hex
-    client = temporal_environment.client
     provider = ProgramFixture()
     controller = ProgramController(company)
-    histories = []
+    turns = turn_loop(company, provider)
 
-    def turn():
-        with company.db.transaction() as conn:
-            return str(conn.execute("SELECT id FROM turns WHERE status='queued' ORDER BY created_at LIMIT 1").fetchone()["id"])
+    async def finish():
+        await finish_turn(turns, company, oldest_queued(company))
 
-    async def finish_turn():
-        identity = turn()
-        await dispatch_once(client, company)
-        handle = client.get_workflow_handle("company-turn-" + identity)
-        assert (await asyncio.wait_for(handle.result(), 20))["state"] == "completed"
-        histories.append(await handle.fetch_history())
-
-    async with make_worker(client, company, TurnExecutor(company, provider)):
-        assert controller.tick()["state"] == "running"
-        await finish_turn()  # Durable original read before the worker restarts.
+    assert controller.tick()["state"] == "running"
+    await finish()  # Durable original read before the worker restarts.
     company = Company(company.settings, company.roles)
     controller = ProgramController(company)
-    async with make_worker(client, company, TurnExecutor(company, provider)):
-        await finish_turn()
+    turns = turn_loop(company, provider)
+    await finish()
+    assert controller.tick()["state"] == "completed"
+    for _ in range(2):
+        assert controller.tick()["state"] == "running"
+        await finish()
+        await finish()
         assert controller.tick()["state"] == "completed"
-        for _ in range(2):
-            assert controller.tick()["state"] == "running"
-            await finish_turn()
-            await finish_turn()
-            assert controller.tick()["state"] == "completed"
-        for history in histories:
-            await Replayer(workflows=[CompanyTurnWorkflow]).replay_workflow(history)
     with company.db.transaction() as conn:
         assert conn.execute("SELECT count(*) AS n FROM research_stage_reads").fetchone()["n"] == 3
         assert conn.execute("SELECT count(*) AS n FROM research_program_tasks WHERE state='accepted'").fetchone()["n"] == 1

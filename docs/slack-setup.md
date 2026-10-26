@@ -43,7 +43,7 @@ Tech Scout는 `chat:write` bot scope만 사용하고 이벤트 구독과 Socket 
 
 ## 첫 연결 확인
 
-1. AWS 서비스와 Temporal 연결, 서버 Codex device login을 먼저 확인합니다.
+1. AWS 서비스와 서버 Codex device login을 먼저 확인합니다.
 2. `slack-socket`과 dispatcher를 시작합니다. 각 앱의 인증·연결 오류 여부를 확인합니다.
 3. 본인 계정으로 총괄에게 합성 과제를 보내 네 직원의 위임·도구 결과·결론을 확인합니다.
 4. 같은 스레드에서 `상태`, 이어서 `수정: ...`를 보내 새 지시가 반영되는지 확인합니다.

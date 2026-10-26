@@ -1243,15 +1243,13 @@ class Company:
                                                   "reconciliation_note": reconciliation_note}, project["id"])
             return {"turn_id": self._new_turn(conn, task)}
 
-    def pending_starts(self):
+    def due_turns(self):
+        """Turns a worker should look at now, most urgent first; prepare_turn decides whether each one runs. A
+        running turn is here too: after a restart it resumes with its frozen request."""
         with self.db.transaction() as conn:
-            return as_json(conn.execute("""SELECT t.id FROM turns t JOIN tasks k ON k.id=t.task_id
-                WHERE NOT t.workflow_started AND t.status='queued'
-                ORDER BY k.priority,t.created_at LIMIT 50""").fetchall())
-
-    def mark_started(self, turn_id):
-        with self.db.transaction() as conn:
-            conn.execute("UPDATE turns SET workflow_started=true WHERE id=%s", (turn_id,))
+            return [str(row["id"]) for row in conn.execute("""SELECT t.id FROM turns t JOIN tasks k ON k.id=t.task_id
+                WHERE t.status IN ('queued','running','waiting') AND t.due_at<=now()
+                ORDER BY k.priority,t.created_at LIMIT 200""").fetchall()]
 
     def put_source(self, *, source_id: str, title: str, uri: str, content: str,
                    available_at: datetime, project_id=None, approved=False, synthetic=False):

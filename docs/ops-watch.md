@@ -14,7 +14,7 @@ Slack에서 서버 작업의 진행 상황을 물으면 봇이 실제 운영 상
 | 감시 | [`ops/watch.py`](../src/quant_company/ops/watch.py) | dispatcher 루프가 60초마다 규칙을 평가해 `ops_incidents`를 갱신하고 운영 채널에 알린다 |
 | 비상 경로 | `ops_probe.py --fallback` | PostgreSQL·dispatch가 멈췄거나 감시가 10분 넘게 기록되지 않으면 Slack에 직접 한 번 알린다 |
 
-감시는 Temporal이나 모델에 의존하지 않도록 dispatcher 안에서 돈다. 그래서 Temporal Cloud 장애도
+감시는 모델에 의존하지 않도록 dispatcher 안에서 돈다. 그래서 모델 실행기 장애도
 알릴 수 있다. dispatcher가 멈춘 경우는 호스트 수집기가 대신 알린다.
 
 ## Slack에서 묻기

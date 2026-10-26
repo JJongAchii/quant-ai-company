@@ -10,7 +10,6 @@ from pathlib import Path
 
 import httpx
 from pydantic import ValidationError
-from temporalio import activity
 
 from ..company import PolicyError
 from ..contracts import ProviderAttachment, ProviderFault, ProviderRequest
@@ -1041,15 +1040,3 @@ class VideoRunner:
             await self.effect(job, "publish", {"video": job["youtube_id"], "digest": job["artifact_digest"],
                               "approved_by": job["approved_by"]}, "youtube-write", lambda: self.youtube.publish(job))
             await asyncio.to_thread(self.store.save, job, "published")
-
-    @activity.defn(name="company_video_tick")
-    async def activity_tick(self):
-        task = asyncio.create_task(self.tick())
-        try:
-            while not task.done():
-                await asyncio.wait({task}, timeout=5)
-                activity.heartbeat()
-            return await task
-        finally:
-            if not task.done():
-                task.cancel()

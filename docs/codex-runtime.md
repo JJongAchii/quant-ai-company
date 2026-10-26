@@ -117,7 +117,7 @@ returns the cached result without invoking Codex or requiring current quota.
 The HTTP client has no internal retry loop. Transport timeouts return `uncertain`:
 the company service may recover the **same** request ID to obtain its receipt,
 but must not invent a new inference ID to get around an ambiguous outcome.
-The deployed company client waits 960 seconds and its Temporal activity allows
+The deployed company client waits 960 seconds and its turn loop allows
 20 minutes, so the runtime's 900-second terminal receipt is committed before either
 outer boundary expires.
 

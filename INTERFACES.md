@@ -32,7 +32,6 @@ array of `Role` objects, packaged in `src/quant_company/`.
 - Environment: DATABASE_URL, OPERATOR_TOKEN, MODEL_PROVIDER=codex|fixture,
   MODEL_RUNTIME_URL, MODEL_RUNTIME_TOKEN, SLACK_TEAM_ID, SLACK_ALLOWED_USERS (JSON list),
   SLACK_ALLOWED_CHANNELS (JSON list), SLACK_CREDENTIALS_FILE (JSON object by role ID),
-  TEMPORAL_ADDRESS, TEMPORAL_NAMESPACE, TEMPORAL_API_KEY (optional), TEMPORAL_TLS,
   COMPANY_MAX_DAILY_TURNS=100, COMPANY_MAX_TASK_TURNS=8, COMPANY_MAX_DEPTH=3.
 - Slack credentials: `{role_id: {app_id, bot_user_id, bot_token, app_token, signing_secret}}`.
   `app_token` with `connections:write` is required for Socket Mode; `signing_secret` is required only for HTTP.
@@ -50,11 +49,11 @@ array of `Role` objects, packaged in `src/quant_company/`.
   Authenticated `GET /v1/model-assignments` returns `{enabled, revision, assignments, precedence,
   independent_reviewer}`; `/v1/agents` reflects effective role settings when enabled.
   Assignment changes enter only through authenticated owner Slack commands, processed by the
-  existing account-control Temporal queue. Policy provenance stays in PostgreSQL; the
+  worker's account-control loop. Policy provenance stays in PostgreSQL; the
   `ProviderRequest` wire schema and legacy receipt digests remain unchanged.
-- Temporal workflow IDs are stable turn IDs. PostgreSQL owns company task state and inbox/outbox;
-  Temporal owns the execution of each bounded turn and its delayed retries.
-- The dispatch process drains durable turn starts and Slack outbox. Bot messages are mirrored
+- Turn IDs are stable. PostgreSQL owns company task state, turn due times and inbox/outbox; the worker's
+  turn loop runs each due turn and its delayed retries (docs/adr/0049).
+- The dispatch process drains the Slack outbox. Bot messages are mirrored
   to Slack; internal delivery is direct and does not depend on Slack bot events.
 - No live trade or arbitrary shell tool in this slice. Coding results can be artifacts.
 
@@ -65,8 +64,8 @@ array of `Role` objects, packaged in `src/quant_company/`.
 - `quant-company tech-feed probe|collect|status [--output PATH]`.
 - `TECH_FEED_ENABLED=false`, `TECH_FEED_PUBLISH_ENABLED=false`, `TECH_FEED_CHANNEL_ID`,
   `TECH_FEED_OWNER_USER`, optional `TECH_FEED_SOURCES_FILE`. Slack allowlists still apply.
-- Separate PostgreSQL `tech_feed_*` state and `company-tech-feed-collection-v1` Temporal workflow;
-  task queue suffix `-tech-feed`. Uses the dedicated `tech_scout` credential and the existing outbox with
+- Separate PostgreSQL `tech_feed_*` state and a `tech-feed` loop (in `tech-feed-worker`, or in `worker`
+  without `TECH_FEED_DEDICATED_WORKER`). Uses the dedicated `tech_scout` credential and the existing outbox with
   message kind `tech_feed`; queued legacy Reporter deliveries migrate before sending.
 - No ProviderRequest, turns, model budgets, automatic summaries/translations or interactive Tech Scout calls.
 - See [tech-feed](docs/tech-feed.md) for first-sync, freshness, delivery window and uncertainty semantics.
@@ -74,7 +73,7 @@ array of `Role` objects, packaged in `src/quant_company/`.
 ### Host
 
 Single AWS Lightsail host with service, Slack socket receiver, worker/dispatcher, PostgreSQL and isolated Codex
-runtime. Temporal Cloud in production; local Temporal dev server is for development only.
+runtime. Background work runs as in-process loops; no workflow service is needed.
 Caddy is an optional `https` Compose profile. Default Lightsail ingress allows only the configured
 SSH IPv4 /32. HTTP/HTTPS port opening must be an explicit deployment option.
 Secrets/config are operator-provided local files, excluded from Git and images. Use separate

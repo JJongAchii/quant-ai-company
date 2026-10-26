@@ -80,7 +80,7 @@ async def test_an_owner_reply_under_a_card_is_answered_in_its_thread(brief, vide
     asked = reply(analytics)
     assert asked["video_question"] and asked["duplicate"] is False
     assert reply(analytics)["duplicate"] is True  # Slack retries the event
-    assert analytics.unstarted_questions() == [asked["video_question"]]
+    assert [str(row["id"]) for row in analytics.pending_questions()] == [asked["video_question"]]
     assert await runner.answer(asked["video_question"]) == "answered"
     request = provider.calls[-1]
     assert (request.output_contract, request.request_id) == ("video_answer_v1",
@@ -155,7 +155,7 @@ async def test_replies_outside_a_delivered_analytics_thread_are_not_questions(br
         analytics.settings.slack_allowed_users = [*analytics.settings.slack_allowed_users, change["user"]]
     result = reply(analytics, **change)
     assert "video_question" not in result
-    assert analytics.unstarted_questions() == []
+    assert analytics.pending_questions() == []
 
 
 async def test_an_instruction_comes_back_as_a_lesson_with_owner_buttons(brief, video, analytics):  # noqa: F811

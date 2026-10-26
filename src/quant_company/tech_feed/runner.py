@@ -1,7 +1,5 @@
 import asyncio
 
-from temporalio import activity
-
 from .contracts import TechFeedSource
 from .feeds import fetch
 from .store import TechFeedStore
@@ -26,7 +24,3 @@ class TechFeedCollector:
                 return {"source": row["id"], **result}
 
         return {"state": "collected" if claimed else "idle", "sources": await asyncio.gather(*(collect(r) for r in claimed))}
-
-    @activity.defn(name="company_tech_feed_collect")
-    async def activity_tick(self):
-        return await self.tick()

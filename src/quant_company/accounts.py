@@ -7,8 +7,6 @@ from zoneinfo import ZoneInfo
 
 from psycopg import sql
 from psycopg.types.json import Jsonb
-from temporalio import activity
-from temporalio.service import RPCError, RPCStatusCode
 
 from .command_help import HELP_COMMANDS
 from .command_help import HELP_TEXT as COMMAND_HELP
@@ -165,10 +163,11 @@ def status_text(policy, accounts):
 
 
 class AccountControl:
-    def __init__(self, company, client=None, temporal=None):
+    def __init__(self, company, client=None, wake=None):
         self.company = company
         self.client = client
-        self.temporal = temporal
+        # Wakes a turn deferred by account quota as soon as an account changes (loops.TurnLoop.wake).
+        self.wake = wake
 
     def pending(self):
         with self.company.db.transaction() as conn:
@@ -237,7 +236,7 @@ class AccountControl:
     async def tick(self):
         from .model_control import ModelControl
 
-        # Existing activity/queue keeps Temporal histories unchanged and works during inference quota waits.
+        # Its own loop, so owner commands work during inference quota waits.
         processed = await ModelControl(self.company, self.client).tick()
         pending = None if processed else await asyncio.to_thread(self.pending)
         if pending:
@@ -249,16 +248,7 @@ class AccountControl:
             except ProviderFault:
                 statuses = [{"profile": profile, "authentication": "unavailable"} for profile in LABELS]
             await asyncio.to_thread(self.apply, pending["id"], statuses)
-        if self.temporal:
+        if self.wake:
             for row in await asyncio.to_thread(self.wakes):
-                try:
-                    await self.temporal.get_workflow_handle("company-turn-" + str(row["turn_id"])).signal(
-                        "model_account_changed", row["revision"])
-                except RPCError as exc:
-                    if exc.status != RPCStatusCode.NOT_FOUND:
-                        raise
+                self.wake(row["turn_id"])
                 await asyncio.to_thread(self.acknowledged, row)
-
-    @activity.defn(name="company_accounts_tick")
-    async def activity_tick(self):
-        await self.tick()

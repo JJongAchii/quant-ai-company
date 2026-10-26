@@ -105,7 +105,7 @@ class LocalCI(GitHubFixture):
     def ci_failure(self, receipt):
         return {'head': receipt['head'], 'log_excerpt': self.results[-1].stdout,
                 'steps': [{'name': 'Regression reproduces on base', 'conclusion': 'success'},
-                          {'name': 'PostgreSQL, Temporal and service regression tests', 'conclusion': 'failure'}]}
+                          {'name': 'PostgreSQL and service regression tests', 'conclusion': 'failure'}]}
 
 
 @pytest.mark.parametrize('weaken_test', [False, True])

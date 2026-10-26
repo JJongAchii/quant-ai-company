@@ -33,7 +33,7 @@ LH가 지역을 전국 또는 여러 권역으로 표시한 공고와 SH 게시�
 - 신규·변경 공고를 08:00~21:00 KST에 개별 발송한다. 채널 전체 발송 시도 간격은 최소 1분이다.
 - 첫 연결 때 현재 접수 예정·진행 중인 공고도 발송한다. 종료된 과거 공고는 발송하지 않는다.
 - 전날과 당일 알림은 확인된 접수 시작일·종료일에 대해 09:00부터 처리한다.
-  Temporal이 5분 대기 간격으로 확인하므로 수집·장애에 따라 늦어질 수 있다.
+  `housing-feed` 루프가 5분 대기 간격으로 확인하므로 수집·장애에 따라 늦어질 수 있다.
   15시까지 복구하지 못한 해당 날짜 알림은 버린다. 09시 이후 처음 수집한 공고는
   신규 공고 메시지로 안내하고 같은 날 중복 일정 알림을 추가하지 않는다.
 - 공고 내용이 바뀌면 변경 공고를 만들며, 이전 버전의 미발송 메시지는 발송 직전에 차단한다.
@@ -88,9 +88,8 @@ uv run --frozen quant-company housing-feed status
 
 분양 피드 첫 배포 시 **같은 버전의 dispatcher와 housing-feed-worker**를 사용한다. 기존 버전 dispatcher는
 새 메시지 종류의 검증을 지원하지 않으므로 수집·발송 활성화보다 먼저 교체해야 한다.
-Compose의 `housing-feed` profile을 켜면 전용 worker가 실행된다. 기존 dispatcher가
-`company-housing-feed-v1` Temporal workflow를 시작하고, 전용 `-housing-feed` queue에서 실행한다.
-수집 worker에는 DB·Temporal 자격증명만 전달하며 Slack·Codex 자격증명은 전달하지 않는다.
+Compose의 `housing-feed` profile을 켜면 전용 worker가 `housing-feed` 루프를 실행한다.
+수집 worker에는 DB 자격증명만 전달하며 Slack·Codex 자격증명은 전달하지 않는다.
 
 공개 페이지와 채널 접근을 확인한 후 `HOUSING_FEED_PUBLISH_ENABLED=true`로 켠다.
 중지할 때는 두 설정을 false로 바꿔 worker와 dispatcher에 함께 반영한다. 영수증은 보존한다.
@@ -98,7 +97,7 @@ Compose의 `housing-feed` profile을 켜면 전용 worker가 실행된다. 기�
 ## 검증
 
 ```bash
-TEST_DATABASE_URL=postgresql://localhost:55483/postgres uv run --frozen pytest -q tests/test_housing_feed.py tests/test_housing_feed_temporal.py
+TEST_DATABASE_URL=postgresql://localhost:55483/postgres uv run --frozen pytest -q tests/test_housing_feed.py tests/test_housing_feed_loops.py
 uv run --frozen ruff check .
 ```
 
@@ -128,7 +127,7 @@ uv run --frozen ruff check .
 영수증은 서버 `/var/lib/quant-company/releases/housing-feed-<commit>.json`에 남는다.
 실패 시 새 프로세스를 멈추고 housing pending은 stale, sending은 uncertain으로 보존한 뒤
 이전 runtime.env와 dispatcher를 복구한다. 이미 게시된 메시지는 되돌리지 않는다.
-최종 실제 Slack readback과 Temporal 상태는 별도 운영 증거로 보존한다.
+최종 실제 Slack readback과 루프 상태는 별도 운영 증거로 보존한다.
 
 기존 app image의 의존성을 재사용하려면 operator가 stage에 `--reuse-base-image`를 명시한다.
 `pyproject.toml`, `uv.lock`, 기본 Dockerfile, entrypoint, qdata pin이 이전 release와 바이트 단위로

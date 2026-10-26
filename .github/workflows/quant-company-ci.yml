@@ -48,7 +48,7 @@ jobs:
       - name: Regression reproduces on base
         if: startsWith(github.head_ref || github.ref_name, 'maintenance/')
         run: uv run --frozen python scripts/check_maintenance_regression.py
-      - name: PostgreSQL, Temporal and service regression tests
+      - name: PostgreSQL and service regression tests
         run: >-
           uv run --frozen pytest -q -m 'not live'
           tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py

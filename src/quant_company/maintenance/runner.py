@@ -4,7 +4,6 @@ import json
 from datetime import UTC, datetime, timedelta
 
 import httpx
-from temporalio import activity
 
 from ..contracts import ProviderFault, ProviderRequest, ProviderResponse
 from ..execution import provider_for
@@ -800,7 +799,6 @@ class Maintainer:
         self.store.sync_pull_requests(metadata.get("pull_requests", []))
         return snapshot
 
-    @activity.defn(name="company_maintenance_tick")
     async def tick(self):
         self.store.heartbeat()
         if not self.config.enabled:
@@ -851,14 +849,8 @@ class Maintainer:
 
 
 async def run_maintenance(company, config):
-    from temporalio.client import WorkflowExecutionStatus
-    from temporalio.common import WorkflowIDReusePolicy
-    from temporalio.exceptions import WorkflowAlreadyStartedError
-    from temporalio.worker import Worker
-
-    from ..runtime import connect
+    from ..loops import Loop, run_all
     from .reporting import Reporter
-    from .workflow import MaintenanceReportingWorkflow, MaintenanceWorkflow
 
     if not config.enabled:
         raise SystemExit("Maintenance is disabled; review the deployment and GitHub App installation first")
@@ -866,30 +858,7 @@ async def run_maintenance(company, config):
         raise SystemExit("Maintenance owners must be a subset of the company's authorized Slack users")
     maintainer = Maintainer(company, config)
     maintainer.store.initialize()
-    client = await connect(company.settings)
-    queue = company.settings.temporal_task_queue + "-maintenance"
-    workflow_id = "company-maintenance-v1"
     reporter = Reporter(company, config)
-    async with (
-        Worker(client, task_queue=queue, workflows=[MaintenanceWorkflow], activities=[maintainer.tick],
-               max_concurrent_activities=1, max_cached_workflows=10),
-        Worker(client, task_queue=queue + "-reporting", workflows=[MaintenanceReportingWorkflow],
-               activities=[reporter.tick], max_concurrent_activities=1, max_cached_workflows=2),
-    ):
-        try:
-            handle = await client.start_workflow(MaintenanceWorkflow.run, config.poll_seconds,
-                                                 id=workflow_id, task_queue=queue,
-                                                 id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-        except WorkflowAlreadyStartedError:
-            handle = client.get_workflow_handle(workflow_id)
-        if (await handle.describe()).status != WorkflowExecutionStatus.RUNNING:
-            raise RuntimeError("Maintenance workflow is not running; inspect its existing history")
-        report_id = "company-maintenance-reporting-v1"
-        try:
-            report_handle = await client.start_workflow(MaintenanceReportingWorkflow.run, 60,
-                id=report_id, task_queue=queue + "-reporting", id_reuse_policy=WorkflowIDReusePolicy.REJECT_DUPLICATE)
-        except WorkflowAlreadyStartedError:
-            report_handle = client.get_workflow_handle(report_id)
-        if (await report_handle.describe()).status != WorkflowExecutionStatus.RUNNING:
-            raise RuntimeError("Maintenance reporting workflow is not running; inspect its existing history")
-        await asyncio.Event().wait()
+    # A failed tick keeps its durable job and case/outbox; the next tick resumes them.
+    await run_all([Loop("maintenance", maintainer.tick, timeout=600, delay=config.poll_seconds),
+                   Loop("maintenance-report", reporter.tick, timeout=45, delay=60)])

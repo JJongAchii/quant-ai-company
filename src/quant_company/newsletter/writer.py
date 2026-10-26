@@ -9,7 +9,6 @@ import asyncio
 import logging
 
 from pydantic import ValidationError
-from temporalio import activity
 
 from ..contracts import ProviderFault
 from ..providers.claude_runner import ClaudeRequest
@@ -131,11 +130,3 @@ class NewsletterWriter:
         # A draft that arrives after the fallback replaced it is not used (accept only moves a 'writing' email).
         accepted = await asyncio.to_thread(self.store.accept, issue, draft, {**record, "outcome": "passed"})
         return {"state": "ready" if accepted else "superseded"}
-
-    @activity.defn(name="company_newsletter_tick")
-    async def activity_tick(self):
-        try:
-            return await self.tick()
-        except Exception as error:  # noqa: BLE001 - the dispatcher's fallback covers a writer that keeps failing
-            LOG.error("newsletter writer tick failed: %s", type(error).__name__)
-            return {"state": "failed", "error": type(error).__name__}

@@ -61,8 +61,8 @@ quota 대기, 실행 횟수 한도, 연구 워커 대기는 자동 수리할 결
 진단 원본은 DB에 유지한다. 모델 입력에서 경로 목록이나 상세 내용이 생략되면 생략 수와 요약
 표시를 남기고, 기존 코드 검색 도구로 필요한 원문을 찾을 수 있다. 이미 예약한 모델 입력은 수정하지 않는다.
 
-`company-maintenance-v1`과 기존 모델 요청·CI 실행은 보존한다. 별도의 Temporal workflow
-`company-maintenance-reporting-v1`이 `-maintenance-reporting` 큐에서 60초마다 경량 보고를 실행한다.
+기존 모델 요청·CI 실행은 보존한다. maintenance 프로세스의 별도 `maintenance-report` 루프가
+60초마다 경량 보고를 실행한다.
 보고는 DB를 읽고 outbox에 기록할 뿐 모델·GitHub·Slack 네트워크를 호출하지 않는다. 별도 모델
 슬롯이나 서버를 추가하지 않는다. 같은 프로세스/DB 장애 시에는 보고도 중단될 수 있다.
 
@@ -88,5 +88,5 @@ quota 대기, 실행 횟수 한도, 연구 워커 대기는 자동 수리할 결
 6. 활성화 증거는 `docs/project/evidence`에 남긴다. 로컬 테스트나 앱 manifest 생성만으로
    앱 설치·운영 배포·실제 Slack 인수가 완료됐다고 기록하지 않는다.
 
-되돌릴 때는 새 intake 설정을 비활성화하고 기존 케이스·outbox·Temporal 기록을 유지한다.
+되돌릴 때는 새 intake 설정을 비활성화하고 기존 케이스·outbox 기록을 유지한다.
 불명 전달·이미 승인된 반영은 해당 영수증을 검토한다. DB 삭제나 새 워크플로 ID로 재실행하지 않는다.

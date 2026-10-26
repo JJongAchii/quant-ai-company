@@ -276,7 +276,7 @@ manifest 파일이나 코드를 바꾼 것만으로 실제 Slack 앱의 이름�
   보완 16분·최종 검토 12분은 후속 작업을 위한 예약량이며 각 호출의 고정 종료 제한이 아니다.
   예를 들어 정상 기준 시각에 시작한 선정은 후속 작업을 예약하고 약 10분을 쓸 수 있으며,
   선정이 3분에 끝나면 사실 정리는 약 25분을 쓸 수 있다. 정시 완료를 보장하는 수치는 아니다.
-  대기나 재접속은 종료 시각을 늘리지 않는다. 런타임·HTTP·Temporal도 같은 종료 경계를 존중하며,
+  대기나 재접속은 종료 시각을 늘리지 않는다. 런타임·HTTP·루프도 같은 종료 경계를 존중하며,
   기존 요청은 당시 제한과 해시를 유지한다. 첫 검토에서 문제가 확인되고 최종 검토까지 마칠 시간이
   남으면 같은 원문으로 한 차례 보완한다. 새 회차는 최대 6회이며 회사 한도와 기존 실행 자리를 지킨다.
   수정 전 문장·거절 항목·검토 지적을 전달하되 중복 인용문은 피드백에서만 줄인다. 원문과 실제
@@ -389,7 +389,7 @@ manifest 파일이나 코드를 바꾼 것만으로 실제 Slack 앱의 이름�
 - 아침 미국 거래가 있으면 S&P 500·나스닥 종합 종가, 오후에는 코스피·코스닥 종가가 핵심이다.
   핵심 종가나 요약이 부족하면 `축약판`으로 표시한다. 빠진 값을 생성하거나 이전 날 값으로 채우지 않는다.
 - PostgreSQL에 발간본·모델 요청·입력·검토·메시지를 저장한다. 날짜/판/채널/소유자별 ID가 고정된다.
-  Temporal은 수집과 모델 작업의 타이머·재시도·복구를 담당한다.
+  news-worker의 루프가 수집과 모델 작업의 대기·재시도를 맡고, 복구는 PostgreSQL 상태에서 이어진다.
 - 수집은 `-brief-collection` queue, 작성·검토·검색은 기존 `-news-model` queue와 뉴스용 Codex 잠금을
   사용한다. 모델 슬롯은 늘리지 않는다. 준비 중에는 새 일반 뉴스 모델 작업을 미루되 이미 실행 중인
   요청을 중단하지 않는다. 일반 사용자·연구 업무의 기존 실행 자리는 유지한다.
@@ -460,17 +460,17 @@ uv run quant-company briefing qualify --output .local/briefing-qualification.jso
 `probe`는 공개 네트워크 연결 검사이며 DB·모델·Slack을 사용하지 않는다. `collect`는 일정상 준비
 가능한 판의 자료를 수집한다. `review`는 준비된 검색/선정/작성/검토/보완/최종검토 단계 중 최대 한 번을 수행하며
 실제 구독을 사용할 수 있다. 설정된 시간 창 밖에서는 대기한다. `preview`는 이미 저장된 최근
-발간본을 읽을 뿐 모델 호출·게시를 수행하지 않는다. 상시 운전은 Temporal 워크플로가 담당한다.
+발간본을 읽을 뿐 모델 호출·게시를 수행하지 않는다. 상시 운전은 서비스별 루프가 담당한다.
 
 `status`에서 `previewed`, 실제 outbox `pending/delivered/uncertain`, `missed`, 출처 오류와 핵심 지표
 결측을 구분한다. 모델 장애는 `calls`의 고정 요청 ID로 조사한다. 결과 불명인 발송을 새로운 ID로
 다시 만들지 말고 Slack과 outbox 영수증을 먼저 대조한다. 이번 버전에는 자동 재발행 명령이 없다.
 
-실제 PostgreSQL·로컬 Temporal과 합성 시장 자료/모의 Slack을 사용하는 데모 검증:
+실제 PostgreSQL과 합성 시장 자료/모의 Slack을 사용하는 데모 검증:
 
 ```bash
 TEST_DATABASE_URL=postgresql://DISPOSABLE_TEST_USER@localhost:5432/postgres \
-  uv run pytest -q tests/test_briefing.py tests/test_briefing_temporal.py
+  uv run pytest -q tests/test_briefing.py tests/test_briefing_loops.py
 uv run ruff check .
 ```
 

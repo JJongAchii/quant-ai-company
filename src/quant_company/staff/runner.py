@@ -1,7 +1,5 @@
 import asyncio
 
-from temporalio import activity
-
 from ..contracts import ProviderFault, ProviderRequest
 from ..execution import provider_for
 from .independent_review import IndependentReviewRunner
@@ -14,7 +12,7 @@ class StaffRunner:
         self.provider = provider if provider is not None else provider_for(company)
         self.reviews = IndependentReviewRunner(company, review_provider)
 
-    async def tick(self, heartbeat=False, manual=False):
+    async def tick(self, manual=False):
         if not manual and not self.store.company.settings.company_staff_development_enabled:
             return {"state": "paused"}
         from ..briefing.store import priority_pending
@@ -24,15 +22,13 @@ class StaffRunner:
         await asyncio.to_thread(self.store.schedule)
         ready = await asyncio.to_thread(self.store.prepare)
         if ready["state"] == "idle" and self.store.company.settings.company_staff_review_enabled:
-            return await self.reviews.tick(heartbeat=heartbeat)
+            return await self.reviews.tick()
         if ready["state"] != "ready":
             return ready
         task = asyncio.create_task(self.provider.run(ProviderRequest.model_validate(ready["request"])))
         try:
             while not task.done():
                 await asyncio.wait({task}, timeout=5)
-                if heartbeat:
-                    activity.heartbeat({"run_id": ready["run_id"]})
             response = await task
             return await asyncio.to_thread(self.store.commit, ready["run_id"], response)
         except ProviderFault as exc:
@@ -45,7 +41,3 @@ class StaffRunner:
             # Recover a worker crash using the frozen request ID, never a new inference identity.
             if not task.done():
                 task.cancel()
-
-    @activity.defn(name="company_staff_tick")
-    async def activity_tick(self):
-        return await self.tick(heartbeat=True)

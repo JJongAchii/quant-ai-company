@@ -1,21 +1,16 @@
-"""Real PostgreSQL/Temporal mission debate; scripted employees, no scientific execution."""
+"""Real PostgreSQL mission debate through the turn loop; scripted employees, no scientific execution."""
 
-import asyncio
 import json
 from uuid import uuid4
 
 import pytest
-from temporalio.worker import Replayer
 
 from quant_company.company import Company
 from quant_company.contracts import AgentDecision, ProviderResponse
-from quant_company.execution import TurnExecutor
 from quant_company.research.controller import MissionController
-from quant_company.runtime import dispatch_once, make_worker
-from quant_company.workflow import CompanyTurnWorkflow
 
 from .test_research_controller import FixtureBackend, active, mission  # noqa: F401
-from .test_temporal import temporal_environment  # noqa: F401
+from .test_research_loop import finish_turn, turn_loop
 
 
 class DebateFixture:
@@ -46,53 +41,34 @@ class DebateFixture:
 
 
 @pytest.mark.integration
-async def test_mission_debate_continues_from_same_temporal_timer_after_restart(mission, temporal_environment):  # noqa: F811
+async def test_mission_debate_continues_from_the_same_database_due_time_after_restart(mission):  # noqa: F811
     company = mission.company
-    company.settings.temporal_task_queue = "mission-restart-" + uuid4().hex
-    client = temporal_environment.client
     controller = MissionController(company, backend=FixtureBackend(company))
     provider = DebateFixture(mission)
-    histories = []
+    turns = turn_loop(company, provider)
 
     async def finish_stage():
         assert controller.tick()["state"] == "running"
         _, identity = active(mission)
-        await dispatch_once(client, company)
-        handle = client.get_workflow_handle("company-turn-" + identity)
-        assert (await asyncio.wait_for(handle.result(), timeout=20))["state"] == "completed"
-        histories.append(await handle.fetch_history())
+        await finish_turn(turns, company, identity)
         assert controller.tick()["state"] == "completed"
 
-    async with make_worker(client, company, TurnExecutor(company, provider)):
-        await finish_stage()
-        assert controller.tick()["state"] == "running"
-        _, deferred = active(mission)
-        with company.db.transaction() as conn:
-            conn.execute("UPDATE turns SET due_at=now()+interval '3 seconds' WHERE id=%s", (deferred,))
-        await dispatch_once(client, company)
-        handle = client.get_workflow_handle("company-turn-" + deferred)
-        async with asyncio.timeout(10):
-            while True:
-                history = await handle.fetch_history()
-                if any(item.HasField("timer_started_event_attributes") for item in history.events):
-                    break
-                await asyncio.sleep(0.05)
+    await finish_stage()
+    assert controller.tick()["state"] == "running"
+    _, deferred = active(mission)
+    with company.db.transaction() as conn:
+        conn.execute("UPDATE turns SET due_at=now()+interval '2 seconds' WHERE id=%s", (deferred,))
+    assert await turns.tick() == {"state": "idle"}  # the wait lives in PostgreSQL, not in the worker
 
-    # A fresh runtime object reads PostgreSQL; the workflow timer survives the old worker.
+    # A fresh runtime object reads PostgreSQL and runs the deferred turn once it is due.
     company = Company(company.settings, company.roles)
     mission.company = company
     controller = MissionController(company, backend=FixtureBackend(company))
-    async with make_worker(client, company, TurnExecutor(company, provider)):
-        with company.db.transaction() as conn:
-            conn.execute("UPDATE turns SET workflow_started=false WHERE id=%s", (deferred,))
-        await dispatch_once(client, company)
-        assert (await asyncio.wait_for(handle.result(), timeout=20))["state"] == "completed"
-        histories.append(await handle.fetch_history())
-        assert controller.tick()["state"] == "completed"
-        for _ in range(4):
-            await finish_stage()
-        for history in histories:
-            await Replayer(workflows=[CompanyTurnWorkflow]).replay_workflow(history)
+    turns = turn_loop(company, provider)
+    await finish_turn(turns, company, deferred)
+    assert controller.tick()["state"] == "completed"
+    for _ in range(4):
+        await finish_stage()
     state = mission.snapshot()
     assert state["stage"]["stage"] == "implementation"
     assert len(state["proposals"]) == 2 and len(state["rejections"]) == 1

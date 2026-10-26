@@ -4,9 +4,10 @@ This is the independent, subscription-first company runtime. Its source of truth
 Work in an isolated qws attachment; the package/CLI name remains quant-company. Existing research repos are read-only
 integration targets until a particular research task is authorized.
 
-- Python 3.11+, FastAPI, PostgreSQL, Temporal. Production never uses an in-memory task queue.
-- Keep workflow decisions deterministic. PostgreSQL owns company records; Temporal owns
-  execution, retries and timers. A turn has a stable ID and one committed outcome.
+- Python 3.11+, FastAPI, PostgreSQL. No Temporal (docs/adr/0049): each service runs in-process loops
+  (`loops.py`, `runtime.py`) whose ticks resume from PostgreSQL. Never keep work state only in memory.
+- PostgreSQL owns company records and execution state; a loop only decides when to tick again.
+  A turn has a stable ID and one committed outcome.
 - Accept only signed Slack events from configured workspace/users/channels. Ignore bot echoes.
 - Model output is a typed proposal. The service validates permissions, revision and limits
   before applying messages, delegations, memories or tool calls.
@@ -15,7 +16,7 @@ integration targets until a particular research task is authorized.
 - Every external effect may be ambiguous after a crash. Preserve receipts; do not claim
   exactly-once delivery or automatically replay an uncertain charge or write.
 - No heavy training, backtests, live orders or automatic 5090 fallback in this service slice.
-- Test against real PostgreSQL and Temporal where available. Mark simulated Slack and real
+- Test against real PostgreSQL where available. Mark simulated Slack and real
   Codex checks separately. Never label mocked cloud/Slack integration as deployed.
 - Do not print secrets or copy credential files into Git. Deployment templates reference secrets.
 - Tests: `uv run pytest`; lint: `uv run ruff check .`; demo: documented in README.

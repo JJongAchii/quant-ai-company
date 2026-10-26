@@ -3,7 +3,6 @@ import contextlib
 import json
 
 from pydantic import ValidationError
-from temporalio import activity
 
 from .company import Company, PolicyError
 from .contracts import AgentDecision, ProviderFault, ProviderRequest, ProviderResponse
@@ -58,7 +57,7 @@ class TurnExecutor:
         self.company = company
         self.provider = provider if provider is not None else provider_for(company)
 
-    async def execute(self, turn_id: str, heartbeat=False) -> dict:
+    async def execute(self, turn_id: str) -> dict:
         try:
             prepared = await asyncio.to_thread(self.company.prepare_turn, turn_id)
         except (PolicyError, ValidationError) as exc:
@@ -82,8 +81,6 @@ class TurnExecutor:
         try:
             while not task.done():
                 await asyncio.wait({task}, timeout=1)
-                if heartbeat:
-                    activity.heartbeat({"turn_id": turn_id})
                 if not await asyncio.to_thread(self.company.is_current, turn_id):
                     with contextlib.suppress(ProviderFault, asyncio.TimeoutError):
                         await asyncio.wait_for(self.provider.cancel(turn_id), timeout=10)
@@ -115,11 +112,3 @@ class TurnExecutor:
                 task.cancel()
                 with contextlib.suppress(asyncio.CancelledError):
                     await task
-
-    @activity.defn(name="company_execute_turn")
-    async def activity_execute(self, turn_id: str) -> dict:
-        return await self.execute(turn_id, heartbeat=True)
-
-    @activity.defn(name="company_block_turn")
-    async def activity_block(self, turn_id: str) -> None:
-        await asyncio.to_thread(self.company.block_turn, turn_id, "activity_retries_exhausted")

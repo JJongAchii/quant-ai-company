@@ -11,7 +11,7 @@ Linux Lightsail 한 대에서 API, Slack Socket 수신기, worker, news-worker, 
 기존 4GB 기본 설정의 메모리 한도 합계는 2GB를 넘으므로 그대로 2GB에 적용하지 않는다.
 기본 Slack 연결에는 도메인과 공개 HTTP endpoint가 필요 없다.
 Socket 수신기가 Slack에 인증된 outbound WebSocket 연결을 유지한다. Caddy는 선택 기능이다.
-[Slack Socket Mode](https://docs.slack.dev/apis/events-api/using-socket-mode/) 운영 workflow는 Temporal Cloud를 사용한다. 직원 10명 중 총괄·금융전략·
+[Slack Socket Mode](https://docs.slack.dev/apis/events-api/using-socket-mode/) 백그라운드 업무는 각 서비스 안의 루프로 돈다(2026-10-26부터 Temporal을 쓰지 않는다, [ADR 0049](adr/0049-in-process-loops-instead-of-temporal.md)). 직원 10명 중 총괄·금융전략·
 국내연구·데이터만 활성화한 첫 검증에서 Codex는 한 번에 한 작업을 처리했다. 현재 실행기에는
 일반 업무 1개와 뉴스 전용 1개의 자리가 있다([뉴스 실행 정책](news.md)). 무거운 계산·학습은
 이 서버의 업무가 아니다. 2GB에서 네 직원·8회 모델 호출의 합성 협업을 완료했다. 약 4분간
@@ -34,9 +34,9 @@ worker·호스트 재시작을 측정한다. 이 설정에는 선택 HTTPS profi
 | Slack Socket 수신기 | core/서비스 egress → Slack | DB 앱 계정, Slack 자격증명; 공개 포트 없음 |
 | API | edge/core, host 127.0.0.1:8000 | DB 앱 계정, Slack 자격증명·operator token |
 | Caddy — 선택 `https` profile | public 80/443 → API | 인증서 저장, HTTP 수신을 선택할 때만 실행 |
-| worker | core/model/서비스 egress | DB, Temporal API key, model runtime token |
-| news-worker | core/model/서비스 egress | 뉴스 수집·선별·편집·검색 전담. DB, Temporal, model runtime token만 사용 |
-| dispatcher | core/서비스 egress | DB, Temporal, Slack 발신 token |
+| worker | core/model/서비스 egress | DB, model runtime token |
+| news-worker | core/model/서비스 egress | 뉴스 수집·선별·편집·검색 전담. DB, model runtime token만 사용 |
+| dispatcher | core/서비스 egress | DB, Slack 발신 token |
 | PostgreSQL | core 전용, 공개 포트 없음 | DB 볼륨, 별도 관리자 계정 |
 | Codex runtime | model/전용 egress | Codex 계정 캐시·job 영수증·runtime token |
 
@@ -58,7 +58,6 @@ postgres 사용자로 실행하며, 앱용 `company` 계정에는 superuser 권�
 - 새 전용 Slack: workspace/team ID, 허용 사용자·채널 ID, 네 앱 각각의 bot token과
   `connections:write` 권한을 가진 app-level token(`xapp-…`).
 - DNS·ACME 이메일·signing secret은 선택 HTTP 연결에서만 필요하다.
-- Temporal Cloud: namespace, endpoint, 해당 namespace용 API key. 이 설정은 TLS를 사용한다.
 - Codex: 개인 구독의 공식 device login. 다른 직원 수만큼 별도 사용량이 생기지 않는다.
 
 비밀 값은 채팅·Git·Docker image에 넣지 않는다. 운영자는 호스트의 secret 파일을 직접
@@ -121,7 +120,7 @@ sudo ln -s /var/lib/quant-company/config/runtime.env deploy/.env
 
 `prepare-state`는 기존 파일을 덮어쓰지 않는다. `.env`는 코드 릴리스 밖의 영속 설정을
 가리킨다. `deploy/.env`의 `RELEASE_COMMIT`에는
-배치한 코드의 40자리 Git commit을 기록하고 Slack·Temporal 값을 채운다.
+배치한 코드의 40자리 Git commit을 기록하고 Slack 값을 채운다.
 기본 Socket Mode에서는 주석 처리된 도메인·ACME 항목을 채우지 않아도 된다.
 `/var/lib/quant-company/secrets`에서 다음 파일을 설정한다.
 
@@ -129,7 +128,6 @@ sudo ln -s /var/lib/quant-company/config/runtime.env deploy/.env
 |---|---|
 | `database_password`, `database_admin_password` | 최초 준비 시 난수 생성; 기존 DB 비밀번호 변경은 별도 DB 작업 |
 | `operator_token`, `model_runtime_token` | 최초 준비 시 난수 생성; API와 모델 token 분리 |
-| `temporal_api_key` | 실제 namespace API key로 교체 |
 | `slack-credentials.json` | 네 역할의 app ID/bot user ID/bot token/app token 입력; signing secret은 HTTP에서만 필요 |
 | `lake_read_credentials` | 데이터 읽기를 켤 때만 전용 IAM 사용자의 `[default]` INI 프로필 입력 |
 
@@ -146,21 +144,9 @@ sudo ln -s /var/lib/quant-company/config/runtime.env deploy/.env
 연구 작업이다. 조회 영수증에는 qdata 커밋·객체 URI·ETag·조회 시각을 저장한다. 현재 버킷의
 객체 버전이 없으면 이 정보만으로 과거 원본의 재다운로드를 보장할 수 없다.
 
-현재 Temporal namespace는 `quant-company.d2y48`, endpoint는
-`quant-company.d2y48.tmprl.cloud:7233`다. AWS 서울 단일 리전·On-Demand·7일 보관이며,
-`quant-company-runtime` 서비스 계정은 계정 Read-Only / 해당 namespace Write 권한을 가진다.
-Developer 요금제의 월 최소 금액은 $0이고 사용량은 별도다. $150 체험 크레딧과 최초 키는
-2026-12-15에 만료되므로 그 전에 요금·키 갱신을 검토한다. replica·Provisioned·Fairness는 켜지 않았다.
-
-클라우드 연결을 다시 확인할 때 아래 검사는 합성 업무 하나와 activity 두 번을 실행한다.
-회사 workflow의 timer, worker 재시작과 이력 재생을 확인하며 모델·Slack·DB를 호출하지 않는다.
-이미 이 검사는 개발 맥에서 통과했다. AWS 호스트 인수와는 별도다.
-
-```bash
-uv run python scripts/check_temporal_cloud.py \
-  --address quant-company.d2y48.tmprl.cloud:7233 --namespace quant-company.d2y48 \
-  --api-key-file /secure/path/temporal_api_key --evidence .local/temporal-cloud-check.json
-```
+2026-10-26까지 Temporal Cloud namespace `quant-company.d2y48`(Developer 요금제)를 썼다. 하루 약 15만 건의
+과금 동작(월 약 $250)이 대부분 할 일 확인 반복이어서, [ADR 0049](adr/0049-in-process-loops-instead-of-temporal.md)로
+모든 루프를 서비스 안으로 옮기고 사용을 멈췄다. 업무 상태는 전과 같이 PostgreSQL에 있다.
 
 호스트의 secrets 디렉터리는 root만 접근한다. 개별 파일은 명시적으로 마운트된 컨테이너의
 비 root 프로세스가 읽을 수 있도록 준비한다. 단일 호스트 Compose의 secret 파일은 별도의
@@ -228,7 +214,7 @@ Tech Scout를 `#tech-feeds`에 초대한 뒤 `app_id`, `bot_user_id`, `bot_token
 앱을 허용 채널에 초대한 뒤 DM·멘션으로 실제 왕복을 확인한다. Socket 연결에서는 인증된
 WebSocket과 앱·workspace·사용자·채널 검사가 수신 경계를 이룬다. DB 저장 후 envelope를
 ACK하며, HTTP용 signing secret 검증과 구분한다. 연결 재수립·재전송 중에도 업무가 중복
-생성되지 않는지 실제로 확인해야 한다. Socket 수신기는 모델·Temporal·operator·AWS secret을
+생성되지 않는지 실제로 확인해야 한다. Socket 수신기는 모델·operator·AWS secret을
 받지 않는다. 운영 API는 SSH tunnel로 호스트 `127.0.0.1:8000`에 연결한 뒤 operator token으로 쓴다.
 
 ### 선택: 도메인을 마련한 뒤 HTTP 연결 사용
@@ -309,7 +295,7 @@ sudo bash deploy/restore.sh --archive /path/company-backup.tar.gz --database res
 
 스크립트는 운영 DB, 현재 역할 파일, Codex 영수증, 회사 서비스를 자동 전환하지 않는다.
 출력한 임시 복원 경로에서 기록된 commit/역할/영수증을 확인하고, 격리한 DB로 업무·기억을
-검증한다. 실제 전환 전에는 외부 Slack 게시·진행 중 Temporal 업무·불확실한 Codex 호출을
+검증한다. 실제 전환 전에는 외부 Slack 게시·진행 중 루프 업무·불확실한 Codex 호출을
 대사해야 한다. 과거 DB로 돌아간 것만으로 이미 발생한 외부 효과가 되돌아가지는 않는다.
 자격증명은 별도 비밀 저장 경로에서 다시 설정하고 Codex는 필요하면 재로그인한다.
 
@@ -317,7 +303,7 @@ sudo bash deploy/restore.sh --archive /path/company-backup.tar.gz --database res
 
 - `/healthz`: 회사 API는 DB `SELECT 1`을 검사한다. schema·모델 준비 상태까지 보장하지 않는다.
   Codex health는 프로세스 응답 확인이다.
-- Temporal Cloud 연결·poller와 실제 typed model turn, 네 앱의 Socket 연결·envelope ACK·각 직원의 게시.
+- 서비스마다 시작 로그의 루프 목록(`Running loops: …`)과 실제 typed model turn, 네 앱의 Socket 연결·envelope ACK·각 직원의 게시.
 - Socket 재연결·동일 이벤트 재전송·DB 장애 시 ACK 보류 및 복구. 선택 HTTP는 별도로 서명 검증.
 - 호스트 재부팅 후 볼륨·역할·기억 보존, quota/auth 오류 시 업무 보존과 대기.
 - 맥북을 종료한 상태에서 휴대폰의 요청 → 직원 간 위임 → 결과 수신.

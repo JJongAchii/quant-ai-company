@@ -107,7 +107,7 @@ def test_ci_binds_exact_head_workflow_attempt_and_real_test_step(test_conclusion
             {"name": "Install core dependencies", "conclusion": "success"},
             {"name": "Lint", "conclusion": "success"},
             {"name": "Regression reproduces on base", "conclusion": "success"},
-            {"name": "PostgreSQL, Temporal and service regression tests", "conclusion": test_conclusion},
+            {"name": "PostgreSQL and service regression tests", "conclusion": test_conclusion},
         ]}]})
     github = client(handler)
     if test_conclusion == "success":
@@ -189,7 +189,7 @@ def test_ci_repair_feedback_uses_exact_attempt_and_redacts_log_credentials(probl
         if request.url.path.endswith('/runs/20/attempts/2/jobs'):
             return httpx.Response(200, json={'jobs': [{'id': 30, 'name': 'service', 'steps': [
                 {'name': 'Regression reproduces on base', 'conclusion': 'success'},
-                {'name': 'PostgreSQL, Temporal and service regression tests', 'conclusion': 'failure'}]}]})
+                {'name': 'PostgreSQL and service regression tests', 'conclusion': 'failure'}]}]})
         if request.url.path.endswith('/jobs/30/logs'):
             host = 'private.invalid' if problem == 'unsafe_redirect' else 'fixture.blob.core.windows.net'
             return httpx.Response(302, headers={'Location': f'https://{host}/log'})

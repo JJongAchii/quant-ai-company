@@ -1,8 +1,6 @@
 import asyncio
 import contextlib
 
-from temporalio import activity
-
 from ..contracts import ProviderFault, ProviderRequest, ProviderResponse
 from ..execution import provider_for
 from . import schedule
@@ -42,28 +40,24 @@ class NewsCollector:
             result["article_fetched"] = True
         return result
 
-    @activity.defn(name="company_news_collect")
-    async def activity_tick(self):
-        return await self.tick()
-
 
 class NewsEditor:
     def __init__(self, company, provider=None):
         self.store = NewsStore(company)
         self.provider = provider if provider is not None else provider_for(company)
 
-    async def tick(self, heartbeat=False):
+    async def tick(self):
         if self.store.company.settings.news_optimization_enabled:
             screening = NewsScreeningStore(self.store.company)
             ready = await asyncio.to_thread(screening.prepare)
             if ready["state"] not in {"idle", "paused"}:
-                result = await self.run_request(ready, screening.commit, screening.screen_fault, heartbeat)
+                result = await self.run_request(ready, screening.commit, screening.screen_fault)
                 result.setdefault("next_delay", schedule.next_delay(self.store.company.settings))
                 return result
         ready = await asyncio.to_thread(self.store.prepare_review)
-        return await self.run_request(ready, self.store.commit_review, self.store.fault, heartbeat)
+        return await self.run_request(ready, self.store.commit_review, self.store.fault)
 
-    async def run_request(self, ready, commit, fault, heartbeat):
+    async def run_request(self, ready, commit, fault):
         if ready["state"] != "ready":
             return ready
         request = ProviderRequest.model_validate(ready["request"])
@@ -71,8 +65,6 @@ class NewsEditor:
         try:
             while not task.done():
                 await asyncio.wait({task}, timeout=5)
-                if heartbeat:
-                    activity.heartbeat({"review_id": request.request_id})
             response = ProviderResponse.model_validate(await task)
             if response.request_id != request.request_id:
                 raise ValueError("news_response_identity_mismatch")
@@ -89,20 +81,12 @@ class NewsEditor:
                 with contextlib.suppress(asyncio.CancelledError):
                     await task
 
-    @activity.defn(name="company_news_review")
-    async def activity_tick(self):
-        return await self.tick(heartbeat=True)
-
 
 class NewsDiscovery(NewsEditor):
     def __init__(self, company, provider=None):
         super().__init__(company, provider)
         self.store = NewsDiscoveryStore(company)
 
-    async def tick(self, heartbeat=False):
+    async def tick(self):
         ready = await asyncio.to_thread(self.store.prepare)
-        return await self.run_request(ready, self.store.commit, self.store.search_fault, heartbeat)
-
-    @activity.defn(name="company_news_discover")
-    async def activity_tick(self):
-        return await self.tick(heartbeat=True)
+        return await self.run_request(ready, self.store.commit, self.store.search_fault)

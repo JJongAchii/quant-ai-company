@@ -142,7 +142,7 @@ def test_account_gateway_overlay_preserves_research_code_pin_and_auth_boundary(t
     for name in ("worker", "api", "slack-socket", "account-gateway"):
         assert services[name]["environment"]["COMPANY_CODE_COMMIT"] == "5" * 40
     assert gateway["environment"]["MODEL_RUNTIME_URL"] == "http://codex-runtime:8080"
-    assert {s["source"] for s in gateway["secrets"]} == {"database_password", "temporal_api_key", "model_runtime_token"}
+    assert {s["source"] for s in gateway["secrets"]} == {"database_password", "model_runtime_token"}
     assert all("/codex/" not in v["source"] for v in gateway.get("volumes", []))
     assert {s["source"] for s in model["secrets"]} == {"model_runtime_token"}
     assert not gateway.get("ports") and not model.get("ports")
@@ -218,7 +218,7 @@ def test_news_worker_is_independent_and_has_only_news_runtime_credentials():
     assert news["command"] == ["quant-company", "news-worker"]
     assert "worker" not in news["depends_on"]
     assert {item["source"] for item in news["secrets"]} == {
-        "database_password", "temporal_api_key", "model_runtime_token"}
+        "database_password", "model_runtime_token"}
     assert int(news["mem_limit"]) == 192 * 1024 * 1024
     assert set(news["networks"]) == {"core", "model", "service_egress"}
     assert "news-worker" in backup.APP_SERVICES
@@ -235,7 +235,7 @@ def test_quant_worker_is_opt_in_and_has_no_slack_or_lake_secrets():
     assert "quant-codex-runtime" in service["depends_on"]
     assert int(service["mem_limit"]) == 256 * 1024 * 1024
     assert {item["source"] for item in service["secrets"]} == {
-        "database_password", "temporal_api_key", "model_runtime_token"}
+        "database_password", "model_runtime_token"}
     assert "worker" not in service["depends_on"]
     assert model["image"].startswith("quant-company-codex:")
     assert {item["source"] for item in model["secrets"]} == {"model_runtime_token"}
@@ -578,7 +578,7 @@ def test_newsletter_password_reaches_only_dispatch_and_its_settings_reach_every_
     # so a release before the owner sets the password still starts and the email stays inactive.
     assert mount.get("bind", {}).get("create_host_path", True) is True
     assert {v["target"] for v in dispatch["volumes"]} >= {"/etc/quant-company/roles.json", "/state/video"}
-    assert {s["source"] for s in dispatch["secrets"]} == {"database_password", "temporal_api_key", "slack_credentials"}
+    assert {s["source"] for s in dispatch["secrets"]} == {"database_password", "slack_credentials"}
     # The commit hook (news-worker or dispatch), the commands (api, slack-socket), sending (dispatch), writing (video).
     for name in ("api", "slack-socket", "dispatch", "news-worker", "worker", "video-worker"):
         assert services[name]["environment"]["NEWSLETTER_ENABLED"] == "true", name
@@ -603,3 +603,12 @@ def test_newsletter_secret_script_reads_without_echo_and_writes_in_place():
     assert "printf '%s' \"$password\" > \"$file\"" in script and "/var/lib/quant-company/secrets/newsletter" in script
     assert 'echo "$password' not in script and "set -x" not in script and "mv " not in script
     subprocess.run(["bash", "-n", str(path)], check=True)
+
+
+def test_no_service_reaches_temporal():
+    """docs/adr/0049-in-process-loops-instead-of-temporal.md: every loop runs in its own service, so no released
+    compose file passes Temporal settings or its API key."""
+    files = json.loads((DEPLOY / "release.json").read_text())["compose_files"]
+    assert "compose.yaml" in files
+    for name in files:
+        assert "temporal" not in (DEPLOY / name).read_text().lower(), name

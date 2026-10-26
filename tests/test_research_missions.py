@@ -568,4 +568,5 @@ def test_qualification_captured_ingress_to_typed_artifact_postgres_restart_consu
                "empty_nonfinite_wrong_unit_wrong_field_rejected": True, "public_result_withheld": True,
                "scientific_performance_measured": False, "producer_evidence_files": evidence,
                "outcome_digest": fingerprint(consumer.model_dump(mode="json"))}
+    Path(".local").mkdir(exist_ok=True)
     Path(".local/mission-store-qualification.json").write_text(json.dumps(receipt, indent=2) + "\n")

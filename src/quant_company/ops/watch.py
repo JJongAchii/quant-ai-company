@@ -1,5 +1,5 @@
 """Durable ops alerts in the dedicated channel. The dispatcher evaluates the rules once a minute so the
-watch does not depend on Temporal or a model; the host probe covers the dispatcher and PostgreSQL."""
+watch does not depend on a model; the host probe covers the dispatcher and PostgreSQL."""
 
 import logging
 import time

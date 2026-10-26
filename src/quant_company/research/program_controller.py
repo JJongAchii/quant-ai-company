@@ -1,4 +1,4 @@
-"""Program planning uses the existing durable employee turns, file reads and Temporal tick."""
+"""Program planning uses the existing durable employee turns, file reads and research tick."""
 
 import json
 from datetime import timedelta
