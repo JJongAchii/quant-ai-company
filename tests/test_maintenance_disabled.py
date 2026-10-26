@@ -48,12 +48,11 @@ def test_disabled_reporter_posts_nothing_but_keeps_its_heartbeat(company, monkey
 
 @pytest.mark.integration
 async def test_disabled_maintainer_service_starts_instead_of_exiting(company, monkeypatch):
-    class Started(Exception):
-        pass
+    started = []
 
-    async def connect(settings):
-        raise Started
+    async def run_all(loops):
+        started.extend(loop.name for loop in loops)
 
-    monkeypatch.setattr("quant_company.runtime.connect", connect)
-    with pytest.raises(Started):
-        await run_maintenance(company, off())
+    monkeypatch.setattr("quant_company.loops.run_all", run_all)
+    await run_maintenance(company, off())
+    assert started == ["maintenance", "maintenance-report"]
