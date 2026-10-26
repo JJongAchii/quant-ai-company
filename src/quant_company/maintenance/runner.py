@@ -852,8 +852,8 @@ async def run_maintenance(company, config):
     from ..loops import Loop, run_all
     from .reporting import Reporter
 
-    if not config.enabled:
-        raise SystemExit("Maintenance is disabled; review the deployment and GitHub App installation first")
+    # A disabled Maintainer stays up and idle: its ticks only record enabled=false, so the company refuses
+    # new requests and the ops watch reads "off" instead of a restarting container.
     if not set(config.allowed_owners) <= set(company.settings.slack_allowed_users):
         raise SystemExit("Maintenance owners must be a subset of the company's authorized Slack users")
     maintainer = Maintainer(company, config)
