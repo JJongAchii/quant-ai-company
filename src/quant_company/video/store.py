@@ -242,7 +242,10 @@ class VideoStore:
                 conn.execute("UPDATE video_jobs SET lease_until=now()+interval '200 minutes' WHERE id=%s", (row["id"],))
             return row
 
-    def allowed(self, job):
+    def allowed(self, job, *, approval=False):
+        """A follow-up in the brief's thread raises its project revision (2026-10-26 PM: the owner's question at 18:07
+        stopped the close video at its next step). Production and thread delivery go on from the frozen body; only a
+        public-release approval stays bound to the revision it was asked under."""
         configured = (self.enabled() and job['source']['owner_user'] == self.settings.briefing_owner_user
                 and job['source']['channel'] == self.settings.briefing_channel_id
                 and job['policy']['youtube_channel'] == self.settings.video_youtube_channel_id
@@ -252,11 +255,11 @@ class VideoStore:
         with self.db.transaction() as conn:
             project = conn.execute('SELECT status,revision FROM projects WHERE id=%s',
                                    (job['source']['project_id'],)).fetchone()
-        return bool(project and project['status'] == 'active' and project['revision'] == 1)
+        return bool(project and project['status'] == 'active' and (not approval or project['revision'] == 1))
 
     def gate(self, conn, row):
         job = conn.execute('SELECT * FROM video_jobs WHERE review_message_id=%s', (row['id'],)).fetchone()
-        if (job and self.allowed(job) and job['state'] == 'awaiting_approval'
+        if (job and self.allowed(job, approval=True) and job['state'] == 'awaiting_approval'
                 and utcnow() < job['publish_deadline']):
             return True
         conn.execute("UPDATE outbox SET status='stale',error='video_review_expired_or_disabled' WHERE id=%s",
@@ -411,7 +414,7 @@ class VideoStore:
         with self.db.transaction() as conn:
             current = conn.execute("SELECT * FROM video_jobs WHERE id=%s FOR UPDATE", (job["id"],)).fetchone()
             if (current["review_message_id"] or current['state'] != 'awaiting_approval'
-                    or utcnow() >= current['publish_deadline'] or not self.allowed(current)):
+                    or utcnow() >= current['publish_deadline'] or not self.allowed(current, approval=True)):
                 return
             project = self.company._project(conn, current["source"]["project_id"])
             # The existing briefing parent must have a confirmed Slack receipt before threading the review.
@@ -497,7 +500,7 @@ class VideoStore:
         with self.db.transaction() as conn:
             conn.execute("SELECT pg_advisory_xact_lock(%s)", (LOCK,))
             job = conn.execute("SELECT * FROM video_jobs WHERE id=%s FOR UPDATE", (str(UUID(identity)),)).fetchone()
-            if (not job or not self.allowed(job) or owner != job["source"]["owner_user"] or channel != job["source"]["channel"]
+            if (not job or not self.allowed(job, approval=True) or owner != job["source"]["owner_user"] or channel != job["source"]["channel"]
                     or owner not in self.settings.slack_allowed_users or channel not in self.settings.slack_allowed_channels
                     or action.version != job["version"] or action.artifact_digest != job["artifact_digest"]):
                 raise PolicyError("Invalid video approval identity or version")

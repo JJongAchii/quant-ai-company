@@ -289,6 +289,17 @@ def test_approval_is_bound_to_owner_message_version_digest_and_deadline(brief, v
     assert store.get(job['id'])['state'] == 'awaiting_approval'
 
 
+def test_a_follow_up_in_the_brief_thread_keeps_production_going(brief, video):  # noqa: F811
+    """2026-10-26 PM: the owner's question in the brief thread raised its project revision at 18:08 and the close video
+    stopped at its next step. Production goes on from the frozen body; only the public-release approval is bound."""
+    store, _ = video
+    job = new_job(brief, video)
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE projects SET revision=2 WHERE id=%s', (job['source']['project_id'],))
+    assert store.allowed(job) and not store.allowed(job, approval=True)
+    assert store.claim()['id'] == job['id']
+
+
 def test_revision_invalidate_previous_approval_and_credit_cap_follows_edition(brief, video):  # noqa: F811
     store, clock = video
     job = prepare_approval(store, new_job(brief, video))

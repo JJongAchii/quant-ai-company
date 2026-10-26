@@ -16,7 +16,13 @@ from .inventory import facts, qualifier_text
 PROMPT_LIMIT = 90000  # ProviderRequest.prompt
 DRAFT_LIMIT = 80000
 SCHEMA = "brief_output_schema"
+EMPTY_DRAFT = "brief_draft_empty"
+# A write or revise draft without these has no body to keep (2026-10-26 PM: only the calendar was filled; two in-place
+# repairs carried the empty body into the edition), so the retry is the full phase again.
+BODY = ("summary", "overview", "observations", "issues")
 RULES = {
+    EMPTY_DRAFT: "the previous draft left summary, overview, observations and issues empty. Write the complete "
+                 "briefing from the inputs above.",
     "inventory_placement_accounting": "fact_placements must hold exactly one entry for every committed fact ID "
                                       "(none missing, none repeated, none invented).",
     "inventory_supplement_accounting": "supplemental_source_notes must hold exactly one note for every new source "
@@ -38,6 +44,16 @@ the previous draft. Return the complete corrected JSON object in the same output
 def retry_note(label):
     return (f"\n\nRETRY: the previous draft of this phase was rejected by the server check '{label}'. "
             f"{RULES.get(label, GENERIC)} Return the complete JSON object again; do not shorten other parts.")
+
+
+def hollow(phase, draft):
+    if phase not in {"write", "revise"} or not draft:
+        return False
+    try:
+        value = json.loads(draft, strict=False)
+    except ValueError:
+        return False
+    return isinstance(value, dict) and not any(value.get(key) for key in BODY)
 
 
 def failure(exc, response):
@@ -85,7 +101,7 @@ def supplement_detail(bundle, draft):
 def repair_prompt(bundle, phase, draft, label, detail=None):
     """The previous draft and the check it failed, or None when the failure needs the full phase context or the
     request would not fit; the caller then repeats the phase prompt with retry_note."""
-    if not draft or label not in DRAFT_LOCAL.get(phase, ()):
+    if not draft or label not in DRAFT_LOCAL.get(phase, ()) or hollow(phase, draft):
         return None
     lines = [REPAIR, f"\nREJECTED BY: {label}", f"RULE: {RULES[label]}"]
     try:
