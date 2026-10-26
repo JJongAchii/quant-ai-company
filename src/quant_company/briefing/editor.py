@@ -1230,9 +1230,12 @@ def validate(proposal, bundle):
                     raise ValueError("calendar_is_not_price_evidence")
                 if any(docs[e.source_id].kind == "dataset" for e in item.evidence):
                     official = locked.get(item.instrument)
-                    fields = ("value", "unit", "session_date", "as_of", "basis", "venue", "previous_value", "previous_session_date")
+                    fields = ("value", "unit", "session_date", "as_of", "basis", "previous_value", "previous_session_date")
                     if not official or any(getattr(item, k) != getattr(official, k) for k in fields):
                         raise ValueError("collected_observation_modified")
+                    # The venue is a label ('KRX 유가증권시장' for 'KRX' dropped both index rows on 10/15, 10/21 and
+                    # 10/26 PM); the collected one is shown.
+                    item.venue = official.venue
                 if item.value not in tokens or (item.previous_value is not None and item.previous_value not in tokens):
                     raise ValueError("numeric_value_not_in_evidence")
                 if item.reported_change is not None and not reported_change_supported(
