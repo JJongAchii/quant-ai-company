@@ -13,15 +13,18 @@ from psycopg.types.json import Jsonb
 from quant_company.config import Settings
 from quant_company.contracts import ProviderFault
 from quant_company.video import runner as runner_module
-from quant_company.video.contracts import digest
-from quant_company.video.render import checksum, run, verify_artifacts
 from quant_company.video import shorts as shorts_module
 from quant_company.video.body import parse
+from quant_company.video.contracts import digest
 from quant_company.video.lineup import lineup
+from quant_company.video.render import checksum, run, verify_artifacts
 from quant_company.video.runner import VideoRunner
 from quant_company.video.shorts import (
+    BRIEF_NARRATION,
     CHARS_PER_SECOND,
     CHECKS,
+    CLOSE_NARRATION,
+    CORE_NARRATION,
     HOOK_NARRATION,
     KO_COUNT,
     OUTLOOK_SHORTS,
@@ -46,8 +49,8 @@ from quant_company.video.shorts_store import ShortsStore
 
 from .test_briefing import brief  # noqa: F401
 from .test_video import body_source, video  # noqa: F401
-from .test_video_lineup import PM_TITLES, issue_body, issue_episode
 from .test_video_delivery import FakeSlack, quiet_other_outbox, send
+from .test_video_lineup import PM_TITLES, issue_body, issue_episode
 from .test_video_motion import (
     InspectedRenderer,
     InspectingProvider,
@@ -93,13 +96,13 @@ def violations(raw):
     return shorts_violations(plan, body_source(), episode_json, lineup(body_source(), episode_json))
 
 
-def spoken_plan(core, brief, hook=32, close=(35, 35)):
-    """A cut whose spoken lines have exactly these lengths: core and brief are lists of narration lengths."""
+def spoken_plan(core, others, hook=32, close=(35, 35)):
+    """A cut whose spoken lines have exactly these lengths: core and others (brief issues) list narration lengths."""
     raw = shorts().model_dump(mode='json')
     base = raw['issues'][0]
     raw['hook']['narration'] = '가' * hook
     raw['issues'] = [{**base, 'id': f'issue-{n}', 'issue': n, 'narration': '가' * length}
-                     for n, length in enumerate([*core, *brief], 1)]
+                     for n, length in enumerate([*core, *others], 1)]
     raw['close'].update(conclusion='가' * close[0], signals_narration='가' * close[1])
     return ShortsPlan.model_validate(raw)
 
@@ -356,19 +359,56 @@ def test_an_arrow_its_line_does_not_state_is_dropped_not_rejected():
     assert dropped == [] and any('contradicts its line' in f for f in violations(raw))
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 5')
+def prompt_for(source=None, episode_json=None, **options):
+    source = source or body_source()
+    episode_json = episode_json or episode().model_dump(mode='json')
+    return shorts_prompt(source, episode_json, lineup(source, episode_json), **options)
+
+
 def test_the_prompt_cuts_the_delivered_episode_and_leaves_flagged_claims_out():
-    prompt = shorts_prompt(body_source(), episode().model_dump(mode='json'), ['나스닥 수치 해석이 과장됨'], '- Unbound number')
+    prompt = prompt_for(concerns=['나스닥 수치 해석이 과장됨'], feedback='- Unbound number')
     assert episode().upload.title in prompt and 'no greeting' in prompt and "Never say '보도에 따르면'" in prompt
     assert '나스닥 수치 해석이 과장됨' in prompt and 'Unbound number' in prompt and 'b013' in prompt
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 5')
+def test_the_prompt_lists_the_lineup_and_asks_one_issue_each():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR)
+    prompt = prompt_for(source, episode_json)
+    data = json.loads(prompt.split('Lineup (one issue each, in this order):\n', 1)[1].split('\n', 1)[0])
+    assert [(x['issue'], x['title'], x['tier']) for x in data] == [
+        (1, PM_TITLES[0], 'core'), (2, PM_TITLES[1], 'core'), (3, PM_TITLES[2], 'brief'), (4, PM_TITLES[3], 'brief')]
+    assert data[0]['episode_scenes'][0]['narration'] and data[2]['lines']
+    # The rules a viewer feels: the summary of the episode, every issue once, an answer inside the cut, no bare hedge.
+    for rule in ('exactly one issue per lineup entry', 'never split, merge, skip or replace', 'what happened, why it '
+                 'matters and what it means', 'one number and what it means', 'starts with 정리하면',
+                 'answers the hook', "never a bare hedge ('근거는 부족', '미확정', '확인되지 않았다')",
+                 f'{CORE_NARRATION[0]}-{CORE_NARRATION[1]} characters', f'{BRIEF_NARRATION[0]}-{BRIEF_NARRATION[1]} characters',
+                 f'at most {CLOSE_NARRATION} characters', f'at most {HOOK_NARRATION} characters', "'오늘 이슈는 네 가지입니다.'",
+                 OUTRO['say']):
+        assert rule in prompt, rule
+
+
+def test_the_prompt_revises_the_previous_version():
+    plain = prompt_for()
+    previous = shorts().model_dump(mode='json')
+    revised = prompt_for(previous=previous, feedback='- Core issue semis needs its 그래서 line')
+    assert 'Revise the previous version below' in revised and 'Revise the previous version' not in plain
+    assert json.dumps(previous, ensure_ascii=False, sort_keys=True) in revised
+
+
+def test_the_prompt_asks_for_the_outlook_only_when_the_episode_carried_it():
+    plain, taught = prompt_for(), prompt_for(outlook=True)
+    assert 'the outlook the episode' not in plain  # an episode made before the outlook rule has none to give
+    assert 'the outlook the episode' in taught and 'no target level, no advice' in taught
+    assert taught.replace(OUTLOOK_SHORTS, '') == plain
+
+
 def test_the_shorts_prompt_carries_only_given_lessons():
-    plain = shorts_prompt(body_source(), episode().model_dump(mode='json'))
-    assert shorts_prompt(body_source(), episode().model_dump(mode='json'), lessons=()) == plain  # older cuts unchanged
-    taught = shorts_prompt(body_source(), episode().model_dump(mode='json'), ['나스닥 수치 해석이 과장됨'],
-                           lessons=[{'id': 'x', 'scope': 'shorts', 'text': '첫 문장은 숫자 하나로 시작한다'}])
+    plain = prompt_for()
+    assert prompt_for(lessons=()) == plain  # older cuts unchanged
+    taught = prompt_for(concerns=['나스닥 수치 해석이 과장됨'],
+                        lessons=[{'id': 'x', 'scope': 'shorts', 'text': '첫 문장은 숫자 하나로 시작한다'}])
     assert 'channel_lessons' in taught and '첫 문장은 숫자 하나로 시작한다' in taught and 'channel_lessons' not in plain
     assert taught.index('Briefing body lines') < taught.index('channel_lessons') < taught.index('나스닥 수치 해석이 과장됨')
 
