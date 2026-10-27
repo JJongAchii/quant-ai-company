@@ -1,10 +1,13 @@
-"""Daily Shorts (owner, 2026-10-19; docs/superpowers/specs/2026-10-20-shorts-v2-design.md).
+"""Daily Shorts (owner, 2026-10-19; docs/superpowers/specs/2026-10-20-shorts-v2-design.md,
+docs/superpowers/specs/2026-10-27-shorts-episode-summary-design.md).
 
-A news-style vertical cut of each delivered episode: a dated opener with the episode's sharpest message, the list of the
-day's issues, each issue with its photo, a number and a line on what happened, and the signals to watch. The date line,
-the issue-count line and the closing line are fixed text added by the service. It is written from the delivered episode
-and its briefing body only, checked like the episode, voiced with the episode's voice and rendered here from its own
-template (shorts_design/). It never enters the Fargate render image, so the episode's render inputs stay as they are."""
+The short, clear summary of each delivered episode (owner, 2026-10-27): a dated opener with the day's tension, the list
+of the briefing's issues, every issue in the briefing's order (핵심 이슈: what happened, why and what it means; 함께 볼
+이슈: one number and one line), then the answer to the opener, the signals to watch and the episode button. The date
+line, the issue-count line and the closing tail are fixed text added by the service. It is written from the delivered
+episode and its briefing body only, checked, reviewed and inspected like the episode, voiced with the episode's voice
+and rendered here from its own template (shorts_design/). It never enters the Fargate render image, so the episode's
+render inputs stay as they are."""
 
 import fcntl
 import json
@@ -41,18 +44,17 @@ from .render import mix_music as mix
 from .upload import INSTRUCTION
 
 WIDTH, HEIGHT = 1080, 1920
-# The narration voice reads ~6.7 characters per second (episode.py). The model fills ~97% of the budget, so 400 characters
-# are ~388 spoken: with the fixed lines (date, the issue list read from the labels, closing and the mail invitation:
-# ~145 characters) that is ~533 / 6.7 = ~80 s, plus 0.5 s of lead and tail per scene (6-9 scenes): ~84 s, under the
-# 90 s cap.
-# The hook is one breath after the date line (owner, 10/20: an 11.5-s opener was too long; the spec asks ~3-5 s): with the
-# 19-character date line, a 32-character hook makes an opener of ~51 / 6.7 + 0.5 = ~8 s at the longest, ~6-7 s for a
-# typical one. What the hook gave up (it was 50 characters) left the total (it was 420) instead of going to the issues.
-# The prompt asks for the budgets and shorts_violations enforces them, so a longer cut is rewritten before any speech is
-# paid. The schema keeps #194's limits (420 in all, 50 for the hook): a plan stored under them before a release still
-# validates when it is voiced and rendered.
-NARRATION_BUDGET, HOOK_NARRATION = 400, 32
-NARRATION_LIMIT = 420
+# The narration voice reads ~6.7 characters per second (episode.py), plus 0.5 s of lead and tail per scene. The hook is
+# one breath after the date line (owner, 10/20: an 11.5-s opener was too long): with the 19-character date line, a
+# 32-character hook makes an opener of ~8 s at the longest. Every briefing issue is carried (owner, 2026-10-26), so the
+# depth follows the episode instead of the count: a 핵심 이슈 issue says what happened, why and what it means in 60-85
+# characters (~10-13 s), a 함께 볼 이슈 one says one number and what it means in 25-40 (~5-6 s), and the answer with the
+# signals takes at most 70 before the fixed closing tail. Six issues (two core) run ~74 s; three core and three others at
+# their longest ~87 s, under the 90 s cap. The prompt asks for these lengths and shorts_violations enforces them, so a
+# longer cut is rewritten before any speech is paid; the schema's own limits are looser guards.
+HOOK_NARRATION = 32
+CORE_NARRATION, BRIEF_NARRATION, CLOSE_NARRATION = (60, 85), (25, 40), 70
+NARRATION_LIMIT = 700
 CHARS_PER_SECOND = 6.7
 # Seconds a scene stays up beyond its speech; the renderer and the length estimate share these.
 OUTRO_HOLD = 6.0
@@ -60,15 +62,13 @@ SHORTS_AIM, SHORTS_CAP, YOUTUBE_SHORTS_MAX = (60, 75), 90, 180
 
 
 def agenda_hold(count):
-    return 1.0 + 0.9 * count
-# One end screen (owner, 10/22, after the 10/21 end card): the cut's own question is left for the full episode (the
-# button points down to the related video), then the report mail for subscribers (10/21). Shorts description links
-# cannot be clicked, so the mail points to the channel profile link like the upload text (upload_text).
-OUTRO = {'say': '답은 본편에서 확인하세요.', 'button': '답은 본편에서',
-         'mail': '구독자 전용 매일 리포트 메일은 채널 프로필 링크에서 신청하세요.',
+    """The issue list stays up long enough to glance at every row: its fixed line says only the count."""
+    return 2.0 + 0.4 * count
+# One end screen: the cut answers its own opener (owner, 2026-10-27: "이 짧은 영상 안에서 고품질의 정보를 가져갈 수
+# 있게"), then one fixed tail points to the full episode for the detail and to the report mail for subscribers (10/21).
+# Shorts description links cannot be clicked, so the mail points to the channel profile link like the upload text.
+OUTRO = {'say': '자세한 분석은 본편에서, 매일 리포트 메일은 프로필 링크에서 신청하세요.', 'button': '본편 보기',
          'mail_line': '구독자 전용 · 매일 증시 리포트 메일 신청은 채널 프로필 링크에서'}
-# Said right after the issue list, so the viewer knows the end holds something (owner, 10/22).
-TEASER = '끝에는 앞으로 볼 신호도 짚어요.'
 LEAD, TAIL = 0.15, 0.35
 # Everything a viewer must read stays clear of YouTube's own Shorts controls.
 SAFE = {'left': 70, 'right': 940, 'top': 230, 'bottom': 1500}
@@ -78,13 +78,12 @@ SAFE = {'left': 70, 'right': 940, 'top': 230, 'bottom': 1500}
 # 4 = a cut is never given up on its checks (owner, 10/20 PM; Runner.shorts_step): a cut given up on 3 is reopened and
 # goes on writing (the 10/20 PM cut, every turn rejected by the old worker while the release swapped it). The narration
 # budgets (hook 32, total 400) came with 4.
-CHECKS = 4
+# 5 = the episode's summary (2026-10-27): every briefing issue once, in order, core and brief lengths, an answering close.
+CHECKS = 5
 EDITION_WORDS = {'am': '아침', 'close': '마감'}
-KO_COUNT = {2: '두', 3: '세', 4: '네', 5: '다섯'}
-ISSUE_CHAPTERS = ('핵심 이슈', '함께 볼 이슈')
+KO_COUNT = {1: '한', 2: '두', 3: '세', 4: '네', 5: '다섯', 6: '여섯', 7: '일곱'}
 # The cut's own scenes around the issues (ShortsRenderer.scenes).
 FIXED_SCENES = ('opener', 'agenda', 'outro')
-NOTE_KINDS = ('다르게 볼 점', '의미', '확인할 점')
 
 
 class ShortsSuperseded(Exception):
@@ -115,25 +114,15 @@ def opener_line(date, hook):
     return f"{sentence(hook)} {date}"
 
 
-def outro_line(question):
-    """The closing words after the signals: the cut's question left for the full episode, then the report mail."""
-    return f"{sentence(question)} {OUTRO['say']} {OUTRO['mail']}"
+def outro_line(close):
+    """The closing words: the answer to the opener, the signals, then the fixed tail (the episode and the report mail)."""
+    return f"{sentence(close.conclusion)} {sentence(close.signals_narration)} {OUTRO['say']}"
 
 
-def agenda_line(labels):
-    """The issue list read aloud (owner, 10/21: the list scene said only the count): '오늘 볼 이슈는 한국장 수급, 방산
-    제재, 두 가지입니다.'"""
-    return f"오늘 볼 이슈는 {', '.join(labels)}, {KO_COUNT[len(labels)]} 가지입니다. {TEASER}"
-
-
-def label_times(narration, labels, timed):
-    """Seconds into the take at which each label is said: timed is word_times() over narration's words."""
-    at, cursor = [], 0
-    for label in labels:
-        cursor = narration.index(label, cursor)
-        at.append(timed[len(narration[:cursor].split())][1])
-        cursor += len(label)
-    return at
+def agenda_line(count):
+    """The issue list says only its count (2026-10-27): the list is the scene viewers leave most, and every issue's name
+    comes back on its own scene with k/N."""
+    return f'오늘 이슈는 {KO_COUNT[count]} 가지입니다.'
 
 
 def asset_ids(value):
@@ -198,31 +187,46 @@ class ShortsHook(StrictModel):
 
 
 class ShortsIssue(StrictModel):
+    """One briefing issue (issue: its number in the lineup, video/lineup.py). meaning is the 그래서 line a core issue
+    must carry; a brief issue may leave it and its number out."""
     id: str = Field(pattern=r'^[a-z0-9-]{2,24}$')
-    scene_ids: list[str] = Field(min_length=1, max_length=4)
-    label: str = Field(min_length=2, max_length=16)
+    issue: int = Field(ge=1, le=7)
+    label: str = Field(min_length=2, max_length=12)
     agenda: str = Field(min_length=2, max_length=26)
-    big: str = Field(min_length=1, max_length=12)
-    big_label: str = Field(min_length=1, max_length=12)
+    big: str = Field(default='', max_length=12)
+    big_label: str = Field(default='', max_length=12)
     dir: Literal['up', 'dn'] | None = None
-    body: str = Field(min_length=20, max_length=90)
-    note_kind: Literal['다르게 볼 점', '의미', '확인할 점']
-    note: str = Field(min_length=4, max_length=36)
-    narration: str = Field(min_length=20, max_length=95)
+    body: str = Field(min_length=10, max_length=70)
+    meaning: str = Field(default='', max_length=40)
+    narration: str = Field(min_length=15, max_length=110)
     claim_ids: list[str] = Field(min_length=1, max_length=8)
 
+    @model_validator(mode='after')
+    def number(self):
+        if self.big and not self.big_label:
+            raise ValueError('A shown number needs its big_label')
+        if self.dir and not self.big:
+            raise ValueError('A direction needs a shown number')
+        return self
+
     def screen(self):
-        return [self.label, self.agenda, self.big, self.big_label, self.body, self.note]
+        return [self.label, self.agenda, self.big, self.big_label, self.body, self.meaning]
+
+
+class ShortsClose(StrictModel):
+    """The end: the answer to the opener (shown and said), the signals on screen and the words that say them."""
+    conclusion: str = Field(min_length=8, max_length=40)
+    signals: list[str] = Field(min_length=2, max_length=3)
+    signals_narration: str = Field(min_length=10, max_length=60)
+    claim_ids: list[str] = Field(min_length=1, max_length=8)
 
 
 class ShortsPlan(StrictModel):
     title: str = Field(min_length=5, max_length=90)
     description: str = Field(min_length=10, max_length=300)
     hook: ShortsHook
-    issues: list[ShortsIssue] = Field(min_length=2, max_length=5)
-    signals: list[str] = Field(min_length=2, max_length=3)
-    signals_narration: str = Field(min_length=10, max_length=90)
-    signals_claim_ids: list[str] = Field(min_length=1, max_length=8)
+    issues: list[ShortsIssue] = Field(min_length=1, max_length=7)
+    close: ShortsClose
 
     @model_validator(mode='after')
     def shape(self):
@@ -230,7 +234,7 @@ class ShortsPlan(StrictModel):
             raise ValueError('Issue IDs must be unique')
         if {i.id for i in self.issues} & set(FIXED_SCENES):
             raise ValueError('Issue IDs opener, agenda and outro name the fixed scenes')
-        if any(not 4 <= len(x) <= 30 for x in self.signals):
+        if any(not 4 <= len(x) <= 30 for x in self.close.signals):
             raise ValueError('A signal is 4-30 characters')
         spoken_lines = self.narrations()
         if sum(len(x) for x in spoken_lines) > NARRATION_LIMIT:
@@ -246,7 +250,8 @@ class ShortsPlan(StrictModel):
 
     def narrations(self):
         """The spoken lines the model wrote, in order (the fixed lines are added by the service)."""
-        return [self.hook.narration, *(i.narration for i in self.issues), self.signals_narration]
+        return [self.hook.narration, *(i.narration for i in self.issues), self.close.conclusion,
+                self.close.signals_narration]
 
 
 SHORTS_LESSON_RULE = ("channel_lessons are standing lessons the owner adopted for the Shorts from the performance "
@@ -419,8 +424,7 @@ def estimated_seconds(plan):
     voice's pace plus lead and tail, the agenda and the closing at least as long as their holds. The date line is
     counted at its longest ('10월 20일 아침 브리핑입니다.')."""
     lines = {'opener': opener_line('10월 20일 아침 브리핑입니다.', plan.hook.narration),
-             'agenda': agenda_line([i.label for i in plan.issues]),
-             'outro': plan.signals_narration + ' ' + outro_line(plan.hook.question)}
+             'agenda': agenda_line(len(plan.issues)), 'outro': outro_line(plan.close)}
     holds = {'agenda': agenda_hold(len(plan.issues)), 'outro': OUTRO_HOLD}
     texts = [('opener', lines['opener']), ('agenda', lines['agenda']), *(('issue', i.narration) for i in plan.issues),
              ('outro', lines['outro'])]
@@ -608,15 +612,15 @@ class ShortsRenderer:
         return [
             {'id': 'opener', 'type': 'opener', 'narration': opener_line(date_line(job), plan.hook.narration),
              'data': {'kicker': '오늘의 질문', 'headline': plan.hook.headline, 'question': plan.hook.question}},
-            {'id': 'agenda', 'type': 'agenda', 'narration': agenda_line([i.label for i in plan.issues]),
+            {'id': 'agenda', 'type': 'agenda', 'narration': agenda_line(count),
              'data': {'kicker': f'오늘 볼 이슈 {count}가지', 'rows': [{'label': i.label, 'agenda': i.agenda} for i in plan.issues]}},
             *({'id': i.id, 'type': 'issue', 'narration': i.narration,
                'data': {'k': k, 'n': count, 'label': i.label, 'agenda': i.agenda, 'big': i.big, 'big_label': i.big_label,
                         'dir': i.dir,
-                        'body': i.body, 'note_kind': i.note_kind, 'note': i.note}}
+                        'body': i.body, 'meaning': i.meaning}}
               for k, i in enumerate(plan.issues, 1)),
-            {'id': 'outro', 'type': 'outro', 'narration': plan.signals_narration + ' ' + outro_line(plan.hook.question),
-             'data': {'kicker': '확인할 신호', 'signals': list(plan.signals), 'question': plan.hook.question,
+            {'id': 'outro', 'type': 'outro', 'narration': outro_line(plan.close),
+             'data': {'kicker': '정리', 'conclusion': plan.close.conclusion, 'signals': list(plan.close.signals),
                       'button': OUTRO['button'], 'mail': OUTRO['mail_line']}}]
 
     def _pictures(self, job, plan, episode, scenes, page):
@@ -687,9 +691,6 @@ class ShortsRenderer:
             words = aligned.get('words') or [{'word': c['text'], 'start': c['start'], 'end': c['end']} for c in aligned['cues']]
             timed = word_times(scene['narration'], words, duration)
             cues += captions(timed, t + LEAD, t + length)
-            if scene['type'] == 'agenda':  # each row comes in as its label is said
-                rows = [r['label'] for r in scene['data']['rows']]
-                scene['data']['at'] = [round(LEAD + x, 3) for x in label_times(scene['narration'], rows, timed)]
             t = scene['t1']
         total = round(t, 3)
         # Paid speech is never thrown away over length: only a cut YouTube cannot take as a Short raises.

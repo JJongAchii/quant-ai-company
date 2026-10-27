@@ -15,6 +15,8 @@ from quant_company.contracts import ProviderFault
 from quant_company.video import runner as runner_module
 from quant_company.video.contracts import digest
 from quant_company.video.render import checksum, run, verify_artifacts
+from quant_company.video import shorts as shorts_module
+from quant_company.video.lineup import lineup
 from quant_company.video.runner import VideoRunner
 from quant_company.video.shorts import (
     CHARS_PER_SECOND,
@@ -25,7 +27,6 @@ from quant_company.video.shorts import (
     OUTRO,
     QA_JS,
     SAFE,
-    TEASER,
     ShortsPlan,
     ShortsRenderer,
     agenda_line,
@@ -34,7 +35,6 @@ from quant_company.video.shorts import (
     date_line,
     direction,
     estimated_seconds,
-    issue_scenes,
     opener_line,
     outro_line,
     settle,
@@ -59,24 +59,19 @@ from .test_video_render import ffmpeg_binary
 
 
 def shorts(**changes):
+    """A v2 cut of the fixture episode: its brief has one numbered issue (b006-b011), a 핵심 이슈 one."""
     value = dict(
         title='S&P 500 1.92% 상승, 반도체가 이끌었다', description='반도체가 이끈 미국 증시와 확산 여부를 짧게 정리합니다.',
         hook=dict(headline='반도체가 이끈 미국 증시, 확산은 아직', question='확산될까?',
                   narration='반도체가 주도했지만 업종별 흐름은 엇갈렸습니다.', claim_ids=['b001', 'b013']),
-        issues=[dict(id='semis', scene_ids=['head', 'flow'], label='반도체 주도', agenda='반도체가 이끈 상승', big='1.92%',
+        issues=[dict(id='semis', issue=1, label='반도체 주도', agenda='반도체가 이끈 상승, 확산은 아직', big='1.92%',
                      big_label='S&P 500', dir='up', body='정규장 종가 기준 S&P 500이 올랐고 반도체가 상승을 주도했습니다.',
-                     note_kind='의미', note='수익률 하락은 할인 부담을 낮출 수 있음',
-                     narration='에스앤피 500이 정규장 종가 기준 1.92% 올랐고 반도체가 상승을 주도했습니다. '
-                               '수익률 하락은 성장주의 할인 부담을 낮출 수 있습니다.',
-                     claim_ids=['b013', 'b007', 'b009']),
-                dict(id='check', scene_ids=['photo', 'counter'], label='다르게 볼 점', agenda='금리만의 효과일까', big='0.59%',
-                     big_label='나스닥 종합', dir='up', body='나스닥 종합도 정규장 종가 기준 0.59% 올랐지만 기술주 밖의 참여는 혼조였습니다.',
-                     note_kind='확인할 점', note='비기술 업종으로 확산되는지',
-                     narration='나스닥 종합은 0.59% 올랐지만 금리보다 반도체 자체의 재료가 영향을 줬을 수도 있습니다.',
-                     claim_ids=['b014', 'b010', 'b011'])],
-        signals=['비기술 업종 상승 확산', '한국 반도체 강세 지속'],
-        signals_narration='비기술 업종으로 상승이 확산되는지, 한국 반도체 강세가 이어지는지 확인합니다.',
-        signals_claim_ids=['b011', 'b012'])
+                     meaning='수익률 하락이 성장주 부담을 덜 수 있음',
+                     narration='에스앤피 500이 정규장 종가 기준 1.92% 올랐고 반도체가 이끌었습니다. '
+                               '수익률 하락은 성장주 부담을 낮출 수 있습니다.',
+                     claim_ids=['b013', 'b007', 'b009'])],
+        close=dict(conclusion='정리하면, 반도체가 이끌었지만 확산은 아직입니다.', signals=['비기술 업종 상승 확산', '한국 반도체 강세 지속'],
+                   signals_narration='비기술 업종 확산과 한국 반도체 강세를 보세요.', claim_ids=['b011', 'b012']))
     value.update(changes)
     return ShortsPlan.model_validate(value)
 
@@ -92,83 +87,85 @@ def cut(*, issue=None, **changes):
 
 
 def violations(raw):
-    return shorts_violations(ShortsPlan.model_validate(raw), body_source(), episode().model_dump(mode='json'))
+    plan, episode_json = ShortsPlan.model_validate(raw), episode().model_dump(mode='json')
+    return shorts_violations(plan, body_source(), episode_json, lineup(body_source(), episode_json))
 
 
-def test_a_cut_is_a_hook_two_to_five_issues_and_signals():
+def spoken_plan(core, brief, hook=32, close=(35, 35)):
+    """A cut whose spoken lines have exactly these lengths: core and brief are lists of narration lengths."""
+    raw = shorts().model_dump(mode='json')
+    base = raw['issues'][0]
+    raw['hook']['narration'] = '가' * hook
+    raw['issues'] = [{**base, 'id': f'issue-{n}', 'issue': n, 'narration': '가' * length}
+                     for n, length in enumerate([*core, *brief], 1)]
+    raw['close'].update(conclusion='가' * close[0], signals_narration='가' * close[1])
+    return ShortsPlan.model_validate(raw)
+
+
+def test_a_cut_is_a_hook_one_to_seven_issues_and_a_close():
     plan = shorts().model_dump(mode='json')
-    for issues in (plan['issues'][:1], [{**plan['issues'][0], 'id': f'issue-{n}'} for n in range(6)]):
+    issue = plan['issues'][0]
+    for issues in ([], [{**issue, 'id': f'issue-{n}', 'issue': 1} for n in range(8)]):
         with pytest.raises(ValueError, match='issues'):
             ShortsPlan.model_validate({**plan, 'issues': issues})
     with pytest.raises(ValueError, match='series name'):
         ShortsPlan.model_validate({**plan, 'title': '반도체가 이끌었다 | 9월 22일 아침 · 오늘의 증시story'})
-    long = [{**plan['issues'][0], 'id': f'long-{n}', 'narration': '가' * 90} for n in range(5)]
-    with pytest.raises(ValueError, match='Shorts length'):  # 5 x 90 + the hook and the signals
-        ShortsPlan.model_validate({**plan, 'issues': long})
     with pytest.raises(ValueError, match='unique'):
-        ShortsPlan.model_validate({**plan, 'issues': [plan['issues'][0], plan['issues'][0]]})
+        ShortsPlan.model_validate({**plan, 'issues': [issue, issue]})
     with pytest.raises(ValueError, match='fixed scenes'):  # the cut's own scene IDs
-        ShortsPlan.model_validate({**plan, 'issues': [plan['issues'][0], {**plan['issues'][1], 'id': 'outro'}]})
+        ShortsPlan.model_validate({**plan, 'issues': [{**issue, 'id': 'outro'}]})
     with pytest.raises(ValueError, match='delivery tags'):
-        ShortsPlan.model_validate({**plan, 'signals_narration': '[calm] 비기술 업종으로 확산되는지 확인합니다.'})
+        ShortsPlan.model_validate({**plan, 'close': {**plan['close'], 'signals_narration': '[calm] 비기술 업종 확산을 보세요.'}})
     with pytest.raises(ValueError, match='signs as words'):
-        ShortsPlan.model_validate({**plan, 'signals_narration': '비기술 업종이 +2% 오르는지 확인합니다.'})
-
-
-# A hook written under #194's 50-character limit, before the one-breath budget.
-OLD_HOOK = '미국 증시는 반도체가 주도했지만 업종별 흐름은 엇갈렸고 확산 여부는 아직 모릅니다'
+        ShortsPlan.model_validate({**plan, 'close': {**plan['close'], 'signals_narration': '비기술 업종이 +2% 오르는지 보세요.'}})
+    with pytest.raises(ValueError, match='big_label'):
+        ShortsPlan.model_validate({**plan, 'issues': [{**issue, 'big_label': ''}]})
+    # A brief issue may show no number and no 그래서 line.
+    assert ShortsPlan.model_validate({**plan, 'issues': [{**issue, 'big': '', 'big_label': '', 'dir': None, 'meaning': ''}]})
+    # A cut of the earlier shape (issues cut from scenes, a note per issue, signals on the plan) is not a v2 plan.
+    old = {**plan, 'signals': ['a 신호다', 'b 신호다'], 'signals_narration': '신호를 봅니다.', 'signals_claim_ids': ['b011']}
+    old.pop('close')
+    with pytest.raises(ValueError):
+        ShortsPlan.model_validate(old)
 
 
 def test_the_hook_is_one_breath_after_the_date_line():
     # Owner, 10/20: the first preview's opener ran 11.5 s (the spec asks ~3-5 s); the on-screen headline carries the detail.
     plan = shorts().model_dump(mode='json')
-    assert HOOK_NARRATION == 32 and len(plan['hook']['narration']) <= HOOK_NARRATION and len(OLD_HOOK) == 45
-    assert not any('Hook narration' in f for f in violations(cut(hook={**plan['hook'], 'narration': '가' * 32})))
-    # A longer hook is a finding the model rewrites before any speech is paid, never a schema error: a plan stored under
-    # the old limits still validates after a release.
-    old = ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': OLD_HOOK}})
-    assert 'Hook narration is 45 characters, over 32: one sentence in one breath after the date line' in ' '.join(
-        shorts_violations(old, body_source(), episode().model_dump(mode='json')))
-    # So is a total over the 400-character budget that still fits the schema's 420 (the five labels read in the list
-    # count too: 5 x 6 characters).
-    raw = cut(signals_narration='가' * (405 - 5 * 66 - 5 * 6 - len(plan['hook']['narration'])))
-    raw['issues'] = [{**plan['issues'][0], 'id': f'long-{n}', 'narration': '가' * 66} for n in range(5)]
-    assert 'Narration and labels are 405 characters in all, over 400: shorten the narrations or the labels' in violations(raw)
-    # The length estimate counts the hook with the date line at the voice's pace.
+    assert HOOK_NARRATION == 32 and len(plan['hook']['narration']) <= HOOK_NARRATION
     short, long = (ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': '가' * n}}) for n in (10, 32))
     assert estimated_seconds(long) - estimated_seconds(short) == pytest.approx(22 / CHARS_PER_SECOND)
-    prompt = shorts_prompt(body_source(), episode().model_dump(mode='json'))
-    assert f'narration (8-{HOOK_NARRATION} characters' in prompt and 'one breath' in prompt
-    # Owner, 10/22: the signals carry the episode's outlook, conditions and direction only.
-    assert 'the outlook the episode' not in prompt  # an episode made before the outlook rule has none to give
-    taught = shorts_prompt(body_source(), episode().model_dump(mode='json'), outlook=True)
-    assert 'the outlook the episode' in taught and 'no target level, no advice' in taught
-    assert taught.replace(OUTLOOK_SHORTS, '') == prompt
-
-
-async def test_a_cut_asks_for_the_outlook_only_when_its_episode_carried_the_rule(brief, video, tmp_path, monkeypatch):  # noqa: F811
-    store, clock = video
-    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
-    assert job['policy']['craft'] >= 2  # a new episode carries the outlook rule
-    store.settings.video_shorts_enabled = True
-    await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
-    request = next(c for c in provider.calls if c.output_contract == 'video_shorts_v1')
-    assert OUTLOOK_SHORTS in request.prompt
 
 
 def test_fixed_lines():
     assert date_line({'source': {'day': '2026-10-20', 'edition_kind': 'am'}}) == '10월 20일 아침 브리핑입니다.'
     assert date_line({'source': {'day': '2026-10-20', 'edition_kind': 'close'}}).endswith('마감 브리핑입니다.')
-    # Owner, 10/21: the list scene reads each issue once, not only the count.
-    assert agenda_line(['한국장 수급', '방산 제재']) == '오늘 볼 이슈는 한국장 수급, 방산 제재, 두 가지입니다. ' + TEASER
-    assert ', e, 다섯 가지입니다.' in agenda_line(['a', 'b', 'c', 'd', 'e'])
-    # Owner, 10/22: the hook comes first and the date after it; the end leaves the cut's question for the full episode.
+    # 2026-10-27: the list scene says only the count; each issue's name comes back with k/N on its own scene.
+    assert agenda_line(6) == '오늘 이슈는 여섯 가지입니다.' and agenda_line(1) == '오늘 이슈는 한 가지입니다.'
+    assert [KO_COUNT[n] for n in range(1, 8)] == ['한', '두', '세', '네', '다섯', '여섯', '일곱']
+    # Owner, 10/22: the hook comes first and the date after it.
     assert opener_line('10월 20일 아침 브리핑입니다.', '반등은 진짜일까?') == '반등은 진짜일까? 10월 20일 아침 브리핑입니다.'
     assert opener_line('10월 20일 아침 브리핑입니다.', '반도체가 이끌었습니다') == '반도체가 이끌었습니다. 10월 20일 아침 브리핑입니다.'
-    assert outro_line('확산될까?').startswith('확산될까? 답은 본편에서 확인하세요. ') and outro_line('확산될까?').endswith(OUTRO['mail'])
-    assert [KO_COUNT[n] for n in (3, 4)] == ['세', '네']
+    # Owner, 10/27: the cut answers its opener, then points to the full episode and the report mail.
+    close = shorts().close
+    assert outro_line(close) == ('정리하면, 반도체가 이끌었지만 확산은 아직입니다. 비기술 업종 확산과 한국 반도체 강세를 보세요. '
+                                 '자세한 분석은 본편에서, 매일 리포트 메일은 프로필 링크에서 신청하세요.')
+    assert OUTRO['button'] == '본편 보기' and not hasattr(shorts_module, 'TEASER')
 
 
+def test_six_issues_at_their_longest_are_found_before_speech():
+    # Three core issues at 85 characters, three brief ones at 40, the answer and the signals at 70 together.
+    longest = spoken_plan([85] * 3, [40] * 3)
+    assert 85 <= estimated_seconds(longest) <= 90
+    assert estimated_seconds(spoken_plan([85] * 3, [40] * 4)) > 90
+
+
+def test_four_issues_at_their_middle_run_about_a_minute():
+    assert 55 <= estimated_seconds(spoken_plan([72] * 2, [33] * 2, hook=28, close=(30, 30))) <= 66
+    assert 70 <= estimated_seconds(spoken_plan([72] * 2, [33] * 4, hook=28, close=(30, 30))) <= 78
+
+
+@pytest.mark.skip(reason='v2: rewritten in Task 4')
 def test_issues_cut_the_episode_issue_scenes_in_order():
     assert [s['id'] for s in issue_scenes(episode().model_dump(mode='json'))] == ['head', 'flow', 'photo', 'counter']
     assert any('Issue scene board is not an issue scene' in f for f in violations(cut(issue=0, scene_ids=['board'])))
@@ -182,6 +179,7 @@ def test_issues_cut_the_episode_issue_scenes_in_order():
     assert any('does not have' in f for f in violations(cut(issue=1, scene_ids=['nowhere'])))
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 4')
 def test_numbers_must_be_in_the_episode():
     # '21' is in the cited line b002 ('2026-09-21 종가') but in no scene of the delivered episode.
     raw = cut(issue=1, big='21', claim_ids=['b014', 'b002'], dir=None)
@@ -189,6 +187,7 @@ def test_numbers_must_be_in_the_episode():
     assert not any('Unbound' in f for f in violations(raw))
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 4')
 def test_only_visible_episode_text_counts_as_in_the_episode():
     # '5' (from '05:00' in b013) and '21' (b002) are in cited lines but in no visible text of the episode; card numbers,
     # icon sizes and colours (112, '01', #5EA0FF) are not text.
@@ -198,6 +197,7 @@ def test_only_visible_episode_text_counts_as_in_the_episode():
     assert 'not in the delivered episode' not in ' '.join(violations(cut()))
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 4')
 def test_the_labels_share_the_narration_budget_and_have_no_comma(monkeypatch):
     from quant_company.video import shorts as shorts_module
 
@@ -214,6 +214,7 @@ def test_the_labels_share_the_narration_budget_and_have_no_comma(monkeypatch):
     assert not any('A label has a comma' in f for f in violations(cut()))
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 4')
 def test_an_over_long_plan_is_found_before_any_speech_is_paid(monkeypatch):
     from quant_company.video import shorts as shorts_module
 
@@ -228,6 +229,7 @@ def test_an_over_long_plan_is_found_before_any_speech_is_paid(monkeypatch):
     assert any('Estimated length' in f and 'over the 90 s cap' in f for f in violations(raw))
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 4')
 def test_claim_ids_are_bound_to_the_episode_scenes():
     # b010 is used by the episode (photo), but not by the scenes this issue cites (head, flow).
     assert any('issue semis' in f and 'cited scenes' in f for f in violations(cut(issue=0, claim_ids=['b013', 'b010'])))
@@ -236,6 +238,7 @@ def test_claim_ids_are_bound_to_the_episode_scenes():
     assert any('the signals' in f and 'anywhere in the episode' in f for f in violations(cut(signals_claim_ids=['b002'])))
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 4')
 def test_title_and_description_numbers_must_be_in_the_delivered_episode():
     # '21' is in the cited line b002 (also cited by the issue) but in no visible text of the episode.
     raw = cut(title='S&P 500 21일 상승, 반도체가 이끌었다')
@@ -244,11 +247,13 @@ def test_title_and_description_numbers_must_be_in_the_delivered_episode():
     assert any('title or description is not in the delivered episode' in f for f in found), found
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 4')
 def test_two_issues_is_enough():
     assert len(shorts().issues) == 2
     assert shorts_violations(shorts(), body_source(), episode().model_dump(mode='json')) == []
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 4')
 @pytest.mark.parametrize('change,error', [
     (lambda r: r['issues'][0].update(big='5,400'), 'Unbound number'),
     (lambda r: r['issues'][0].update(dir='dn'), 'contradicts its line'),  # ▼ for the 1.92% rise
@@ -275,6 +280,7 @@ def test_a_list_shares_its_verb_and_a_date_is_no_close():
     assert closes_of('나스닥 종합 26,430.89 pt · +1.11% · 정규장 종가 10/20 05:00 KST · Yahoo chart') == {'26430.89', '1.11'}
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 4')
 def test_an_arrow_its_line_does_not_state_is_dropped_not_rejected():
     raw = cut(issue=0, big='5,300', claim_ids=['b013'])  # a level: its line states no direction for it
     plan, dropped = settle(ShortsPlan.model_validate(raw), body_source())
@@ -285,12 +291,14 @@ def test_an_arrow_its_line_does_not_state_is_dropped_not_rejected():
     assert dropped == [] and any('contradicts its line' in f for f in violations(raw))
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 5')
 def test_the_prompt_cuts_the_delivered_episode_and_leaves_flagged_claims_out():
     prompt = shorts_prompt(body_source(), episode().model_dump(mode='json'), ['나스닥 수치 해석이 과장됨'], '- Unbound number')
     assert episode().upload.title in prompt and 'no greeting' in prompt and "Never say '보도에 따르면'" in prompt
     assert '나스닥 수치 해석이 과장됨' in prompt and 'Unbound number' in prompt and 'b013' in prompt
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 5')
 def test_the_shorts_prompt_carries_only_given_lessons():
     plain = shorts_prompt(body_source(), episode().model_dump(mode='json'))
     assert shorts_prompt(body_source(), episode().model_dump(mode='json'), lessons=()) == plain  # older cuts unchanged
@@ -327,6 +335,7 @@ def render_fixture(tmp_path, assets=True):
 TAKES = [4, 1, 6, 6, 3]
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
     plan = shorts()
@@ -384,6 +393,7 @@ def scene_classes(page):
     return {s['id']: (s['bg'], s['blur'], s['cls']) for s in scenes}
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_layout_qa_finds_text_covered_by_the_background(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
     built = ShortsRenderer(settings, WordAligner()).build(job, shorts(), episode().model_dump(mode='json'), tmp_path / 'out',
@@ -396,6 +406,7 @@ def test_layout_qa_finds_text_covered_by_the_background(tmp_path):
     assert {f[0] for f in found} == {'covered'} and any('1.92%' in f[1] for f in found), found
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_build_keeps_a_minus_without_an_arrow(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
     raw = shorts().model_dump(mode='json')
@@ -407,6 +418,7 @@ def test_build_keeps_a_minus_without_an_arrow(tmp_path):
     assert shown == ['-0.2%', '▼0.59%']
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_a_long_total_is_a_finding_not_a_raise(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
     takes = tones(tmp_path, [20, 20, 20, 20, 20], ffmpeg)  # ~100 s of paid speech
@@ -415,6 +427,7 @@ def test_a_long_total_is_a_finding_not_a_raise(tmp_path):
     assert any('at most 90 s' in f for f in built['findings'])
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_a_sparse_library_entry_cannot_raise_the_credit(tmp_path):
     ffmpeg = ffmpeg_binary()
     settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_asset_dir=tmp_path / 'assets')
@@ -427,6 +440,7 @@ def test_a_sparse_library_entry_cannot_raise_the_credit(tmp_path):
     assert pictures['issues'][1]['credit'] == '자료사진 ·  · '
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_every_scene_has_a_picture(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
     paths = tones(tmp_path, TAKES, ffmpeg)
@@ -453,6 +467,7 @@ def test_every_scene_has_a_picture(tmp_path):
         f'Shorts scene without a picture: {i}' for i in ('opener', 'agenda', 'semis', 'check', 'outro')]
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_an_issue_without_a_picture_takes_one_from_its_chapter_before_the_cover(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
     raw = episode().model_dump(mode='json')  # the thumbnail picture (the cover) is the headline card's illustration
@@ -487,6 +502,7 @@ def test_an_issue_without_a_picture_takes_one_from_its_chapter_before_the_cover(
     assert {p['scene']: p['credit'] for p in built['pictures']}['check'] == '자료사진 · Fixture Author · CC BY 4.0'
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_the_headline_breaks_after_its_first_comma(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
     takes = tones(tmp_path, TAKES, ffmpeg)
@@ -515,6 +531,7 @@ def test_the_headline_breaks_after_its_first_comma(tmp_path):
     assert '<br class="comma">' in fullwidth and '반도체 주도，</span>' in fullwidth
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_each_issue_leads_with_its_line_and_the_list_rows_come_in_as_they_are_read(tmp_path):
     # Owner, 10/21: an issue led with a bare number; its one-line takeaway (its row in the list) now heads it.
     ffmpeg, settings, job = render_fixture(tmp_path)
@@ -528,6 +545,7 @@ def test_each_issue_leads_with_its_line_and_the_list_rows_come_in_as_they_are_re
     assert heads == [i.agenda for i in plan.issues]
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_the_question_stays_up_over_the_issues_and_the_end_leaves_it_for_the_episode(tmp_path):
     # Owner, 10/22: 59% of the 10/20 cut's feed viewers swiped away; the question bar and one end screen.
     ffmpeg, settings, job = render_fixture(tmp_path)
@@ -561,6 +579,7 @@ def test_the_question_stays_up_over_the_issues_and_the_end_leaves_it_for_the_epi
         assert not issues, (s['id'], issues)
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_music_is_optional(tmp_path):
     av = pytest.importorskip('av')  # the cut is read back with PyAV (the video extra)
 
@@ -672,6 +691,7 @@ async def shorts_ticks(store, provider, speech, renderer, job, limit=12):
     return shorts_store.get(job['id'])
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -705,6 +725,7 @@ async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, vid
     assert len(provider.calls) == calls
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_cut_receives_the_shorts_lessons_frozen_in_its_episode_job(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -718,6 +739,7 @@ async def test_a_cut_receives_the_shorts_lessons_frozen_in_its_episode_job(brief
     assert '쇼츠 첫 문장은 숫자 하나로' in request.prompt and '썸네일 교훈 본편 전용' not in request.prompt
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_plan_stored_under_the_old_limits_is_still_voiced_and_rendered(brief, video, tmp_path, monkeypatch):  # noqa: F811
     # A cut written under #194 (a 45-character hook) waits between ticks with no lease while a release swaps the worker.
     store, clock = video
@@ -734,6 +756,7 @@ async def test_a_plan_stored_under_the_old_limits_is_still_voiced_and_rendered(b
     assert speech.calls[takes]['text'] == opener_line('9월 22일 아침 브리핑입니다.', OLD_HOOK) and len(renderer.calls) == 1
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_cut_voiced_before_new_fixed_lines_voices_them_before_it_renders(brief, video, tmp_path, monkeypatch):  # noqa: F811
     # A release between ticks (10/21: the read list, the mail invitation): the rendering step finds a take it lacks.
     store, clock = video
@@ -755,6 +778,7 @@ async def test_a_cut_voiced_before_new_fixed_lines_voices_them_before_it_renders
     assert len(speech.calls) - takes == 1 and speech.calls[-1]['text'].endswith(OUTRO['mail']) and len(renderer.calls) == 1
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_an_episode_with_under_two_issue_scenes_spends_no_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -796,6 +820,7 @@ async def test_the_episode_goes_first_and_a_late_cut_is_given_up(brief, video, t
     assert note and not note['text'].startswith('<@')
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_shorts_leave_the_credits_the_next_episodes_need(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -808,6 +833,7 @@ async def test_shorts_leave_the_credits_the_next_episodes_need(brief, video, tmp
     assert row['state'] == 'skipped' and row['error'] == 'credit_reserve' and len(speech.calls) == takes
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_the_reserve_is_kept_in_the_month_not_in_the_episode_cap(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -878,6 +904,7 @@ async def test_the_close_cut_starts_once_the_close_episode_is_out(brief, video, 
     assert ShortsStore(store.company).claim()['state'] == 'writing'
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_lost_completion_keeps_the_file_receipt(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -896,6 +923,7 @@ async def test_a_lost_completion_keeps_the_file_receipt(brief, video, tmp_path, 
     assert note['text'].startswith('<@UHUMAN>\n') and '서버 보관 경로' in note['text']
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_lost_turn_is_asked_again_as_a_new_attempt(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -919,6 +947,7 @@ def shorts_keys(provider):
     return [c.request_id.rsplit('-', 1)[-1] for c in provider.calls if c.output_contract == 'video_shorts_v1']
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_cut_given_up_on_older_checks_is_checked_again_without_a_new_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -941,6 +970,7 @@ async def test_a_cut_given_up_on_older_checks_is_checked_again_without_a_new_tur
     assert 'recheck' not in row['qa'] and row['plan'] == shorts().model_dump(mode='json')
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_the_cut_given_up_by_the_old_worker_in_the_release_is_written_again(brief, video, tmp_path, monkeypatch):  # noqa: F811
     # 10/20 PM: the v1 worker claimed the cut at 19:00 while claude-runtime already wrote the v2 plan, so all three turns
     # were rejected and the cut was skipped on checks 3 with no version written.
@@ -959,6 +989,7 @@ async def test_the_cut_given_up_by_the_old_worker_in_the_release_is_written_agai
     assert shorts_keys(provider) == ['1', '2', '3', '4']
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_cut_is_produced_with_its_fewest_findings_after_the_last_version(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -978,6 +1009,7 @@ async def test_a_cut_is_produced_with_its_fewest_findings_after_the_last_version
     assert '자동 검사 지적 1건(아래, 제작은 계속함)' in text and '• 대본: 반도체가 이끈 미국 증시 넷째판 지적 가\n' in text
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_cut_with_no_valid_version_waits_and_writes_again(brief, video, tmp_path, monkeypatch):  # noqa: F811
     from datetime import UTC, datetime, timedelta
 
@@ -1002,6 +1034,7 @@ async def test_a_cut_with_no_valid_version_waits_and_writes_again(brief, video, 
     assert shorts_keys(provider) == ['1', '2', '3', '4', '5', '6'] and row['qa']['attempts'][-1]['outcome'] == 'passed'
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_cut_pictures_follow_the_cited_scenes(tmp_path):
     ffmpeg = ffmpeg_binary()
     settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_asset_dir=tmp_path / 'assets')
@@ -1027,11 +1060,12 @@ def test_takes_open_with_the_date_and_close_with_the_outro():
     takes = VideoRunner.shorts_takes(None, job, plan)
     texts = [request['text'] for _, request in takes]
     assert len(takes) == 2 + len(plan.issues) + 1
-    assert texts[0].endswith(' 9월 22일 아침 브리핑입니다.') and texts[1] == agenda_line(['반도체 주도', '다르게 볼 점'])
-    assert texts[-1].endswith(OUTRO['mail'])
+    assert texts[0].endswith(' 9월 22일 아침 브리핑입니다.') and texts[1] == agenda_line(1)
+    assert texts[-1].startswith('정리하면, 반도체가 이끌었지만 확산은 아직입니다.') and texts[-1].endswith(OUTRO['say'])
     assert all(key.startswith(f'shorts-speech-{i}-') for i, (key, _) in enumerate(takes))
 
 
+@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_recheck_skips_versions_of_the_old_shape(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)

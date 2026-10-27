@@ -586,10 +586,9 @@ class VideoRunner:
 
     def shorts_takes(self, job, plan):
         """(effect key, Runway request) per Shorts take, keyed apart from the episode's takes: the hook then the date,
-        the agenda, each issue, then the signals with the question left for the full episode and the mail invitation."""
-        texts = [opener_line(date_line(job), spoken(plan.hook.narration)), spoken(agenda_line([i.label for i in plan.issues])),
-                 *(spoken(i.narration) for i in plan.issues),
-                 spoken(plan.signals_narration) + ' ' + spoken(outro_line(plan.hook.question))]
+        the issue count, each issue, then the answer, the signals and the closing tail."""
+        texts = [opener_line(date_line(job), spoken(plan.hook.narration)), spoken(agenda_line(len(plan.issues))),
+                 *(spoken(i.narration) for i in plan.issues), spoken(outro_line(plan.close))]
         return [(f"shorts-speech-{i}-{digest(text)[:12]}",
                  {"text": text, "voice": job["policy"]["voice"], "model": job["policy"]["speech_model"]})
                 for i, text in enumerate(texts)]
