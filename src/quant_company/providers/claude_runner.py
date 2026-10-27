@@ -88,6 +88,10 @@ CLAUDE_ONLY = ("newsletter_v1",)
 # reaches the API only when the subscription refused before running anything (auth or quota).
 API_FIRST = frozenset({"video_shorts_v1", "newsletter_v1", "video_performance_v1", "video_weekly_v1",
                        "video_answer_v1", "agent_decision", "video_screen_fix_v1"})
+# A Shorts is reviewed and inspected like the episode, with the episode's own contracts (2026-10-27): its editors' turns
+# are Shorts work, so they take the API lane first too. They are told apart from the episode's by request ID.
+SHORTS_REQUEST = re.compile(r"^video-[0-9a-f-]{36}-shorts-")
+SHORTS_SHARED = frozenset({"video_review_v1", "video_visual_review_v1"})
 API_SLOTS = 2
 UNCERTAIN_PAUSE_SECONDS = 1800
 # API outcomes that may have executed: the same request ID never goes to the API again (spec 9-3).
@@ -113,6 +117,12 @@ class ClaudeRequest(ProviderRequest):
 
 # Staff explanation reviews stay on the calibrated review model; video contracts may use the newer Opus.
 VIDEO_MODELS = frozenset({REVIEW_MODEL, "claude-opus-5-5"})
+
+
+def api_first(request):
+    """The owner's API-first work (API_FIRST), and a Shorts editor's turn under an episode contract."""
+    return request.output_contract in API_FIRST or (request.output_contract in SHORTS_SHARED
+                                                     and bool(SHORTS_REQUEST.match(request.request_id)))
 
 
 def allowed_models(request):
@@ -535,7 +545,7 @@ class ClaudeRunner:
 
     async def _api_instead(self, request, path, digest, restore, fault):
         """The API takes work the subscription refused before running it; otherwise that refusal stands."""
-        route = "api_first" if request.output_contract in API_FIRST else "fallback"
+        route = "api_first" if api_first(request) else "fallback"
         lane = self._lane(request, attempts_of(restore), route)
         if lane is None:
             raise fault
@@ -581,7 +591,7 @@ class ClaudeRunner:
                 raise ProviderFault("uncertain", "A Claude API call was interrupted; it will not be repeated.")
             return await self._run_cli(request, path, digest)
         attempts = attempts_of(receipt)
-        if request.output_contract in API_FIRST:
+        if api_first(request):
             lane = self._lane(request, attempts, "api_first")
             if lane is not None:
                 restore = receipt or {"provider": "claude", "request_id": request.request_id, "input_digest": digest,

@@ -548,6 +548,46 @@ async def test_api_first_contract_runs_on_the_api_and_receipt_says_so(lane):
     assert status(config)["state"] == "on" and status(config)["calls_31d"] == {"api_first": 1}
 
 
+SHORTS_JOB = "00000000-0000-4000-8000-000000000027"
+
+
+def shorts_review(kind="review", n=1, job=SHORTS_JOB):
+    """A Shorts editor's turn: it shares the episode's contract and is told apart by its request ID."""
+    contract = {"review": "video_review_v1", "visual": "video_visual_review_v1"}[kind]
+    frames = [{"name": "f1.jpg", "media_type": "image/jpeg", "data": "AAAA"}] if kind == "visual" else []
+    return ProviderRequest(request_id=f"video-{job}-shorts-{kind}-{n}", model="claude-opus-5-5", reasoning_effort="max",
+                           prompt="Shorts: fixture", output_contract=contract, attachments=frames)
+
+
+async def test_a_shorts_review_runs_on_the_api_first(lane):
+    # Owner, 2026-10-23: Shorts take the API credit lane first; its review and inspection are Shorts too (2026-10-27).
+    config, _, calls = lane
+    api = Api(ok(VIDEO_REVIEW))
+    result = await make_runner(config, api).run(shorts_review())
+    assert len(api.seen) == 1 and calls() == [] and result.usage["billing_mode"] == "api_credit"
+    assert [(e["request_id"].split("#")[0], e["route"]) for e in ledger(config)["entries"]] == [
+        (f"video-{SHORTS_JOB}-shorts-review-1", "api_first")]
+
+
+async def test_a_shorts_visual_review_runs_on_the_api_first_with_its_frames(lane):
+    config, _, calls = lane
+    api = Api(ok({"passed": True, "issues": []}))
+    result = await make_runner(config, api).run(shorts_review("visual"))
+    assert len(api.seen) == 1 and calls() == [] and result.usage["backend"] == "api"
+    sent = json.loads(api.seen[0].content)
+    assert any(part.get("type") == "image" for part in sent["messages"][0]["content"])
+
+
+async def test_an_episode_review_stays_on_the_subscription_first(lane):
+    config, configure, calls = lane
+    cli_video(configure)
+    api = Api(ok(VIDEO_REVIEW))
+    episode_review = ProviderRequest(request_id=f"video-{SHORTS_JOB}-review-1", model="claude-opus-5-5",
+                                     reasoning_effort="max", prompt="Plan: fixture", output_contract="video_review_v1")
+    result = await make_runner(config, api).run(episode_review)
+    assert not api.seen and len(calls()) == 1 and result.usage["billing_mode"] == "subscription"
+
+
 async def test_subscription_first_contract_stays_on_the_cli_while_it_works(lane):
     config, configure, calls = lane
     cli_video(configure)
