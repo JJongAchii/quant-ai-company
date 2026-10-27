@@ -279,16 +279,21 @@ def lineup_json(source, episode, issues):
                                 for s in i.scene_ids if s in scenes]} for i in issues]
 
 
+def episode_cut(episode):
+    """What the writer and the reviewer read of the delivered episode besides its issue scenes."""
+    opening = next((s for s in episode['scenes'] if s.get('type') == 'cold_open'), episode['scenes'][0])
+    return {'title': episode['upload']['title'], 'thumbnail': episode['thumbnail'],
+            'thumbnail_stat': episode.get('thumbnail_stat', ''), 'cold_open': opening['narration'],
+            'closing_signals': [{'narration': s['narration'], 'claim_ids': s['claim_ids']}
+                                for s in episode['scenes'] if s.get('type') == 'signals']}
+
+
 def shorts_prompt(source, episode, issues, concerns=(), feedback='', lessons=(), outlook=False, previous=None):
     """episode: the delivered EpisodePlan as JSON; issues: its lineup (video/lineup.py). concerns: the episode review's
     open findings, kept out of the cut. lessons: the episode job's frozen lessons of scope shorts. outlook: the episode
     carried the outlook rule (craft 2). previous: the last written version, revised rather than rewritten (the
     episode's 10/14 lesson: each rewrite from scratch broke a fixed rule somewhere new)."""
-    opening = next((s for s in episode['scenes'] if s.get('type') == 'cold_open'), episode['scenes'][0])
-    cut = {'title': episode['upload']['title'], 'thumbnail': episode['thumbnail'],
-           'thumbnail_stat': episode.get('thumbnail_stat', ''), 'cold_open': opening['narration'],
-           'closing_signals': [{'narration': s['narration'], 'claim_ids': s['claim_ids']}
-                               for s in episode['scenes'] if s.get('type') == 'signals']}
+    cut = episode_cut(episode)
     text = (
         "Write the Korean vertical YouTube Shorts of this delivered daily market episode: its short, clear summary. A "
         "viewer who watches only the Shorts should understand the day (what happened, why, what it means, what to "
@@ -458,7 +463,9 @@ def lineup_findings(plan, episode, issues):
         own = by_number.get(issue.issue)
         if own is None:
             continue
-        allowed = set(own.claim_ids).union(*(scenes.get(s, set()) for s in own.scene_ids))
+        # Its scenes' other lines (an index close, a detail line) are allowed; another issue's lines are not.
+        others = set().union(*(i.claim_ids for i in issues if i.number != own.number))
+        allowed = set(own.claim_ids) | (set().union(*(scenes.get(s, set()) for s in own.scene_ids)) - others)
         stray = sorted(set(issue.claim_ids) - allowed)
         if stray:
             found.append(f'Line IDs {stray} in issue {issue.id} belong to neither briefing issue {own.number} nor the '
@@ -609,9 +616,10 @@ class ShortsRenderer:
             self._library = json.loads(path.read_text()) if path.exists() else {}
         return self._library
 
-    def render(self, job, plan, episode, directory, audio_paths, stop=None):
+    def render(self, job, plan, episode, directory, audio_paths, stop=None, texts=None):
         """episode: the delivered EpisodePlan as JSON. audio_paths: one take per scene (opener, agenda, each issue,
-        outro). stop: asked every few seconds of frames; True gives the render up (ShortsSuperseded)."""
+        outro); texts: what each take says (a misread scene is voiced again in Korean number words), else the scenes'
+        spoken narration. stop: asked every few seconds of frames; True gives the render up (ShortsSuperseded)."""
         self.stop = stop
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
@@ -622,7 +630,7 @@ class ShortsRenderer:
             os.close(lock)
             raise RenderInProgress(str(directory)) from None
         try:
-            return self._render(job, plan, episode, directory, audio_paths)
+            return self._render(job, plan, episode, directory, audio_paths, texts)
         finally:
             os.close(lock)
 
@@ -691,8 +699,9 @@ class ShortsRenderer:
             pictures.append({'scene': scene['id'], 'file': name, 'credit': picture['credit']})
         return pictures, findings
 
-    def build(self, job, plan, episode, directory, audio_paths):
-        """The page before any frame: pictures copied, speech aligned, the timeline and EP written."""
+    def build(self, job, plan, episode, directory, audio_paths, texts=None):
+        """The page before any frame: pictures copied, speech aligned against what each take says, the timeline and EP
+        written."""
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
         page = self._page(directory)
@@ -707,7 +716,7 @@ class ShortsRenderer:
             # The end screen says the signals, the question and the mail line: up to ~150 characters, ~25 s.
             if not 0.5 <= duration <= 40:
                 raise ValueError('Shorts scene duration outside limits')
-            said = spoken(scene['narration'])
+            said = texts[number] if texts else spoken(scene['narration'])
             cache, key = directory / f'align-{number:02}.json', checksum(audio) + ':' + digest(said)
             try:
                 kept = json.loads(cache.read_text())
@@ -740,8 +749,8 @@ class ShortsRenderer:
         return {'page': page, 'scenes': scenes, 'captions': cues, 'total': total, 'findings': findings,
                 'pictures': pictures, 'ep': ep, 'heard': heard}
 
-    def _render(self, job, plan, episode, directory, audio_paths):
-        built = self.build(job, plan, episode, directory, audio_paths)
+    def _render(self, job, plan, episode, directory, audio_paths, texts=None):
+        built = self.build(job, plan, episode, directory, audio_paths, texts)
         page, scenes, cues, total, findings = (built[k] for k in ('page', 'scenes', 'captions', 'total', 'findings'))
         frames = int(total * FPS)
         layout, stills, broken = self._capture(page / 'index.html', scenes, frames, directory)
@@ -787,7 +796,9 @@ class ShortsRenderer:
         manifest = {'title': plan.title, 'duration': duration, 'qa_passed': True, 'fps': FPS, 'frames': frames, 'size': [WIDTH, HEIGHT],
                     'findings': findings, 'audio_quality': measured, 'review': {'frames': stills, 'audio': built['heard']},
                     'music': music,
-                    'pictures': built['pictures'], 'scenes': [{k: s[k] for k in ('id', 'type', 't0', 't1')} for s in scenes],
+                    'pictures': built['pictures'],
+                    'scenes': [{**{k: s[k] for k in ('id', 'type', 't0', 't1')},
+                                **({'tier': s['data']['tier']} if s['type'] == 'issue' else {})} for s in scenes],
                     'files': {n: checksum(directory / n) for n in names}, 'directory': str(directory)}
         manifest['digest'] = digest(manifest)
         (directory / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))

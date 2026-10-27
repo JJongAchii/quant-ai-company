@@ -110,7 +110,15 @@ def test_a_scene_citing_two_issues_covers_both():
     issues = briefing_issues(source)
     episode['scenes'][2]['claim_ids'].append(issues[1][2][1])  # issue-1's headline also cites issue 2's fact
     found = lineup(source, episode)
-    assert found[1].scene_ids == ('issue-1', 'issue-2') and found[1].tier == 'core'
+    # Both cover it, its own scene first: the picture and the depth come from the scene that is about it (review #1).
+    assert found[1].scene_ids == ('issue-2', 'issue-1') and found[1].tier == 'brief'
+
+
+def test_a_heading_carrying_a_source_link_drops_no_issue():
+    source = issue_body(PM_TITLES[:3])
+    source['body'][0] = source['body'][0].replace(f'*2. {PM_TITLES[1]}* · 수일~수주',
+                                                  f'*2. {PM_TITLES[1]}* · 수일~수주 <https://example.invalid/a|[1]>')
+    assert [n for n, _, _ in briefing_issues(source)] == [1, 2, 3]
 
 
 def test_lines_outside_numbered_issues_belong_to_no_issue():

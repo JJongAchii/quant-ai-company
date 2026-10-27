@@ -3,14 +3,14 @@
 
 The briefing's numbered issues ('*1. 제목* · 기간' in its 주요 이슈 section) are the lineup, in their own order. An
 episode scene in an issue chapter covers an issue when it cites any of that issue's lines, the heading line included;
-the chapter of the first such scene sets how deep the Shorts goes (핵심 이슈: what happened, why, what it means; 함께
-볼 이슈: one number and one line). Nothing here is a render input: video/remote.py and its imports never import it."""
+the chapter of its first covering scene that is about it sets how deep the Shorts goes (핵심 이슈: what happened, why,
+what it means; 함께 볼 이슈: one number and one line). Nothing here is a render input: video/remote.py and its imports never import it."""
 
 import html
 import re
 from typing import NamedTuple
 
-from .body import parse, plain
+from .body import LINK, REF, parse, plain
 
 ISSUE_CHAPTERS = ('핵심 이슈', '함께 볼 이슈')
 CORE_MAX = 3
@@ -26,12 +26,13 @@ class LineupIssue(NamedTuple):
 
 
 def briefing_issues(source):
-    """[(number, title, claim IDs of the heading line and every line under it)], in body order."""
+    """[(number, title, claim IDs of the heading line and every line under it)], in body order. A heading is matched
+    as body.parse reads it (links and source marks dropped); one that matches no line costs only itself."""
     parts = source['body'] if isinstance(source['body'], list) else [source['body']]
     headings = []
     for part in parts:
         for raw in part.split('\n'):
-            found = HEADING.match(html.unescape(raw.strip()))
+            found = HEADING.match(REF.sub('', LINK.sub('', html.unescape(raw.strip()))).strip())
             if found:
                 text = found[2] + (f' · {found[3]}' if found[3] else '')
                 headings.append((int(found[1]), plain(found[2]), plain(text)))
@@ -40,8 +41,10 @@ def briefing_issues(source):
         if claim['section'] != '주요 이슈':
             current = None
             continue
-        if pending and claim['text'] == pending[0][2]:
-            number, title, _ = pending.pop(0)
+        at = next((n for n, h in enumerate(pending) if h[2] == claim['text']), None)
+        if at is not None:
+            number, title, _ = pending[at]
+            del pending[:at + 1]
             current = (number, title, [claim_id])
             issues.append(current)
         elif current is not None:
@@ -50,13 +53,18 @@ def briefing_issues(source):
 
 
 def lineup(source, episode):
-    """The issues with the episode scenes that covered each (episode order) and their depth. episode: the delivered
-    EpisodePlan as JSON."""
+    """The issues with the episode scenes that covered each and their depth. episode: the delivered EpisodePlan as JSON.
+    A scene is about the issue whose lines it cites most (the earlier on a tie). An issue's scenes come in episode
+    order, the ones about another issue last: such a scene covers it too, but the picture and the depth come from a
+    scene that is about it."""
     scenes = [s for s in episode.get('scenes', []) if s.get('chapter') in ISSUE_CHAPTERS]
+    issues = briefing_issues(source)
+    about = {s['id']: max(issues, key=lambda i: (len(set(i[2]) & set(s.get('claim_ids', []))), -i[0]))[0]
+             for s in scenes if issues}
     found, core = [], 0
-    for number, title, ids in briefing_issues(source):
+    for number, title, ids in issues:
         own = set(ids)
-        covering = [s for s in scenes if own & set(s.get('claim_ids', []))]
+        covering = sorted((s for s in scenes if own & set(s.get('claim_ids', []))), key=lambda s: about[s['id']] != number)
         tier = 'brief'
         if covering and covering[0]['chapter'] == ISSUE_CHAPTERS[0] and core < CORE_MAX:
             tier, core = 'core', core + 1

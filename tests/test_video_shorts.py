@@ -735,6 +735,28 @@ def test_heard_findings_are_kept_per_scene(tmp_path):
                                                                  tmp_path / 'out', tones(tmp_path, TAKES, ffmpeg))
     assert manifest['review']['audio'] == {'semis': 'heard 1.92 as 192'}
     assert 'Scene semis: heard 1.92 as 192' in manifest['findings']
+    # The depth stays with the scenes the analysis measures (spec: 장면 데이터에 표시).
+    assert [s.get('tier') for s in manifest['scenes']] == [None, None, 'core', None]
+
+
+class RecordingAligner(WordAligner):
+    def __init__(self):
+        self.expected = []
+
+    def align(self, audio, expected):
+        self.expected.append(expected)
+        return super().align(audio, expected)
+
+
+def test_each_take_is_checked_against_what_it_says(tmp_path):
+    # A scene voiced again in Korean number words is aligned against those words, not the digits (review #3).
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    aligner = RecordingAligner()
+    said = ['훅 문장 구월 이십이일 아침 브리핑입니다.', '오늘 이슈는 한 가지입니다.', '에스앤피 오백이 일 점 구이 퍼센트 올랐습니다.',
+            '정리하면, 반도체가 이끌었습니다.']
+    ShortsRenderer(settings, aligner).build(job, shorts(), episode().model_dump(mode='json'), tmp_path / 'out',
+                                            tones(tmp_path, TAKES, ffmpeg), texts=said)
+    assert aligner.expected == said
 
 
 def test_music_is_optional(tmp_path):
@@ -804,11 +826,12 @@ class ShortsFileRenderer:
     scene for the first render."""
 
     def __init__(self, heard=None):
-        self.calls, self.plans, self.heard = [], [], heard or {}
+        self.calls, self.plans, self.texts, self.heard = [], [], [], heard or {}
 
-    def render(self, job, plan, episode, directory, paths, stop=None):
+    def render(self, job, plan, episode, directory, paths, stop=None, texts=None):
         self.calls.append((len(paths), paths[-1]))
         self.plans.append(plan)
+        self.texts.append(texts)
         files = {'shorts.mp4': b'simulated-shorts', 'shorts.srt': b'1\n00:00:00,000 --> 00:00:01,000\nx\n',
                  'shorts-upload.txt': '[제목]\nS&P 500 1.92% 상승\n'.encode(), 'shorts-plan.json': plan.model_dump_json().encode()}
         for name, content in files.items():
@@ -1396,6 +1419,8 @@ async def test_a_misread_scene_is_voiced_again_in_korean_numbers(brief, video, t
     assert row['state'] == 'delivering', row['error']
     assert row['qa']['retake'] == ['semis'] and len(renderer.calls) == 2
     assert len(speech.calls) - before == 5 and speech.calls[-1]['text'] == korean_numbers(shorts().issues[0].narration)
+    # The renderer aligns each take against what it says: the retaken scene in its number words.
+    assert renderer.texts[-1][2] == korean_numbers(shorts().issues[0].narration) and renderer.texts[0][2] != renderer.texts[-1][2]
     assert 'heard 1.92 as 192' in shorts_calls(provider, 'visual')[0].prompt
 
 
@@ -1423,3 +1448,21 @@ def test_the_delivery_text_lists_review_and_screen_findings():
     assert '길이 72초 · 이슈 2개' in text and '자동 검사 지적 4건(아래, 제작은 계속함)' in text
     assert ('• 대본: 숫자 지적\n• 검토: 용어 풀이가 없음\n• 화면: semis: 숫자가 작음\n'
             '• 화면·음성: Scene semis: heard 1.92 as 192\n') in text
+
+
+def test_an_issue_may_not_cite_another_issues_lines_through_a_shared_scene():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR)
+    issues = lineup(source, episode_json)
+    episode_json['scenes'][2]['claim_ids'].append(issues[1].claim_ids[1])  # issue-1's card also cites issue 2's fact
+    plan = lineup_plan(source, episode_json).model_dump(mode='json')
+    plan['issues'][1]['claim_ids'].append(issues[0].claim_ids[1])  # issue 2 borrows issue 1's fact through that card
+    assert any("belong to neither briefing issue 2" in f
+               for f in lineup_violations(ShortsPlan.model_validate(plan), source, episode_json))
+
+
+def test_a_fix_trading_a_finding_for_a_new_one_is_not_taken():
+    from quant_company.video.runner import fix_adds_findings
+
+    assert fix_adds_findings(['a', 'b'], ['a', 'c']) and fix_adds_findings([], ['a'])
+    assert not fix_adds_findings(['a', 'b'], ['a']) and not fix_adds_findings(['a'], ['a'])

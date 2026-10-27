@@ -171,6 +171,11 @@ class VideoFailure(ValueError):
         self.code = code
 
 
+def fix_adds_findings(before, after):
+    """True when a screen fix leaves any finding the cut did not have (trading one for another is not a fix)."""
+    return bool(set(after) - set(before))
+
+
 def free_gb(path):
     path = Path(path)
     while not path.exists() and path != path.parent:
@@ -627,7 +632,7 @@ class VideoRunner:
         try:
             renderer = self.shorts_renderer or ShortsRenderer(self.settings)
             artifacts = await asyncio.to_thread(renderer.render, job, plan, job['plan'], directory, paths,
-                                                lambda: self.shorts.superseded(job['id']))
+                                                lambda: self.shorts.superseded(job['id']), [r['text'] for _, r in takes])
         except RenderInProgress:
             await asyncio.to_thread(self.shorts.wait, row, 120, 'render_in_progress')
             return
@@ -675,8 +680,8 @@ class VideoRunner:
                         job['source'], job['plan'], found, plan, screen), ShortsPlan, contract='video_shorts_v1')
                     candidate, _ = settle(shorts_review.keep_spoken(plan, patch), job['source'])
                     # A fix that breaks a rule the cut kept is not taken: the screen stays as it was.
-                    if (len(shorts_violations(candidate, job['source'], job['plan'], found))
-                            > len(shorts_violations(plan, job['source'], job['plan'], found))):
+                    if fix_adds_findings(shorts_violations(plan, job['source'], job['plan'], found),
+                                         shorts_violations(candidate, job['source'], job['plan'], found)):
                         rounds[-1]['fix_reverted'] = True
                     else:
                         fixed = candidate

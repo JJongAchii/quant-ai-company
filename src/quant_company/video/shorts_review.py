@@ -7,12 +7,12 @@ import json
 
 from .contracts import OWNER_DESIGN_RULES, prompt_claims
 from .episode import REPORT_LABEL
-from .shorts import SHORTS_AIM, SHORTS_CAP, ShortsPlan, lineup_json
+from .shorts import SHORTS_AIM, SHORTS_CAP, ShortsPlan, episode_cut, lineup_json
 
 
 def review_prompt(source, episode, issues, plan, concerns, seconds):
-    """concerns: the episode review's open findings; seconds: the cut's estimated length."""
-    opening = next((s for s in episode['scenes'] if s.get('type') == 'cold_open'), episode['scenes'][0])
+    """concerns: the episode review's open findings; seconds: the cut's estimated length. The reviewer reads the episode
+    as the writer did (episode_cut): the closing signals carry the outlook the Shorts repeats."""
     return (
         "You are the independent editor of a Korean market Shorts: the short summary of a delivered daily episode for "
         "viewers scrolling the Shorts feed, who should understand the day from it alone. Review it against the delivered "
@@ -37,8 +37,7 @@ def review_prompt(source, episode, issues, plan, concerns, seconds):
         "aloud. Reject buy/sell wording and any mention of AI, models, tools or how the video was made. Write at most 12 "
         "concerns, each in Korean for the Korean editor, naming the issue or field and the concrete fix.\n"
         + json.dumps({'lines': prompt_claims(source), 'lineup': lineup_json(source, episode, issues),
-                      'episode': {'title': episode['upload']['title'], 'thumbnail': episode['thumbnail'],
-                                  'cold_open': opening['narration']},
+                      'episode': episode_cut(episode),
                       'episode_concerns': list(concerns)[:20], 'shorts': plan.model_dump(mode='json')},
                      ensure_ascii=False))
 
@@ -77,7 +76,7 @@ def fix_prompt(source, episode, issues, plan, screen):
 def keep_spoken(original, fixed):
     """fixed with every spoken field, and each issue's identity and lines, restored from original: a screen fix pays
     no new speech. A fix that changed the issues themselves is not a screen fix; original stands."""
-    if len(fixed.issues) != len(original.issues):
+    if [i.id for i in fixed.issues] != [i.id for i in original.issues]:
         return original
     raw = fixed.model_dump(mode='json')
     raw['hook'].update(narration=original.hook.narration, claim_ids=list(original.hook.claim_ids))

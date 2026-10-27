@@ -28,6 +28,9 @@ def test_review_prompt_names_the_five_checks_and_the_episode_concerns():
     data = json.loads(prompt.rsplit('\n', 1)[1])
     assert data['shorts'] == shorts().model_dump(mode='json') and data['lineup'][0]['issue'] == 1
     assert 'b013' in json.dumps(data['lines'])
+    # The reviewer sees the episode as the writer did: its closing signals carry the outlook the Shorts repeats.
+    assert data['episode']['closing_signals'][0]['narration'] == episode().scenes[-1].narration
+    assert data['episode']['thumbnail_stat'] == episode().thumbnail_stat
 
 
 def test_visual_prompt_lists_the_frames_and_keeps_the_owner_rules():
@@ -49,7 +52,7 @@ def test_keep_spoken_restores_every_spoken_field():
     raw = original.model_dump(mode='json')
     raw['hook'].update(narration='다르게 말한 훅입니다.', headline='화면 제목만 바뀜')
     raw['issues'][0].update(narration='다르게 말한 이슈 내레이션입니다. 길이는 상관없습니다.', body='화면 본문만 바뀝니다.',
-                            issue=2, id='other', claim_ids=['b001'])
+                            issue=2, claim_ids=['b001'])
     raw['close'].update(conclusion='정리하면, 다른 결론입니다.', signals_narration='다른 신호 내레이션입니다.',
                         signals=['화면 신호 하나', '화면 신호 둘'])
     kept = keep_spoken(original, ShortsPlan.model_validate(raw))
@@ -59,3 +62,14 @@ def test_keep_spoken_restores_every_spoken_field():
     assert kept.close.conclusion == original.close.conclusion
     assert kept.close.signals_narration == original.close.signals_narration and kept.close.signals == ['화면 신호 하나', '화면 신호 둘']
     assert kept.narrations() == original.narrations()
+
+
+def test_keep_spoken_matches_issues_by_id():
+    from .test_video_lineup import PM_TITLES, issue_body, issue_episode
+    from .test_video_shorts import lineup_plan
+
+    source = issue_body(PM_TITLES[:2])
+    original = lineup_plan(source, issue_episode(source, {1: '핵심 이슈', 2: '함께 볼 이슈'}))
+    raw = original.model_dump(mode='json')
+    raw['issues'].reverse()  # a reordered "fix" would pair one issue's screen with the other's narration
+    assert keep_spoken(original, ShortsPlan.model_validate(raw)) == original
