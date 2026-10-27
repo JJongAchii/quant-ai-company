@@ -1,6 +1,7 @@
 """Daily Shorts: the cut's contract and checks, a real Chromium/FFmpeg vertical render, and the production flow on real
 PostgreSQL. Model, speech, alignment and Slack's HTTP API are simulated fixtures; nothing here calls them."""
 
+import copy
 import importlib.util
 import json
 import re
@@ -177,7 +178,7 @@ def lineup_plan(source, episode, **changes):
         n, ids = i.number, i.claim_ids
         core = i.tier == 'core'
         issues.append(dict(
-            id=f'issue-{n}', issue=n, label=f'이슈 {chr(64 + n)}', agenda=f'{chr(64 + n)} 이슈, 수급 부담 신호', big=f'{n}.{n}%', big_label='관련 지표',
+            id=f'issue-{n}', issue=n, label=f'이슈 {chr(64 + n)}', agenda=f'{chr(64 + n)} 이슈 수급 부담 신호', big=f'{n}.{n}%', big_label='관련 지표',
             body=f'관련 지표가 {n}.{n}% 움직였습니다.', meaning='수급 부담으로 이어질 수 있음' if core else '',
             narration=(f'관련 지표가 {n}.{n}% 움직였습니다. 브리핑은 이 흐름이 결국 투자자 수급 부담으로 이어질 수 있다고 해석합니다.'
                        if core else f'관련 지표가 {n}.{n}% 움직여 수급 부담 신호입니다.'),
@@ -424,7 +425,7 @@ def tones(folder, seconds, ffmpeg):
     return paths
 
 
-def render_fixture(tmp_path, assets=True):
+def render_fixture(tmp_path, assets=True, source=None):
     """Settings, job and the episode's pictures (the motion fixture library) for a real Shorts render."""
     if not importlib.util.find_spec('playwright'):
         pytest.skip('Install optional video dependencies and Chromium')
@@ -432,15 +433,36 @@ def render_fixture(tmp_path, assets=True):
     settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_ffprobe='', video_asset_dir=tmp_path / 'assets')
     if assets:
         library(tmp_path / 'assets', ffmpeg)
-    job = {'id': 'fixture', 'source': {**body_source(), 'edition_kind': 'am'}, 'policy': {'template': 'motion-v2'}}
+    job = {'id': 'fixture', 'source': {**(source or body_source()), 'edition_kind': 'am'}, 'policy': {'template': 'motion-v2'}}
     return ffmpeg, settings, job
 
 
-# A short agenda take is held for the list; the outro is held for its button.
-TAKES = [4, 1, 6, 6, 3]
+def without_pictures(episode_json, *scene_ids):
+    """The episode with those scenes drawn as the fixture's flow card, which shows no picture (a headline card must)."""
+    flow = next(s for s in episode().model_dump(mode='json')['scenes'] if s['id'] == 'flow')
+    for scene in episode_json['scenes']:
+        if scene['id'] in scene_ids:
+            scene.update(type=flow['type'], data=copy.deepcopy(flow['data']))
+    return episode_json
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 6')
+def multi_cut(tmp_path, titles, chapters, skip=(), photo_first=()):
+    """(ffmpeg, settings, job, episode JSON, plan) for a real render of an issue_body brief; photo_first: issue numbers
+    whose headline card shows the fixture photo instead of the illustration."""
+    source = issue_body(titles)
+    ffmpeg, settings, job = render_fixture(tmp_path, source=source)
+    episode_json = issue_episode(source, chapters, skip)
+    for scene in episode_json['scenes']:
+        if scene['id'] in {f'issue-{n}' for n in photo_first}:
+            scene['data']['image'] = {'asset': 'fixture-photo'}
+    return ffmpeg, settings, job, episode_json, lineup_plan(job['source'], episode_json)
+
+
+# A short agenda take is held for the list; the outro is held for its button. One take per scene of the fixture cut
+# (opener, agenda, its one issue, outro).
+TAKES = [4, 1, 8, 4]
+
+
 def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
     plan = shorts()
@@ -448,28 +470,48 @@ def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
     manifest = ShortsRenderer(settings, WordAligner()).render(job, plan, episode().model_dump(mode='json'), tmp_path / 'out', paths)
     assert manifest['size'] == [1080, 1920] and manifest['fps'] == 30
     scenes = manifest['scenes']
-    assert [s['id'] for s in scenes] == ['opener', 'agenda', 'semis', 'check', 'outro']
-    assert [s['type'] for s in scenes] == ['opener', 'agenda', 'issue', 'issue', 'outro']
+    assert [s['id'] for s in scenes] == ['opener', 'agenda', 'semis', 'outro']
+    assert [s['type'] for s in scenes] == ['opener', 'agenda', 'issue', 'outro']
     assert not any(k in f for f in manifest['findings'] for k in ('outside-safe-area', 'overlap', 'covered')), manifest['findings']
-    assert scenes[1]['t1'] - scenes[1]['t0'] >= 1.0 + 0.9 * len(plan.issues) - 1e-6
+    assert scenes[1]['t1'] - scenes[1]['t0'] >= 2.0 + 0.4 * len(plan.issues) - 1e-6
     assert scenes[-1]['t1'] - scenes[-1]['t0'] >= 6.0 - 1e-6
     assert scenes[0]['t0'] == 0 and manifest['duration'] == pytest.approx(scenes[-1]['t1'], abs=.5)
-    assert manifest['music'] is None
+    assert manifest['music'] is None and manifest['review']['audio'] == {}
     pictures = {p['scene']: p for p in manifest['pictures']}
     assert set(pictures) == {s['id'] for s in scenes}  # every scene shows a picture
-    assert pictures['check']['credit'] == '자료사진 · Fixture Author · CC BY 4.0' and pictures['semis']['credit'] == ''
-    assert not any('without a picture' in f for f in manifest['findings'])
+    assert pictures['semis']['credit'] == '' and not any('without a picture' in f for f in manifest['findings'])
     upload = (tmp_path / 'out' / 'shorts-upload.txt').read_text()
     assert plan.title in upload and '#Shorts' in upload and '관련 동영상' in upload and '|' not in upload.split('\n')[1]
-    assert '[사진 출처]\n자료사진 · Fixture Author · CC BY 4.0\n' in upload
     srt = (tmp_path / 'out' / 'shorts.srt').read_text()
-    assert '9월 22일 아침 브리핑입니다.' in srt and '반도체 주도, 다르게 볼 점, 두 가지입니다.' in srt and '본편에서 확인하세요.' in srt
-    assert '채널 프로필 링크에서 신청하세요.' in srt and '답은 본편에서 확인하세요.' in srt  # the end screen (owner, 10/21-22)
+    assert '9월 22일 아침 브리핑입니다.' in srt and '오늘 이슈는 한 가지입니다.' in srt and '정리하면' in srt
+    assert '자세한 분석은 본편에서' in srt and '프로필 링크에서 신청하세요.' in srt  # the end screen (owner, 10/21, 10/27)
     assert '[고정 댓글]\n확산될까? 여러분은 어떻게 보세요? 댓글로 남겨 주세요.' in upload
     assert [f['scene'] for f in manifest['review']['frames']] == [s['id'] for s in scenes]
     assert all((tmp_path / 'out' / f['file']).stat().st_size for f in manifest['review']['frames'])
     assert not (tmp_path / 'out' / 'page').exists() and not list((tmp_path / 'out').glob('aud-*.wav'))
     verify_artifacts(manifest, tmp_path)
+
+
+def test_six_issues_render_inside_the_safe_area(tmp_path):
+    ffmpeg, settings, job, episode_json, plan = multi_cut(
+        tmp_path, PM_TITLES, {1: '핵심 이슈', 2: '핵심 이슈', 3: '핵심 이슈', 4: '함께 볼 이슈', 5: '함께 볼 이슈', 6: '함께 볼 이슈'})
+    raw = plan.model_dump(mode='json')
+    for issue in raw['issues']:  # every screen line at its longest
+        n = issue['issue']
+        issue.update(label=f'긴 이슈 이름 {n}번 이야기'[:12], agenda=f'{n}.{n}% 움직인 지표, 수급 부담은 아직 계속되는 중'[:26],
+                     body=(f'관련 지표가 {n}.{n}% 움직였고 이는 투자자 수급 부담과 업종별 차별화가 함께 나타났다는 뜻입니다. '
+                           '다음 장에서 이어지는지 봐야 합니다.')[:70],
+                     meaning=('수급 부담이 이어지면 반등 시도가 다시 꺾일 수 있다는 점을 뜻합니다 정말로' if n <= 3 else '')[:40])
+    plan = ShortsPlan.model_validate(raw)
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode_json, tmp_path / 'out',
+                                                          tones(tmp_path, [4, 1, 6, 6, 6, 3, 3, 3, 3], ffmpeg))
+    scenes = built['ep']['scenes']
+    assert [s['id'] for s in scenes] == ['opener', 'agenda', *(f'issue-{n}' for n in range(1, 7)), 'outro']
+    found = on_page(built['page'], [QA_JS, "document.querySelectorAll('.agenda .row').length"], t=scenes[1]['t1'] - 0.3)
+    assert found == [[], 6]
+    for scene in scenes:
+        [issues] = on_page(built['page'], [QA_JS], t=scene['t1'] - 0.3)
+        assert not issues, (scene['id'], issues)
 
 
 def on_page(page, scripts, t=0.0, style=''):
@@ -498,7 +540,6 @@ def scene_classes(page):
     return {s['id']: (s['bg'], s['blur'], s['cls']) for s in scenes}
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_layout_qa_finds_text_covered_by_the_background(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
     built = ShortsRenderer(settings, WordAligner()).build(job, shorts(), episode().model_dump(mode='json'), tmp_path / 'out',
@@ -511,28 +552,26 @@ def test_layout_qa_finds_text_covered_by_the_background(tmp_path):
     assert {f[0] for f in found} == {'covered'} and any('1.92%' in f[1] for f in found), found
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_build_keeps_a_minus_without_an_arrow(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
-    raw = shorts().model_dump(mode='json')
-    raw['issues'][0].update(big='-0.2%', dir=None)  # a signed level: the sign is the fact
-    raw['issues'][1].update(big='-0.59%', dir='dn')  # the arrow replaces the sign
-    built = ShortsRenderer(settings, WordAligner()).build(job, ShortsPlan.model_validate(raw), episode().model_dump(mode='json'),
-                                                          tmp_path / 'out', tones(tmp_path, TAKES, ffmpeg))
-    [shown] = on_page(built['page'], ["[...document.querySelectorAll('.scene.issue .num .v')].map(e => e.textContent)"])
+    shown = []
+    for name, big, dir_ in (('level', '-0.2%', None), ('fall', '-0.59%', 'dn')):  # a signed level; an arrow for the sign
+        raw = shorts().model_dump(mode='json')
+        raw['issues'][0].update(big=big, dir=dir_)
+        built = ShortsRenderer(settings, WordAligner()).build(job, ShortsPlan.model_validate(raw), episode().model_dump(mode='json'),
+                                                              tmp_path / name, tones(tmp_path, TAKES, ffmpeg))
+        shown += on_page(built['page'], ["document.querySelector('.scene.issue .num .v').textContent"])
     assert shown == ['-0.2%', '▼0.59%']
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_a_long_total_is_a_finding_not_a_raise(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
-    takes = tones(tmp_path, [20, 20, 20, 20, 20], ffmpeg)  # ~100 s of paid speech
+    takes = tones(tmp_path, [25, 25, 25, 25], ffmpeg)  # ~100 s of paid speech
     built = ShortsRenderer(settings, WordAligner()).build(job, shorts(), episode().model_dump(mode='json'), tmp_path / 'out', takes)
     assert 90 < built['total'] < 180
     assert any('at most 90 s' in f for f in built['findings'])
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_a_sparse_library_entry_cannot_raise_the_credit(tmp_path):
     ffmpeg = ffmpeg_binary()
     settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_asset_dir=tmp_path / 'assets')
@@ -540,28 +579,24 @@ def test_a_sparse_library_entry_cannot_raise_the_credit(tmp_path):
     for entry in shelf.values():
         entry.pop('author', None)
         entry.pop('license', None)
+    raw = episode().model_dump(mode='json')
+    raw['scenes'][3]['data']['image'] = {'asset': 'fixture-photo'}  # the issue's headline card shows the photo
     job = {'id': 'fixture', 'source': source(), 'policy': {'template': 'motion-v2'}}
-    pictures = cut_pictures(job, episode().model_dump(mode='json'), shorts(), settings, shelf)
-    assert pictures['issues'][1]['credit'] == '자료사진 ·  · '
+    pictures = cut_pictures(job, raw, shorts(), settings, shelf, lineup(source(), raw))
+    assert pictures['issues'][0]['credit'] == '자료사진 ·  · '
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_every_scene_has_a_picture(tmp_path):
-    ffmpeg, settings, job = render_fixture(tmp_path)
-    paths = tones(tmp_path, TAKES, ffmpeg)
-    raw = shorts().model_dump(mode='json')
-    raw['issues'][0]['scene_ids'], raw['issues'][1]['scene_ids'] = ['flow'], ['counter']  # cards without a picture
-    plan = ShortsPlan.model_validate(raw)
-    bare = episode(thumbnail_image='').model_dump(mode='json')
+    ffmpeg, settings, job, episode_json, plan = multi_cut(tmp_path, PM_TITLES[:2], {1: '핵심 이슈', 2: '함께 볼 이슈'})
+    paths = tones(tmp_path, [4, 1, 6, 3, 3], ffmpeg)
+    bare = without_pictures({**episode_json, 'thumbnail_image': ''}, 'issue-1', 'issue-2')  # only issue-1-view keeps its photo
     built = ShortsRenderer(settings, WordAligner()).build(job, plan, bare, tmp_path / 'out', paths)
     shown = scene_classes(built['page'])
-    # The cover is the first picture the episode shows (the headline card's), sharp behind the opener and blurred
-    # behind the agenda and the outro. The issues without their own picture show their chapter's other pictures blurred,
-    # each one the scene before does not show.
+    # No thumbnail picture: the cover is issue 1's own picture (its photo card), sharp behind the opener and blurred
+    # behind the agenda and the outro; issue 2 has none in its chapter either, so it shows the cover blurred.
     assert {i: (bg, blur) for i, (bg, blur, _) in shown.items()} == {
-        'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'semis': ('img/photo.png', True),
-        'check': ('img/illu.png', True), 'outro': ('img/illu.png', True)}
-    assert (built['page'] / 'img' / 'illu.png').is_file() and (built['page'] / 'img' / 'photo.png').is_file()
+        'opener': ('img/photo.png', False), 'agenda': ('img/photo.png', True), 'issue-1': ('img/photo.png', False),
+        'issue-2': ('img/photo.png', True), 'outro': ('img/photo.png', True)}
     assert not any('nophoto' in cls for *_, cls in shown.values()) and not any('picture' in f for f in built['findings'])
     # No picture anywhere (no reviewed library, no episode picture): a gradient, never a bare frame, and a finding.
     settings.video_asset_dir = tmp_path / 'empty'
@@ -569,45 +604,38 @@ def test_every_scene_has_a_picture(tmp_path):
     shown = scene_classes(built['page'])
     assert all(bg is None and 'nophoto' in cls for bg, _, cls in shown.values()), shown
     assert [f for f in built['findings'] if 'picture' in f] == [
-        f'Shorts scene without a picture: {i}' for i in ('opener', 'agenda', 'semis', 'check', 'outro')]
+        f'Shorts scene without a picture: {i}' for i in ('opener', 'agenda', 'issue-1', 'issue-2', 'outro')]
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 6')
 def test_an_issue_without_a_picture_takes_one_from_its_chapter_before_the_cover(tmp_path):
-    ffmpeg, settings, job = render_fixture(tmp_path)
-    raw = episode().model_dump(mode='json')  # the thumbnail picture (the cover) is the headline card's illustration
-    raw['scenes'][6]['chapter'] = '함께 볼 이슈'  # counter: alone in its chapter, with no picture
-    assert [(s['id'], s['chapter']) for s in issue_scenes(raw)] == [
-        ('head', '핵심 이슈'), ('flow', '핵심 이슈'), ('photo', '핵심 이슈'), ('counter', '함께 볼 이슈')]
-    plan = shorts().model_dump(mode='json')
-    plan['issues'][0]['scene_ids'], plan['issues'][1]['scene_ids'] = ['flow'], ['counter']  # cards without a picture
-    plan = ShortsPlan.model_validate(plan)
+    ffmpeg, settings, job, episode_json, plan = multi_cut(
+        tmp_path, PM_TITLES[:3], {1: '핵심 이슈', 2: '함께 볼 이슈', 3: '함께 볼 이슈'}, photo_first=(3,))
+    raw = without_pictures(episode_json, 'issue-2')  # issue 2's only card has no picture; issue 3's shares its chapter
     shelf = json.loads((tmp_path / 'assets' / 'manifest.json').read_text())
-    nearby = cut_pictures(job, raw, plan, settings, shelf)['nearby']
-    assert [[p['path'].rsplit('/', 1)[1] for p in n] for n in nearby] == [['illu.png', 'photo.png'], []]
-    built = ShortsRenderer(settings, WordAligner()).build(job, plan, raw, tmp_path / 'out', tones(tmp_path, TAKES, ffmpeg))
+    issues = lineup(job['source'], raw)
+    nearby = cut_pictures(job, raw, plan, settings, shelf, issues)['nearby']
+    assert [[p['path'].rsplit('/', 1)[1] for p in n] for n in nearby] == [[], ['photo.png'], []]
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, raw, tmp_path / 'out', tones(tmp_path, [4, 1, 6, 3, 3, 3], ffmpeg))
     shown = scene_classes(built['page'])
-    # flow: its chapter's nearest picture is the cover the agenda shows just before, so the photo two scenes on, with
-    # its own credit. counter: nothing else in its chapter, so the cover.
     assert {i: (bg, blur) for i, (bg, blur, _) in shown.items()} == {
-        'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'semis': ('img/photo.png', True),
-        'check': ('img/illu.png', True), 'outro': ('img/illu.png', True)}
+        'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'issue-1': ('img/illu.png', False),
+        'issue-2': ('img/photo.png', True), 'issue-3': ('img/photo.png', False), 'outro': ('img/illu.png', True)}
     credits = {p['scene']: p['credit'] for p in built['pictures']}
-    assert credits['semis'] == '자료사진 · Fixture Author · CC BY 4.0' and credits['check'] == '' and credits['agenda'] == ''
-    [drawn] = on_page(built['page'], ["[...document.querySelectorAll('.scene')].map(e => e.querySelector('.credit')?.textContent || '')"])
-    assert drawn == ['', '', '자료사진 · Fixture Author · CC BY 4.0', '', '']
-    # The chapter's picture is taken even when the scene before shows it: the cover comes only after the chapter.
-    raw['scenes'][5]['chapter'] = '함께 볼 이슈'  # photo and counter
-    plan = shorts().model_dump(mode='json')
-    plan['issues'][0]['scene_ids'], plan['issues'][1]['scene_ids'] = ['photo'], ['counter']
-    built = ShortsRenderer(settings, WordAligner()).build(job, ShortsPlan.model_validate(plan), raw, tmp_path / 'again',
-                                                          tones(tmp_path, TAKES, ffmpeg))
-    shown = scene_classes(built['page'])
-    assert (shown['semis'][:2], shown['check'][:2]) == (('img/photo.png', False), ('img/photo.png', True))
-    assert {p['scene']: p['credit'] for p in built['pictures']}['check'] == '자료사진 · Fixture Author · CC BY 4.0'
+    assert credits['issue-2'] == credits['issue-3'] == '자료사진 · Fixture Author · CC BY 4.0' and credits['issue-1'] == ''
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 6')
+def test_an_issue_without_scenes_takes_the_cover(tmp_path):
+    ffmpeg, settings, job, episode_json, plan = multi_cut(tmp_path, PM_TITLES[:2], {1: '핵심 이슈', 2: '함께 볼 이슈'},
+                                                          skip=(2,))
+    assert lineup(job['source'], episode_json)[1].scene_ids == ()
+    shelf = json.loads((tmp_path / 'assets' / 'manifest.json').read_text())
+    pictures = cut_pictures(job, episode_json, plan, settings, shelf, lineup(job['source'], episode_json))
+    assert pictures['issues'][1] is None and pictures['nearby'][1] == []
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode_json, tmp_path / 'out',
+                                                          tones(tmp_path, [4, 1, 6, 3, 3], ffmpeg))
+    assert scene_classes(built['page'])['issue-2'][:2] == ('img/illu.png', True)
+
+
 def test_the_headline_breaks_after_its_first_comma(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
     takes = tones(tmp_path, TAKES, ffmpeg)
@@ -636,23 +664,30 @@ def test_the_headline_breaks_after_its_first_comma(tmp_path):
     assert '<br class="comma">' in fullwidth and '반도체 주도，</span>' in fullwidth
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 6')
-def test_each_issue_leads_with_its_line_and_the_list_rows_come_in_as_they_are_read(tmp_path):
-    # Owner, 10/21: an issue led with a bare number; its one-line takeaway (its row in the list) now heads it.
-    ffmpeg, settings, job = render_fixture(tmp_path)
-    plan = shorts()
-    built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode().model_dump(mode='json'), tmp_path / 'out',
-                                                          tones(tmp_path, TAKES, ffmpeg))
-    agenda = built['ep']['scenes'][1]
-    at = agenda['data']['at']
-    assert len(at) == len(plan.issues) and 0 < at[0] < at[1] < agenda['t1'] - agenda['t0']
-    [heads] = on_page(built['page'], ["[...document.querySelectorAll('.issue .ih')].map(e => e.innerText)"])
-    assert heads == [i.agenda for i in plan.issues]
+def test_each_issue_leads_with_its_line_and_the_list_rows_come_in_one_by_one(tmp_path):
+    # Owner, 10/21: an issue led with a bare number; its one-line takeaway (its row in the list) now heads it. The list
+    # says only its count (2026-10-27), so its rows come in one by one.
+    ffmpeg, settings, job, episode_json, plan = multi_cut(tmp_path, PM_TITLES[:3], {1: '핵심 이슈', 2: '함께 볼 이슈', 3: '함께 볼 이슈'})
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode_json, tmp_path / 'out',
+                                                          tones(tmp_path, [4, 1, 6, 3, 3, 3], ffmpeg))
+    assert 'at' not in built['ep']['scenes'][1]['data']
+    [starts, heads] = on_page(built['page'], ["[...document.querySelectorAll('.agenda .row')].map(e => e.dataset.in.split(',')[0])",
+                                              "[...document.querySelectorAll('.issue .ih')].map(e => e.innerText)"])
+    assert starts == ['0.15', '0.45', '0.75'] and heads == [i.agenda for i in plan.issues]
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 6')
-def test_the_question_stays_up_over_the_issues_and_the_end_leaves_it_for_the_episode(tmp_path):
-    # Owner, 10/22: 59% of the 10/20 cut's feed viewers swiped away; the question bar and one end screen.
+def test_a_core_card_shows_what_it_means_and_a_brief_card_does_not(tmp_path):
+    ffmpeg, settings, job, episode_json, plan = multi_cut(tmp_path, PM_TITLES[:2], {1: '핵심 이슈', 2: '함께 볼 이슈'})
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode_json, tmp_path / 'out',
+                                                          tones(tmp_path, [4, 1, 6, 3, 3], ffmpeg))
+    assert [s['data']['tier'] for s in built['ep']['scenes'][2:4]] == ['core', 'brief']
+    [cards] = on_page(built['page'], ["[...document.querySelectorAll('.scene.issue')].map(e => [e.querySelector('.card').className,"
+                                      " e.querySelector('.tag')?.innerText || ''])"])
+    assert cards == [['card', '그래서 · 수급 부담으로 이어질 수 있음'], ['card brief', '']]
+
+
+def test_the_end_screen_answers_with_the_conclusion_and_points_to_the_episode(tmp_path):
+    # Owner, 10/22: the question bar stays up over the list and the issues. Owner, 10/27: the cut answers it at the end.
     ffmpeg, settings, job = render_fixture(tmp_path)
     plan = shorts()
     built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode().model_dump(mode='json'), tmp_path / 'out',
@@ -664,8 +699,9 @@ def test_the_question_stays_up_over_the_issues_and_the_end_leaves_it_for_the_epi
     assert float(hidden) == 0 and float(shown) == 1 and text == f'오늘의 질문{plan.hook.question}'
     end = scenes['outro']
     [found] = on_page(built['page'], ["[document.querySelector('.outro .oq').innerText, document.querySelector('.outro .play').innerText,"
-                                      " document.querySelector('.outro .mailrow').innerText]"], t=end['t1'] - 0.3)
-    assert found == [plan.hook.question, OUTRO['button'], OUTRO['mail_line']]
+                                      " document.querySelector('.outro .mailrow').innerText,"
+                                      " [...document.querySelectorAll('.outro .sig span')].map(e => e.innerText)]"], t=end['t1'] - 0.3)
+    assert found == [plan.close.conclusion, '본편 보기', OUTRO['mail_line'], plan.close.signals]
     [issues] = on_page(built['page'], [QA_JS], t=end['t1'] - 0.3)
     assert not issues, issues
     # A long question beside a long credit (a 48-character author is allowed): neither covers nor overlaps the other,
@@ -684,7 +720,22 @@ def test_the_question_stays_up_over_the_issues_and_the_end_leaves_it_for_the_epi
         assert not issues, (s['id'], issues)
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 6')
+class HearingAligner(WordAligner):
+    """Reports a misheard number in the issue's take (the one that says 에스앤피 500)."""
+
+    def align(self, audio, expected):
+        aligned = super().align(audio, expected)
+        return {**aligned, 'findings': ['heard 1.92 as 192']} if '에스앤피' in expected else aligned
+
+
+def test_heard_findings_are_kept_per_scene(tmp_path):
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    manifest = ShortsRenderer(settings, HearingAligner()).render(job, shorts(), episode().model_dump(mode='json'),
+                                                                 tmp_path / 'out', tones(tmp_path, TAKES, ffmpeg))
+    assert manifest['review']['audio'] == {'semis': 'heard 1.92 as 192'}
+    assert 'Scene semis: heard 1.92 as 192' in manifest['findings']
+
+
 def test_music_is_optional(tmp_path):
     av = pytest.importorskip('av')  # the cut is read back with PyAV (the video extra)
 
@@ -1139,24 +1190,21 @@ async def test_a_cut_with_no_valid_version_waits_and_writes_again(brief, video, 
     assert shorts_keys(provider) == ['1', '2', '3', '4', '5', '6'] and row['qa']['attempts'][-1]['outcome'] == 'passed'
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 6')
-def test_cut_pictures_follow_the_cited_scenes(tmp_path):
+def test_cut_pictures_follow_the_lineup_scenes(tmp_path):
     ffmpeg = ffmpeg_binary()
     settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_asset_dir=tmp_path / 'assets')
     shelf = library(tmp_path / 'assets', ffmpeg)
     job = {'id': 'fixture', 'source': source(), 'policy': {'template': 'motion-v2'}}
     raw = episode().model_dump(mode='json')
     plan = shorts()
-    pictures = cut_pictures(job, raw, plan, settings, shelf)
+    pictures = cut_pictures(job, raw, plan, settings, shelf, lineup(source(), raw))
     assert pictures['issues'][0] == {'path': str(tmp_path / 'assets' / 'illu.png'), 'credit': ''}
-    assert pictures['issues'][1]['path'] == str(tmp_path / 'assets' / 'photo.png')
-    assert pictures['issues'][1]['credit'] == '자료사진 · Fixture Author · CC BY 4.0'
     assert pictures['hook'] == pictures['cover'] == pictures['issues'][0]  # the episode thumbnail is fixture-illustration
-    bare = shorts(issues=[{**plan.model_dump(mode='json')['issues'][0], 'scene_ids': ['flow']},
-                          {**plan.model_dump(mode='json')['issues'][1], 'scene_ids': ['photo', 'counter']}])
-    raw['thumbnail_image'] = ''
-    pictures = cut_pictures(job, raw, bare, settings, shelf)
-    assert pictures['issues'][0] is None and pictures['hook'] == pictures['issues'][1]
+    # Without the headline card's picture and the thumbnail, the issue shows its next cited card's (the photo).
+    raw = without_pictures({**raw, 'thumbnail_image': ''}, 'head')
+    pictures = cut_pictures(job, raw, plan, settings, shelf, lineup(source(), raw))
+    assert pictures['issues'][0]['path'] == str(tmp_path / 'assets' / 'photo.png')
+    assert pictures['issues'][0]['credit'] == '자료사진 · Fixture Author · CC BY 4.0' and pictures['hook'] == pictures['issues'][0]
 
 
 def test_takes_open_with_the_date_and_close_with_the_outro():

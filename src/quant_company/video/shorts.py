@@ -38,7 +38,7 @@ from .episode import (
     tool_wording,
 )
 from .illustrations import library_entries
-from .lineup import ISSUE_CHAPTERS
+from .lineup import ISSUE_CHAPTERS, lineup
 from .motion import CHROMIUM_ARGS, FPS, captions, word_times
 from .render import Aligner, RenderInProgress, checksum, music_track, probe, quality_probe, run, spoken
 from .render import mix_music as mix
@@ -138,13 +138,13 @@ def asset_ids(value):
             yield from asset_ids(v)
 
 
-def cut_pictures(job, episode, plan, settings, library):
+def cut_pictures(job, episode, plan, settings, library, issues):
     """{'hook', 'issues', 'nearby', 'cover'}: {'path', 'credit'} or None per picture, resolved as the episode's own render
-    does (this episode's pictures first, then the reviewed library). An issue shows the first picture of its cited
-    scenes; 'nearby' lists, per issue, the pictures of the other scenes in its chapter, nearest first, for an issue
-    without its own (spec: the same chapter's other picture before the thumbnail's). The hook and the blurred cover show
-    the episode's thumbnail picture, else the first issue picture, else the first picture any scene of the episode
-    shows."""
+    does (this episode's pictures first, then the reviewed library). An issue shows the first picture of the episode
+    scenes that covered it (issues: its lineup); 'nearby' lists, per issue, the pictures of the other scenes in their
+    chapter, nearest first, for an issue without its own (spec: the same chapter's other picture before the
+    thumbnail's). An issue the episode did not cover has neither. The hook and the blurred cover show the episode's
+    thumbnail picture, else the first issue picture, else the first picture any scene of the episode shows."""
     made = library_entries(job, plan_class(job).model_validate(episode), settings, library)
     scenes = episode['scenes']
     by_id, order = {s['id']: s for s in scenes}, {s['id']: n for n, s in enumerate(scenes)}
@@ -159,8 +159,10 @@ def cut_pictures(job, episode, plan, settings, library):
         credit = f"자료사진 · {asset.get('author', '')} · {asset.get('license', '')}" if asset.get('kind') == '자료사진' else ''
         return {'path': str(path), 'credit': credit}
 
+    covered = {i.number: i.scene_ids for i in issues}
+
     def nearby(issue):
-        cited = [order[sid] for sid in issue.scene_ids if sid in order]
+        cited = [order[sid] for sid in covered.get(issue.issue, ()) if sid in order]
         chapters = {scenes[n].get('chapter') for n in cited}
         others = sorted((n for n, s in enumerate(scenes) if s.get('chapter') in chapters and n not in cited),
                         key=lambda n: (min(abs(n - c) for c in cited), n))
@@ -168,7 +170,7 @@ def cut_pictures(job, episode, plan, settings, library):
 
     issues = []
     for issue in plan.issues:
-        ids = (a for sid in issue.scene_ids for a in asset_ids((by_id.get(sid) or {}).get('data')))
+        ids = (a for sid in covered.get(issue.issue, ()) for a in asset_ids((by_id.get(sid) or {}).get('data')))
         issues.append(picture(next(ids, None)))
     hook = (picture(episode.get('thumbnail_image')) or next((p for p in issues if p), None)
             or next((p for s in scenes for p in [picture(next(asset_ids(s.get('data')), None))] if p), None))
@@ -634,10 +636,11 @@ class ShortsRenderer:
         return page
 
     @staticmethod
-    def scenes(job, plan):
-        """The cut's scenes with the words they say: the hook then the date, the issue list, each issue, the signals with
-        the question left for the full episode and the mail invitation. The fixed copy on screen is the service's."""
-        count = len(plan.issues)
+    def scenes(job, plan, issues):
+        """The cut's scenes with the words they say: the hook then the date, the issue count, each issue at its depth
+        (issues: the lineup), then the answer, the signals and the closing tail. The fixed copy on screen is the
+        service's."""
+        count, tiers = len(plan.issues), {i.number: i.tier for i in issues}
         return [
             {'id': 'opener', 'type': 'opener', 'narration': opener_line(date_line(job), plan.hook.narration),
              'data': {'kicker': '오늘의 질문', 'headline': plan.hook.headline, 'question': plan.hook.question}},
@@ -645,19 +648,18 @@ class ShortsRenderer:
              'data': {'kicker': f'오늘 볼 이슈 {count}가지', 'rows': [{'label': i.label, 'agenda': i.agenda} for i in plan.issues]}},
             *({'id': i.id, 'type': 'issue', 'narration': i.narration,
                'data': {'k': k, 'n': count, 'label': i.label, 'agenda': i.agenda, 'big': i.big, 'big_label': i.big_label,
-                        'dir': i.dir,
-                        'body': i.body, 'meaning': i.meaning}}
+                        'dir': i.dir, 'tier': tiers.get(i.issue, 'brief'), 'body': i.body, 'meaning': i.meaning}}
               for k, i in enumerate(plan.issues, 1)),
             {'id': 'outro', 'type': 'outro', 'narration': outro_line(plan.close),
              'data': {'kicker': '정리', 'conclusion': plan.close.conclusion, 'signals': list(plan.close.signals),
                       'button': OUTRO['button'], 'mail': OUTRO['mail_line']}}]
 
-    def _pictures(self, job, plan, episode, scenes, page):
+    def _pictures(self, job, plan, episode, scenes, page, issues):
         """bg, blur and credit per scene, each picture copied once into page/img: the opener shows the episode's picture
         sharp, each issue its own; an issue without one shows, blurred, a picture of another scene in its chapter (one
         the scene before it does not show, if there is one), else the cover. The agenda and the outro show the cover
         blurred. The credit is the shown picture's own."""
-        found = cut_pictures(job, episode, plan, self.settings, self.library)
+        found = cut_pictures(job, episode, plan, self.settings, self.library, issues)
 
         def usable(picture):
             return picture if picture and Path(picture['path']).is_file() else None
@@ -694,11 +696,12 @@ class ShortsRenderer:
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
         page = self._page(directory)
-        scenes = self.scenes(job, plan)
-        pictures, findings = self._pictures(job, plan, episode, scenes, page)
+        issues = lineup(job['source'], episode)
+        scenes = self.scenes(job, plan, issues)
+        pictures, findings = self._pictures(job, plan, episode, scenes, page, issues)
         # The list and the closing button stay up long enough to read, past their short fixed lines.
         hold = {'agenda': agenda_hold(len(plan.issues)), 'outro': OUTRO_HOLD}
-        t, cues = 0.0, []
+        t, cues, heard = 0.0, [], {}
         for number, (scene, audio) in enumerate(zip(scenes, audio_paths, strict=True)):
             duration = float(probe(audio, self.settings)['format']['duration'])
             # The end screen says the signals, the question and the mail line: up to ~150 characters, ~25 s.
@@ -715,6 +718,8 @@ class ShortsRenderer:
                 aligned = self.aligner.align(audio, said)
                 cache.write_text(json.dumps({'key': key, 'aligned': aligned}, ensure_ascii=False))
             findings += [f"Scene {scene['id']}: {f}" for f in aligned.get('findings', [])]
+            if aligned.get('findings'):  # what the final editor judges as misread or not (Runner.shorts_inspect)
+                heard[scene['id']] = '; '.join(aligned['findings'])
             length = math.ceil(max(LEAD + duration + TAIL, hold.get(scene['type'], 0.0)) * 1000 - 1e-6) / 1000
             scene.update(t0=round(t, 3), t1=round(t + length, 3), audio=str(audio))
             words = aligned.get('words') or [{'word': c['text'], 'start': c['start'], 'end': c['end']} for c in aligned['cues']]
@@ -733,7 +738,7 @@ class ShortsRenderer:
               'scenes': [{k: s[k] for k in ('id', 'type', 'data', 't0', 't1', 'bg', 'blur', 'credit')} for s in scenes]}
         (page / 'episode.js').write_text('window.EP=' + json.dumps(ep, ensure_ascii=False) + ';')
         return {'page': page, 'scenes': scenes, 'captions': cues, 'total': total, 'findings': findings,
-                'pictures': pictures, 'ep': ep}
+                'pictures': pictures, 'ep': ep, 'heard': heard}
 
     def _render(self, job, plan, episode, directory, audio_paths):
         built = self.build(job, plan, episode, directory, audio_paths)
@@ -780,7 +785,8 @@ class ShortsRenderer:
         (directory / 'shorts-plan.json').write_text(plan.model_dump_json(indent=2))
         names = ['shorts.mp4', 'shorts.srt', 'shorts-upload.txt', 'shorts-plan.json']
         manifest = {'title': plan.title, 'duration': duration, 'qa_passed': True, 'fps': FPS, 'frames': frames, 'size': [WIDTH, HEIGHT],
-                    'findings': findings, 'audio_quality': measured, 'review': {'frames': stills}, 'music': music,
+                    'findings': findings, 'audio_quality': measured, 'review': {'frames': stills, 'audio': built['heard']},
+                    'music': music,
                     'pictures': built['pictures'], 'scenes': [{k: s[k] for k in ('id', 'type', 't0', 't1')} for s in scenes],
                     'files': {n: checksum(directory / n) for n in names}, 'directory': str(directory)}
         manifest['digest'] = digest(manifest)

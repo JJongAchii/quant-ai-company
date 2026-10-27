@@ -5,7 +5,6 @@ const eo = p => 1 - Math.pow(1 - p, 4);
 const back = p => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); };
 const prog = (lt, s, d) => clamp((lt - s) / d);
 const ARROW = { up: '▲', dn: '▼' };
-const KINDS = ['다르게 볼 점', '의미', '확인할 점'];
 // Each picture zooms toward its own point, so consecutive scenes do not move alike.
 const ORIGINS = ['50% 30%', '32% 50%', '68% 45%', '45% 68%', '60% 35%', '38% 40%'];
 const FADE = 0.35;
@@ -34,32 +33,33 @@ const CARDS = {
     return `<div class="inner"><div class="kicker">${esc(d.kicker)}</div><div class="h1" data-text="${esc(d.headline)}">${headline(d.headline)}</div>
       <div class="ask" data-in="0.35,0.45,24">${esc(d.question)}</div></div>`;
   },
-  agenda(d, sc) {
-    // Each row comes in as its label is said (d.at, from the take's word times), else one by one over ~60% of the scene.
-    const n = d.rows.length, span = Math.max(0.6 * (sc.t1 - sc.t0) - 0.15, 0.3);
+  agenda(d) {
+    // The list says only its count (2026-10-27): the rows come in one by one, every 0.3 s, and stay to be glanced at.
     return `<div class="inner"><div class="kicker" data-in="0,0.3,20">${esc(d.kicker)}</div><div class="list">`
-      + d.rows.map((r, i) => `<div class="row" data-in="${(d.at?.[i] ?? 0.15 + i * span / n).toFixed(2)},0.4,0,70"><b>${i + 1}</b>`
+      + d.rows.map((r, i) => `<div class="row" data-in="${(0.15 + 0.3 * i).toFixed(2)},0.4,0,70"><b>${i + 1}</b>`
         + `<div><strong data-fit>${esc(r.label)}</strong><small>${esc(r.agenda)}</small></div></div>`).join('')
       + '</div></div>';
   },
   issue(d) {
-    // The issue's one-line takeaway (its line in the list) leads; the number backs it up (owner, 10/21).
-    const dir = ARROW[d.dir] || '';
+    // The issue's one-line takeaway (its line in the list) leads; the number backs it up (owner, 10/21). A core issue's
+    // card ends with what it means (그래서, 2026-10-27); a brief one is the number and one line.
+    const dir = ARROW[d.dir] || '', brief = d.tier !== 'core';
+    const num = d.big ? `<div class="num"><span class="v ${d.dir || ''}" data-pop="0.35,0.45" data-fit>${dir}${esc(bare(d.big, ARROW[d.dir]))}</span>`
+      + `<span class="l" data-in="0.55,0.4,0,-24">${esc(d.big_label)}</span></div>` : '';
+    const tag = !brief && d.meaning ? `<span class="tag k1" data-in="1.1,0.4,14"><strong>그래서</strong> · ${gold(d.meaning)}</span>` : '';
     return `<div class="inner"><div class="pill" data-in="0,0.3,0,-50" data-fit><b>${d.k}</b>${esc(d.label)}<i>${d.k}/${d.n}</i></div>
-      <div class="ih" data-in="0.1,0.4,24" data-text="${esc(d.agenda)}">${headline(d.agenda)}</div>
-      <div class="num"><span class="v ${d.dir || ''}" data-pop="0.35,0.45" data-fit>${dir}${esc(bare(d.big, ARROW[d.dir]))}</span>`
-      + `<span class="l" data-in="0.55,0.4,0,-24">${esc(d.big_label)}</span></div>
-      <div class="card" data-in="0.7,0.45,40"><p>${gold(d.body)}</p>`
-      + `<span class="tag k${Math.max(0, KINDS.indexOf(d.note_kind))}" data-in="1.1,0.4,14"><strong>${esc(d.note_kind)}</strong> · ${esc(d.note)}</span></div></div>`;
+      <div class="ih" data-in="0.1,0.4,24" data-text="${esc(d.agenda)}">${headline(d.agenda)}</div>${num}
+      <div class="card${brief ? ' brief' : ''}" data-in="0.7,0.45,40"><p>${gold(d.body)}</p>${tag}</div></div>`;
   },
   outro(d, sc) {
-    // One end screen (owner, 10/22): the signals, the cut's question left for the full episode with a button pointing
-    // down to the related video, and the report mail line. The button comes in as '본편' is said, else halfway through.
+    // One end screen: the answer to the opener first (2026-10-27), the signals to watch, then a button pointing down to
+    // the related video and the report mail line. The button comes in as '본편' is said, else halfway through.
     const said = EP.captions.find(c => c[0] >= sc.t0 && c[0] < sc.t1 && c[2].includes('본편'));
     const pop = said ? Math.min(said[0] - sc.t0, sc.t1 - sc.t0 - 1.2) : 0.5 * (sc.t1 - sc.t0);
-    return `<div class="inner"><div class="kicker" data-in="0,0.3,20">${esc(d.kicker)}</div><div class="sigs" data-in="0.1,0.4,30">`
-      + d.signals.map((s, i) => `<div class="sig" data-in="${(0.3 + i * 0.35).toFixed(2)},0.4,0,50"><b>${'①②③④'[i]}</b><span>${gold(s)}</span></div>`).join('')
-      + `</div>` + (d.question ? `<div class="oq" data-in="${Math.max(0.3, pop - 0.5).toFixed(2)},0.4,20">${gold(d.question)}</div>` : '')
+    return `<div class="inner"><div class="kicker" data-in="0,0.3,20">${esc(d.kicker)}</div>`
+      + `<div class="oq" data-in="0.15,0.45,20">${gold(d.conclusion)}</div><div class="sigs" data-in="0.6,0.4,30">`
+      + d.signals.map((s, i) => `<div class="sig" data-in="${(0.8 + i * 0.35).toFixed(2)},0.4,0,50"><b>${'①②③④'[i]}</b><span>${gold(s)}</span></div>`).join('')
+      + `</div>`
       + `<div class="play" data-pop="${Math.max(0.4, pop).toFixed(2)},0.45">${PLAY}${esc(d.button)}<i class="down">${DOWN}</i></div>`
       + (d.mail ? `<div class="mailrow" data-in="${(Math.max(0.4, pop) + 0.8).toFixed(2)},0.4,14">${MAIL}<span>${esc(d.mail)}</span></div>` : '')
       + '</div>';
