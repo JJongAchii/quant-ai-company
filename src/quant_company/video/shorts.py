@@ -526,13 +526,18 @@ def shorts_violations(plan, source, episode, issues):
         missing = (shown | nums(narration)) - in_episode
         if missing and not (issue and issue.issue in left_out):
             found.append(f'Number {sorted(missing)} in {name} is not in the delivered episode')
-        # A direction is drawn only where the cited line states one, and never against it (▲ for a fall).
+        # A direction is drawn only where the cited line states one, and never against it (▲ for a fall); a number
+        # whose line states one shows it (preview 10/27 AM: '20.8%' of a fall read like a rise without its arrow).
         if issue and issue.dir:
             for value in nums(issue.big):
                 stated_dir = direction(source_text, value)
                 if stated_dir != issue.dir:
                     found.append(f'Direction of {issue.big} in {name} '
                                  + ('is not stated by its line' if stated_dir is None else 'contradicts its line'))
+        elif issue and issue.big:
+            stated = {direction(source_text, value) for value in nums(issue.big)} - {None}
+            if len(stated) == 1:
+                found.append(f'Direction of {issue.big} in {name} is stated by its line ({stated.pop()}): set dir')
         for text in [narration, *screen]:
             for value in nums(text):
                 said, stated_dir = direction(text, value), direction(source_text, value)

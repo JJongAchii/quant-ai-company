@@ -1466,3 +1466,20 @@ def test_a_fix_trading_a_finding_for_a_new_one_is_not_taken():
 
     assert fix_adds_findings(['a', 'b'], ['a', 'c']) and fix_adds_findings([], ['a'])
     assert not fix_adds_findings(['a', 'b'], ['a']) and not fix_adds_findings(['a'], ['a'])
+
+
+def test_a_number_its_line_gives_a_direction_shows_it():
+    # Preview 10/27 AM: '20.8%' (현대차 영업이익, '20.8% 줄고') was drawn with no arrow and read like a rise.
+    assert any('Direction of 1.92% in issue semis is stated by its line (up): set dir' in f
+               for f in violations(cut(issue=0, dir=None)))
+    assert not any('stated by its line' in f for f in violations(cut()))
+
+
+def test_the_meaning_line_reads_like_the_body(tmp_path):
+    # Preview 10/27 AM: the 그래서 line, the core issue's takeaway, was drawn smaller than the body it concludes.
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    built = ShortsRenderer(settings, WordAligner()).build(job, shorts(), episode().model_dump(mode='json'), tmp_path / 'out',
+                                                          tones(tmp_path, TAKES, ffmpeg))
+    [[tag, body]] = on_page(built['page'], ["['.issue .tag', '.issue .card p'].map(s => parseFloat(getComputedStyle("
+                                            "document.querySelector(s)).fontSize))"])
+    assert tag >= 0.85 * body, (tag, body)
