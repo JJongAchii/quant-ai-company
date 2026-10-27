@@ -35,6 +35,7 @@ from .episode import (
     template,
     tidy_tags,
 )
+from .lineup import coverage_findings
 from .motion import BRAND, RENDERER_DIGEST, MotionRenderer
 from .motion import FPS as MOTION_FPS
 from .render import Renderer, RenderInProgress, korean_numbers, probe, spoken, verify_artifacts
@@ -644,6 +645,9 @@ class VideoRunner:
             plan = proposal(job, await self.model(job, key, prompt, plan_class(job), contract))
             findings = plan_findings(job, plan, library, photos=qa.get('illustrations_offered', False),
                                      recent=qa.get('recent_thumbnails') or [])
+            if template(job) == 'motion-v2':
+                # Every briefing issue gets an issue scene, so the Shorts can carry the same issues (owner, 2026-10-26).
+                findings += coverage_findings(job['source'], plan.model_dump(mode='json'))
             attempts.append({'key': key, 'outcome': 'check_failed' if findings else 'passed', 'findings': findings[:30]})
         except ModelRejected as rejected:
             plan, findings = None, [f'Output contract: {rejected.detail}' if rejected.detail else f'Model {rejected.code}']

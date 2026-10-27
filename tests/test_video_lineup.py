@@ -2,9 +2,13 @@
 multi-issue briefing and episode below are also the fixtures of the Shorts tests."""
 
 import copy
+import json
 
 from quant_company.video.body import parse
-from quant_company.video.lineup import CORE_MAX, briefing_issues, lineup, uncovered
+from quant_company.video.lineup import CORE_MAX, briefing_issues, coverage_findings, lineup, uncovered
+
+from .test_briefing import brief  # noqa: F401
+from .test_video import video  # noqa: F401
 
 PM_TITLES = ['장 초반 반등 실패, 코스닥 낙폭 확대', '유가 조정에도 공급 위험은 남았다', 'AI 이익 성장과 투자재원',
              '중소기업 수출 최대, 자동차는 역행', 'LIG 급락·루닛 상한가', '반도체 호조가 청년 채용으로 안 이어져']
@@ -131,3 +135,42 @@ def test_the_fixture_brief_has_one_issue():
     assert [(i.number, i.tier) for i in found] == [(1, 'core')]
     assert found[0].title == '반도체 주도와 제한된 확산'
     assert found[0].scene_ids == ('head', 'flow', 'photo', 'counter')
+
+
+def test_coverage_findings_name_each_uncovered_issue():
+    source = issue_body(PM_TITLES[:3])
+    episode = issue_episode(source, {1: '핵심 이슈', 2: '함께 볼 이슈', 3: '함께 볼 이슈'}, skip=(2, 3))
+    assert coverage_findings(source, episode) == [
+        f"Briefing issue {n} ({PM_TITLES[n - 1]}) has no scene in 핵심 이슈 or 함께 볼 이슈: give it at least one issue scene"
+        for n in (2, 3)]
+    assert coverage_findings(source, issue_episode(source, {1: '핵심 이슈', 2: '함께 볼 이슈', 3: '함께 볼 이슈'})) == []
+
+
+def test_a_facts_edition_has_no_coverage_finding():
+    source = {**issue_body(PM_TITLES[:2]), 'format': 'facts'}
+    assert coverage_findings(source, {'scenes': []}) == []
+    assert coverage_findings(issue_body([]), {'scenes': []}) == []
+
+
+async def test_an_episode_that_skips_a_briefing_issue_is_asked_to_cover_it(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video.contracts import VisualReview
+
+    from .test_video_motion import InspectedRenderer, InspectingProvider, episode, produce_inspected
+
+    store, _ = video
+    provider = InspectingProvider(visual=[VisualReview(passed=True, issues=[])])
+    # The fixture brief's one issue (lines b006-b011) is cited by no issue-chapter scene of the first version.
+    skipping = episode().model_dump(mode='json')
+    for scene in skipping['scenes']:
+        scene['claim_ids'] = {'head': ['b013'], 'flow': ['b005'], 'photo': ['b012'], 'counter': ['b014']}.get(
+            scene['id'], scene['claim_ids'])
+    provider.queues['video_episode_v1'] = [type(episode()).model_validate(skipping), episode()]
+    job, _ = await produce_inspected(store, tmp_path, monkeypatch, provider, InspectedRenderer(), brief)
+    attempts = job['qa']['plan_attempts']
+    finding = ('Briefing issue 1 (반도체 주도와 제한된 확산) has no scene in 핵심 이슈 or 함께 볼 이슈: '
+               'give it at least one issue scene')
+    assert attempts[0]['outcome'] == 'check_failed' and finding in attempts[0]['findings']
+    assert attempts[1]['outcome'] == 'passed', attempts[1]
+    second = [c for c in provider.calls if c.output_contract == 'video_episode_v1'][1].prompt
+    assert finding in json.loads(second.rsplit('\n', 1)[1])['revision_feedback']
+    assert job['state'] == 'uploading', job['error']

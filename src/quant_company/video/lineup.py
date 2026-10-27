@@ -67,3 +67,12 @@ def lineup(source, episode):
 def uncovered(issues):
     """The issues no episode scene covered."""
     return [i for i in issues if not i.scene_ids]
+
+
+def coverage_findings(source, episode):
+    """The episode script's findings on briefing issues it gave no issue scene, so the next version covers them (the
+    Shorts then carries the same issues). A fact-list edition has no issue analysis to cover."""
+    if source.get('format') == 'facts':
+        return []
+    return [f"Briefing issue {i.number} ({i.title}) has no scene in 핵심 이슈 or 함께 볼 이슈: give it at least one issue "
+            "scene" for i in uncovered(lineup(source, episode))]
