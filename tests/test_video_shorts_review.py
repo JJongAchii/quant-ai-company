@@ -73,3 +73,23 @@ def test_keep_spoken_matches_issues_by_id():
     raw = original.model_dump(mode='json')
     raw['issues'].reverse()  # a reordered "fix" would pair one issue's screen with the other's narration
     assert keep_spoken(original, ShortsPlan.model_validate(raw)) == original
+
+
+def test_review_prompt_keeps_the_reviewer_inside_the_cuts_limits():
+    # Preview 10/27 close: the reviewer asked a one-line issue to carry a second topic and a number the episode never
+    # showed (-13.88%), so the next version failed the checks and the concerns could never be met.
+    source, episode_json, issues = inputs()
+    prompt = review_prompt(source, episode_json, issues, shorts(), [], 61.4)
+    for rule in ('never ask a brief issue to carry a second topic', 'never ask for a number the episode does not show',
+                 'at most 8 concerns, the most important first', 'what a viewer would get wrong or miss'):
+        assert rule in prompt, rule
+    data = json.loads(prompt.rsplit('\n', 1)[1])
+    assert '1.92' in data['episode_numbers'] and '5300' in data['episode_numbers']
+
+
+def test_the_writer_carries_the_main_topic_of_a_two_topic_brief_issue():
+    from quant_company.video.shorts import shorts_prompt
+
+    source, episode_json, issues = inputs()
+    prompt = shorts_prompt(source, episode_json, issues)
+    assert 'When an entry\'s title joins two topics, a brief issue carries the more material one' in prompt
