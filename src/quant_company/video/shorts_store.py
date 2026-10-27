@@ -39,9 +39,12 @@ def names(job):
     return [(source, stem + suffix, title) for source, suffix, title in FILES]
 
 
-def delivery_text(job, artifacts, script_findings=()):
-    """script_findings: what the checks still found in a cut produced after its last version (Runner.shorts_step)."""
-    findings = [f'대본: {f}' for f in script_findings] + [f'화면·음성: {f}' for f in artifacts.get('findings') or []]
+def delivery_text(job, artifacts, script_findings=(), review_findings=(), inspection_findings=()):
+    """What is left when the cut goes out anyway (owner, 10/20 PM: never skipped on its checks): the checks after its
+    last version, the reviewer's concerns after the last review, the final editor's after the last look at the frames,
+    and the renderer's own findings."""
+    findings = ([f'대본: {f}' for f in script_findings] + [f'검토: {f}' for f in review_findings]
+                + [f'화면: {f}' for f in inspection_findings] + [f'화면·음성: {f}' for f in artifacts.get('findings') or []])
     check = '자동 검사 통과' if not findings else f'자동 검사 지적 {len(findings)}건(아래, 제작은 계속함)'
     notes = ''.join(f'• {f[:180]}\n' for f in findings[:8]) + (f'• 외 {len(findings) - 8}건\n' if len(findings) > 8 else '')
     issues = sum(1 for x in artifacts.get('scenes', []) if x.get('type') == 'issue')
@@ -150,14 +153,16 @@ class ShortsStore:
         with self.db.transaction() as conn:
             conn.execute('SELECT pg_advisory_xact_lock(%s)', (LOCK,))
             current = conn.execute('SELECT * FROM video_shorts WHERE job_id=%s FOR UPDATE', (row['job_id'],)).fetchone()
-            if current['state'] != 'rendering':
+            if current['state'] != 'inspecting':
                 raise PolicyError('Shorts changed while processing')
             project = self.company._project(conn, job['source']['project_id'])
             if not project['thread_ts'] or project['status'] != 'active':
                 raise PolicyError('Brief thread receipt missing')
             mid = stable(f"video-shorts:{job['id']}")
             # Ready files wait for the owner's upload: the message mentions the owner (2026-10-19 tag rule).
-            text = delivery_text(job, artifacts, (current['qa'] or {}).get('shipped_with_findings', []))
+            qa = current['qa'] or {}
+            text = delivery_text(job, artifacts, qa.get('shipped_with_findings', []), qa.get('review_findings', []),
+                                 qa.get('inspection_findings', []))
             self.company._message(conn, project, None, 'market_brief', 'video_shorts', text, message_id=mid, notify_owner=True)
             conn.execute("""UPDATE video_shorts SET state='delivering',artifacts=%s,delivery_message_id=%s,error=NULL,
                 lease_until=NULL,updated_at=now() WHERE job_id=%s""", (Jsonb(artifacts), mid, row['job_id']))

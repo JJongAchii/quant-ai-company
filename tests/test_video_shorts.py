@@ -16,7 +16,7 @@ from quant_company.contracts import ProviderFault
 from quant_company.video import runner as runner_module
 from quant_company.video import shorts as shorts_module
 from quant_company.video.body import parse
-from quant_company.video.contracts import digest
+from quant_company.video.contracts import VisualReview, digest
 from quant_company.video.lineup import lineup
 from quant_company.video.render import checksum, run, verify_artifacts
 from quant_company.video.runner import VideoRunner
@@ -800,17 +800,28 @@ def test_music_is_never_fatal_and_never_lifts_the_peak(tmp_path, monkeypatch):
 
 
 class ShortsFileRenderer:
-    def __init__(self):
-        self.calls = []
+    """Writes the cut's files and one review frame per scene, like ShortsRenderer; heard: speech-to-text findings per
+    scene for the first render."""
+
+    def __init__(self, heard=None):
+        self.calls, self.plans, self.heard = [], [], heard or {}
 
     def render(self, job, plan, episode, directory, paths, stop=None):
         self.calls.append((len(paths), paths[-1]))
+        self.plans.append(plan)
         files = {'shorts.mp4': b'simulated-shorts', 'shorts.srt': b'1\n00:00:00,000 --> 00:00:01,000\nx\n',
                  'shorts-upload.txt': '[제목]\nS&P 500 1.92% 상승\n'.encode(), 'shorts-plan.json': plan.model_dump_json().encode()}
         for name, content in files.items():
             (directory / name).write_bytes(content)
+        (directory / 'review').mkdir(exist_ok=True)
+        ids = ['opener', 'agenda', *(i.id for i in plan.issues), 'outro']
+        for n, scene in enumerate(ids):
+            (directory / f'review/{n:02}-{scene}.jpg').write_bytes(b'\xff\xd8simulated-frame')
+        heard, self.heard = self.heard, {}
         manifest = {'title': plan.title, 'duration': 46.0, 'qa_passed': True, 'findings': [], 'directory': str(directory),
                     'scenes': [{'id': i.id, 'type': 'issue'} for i in plan.issues],
+                    'review': {'frames': [{'scene': s, 'file': f'review/{n:02}-{s}.jpg'} for n, s in enumerate(ids)],
+                               'audio': heard},
                     'files': {n: checksum(directory / n) for n in files}}
         manifest['digest'] = digest(manifest)
         return manifest
@@ -1312,3 +1323,103 @@ async def test_a_lost_review_turn_reviews_the_same_plan_again(brief, video, tmp_
     assert row['state'] == 'delivering', row['error']
     assert [r.get('outcome') for r in row['qa']['review_rounds']] == ['uncertain', None]
     assert len(shorts_calls(provider, 'shorts')) == 1  # nothing was rewritten
+
+
+def visual_issue(scene, kind, detail, fix):
+    from quant_company.video.contracts import VisualReview
+
+    return VisualReview(passed=False, issues=[dict(scene=scene, kind=kind, detail=detail, fix=fix)])
+
+
+async def test_a_cut_is_inspected_before_it_is_delivered(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'delivering', row['error']
+    [visual] = shorts_calls(provider, 'visual')
+    assert visual.request_id == f"video-{job['id']}-shorts-visual-1" and visual.output_contract == 'video_visual_review_v1'
+    assert visual.reasoning_effort == job['policy']['review_effort'] and len(visual.attachments) == 4  # one per scene
+    assert '1=opener, 2=agenda, 3=semis, 4=outro' in visual.prompt.replace('image ', '')
+    assert row['qa']['inspections'][0]['issues'] == [] and row['qa']['inspection_findings'] == []
+
+
+async def test_a_screen_fix_never_changes_what_is_said(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.shorts_queues['visual'] = [visual_issue('semis', 'clipped_text', '본문이 두 줄을 넘어 잘림', '본문을 짧게'),
+                                        visual_issue('semis', 'other', '문제 없음', 'none')]
+    fixed = cut(issue=0, body='S&P 500이 정규장 종가 기준 1.92% 올랐습니다.',
+                narration='에스앤피 500이 1.92% 올랐다는 다른 말입니다. 수익률 하락은 성장주 부담을 낮출 수 있다고 봅니다.')
+    provider.queues['video_shorts_v1'] = [shorts(), ShortsPlan.model_validate(fixed)]
+    renderer = ShortsFileRenderer()
+    row = await shorts_ticks(store, provider, speech, renderer, job, limit=20)
+    assert row['state'] == 'delivering', row['error']
+    [_, fix] = shorts_calls(provider, 'shorts')
+    assert fix.request_id == f"video-{job['id']}-shorts-fix-1" and '본문이 두 줄을 넘어 잘림' in fix.prompt
+    assert fix.reasoning_effort == job['policy']['effort']
+    # The screen changed, what is said did not: the second render reuses every paid take.
+    assert [p.issues[0].body for p in renderer.plans] == [shorts().issues[0].body, 'S&P 500이 정규장 종가 기준 1.92% 올랐습니다.']
+    assert renderer.plans[1].narrations() == shorts().narrations()
+    with store.db.transaction() as conn:
+        takes = conn.execute("SELECT count(*) AS n FROM video_effects WHERE job_id=%s AND id LIKE %s",
+                             (job['id'], '%:shorts-speech-%')).fetchone()['n']
+    assert takes == 4 and row['plan']['issues'][0]['body'] == 'S&P 500이 정규장 종가 기준 1.92% 올랐습니다.'
+    assert row['qa']['inspection_findings'] == ['semis: 문제 없음']
+
+
+async def test_a_fix_that_adds_findings_is_reverted(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.shorts_queues['visual'] = [visual_issue('semis', 'readability', '숫자가 작음', '숫자를 키움')]
+    worse = cut(issue=0, big='7.7%')  # a number in no cited line
+    provider.queues['video_shorts_v1'] = [shorts(), ShortsPlan.model_validate(worse)]
+    renderer = ShortsFileRenderer()
+    row = await shorts_ticks(store, provider, speech, renderer, job, limit=20)
+    assert row['state'] == 'delivering', row['error']
+    assert row['qa']['inspections'][0]['fix_reverted'] is True and len(renderer.calls) == 1
+    assert row['plan']['issues'][0]['big'] == '1.92%' and row['qa']['inspection_findings'] == ['semis: 숫자가 작음']
+
+
+async def test_a_misread_scene_is_voiced_again_in_korean_numbers(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video.render import korean_numbers
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.shorts_queues['visual'] = [visual_issue('semis', 'audio_text', '1.92를 일구이로 읽음', '숫자를 풀어 다시 녹음'),
+                                        VisualReview(passed=True, issues=[])]
+    renderer, before = ShortsFileRenderer(heard={'semis': 'heard 1.92 as 192'}), len(speech.calls)
+    row = await shorts_ticks(store, provider, speech, renderer, job, limit=24)
+    assert row['state'] == 'delivering', row['error']
+    assert row['qa']['retake'] == ['semis'] and len(renderer.calls) == 2
+    assert len(speech.calls) - before == 5 and speech.calls[-1]['text'] == korean_numbers(shorts().issues[0].narration)
+    assert 'heard 1.92 as 192' in shorts_calls(provider, 'visual')[0].prompt
+
+
+async def test_inspection_stops_after_its_last_round(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    titles = iter(['S&P 500 1.92% 상승, 반도체 주도', 'S&P 500 1.92% 상승, 반도체 견인', 'S&P 500 1.92% 상승, 반도체 앞장'])
+    provider.shorts_queues['visual'] = [visual_issue('opener', 'readability', '제목이 길어 보임', '제목을 다듬기')]
+    provider.queues['video_shorts_v1'] = [shorts(), *(shorts(title=t) for t in titles)]
+    renderer = ShortsFileRenderer()
+    row = await shorts_ticks(store, provider, speech, renderer, job, limit=30)
+    assert row['state'] == 'delivering', row['error']  # never held on its inspection
+    assert len(row['qa']['inspections']) == 3 and len(renderer.calls) == 3
+    assert row['qa']['inspection_findings'] == ['opener: 제목이 길어 보임']
+
+
+def test_the_delivery_text_lists_review_and_screen_findings():
+    from quant_company.video.shorts_store import delivery_text
+
+    job = {'source': {'edition_kind': 'close'}}
+    artifacts = {'title': '반등 실패, 수급 부담이 막았다', 'duration': 71.6, 'findings': ['Scene semis: heard 1.92 as 192'],
+                 'scenes': [{'id': 'a', 'type': 'issue'}, {'id': 'b', 'type': 'issue'}]}
+    text = delivery_text(job, artifacts, ['숫자 지적'], ['용어 풀이가 없음'], ['semis: 숫자가 작음'])
+    assert '길이 72초 · 이슈 2개' in text and '자동 검사 지적 4건(아래, 제작은 계속함)' in text
+    assert ('• 대본: 숫자 지적\n• 검토: 용어 풀이가 없음\n• 화면: semis: 숫자가 작음\n'
+            '• 화면·음성: Scene semis: heard 1.92 as 192\n') in text

@@ -464,7 +464,7 @@ class VideoRunner:
 
     async def shorts_step(self, row, job):
         steps = {'writing': self.shorts_write, 'reviewing': self.shorts_review, 'synthesizing': self.shorts_synthesize,
-                 'rendering': self.shorts_render}
+                 'rendering': self.shorts_render, 'inspecting': self.shorts_inspect}
         await steps[row['state']](row, job)
 
     async def shorts_plan(self, row):
@@ -591,7 +591,7 @@ class VideoRunner:
         plan = await self.shorts_plan(row)
         if plan is None:
             return
-        takes = self.shorts_takes(job, plan)
+        takes = self.shorts_takes(job, plan, (row['qa'] or {}).get('retake', ()))
         pending = [(k, r) for k, r in takes if not await asyncio.to_thread(self.store.effect_receipt, job, k, 'completed')]
         cost = sum(speech_credits(r['text']) for _, r in pending)
         if pending and not await asyncio.to_thread(self.store.budget_available, job, cost, SHORTS_CREDIT_RESERVE):
@@ -614,7 +614,7 @@ class VideoRunner:
         plan = await self.shorts_plan(row)
         if plan is None:
             return
-        takes = self.shorts_takes(job, plan)
+        takes = self.shorts_takes(job, plan, (row['qa'] or {}).get('retake', ()))
         # A cut voiced before a release changed its fixed lines (10/21: the read list, the mail invitation) voices
         # the new ones first.
         if not all([await asyncio.to_thread(self.store.effect_receipt, job, k, 'completed') for k, _ in takes]):
@@ -631,7 +631,67 @@ class VideoRunner:
         except RenderInProgress:
             await asyncio.to_thread(self.shorts.wait, row, 120, 'render_in_progress')
             return
-        await asyncio.to_thread(self.shorts.deliver, row, job, artifacts)
+        await asyncio.to_thread(self.shorts.save, row, 'inspecting', artifacts=artifacts)
+
+    async def shorts_inspect(self, row, job):
+        """The final editor at the review effort looks at the rendered frames and the speech-to-text findings, like the
+        episode's (inspect_video): screen text is fixed without touching what is said, misread scenes are voiced again
+        in Korean number words, up to INSPECT_ROUNDS looks; after the last the files go out with what is left."""
+        plan = await self.shorts_plan(row)
+        if plan is None:
+            return
+        qa, artifacts, policy = dict(row['qa'] or {}), row['artifacts'], job['policy']
+        rounds = qa.setdefault('inspections', [])
+        directory = verify_artifacts(artifacts, self.settings.video_artifact_dir)
+        review = artifacts.get('review') or {}
+        frames = [f for f in review.get('frames', []) if (directory / f['file']).is_file()]
+        heard = review.get('audio') or {}
+        key = f'shorts-visual-{len(rounds) + 1}'
+        issues, visual = [], None
+        if frames:
+            attachments = [ProviderAttachment(name=f"frame-{n:02}" + Path(f['file']).suffix,
+                                              media_type='image/png' if f['file'].endswith('.png') else 'image/jpeg',
+                                              data=base64.b64encode((directory / f['file']).read_bytes()).decode())
+                           for n, f in enumerate(frames, 1)]
+            prompt = shorts_review.visual_prompt(job['source'], plan, [(f['scene'], f'image {n}') for n, f in enumerate(frames, 1)],
+                                                 heard)
+            try:
+                visual = await self.model(job, key, prompt, VisualReview, 'video_visual_review_v1', attachments,
+                                          effort=policy.get('review_effort', policy.get('effort', 'high')))
+                issues = [i.model_dump() for i in visual.issues]
+            except ModelRejected as rejected:
+                issues = [{'scene': 'opener', 'kind': 'other', 'detail': f'Visual review unavailable: {rejected.detail}',
+                           'fix': 'none'}]
+        retake = {i['scene'] for i in issues if i['kind'] == 'audio_text'} | (set(heard) if visual is None else set())
+        retake -= set(qa.get('retake', []))  # a scene already voiced again in number words is not voiced a third time
+        screen = [i for i in issues if i['kind'] != 'audio_text' and i['fix'] != 'none']
+        rounds.append({'key': key, 'issues': issues, 'heard': heard, 'findings': artifacts.get('findings', [])})
+        if (screen or retake) and len(rounds) < INSPECT_ROUNDS:
+            fixed = plan
+            if screen:
+                found = lineup(job['source'], job['plan'])
+                try:
+                    patch = await self.model(job, f'shorts-fix-{len(rounds)}', shorts_review.fix_prompt(
+                        job['source'], job['plan'], found, plan, screen), ShortsPlan, contract='video_shorts_v1')
+                    candidate, _ = settle(shorts_review.keep_spoken(plan, patch), job['source'])
+                    # A fix that breaks a rule the cut kept is not taken: the screen stays as it was.
+                    if (len(shorts_violations(candidate, job['source'], job['plan'], found))
+                            > len(shorts_violations(plan, job['source'], job['plan'], found))):
+                        rounds[-1]['fix_reverted'] = True
+                    else:
+                        fixed = candidate
+                except (ModelRejected, ValueError) as error:
+                    rounds[-1]['fix_error'] = str(getattr(error, 'detail', error))[:500]
+            qa['retake'] = sorted(set(qa.get('retake', [])) | retake)
+            if fixed.model_dump(mode='json') != plan.model_dump(mode='json') or retake:
+                qa['inspection_findings'] = []
+                await asyncio.to_thread(self.shorts.save, row, 'synthesizing' if retake else 'rendering',
+                                        plan=fixed.model_dump(mode='json'), qa=qa)
+                return
+        qa['inspection_findings'] = [f"{i['scene']}: {i['detail']}" for i in issues] + (
+            [f'{scene}: speech-to-text mismatch' for scene in heard] if visual is None else [])
+        await asyncio.to_thread(self.shorts.save, row, 'inspecting', qa=qa)
+        await asyncio.to_thread(self.shorts.deliver, {**row, 'qa': qa}, job, artifacts)
 
     def shorts_fallback(self, job, attempts, issues):
         """(plan, findings, attempt number) of the written version with the fewest findings under the current checks, the
@@ -664,11 +724,13 @@ class VideoRunner:
             return json.loads(json.dumps(plan.model_dump(mode='json'), sort_keys=True)) if plan else None
         return None
 
-    def shorts_takes(self, job, plan):
+    def shorts_takes(self, job, plan, retake=()):
         """(effect key, Runway request) per Shorts take, keyed apart from the episode's takes: the hook then the date,
-        the issue count, each issue, then the answer, the signals and the closing tail."""
-        texts = [opener_line(date_line(job), spoken(plan.hook.narration)), spoken(agenda_line(len(plan.issues))),
-                 *(spoken(i.narration) for i in plan.issues), spoken(outro_line(plan.close))]
+        the issue count, each issue, then the answer, the signals and the closing tail. A scene in retake (misread, the
+        final editor said) is voiced in Korean number words."""
+        lines = [('opener', opener_line(date_line(job), plan.hook.narration)), ('agenda', agenda_line(len(plan.issues))),
+                 *((i.id, i.narration) for i in plan.issues), ('outro', outro_line(plan.close))]
+        texts = [korean_numbers(text) if scene in retake else spoken(text) for scene, text in lines]
         return [(f"shorts-speech-{i}-{digest(text)[:12]}",
                  {"text": text, "voice": job["policy"]["voice"], "model": job["policy"]["speech_model"]})
                 for i, text in enumerate(texts)]
