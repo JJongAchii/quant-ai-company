@@ -552,6 +552,9 @@ def test_a_shorts_cut_in_production_holds_the_video_worker():
     release.busy("video-worker", runner=lambda args, **k: queries.append(args[-1]) or "0")
     # A cut waiting 30 minutes for a valid version holds nothing in flight.
     assert any("video_shorts" in q and "no_valid_version" in q for q in queries)
+    # Reviewed and inspected like the episode (2026-10-27): those states hold the worker too.
+    shorts = next(q for q in queries if "video_shorts" in q)
+    assert all(f"'{state}'" in shorts for state in ('writing', 'reviewing', 'synthesizing', 'rendering', 'inspecting'))
 
 
 def test_an_email_being_sent_holds_dispatch():

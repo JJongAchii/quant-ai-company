@@ -13,7 +13,7 @@ from .shorts import CHECKS
 from .store import ACTIVE as EPISODE_ACTIVE
 from .store import EDITION_NAMES, KST, LOCK, VideoStore
 
-ACTIVE = ('writing', 'synthesizing', 'rendering')
+ACTIVE = ('writing', 'reviewing', 'synthesizing', 'rendering', 'inspecting')
 # The next episode is usually in production then (briefs at about 07:45 and 16:10-17:25, then about 1.5 hours of
 # script, speech and render): a cut takes no step that would hold the video worker or the Claude lane. A window
 # (its edition kind is the third value) ends early once that day's episode of its kind is delivered (claim).

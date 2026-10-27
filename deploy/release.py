@@ -345,8 +345,8 @@ def busy(service, runner=run):
     # A Shorts cut holds its lease while the worker writes, voices or renders it; 0 before the table exists. A cut that
     # has no valid version yet waits 30 minutes between turns until the next episode supersedes it: nothing is in
     # flight then (the turn itself is covered by LIVE_CALL), so that wait never holds a release.
-    if service == "video-worker" and sql("SELECT count(*) FROM video_shorts WHERE state IN ('writing','synthesizing',"
-                                         "'rendering') AND lease_until>now() "
+    if service == "video-worker" and sql("SELECT count(*) FROM video_shorts WHERE state IN ('writing','reviewing',"
+                                         "'synthesizing','rendering','inspecting') AND lease_until>now() "
                                          "AND error IS DISTINCT FROM 'no_valid_version'", runner):
         reasons.append("Shorts in production")
     if service in {"news-worker", "briefing-data-worker"}:

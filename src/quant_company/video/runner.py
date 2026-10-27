@@ -14,6 +14,7 @@ from pydantic import ValidationError
 from ..company import PolicyError
 from ..contracts import ProviderAttachment, ProviderFault, ProviderRequest
 from ..providers.client import RuntimeClient
+from . import shorts_review
 from . import store as store_module
 from .contracts import (
     VideoReview,
@@ -35,7 +36,7 @@ from .episode import (
     template,
     tidy_tags,
 )
-from .lineup import coverage_findings
+from .lineup import coverage_findings, lineup
 from .motion import BRAND, RENDERER_DIGEST, MotionRenderer
 from .motion import FPS as MOTION_FPS
 from .render import Renderer, RenderInProgress, korean_numbers, probe, spoken, verify_artifacts
@@ -47,7 +48,7 @@ from .shorts import (
     ShortsSuperseded,
     agenda_line,
     date_line,
-    issue_scenes,
+    estimated_seconds,
     opener_line,
     outro_line,
     settle,
@@ -80,6 +81,8 @@ BRAND_TAKE = 1
 # With no version of the current shape at all, one more is asked for every SHORTS_RETRY seconds until the next episode
 # starts. Its voice never takes the credits the next episodes need: SHORTS_CREDIT_RESERVE stay in the month's budget.
 SHORTS_ATTEMPTS = 5
+# Reviewed like the episode's script (REVIEW_ROUNDS): a lost review turn is asked again, up to these many times.
+SHORTS_REVIEW_ROUNDS, SHORTS_REVIEW_RUNTIME_RETRIES = 2, 4
 SHORTS_RETRY = 1800
 SHORTS_CREDIT_RESERVE = 80
 REVIEW_PHASES = frozenset({'review', 'visual'})
@@ -460,114 +463,177 @@ class VideoRunner:
         return {"state": "shorts_" + current['state'], "job_id": str(row['job_id'])}
 
     async def shorts_step(self, row, job):
-        qa = dict(row['qa'] or {})
-        if row['state'] == 'writing':
-            if len(issue_scenes(job['plan'])) < 2:  # nothing to cut an issue list from: no turn is spent
-                await asyncio.to_thread(self.shorts.skip, row, 'too_few_issues',
-                                        '쇼츠는 본편에 이슈 장면이 2개 미만이라 만들지 않았습니다.')
-                return
-            attempts = qa.setdefault('attempts', [])
-            if qa.pop('recheck', False):
-                # Given up on older checks: the versions already written are checked again, latest first (it carries
-                # the most fixes), without a new turn.
-                for number, attempt in reversed(list(enumerate(attempts, 1))):
-                    receipt = await asyncio.to_thread(self.store.effect_receipt, job, f'shorts-{number}', 'completed')
-                    if attempt['outcome'] != 'check_failed' or not receipt:
-                        continue
-                    try:
-                        plan, dropped = settle(ShortsPlan.model_validate(receipt['output']), job['source'])
-                    except ValidationError:  # written in an older plan shape: nothing to check it against
-                        attempt['recheck'] = {'checks': SHORTS_CHECKS, 'findings': ['older plan shape']}
-                        continue
-                    attempt['recheck'] = {'checks': SHORTS_CHECKS,
-                                          'findings': shorts_violations(plan, job['source'], job['plan']),
-                                          **({'dropped': dropped} if dropped else {})}
-                    if not attempt['recheck']['findings']:
-                        await asyncio.to_thread(self.shorts.save, row, 'synthesizing', plan=plan.model_dump(mode='json'),
-                                                qa=qa)
-                        return
-                # Nothing written passes (or nothing was written: 10/20 PM, every turn rejected by the old worker during
-                # the release): the cut goes on writing under the rules below.
-            if sum(a['outcome'] not in RUNTIME_OUTCOMES for a in attempts) >= SHORTS_ATTEMPTS:
-                best = await asyncio.to_thread(self.shorts_fallback, job, attempts)
-                if best:
-                    plan, found, number = best
-                    qa.update(shipped_with_findings=found, shipped_attempt=number)
-                    await asyncio.to_thread(self.shorts.save, row, 'synthesizing', plan=plan.model_dump(mode='json'), qa=qa)
-                    return
-                if not qa.pop('retry_waited', False):
-                    qa['retry_waited'] = True
-                    await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
-                    await asyncio.to_thread(self.shorts.wait, row, SHORTS_RETRY, 'no_valid_version')
-                    return
-            last = attempts[-1].get('findings', []) if attempts else []
-            # The cut takes the shorts lessons frozen with its episode's job; the episode prompt never sees them.
-            prompt = shorts_prompt(job['source'], job['plan'], (job.get('qa') or {}).get('review_findings', []),
-                                   '\n'.join(f'- {f}' for f in last[:30]),
-                                   lessons=[x for x in job['policy'].get('lessons', ()) if x.get('scope') == 'shorts'],
-                                   outlook=(job['policy'].get('craft') or 0) >= 2)
-            try:
-                # A short cut of a checked episode: a lighter turn keeps the Claude lane free for the next episode.
-                plan = await self.model(job, f'shorts-{len(attempts) + 1}', prompt, ShortsPlan, contract='video_shorts_v1',
-                                        effort='high')
-            except ModelRejected as error:
-                # A lost turn (uncertain, timeout) wrote nothing; like a rejected one, the next attempt is a new request.
-                attempts.append({'outcome': error.code if error.code in RUNTIME_OUTCOMES else 'rejected', 'code': error.code,
-                                 'findings': [str(error.detail)[:300]]})
-                await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
-                if error.code in RUNTIME_OUTCOMES:  # not counted above: paced like the episode's lost turns
-                    lost = sum(a['outcome'] in RUNTIME_OUTCOMES for a in attempts)
-                    await asyncio.to_thread(self.shorts.wait, row, min(180, 30 * lost), 'model_retry')
-                return
-            plan, dropped = settle(plan, job['source'])
-            found = shorts_violations(plan, job['source'], job['plan'])
-            attempts.append({'outcome': 'check_failed' if found else 'passed', 'findings': found,
-                             **({'dropped': dropped} if dropped else {})})
-            if found:
-                await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
-            else:
-                await asyncio.to_thread(self.shorts.save, row, 'synthesizing', plan=plan.model_dump(mode='json'), qa=qa)
-        elif row['state'] == 'synthesizing':
-            takes = self.shorts_takes(job, ShortsPlan.model_validate(row['plan']))
-            pending = [(k, r) for k, r in takes if not await asyncio.to_thread(self.store.effect_receipt, job, k, 'completed')]
-            cost = sum(speech_credits(r['text']) for _, r in pending)
-            if pending and not await asyncio.to_thread(self.store.budget_available, job, cost, SHORTS_CREDIT_RESERVE):
-                await asyncio.to_thread(self.shorts.skip, row, 'credit_reserve',
-                                        '쇼츠는 다음 회차들의 음성 크레딧을 남기기 위해 만들지 않았습니다.')
-                return
-            if pending:
-                account = await self.speech.account(job['policy']['workspace_id'])
-                if cost > account['credits']['total']:
-                    await asyncio.to_thread(self.shorts.skip, row, 'runway_balance', '쇼츠는 음성 크레딧이 부족해 만들지 않았습니다.')
-                    return
-                key, request = pending[0]  # one take per tick, its task ID kept before polling
-                await self.effect(job, key, request, 'speech', lambda: self.speech.submit(**request),
-                                  cost=speech_credits(request['text']))
-                await asyncio.to_thread(self.shorts.save, row, 'synthesizing')
-                return
-            await asyncio.to_thread(self.shorts.save, row, 'rendering')
-        elif row['state'] == 'rendering':
-            plan = ShortsPlan.model_validate(row['plan'])
-            takes = self.shorts_takes(job, plan)
-            # A cut voiced before a release changed its fixed lines (10/21: the read list, the mail invitation) voices
-            # the new ones first.
-            if not all([await asyncio.to_thread(self.store.effect_receipt, job, k, 'completed') for k, _ in takes]):
-                await asyncio.to_thread(self.shorts.save, row, 'synthesizing')
-                return
-            directory = self.settings.video_artifact_dir / str(job['id']) / ('shorts-' + digest(
-                {'plan': row['plan'], 'takes': [k for k, _ in takes]})[:16])
-            directory.mkdir(parents=True, exist_ok=True)
-            paths = await self.fetch_audio(job, takes, directory)
-            try:
-                renderer = self.shorts_renderer or ShortsRenderer(self.settings)
-                artifacts = await asyncio.to_thread(renderer.render, job, plan, job['plan'], directory, paths,
-                                                    lambda: self.shorts.superseded(job['id']))
-            except RenderInProgress:
-                await asyncio.to_thread(self.shorts.wait, row, 120, 'render_in_progress')
-                return
-            await asyncio.to_thread(self.shorts.deliver, row, job, artifacts)
+        steps = {'writing': self.shorts_write, 'reviewing': self.shorts_review, 'synthesizing': self.shorts_synthesize,
+                 'rendering': self.shorts_render}
+        await steps[row['state']](row, job)
 
-    def shorts_fallback(self, job, attempts):
+    async def shorts_plan(self, row):
+        """The stored cut, or None after sending a cut of an older plan shape (written before a release) back to be
+        written again under the current one."""
+        try:
+            return ShortsPlan.model_validate(row['plan'])
+        except ValidationError:
+            await asyncio.to_thread(self.shorts.save, row, 'writing', qa={**(row['qa'] or {}), 'older_shape': True})
+            return None
+
+    async def shorts_write(self, row, job):
+        """One written version per tick, revised from the last one with its findings and the open review concerns; a
+        version that passes the checks goes to the review. After the last attempt the version with the fewest findings
+        is reviewed and produced anyway, its findings in the thread (owner, 10/20 PM)."""
+        qa = dict(row['qa'] or {})
+        issues = lineup(job['source'], job['plan'])
+        if not issues:  # a briefing with no numbered issue (a fact list): nothing to summarise, no turn is spent
+            await asyncio.to_thread(self.shorts.skip, row, 'too_few_issues',
+                                    '쇼츠는 브리핑에 번호 붙은 이슈가 없어 만들지 않았습니다.')
+            return
+        attempts = qa.setdefault('attempts', [])
+        if qa.pop('recheck', False):
+            # Given up on older checks: the versions already written are checked again, latest first (it carries
+            # the most fixes), without a new turn.
+            for number, attempt in reversed(list(enumerate(attempts, 1))):
+                receipt = await asyncio.to_thread(self.store.effect_receipt, job, f'shorts-{number}', 'completed')
+                if attempt['outcome'] != 'check_failed' or not receipt:
+                    continue
+                try:
+                    plan, dropped = settle(ShortsPlan.model_validate(receipt['output']), job['source'])
+                except ValidationError:  # written in an older plan shape: nothing to check it against
+                    attempt['recheck'] = {'checks': SHORTS_CHECKS, 'findings': ['older plan shape']}
+                    continue
+                attempt['recheck'] = {'checks': SHORTS_CHECKS,
+                                      'findings': shorts_violations(plan, job['source'], job['plan'], issues),
+                                      **({'dropped': dropped} if dropped else {})}
+                if not attempt['recheck']['findings']:
+                    await asyncio.to_thread(self.shorts.save, row, 'reviewing', plan=plan.model_dump(mode='json'), qa=qa)
+                    return
+            # Nothing written passes (or nothing was written: 10/20 PM, every turn rejected by the old worker during
+            # the release): the cut goes on writing under the rules below.
+        if sum(a['outcome'] not in RUNTIME_OUTCOMES for a in attempts) >= SHORTS_ATTEMPTS:
+            best = await asyncio.to_thread(self.shorts_fallback, job, attempts, issues)
+            if best:
+                plan, found, number = best
+                qa.update(shipped_with_findings=found, shipped_attempt=number)
+                await asyncio.to_thread(self.shorts.save, row, 'reviewing', plan=plan.model_dump(mode='json'), qa=qa)
+                return
+            if not qa.pop('retry_waited', False):
+                qa['retry_waited'] = True
+                await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
+                await asyncio.to_thread(self.shorts.wait, row, SHORTS_RETRY, 'no_valid_version')
+                return
+        last = attempts[-1].get('findings', []) if attempts else []
+        feedback = [*last[:30], *qa.get('review_concerns', [])]
+        # The cut takes the shorts lessons frozen with its episode's job; the episode prompt never sees them.
+        options = dict(concerns=(job.get('qa') or {}).get('review_findings', []),
+                       feedback='\n'.join(f'- {f}' for f in feedback),
+                       lessons=[x for x in job['policy'].get('lessons', ()) if x.get('scope') == 'shorts'],
+                       outlook=(job['policy'].get('craft') or 0) >= 2)
+        previous = await asyncio.to_thread(self.shorts_previous, job, attempts)
+        prompt = shorts_prompt(job['source'], job['plan'], issues, previous=previous, **options)
+        if len(prompt) > PROMPT_LIMIT:
+            prompt = shorts_prompt(job['source'], job['plan'], issues, **options)
+        try:
+            # Written at the episode script's effort (owner, 2026-10-26: Shorts at the episode's level).
+            plan = await self.model(job, f'shorts-{len(attempts) + 1}', prompt, ShortsPlan, contract='video_shorts_v1')
+        except ModelRejected as error:
+            # A lost turn (uncertain, timeout) wrote nothing; like a rejected one, the next attempt is a new request.
+            attempts.append({'outcome': error.code if error.code in RUNTIME_OUTCOMES else 'rejected', 'code': error.code,
+                             'findings': [str(error.detail)[:300]]})
+            await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
+            if error.code in RUNTIME_OUTCOMES:  # not counted above: paced like the episode's lost turns
+                lost = sum(a['outcome'] in RUNTIME_OUTCOMES for a in attempts)
+                await asyncio.to_thread(self.shorts.wait, row, min(180, 30 * lost), 'model_retry')
+            return
+        plan, dropped = settle(plan, job['source'])
+        found = shorts_violations(plan, job['source'], job['plan'], issues)
+        attempts.append({'outcome': 'check_failed' if found else 'passed', 'findings': found,
+                         **({'dropped': dropped} if dropped else {})})
+        if found:
+            await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
+        else:
+            await asyncio.to_thread(self.shorts.save, row, 'reviewing', plan=plan.model_dump(mode='json'), qa=qa)
+
+    async def shorts_review(self, row, job):
+        """The independent editor at the review effort (owner, 2026-10-26: "본편수준으로 점검"): concerns are fixed by
+        another version, up to SHORTS_REVIEW_ROUNDS reviews; what is left travels with the files."""
+        plan = await self.shorts_plan(row)
+        if plan is None:
+            return
+        qa = dict(row['qa'] or {})
+        rounds = qa.setdefault('review_rounds', [])
+        key = f'shorts-review-{len(rounds) + 1}'
+        policy = job['policy']
+        prompt = shorts_review.review_prompt(job['source'], job['plan'], lineup(job['source'], job['plan']), plan,
+                                             (job.get('qa') or {}).get('review_findings', []), estimated_seconds(plan))
+        try:
+            review = await self.model(job, key, prompt, VideoReview, contract='video_review_v1',
+                                      effort=policy.get('review_effort', policy.get('effort', 'high')))
+            concerns = list(review.concerns) + [f'{name} check failed' for name in REVIEW_CHECKS if not getattr(review, name)]
+        except ModelRejected as rejected:
+            lost = sum(r.get('outcome') in RUNTIME_OUTCOMES for r in rounds)
+            if rejected.code in RUNTIME_OUTCOMES and lost < SHORTS_REVIEW_RUNTIME_RETRIES:
+                # The runtime lost the review turn: the same cut is reviewed again, nothing is rewritten.
+                rounds.append({'key': key, 'passed': False, 'outcome': rejected.code, 'concerns': []})
+                await asyncio.to_thread(self.shorts.save, row, 'reviewing', qa=qa)
+                await asyncio.to_thread(self.shorts.wait, row, min(180, 30 * (lost + 1)), 'model_retry')
+                return
+            concerns = [f'Review output contract: {rejected.detail or rejected.code}']
+        rounds.append({'key': key, 'passed': not concerns, 'concerns': concerns[:20]})
+        reviewed = sum(r.get('outcome') not in RUNTIME_OUTCOMES for r in rounds)
+        written = sum(a['outcome'] not in RUNTIME_OUTCOMES for a in qa.get('attempts', []))
+        if concerns and reviewed < SHORTS_REVIEW_ROUNDS and written < SHORTS_ATTEMPTS:
+            qa['review_concerns'] = concerns
+            await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
+            return
+        qa.pop('review_concerns', None)
+        qa['review_findings'] = concerns
+        await asyncio.to_thread(self.shorts.save, row, 'synthesizing', qa=qa)
+
+    async def shorts_synthesize(self, row, job):
+        plan = await self.shorts_plan(row)
+        if plan is None:
+            return
+        takes = self.shorts_takes(job, plan)
+        pending = [(k, r) for k, r in takes if not await asyncio.to_thread(self.store.effect_receipt, job, k, 'completed')]
+        cost = sum(speech_credits(r['text']) for _, r in pending)
+        if pending and not await asyncio.to_thread(self.store.budget_available, job, cost, SHORTS_CREDIT_RESERVE):
+            await asyncio.to_thread(self.shorts.skip, row, 'credit_reserve',
+                                    '쇼츠는 다음 회차들의 음성 크레딧을 남기기 위해 만들지 않았습니다.')
+            return
+        if pending:
+            account = await self.speech.account(job['policy']['workspace_id'])
+            if cost > account['credits']['total']:
+                await asyncio.to_thread(self.shorts.skip, row, 'runway_balance', '쇼츠는 음성 크레딧이 부족해 만들지 않았습니다.')
+                return
+            key, request = pending[0]  # one take per tick, its task ID kept before polling
+            await self.effect(job, key, request, 'speech', lambda: self.speech.submit(**request),
+                              cost=speech_credits(request['text']))
+            await asyncio.to_thread(self.shorts.save, row, 'synthesizing')
+            return
+        await asyncio.to_thread(self.shorts.save, row, 'rendering')
+
+    async def shorts_render(self, row, job):
+        plan = await self.shorts_plan(row)
+        if plan is None:
+            return
+        takes = self.shorts_takes(job, plan)
+        # A cut voiced before a release changed its fixed lines (10/21: the read list, the mail invitation) voices
+        # the new ones first.
+        if not all([await asyncio.to_thread(self.store.effect_receipt, job, k, 'completed') for k, _ in takes]):
+            await asyncio.to_thread(self.shorts.save, row, 'synthesizing')
+            return
+        directory = self.settings.video_artifact_dir / str(job['id']) / ('shorts-' + digest(
+            {'plan': row['plan'], 'takes': [k for k, _ in takes]})[:16])
+        directory.mkdir(parents=True, exist_ok=True)
+        paths = await self.fetch_audio(job, takes, directory)
+        try:
+            renderer = self.shorts_renderer or ShortsRenderer(self.settings)
+            artifacts = await asyncio.to_thread(renderer.render, job, plan, job['plan'], directory, paths,
+                                                lambda: self.shorts.superseded(job['id']))
+        except RenderInProgress:
+            await asyncio.to_thread(self.shorts.wait, row, 120, 'render_in_progress')
+            return
+        await asyncio.to_thread(self.shorts.deliver, row, job, artifacts)
+
+    def shorts_fallback(self, job, attempts, issues):
         """(plan, findings, attempt number) of the written version with the fewest findings under the current checks, the
         latest on a tie; None when no attempt holds a version of the current plan shape."""
         best = None
@@ -579,10 +645,24 @@ class VideoRunner:
                 plan, _ = settle(ShortsPlan.model_validate(receipt['output']), job['source'])
             except ValidationError:
                 continue
-            found = shorts_violations(plan, job['source'], job['plan'])
+            found = shorts_violations(plan, job['source'], job['plan'], issues)
             if best is None or len(found) <= len(best[1]):
                 best = (plan, found, number)
         return best
+
+    def shorts_previous(self, job, attempts):
+        """The last version written (a lost or rejected turn wrote none) as JSON with sorted keys, so a re-asked turn
+        sends the identical request; None before the first or for a version of an older plan shape."""
+        for number in range(len(attempts), 0, -1):
+            if attempts[number - 1]['outcome'] not in {'passed', 'check_failed'}:
+                continue
+            receipt = self.store.effect_receipt(job, f'shorts-{number}', 'completed')
+            try:
+                plan = ShortsPlan.model_validate(receipt['output']) if receipt else None
+            except ValidationError:
+                return None
+            return json.loads(json.dumps(plan.model_dump(mode='json'), sort_keys=True)) if plan else None
+        return None
 
     def shorts_takes(self, job, plan):
         """(effect key, Runway request) per Shorts take, keyed apart from the episode's takes: the hook then the date,

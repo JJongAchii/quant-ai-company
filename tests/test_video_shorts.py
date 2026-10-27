@@ -46,10 +46,11 @@ from quant_company.video.shorts import (
     shorts_prompt,
     shorts_violations,
 )
+from quant_company.video.shorts_store import ACTIVE as SHORTS_ACTIVE
 from quant_company.video.shorts_store import ShortsStore
 
 from .test_briefing import brief  # noqa: F401
-from .test_video import body_source, video  # noqa: F401
+from .test_video import body_source, good_review, video  # noqa: F401
 from .test_video_delivery import FakeSlack, quiet_other_outbox, send
 from .test_video_lineup import PM_TITLES, issue_body, issue_episode
 from .test_video_motion import (
@@ -815,6 +816,36 @@ class ShortsFileRenderer:
         return manifest
 
 
+class ShortsProvider(InspectingProvider):
+    """The episode's simulated editors, with the Shorts review and inspection answered from their own queues: they share
+    the episode's contracts and are told apart by request ID (video-<job>-shorts-review-N, -shorts-visual-N)."""
+
+    def __init__(self, visual):
+        from quant_company.video.contracts import VisualReview
+
+        from .test_video import good_review
+
+        super().__init__(visual)
+        self.shorts_queues = {'review': [good_review()], 'visual': [VisualReview(passed=True, issues=[])]}
+
+    async def run(self, request):
+        for kind in ('review', 'visual'):
+            if f'-shorts-{kind}-' in request.request_id:
+                queue = self.shorts_queues[kind]
+                self.queues[f'shorts-{kind}'] = queue
+                saved, request = request, request.model_copy(update={'output_contract': f'shorts-{kind}'})
+                response = await super().run(request)
+                self.calls[-1] = saved
+                return response
+        return await super().run(request)
+
+
+def shorts_calls(provider, kind):
+    """The Shorts turns of one kind ('shorts' = writing and fixes, 'review', 'visual'), in order."""
+    return [c for c in provider.calls if ('-shorts-' in c.request_id) and (
+        c.output_contract == 'video_shorts_v1' if kind == 'shorts' else f'-shorts-{kind}-' in c.request_id)]
+
+
 async def delivered_episode(store, tmp_path, monkeypatch, brief, clock=None):  # noqa: F811
     from datetime import datetime
     from zoneinfo import ZoneInfo
@@ -822,7 +853,7 @@ async def delivered_episode(store, tmp_path, monkeypatch, brief, clock=None):  #
     from quant_company.video.contracts import VisualReview
 
     store.settings.video_upload_enabled = store.settings.video_publish_enabled = False
-    provider = InspectingProvider(visual=[VisualReview(passed=True, issues=[])])
+    provider = ShortsProvider(visual=[VisualReview(passed=True, issues=[])])
     provider.queues['video_shorts_v1'] = [shorts()]
     job, speech = await produce_inspected(store, tmp_path, monkeypatch, provider, InspectedRenderer(), brief)
     assert job['state'] == 'delivering', job['error']
@@ -842,12 +873,11 @@ async def shorts_ticks(store, provider, speech, renderer, job, limit=12):
         with store.db.transaction() as conn:
             conn.execute('UPDATE video_shorts SET lease_until=NULL WHERE job_id=%s', (job['id'],))
         row = shorts_store.get(job['id'])
-        if row and row['state'] not in {'writing', 'synthesizing', 'rendering'}:
+        if row and row['state'] not in SHORTS_ACTIVE:
             return row
     return shorts_store.get(job['id'])
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -857,18 +887,22 @@ async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, vid
     takes = len(speech.calls)
     row = await shorts_ticks(store, provider, speech, renderer, job)
     assert row['state'] == 'delivering', row['error']
-    request = next(c for c in provider.calls if c.output_contract == 'video_shorts_v1')
+    [request], [review] = shorts_calls(provider, 'shorts'), shorts_calls(provider, 'review')
     assert request.request_id == f"video-{job['id']}-shorts-1" and episode().upload.title in request.prompt
+    assert review.request_id == f"video-{job['id']}-shorts-review-1" and review.output_contract == 'video_review_v1'
+    # Written like the episode's script and reviewed like it (owner, 2026-10-26: "본편수준으로 점검").
+    assert request.reasoning_effort == job['policy']['effort'] and review.reasoning_effort == job['policy']['review_effort']
+    assert row['qa']['review_rounds'][0]['passed'] and row['qa']['review_findings'] == []
     count = 2 + len(shorts().issues) + 1
-    assert len(speech.calls) - takes == count == 5
+    assert len(speech.calls) - takes == count == 4
     assert speech.calls[-count]['text'].endswith(' 9월 22일 아침 브리핑입니다.')  # the hook first (owner, 10/22)
-    assert speech.calls[-1]['text'].endswith(OUTRO['mail'])
+    assert speech.calls[-1]['text'].endswith(OUTRO['say'])
     assert renderer.calls == [(count, renderer.calls[0][1])]
     with store.db.transaction() as conn:
         message = conn.execute("SELECT o.text,o.thread_ts FROM outbox o WHERE o.id=%s", (row['delivery_message_id'],)).fetchone()
         keys = [r['id'].split(':', 1)[1] for r in conn.execute(
             "SELECT id FROM video_effects WHERE job_id=%s AND id LIKE %s", (job['id'], '%:shorts-speech-%')).fetchall()]
-    assert message['text'].startswith('<@UHUMAN>\n쇼츠 준비 완료') and '이슈 2개' in message['text'] and len(keys) == count
+    assert message['text'].startswith('<@UHUMAN>\n쇼츠 준비 완료') and '이슈 1개' in message['text'] and len(keys) == count
     quiet_other_outbox(store, row['delivery_message_id'])
     slack = FakeSlack()
     assert await send(store, slack)
@@ -881,7 +915,6 @@ async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, vid
     assert len(provider.calls) == calls
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_cut_receives_the_shorts_lessons_frozen_in_its_episode_job(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -895,24 +928,26 @@ async def test_a_cut_receives_the_shorts_lessons_frozen_in_its_episode_job(brief
     assert '쇼츠 첫 문장은 숫자 하나로' in request.prompt and '썸네일 교훈 본편 전용' not in request.prompt
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 7')
-async def test_a_plan_stored_under_the_old_limits_is_still_voiced_and_rendered(brief, video, tmp_path, monkeypatch):  # noqa: F811
-    # A cut written under #194 (a 45-character hook) waits between ticks with no lease while a release swaps the worker.
+async def test_a_plan_of_the_old_shape_is_written_again(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    # A cut written before the release (issues cut from scenes, signals on the plan) waits between ticks with no lease
+    # while the release swaps the worker: it is written again under the new shape, never a failed tick.
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
-    assert row['state'] == 'synthesizing', row['error']
-    stored = {**row['plan'], 'hook': {**row['plan']['hook'], 'narration': OLD_HOOK}}
+    assert row['state'] == 'reviewing', row['error']
+    old = {**row['plan'], 'signals': ['비기술 업종 확산', '한국 반도체 강세'], 'signals_narration': '확산을 봅니다.',
+           'signals_claim_ids': ['b011']}
+    old.pop('close')
     with store.db.transaction() as conn:
-        conn.execute('UPDATE video_shorts SET plan=%s::jsonb WHERE job_id=%s', (json.dumps(stored), job['id']))
-    renderer, takes = ShortsFileRenderer(), len(speech.calls)
-    row = await shorts_ticks(store, provider, speech, renderer, job)
+        conn.execute("UPDATE video_shorts SET state='synthesizing',plan=%s::jsonb WHERE job_id=%s", (json.dumps(old), job['id']))
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
+    assert row['state'] == 'writing' and row['qa']['older_shape'] is True
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
     assert row['state'] == 'delivering', row['error']
-    assert speech.calls[takes]['text'] == opener_line('9월 22일 아침 브리핑입니다.', OLD_HOOK) and len(renderer.calls) == 1
+    assert [c.request_id.rsplit('-', 1)[-1] for c in shorts_calls(provider, 'shorts')] == ['1', '2']
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_cut_voiced_before_new_fixed_lines_voices_them_before_it_renders(brief, video, tmp_path, monkeypatch):  # noqa: F811
     # A release between ticks (10/21: the read list, the mail invitation): the rendering step finds a take it lacks.
     store, clock = video
@@ -925,30 +960,26 @@ async def test_a_cut_voiced_before_new_fixed_lines_voices_them_before_it_renders
         row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
     assert row['state'] == 'rendering', row['error']
     with store.db.transaction() as conn:
-        conn.execute("DELETE FROM video_effects WHERE job_id=%s AND id LIKE %s", (job['id'], '%:shorts-speech-4-%'))
+        conn.execute("DELETE FROM video_effects WHERE job_id=%s AND id LIKE %s", (job['id'], '%:shorts-speech-3-%'))
     renderer, takes = ShortsFileRenderer(), len(speech.calls)
     row = await shorts_ticks(store, provider, speech, renderer, job, limit=1)
     assert row['state'] == 'synthesizing' and not renderer.calls
     row = await shorts_ticks(store, provider, speech, renderer, job)
     assert row['state'] == 'delivering', row['error']
-    assert len(speech.calls) - takes == 1 and speech.calls[-1]['text'].endswith(OUTRO['mail']) and len(renderer.calls) == 1
+    assert len(speech.calls) - takes == 1 and speech.calls[-1]['text'].endswith(OUTRO['say']) and len(renderer.calls) == 1
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 7')
-async def test_an_episode_with_under_two_issue_scenes_spends_no_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811
+async def test_a_briefing_without_numbered_issues_spends_no_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
-    plan = store.get(job['id'])['plan']
-    for scene in plan['scenes']:
-        if scene.get('chapter') == '함께 볼 이슈' or scene['id'] in ('flow', 'photo', 'counter'):
-            scene['chapter'] = '시장'
+    source = dict(store.get(job['id'])['source'])
+    source['body'] = [re.sub(r'\*\d+\. ([^*]+)\*', r'*\1*', part) for part in source['body']]
     with store.db.transaction() as conn:
-        conn.execute('UPDATE video_jobs SET plan=%s::jsonb WHERE id=%s', (json.dumps(plan), job['id']))
-    turns = len([c for c in provider.calls if c.output_contract == 'video_shorts_v1'])
+        conn.execute('UPDATE video_jobs SET source=%s::jsonb,source_digest=%s WHERE id=%s',
+                     (json.dumps(source), digest(source), job['id']))
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
-    assert row['state'] == 'skipped' and row['error'] == 'too_few_issues'
-    assert len([c for c in provider.calls if c.output_contract == 'video_shorts_v1']) == turns
+    assert row['state'] == 'skipped' and row['error'] == 'too_few_issues' and not shorts_calls(provider, 'shorts')
 
 
 async def test_the_episode_goes_first_and_a_late_cut_is_given_up(brief, video, tmp_path, monkeypatch):  # noqa: F811
@@ -976,7 +1007,6 @@ async def test_the_episode_goes_first_and_a_late_cut_is_given_up(brief, video, t
     assert note and not note['text'].startswith('<@')
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_shorts_leave_the_credits_the_next_episodes_need(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -989,14 +1019,13 @@ async def test_shorts_leave_the_credits_the_next_episodes_need(brief, video, tmp
     assert row['state'] == 'skipped' and row['error'] == 'credit_reserve' and len(speech.calls) == takes
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_the_reserve_is_kept_in_the_month_not_in_the_episode_cap(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
     with store.db.transaction() as conn:
         spent = conn.execute('SELECT COALESCE(sum(credits),0) AS n FROM video_effects').fetchone()['n']
-    store.settings.video_episode_credit_limit = spent + 5  # room for the cut's five takes, not for another 80
+    store.settings.video_episode_credit_limit = spent + 5  # room for the cut's four takes, not for another 80
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
     assert row['state'] == 'delivering', row['error']
 
@@ -1060,7 +1089,6 @@ async def test_the_close_cut_starts_once_the_close_episode_is_out(brief, video, 
     assert ShortsStore(store.company).claim()['state'] == 'writing'
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_lost_completion_keeps_the_file_receipt(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -1079,7 +1107,6 @@ async def test_a_lost_completion_keeps_the_file_receipt(brief, video, tmp_path, 
     assert note['text'].startswith('<@UHUMAN>\n') and '서버 보관 경로' in note['text']
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_lost_turn_is_asked_again_as_a_new_attempt(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -1100,17 +1127,16 @@ def given_up(store, job, checks):
 
 
 def shorts_keys(provider):
-    return [c.request_id.rsplit('-', 1)[-1] for c in provider.calls if c.output_contract == 'video_shorts_v1']
+    return [c.request_id.rsplit('-', 1)[-1] for c in shorts_calls(provider, 'shorts')]
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_cut_given_up_on_older_checks_is_checked_again_without_a_new_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
     provider.queues['video_shorts_v1'] = [shorts(), shorts(), shorts()]
     checks = runner_module.shorts_violations
-    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode: ['an older check'])
+    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode, issues: ['an older check'])
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=3)
     assert row['state'] == 'writing' and [a['outcome'] for a in row['qa']['attempts']] == ['check_failed'] * 3
     given_up(store, job, CHECKS)
@@ -1118,15 +1144,14 @@ async def test_a_cut_given_up_on_older_checks_is_checked_again_without_a_new_tur
     assert shorts_store.claim() is None  # given up on the current checks: not looked at again
     monkeypatch.setattr(runner_module, 'shorts_violations', checks)
     given_up(store, job, CHECKS - 1)  # as if given up before this version of the checks
-    calls = len(provider.calls)
+    turns = len(shorts_calls(provider, 'shorts'))
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
     assert row['state'] == 'delivering', row['error']
-    assert len(provider.calls) == calls  # the written versions, no new turn
+    assert len(shorts_calls(provider, 'shorts')) == turns  # the written versions, no new writing turn
     assert row['qa']['attempts'][-1]['recheck'] == {'checks': CHECKS, 'findings': []}
     assert 'recheck' not in row['qa'] and row['plan'] == shorts().model_dump(mode='json')
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_the_cut_given_up_by_the_old_worker_in_the_release_is_written_again(brief, video, tmp_path, monkeypatch):  # noqa: F811
     # 10/20 PM: the v1 worker claimed the cut at 19:00 while claude-runtime already wrote the v2 plan, so all three turns
     # were rejected and the cut was skipped on checks 3 with no version written.
@@ -1136,7 +1161,7 @@ async def test_the_cut_given_up_by_the_old_worker_in_the_release_is_written_agai
     provider.queues['video_shorts_v1'] = [ProviderFault('invalid_output', 'hook: Extra inputs are not permitted; scenes: Field required')]
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=3)
     assert [a['outcome'] for a in row['qa']['attempts']] == ['rejected'] * 3
-    assert CHECKS == 4
+    assert CHECKS == 5
     given_up(store, job, 3)
     provider.queues['video_shorts_v1'] = [shorts()]
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
@@ -1145,7 +1170,6 @@ async def test_the_cut_given_up_by_the_old_worker_in_the_release_is_written_agai
     assert shorts_keys(provider) == ['1', '2', '3', '4']
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_cut_is_produced_with_its_fewest_findings_after_the_last_version(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
@@ -1153,7 +1177,7 @@ async def test_a_cut_is_produced_with_its_fewest_findings_after_the_last_version
     titles = [f'반도체가 이끈 미국 증시 {name}판' for name in ('첫', '둘째', '셋째', '넷째', '다섯째')]
     found = {t: [f'{t} 지적 {"가나다라"[k]}' for k in range(n)] for t, n in zip(titles, (3, 1, 2, 1, 4), strict=True)}
     provider.queues['video_shorts_v1'] = [shorts(title=t) for t in titles]
-    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode: found[plan.title])
+    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode, issues: found[plan.title])
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=16)  # 5 versions, 5 takes, render
     assert row['state'] == 'delivering', row['error']
     assert [a['outcome'] for a in row['qa']['attempts']] == ['check_failed'] * 5 and shorts_keys(provider) == ['1', '2', '3', '4', '5']
@@ -1165,7 +1189,6 @@ async def test_a_cut_is_produced_with_its_fewest_findings_after_the_last_version
     assert '자동 검사 지적 1건(아래, 제작은 계속함)' in text and '• 대본: 반도체가 이끈 미국 증시 넷째판 지적 가\n' in text
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_a_cut_with_no_valid_version_waits_and_writes_again(brief, video, tmp_path, monkeypatch):  # noqa: F811
     from datetime import UTC, datetime, timedelta
 
@@ -1218,14 +1241,13 @@ def test_takes_open_with_the_date_and_close_with_the_outro():
     assert all(key.startswith(f'shorts-speech-{i}-') for i, (key, _) in enumerate(takes))
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 7')
 async def test_recheck_skips_versions_of_the_old_shape(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
     provider.queues['video_shorts_v1'] = [shorts(), shorts(), shorts()]
     checks = runner_module.shorts_violations
-    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode: ['a check'])
+    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode, issues: ['a check'])
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=3)
     assert [a['outcome'] for a in row['qa']['attempts']] == ['check_failed'] * 3
     monkeypatch.setattr(runner_module, 'shorts_violations', checks)
@@ -1239,3 +1261,54 @@ async def test_recheck_skips_versions_of_the_old_shape(brief, video, tmp_path, m
     assert row['state'] == 'delivering', row['error']
     assert [a.get('recheck') for a in row['qa']['attempts']] == [{'checks': CHECKS, 'findings': ['older plan shape']}] * 3 + [None]
     assert row['qa']['attempts'][-1]['outcome'] == 'passed' and shorts_keys(provider) == ['1', '2', '3', '4']
+
+
+async def test_review_concerns_are_written_into_the_next_version(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video.contracts import VideoReview
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    concern = '시작 질문에 Shorts 안에서 답하지 않음: 결론 문장을 시작 질문에 맞추세요'
+    provider.shorts_queues['review'] = [VideoReview(facts=True, numbers=True, conditions=True, coverage=False,
+                                                    readability=True, concerns=[concern]), good_review()]
+    provider.queues['video_shorts_v1'] = [shorts(), shorts(title='S&P 500 1.92% 상승, 반도체가 끌었다')]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=16)
+    assert row['state'] == 'delivering', row['error']
+    first, second = shorts_calls(provider, 'shorts')
+    # The second version revises the first with the reviewer's concerns, not a new script from scratch.
+    assert concern in second.prompt and 'coverage check failed' in second.prompt
+    assert 'Revise the previous version below' in second.prompt and 'Revise the previous version' not in first.prompt
+    assert [r['passed'] for r in row['qa']['review_rounds']] == [False, True] and row['qa']['review_findings'] == []
+    assert row['plan']['title'] == 'S&P 500 1.92% 상승, 반도체가 끌었다'
+
+
+async def test_concerns_left_after_two_reviews_travel_with_the_cut(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video.contracts import VideoReview
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    left = VideoReview(facts=True, numbers=True, conditions=True, coverage=True, readability=False,
+                       concerns=['용어 풀이가 없음: 할인 부담을 쉬운 말로'])
+    provider.shorts_queues['review'] = [left]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=16)
+    assert row['state'] == 'delivering', row['error']  # never held on its review
+    assert len(shorts_calls(provider, 'review')) == 2 and len(shorts_calls(provider, 'shorts')) == 2
+    assert row['qa']['review_findings'] == ['용어 풀이가 없음: 할인 부담을 쉬운 말로', 'readability check failed']
+
+
+async def test_a_lost_review_turn_reviews_the_same_plan_again(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.shorts_queues['review'] = [ProviderFault('uncertain', 'the CLI exited'), good_review()]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
+    assert row['state'] == 'reviewing' and row['error'] == 'model_retry'
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE video_shorts SET lease_until=NULL WHERE job_id=%s', (job['id'],))
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'delivering', row['error']
+    assert [r.get('outcome') for r in row['qa']['review_rounds']] == ['uncertain', None]
+    assert len(shorts_calls(provider, 'shorts')) == 1  # nothing was rewritten
