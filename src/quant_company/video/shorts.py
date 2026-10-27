@@ -38,6 +38,7 @@ from .episode import (
     tool_wording,
 )
 from .illustrations import library_entries
+from .lineup import ISSUE_CHAPTERS
 from .motion import CHROMIUM_ARGS, FPS, captions, word_times
 from .render import Aligner, RenderInProgress, checksum, music_track, probe, quality_probe, run, spoken
 from .render import mix_music as mix
@@ -398,27 +399,6 @@ def episode_text(episode):
     return ' '.join(parts)
 
 
-def issue_citations(plan, episode):
-    """Findings on which episode scenes the issues cut: issue scenes only, each once, in the episode's order."""
-    found, order = [], {s['id']: n for n, s in enumerate(episode['scenes'])}
-    allowed = {s['id'] for s in issue_scenes(episode)}
-    seen, last = set(), -1
-    for issue in plan.issues:
-        for number, scene_id in enumerate(issue.scene_ids):
-            if scene_id not in order:
-                found.append(f'Issue {issue.id} cites scene {scene_id}, which the episode does not have')
-            elif scene_id not in allowed:
-                found.append(f'Issue scene {scene_id} is not an issue scene (issue {issue.id})')
-            elif scene_id in seen:
-                found.append(f'Issue scene {scene_id} is cited twice (issue {issue.id})')
-            elif number == 0:  # issues follow the episode by their first scene; their own scenes may come in any order
-                if order[scene_id] < last:
-                    found.append(f'Issue scene {scene_id} is out of episode order (issue {issue.id})')
-                last = max(last, order[scene_id])
-            seen.add(scene_id)
-    return found
-
-
 def estimated_seconds(plan):
     """The cut's length before any speech is paid, as build() will lay it out: each scene is its spoken text at the
     voice's pace plus lead and tail, the agenda and the closing at least as long as their holds. The date line is
@@ -431,47 +411,71 @@ def estimated_seconds(plan):
     return sum(max(LEAD + len(spoken(t)) / CHARS_PER_SECOND + TAIL, holds.get(kind, 0.0)) for kind, t in texts)
 
 
-def claim_binding(plan, episode):
-    """Findings on claim IDs the episode's own scenes do not carry."""
-    found, by_id = [], {s['id']: set(s['claim_ids']) for s in episode['scenes']}
-    everywhere = set().union(*by_id.values()) if by_id else set()
+def lineup_findings(plan, episode, issues):
+    """Findings on how the cut carries the lineup (video/lineup.py): every briefing issue once, in the briefing's order,
+    each from its own lines, at its depth; the hook and the close from lines the episode or the issues use."""
+    found, numbers, expected = [], [i.issue for i in plan.issues], [i.number for i in issues]
+    if numbers != expected:
+        missing = sorted(set(expected) - set(numbers))
+        repeated = sorted({n for n in numbers if numbers.count(n) > 1})
+        extra = sorted({n for n in numbers if n not in expected})
+        if missing:
+            found.append(f'Briefing issues {missing} are missing: carry every briefing issue once, in its order')
+        if repeated:
+            found.append(f'Briefing issues {repeated} are split into more than one issue: one issue each')
+        if extra:
+            found.append(f'Issues {extra} are not briefing issues {expected}')
+        if not (missing or repeated or extra):
+            found.append(f'Issues are out of the briefing order {expected}: follow it')
+    by_number, scenes = {i.number: i for i in issues}, {s['id']: set(s['claim_ids']) for s in episode['scenes']}
     for issue in plan.issues:
-        own = set().union(*(by_id.get(sid, set()) for sid in issue.scene_ids))
-        stray = sorted(set(issue.claim_ids) - own)
+        own = by_number.get(issue.issue)
+        if own is None:
+            continue
+        allowed = set(own.claim_ids).union(*(scenes.get(s, set()) for s in own.scene_ids))
+        stray = sorted(set(issue.claim_ids) - allowed)
         if stray:
-            found.append(f'Line IDs {stray} in issue {issue.id} are not used by its cited scenes')
-    for name, ids in (('the hook', plan.hook.claim_ids), ('the signals', plan.signals_claim_ids)):
+            found.append(f'Line IDs {stray} in issue {issue.id} belong to neither briefing issue {own.number} nor the '
+                         'episode scenes that covered it')
+        low, high = CORE_NARRATION if own.tier == 'core' else BRIEF_NARRATION
+        if not low <= len(issue.narration) <= high:
+            found.append(f'Issue {issue.id} narration is {len(issue.narration)} characters; a {own.tier} issue takes '
+                         f'{low}-{high}' + (': what happened, why and what it means' if own.tier == 'core'
+                                            else ': one number and what it means'))
+        if own.tier == 'core' and not issue.meaning.strip():
+            found.append(f'Core issue {issue.id} needs its 그래서 line (meaning): what it means for an investor')
+    everywhere = set().union(*scenes.values(), *(i.claim_ids for i in issues))
+    for name, ids in (('the hook', plan.hook.claim_ids), ('the close', plan.close.claim_ids)):
         stray = sorted(set(ids) - everywhere)
         if stray:
-            found.append(f'Line IDs {stray} in {name} are not used anywhere in the episode')
+            found.append(f'Line IDs {stray} in {name} are used nowhere in the episode or the issues')
     return found
 
 
-def shorts_violations(plan, source, episode):
-    """The episode's binding rules on the cut: cited numbers only (also in the delivered episode), no advice, no tool
-    wording, no spoken attribution. episode: the delivered EpisodePlan as JSON."""
-    claims, found, cited, lines = claim_catalog(source), issue_citations(plan, episode), set(), []
-    found += claim_binding(plan, episode)
-    # The labels are read aloud in the issue list (agenda_line), so they share the budget.
+def shorts_violations(plan, source, episode, issues):
+    """The episode's binding rules on the cut: the lineup carried as it is, cited numbers only (also in the delivered
+    episode, except for an issue the episode did not cover), no advice, no tool wording, no spoken attribution.
+    episode: the delivered EpisodePlan as JSON; issues: lineup(source, episode)."""
+    claims, found, cited, lines = claim_catalog(source), lineup_findings(plan, episode, issues), set(), []
     hook = len(plan.hook.narration)
-    total = sum(len(x) for x in plan.narrations()) + sum(len(i.label) for i in plan.issues)
     if hook > HOOK_NARRATION:
         found.append(f'Hook narration is {hook} characters, over {HOOK_NARRATION}: one sentence in one breath after the date '
                      'line (the headline carries the detail)')
-    if total > NARRATION_BUDGET:
-        found.append(f'Narration and labels are {total} characters in all, over {NARRATION_BUDGET}: shorten the narrations '
-                     'or the labels')
-    if any(',' in i.label for i in plan.issues):
-        found.append('A label has a comma: the labels are read aloud as one list, so write each without one')
+    close = len(plan.close.conclusion) + len(plan.close.signals_narration)
+    if close > CLOSE_NARRATION:
+        found.append(f'The conclusion and the signals narration are {close} characters, over {CLOSE_NARRATION}: shorten '
+                     'them')
     seconds = estimated_seconds(plan)
     if seconds > SHORTS_CAP:
         found.append(f'Estimated length {seconds:.0f} s is over the {SHORTS_CAP} s cap (aim {SHORTS_AIM[0]}-{SHORTS_AIM[1]} s):'
                      ' shorten the narrations')
     allowed_frame = nums(frame(source))
     in_episode = nums(episode_text(episode)) | allowed_frame
+    left_out = {i.number for i in issues if not i.scene_ids}
     units = [('the hook', plan.hook.claim_ids, [plan.hook.headline, plan.hook.question], plan.hook.narration, None),
              *((f'issue {i.id}', i.claim_ids, i.screen(), i.narration, i) for i in plan.issues),
-             ('the signals', plan.signals_claim_ids, plan.signals, plan.signals_narration, None)]
+             ('the close', plan.close.claim_ids, [plan.close.conclusion, *plan.close.signals],
+              f'{plan.close.conclusion} {plan.close.signals_narration}', None)]
     for name, claim_ids, screen, narration, issue in units:
         unknown = sorted(set(claim_ids) - claims.keys())
         if unknown:
@@ -485,8 +489,9 @@ def shorts_violations(plan, source, episode):
         extra = (shown | nums(narration)) - allowed
         if extra:
             found.append(f'Unbound number {sorted(extra)} in {name}')
+        # An issue the episode left out (the episode was produced with that finding) is bound to its briefing lines only.
         missing = (shown | nums(narration)) - in_episode
-        if missing:
+        if missing and not (issue and issue.issue in left_out):
             found.append(f'Number {sorted(missing)} in {name} is not in the delivered episode')
         # A direction is drawn only where the cited line states one, and never against it (▲ for a fall).
         if issue and issue.dir:

@@ -16,6 +16,7 @@ from quant_company.video import runner as runner_module
 from quant_company.video.contracts import digest
 from quant_company.video.render import checksum, run, verify_artifacts
 from quant_company.video import shorts as shorts_module
+from quant_company.video.body import parse
 from quant_company.video.lineup import lineup
 from quant_company.video.runner import VideoRunner
 from quant_company.video.shorts import (
@@ -45,6 +46,7 @@ from quant_company.video.shorts_store import ShortsStore
 
 from .test_briefing import brief  # noqa: F401
 from .test_video import body_source, video  # noqa: F401
+from .test_video_lineup import PM_TITLES, issue_body, issue_episode
 from .test_video_delivery import FakeSlack, quiet_other_outbox, send
 from .test_video_motion import (
     InspectedRenderer,
@@ -165,104 +167,167 @@ def test_four_issues_at_their_middle_run_about_a_minute():
     assert 70 <= estimated_seconds(spoken_plan([72] * 2, [33] * 4, hook=28, close=(30, 30))) <= 78
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 4')
-def test_issues_cut_the_episode_issue_scenes_in_order():
-    assert [s['id'] for s in issue_scenes(episode().model_dump(mode='json'))] == ['head', 'flow', 'photo', 'counter']
-    assert any('Issue scene board is not an issue scene' in f for f in violations(cut(issue=0, scene_ids=['board'])))
+def lineup_plan(source, episode, **changes):
+    """A passing cut of an issue_body brief: one issue per lineup entry, core and brief lengths, numbers from the facts."""
+    issues = []
+    for i in lineup(source, episode):
+        n, ids = i.number, i.claim_ids
+        core = i.tier == 'core'
+        issues.append(dict(
+            id=f'issue-{n}', issue=n, label=f'이슈 {chr(64 + n)}', agenda=f'{chr(64 + n)} 이슈, 수급 부담 신호', big=f'{n}.{n}%', big_label='관련 지표',
+            body=f'관련 지표가 {n}.{n}% 움직였습니다.', meaning='수급 부담으로 이어질 수 있음' if core else '',
+            narration=(f'관련 지표가 {n}.{n}% 움직였습니다. 브리핑은 이 흐름이 결국 투자자 수급 부담으로 이어질 수 있다고 해석합니다.'
+                       if core else f'관련 지표가 {n}.{n}% 움직여 수급 부담 신호입니다.'),
+            claim_ids=list(ids[:2]) + ([ids[2]] if core else [])))
+    claims = parse(source['body'])['claims']
+    summary = next(k for k, v in claims.items() if v['section'] == '오늘의 핵심')
+    following = next(k for k, v in claims.items() if v['section'] == '다음 확인할 것')
+    value = dict(title='반등 실패, 수급 부담이 막았다', description='오늘 마감 이슈를 짧게 정리합니다.',
+                 hook=dict(headline='반등은 실패, 코스닥 낙폭 확대', question='왜 꺾였나?', narration='반등을 시도했지만 끝내 꺾였습니다.',
+                           claim_ids=[summary]),
+                 issues=issues,
+                 close=dict(conclusion='정리하면, 수급 부담이 반등을 막았습니다.', signals=['외국인 수급 전환', '코스닥 종가 회복'],
+                            signals_narration='외국인 수급과 코스닥 종가를 보세요.', claim_ids=[issues[0]['claim_ids'][0], following]))
+    value.update(changes)
+    return ShortsPlan.model_validate(value)
+
+
+FOUR = {1: '핵심 이슈', 2: '핵심 이슈', 3: '함께 볼 이슈', 4: '함께 볼 이슈'}
+
+
+def lineup_violations(plan, source, episode):
+    return shorts_violations(plan, source, episode, lineup(source, episode))
+
+
+def test_a_cut_of_every_issue_in_order_passes():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR)
+    assert lineup_violations(lineup_plan(source, episode_json), source, episode_json) == []
+    assert violations(cut()) == []  # the fixture brief's one issue
+
+
+def test_every_briefing_issue_once_in_order():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR)
+    raw = lineup_plan(source, episode_json).model_dump(mode='json')
+    issues = raw['issues']
+
+    def found(changed):
+        return ' '.join(lineup_violations(ShortsPlan.model_validate({**raw, 'issues': changed}), source, episode_json))
+
+    assert 'Briefing issues [3] are missing' in found([issues[0], issues[1], issues[3]])
+    split = {**issues[0], 'id': 'issue-1b'}
+    assert 'Briefing issues [1] are split into more than one issue' in found([issues[0], split, *issues[1:]])
+    assert 'out of the briefing order [1, 2, 3, 4]' in found([issues[1], issues[0], *issues[2:]])
+    assert 'Issues [5] are not briefing issues' in found([*issues, {**issues[3], 'id': 'issue-5', 'issue': 5}])
+
+
+def test_an_issue_cites_only_its_own_lines():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR)
+    plan = lineup_plan(source, episode_json).model_dump(mode='json')
+    other = lineup(source, episode_json)[2].claim_ids[1]
+    plan['issues'][1]['claim_ids'].append(other)
+    assert any(f"Line IDs ['{other}'] in issue issue-2 belong to neither briefing issue 2" in f
+               for f in lineup_violations(ShortsPlan.model_validate(plan), source, episode_json))
+
+
+def test_core_and_brief_narration_lengths():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR)
+    plan = lineup_plan(source, episode_json).model_dump(mode='json')
+    plan['issues'][0]['narration'] = '관련 지표가 1.1% 움직였습니다. 수급 부담입니다.'
+    plan['issues'][2]['narration'] = '관련 지표가 3.3% 움직였고 이 흐름은 투자자 수급 부담으로 이어질 수 있습니다.'
+    found = ' '.join(lineup_violations(ShortsPlan.model_validate(plan), source, episode_json))
+    assert 'Issue issue-1 narration is 29 characters; a core issue takes 60-85' in found
+    assert 'Issue issue-3 narration is 46 characters; a brief issue takes 25-40' in found
+
+
+def test_a_core_issue_says_what_it_means():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR)
+    plan = lineup_plan(source, episode_json).model_dump(mode='json')
+    plan['issues'][0]['meaning'] = ''
+    assert any('Core issue issue-1 needs its 그래서 line' in f
+               for f in lineup_violations(ShortsPlan.model_validate(plan), source, episode_json))
+    plan['issues'][0]['meaning'], plan['issues'][3]['meaning'] = '수급 부담으로 이어질 수 있음', ''
+    assert lineup_violations(ShortsPlan.model_validate(plan), source, episode_json) == []
+
+
+def test_the_close_fits_its_budget():
     raw = cut()
-    raw['issues'][0]['scene_ids'], raw['issues'][1]['scene_ids'] = ['photo', 'counter'], ['head', 'flow']
-    assert any('out of episode order' in f for f in violations(raw))
-    raw = cut()  # within an issue any order is fine; only the first scene of each issue follows the episode
-    raw['issues'][0]['scene_ids'], raw['issues'][1]['scene_ids'] = ['head', 'counter'], ['flow']
-    assert not any('episode order' in f for f in violations(raw))
-    assert any('cited twice' in f for f in violations(cut(issue=1, scene_ids=['flow', 'counter'])))
-    assert any('does not have' in f for f in violations(cut(issue=1, scene_ids=['nowhere'])))
+    raw['close'].update(conclusion='정리하면, 반도체가 이끌었지만 비기술 업종 확산은 아직입니다.',
+                        signals_narration='비기술 업종 확산과 한국 반도체 강세가 이어지는지 꼭 확인해 보세요.')
+    assert any(f.startswith('The conclusion and the signals narration are 72 characters, over 70') for f in violations(raw))
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 4')
+def test_an_issue_the_episode_left_out_needs_only_its_briefing_lines():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR, skip=(3,))
+    plan = lineup_plan(source, episode_json)
+    assert '3.3' not in json.dumps(episode_json, ensure_ascii=False)
+    assert lineup_violations(plan, source, episode_json) == []
+    raw = plan.model_dump(mode='json')
+    raw['issues'][2]['big'] = '7.7%'  # in no line of issue 3
+    assert any('Unbound number' in f and 'issue-3' in f
+               for f in lineup_violations(ShortsPlan.model_validate(raw), source, episode_json))
+
+
+def test_the_hook_takes_one_breath():
+    plan = cut(hook={**cut()['hook'], 'narration': '가' * 33})
+    assert 'Hook narration is 33 characters, over 32: one sentence in one breath after the date line' in ' '.join(
+        violations(plan))
+    assert not any('Hook narration' in f for f in violations(cut(hook={**cut()['hook'], 'narration': '가' * 32})))
+
+
 def test_numbers_must_be_in_the_episode():
-    # '21' is in the cited line b002 ('2026-09-21 종가') but in no scene of the delivered episode.
-    raw = cut(issue=1, big='21', claim_ids=['b014', 'b002'], dir=None)
-    assert any('not in the delivered episode' in f for f in violations(raw))
-    assert not any('Unbound' in f for f in violations(raw))
+    # '21' is in the briefing line b002 ('2026-09-21 종가') but in no scene of the delivered episode.
+    raw = cut(close={**cut()['close'], 'signals': ['21일 종가 확인', '한국 반도체 강세 지속'], 'claim_ids': ['b011', 'b002']})
+    assert any('Number [\'21\'] in the close is not in the delivered episode' in f for f in violations(raw))
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 4')
 def test_only_visible_episode_text_counts_as_in_the_episode():
     # '5' (from '05:00' in b013) and '21' (b002) are in cited lines but in no visible text of the episode; card numbers,
     # icon sizes and colours (112, '01', #5EA0FF) are not text.
-    for big, ids in (('5', ['b013']), ('21', ['b014', 'b002']), ('112', ['b014'])):
-        raw = cut(issue=1, big=big, claim_ids=ids, dir=None)
+    for big, ids in (('5', ['b013']), ('112', ['b014'])):
+        raw = cut(issue=0, big=big, dir=None, claim_ids=ids)
         assert any('not in the delivered episode' in f for f in violations(raw)), big
     assert 'not in the delivered episode' not in ' '.join(violations(cut()))
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 4')
-def test_the_labels_share_the_narration_budget_and_have_no_comma(monkeypatch):
-    from quant_company.video import shorts as shorts_module
-
-    # Owner, 10/21: the labels are read aloud in the issue list, so they count toward the length.
-    plan = ShortsPlan.model_validate(cut())
-    spoken_total, labels = sum(len(x) for x in plan.narrations()), sum(len(i.label) for i in plan.issues)
-    monkeypatch.setattr(shorts_module, 'NARRATION_BUDGET', spoken_total + labels - 1)
-    assert any(f.startswith('Narration and labels are') for f in violations(cut()))
-    monkeypatch.setattr(shorts_module, 'NARRATION_BUDGET', spoken_total + labels)
-    assert not any(f.startswith('Narration and labels are') for f in violations(cut()))
-    raw = cut()
-    raw['issues'][0]['label'] = '금리, 환율'
-    assert any('A label has a comma' in f for f in violations(raw))
-    assert not any('A label has a comma' in f for f in violations(cut()))
+def test_an_over_long_plan_is_found_before_any_speech_is_paid():
+    assert estimated_seconds(shorts()) < 60 and not any('Estimated length' in f for f in violations(cut()))
+    plan = spoken_plan([85] * 3, [40] * 4)
+    found = shorts_violations(plan, body_source(), episode().model_dump(mode='json'),
+                              lineup(body_source(), episode().model_dump(mode='json')))
+    assert any('Estimated length' in f and 'over the 90 s cap' in f for f in found)
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 4')
-def test_an_over_long_plan_is_found_before_any_speech_is_paid(monkeypatch):
-    from quant_company.video import shorts as shorts_module
-
-    assert estimated_seconds(shorts()) < 60
-    assert not any('Estimated length' in f for f in violations(cut()))
-    # The plan's own character limit keeps real plans under the cap; a looser limit shows the estimate as the second guard.
-    monkeypatch.setattr(shorts_module, 'NARRATION_LIMIT', 2000)
-    raw = cut(signals_narration='가' * 10, hook=dict(cut()['hook'], narration='가' * 10))
-    raw['issues'] = [{**cut()['issues'][0], 'id': f'long-{n}', 'narration': '가' * 95} for n in range(5)]
-    plan = ShortsPlan.model_validate(raw)
-    assert estimated_seconds(plan) > 90
-    assert any('Estimated length' in f and 'over the 90 s cap' in f for f in violations(raw))
+def test_hook_and_close_lines_are_used_by_the_episode_or_the_issues():
+    # b002 is a briefing line no scene of the episode carries and no issue owns.
+    assert any('the hook' in f and 'used nowhere' in f for f in violations(cut(hook=dict(cut()['hook'], claim_ids=['b002']))))
+    assert any('the close' in f and 'used nowhere' in f
+               for f in violations(cut(close={**cut()['close'], 'claim_ids': ['b002']})))
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 4')
-def test_claim_ids_are_bound_to_the_episode_scenes():
-    # b010 is used by the episode (photo), but not by the scenes this issue cites (head, flow).
-    assert any('issue semis' in f and 'cited scenes' in f for f in violations(cut(issue=0, claim_ids=['b013', 'b010'])))
-    # b002 is a briefing line no scene of the episode carries.
-    assert any('the hook' in f and 'anywhere in the episode' in f for f in violations(cut(hook=dict(cut()['hook'], claim_ids=['b002']))))
-    assert any('the signals' in f and 'anywhere in the episode' in f for f in violations(cut(signals_claim_ids=['b002'])))
-
-
-@pytest.mark.skip(reason='v2: rewritten in Task 4')
 def test_title_and_description_numbers_must_be_in_the_delivered_episode():
-    # '21' is in the cited line b002 (also cited by the issue) but in no visible text of the episode.
-    raw = cut(title='S&P 500 21일 상승, 반도체가 이끌었다')
-    raw['issues'][0]['claim_ids'] = ['b013', 'b007', 'b009', 'b002']
+    raw = cut(title='S&P 500 21일 상승, 반도체가 이끌었다', close={**cut()['close'], 'claim_ids': ['b011', 'b012', 'b002']})
     found = violations(raw)
     assert any('title or description is not in the delivered episode' in f for f in found), found
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 4')
-def test_two_issues_is_enough():
-    assert len(shorts().issues) == 2
-    assert shorts_violations(shorts(), body_source(), episode().model_dump(mode='json')) == []
-
-
-@pytest.mark.skip(reason='v2: rewritten in Task 4')
 @pytest.mark.parametrize('change,error', [
     (lambda r: r['issues'][0].update(big='5,400'), 'Unbound number'),
     (lambda r: r['issues'][0].update(dir='dn'), 'contradicts its line'),  # ▼ for the 1.92% rise
-    (lambda r: r['issues'][1].update(narration='나스닥 종합은 0.59% 급락해 금리보다 반도체 재료가 영향을 줬을 수도 있습니다.'),
-     'contradicts its line'),
-    (lambda r: r['issues'][1].update(body='나스닥 종합은 0.59% 올랐지만 기술주 밖의 참여는 혼조였습니다.'), '종가'),  # no label
-    (lambda r: r['issues'][1].update(narration='보도에 따르면 나스닥 종합은 0.59% 올랐습니다. 반도체 재료도 있습니다.'), '보도에 따르면'),
-    (lambda r: r.update(signals_narration='이 영상은 AI가 만든 요약입니다. 확산을 확인합니다.'), 'tool wording'),
-    (lambda r: r.update(signals_narration='반도체는 지금 사세요. 확산을 확인합니다.'), 'Buy/sell'),
+    (lambda r: r['issues'][0].update(narration='에스앤피 500이 정규장 종가 기준 1.92% 급락했고 반도체가 흔들렸습니다. '
+                                               '수익률 하락은 성장주 부담을 낮출 수 있습니다.'), 'contradicts its line'),
+    (lambda r: r['issues'][0].update(body='S&P 500이 1.92% 올랐고 반도체가 상승을 주도했습니다.',
+                                     narration='에스앤피 500이 1.92% 올랐고 반도체가 이끌었습니다. 수익률 하락은 성장주 부담을 '
+                                               '낮출 수 있다는 해석입니다.'), '종가'),  # no label
+    (lambda r: r['issues'][0].update(narration='보도에 따르면 에스앤피 500이 정규장 종가 기준 1.92% 올랐습니다. 수익률 하락은 '
+                                               '성장주 부담을 낮출 수 있습니다.'), '보도에 따르면'),
+    (lambda r: r['close'].update(signals_narration='이 영상은 AI가 만든 요약입니다.'), 'tool wording'),
+    (lambda r: r['close'].update(signals_narration='반도체는 지금 사세요. 확산을 보세요.'), 'Buy/sell'),
     (lambda r: r['hook'].update(headline='S&P 500이 3.1% 올랐다'), 'Unbound number'),
 ])
 def test_the_cut_follows_the_episode_binding_rules(change, error):
@@ -280,12 +345,12 @@ def test_a_list_shares_its_verb_and_a_date_is_no_close():
     assert closes_of('나스닥 종합 26,430.89 pt · +1.11% · 정규장 종가 10/20 05:00 KST · Yahoo chart') == {'26430.89', '1.11'}
 
 
-@pytest.mark.skip(reason='v2: rewritten in Task 4')
 def test_an_arrow_its_line_does_not_state_is_dropped_not_rejected():
     raw = cut(issue=0, big='5,300', claim_ids=['b013'])  # a level: its line states no direction for it
     plan, dropped = settle(ShortsPlan.model_validate(raw), body_source())
     assert dropped == ['semis: 5,300'] and plan.issues[0].dir is None
-    assert shorts_violations(plan, body_source(), episode().model_dump(mode='json')) == []
+    episode_json = episode().model_dump(mode='json')
+    assert shorts_violations(plan, body_source(), episode_json, lineup(body_source(), episode_json)) == []
     raw = cut(issue=0, big='1.92%', dir='dn')  # against its line: kept, and the checks fail
     plan, dropped = settle(ShortsPlan.model_validate(raw), body_source())
     assert dropped == [] and any('contradicts its line' in f for f in violations(raw))
