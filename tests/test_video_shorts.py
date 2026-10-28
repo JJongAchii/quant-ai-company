@@ -1,6 +1,7 @@
 """Daily Shorts: the cut's contract and checks, a real Chromium/FFmpeg vertical render, and the production flow on real
 PostgreSQL. Model, speech, alignment and Slack's HTTP API are simulated fixtures; nothing here calls them."""
 
+import copy
 import importlib.util
 import json
 import re
@@ -13,19 +14,24 @@ from psycopg.types.json import Jsonb
 from quant_company.config import Settings
 from quant_company.contracts import ProviderFault
 from quant_company.video import runner as runner_module
-from quant_company.video.contracts import digest
+from quant_company.video import shorts as shorts_module
+from quant_company.video.body import parse
+from quant_company.video.contracts import VisualReview, digest
+from quant_company.video.lineup import lineup
 from quant_company.video.render import checksum, run, verify_artifacts
 from quant_company.video.runner import VideoRunner
 from quant_company.video.shorts import (
+    BRIEF_NARRATION,
     CHARS_PER_SECOND,
     CHECKS,
+    CLOSE_NARRATION,
+    CORE_NARRATION,
     HOOK_NARRATION,
     KO_COUNT,
     OUTLOOK_SHORTS,
     OUTRO,
     QA_JS,
     SAFE,
-    TEASER,
     ShortsPlan,
     ShortsRenderer,
     agenda_line,
@@ -34,18 +40,19 @@ from quant_company.video.shorts import (
     date_line,
     direction,
     estimated_seconds,
-    issue_scenes,
     opener_line,
     outro_line,
     settle,
     shorts_prompt,
     shorts_violations,
 )
+from quant_company.video.shorts_store import ACTIVE as SHORTS_ACTIVE
 from quant_company.video.shorts_store import ShortsStore
 
 from .test_briefing import brief  # noqa: F401
-from .test_video import body_source, video  # noqa: F401
+from .test_video import body_source, good_review, video  # noqa: F401
 from .test_video_delivery import FakeSlack, quiet_other_outbox, send
+from .test_video_lineup import PM_TITLES, issue_body, issue_episode
 from .test_video_motion import (
     InspectedRenderer,
     InspectingProvider,
@@ -59,24 +66,19 @@ from .test_video_render import ffmpeg_binary
 
 
 def shorts(**changes):
+    """A v2 cut of the fixture episode: its brief has one numbered issue (b006-b011), a 핵심 이슈 one."""
     value = dict(
         title='S&P 500 1.92% 상승, 반도체가 이끌었다', description='반도체가 이끈 미국 증시와 확산 여부를 짧게 정리합니다.',
         hook=dict(headline='반도체가 이끈 미국 증시, 확산은 아직', question='확산될까?',
                   narration='반도체가 주도했지만 업종별 흐름은 엇갈렸습니다.', claim_ids=['b001', 'b013']),
-        issues=[dict(id='semis', scene_ids=['head', 'flow'], label='반도체 주도', agenda='반도체가 이끈 상승', big='1.92%',
+        issues=[dict(id='semis', issue=1, label='반도체 주도', agenda='반도체가 이끈 상승, 확산은 아직', big='1.92%',
                      big_label='S&P 500', dir='up', body='정규장 종가 기준 S&P 500이 올랐고 반도체가 상승을 주도했습니다.',
-                     note_kind='의미', note='수익률 하락은 할인 부담을 낮출 수 있음',
-                     narration='에스앤피 500이 정규장 종가 기준 1.92% 올랐고 반도체가 상승을 주도했습니다. '
-                               '수익률 하락은 성장주의 할인 부담을 낮출 수 있습니다.',
-                     claim_ids=['b013', 'b007', 'b009']),
-                dict(id='check', scene_ids=['photo', 'counter'], label='다르게 볼 점', agenda='금리만의 효과일까', big='0.59%',
-                     big_label='나스닥 종합', dir='up', body='나스닥 종합도 정규장 종가 기준 0.59% 올랐지만 기술주 밖의 참여는 혼조였습니다.',
-                     note_kind='확인할 점', note='비기술 업종으로 확산되는지',
-                     narration='나스닥 종합은 0.59% 올랐지만 금리보다 반도체 자체의 재료가 영향을 줬을 수도 있습니다.',
-                     claim_ids=['b014', 'b010', 'b011'])],
-        signals=['비기술 업종 상승 확산', '한국 반도체 강세 지속'],
-        signals_narration='비기술 업종으로 상승이 확산되는지, 한국 반도체 강세가 이어지는지 확인합니다.',
-        signals_claim_ids=['b011', 'b012'])
+                     meaning='수익률 하락이 성장주 부담을 덜 수 있음',
+                     narration='에스앤피 500이 정규장 종가 기준 1.92% 올랐고 반도체가 이끌었습니다. '
+                               '수익률 하락은 성장주 부담을 낮출 수 있습니다.',
+                     claim_ids=['b013', 'b007', 'b009'])],
+        close=dict(conclusion='정리하면, 반도체가 이끌었지만 확산은 아직입니다.', signals=['비기술 업종 상승 확산', '한국 반도체 강세 지속'],
+                   signals_narration='비기술 업종 확산과 한국 반도체 강세를 보세요.', claim_ids=['b011', 'b012']))
     value.update(changes)
     return ShortsPlan.model_validate(value)
 
@@ -92,172 +94,245 @@ def cut(*, issue=None, **changes):
 
 
 def violations(raw):
-    return shorts_violations(ShortsPlan.model_validate(raw), body_source(), episode().model_dump(mode='json'))
+    plan, episode_json = ShortsPlan.model_validate(raw), episode().model_dump(mode='json')
+    return shorts_violations(plan, body_source(), episode_json, lineup(body_source(), episode_json))
 
 
-def test_a_cut_is_a_hook_two_to_five_issues_and_signals():
+def spoken_plan(core, others, hook=32, close=(35, 35)):
+    """A cut whose spoken lines have exactly these lengths: core and others (brief issues) list narration lengths."""
+    raw = shorts().model_dump(mode='json')
+    base = raw['issues'][0]
+    raw['hook']['narration'] = '가' * hook
+    raw['issues'] = [{**base, 'id': f'issue-{n}', 'issue': n, 'narration': '가' * length}
+                     for n, length in enumerate([*core, *others], 1)]
+    raw['close'].update(conclusion='가' * close[0], signals_narration='가' * close[1])
+    return ShortsPlan.model_validate(raw)
+
+
+def test_a_cut_is_a_hook_one_to_seven_issues_and_a_close():
     plan = shorts().model_dump(mode='json')
-    for issues in (plan['issues'][:1], [{**plan['issues'][0], 'id': f'issue-{n}'} for n in range(6)]):
+    issue = plan['issues'][0]
+    for issues in ([], [{**issue, 'id': f'issue-{n}', 'issue': 1} for n in range(8)]):
         with pytest.raises(ValueError, match='issues'):
             ShortsPlan.model_validate({**plan, 'issues': issues})
     with pytest.raises(ValueError, match='series name'):
         ShortsPlan.model_validate({**plan, 'title': '반도체가 이끌었다 | 9월 22일 아침 · 오늘의 증시story'})
-    long = [{**plan['issues'][0], 'id': f'long-{n}', 'narration': '가' * 90} for n in range(5)]
-    with pytest.raises(ValueError, match='Shorts length'):  # 5 x 90 + the hook and the signals
-        ShortsPlan.model_validate({**plan, 'issues': long})
     with pytest.raises(ValueError, match='unique'):
-        ShortsPlan.model_validate({**plan, 'issues': [plan['issues'][0], plan['issues'][0]]})
+        ShortsPlan.model_validate({**plan, 'issues': [issue, issue]})
     with pytest.raises(ValueError, match='fixed scenes'):  # the cut's own scene IDs
-        ShortsPlan.model_validate({**plan, 'issues': [plan['issues'][0], {**plan['issues'][1], 'id': 'outro'}]})
+        ShortsPlan.model_validate({**plan, 'issues': [{**issue, 'id': 'outro'}]})
     with pytest.raises(ValueError, match='delivery tags'):
-        ShortsPlan.model_validate({**plan, 'signals_narration': '[calm] 비기술 업종으로 확산되는지 확인합니다.'})
+        ShortsPlan.model_validate({**plan, 'close': {**plan['close'], 'signals_narration': '[calm] 비기술 업종 확산을 보세요.'}})
     with pytest.raises(ValueError, match='signs as words'):
-        ShortsPlan.model_validate({**plan, 'signals_narration': '비기술 업종이 +2% 오르는지 확인합니다.'})
-
-
-# A hook written under #194's 50-character limit, before the one-breath budget.
-OLD_HOOK = '미국 증시는 반도체가 주도했지만 업종별 흐름은 엇갈렸고 확산 여부는 아직 모릅니다'
+        ShortsPlan.model_validate({**plan, 'close': {**plan['close'], 'signals_narration': '비기술 업종이 +2% 오르는지 보세요.'}})
+    with pytest.raises(ValueError, match='big_label'):
+        ShortsPlan.model_validate({**plan, 'issues': [{**issue, 'big_label': ''}]})
+    # A brief issue may show no number and no 그래서 line.
+    assert ShortsPlan.model_validate({**plan, 'issues': [{**issue, 'big': '', 'big_label': '', 'dir': None, 'meaning': ''}]})
+    # A cut of the earlier shape (issues cut from scenes, a note per issue, signals on the plan) is not a v2 plan.
+    old = {**plan, 'signals': ['a 신호다', 'b 신호다'], 'signals_narration': '신호를 봅니다.', 'signals_claim_ids': ['b011']}
+    old.pop('close')
+    with pytest.raises(ValueError):
+        ShortsPlan.model_validate(old)
 
 
 def test_the_hook_is_one_breath_after_the_date_line():
     # Owner, 10/20: the first preview's opener ran 11.5 s (the spec asks ~3-5 s); the on-screen headline carries the detail.
     plan = shorts().model_dump(mode='json')
-    assert HOOK_NARRATION == 32 and len(plan['hook']['narration']) <= HOOK_NARRATION and len(OLD_HOOK) == 45
-    assert not any('Hook narration' in f for f in violations(cut(hook={**plan['hook'], 'narration': '가' * 32})))
-    # A longer hook is a finding the model rewrites before any speech is paid, never a schema error: a plan stored under
-    # the old limits still validates after a release.
-    old = ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': OLD_HOOK}})
-    assert 'Hook narration is 45 characters, over 32: one sentence in one breath after the date line' in ' '.join(
-        shorts_violations(old, body_source(), episode().model_dump(mode='json')))
-    # So is a total over the 400-character budget that still fits the schema's 420 (the five labels read in the list
-    # count too: 5 x 6 characters).
-    raw = cut(signals_narration='가' * (405 - 5 * 66 - 5 * 6 - len(plan['hook']['narration'])))
-    raw['issues'] = [{**plan['issues'][0], 'id': f'long-{n}', 'narration': '가' * 66} for n in range(5)]
-    assert 'Narration and labels are 405 characters in all, over 400: shorten the narrations or the labels' in violations(raw)
-    # The length estimate counts the hook with the date line at the voice's pace.
+    assert HOOK_NARRATION == 32 and len(plan['hook']['narration']) <= HOOK_NARRATION
     short, long = (ShortsPlan.model_validate({**plan, 'hook': {**plan['hook'], 'narration': '가' * n}}) for n in (10, 32))
     assert estimated_seconds(long) - estimated_seconds(short) == pytest.approx(22 / CHARS_PER_SECOND)
-    prompt = shorts_prompt(body_source(), episode().model_dump(mode='json'))
-    assert f'narration (8-{HOOK_NARRATION} characters' in prompt and 'one breath' in prompt
-    # Owner, 10/22: the signals carry the episode's outlook, conditions and direction only.
-    assert 'the outlook the episode' not in prompt  # an episode made before the outlook rule has none to give
-    taught = shorts_prompt(body_source(), episode().model_dump(mode='json'), outlook=True)
-    assert 'the outlook the episode' in taught and 'no target level, no advice' in taught
-    assert taught.replace(OUTLOOK_SHORTS, '') == prompt
-
-
-async def test_a_cut_asks_for_the_outlook_only_when_its_episode_carried_the_rule(brief, video, tmp_path, monkeypatch):  # noqa: F811
-    store, clock = video
-    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
-    assert job['policy']['craft'] >= 2  # a new episode carries the outlook rule
-    store.settings.video_shorts_enabled = True
-    await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
-    request = next(c for c in provider.calls if c.output_contract == 'video_shorts_v1')
-    assert OUTLOOK_SHORTS in request.prompt
 
 
 def test_fixed_lines():
     assert date_line({'source': {'day': '2026-10-20', 'edition_kind': 'am'}}) == '10월 20일 아침 브리핑입니다.'
     assert date_line({'source': {'day': '2026-10-20', 'edition_kind': 'close'}}).endswith('마감 브리핑입니다.')
-    # Owner, 10/21: the list scene reads each issue once, not only the count.
-    assert agenda_line(['한국장 수급', '방산 제재']) == '오늘 볼 이슈는 한국장 수급, 방산 제재, 두 가지입니다. ' + TEASER
-    assert ', e, 다섯 가지입니다.' in agenda_line(['a', 'b', 'c', 'd', 'e'])
-    # Owner, 10/22: the hook comes first and the date after it; the end leaves the cut's question for the full episode.
+    # 2026-10-27: the list scene says only the count; each issue's name comes back with k/N on its own scene.
+    assert agenda_line(6) == '오늘 이슈는 여섯 가지입니다.' and agenda_line(1) == '오늘 이슈는 한 가지입니다.'
+    assert [KO_COUNT[n] for n in range(1, 8)] == ['한', '두', '세', '네', '다섯', '여섯', '일곱']
+    # Owner, 10/22: the hook comes first and the date after it.
     assert opener_line('10월 20일 아침 브리핑입니다.', '반등은 진짜일까?') == '반등은 진짜일까? 10월 20일 아침 브리핑입니다.'
     assert opener_line('10월 20일 아침 브리핑입니다.', '반도체가 이끌었습니다') == '반도체가 이끌었습니다. 10월 20일 아침 브리핑입니다.'
-    assert outro_line('확산될까?').startswith('확산될까? 답은 본편에서 확인하세요. ') and outro_line('확산될까?').endswith(OUTRO['mail'])
-    assert [KO_COUNT[n] for n in (3, 4)] == ['세', '네']
+    # Owner, 10/27: the cut answers its opener, then points to the full episode and the report mail.
+    close = shorts().close
+    assert outro_line(close) == ('정리하면, 반도체가 이끌었지만 확산은 아직입니다. 비기술 업종 확산과 한국 반도체 강세를 보세요. '
+                                 '자세한 분석은 본편에서, 매일 리포트 메일은 프로필 링크에서 신청하세요.')
+    assert OUTRO['button'] == '본편 보기' and not hasattr(shorts_module, 'TEASER')
 
 
-def test_issues_cut_the_episode_issue_scenes_in_order():
-    assert [s['id'] for s in issue_scenes(episode().model_dump(mode='json'))] == ['head', 'flow', 'photo', 'counter']
-    assert any('Issue scene board is not an issue scene' in f for f in violations(cut(issue=0, scene_ids=['board'])))
+def test_six_issues_at_their_longest_are_found_before_speech():
+    # Three core issues at 85 characters, three brief ones at 40, the answer and the signals at 70 together.
+    longest = spoken_plan([85] * 3, [40] * 3)
+    assert 85 <= estimated_seconds(longest) <= 90
+    assert estimated_seconds(spoken_plan([85] * 3, [40] * 4)) > 90
+
+
+def test_four_issues_at_their_middle_run_about_a_minute():
+    assert 55 <= estimated_seconds(spoken_plan([72] * 2, [33] * 2, hook=28, close=(30, 30))) <= 66
+    assert 70 <= estimated_seconds(spoken_plan([72] * 2, [33] * 4, hook=28, close=(30, 30))) <= 78
+
+
+def lineup_plan(source, episode, **changes):
+    """A passing cut of an issue_body brief: one issue per lineup entry, core and brief lengths, numbers from the facts."""
+    issues = []
+    for i in lineup(source, episode):
+        n, ids = i.number, i.claim_ids
+        core = i.tier == 'core'
+        issues.append(dict(
+            id=f'issue-{n}', issue=n, label=f'이슈 {chr(64 + n)}', agenda=f'{chr(64 + n)} 이슈 수급 부담 신호', big=f'{n}.{n}%', big_label='관련 지표',
+            body=f'관련 지표가 {n}.{n}% 움직였습니다.', meaning='수급 부담으로 이어질 수 있음' if core else '',
+            narration=(f'관련 지표가 {n}.{n}% 움직였습니다. 브리핑은 이 흐름이 결국 투자자 수급 부담으로 이어질 수 있다고 해석합니다.'
+                       if core else f'관련 지표가 {n}.{n}% 움직여 수급 부담 신호입니다.'),
+            claim_ids=list(ids[:2]) + ([ids[2]] if core else [])))
+    claims = parse(source['body'])['claims']
+    summary = next(k for k, v in claims.items() if v['section'] == '오늘의 핵심')
+    following = next(k for k, v in claims.items() if v['section'] == '다음 확인할 것')
+    value = dict(title='반등 실패, 수급 부담이 막았다', description='오늘 마감 이슈를 짧게 정리합니다.',
+                 hook=dict(headline='반등은 실패, 코스닥 낙폭 확대', question='왜 꺾였나?', narration='반등을 시도했지만 끝내 꺾였습니다.',
+                           claim_ids=[summary]),
+                 issues=issues,
+                 close=dict(conclusion='정리하면, 수급 부담이 반등을 막았습니다.', signals=['외국인 수급 전환', '코스닥 종가 회복'],
+                            signals_narration='외국인 수급과 코스닥 종가를 보세요.', claim_ids=[issues[0]['claim_ids'][0], following]))
+    value.update(changes)
+    return ShortsPlan.model_validate(value)
+
+
+FOUR = {1: '핵심 이슈', 2: '핵심 이슈', 3: '함께 볼 이슈', 4: '함께 볼 이슈'}
+
+
+def lineup_violations(plan, source, episode):
+    return shorts_violations(plan, source, episode, lineup(source, episode))
+
+
+def test_a_cut_of_every_issue_in_order_passes():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR)
+    assert lineup_violations(lineup_plan(source, episode_json), source, episode_json) == []
+    assert violations(cut()) == []  # the fixture brief's one issue
+
+
+def test_every_briefing_issue_once_in_order():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR)
+    raw = lineup_plan(source, episode_json).model_dump(mode='json')
+    issues = raw['issues']
+
+    def found(changed):
+        return ' '.join(lineup_violations(ShortsPlan.model_validate({**raw, 'issues': changed}), source, episode_json))
+
+    assert 'Briefing issues [3] are missing' in found([issues[0], issues[1], issues[3]])
+    split = {**issues[0], 'id': 'issue-1b'}
+    assert 'Briefing issues [1] are split into more than one issue' in found([issues[0], split, *issues[1:]])
+    assert 'out of the briefing order [1, 2, 3, 4]' in found([issues[1], issues[0], *issues[2:]])
+    assert 'Issues [5] are not briefing issues' in found([*issues, {**issues[3], 'id': 'issue-5', 'issue': 5}])
+
+
+def test_an_issue_cites_only_its_own_lines():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR)
+    plan = lineup_plan(source, episode_json).model_dump(mode='json')
+    other = lineup(source, episode_json)[2].claim_ids[1]
+    plan['issues'][1]['claim_ids'].append(other)
+    assert any(f"Line IDs ['{other}'] in issue issue-2 belong to neither briefing issue 2" in f
+               for f in lineup_violations(ShortsPlan.model_validate(plan), source, episode_json))
+
+
+def test_core_and_brief_narration_lengths():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR)
+    plan = lineup_plan(source, episode_json).model_dump(mode='json')
+    plan['issues'][0]['narration'] = '관련 지표가 1.1% 움직였습니다. 수급 부담입니다.'
+    plan['issues'][2]['narration'] = '관련 지표가 3.3% 움직였고 이 흐름은 투자자 수급 부담으로 이어질 수 있습니다.'
+    found = ' '.join(lineup_violations(ShortsPlan.model_validate(plan), source, episode_json))
+    assert 'Issue issue-1 narration is 29 characters; a core issue takes 60-85' in found
+    assert 'Issue issue-3 narration is 46 characters; a brief issue takes 25-40' in found
+
+
+def test_a_core_issue_says_what_it_means():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR)
+    plan = lineup_plan(source, episode_json).model_dump(mode='json')
+    plan['issues'][0]['meaning'] = ''
+    assert any('Core issue issue-1 needs its 그래서 line' in f
+               for f in lineup_violations(ShortsPlan.model_validate(plan), source, episode_json))
+    plan['issues'][0]['meaning'], plan['issues'][3]['meaning'] = '수급 부담으로 이어질 수 있음', ''
+    assert lineup_violations(ShortsPlan.model_validate(plan), source, episode_json) == []
+
+
+def test_the_close_fits_its_budget():
     raw = cut()
-    raw['issues'][0]['scene_ids'], raw['issues'][1]['scene_ids'] = ['photo', 'counter'], ['head', 'flow']
-    assert any('out of episode order' in f for f in violations(raw))
-    raw = cut()  # within an issue any order is fine; only the first scene of each issue follows the episode
-    raw['issues'][0]['scene_ids'], raw['issues'][1]['scene_ids'] = ['head', 'counter'], ['flow']
-    assert not any('episode order' in f for f in violations(raw))
-    assert any('cited twice' in f for f in violations(cut(issue=1, scene_ids=['flow', 'counter'])))
-    assert any('does not have' in f for f in violations(cut(issue=1, scene_ids=['nowhere'])))
+    raw['close'].update(conclusion='정리하면, 반도체가 이끌었지만 비기술 업종 확산은 아직입니다.',
+                        signals_narration='비기술 업종 확산과 한국 반도체 강세가 이어지는지 꼭 확인해 보세요.')
+    assert any(f.startswith('The conclusion and the signals narration are 72 characters, over 70') for f in violations(raw))
+
+
+def test_an_issue_the_episode_left_out_needs_only_its_briefing_lines():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR, skip=(3,))
+    plan = lineup_plan(source, episode_json)
+    assert '3.3' not in json.dumps(episode_json, ensure_ascii=False)
+    assert lineup_violations(plan, source, episode_json) == []
+    raw = plan.model_dump(mode='json')
+    raw['issues'][2]['big'] = '7.7%'  # in no line of issue 3
+    assert any('Unbound number' in f and 'issue-3' in f
+               for f in lineup_violations(ShortsPlan.model_validate(raw), source, episode_json))
+
+
+def test_the_hook_takes_one_breath():
+    plan = cut(hook={**cut()['hook'], 'narration': '가' * 33})
+    assert 'Hook narration is 33 characters, over 32: one sentence in one breath after the date line' in ' '.join(
+        violations(plan))
+    assert not any('Hook narration' in f for f in violations(cut(hook={**cut()['hook'], 'narration': '가' * 32})))
 
 
 def test_numbers_must_be_in_the_episode():
-    # '21' is in the cited line b002 ('2026-09-21 종가') but in no scene of the delivered episode.
-    raw = cut(issue=1, big='21', claim_ids=['b014', 'b002'], dir=None)
-    assert any('not in the delivered episode' in f for f in violations(raw))
-    assert not any('Unbound' in f for f in violations(raw))
+    # '21' is in the briefing line b002 ('2026-09-21 종가') but in no scene of the delivered episode.
+    raw = cut(close={**cut()['close'], 'signals': ['21일 종가 확인', '한국 반도체 강세 지속'], 'claim_ids': ['b011', 'b002']})
+    assert any('Number [\'21\'] in the close is not in the delivered episode' in f for f in violations(raw))
 
 
 def test_only_visible_episode_text_counts_as_in_the_episode():
     # '5' (from '05:00' in b013) and '21' (b002) are in cited lines but in no visible text of the episode; card numbers,
     # icon sizes and colours (112, '01', #5EA0FF) are not text.
-    for big, ids in (('5', ['b013']), ('21', ['b014', 'b002']), ('112', ['b014'])):
-        raw = cut(issue=1, big=big, claim_ids=ids, dir=None)
+    for big, ids in (('5', ['b013']), ('112', ['b014'])):
+        raw = cut(issue=0, big=big, dir=None, claim_ids=ids)
         assert any('not in the delivered episode' in f for f in violations(raw)), big
     assert 'not in the delivered episode' not in ' '.join(violations(cut()))
 
 
-def test_the_labels_share_the_narration_budget_and_have_no_comma(monkeypatch):
-    from quant_company.video import shorts as shorts_module
-
-    # Owner, 10/21: the labels are read aloud in the issue list, so they count toward the length.
-    plan = ShortsPlan.model_validate(cut())
-    spoken_total, labels = sum(len(x) for x in plan.narrations()), sum(len(i.label) for i in plan.issues)
-    monkeypatch.setattr(shorts_module, 'NARRATION_BUDGET', spoken_total + labels - 1)
-    assert any(f.startswith('Narration and labels are') for f in violations(cut()))
-    monkeypatch.setattr(shorts_module, 'NARRATION_BUDGET', spoken_total + labels)
-    assert not any(f.startswith('Narration and labels are') for f in violations(cut()))
-    raw = cut()
-    raw['issues'][0]['label'] = '금리, 환율'
-    assert any('A label has a comma' in f for f in violations(raw))
-    assert not any('A label has a comma' in f for f in violations(cut()))
+def test_an_over_long_plan_is_found_before_any_speech_is_paid():
+    assert estimated_seconds(shorts()) < 60 and not any('Estimated length' in f for f in violations(cut()))
+    plan = spoken_plan([85] * 3, [40] * 4)
+    found = shorts_violations(plan, body_source(), episode().model_dump(mode='json'),
+                              lineup(body_source(), episode().model_dump(mode='json')))
+    assert any('Estimated length' in f and 'over the 90 s cap' in f for f in found)
 
 
-def test_an_over_long_plan_is_found_before_any_speech_is_paid(monkeypatch):
-    from quant_company.video import shorts as shorts_module
-
-    assert estimated_seconds(shorts()) < 60
-    assert not any('Estimated length' in f for f in violations(cut()))
-    # The plan's own character limit keeps real plans under the cap; a looser limit shows the estimate as the second guard.
-    monkeypatch.setattr(shorts_module, 'NARRATION_LIMIT', 2000)
-    raw = cut(signals_narration='가' * 10, hook=dict(cut()['hook'], narration='가' * 10))
-    raw['issues'] = [{**cut()['issues'][0], 'id': f'long-{n}', 'narration': '가' * 95} for n in range(5)]
-    plan = ShortsPlan.model_validate(raw)
-    assert estimated_seconds(plan) > 90
-    assert any('Estimated length' in f and 'over the 90 s cap' in f for f in violations(raw))
-
-
-def test_claim_ids_are_bound_to_the_episode_scenes():
-    # b010 is used by the episode (photo), but not by the scenes this issue cites (head, flow).
-    assert any('issue semis' in f and 'cited scenes' in f for f in violations(cut(issue=0, claim_ids=['b013', 'b010'])))
-    # b002 is a briefing line no scene of the episode carries.
-    assert any('the hook' in f and 'anywhere in the episode' in f for f in violations(cut(hook=dict(cut()['hook'], claim_ids=['b002']))))
-    assert any('the signals' in f and 'anywhere in the episode' in f for f in violations(cut(signals_claim_ids=['b002'])))
+def test_hook_and_close_lines_are_used_by_the_episode_or_the_issues():
+    # b002 is a briefing line no scene of the episode carries and no issue owns.
+    assert any('the hook' in f and 'used nowhere' in f for f in violations(cut(hook=dict(cut()['hook'], claim_ids=['b002']))))
+    assert any('the close' in f and 'used nowhere' in f
+               for f in violations(cut(close={**cut()['close'], 'claim_ids': ['b002']})))
 
 
 def test_title_and_description_numbers_must_be_in_the_delivered_episode():
-    # '21' is in the cited line b002 (also cited by the issue) but in no visible text of the episode.
-    raw = cut(title='S&P 500 21일 상승, 반도체가 이끌었다')
-    raw['issues'][0]['claim_ids'] = ['b013', 'b007', 'b009', 'b002']
+    raw = cut(title='S&P 500 21일 상승, 반도체가 이끌었다', close={**cut()['close'], 'claim_ids': ['b011', 'b012', 'b002']})
     found = violations(raw)
     assert any('title or description is not in the delivered episode' in f for f in found), found
-
-
-def test_two_issues_is_enough():
-    assert len(shorts().issues) == 2
-    assert shorts_violations(shorts(), body_source(), episode().model_dump(mode='json')) == []
 
 
 @pytest.mark.parametrize('change,error', [
     (lambda r: r['issues'][0].update(big='5,400'), 'Unbound number'),
     (lambda r: r['issues'][0].update(dir='dn'), 'contradicts its line'),  # ▼ for the 1.92% rise
-    (lambda r: r['issues'][1].update(narration='나스닥 종합은 0.59% 급락해 금리보다 반도체 재료가 영향을 줬을 수도 있습니다.'),
-     'contradicts its line'),
-    (lambda r: r['issues'][1].update(body='나스닥 종합은 0.59% 올랐지만 기술주 밖의 참여는 혼조였습니다.'), '종가'),  # no label
-    (lambda r: r['issues'][1].update(narration='보도에 따르면 나스닥 종합은 0.59% 올랐습니다. 반도체 재료도 있습니다.'), '보도에 따르면'),
-    (lambda r: r.update(signals_narration='이 영상은 AI가 만든 요약입니다. 확산을 확인합니다.'), 'tool wording'),
-    (lambda r: r.update(signals_narration='반도체는 지금 사세요. 확산을 확인합니다.'), 'Buy/sell'),
+    (lambda r: r['issues'][0].update(narration='에스앤피 500이 정규장 종가 기준 1.92% 급락했고 반도체가 흔들렸습니다. '
+                                               '수익률 하락은 성장주 부담을 낮출 수 있습니다.'), 'contradicts its line'),
+    (lambda r: r['issues'][0].update(body='S&P 500이 1.92% 올랐고 반도체가 상승을 주도했습니다.',
+                                     narration='에스앤피 500이 1.92% 올랐고 반도체가 이끌었습니다. 수익률 하락은 성장주 부담을 '
+                                               '낮출 수 있다는 해석입니다.'), '종가'),  # no label
+    (lambda r: r['issues'][0].update(narration='보도에 따르면 에스앤피 500이 정규장 종가 기준 1.92% 올랐습니다. 수익률 하락은 '
+                                               '성장주 부담을 낮출 수 있습니다.'), '보도에 따르면'),
+    (lambda r: r['close'].update(signals_narration='이 영상은 AI가 만든 요약입니다.'), 'tool wording'),
+    (lambda r: r['close'].update(signals_narration='반도체는 지금 사세요. 확산을 보세요.'), 'Buy/sell'),
     (lambda r: r['hook'].update(headline='S&P 500이 3.1% 올랐다'), 'Unbound number'),
 ])
 def test_the_cut_follows_the_episode_binding_rules(change, error):
@@ -279,23 +354,63 @@ def test_an_arrow_its_line_does_not_state_is_dropped_not_rejected():
     raw = cut(issue=0, big='5,300', claim_ids=['b013'])  # a level: its line states no direction for it
     plan, dropped = settle(ShortsPlan.model_validate(raw), body_source())
     assert dropped == ['semis: 5,300'] and plan.issues[0].dir is None
-    assert shorts_violations(plan, body_source(), episode().model_dump(mode='json')) == []
+    episode_json = episode().model_dump(mode='json')
+    assert shorts_violations(plan, body_source(), episode_json, lineup(body_source(), episode_json)) == []
     raw = cut(issue=0, big='1.92%', dir='dn')  # against its line: kept, and the checks fail
     plan, dropped = settle(ShortsPlan.model_validate(raw), body_source())
     assert dropped == [] and any('contradicts its line' in f for f in violations(raw))
 
 
+def prompt_for(source=None, episode_json=None, **options):
+    source = source or body_source()
+    episode_json = episode_json or episode().model_dump(mode='json')
+    return shorts_prompt(source, episode_json, lineup(source, episode_json), **options)
+
+
 def test_the_prompt_cuts_the_delivered_episode_and_leaves_flagged_claims_out():
-    prompt = shorts_prompt(body_source(), episode().model_dump(mode='json'), ['나스닥 수치 해석이 과장됨'], '- Unbound number')
+    prompt = prompt_for(concerns=['나스닥 수치 해석이 과장됨'], feedback='- Unbound number')
     assert episode().upload.title in prompt and 'no greeting' in prompt and "Never say '보도에 따르면'" in prompt
     assert '나스닥 수치 해석이 과장됨' in prompt and 'Unbound number' in prompt and 'b013' in prompt
 
 
+def test_the_prompt_lists_the_lineup_and_asks_one_issue_each():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR)
+    prompt = prompt_for(source, episode_json)
+    data = json.loads(prompt.split('Lineup (one issue each, in this order):\n', 1)[1].split('\n', 1)[0])
+    assert [(x['issue'], x['title'], x['tier']) for x in data] == [
+        (1, PM_TITLES[0], 'core'), (2, PM_TITLES[1], 'core'), (3, PM_TITLES[2], 'brief'), (4, PM_TITLES[3], 'brief')]
+    assert data[0]['episode_scenes'][0]['narration'] and data[2]['lines']
+    # The rules a viewer feels: the summary of the episode, every issue once, an answer inside the cut, no bare hedge.
+    for rule in ('exactly one issue per lineup entry', 'never split, merge, skip or replace', 'what happened, why it '
+                 'matters and what it means', 'one number and what it means', 'starts with 정리하면',
+                 'answers the hook', "never a bare hedge ('근거는 부족', '미확정', '확인되지 않았다')",
+                 f'{CORE_NARRATION[0]}-{CORE_NARRATION[1]} characters', f'{BRIEF_NARRATION[0]}-{BRIEF_NARRATION[1]} characters',
+                 f'at most {CLOSE_NARRATION} characters', f'at most {HOOK_NARRATION} characters', "'오늘 이슈는 네 가지입니다.'",
+                 OUTRO['say']):
+        assert rule in prompt, rule
+
+
+def test_the_prompt_revises_the_previous_version():
+    plain = prompt_for()
+    previous = shorts().model_dump(mode='json')
+    revised = prompt_for(previous=previous, feedback='- Core issue semis needs its 그래서 line')
+    assert 'Revise the previous version below' in revised and 'Revise the previous version' not in plain
+    assert json.dumps(previous, ensure_ascii=False, sort_keys=True) in revised
+
+
+def test_the_prompt_asks_for_the_outlook_only_when_the_episode_carried_it():
+    plain, taught = prompt_for(), prompt_for(outlook=True)
+    assert 'the outlook the episode' not in plain  # an episode made before the outlook rule has none to give
+    assert 'the outlook the episode' in taught and 'no target level, no advice' in taught
+    assert taught.replace(OUTLOOK_SHORTS, '') == plain
+
+
 def test_the_shorts_prompt_carries_only_given_lessons():
-    plain = shorts_prompt(body_source(), episode().model_dump(mode='json'))
-    assert shorts_prompt(body_source(), episode().model_dump(mode='json'), lessons=()) == plain  # older cuts unchanged
-    taught = shorts_prompt(body_source(), episode().model_dump(mode='json'), ['나스닥 수치 해석이 과장됨'],
-                           lessons=[{'id': 'x', 'scope': 'shorts', 'text': '첫 문장은 숫자 하나로 시작한다'}])
+    plain = prompt_for()
+    assert prompt_for(lessons=()) == plain  # older cuts unchanged
+    taught = prompt_for(concerns=['나스닥 수치 해석이 과장됨'],
+                        lessons=[{'id': 'x', 'scope': 'shorts', 'text': '첫 문장은 숫자 하나로 시작한다'}])
     assert 'channel_lessons' in taught and '첫 문장은 숫자 하나로 시작한다' in taught and 'channel_lessons' not in plain
     assert taught.index('Briefing body lines') < taught.index('channel_lessons') < taught.index('나스닥 수치 해석이 과장됨')
 
@@ -311,7 +426,7 @@ def tones(folder, seconds, ffmpeg):
     return paths
 
 
-def render_fixture(tmp_path, assets=True):
+def render_fixture(tmp_path, assets=True, source=None):
     """Settings, job and the episode's pictures (the motion fixture library) for a real Shorts render."""
     if not importlib.util.find_spec('playwright'):
         pytest.skip('Install optional video dependencies and Chromium')
@@ -319,12 +434,34 @@ def render_fixture(tmp_path, assets=True):
     settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_ffprobe='', video_asset_dir=tmp_path / 'assets')
     if assets:
         library(tmp_path / 'assets', ffmpeg)
-    job = {'id': 'fixture', 'source': {**body_source(), 'edition_kind': 'am'}, 'policy': {'template': 'motion-v2'}}
+    job = {'id': 'fixture', 'source': {**(source or body_source()), 'edition_kind': 'am'}, 'policy': {'template': 'motion-v2'}}
     return ffmpeg, settings, job
 
 
-# A short agenda take is held for the list; the outro is held for its button.
-TAKES = [4, 1, 6, 6, 3]
+def without_pictures(episode_json, *scene_ids):
+    """The episode with those scenes drawn as the fixture's flow card, which shows no picture (a headline card must)."""
+    flow = next(s for s in episode().model_dump(mode='json')['scenes'] if s['id'] == 'flow')
+    for scene in episode_json['scenes']:
+        if scene['id'] in scene_ids:
+            scene.update(type=flow['type'], data=copy.deepcopy(flow['data']))
+    return episode_json
+
+
+def multi_cut(tmp_path, titles, chapters, skip=(), photo_first=()):
+    """(ffmpeg, settings, job, episode JSON, plan) for a real render of an issue_body brief; photo_first: issue numbers
+    whose headline card shows the fixture photo instead of the illustration."""
+    source = issue_body(titles)
+    ffmpeg, settings, job = render_fixture(tmp_path, source=source)
+    episode_json = issue_episode(source, chapters, skip)
+    for scene in episode_json['scenes']:
+        if scene['id'] in {f'issue-{n}' for n in photo_first}:
+            scene['data']['image'] = {'asset': 'fixture-photo'}
+    return ffmpeg, settings, job, episode_json, lineup_plan(job['source'], episode_json)
+
+
+# A short agenda take is held for the list; the outro is held for its button. One take per scene of the fixture cut
+# (opener, agenda, its one issue, outro).
+TAKES = [4, 1, 8, 4]
 
 
 def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
@@ -334,28 +471,48 @@ def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
     manifest = ShortsRenderer(settings, WordAligner()).render(job, plan, episode().model_dump(mode='json'), tmp_path / 'out', paths)
     assert manifest['size'] == [1080, 1920] and manifest['fps'] == 30
     scenes = manifest['scenes']
-    assert [s['id'] for s in scenes] == ['opener', 'agenda', 'semis', 'check', 'outro']
-    assert [s['type'] for s in scenes] == ['opener', 'agenda', 'issue', 'issue', 'outro']
+    assert [s['id'] for s in scenes] == ['opener', 'agenda', 'semis', 'outro']
+    assert [s['type'] for s in scenes] == ['opener', 'agenda', 'issue', 'outro']
     assert not any(k in f for f in manifest['findings'] for k in ('outside-safe-area', 'overlap', 'covered')), manifest['findings']
-    assert scenes[1]['t1'] - scenes[1]['t0'] >= 1.0 + 0.9 * len(plan.issues) - 1e-6
+    assert scenes[1]['t1'] - scenes[1]['t0'] >= 2.0 + 0.4 * len(plan.issues) - 1e-6
     assert scenes[-1]['t1'] - scenes[-1]['t0'] >= 6.0 - 1e-6
     assert scenes[0]['t0'] == 0 and manifest['duration'] == pytest.approx(scenes[-1]['t1'], abs=.5)
-    assert manifest['music'] is None
+    assert manifest['music'] is None and manifest['review']['audio'] == {}
     pictures = {p['scene']: p for p in manifest['pictures']}
     assert set(pictures) == {s['id'] for s in scenes}  # every scene shows a picture
-    assert pictures['check']['credit'] == '자료사진 · Fixture Author · CC BY 4.0' and pictures['semis']['credit'] == ''
-    assert not any('without a picture' in f for f in manifest['findings'])
+    assert pictures['semis']['credit'] == '' and not any('without a picture' in f for f in manifest['findings'])
     upload = (tmp_path / 'out' / 'shorts-upload.txt').read_text()
     assert plan.title in upload and '#Shorts' in upload and '관련 동영상' in upload and '|' not in upload.split('\n')[1]
-    assert '[사진 출처]\n자료사진 · Fixture Author · CC BY 4.0\n' in upload
     srt = (tmp_path / 'out' / 'shorts.srt').read_text()
-    assert '9월 22일 아침 브리핑입니다.' in srt and '반도체 주도, 다르게 볼 점, 두 가지입니다.' in srt and '본편에서 확인하세요.' in srt
-    assert '채널 프로필 링크에서 신청하세요.' in srt and '답은 본편에서 확인하세요.' in srt  # the end screen (owner, 10/21-22)
+    assert '9월 22일 아침 브리핑입니다.' in srt and '오늘 이슈는 한 가지입니다.' in srt and '정리하면' in srt
+    assert '자세한 분석은 본편에서' in srt and '프로필 링크에서 신청하세요.' in srt  # the end screen (owner, 10/21, 10/27)
     assert '[고정 댓글]\n확산될까? 여러분은 어떻게 보세요? 댓글로 남겨 주세요.' in upload
     assert [f['scene'] for f in manifest['review']['frames']] == [s['id'] for s in scenes]
     assert all((tmp_path / 'out' / f['file']).stat().st_size for f in manifest['review']['frames'])
     assert not (tmp_path / 'out' / 'page').exists() and not list((tmp_path / 'out').glob('aud-*.wav'))
     verify_artifacts(manifest, tmp_path)
+
+
+def test_six_issues_render_inside_the_safe_area(tmp_path):
+    ffmpeg, settings, job, episode_json, plan = multi_cut(
+        tmp_path, PM_TITLES, {1: '핵심 이슈', 2: '핵심 이슈', 3: '핵심 이슈', 4: '함께 볼 이슈', 5: '함께 볼 이슈', 6: '함께 볼 이슈'})
+    raw = plan.model_dump(mode='json')
+    for issue in raw['issues']:  # every screen line at its longest
+        n = issue['issue']
+        issue.update(label=f'긴 이슈 이름 {n}번 이야기'[:12], agenda=f'{n}.{n}% 움직인 지표, 수급 부담은 아직 계속되는 중'[:26],
+                     body=(f'관련 지표가 {n}.{n}% 움직였고 이는 투자자 수급 부담과 업종별 차별화가 함께 나타났다는 뜻입니다. '
+                           '다음 장에서 이어지는지 봐야 합니다.')[:70],
+                     meaning=('수급 부담이 이어지면 반등 시도가 다시 꺾일 수 있다는 점을 뜻합니다 정말로' if n <= 3 else '')[:40])
+    plan = ShortsPlan.model_validate(raw)
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode_json, tmp_path / 'out',
+                                                          tones(tmp_path, [4, 1, 6, 6, 6, 3, 3, 3, 3], ffmpeg))
+    scenes = built['ep']['scenes']
+    assert [s['id'] for s in scenes] == ['opener', 'agenda', *(f'issue-{n}' for n in range(1, 7)), 'outro']
+    found = on_page(built['page'], [QA_JS, "document.querySelectorAll('.agenda .row').length"], t=scenes[1]['t1'] - 0.3)
+    assert found == [[], 6]
+    for scene in scenes:
+        [issues] = on_page(built['page'], [QA_JS], t=scene['t1'] - 0.3)
+        assert not issues, (scene['id'], issues)
 
 
 def on_page(page, scripts, t=0.0, style=''):
@@ -398,18 +555,19 @@ def test_layout_qa_finds_text_covered_by_the_background(tmp_path):
 
 def test_build_keeps_a_minus_without_an_arrow(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
-    raw = shorts().model_dump(mode='json')
-    raw['issues'][0].update(big='-0.2%', dir=None)  # a signed level: the sign is the fact
-    raw['issues'][1].update(big='-0.59%', dir='dn')  # the arrow replaces the sign
-    built = ShortsRenderer(settings, WordAligner()).build(job, ShortsPlan.model_validate(raw), episode().model_dump(mode='json'),
-                                                          tmp_path / 'out', tones(tmp_path, TAKES, ffmpeg))
-    [shown] = on_page(built['page'], ["[...document.querySelectorAll('.scene.issue .num .v')].map(e => e.textContent)"])
+    shown = []
+    for name, big, dir_ in (('level', '-0.2%', None), ('fall', '-0.59%', 'dn')):  # a signed level; an arrow for the sign
+        raw = shorts().model_dump(mode='json')
+        raw['issues'][0].update(big=big, dir=dir_)
+        built = ShortsRenderer(settings, WordAligner()).build(job, ShortsPlan.model_validate(raw), episode().model_dump(mode='json'),
+                                                              tmp_path / name, tones(tmp_path, TAKES, ffmpeg))
+        shown += on_page(built['page'], ["document.querySelector('.scene.issue .num .v').textContent"])
     assert shown == ['-0.2%', '▼0.59%']
 
 
 def test_a_long_total_is_a_finding_not_a_raise(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
-    takes = tones(tmp_path, [20, 20, 20, 20, 20], ffmpeg)  # ~100 s of paid speech
+    takes = tones(tmp_path, [25, 25, 25, 25], ffmpeg)  # ~100 s of paid speech
     built = ShortsRenderer(settings, WordAligner()).build(job, shorts(), episode().model_dump(mode='json'), tmp_path / 'out', takes)
     assert 90 < built['total'] < 180
     assert any('at most 90 s' in f for f in built['findings'])
@@ -422,27 +580,24 @@ def test_a_sparse_library_entry_cannot_raise_the_credit(tmp_path):
     for entry in shelf.values():
         entry.pop('author', None)
         entry.pop('license', None)
+    raw = episode().model_dump(mode='json')
+    raw['scenes'][3]['data']['image'] = {'asset': 'fixture-photo'}  # the issue's headline card shows the photo
     job = {'id': 'fixture', 'source': source(), 'policy': {'template': 'motion-v2'}}
-    pictures = cut_pictures(job, episode().model_dump(mode='json'), shorts(), settings, shelf)
-    assert pictures['issues'][1]['credit'] == '자료사진 ·  · '
+    pictures = cut_pictures(job, raw, shorts(), settings, shelf, lineup(source(), raw))
+    assert pictures['issues'][0]['credit'] == '자료사진 ·  · '
 
 
 def test_every_scene_has_a_picture(tmp_path):
-    ffmpeg, settings, job = render_fixture(tmp_path)
-    paths = tones(tmp_path, TAKES, ffmpeg)
-    raw = shorts().model_dump(mode='json')
-    raw['issues'][0]['scene_ids'], raw['issues'][1]['scene_ids'] = ['flow'], ['counter']  # cards without a picture
-    plan = ShortsPlan.model_validate(raw)
-    bare = episode(thumbnail_image='').model_dump(mode='json')
+    ffmpeg, settings, job, episode_json, plan = multi_cut(tmp_path, PM_TITLES[:2], {1: '핵심 이슈', 2: '함께 볼 이슈'})
+    paths = tones(tmp_path, [4, 1, 6, 3, 3], ffmpeg)
+    bare = without_pictures({**episode_json, 'thumbnail_image': ''}, 'issue-1', 'issue-2')  # only issue-1-view keeps its photo
     built = ShortsRenderer(settings, WordAligner()).build(job, plan, bare, tmp_path / 'out', paths)
     shown = scene_classes(built['page'])
-    # The cover is the first picture the episode shows (the headline card's), sharp behind the opener and blurred
-    # behind the agenda and the outro. The issues without their own picture show their chapter's other pictures blurred,
-    # each one the scene before does not show.
+    # No thumbnail picture: the cover is issue 1's own picture (its photo card), sharp behind the opener and blurred
+    # behind the agenda and the outro; issue 2 has none in its chapter either, so it shows the cover blurred.
     assert {i: (bg, blur) for i, (bg, blur, _) in shown.items()} == {
-        'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'semis': ('img/photo.png', True),
-        'check': ('img/illu.png', True), 'outro': ('img/illu.png', True)}
-    assert (built['page'] / 'img' / 'illu.png').is_file() and (built['page'] / 'img' / 'photo.png').is_file()
+        'opener': ('img/photo.png', False), 'agenda': ('img/photo.png', True), 'issue-1': ('img/photo.png', False),
+        'issue-2': ('img/photo.png', True), 'outro': ('img/photo.png', True)}
     assert not any('nophoto' in cls for *_, cls in shown.values()) and not any('picture' in f for f in built['findings'])
     # No picture anywhere (no reviewed library, no episode picture): a gradient, never a bare frame, and a finding.
     settings.video_asset_dir = tmp_path / 'empty'
@@ -450,41 +605,36 @@ def test_every_scene_has_a_picture(tmp_path):
     shown = scene_classes(built['page'])
     assert all(bg is None and 'nophoto' in cls for bg, _, cls in shown.values()), shown
     assert [f for f in built['findings'] if 'picture' in f] == [
-        f'Shorts scene without a picture: {i}' for i in ('opener', 'agenda', 'semis', 'check', 'outro')]
+        f'Shorts scene without a picture: {i}' for i in ('opener', 'agenda', 'issue-1', 'issue-2', 'outro')]
 
 
 def test_an_issue_without_a_picture_takes_one_from_its_chapter_before_the_cover(tmp_path):
-    ffmpeg, settings, job = render_fixture(tmp_path)
-    raw = episode().model_dump(mode='json')  # the thumbnail picture (the cover) is the headline card's illustration
-    raw['scenes'][6]['chapter'] = '함께 볼 이슈'  # counter: alone in its chapter, with no picture
-    assert [(s['id'], s['chapter']) for s in issue_scenes(raw)] == [
-        ('head', '핵심 이슈'), ('flow', '핵심 이슈'), ('photo', '핵심 이슈'), ('counter', '함께 볼 이슈')]
-    plan = shorts().model_dump(mode='json')
-    plan['issues'][0]['scene_ids'], plan['issues'][1]['scene_ids'] = ['flow'], ['counter']  # cards without a picture
-    plan = ShortsPlan.model_validate(plan)
+    ffmpeg, settings, job, episode_json, plan = multi_cut(
+        tmp_path, PM_TITLES[:3], {1: '핵심 이슈', 2: '함께 볼 이슈', 3: '함께 볼 이슈'}, photo_first=(3,))
+    raw = without_pictures(episode_json, 'issue-2')  # issue 2's only card has no picture; issue 3's shares its chapter
     shelf = json.loads((tmp_path / 'assets' / 'manifest.json').read_text())
-    nearby = cut_pictures(job, raw, plan, settings, shelf)['nearby']
-    assert [[p['path'].rsplit('/', 1)[1] for p in n] for n in nearby] == [['illu.png', 'photo.png'], []]
-    built = ShortsRenderer(settings, WordAligner()).build(job, plan, raw, tmp_path / 'out', tones(tmp_path, TAKES, ffmpeg))
+    issues = lineup(job['source'], raw)
+    nearby = cut_pictures(job, raw, plan, settings, shelf, issues)['nearby']
+    assert [[p['path'].rsplit('/', 1)[1] for p in n] for n in nearby] == [[], ['photo.png'], []]
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, raw, tmp_path / 'out', tones(tmp_path, [4, 1, 6, 3, 3, 3], ffmpeg))
     shown = scene_classes(built['page'])
-    # flow: its chapter's nearest picture is the cover the agenda shows just before, so the photo two scenes on, with
-    # its own credit. counter: nothing else in its chapter, so the cover.
     assert {i: (bg, blur) for i, (bg, blur, _) in shown.items()} == {
-        'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'semis': ('img/photo.png', True),
-        'check': ('img/illu.png', True), 'outro': ('img/illu.png', True)}
+        'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'issue-1': ('img/illu.png', False),
+        'issue-2': ('img/photo.png', True), 'issue-3': ('img/photo.png', False), 'outro': ('img/illu.png', True)}
     credits = {p['scene']: p['credit'] for p in built['pictures']}
-    assert credits['semis'] == '자료사진 · Fixture Author · CC BY 4.0' and credits['check'] == '' and credits['agenda'] == ''
-    [drawn] = on_page(built['page'], ["[...document.querySelectorAll('.scene')].map(e => e.querySelector('.credit')?.textContent || '')"])
-    assert drawn == ['', '', '자료사진 · Fixture Author · CC BY 4.0', '', '']
-    # The chapter's picture is taken even when the scene before shows it: the cover comes only after the chapter.
-    raw['scenes'][5]['chapter'] = '함께 볼 이슈'  # photo and counter
-    plan = shorts().model_dump(mode='json')
-    plan['issues'][0]['scene_ids'], plan['issues'][1]['scene_ids'] = ['photo'], ['counter']
-    built = ShortsRenderer(settings, WordAligner()).build(job, ShortsPlan.model_validate(plan), raw, tmp_path / 'again',
-                                                          tones(tmp_path, TAKES, ffmpeg))
-    shown = scene_classes(built['page'])
-    assert (shown['semis'][:2], shown['check'][:2]) == (('img/photo.png', False), ('img/photo.png', True))
-    assert {p['scene']: p['credit'] for p in built['pictures']}['check'] == '자료사진 · Fixture Author · CC BY 4.0'
+    assert credits['issue-2'] == credits['issue-3'] == '자료사진 · Fixture Author · CC BY 4.0' and credits['issue-1'] == ''
+
+
+def test_an_issue_without_scenes_takes_the_cover(tmp_path):
+    ffmpeg, settings, job, episode_json, plan = multi_cut(tmp_path, PM_TITLES[:2], {1: '핵심 이슈', 2: '함께 볼 이슈'},
+                                                          skip=(2,))
+    assert lineup(job['source'], episode_json)[1].scene_ids == ()
+    shelf = json.loads((tmp_path / 'assets' / 'manifest.json').read_text())
+    pictures = cut_pictures(job, episode_json, plan, settings, shelf, lineup(job['source'], episode_json))
+    assert pictures['issues'][1] is None and pictures['nearby'][1] == []
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode_json, tmp_path / 'out',
+                                                          tones(tmp_path, [4, 1, 6, 3, 3], ffmpeg))
+    assert scene_classes(built['page'])['issue-2'][:2] == ('img/illu.png', True)
 
 
 def test_the_headline_breaks_after_its_first_comma(tmp_path):
@@ -515,21 +665,30 @@ def test_the_headline_breaks_after_its_first_comma(tmp_path):
     assert '<br class="comma">' in fullwidth and '반도체 주도，</span>' in fullwidth
 
 
-def test_each_issue_leads_with_its_line_and_the_list_rows_come_in_as_they_are_read(tmp_path):
-    # Owner, 10/21: an issue led with a bare number; its one-line takeaway (its row in the list) now heads it.
-    ffmpeg, settings, job = render_fixture(tmp_path)
-    plan = shorts()
-    built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode().model_dump(mode='json'), tmp_path / 'out',
-                                                          tones(tmp_path, TAKES, ffmpeg))
-    agenda = built['ep']['scenes'][1]
-    at = agenda['data']['at']
-    assert len(at) == len(plan.issues) and 0 < at[0] < at[1] < agenda['t1'] - agenda['t0']
-    [heads] = on_page(built['page'], ["[...document.querySelectorAll('.issue .ih')].map(e => e.innerText)"])
-    assert heads == [i.agenda for i in plan.issues]
+def test_each_issue_leads_with_its_line_and_the_list_rows_come_in_one_by_one(tmp_path):
+    # Owner, 10/21: an issue led with a bare number; its one-line takeaway (its row in the list) now heads it. The list
+    # says only its count (2026-10-27), so its rows come in one by one.
+    ffmpeg, settings, job, episode_json, plan = multi_cut(tmp_path, PM_TITLES[:3], {1: '핵심 이슈', 2: '함께 볼 이슈', 3: '함께 볼 이슈'})
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode_json, tmp_path / 'out',
+                                                          tones(tmp_path, [4, 1, 6, 3, 3, 3], ffmpeg))
+    assert 'at' not in built['ep']['scenes'][1]['data']
+    [starts, heads] = on_page(built['page'], ["[...document.querySelectorAll('.agenda .row')].map(e => e.dataset.in.split(',')[0])",
+                                              "[...document.querySelectorAll('.issue .ih')].map(e => e.innerText)"])
+    assert starts == ['0.15', '0.45', '0.75'] and heads == [i.agenda for i in plan.issues]
 
 
-def test_the_question_stays_up_over_the_issues_and_the_end_leaves_it_for_the_episode(tmp_path):
-    # Owner, 10/22: 59% of the 10/20 cut's feed viewers swiped away; the question bar and one end screen.
+def test_a_core_card_shows_what_it_means_and_a_brief_card_does_not(tmp_path):
+    ffmpeg, settings, job, episode_json, plan = multi_cut(tmp_path, PM_TITLES[:2], {1: '핵심 이슈', 2: '함께 볼 이슈'})
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode_json, tmp_path / 'out',
+                                                          tones(tmp_path, [4, 1, 6, 3, 3], ffmpeg))
+    assert [s['data']['tier'] for s in built['ep']['scenes'][2:4]] == ['core', 'brief']
+    [cards] = on_page(built['page'], ["[...document.querySelectorAll('.scene.issue')].map(e => [e.querySelector('.card').className,"
+                                      " e.querySelector('.tag')?.innerText || ''])"])
+    assert cards == [['card', '그래서 · 수급 부담으로 이어질 수 있음'], ['card brief', '']]
+
+
+def test_the_end_screen_answers_with_the_conclusion_and_points_to_the_episode(tmp_path):
+    # Owner, 10/22: the question bar stays up over the list and the issues. Owner, 10/27: the cut answers it at the end.
     ffmpeg, settings, job = render_fixture(tmp_path)
     plan = shorts()
     built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode().model_dump(mode='json'), tmp_path / 'out',
@@ -541,8 +700,9 @@ def test_the_question_stays_up_over_the_issues_and_the_end_leaves_it_for_the_epi
     assert float(hidden) == 0 and float(shown) == 1 and text == f'오늘의 질문{plan.hook.question}'
     end = scenes['outro']
     [found] = on_page(built['page'], ["[document.querySelector('.outro .oq').innerText, document.querySelector('.outro .play').innerText,"
-                                      " document.querySelector('.outro .mailrow').innerText]"], t=end['t1'] - 0.3)
-    assert found == [plan.hook.question, OUTRO['button'], OUTRO['mail_line']]
+                                      " document.querySelector('.outro .mailrow').innerText,"
+                                      " [...document.querySelectorAll('.outro .sig span')].map(e => e.innerText)]"], t=end['t1'] - 0.3)
+    assert found == [plan.close.conclusion, '본편 보기', OUTRO['mail_line'], plan.close.signals]
     [issues] = on_page(built['page'], [QA_JS], t=end['t1'] - 0.3)
     assert not issues, issues
     # A long question beside a long credit (a 48-character author is allowed): neither covers nor overlaps the other,
@@ -559,6 +719,44 @@ def test_the_question_stays_up_over_the_issues_and_the_end_leaves_it_for_the_epi
     for s in ep['scenes']:
         [issues] = on_page(built['page'], [QA_JS], t=s['t1'] - 0.3)
         assert not issues, (s['id'], issues)
+
+
+class HearingAligner(WordAligner):
+    """Reports a misheard number in the issue's take (the one that says 에스앤피 500)."""
+
+    def align(self, audio, expected):
+        aligned = super().align(audio, expected)
+        return {**aligned, 'findings': ['heard 1.92 as 192']} if '에스앤피' in expected else aligned
+
+
+def test_heard_findings_are_kept_per_scene(tmp_path):
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    manifest = ShortsRenderer(settings, HearingAligner()).render(job, shorts(), episode().model_dump(mode='json'),
+                                                                 tmp_path / 'out', tones(tmp_path, TAKES, ffmpeg))
+    assert manifest['review']['audio'] == {'semis': 'heard 1.92 as 192'}
+    assert 'Scene semis: heard 1.92 as 192' in manifest['findings']
+    # The depth stays with the scenes the analysis measures (spec: 장면 데이터에 표시).
+    assert [s.get('tier') for s in manifest['scenes']] == [None, None, 'core', None]
+
+
+class RecordingAligner(WordAligner):
+    def __init__(self):
+        self.expected = []
+
+    def align(self, audio, expected):
+        self.expected.append(expected)
+        return super().align(audio, expected)
+
+
+def test_each_take_is_checked_against_what_it_says(tmp_path):
+    # A scene voiced again in Korean number words is aligned against those words, not the digits (review #3).
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    aligner = RecordingAligner()
+    said = ['훅 문장 구월 이십이일 아침 브리핑입니다.', '오늘 이슈는 한 가지입니다.', '에스앤피 오백이 일 점 구이 퍼센트 올랐습니다.',
+            '정리하면, 반도체가 이끌었습니다.']
+    ShortsRenderer(settings, aligner).build(job, shorts(), episode().model_dump(mode='json'), tmp_path / 'out',
+                                            tones(tmp_path, TAKES, ffmpeg), texts=said)
+    assert aligner.expected == said
 
 
 def test_music_is_optional(tmp_path):
@@ -624,20 +822,62 @@ def test_music_is_never_fatal_and_never_lifts_the_peak(tmp_path, monkeypatch):
 
 
 class ShortsFileRenderer:
-    def __init__(self):
-        self.calls = []
+    """Writes the cut's files and one review frame per scene, like ShortsRenderer; heard: speech-to-text findings per
+    scene for the first render."""
 
-    def render(self, job, plan, episode, directory, paths, stop=None):
+    def __init__(self, heard=None):
+        self.calls, self.plans, self.texts, self.heard = [], [], [], heard or {}
+
+    def render(self, job, plan, episode, directory, paths, stop=None, texts=None):
         self.calls.append((len(paths), paths[-1]))
+        self.plans.append(plan)
+        self.texts.append(texts)
         files = {'shorts.mp4': b'simulated-shorts', 'shorts.srt': b'1\n00:00:00,000 --> 00:00:01,000\nx\n',
                  'shorts-upload.txt': '[제목]\nS&P 500 1.92% 상승\n'.encode(), 'shorts-plan.json': plan.model_dump_json().encode()}
         for name, content in files.items():
             (directory / name).write_bytes(content)
+        (directory / 'review').mkdir(exist_ok=True)
+        ids = ['opener', 'agenda', *(i.id for i in plan.issues), 'outro']
+        for n, scene in enumerate(ids):
+            (directory / f'review/{n:02}-{scene}.jpg').write_bytes(b'\xff\xd8simulated-frame')
+        heard, self.heard = self.heard, {}
         manifest = {'title': plan.title, 'duration': 46.0, 'qa_passed': True, 'findings': [], 'directory': str(directory),
                     'scenes': [{'id': i.id, 'type': 'issue'} for i in plan.issues],
+                    'review': {'frames': [{'scene': s, 'file': f'review/{n:02}-{s}.jpg'} for n, s in enumerate(ids)],
+                               'audio': heard},
                     'files': {n: checksum(directory / n) for n in files}}
         manifest['digest'] = digest(manifest)
         return manifest
+
+
+class ShortsProvider(InspectingProvider):
+    """The episode's simulated editors, with the Shorts review and inspection answered from their own queues: they share
+    the episode's contracts and are told apart by request ID (video-<job>-shorts-review-N, -shorts-visual-N)."""
+
+    def __init__(self, visual):
+        from quant_company.video.contracts import VisualReview
+
+        from .test_video import good_review
+
+        super().__init__(visual)
+        self.shorts_queues = {'review': [good_review()], 'visual': [VisualReview(passed=True, issues=[])]}
+
+    async def run(self, request):
+        for kind in ('review', 'visual'):
+            if f'-shorts-{kind}-' in request.request_id:
+                queue = self.shorts_queues[kind]
+                self.queues[f'shorts-{kind}'] = queue
+                saved, request = request, request.model_copy(update={'output_contract': f'shorts-{kind}'})
+                response = await super().run(request)
+                self.calls[-1] = saved
+                return response
+        return await super().run(request)
+
+
+def shorts_calls(provider, kind):
+    """The Shorts turns of one kind ('shorts' = writing and fixes, 'review', 'visual'), in order."""
+    return [c for c in provider.calls if ('-shorts-' in c.request_id) and (
+        c.output_contract == 'video_shorts_v1' if kind == 'shorts' else f'-shorts-{kind}-' in c.request_id)]
 
 
 async def delivered_episode(store, tmp_path, monkeypatch, brief, clock=None):  # noqa: F811
@@ -647,7 +887,7 @@ async def delivered_episode(store, tmp_path, monkeypatch, brief, clock=None):  #
     from quant_company.video.contracts import VisualReview
 
     store.settings.video_upload_enabled = store.settings.video_publish_enabled = False
-    provider = InspectingProvider(visual=[VisualReview(passed=True, issues=[])])
+    provider = ShortsProvider(visual=[VisualReview(passed=True, issues=[])])
     provider.queues['video_shorts_v1'] = [shorts()]
     job, speech = await produce_inspected(store, tmp_path, monkeypatch, provider, InspectedRenderer(), brief)
     assert job['state'] == 'delivering', job['error']
@@ -667,7 +907,7 @@ async def shorts_ticks(store, provider, speech, renderer, job, limit=12):
         with store.db.transaction() as conn:
             conn.execute('UPDATE video_shorts SET lease_until=NULL WHERE job_id=%s', (job['id'],))
         row = shorts_store.get(job['id'])
-        if row and row['state'] not in {'writing', 'synthesizing', 'rendering'}:
+        if row and row['state'] not in SHORTS_ACTIVE:
             return row
     return shorts_store.get(job['id'])
 
@@ -681,18 +921,24 @@ async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, vid
     takes = len(speech.calls)
     row = await shorts_ticks(store, provider, speech, renderer, job)
     assert row['state'] == 'delivering', row['error']
-    request = next(c for c in provider.calls if c.output_contract == 'video_shorts_v1')
+    [request], [review] = shorts_calls(provider, 'shorts'), shorts_calls(provider, 'review')
     assert request.request_id == f"video-{job['id']}-shorts-1" and episode().upload.title in request.prompt
+    assert review.request_id == f"video-{job['id']}-shorts-review-1" and review.output_contract == 'video_review_v1'
+    # Written at the episode script's effort and reviewed at the same effort (owner, 2026-10-28: "너가 최적으로
+    # 진행해줘"): measured on the 10/27 close preview, xhigh found max's findings in a third of the time.
+    assert request.reasoning_effort == review.reasoning_effort == job['policy']['effort'] == 'xhigh'
+    assert job['policy']['review_effort'] == 'max'  # the episode's own review stays at max
+    assert row['qa']['review_rounds'][0]['passed'] and row['qa']['review_findings'] == []
     count = 2 + len(shorts().issues) + 1
-    assert len(speech.calls) - takes == count == 5
+    assert len(speech.calls) - takes == count == 4
     assert speech.calls[-count]['text'].endswith(' 9월 22일 아침 브리핑입니다.')  # the hook first (owner, 10/22)
-    assert speech.calls[-1]['text'].endswith(OUTRO['mail'])
+    assert speech.calls[-1]['text'].endswith(OUTRO['say'])
     assert renderer.calls == [(count, renderer.calls[0][1])]
     with store.db.transaction() as conn:
         message = conn.execute("SELECT o.text,o.thread_ts FROM outbox o WHERE o.id=%s", (row['delivery_message_id'],)).fetchone()
         keys = [r['id'].split(':', 1)[1] for r in conn.execute(
             "SELECT id FROM video_effects WHERE job_id=%s AND id LIKE %s", (job['id'], '%:shorts-speech-%')).fetchall()]
-    assert message['text'].startswith('<@UHUMAN>\n쇼츠 준비 완료') and '이슈 2개' in message['text'] and len(keys) == count
+    assert message['text'].startswith('<@UHUMAN>\n쇼츠 준비 완료') and '이슈 1개' in message['text'] and len(keys) == count
     quiet_other_outbox(store, row['delivery_message_id'])
     slack = FakeSlack()
     assert await send(store, slack)
@@ -718,20 +964,24 @@ async def test_a_cut_receives_the_shorts_lessons_frozen_in_its_episode_job(brief
     assert '쇼츠 첫 문장은 숫자 하나로' in request.prompt and '썸네일 교훈 본편 전용' not in request.prompt
 
 
-async def test_a_plan_stored_under_the_old_limits_is_still_voiced_and_rendered(brief, video, tmp_path, monkeypatch):  # noqa: F811
-    # A cut written under #194 (a 45-character hook) waits between ticks with no lease while a release swaps the worker.
+async def test_a_plan_of_the_old_shape_is_written_again(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    # A cut written before the release (issues cut from scenes, signals on the plan) waits between ticks with no lease
+    # while the release swaps the worker: it is written again under the new shape, never a failed tick.
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
-    assert row['state'] == 'synthesizing', row['error']
-    stored = {**row['plan'], 'hook': {**row['plan']['hook'], 'narration': OLD_HOOK}}
+    assert row['state'] == 'reviewing', row['error']
+    old = {**row['plan'], 'signals': ['비기술 업종 확산', '한국 반도체 강세'], 'signals_narration': '확산을 봅니다.',
+           'signals_claim_ids': ['b011']}
+    old.pop('close')
     with store.db.transaction() as conn:
-        conn.execute('UPDATE video_shorts SET plan=%s::jsonb WHERE job_id=%s', (json.dumps(stored), job['id']))
-    renderer, takes = ShortsFileRenderer(), len(speech.calls)
-    row = await shorts_ticks(store, provider, speech, renderer, job)
+        conn.execute("UPDATE video_shorts SET state='synthesizing',plan=%s::jsonb WHERE job_id=%s", (json.dumps(old), job['id']))
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
+    assert row['state'] == 'writing' and row['qa']['older_shape'] is True
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
     assert row['state'] == 'delivering', row['error']
-    assert speech.calls[takes]['text'] == opener_line('9월 22일 아침 브리핑입니다.', OLD_HOOK) and len(renderer.calls) == 1
+    assert [c.request_id.rsplit('-', 1)[-1] for c in shorts_calls(provider, 'shorts')] == ['1', '2']
 
 
 async def test_a_cut_voiced_before_new_fixed_lines_voices_them_before_it_renders(brief, video, tmp_path, monkeypatch):  # noqa: F811
@@ -746,29 +996,26 @@ async def test_a_cut_voiced_before_new_fixed_lines_voices_them_before_it_renders
         row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
     assert row['state'] == 'rendering', row['error']
     with store.db.transaction() as conn:
-        conn.execute("DELETE FROM video_effects WHERE job_id=%s AND id LIKE %s", (job['id'], '%:shorts-speech-4-%'))
+        conn.execute("DELETE FROM video_effects WHERE job_id=%s AND id LIKE %s", (job['id'], '%:shorts-speech-3-%'))
     renderer, takes = ShortsFileRenderer(), len(speech.calls)
     row = await shorts_ticks(store, provider, speech, renderer, job, limit=1)
     assert row['state'] == 'synthesizing' and not renderer.calls
     row = await shorts_ticks(store, provider, speech, renderer, job)
     assert row['state'] == 'delivering', row['error']
-    assert len(speech.calls) - takes == 1 and speech.calls[-1]['text'].endswith(OUTRO['mail']) and len(renderer.calls) == 1
+    assert len(speech.calls) - takes == 1 and speech.calls[-1]['text'].endswith(OUTRO['say']) and len(renderer.calls) == 1
 
 
-async def test_an_episode_with_under_two_issue_scenes_spends_no_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811
+async def test_a_briefing_without_numbered_issues_spends_no_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
-    plan = store.get(job['id'])['plan']
-    for scene in plan['scenes']:
-        if scene.get('chapter') == '함께 볼 이슈' or scene['id'] in ('flow', 'photo', 'counter'):
-            scene['chapter'] = '시장'
+    source = dict(store.get(job['id'])['source'])
+    source['body'] = [re.sub(r'\*\d+\. ([^*]+)\*', r'*\1*', part) for part in source['body']]
     with store.db.transaction() as conn:
-        conn.execute('UPDATE video_jobs SET plan=%s::jsonb WHERE id=%s', (json.dumps(plan), job['id']))
-    turns = len([c for c in provider.calls if c.output_contract == 'video_shorts_v1'])
+        conn.execute('UPDATE video_jobs SET source=%s::jsonb,source_digest=%s WHERE id=%s',
+                     (json.dumps(source), digest(source), job['id']))
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
-    assert row['state'] == 'skipped' and row['error'] == 'too_few_issues'
-    assert len([c for c in provider.calls if c.output_contract == 'video_shorts_v1']) == turns
+    assert row['state'] == 'skipped' and row['error'] == 'too_few_issues' and not shorts_calls(provider, 'shorts')
 
 
 async def test_the_episode_goes_first_and_a_late_cut_is_given_up(brief, video, tmp_path, monkeypatch):  # noqa: F811
@@ -814,7 +1061,7 @@ async def test_the_reserve_is_kept_in_the_month_not_in_the_episode_cap(brief, vi
     store.settings.video_shorts_enabled = True
     with store.db.transaction() as conn:
         spent = conn.execute('SELECT COALESCE(sum(credits),0) AS n FROM video_effects').fetchone()['n']
-    store.settings.video_episode_credit_limit = spent + 5  # room for the cut's five takes, not for another 80
+    store.settings.video_episode_credit_limit = spent + 5  # room for the cut's four takes, not for another 80
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
     assert row['state'] == 'delivering', row['error']
 
@@ -916,7 +1163,7 @@ def given_up(store, job, checks):
 
 
 def shorts_keys(provider):
-    return [c.request_id.rsplit('-', 1)[-1] for c in provider.calls if c.output_contract == 'video_shorts_v1']
+    return [c.request_id.rsplit('-', 1)[-1] for c in shorts_calls(provider, 'shorts')]
 
 
 async def test_a_cut_given_up_on_older_checks_is_checked_again_without_a_new_turn(brief, video, tmp_path, monkeypatch):  # noqa: F811
@@ -925,7 +1172,7 @@ async def test_a_cut_given_up_on_older_checks_is_checked_again_without_a_new_tur
     store.settings.video_shorts_enabled = True
     provider.queues['video_shorts_v1'] = [shorts(), shorts(), shorts()]
     checks = runner_module.shorts_violations
-    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode: ['an older check'])
+    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode, issues: ['an older check'])
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=3)
     assert row['state'] == 'writing' and [a['outcome'] for a in row['qa']['attempts']] == ['check_failed'] * 3
     given_up(store, job, CHECKS)
@@ -933,10 +1180,10 @@ async def test_a_cut_given_up_on_older_checks_is_checked_again_without_a_new_tur
     assert shorts_store.claim() is None  # given up on the current checks: not looked at again
     monkeypatch.setattr(runner_module, 'shorts_violations', checks)
     given_up(store, job, CHECKS - 1)  # as if given up before this version of the checks
-    calls = len(provider.calls)
+    turns = len(shorts_calls(provider, 'shorts'))
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
     assert row['state'] == 'delivering', row['error']
-    assert len(provider.calls) == calls  # the written versions, no new turn
+    assert len(shorts_calls(provider, 'shorts')) == turns  # the written versions, no new writing turn
     assert row['qa']['attempts'][-1]['recheck'] == {'checks': CHECKS, 'findings': []}
     assert 'recheck' not in row['qa'] and row['plan'] == shorts().model_dump(mode='json')
 
@@ -950,7 +1197,7 @@ async def test_the_cut_given_up_by_the_old_worker_in_the_release_is_written_agai
     provider.queues['video_shorts_v1'] = [ProviderFault('invalid_output', 'hook: Extra inputs are not permitted; scenes: Field required')]
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=3)
     assert [a['outcome'] for a in row['qa']['attempts']] == ['rejected'] * 3
-    assert CHECKS == 4
+    assert CHECKS == 5
     given_up(store, job, 3)
     provider.queues['video_shorts_v1'] = [shorts()]
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
@@ -966,7 +1213,7 @@ async def test_a_cut_is_produced_with_its_fewest_findings_after_the_last_version
     titles = [f'반도체가 이끈 미국 증시 {name}판' for name in ('첫', '둘째', '셋째', '넷째', '다섯째')]
     found = {t: [f'{t} 지적 {"가나다라"[k]}' for k in range(n)] for t, n in zip(titles, (3, 1, 2, 1, 4), strict=True)}
     provider.queues['video_shorts_v1'] = [shorts(title=t) for t in titles]
-    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode: found[plan.title])
+    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode, issues: found[plan.title])
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=16)  # 5 versions, 5 takes, render
     assert row['state'] == 'delivering', row['error']
     assert [a['outcome'] for a in row['qa']['attempts']] == ['check_failed'] * 5 and shorts_keys(provider) == ['1', '2', '3', '4', '5']
@@ -1002,23 +1249,21 @@ async def test_a_cut_with_no_valid_version_waits_and_writes_again(brief, video, 
     assert shorts_keys(provider) == ['1', '2', '3', '4', '5', '6'] and row['qa']['attempts'][-1]['outcome'] == 'passed'
 
 
-def test_cut_pictures_follow_the_cited_scenes(tmp_path):
+def test_cut_pictures_follow_the_lineup_scenes(tmp_path):
     ffmpeg = ffmpeg_binary()
     settings = Settings(video_artifact_dir=tmp_path, video_ffmpeg=ffmpeg, video_asset_dir=tmp_path / 'assets')
     shelf = library(tmp_path / 'assets', ffmpeg)
     job = {'id': 'fixture', 'source': source(), 'policy': {'template': 'motion-v2'}}
     raw = episode().model_dump(mode='json')
     plan = shorts()
-    pictures = cut_pictures(job, raw, plan, settings, shelf)
+    pictures = cut_pictures(job, raw, plan, settings, shelf, lineup(source(), raw))
     assert pictures['issues'][0] == {'path': str(tmp_path / 'assets' / 'illu.png'), 'credit': ''}
-    assert pictures['issues'][1]['path'] == str(tmp_path / 'assets' / 'photo.png')
-    assert pictures['issues'][1]['credit'] == '자료사진 · Fixture Author · CC BY 4.0'
     assert pictures['hook'] == pictures['cover'] == pictures['issues'][0]  # the episode thumbnail is fixture-illustration
-    bare = shorts(issues=[{**plan.model_dump(mode='json')['issues'][0], 'scene_ids': ['flow']},
-                          {**plan.model_dump(mode='json')['issues'][1], 'scene_ids': ['photo', 'counter']}])
-    raw['thumbnail_image'] = ''
-    pictures = cut_pictures(job, raw, bare, settings, shelf)
-    assert pictures['issues'][0] is None and pictures['hook'] == pictures['issues'][1]
+    # Without the headline card's picture and the thumbnail, the issue shows its next cited card's (the photo).
+    raw = without_pictures({**raw, 'thumbnail_image': ''}, 'head')
+    pictures = cut_pictures(job, raw, plan, settings, shelf, lineup(source(), raw))
+    assert pictures['issues'][0]['path'] == str(tmp_path / 'assets' / 'photo.png')
+    assert pictures['issues'][0]['credit'] == '자료사진 · Fixture Author · CC BY 4.0' and pictures['hook'] == pictures['issues'][0]
 
 
 def test_takes_open_with_the_date_and_close_with_the_outro():
@@ -1027,8 +1272,8 @@ def test_takes_open_with_the_date_and_close_with_the_outro():
     takes = VideoRunner.shorts_takes(None, job, plan)
     texts = [request['text'] for _, request in takes]
     assert len(takes) == 2 + len(plan.issues) + 1
-    assert texts[0].endswith(' 9월 22일 아침 브리핑입니다.') and texts[1] == agenda_line(['반도체 주도', '다르게 볼 점'])
-    assert texts[-1].endswith(OUTRO['mail'])
+    assert texts[0].endswith(' 9월 22일 아침 브리핑입니다.') and texts[1] == agenda_line(1)
+    assert texts[-1].startswith('정리하면, 반도체가 이끌었지만 확산은 아직입니다.') and texts[-1].endswith(OUTRO['say'])
     assert all(key.startswith(f'shorts-speech-{i}-') for i, (key, _) in enumerate(takes))
 
 
@@ -1038,7 +1283,7 @@ async def test_recheck_skips_versions_of_the_old_shape(brief, video, tmp_path, m
     store.settings.video_shorts_enabled = True
     provider.queues['video_shorts_v1'] = [shorts(), shorts(), shorts()]
     checks = runner_module.shorts_violations
-    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode: ['a check'])
+    monkeypatch.setattr(runner_module, 'shorts_violations', lambda plan, source, episode, issues: ['a check'])
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=3)
     assert [a['outcome'] for a in row['qa']['attempts']] == ['check_failed'] * 3
     monkeypatch.setattr(runner_module, 'shorts_violations', checks)
@@ -1052,3 +1297,191 @@ async def test_recheck_skips_versions_of_the_old_shape(brief, video, tmp_path, m
     assert row['state'] == 'delivering', row['error']
     assert [a.get('recheck') for a in row['qa']['attempts']] == [{'checks': CHECKS, 'findings': ['older plan shape']}] * 3 + [None]
     assert row['qa']['attempts'][-1]['outcome'] == 'passed' and shorts_keys(provider) == ['1', '2', '3', '4']
+
+
+async def test_review_concerns_are_written_into_the_next_version(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video.contracts import VideoReview
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    concern = '시작 질문에 Shorts 안에서 답하지 않음: 결론 문장을 시작 질문에 맞추세요'
+    provider.shorts_queues['review'] = [VideoReview(facts=True, numbers=True, conditions=True, coverage=False,
+                                                    readability=True, concerns=[concern]), good_review()]
+    provider.queues['video_shorts_v1'] = [shorts(), shorts(title='S&P 500 1.92% 상승, 반도체가 끌었다')]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=16)
+    assert row['state'] == 'delivering', row['error']
+    first, second = shorts_calls(provider, 'shorts')
+    # The second version revises the first with the reviewer's concerns, not a new script from scratch.
+    assert concern in second.prompt and 'coverage check failed' in second.prompt
+    assert 'Revise the previous version below' in second.prompt and 'Revise the previous version' not in first.prompt
+    assert [r['passed'] for r in row['qa']['review_rounds']] == [False, True] and row['qa']['review_findings'] == []
+    assert row['plan']['title'] == 'S&P 500 1.92% 상승, 반도체가 끌었다'
+
+
+async def test_concerns_left_after_two_reviews_travel_with_the_cut(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video.contracts import VideoReview
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    left = VideoReview(facts=True, numbers=True, conditions=True, coverage=True, readability=False,
+                       concerns=['용어 풀이가 없음: 할인 부담을 쉬운 말로'])
+    provider.shorts_queues['review'] = [left]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=16)
+    assert row['state'] == 'delivering', row['error']  # never held on its review
+    assert len(shorts_calls(provider, 'review')) == 2 and len(shorts_calls(provider, 'shorts')) == 2
+    assert row['qa']['review_findings'] == ['용어 풀이가 없음: 할인 부담을 쉬운 말로', 'readability check failed']
+
+
+async def test_a_lost_review_turn_reviews_the_same_plan_again(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.shorts_queues['review'] = [ProviderFault('uncertain', 'the CLI exited'), good_review()]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
+    assert row['state'] == 'reviewing' and row['error'] == 'model_retry'
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE video_shorts SET lease_until=NULL WHERE job_id=%s', (job['id'],))
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'delivering', row['error']
+    assert [r.get('outcome') for r in row['qa']['review_rounds']] == ['uncertain', None]
+    assert len(shorts_calls(provider, 'shorts')) == 1  # nothing was rewritten
+
+
+def visual_issue(scene, kind, detail, fix):
+    from quant_company.video.contracts import VisualReview
+
+    return VisualReview(passed=False, issues=[dict(scene=scene, kind=kind, detail=detail, fix=fix)])
+
+
+async def test_a_cut_is_inspected_before_it_is_delivered(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'delivering', row['error']
+    [visual] = shorts_calls(provider, 'visual')
+    assert visual.request_id == f"video-{job['id']}-shorts-visual-1" and visual.output_contract == 'video_visual_review_v1'
+    assert visual.reasoning_effort == job['policy']['effort'] and len(visual.attachments) == 4  # one per scene
+    assert '1=opener, 2=agenda, 3=semis, 4=outro' in visual.prompt.replace('image ', '')
+    assert row['qa']['inspections'][0]['issues'] == [] and row['qa']['inspection_findings'] == []
+
+
+async def test_a_screen_fix_never_changes_what_is_said(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.shorts_queues['visual'] = [visual_issue('semis', 'clipped_text', '본문이 두 줄을 넘어 잘림', '본문을 짧게'),
+                                        visual_issue('semis', 'other', '문제 없음', 'none')]
+    fixed = cut(issue=0, body='S&P 500이 정규장 종가 기준 1.92% 올랐습니다.',
+                narration='에스앤피 500이 1.92% 올랐다는 다른 말입니다. 수익률 하락은 성장주 부담을 낮출 수 있다고 봅니다.')
+    provider.queues['video_shorts_v1'] = [shorts(), ShortsPlan.model_validate(fixed)]
+    renderer = ShortsFileRenderer()
+    row = await shorts_ticks(store, provider, speech, renderer, job, limit=20)
+    assert row['state'] == 'delivering', row['error']
+    [_, fix] = shorts_calls(provider, 'shorts')
+    assert fix.request_id == f"video-{job['id']}-shorts-fix-1" and '본문이 두 줄을 넘어 잘림' in fix.prompt
+    assert fix.reasoning_effort == job['policy']['effort']
+    # The screen changed, what is said did not: the second render reuses every paid take.
+    assert [p.issues[0].body for p in renderer.plans] == [shorts().issues[0].body, 'S&P 500이 정규장 종가 기준 1.92% 올랐습니다.']
+    assert renderer.plans[1].narrations() == shorts().narrations()
+    with store.db.transaction() as conn:
+        takes = conn.execute("SELECT count(*) AS n FROM video_effects WHERE job_id=%s AND id LIKE %s",
+                             (job['id'], '%:shorts-speech-%')).fetchone()['n']
+    assert takes == 4 and row['plan']['issues'][0]['body'] == 'S&P 500이 정규장 종가 기준 1.92% 올랐습니다.'
+    assert row['qa']['inspection_findings'] == ['semis: 문제 없음']
+
+
+async def test_a_fix_that_adds_findings_is_reverted(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.shorts_queues['visual'] = [visual_issue('semis', 'readability', '숫자가 작음', '숫자를 키움')]
+    worse = cut(issue=0, big='7.7%')  # a number in no cited line
+    provider.queues['video_shorts_v1'] = [shorts(), ShortsPlan.model_validate(worse)]
+    renderer = ShortsFileRenderer()
+    row = await shorts_ticks(store, provider, speech, renderer, job, limit=20)
+    assert row['state'] == 'delivering', row['error']
+    assert row['qa']['inspections'][0]['fix_reverted'] is True and len(renderer.calls) == 1
+    assert row['plan']['issues'][0]['big'] == '1.92%' and row['qa']['inspection_findings'] == ['semis: 숫자가 작음']
+
+
+async def test_a_misread_scene_is_voiced_again_in_korean_numbers(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video.render import korean_numbers
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.shorts_queues['visual'] = [visual_issue('semis', 'audio_text', '1.92를 일구이로 읽음', '숫자를 풀어 다시 녹음'),
+                                        VisualReview(passed=True, issues=[])]
+    renderer, before = ShortsFileRenderer(heard={'semis': 'heard 1.92 as 192'}), len(speech.calls)
+    row = await shorts_ticks(store, provider, speech, renderer, job, limit=24)
+    assert row['state'] == 'delivering', row['error']
+    assert row['qa']['retake'] == ['semis'] and len(renderer.calls) == 2
+    assert len(speech.calls) - before == 5 and speech.calls[-1]['text'] == korean_numbers(shorts().issues[0].narration)
+    # The renderer aligns each take against what it says: the retaken scene in its number words.
+    assert renderer.texts[-1][2] == korean_numbers(shorts().issues[0].narration) and renderer.texts[0][2] != renderer.texts[-1][2]
+    assert 'heard 1.92 as 192' in shorts_calls(provider, 'visual')[0].prompt
+
+
+async def test_inspection_stops_after_its_last_round(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    titles = iter(['S&P 500 1.92% 상승, 반도체 주도', 'S&P 500 1.92% 상승, 반도체 견인', 'S&P 500 1.92% 상승, 반도체 앞장'])
+    provider.shorts_queues['visual'] = [visual_issue('opener', 'readability', '제목이 길어 보임', '제목을 다듬기')]
+    provider.queues['video_shorts_v1'] = [shorts(), *(shorts(title=t) for t in titles)]
+    renderer = ShortsFileRenderer()
+    row = await shorts_ticks(store, provider, speech, renderer, job, limit=30)
+    assert row['state'] == 'delivering', row['error']  # never held on its inspection
+    assert len(row['qa']['inspections']) == 3 and len(renderer.calls) == 3
+    assert row['qa']['inspection_findings'] == ['opener: 제목이 길어 보임']
+
+
+def test_the_delivery_text_lists_review_and_screen_findings():
+    from quant_company.video.shorts_store import delivery_text
+
+    job = {'source': {'edition_kind': 'close'}}
+    artifacts = {'title': '반등 실패, 수급 부담이 막았다', 'duration': 71.6, 'findings': ['Scene semis: heard 1.92 as 192'],
+                 'scenes': [{'id': 'a', 'type': 'issue'}, {'id': 'b', 'type': 'issue'}]}
+    text = delivery_text(job, artifacts, ['숫자 지적'], ['용어 풀이가 없음'], ['semis: 숫자가 작음'])
+    assert '길이 72초 · 이슈 2개' in text and '자동 검사 지적 4건(아래, 제작은 계속함)' in text
+    assert ('• 대본: 숫자 지적\n• 검토: 용어 풀이가 없음\n• 화면: semis: 숫자가 작음\n'
+            '• 화면·음성: Scene semis: heard 1.92 as 192\n') in text
+
+
+def test_an_issue_may_not_cite_another_issues_lines_through_a_shared_scene():
+    source = issue_body(PM_TITLES[:4])
+    episode_json = issue_episode(source, FOUR)
+    issues = lineup(source, episode_json)
+    episode_json['scenes'][2]['claim_ids'].append(issues[1].claim_ids[1])  # issue-1's card also cites issue 2's fact
+    plan = lineup_plan(source, episode_json).model_dump(mode='json')
+    plan['issues'][1]['claim_ids'].append(issues[0].claim_ids[1])  # issue 2 borrows issue 1's fact through that card
+    assert any("belong to neither briefing issue 2" in f
+               for f in lineup_violations(ShortsPlan.model_validate(plan), source, episode_json))
+
+
+def test_a_fix_trading_a_finding_for_a_new_one_is_not_taken():
+    from quant_company.video.runner import fix_adds_findings
+
+    assert fix_adds_findings(['a', 'b'], ['a', 'c']) and fix_adds_findings([], ['a'])
+    assert not fix_adds_findings(['a', 'b'], ['a']) and not fix_adds_findings(['a'], ['a'])
+
+
+def test_a_number_its_line_gives_a_direction_shows_it():
+    # Preview 10/27 AM: '20.8%' (현대차 영업이익, '20.8% 줄고') was drawn with no arrow and read like a rise.
+    assert any('Direction of 1.92% in issue semis is stated by its line (up): set dir' in f
+               for f in violations(cut(issue=0, dir=None)))
+    assert not any('stated by its line' in f for f in violations(cut()))
+
+
+def test_the_meaning_line_reads_like_the_body(tmp_path):
+    # Preview 10/27 AM: the 그래서 line, the core issue's takeaway, was drawn smaller than the body it concludes.
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    built = ShortsRenderer(settings, WordAligner()).build(job, shorts(), episode().model_dump(mode='json'), tmp_path / 'out',
+                                                          tones(tmp_path, TAKES, ffmpeg))
+    [[tag, body]] = on_page(built['page'], ["['.issue .tag', '.issue .card p'].map(s => parseFloat(getComputedStyle("
+                                            "document.querySelector(s)).fontSize))"])
+    assert tag >= 0.85 * body, (tag, body)

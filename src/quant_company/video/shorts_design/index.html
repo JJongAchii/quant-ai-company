@@ -66,6 +66,11 @@ em{font-style:normal;color:var(--gold)}
 .num .l{flex:0 0 auto;max-width:8em;padding-bottom:.3em;font-size:4.2em;font-weight:800;line-height:1.2;color:#fff;text-shadow:var(--lift)}
 .card{margin-top:2.6em;width:100%;padding:2.8em 3.2em 3em;border-radius:2.6em;background:rgba(0,17,46,.84);border-left:1em solid var(--gold);box-shadow:0 12px 40px rgba(0,8,24,.35)}
 .card p{font-size:4.6em;font-weight:600;line-height:1.45;color:var(--cream);text-wrap:pretty}
+/* A brief issue (함께 볼 이슈): the number and one line, on a lighter card. */
+.card.brief{margin-top:2.2em;padding:2.2em 2.8em 2.4em;border-left-width:.7em;background:rgba(0,17,46,.78)}
+.card.brief p{font-size:4.4em}
+/* A core issue's 그래서 line is its takeaway: as large as the body it concludes, on its own line. */
+.card .tag.k1{display:block;width:fit-content;max-width:100%;margin-top:.55em;font-size:4.1em;line-height:1.4;font-weight:700}
 .tag{display:inline-block;margin-top:.7em;padding:.3em .7em;border-radius:.4em;font-size:3.3em;font-weight:700;line-height:1.35}
 .tag strong{font-weight:800}
 .tag.k0{background:rgba(94,160,255,.2);color:#CFE1FF} .tag.k1{background:rgba(253,199,73,.18);color:#FFE3A1} .tag.k2{background:rgba(80,210,170,.18);color:#BDF3E2}
@@ -74,7 +79,7 @@ em{font-style:normal;color:var(--gold)}
 .sig{display:flex;gap:.55em;align-items:flex-start;padding:.6em 0;font-size:4.8em;font-weight:700;line-height:1.35}
 .sig+.sig{border-top:2px solid rgba(252,241,219,.14)}
 .sig b{flex:none;color:var(--gold)}
-.oq{align-self:center;margin-top:1.6em;font-size:6.4em;font-weight:800;line-height:1.25;letter-spacing:-.02em;color:#fff;text-align:center;text-wrap:balance;text-shadow:var(--lift)}
+.oq{align-self:stretch;margin-top:1em;font-size:6.2em;font-weight:800;line-height:1.28;letter-spacing:-.02em;color:#fff;text-align:left;text-wrap:balance;text-shadow:var(--lift)}
 .play .down{display:inline-flex;width:.9em;height:.9em;margin-left:.3em}
 .play .down svg{width:100%;height:100%}
 .mailrow{align-self:center;display:flex;align-items:center;gap:.5em;margin-top:2.2em;padding:.6em 1.1em;border-radius:1em;background:rgba(0,17,46,.8);border:2px solid rgba(253,199,73,.5);font-size:3.6em;font-weight:700;line-height:1.3;color:var(--cream)}
