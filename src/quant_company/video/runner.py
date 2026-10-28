@@ -171,6 +171,13 @@ class VideoFailure(ValueError):
         self.code = code
 
 
+def shorts_effort(policy):
+    """The Shorts editors' effort: the episode script's (xhigh), not the episode review's max. Measured on the 10/27
+    close preview with the same script, an xhigh review found max's findings in 5 minutes instead of 15 (34k output
+    tokens instead of 106k); the owner left the choice to the measurement (2026-10-28: "너가 최적으로 진행해줘")."""
+    return policy.get('effort', 'high')
+
+
 def fix_adds_findings(before, after):
     """True when a screen fix leaves any finding the cut did not have (trading one for another is not a fix)."""
     return bool(set(after) - set(before))
@@ -557,8 +564,8 @@ class VideoRunner:
             await asyncio.to_thread(self.shorts.save, row, 'reviewing', plan=plan.model_dump(mode='json'), qa=qa)
 
     async def shorts_review(self, row, job):
-        """The independent editor at the review effort (owner, 2026-10-26: "본편수준으로 점검"): concerns are fixed by
-        another version, up to SHORTS_REVIEW_ROUNDS reviews; what is left travels with the files."""
+        """The independent editor (owner, 2026-10-26: "본편수준으로 점검"; shorts_effort): concerns are fixed by another
+        version, up to SHORTS_REVIEW_ROUNDS reviews; what is left travels with the files."""
         plan = await self.shorts_plan(row)
         if plan is None:
             return
@@ -570,7 +577,7 @@ class VideoRunner:
                                              (job.get('qa') or {}).get('review_findings', []), estimated_seconds(plan))
         try:
             review = await self.model(job, key, prompt, VideoReview, contract='video_review_v1',
-                                      effort=policy.get('review_effort', policy.get('effort', 'high')))
+                                      effort=shorts_effort(policy))
             concerns = list(review.concerns) + [f'{name} check failed' for name in REVIEW_CHECKS if not getattr(review, name)]
         except ModelRejected as rejected:
             lost = sum(r.get('outcome') in RUNTIME_OUTCOMES for r in rounds)
@@ -639,7 +646,7 @@ class VideoRunner:
         await asyncio.to_thread(self.shorts.save, row, 'inspecting', artifacts=artifacts)
 
     async def shorts_inspect(self, row, job):
-        """The final editor at the review effort looks at the rendered frames and the speech-to-text findings, like the
+        """The final editor (shorts_effort) looks at the rendered frames and the speech-to-text findings, like the
         episode's (inspect_video): screen text is fixed without touching what is said, misread scenes are voiced again
         in Korean number words, up to INSPECT_ROUNDS looks; after the last the files go out with what is left."""
         plan = await self.shorts_plan(row)
@@ -662,7 +669,7 @@ class VideoRunner:
                                                  heard)
             try:
                 visual = await self.model(job, key, prompt, VisualReview, 'video_visual_review_v1', attachments,
-                                          effort=policy.get('review_effort', policy.get('effort', 'high')))
+                                          effort=shorts_effort(policy))
                 issues = [i.model_dump() for i in visual.issues]
             except ModelRejected as rejected:
                 issues = [{'scene': 'opener', 'kind': 'other', 'detail': f'Visual review unavailable: {rejected.detail}',

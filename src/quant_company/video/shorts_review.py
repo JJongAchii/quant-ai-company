@@ -1,6 +1,6 @@
 """The Shorts editors after the writer (docs/superpowers/specs/2026-10-27-shorts-episode-summary-design.md): an
 independent review of the script (answered as VideoReview), the final look at the rendered frames (VisualReview) and a
-screen-only revision for what that look found (ShortsPlan). Like the episode's, they think at the review effort; a
+screen-only revision for what that look found (ShortsPlan). They think at the writing effort (runner.shorts_effort); a
 screen fix never changes what is said, so no speech is paid for it. Nothing here is a render input."""
 
 import json

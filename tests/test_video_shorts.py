@@ -924,8 +924,10 @@ async def test_a_delivered_episode_gets_its_shorts_in_the_same_thread(brief, vid
     [request], [review] = shorts_calls(provider, 'shorts'), shorts_calls(provider, 'review')
     assert request.request_id == f"video-{job['id']}-shorts-1" and episode().upload.title in request.prompt
     assert review.request_id == f"video-{job['id']}-shorts-review-1" and review.output_contract == 'video_review_v1'
-    # Written like the episode's script and reviewed like it (owner, 2026-10-26: "본편수준으로 점검").
-    assert request.reasoning_effort == job['policy']['effort'] and review.reasoning_effort == job['policy']['review_effort']
+    # Written at the episode script's effort and reviewed at the same effort (owner, 2026-10-28: "너가 최적으로
+    # 진행해줘"): measured on the 10/27 close preview, xhigh found max's findings in a third of the time.
+    assert request.reasoning_effort == review.reasoning_effort == job['policy']['effort'] == 'xhigh'
+    assert job['policy']['review_effort'] == 'max'  # the episode's own review stays at max
     assert row['qa']['review_rounds'][0]['passed'] and row['qa']['review_findings'] == []
     count = 2 + len(shorts().issues) + 1
     assert len(speech.calls) - takes == count == 4
@@ -1362,7 +1364,7 @@ async def test_a_cut_is_inspected_before_it_is_delivered(brief, video, tmp_path,
     assert row['state'] == 'delivering', row['error']
     [visual] = shorts_calls(provider, 'visual')
     assert visual.request_id == f"video-{job['id']}-shorts-visual-1" and visual.output_contract == 'video_visual_review_v1'
-    assert visual.reasoning_effort == job['policy']['review_effort'] and len(visual.attachments) == 4  # one per scene
+    assert visual.reasoning_effort == job['policy']['effort'] and len(visual.attachments) == 4  # one per scene
     assert '1=opener, 2=agenda, 3=semis, 4=outro' in visual.prompt.replace('image ', '')
     assert row['qa']['inspections'][0]['issues'] == [] and row['qa']['inspection_findings'] == []
 
