@@ -9,11 +9,13 @@ const ARROW = { up: '▲', dn: '▼' };
 const ORIGINS = ['50% 30%', '32% 50%', '68% 45%', '45% 68%', '60% 35%', '38% 40%'];
 const FADE = 0.35;
 const QBAR = ['agenda', 'issue'];
+// A name joined by a middle dot ('엔비디아·AMD', '운송·보험') never breaks at the dot (10/28: '…엔비디아 / ·AMD').
+const nobreak = s => String(s ?? '').replace(/·/g, '\u2060·\u2060');
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // A short run of Latin words stays on one line ('LIG D&A', 'S&P 500'); a longer one keeps its breaks to fit the width.
 const tie = s => String(s ?? '').replace(/[A-Za-z][\w&.]*(?: [A-Za-z\d][\w&.]*)+/g, r => r.length > 16 ? r : r.replace(/ /g, '\u00a0'));
 // Numbers in a line are drawn gold, like the episode captions.
-const gold = s => esc(tie(s)).replace(/(\d(?:[\d,.]*\d)?\s?(?:%p|%|bp|조원|억원|억달러|달러|원|포인트|배)?)/g, '<em>$1</em>');
+const gold = s => esc(nobreak(tie(s))).replace(/(\d(?:[\d,.]*\d)?\s?(?:%p|%|bp|조원|억원|억달러|달러|원|포인트|배)?)/g, '<em>$1</em>');
 // The arrow comes from the direction field only: an arrow the script wrote is never drawn, and a +/- sign is dropped
 // only where the arrow replaces it (a level of -0.2% keeps its minus).
 const bare = (s, dir) => String(s).replace(dir ? /^\s*[▲▼+\-]\s*/ : /^\s*[▲▼]\s*/, '');
@@ -179,7 +181,7 @@ function seek(t) {
   q.style.opacity = shown ? Math.min(1, (t - EP.scenes[cur].t0) / FADE + (cur > 0 && QBAR.includes(EP.scenes[cur - 1].type) ? 1 : 0)) : 0;
   const cb = $('#capbox'), c = EP.captions.find(c => t >= c[0] && t < c[1]);
   if (c) {
-    if (cb.dataset.k !== String(c[0])) { cb.innerHTML = c[2]; cb.dataset.k = String(c[0]); fitCaption(cb); }
+    if (cb.dataset.k !== String(c[0])) { cb.innerHTML = nobreak(c[2]); cb.dataset.k = String(c[0]); fitCaption(cb); }
     cb.style.opacity = Math.min(1, (t - c[0]) / 0.12, (c[1] - t) / 0.12);
   } else cb.style.opacity = 0;
 }
