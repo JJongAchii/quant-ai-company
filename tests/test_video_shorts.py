@@ -1510,9 +1510,8 @@ def test_a_caption_never_breaks_at_a_middle_dot(tmp_path):
 
 def test_text_stays_readable_over_a_bright_picture(tmp_path):
     # 10/29: white headlines over a bright factory roof and a face were hard to read.
-    from PIL import Image
-
-    ffmpeg, settings, job = render_fixture(tmp_path)
+    ffmpeg, settings, job = render_fixture(tmp_path)  # skips without the video extra and Chromium, like the other renders
+    Image = pytest.importorskip('PIL.Image')
     Image.new('RGB', (1280, 720), (255, 255, 255)).save(tmp_path / 'assets' / 'illu.png')  # the issue's own picture, white
     built = ShortsRenderer(settings, WordAligner()).build(job, shorts(), episode().model_dump(mode='json'), tmp_path / 'out',
                                                           tones(tmp_path, TAKES, ffmpeg))
