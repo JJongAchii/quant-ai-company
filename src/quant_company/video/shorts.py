@@ -317,8 +317,9 @@ def shorts_prompt(source, episode, issues, concerns=(), feedback='', lessons=(),
         "characters, shown in the list and big as the issue's headline: what happened and why it matters, understood at "
         "a glance and worth stopping for, e.g. '반대매매 5일째 500억 넘어, 수급 부담 계속', never a bare number or a "
         "topic word), big and big_label (one number as shown, at most 12 characters each, no ▲/▼ or +/- sign, and what "
-        "the number is; a brief issue may leave both empty), optional dir (up or dn, only where the cited line states a "
-        "direction), body (what happened, 10-70 characters, plain '~습니다' Korean), meaning (the 그래서 line, at most 40 "
+        "the number is; a brief issue may leave both empty), optional dir (up or dn): only when big is itself the rise or "
+        "fall, as its cited line states it (a change such as '20.8% 감소': then always set it, or a fall reads as a "
+        "rise), never beside a level (a rate, a price, an index value) whose line says it rose or fell, body (what happened, 10-70 characters, plain '~습니다' Korean), meaning (the 그래서 line, at most 40 "
         "characters), narration, claim_ids.\n"
         f"- core: narration of {CORE_NARRATION[0]}-{CORE_NARRATION[1]} characters says what happened, why it matters and "
         "what it means, in that order. meaning is required: what the issue means for an investor, from its "
@@ -527,18 +528,15 @@ def shorts_violations(plan, source, episode, issues):
         missing = (shown | nums(narration)) - in_episode
         if missing and not (issue and issue.issue in left_out):
             found.append(f'Number {sorted(missing)} in {name} is not in the delivered episode')
-        # A direction is drawn only where the cited line states one, and never against it (▲ for a fall); a number
-        # whose line states one shows it (preview 10/27 AM: '20.8%' of a fall read like a rise without its arrow).
+        # A direction is drawn only where the cited line states one, and never against it (▲ for a fall). It stays
+        # optional: a level (a yield, an index value) has a direction in its line too, and an arrow beside it reads as
+        # a change of that size (10/29 close: ▲5.044%, ▲104.2).
         if issue and issue.dir:
             for value in nums(issue.big):
                 stated_dir = direction(source_text, value)
                 if stated_dir != issue.dir:
                     found.append(f'Direction of {issue.big} in {name} '
                                  + ('is not stated by its line' if stated_dir is None else 'contradicts its line'))
-        elif issue and issue.big:
-            stated = {direction(source_text, value) for value in nums(issue.big)} - {None}
-            if len(stated) == 1:
-                found.append(f'Direction of {issue.big} in {name} is stated by its line ({stated.pop()}): set dir')
         for text in [narration, *screen]:
             for value in nums(text):
                 said, stated_dir = direction(text, value), direction(source_text, value)

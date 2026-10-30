@@ -1436,7 +1436,8 @@ async def test_inspection_stops_after_its_last_round(brief, video, tmp_path, mon
     renderer = ShortsFileRenderer()
     row = await shorts_ticks(store, provider, speech, renderer, job, limit=30)
     assert row['state'] == 'delivering', row['error']  # never held on its inspection
-    assert len(row['qa']['inspections']) == 3 and len(renderer.calls) == 3
+    # One look, one fixed re-render, one more look (10/30 AM: three looks and two re-renders took 30 minutes).
+    assert len(row['qa']['inspections']) == 2 and len(renderer.calls) == 2
     assert row['qa']['inspection_findings'] == ['opener: 제목이 길어 보임']
 
 
@@ -1470,11 +1471,13 @@ def test_a_fix_trading_a_finding_for_a_new_one_is_not_taken():
     assert not fix_adds_findings(['a', 'b'], ['a']) and not fix_adds_findings(['a'], ['a'])
 
 
-def test_a_number_its_line_gives_a_direction_shows_it():
-    # Preview 10/27 AM: '20.8%' (현대차 영업이익, '20.8% 줄고') was drawn with no arrow and read like a rise.
-    assert any('Direction of 1.92% in issue semis is stated by its line (up): set dir' in f
-               for f in violations(cut(issue=0, dir=None)))
-    assert not any('stated by its line' in f for f in violations(cut()))
+def test_an_arrow_is_for_a_change_and_never_asked_of_a_level():
+    # 10/29 close: requiring an arrow wherever the line states a direction drew ▲ beside a yield (5.044%) and an index
+    # (104.2), read as rises of that size. The arrow stays optional and the writer is told it marks a change only.
+    assert not any('stated by its line' in f for f in violations(cut(issue=0, dir=None)))
+    prompt = shorts_prompt(body_source(), episode().model_dump(mode='json'),
+                           lineup(body_source(), episode().model_dump(mode='json')))
+    assert 'only when big is itself the rise or fall' in prompt and 'never beside a level' in prompt
 
 
 def test_the_meaning_line_reads_like_the_body(tmp_path):
@@ -1485,3 +1488,63 @@ def test_the_meaning_line_reads_like_the_body(tmp_path):
     [[tag, body]] = on_page(built['page'], ["['.issue .tag', '.issue .card p'].map(s => parseFloat(getComputedStyle("
                                             "document.querySelector(s)).fontSize))"])
     assert tag >= 0.85 * body, (tag, body)
+
+
+def test_a_caption_never_breaks_at_a_middle_dot(tmp_path):
+    # 10/28 close: captions broke as '…엔비디아 / ·AMD…', the dot opening the second line.
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    raw = shorts().model_dump(mode='json')
+    raw['issues'][0]['narration'] = ('에스앤피 500이 정규장 종가 기준 1.92% 올랐고 엔비디아·AMD 같은 반도체가 이끌었습니다. '
+                                     '수익률 하락은 부담을 낮출 수 있습니다.')
+    built = ShortsRenderer(settings, WordAligner()).build(job, ShortsPlan.model_validate(raw), episode().model_dump(mode='json'),
+                                                          tmp_path / 'out', tones(tmp_path, TAKES, ffmpeg))
+    issue = built['scenes'][2]
+    shown = []
+    for t in [issue['t0'] + 0.2 + k * 0.25 for k in range(int((issue['t1'] - issue['t0']) / 0.25) - 1)]:
+        [text] = on_page(built['page'], ["document.querySelector('#capbox').innerHTML"], t=t)
+        if '·' in text:
+            shown.append(text)
+            break
+    assert shown and '\u2060·\u2060' in shown[0], shown
+
+
+def test_text_stays_readable_over_a_bright_picture(tmp_path):
+    # 10/29: white headlines over a bright factory roof and a face were hard to read.
+    from PIL import Image
+
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    Image.new('RGB', (1280, 720), (255, 255, 255)).save(tmp_path / 'assets' / 'illu.png')  # the issue's own picture, white
+    built = ShortsRenderer(settings, WordAligner()).build(job, shorts(), episode().model_dump(mode='json'), tmp_path / 'out',
+                                                          tones(tmp_path, TAKES, ffmpeg))
+    issue = built['scenes'][2]
+    [box] = on_page(built['page'], ["(() => { const r = document.querySelector('.scene.issue .ih').getBoundingClientRect();"
+                                    " return [r.left, r.top, r.right, r.bottom]; })()"], t=issue['t1'] - 0.3)
+    from playwright.sync_api import sync_playwright
+
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        tab = browser.new_page(viewport={'width': 1080, 'height': 1920})
+        tab.goto((built['page'] / 'index.html').as_uri())
+        tab.evaluate('document.fonts.ready')
+        tab.evaluate('pictures()')
+        tab.evaluate('document.querySelectorAll(".scene .box").forEach(b => b.style.visibility = "hidden")')
+        tab.evaluate(f"seek({issue['t1'] - 0.3})")
+        tab.screenshot(path=str(tmp_path / 'bg.png'))
+        browser.close()
+    region = Image.open(tmp_path / 'bg.png').convert('L').crop(tuple(round(v) for v in box))
+    pixels = list(region.getdata())
+    assert sum(pixels) / len(pixels) / 255 < 0.42, sum(pixels) / len(pixels) / 255  # the ground behind the headline
+
+
+async def test_a_step_clears_the_reason_of_the_last_wait(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    # 10/30 AM: 'model_pending' from a waited visual turn stayed on the cut through its later render.
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    provider.queues['video_shorts_v1'] = [ProviderFault('pending', 'still running', 20), shorts()]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
+    assert row['state'] == 'writing' and row['error'] == 'model_pending'
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE video_shorts SET lease_until=NULL WHERE job_id=%s', (job['id'],))
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
+    assert row['state'] == 'reviewing' and row['error'] is None
