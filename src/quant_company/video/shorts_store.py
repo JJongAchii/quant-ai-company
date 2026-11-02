@@ -116,7 +116,10 @@ class ShortsStore:
     def save(self, row, state, **values):
         if not values.keys() <= {'plan', 'qa', 'artifacts', 'error'}:
             raise ValueError('Unknown Shorts update')
+        # A step clears the reason of the last wait (10/30 AM: 'model_pending' stayed through the later render).
         assignments, parameters = ['state=%s', 'lease_until=NULL', 'updated_at=now()'], [state]
+        if 'error' not in values:
+            assignments.append('error=NULL')
         for key, value in values.items():
             assignments.append(key + '=%s')
             parameters.append(value if key == 'error' else Jsonb(value))

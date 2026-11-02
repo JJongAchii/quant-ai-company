@@ -18,8 +18,10 @@ em{font-style:normal;color:var(--gold)}
 .bg{position:absolute;inset:0;overflow:hidden;opacity:0}
 .bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform}
 .bg.blur img{inset:-80px;width:calc(100% + 160px);height:calc(100% + 160px);filter:blur(12px) brightness(.95) saturate(1.2)}
-.bg .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,17,46,.7) 0%,rgba(0,17,46,.1) 13%,rgba(0,17,46,.08) 30%,rgba(0,17,46,.45) 42%,rgba(0,17,46,.8) 56%,rgba(0,17,46,.93) 74%,#00112E 100%)}
-.bg.blur .shade{background:linear-gradient(180deg,rgba(0,17,46,.6) 0%,rgba(0,17,46,.2) 14%,rgba(0,17,46,.24) 32%,rgba(0,17,46,.5) 48%,rgba(0,17,46,.8) 70%,rgba(0,17,46,.93) 86%,#00112E 100%)}
+/* The picture shows in the top band; from the headline down it is darkened enough for white text even on a bright
+   photo (10/29: headlines over a white roof and a face). */
+.bg .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,17,46,.7) 0%,rgba(0,17,46,.1) 13%,rgba(0,17,46,.12) 22%,rgba(0,17,46,.62) 32%,rgba(0,17,46,.78) 42%,rgba(0,17,46,.88) 56%,rgba(0,17,46,.94) 74%,#00112E 100%)}
+.bg.blur .shade{background:linear-gradient(180deg,rgba(0,17,46,.6) 0%,rgba(0,17,46,.2) 14%,rgba(0,17,46,.4) 24%,rgba(0,17,46,.68) 34%,rgba(0,17,46,.82) 50%,rgba(0,17,46,.9) 70%,rgba(0,17,46,.94) 86%,#00112E 100%)}
 .bg.nophoto{background:radial-gradient(ellipse 90% 60% at 50% 38%,#0E3270 0%,#011A43 55%,#00112E 100%)}
 .bg.nophoto::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(252,241,219,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(252,241,219,.04) 1px,transparent 1px);background-size:72px 72px}
 

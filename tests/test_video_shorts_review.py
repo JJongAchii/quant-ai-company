@@ -93,3 +93,11 @@ def test_the_writer_carries_the_main_topic_of_a_two_topic_brief_issue():
     source, episode_json, issues = inputs()
     prompt = shorts_prompt(source, episode_json, issues)
     assert 'When an entry\'s title joins two topics, a brief issue carries the more material one' in prompt
+
+
+def test_the_final_editor_asks_for_fixes_only_text_or_a_retake_can_make():
+    # 10/30 AM: three looks re-rendered for caption breaks, bright pictures and the brief card's missing 그래서 line,
+    # none of which the screen text can change.
+    prompt = visual_prompt(body_source(), shorts(), [('opener', 'image 1')], {})
+    assert "fix 'none'" in prompt and 'a brief issue\'s card has no 그래서 line' in prompt
+    assert 'captions' in prompt and 'picture brightness' in prompt

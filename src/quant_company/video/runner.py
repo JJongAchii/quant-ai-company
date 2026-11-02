@@ -83,6 +83,9 @@ BRAND_TAKE = 1
 SHORTS_ATTEMPTS = 5
 # Reviewed like the episode's script (REVIEW_ROUNDS): a lost review turn is asked again, up to these many times.
 SHORTS_REVIEW_ROUNDS, SHORTS_REVIEW_RUNTIME_RETRIES = 2, 4
+# One look at the frames, one fixed re-render, one more look (10/30 AM: three looks and two re-renders of about 12
+# minutes each, mostly for problems of the template that screen text cannot change).
+SHORTS_INSPECT_ROUNDS = 2
 SHORTS_RETRY = 1800
 SHORTS_CREDIT_RESERVE = 80
 REVIEW_PHASES = frozenset({'review', 'visual'})
@@ -648,7 +651,7 @@ class VideoRunner:
     async def shorts_inspect(self, row, job):
         """The final editor (shorts_effort) looks at the rendered frames and the speech-to-text findings, like the
         episode's (inspect_video): screen text is fixed without touching what is said, misread scenes are voiced again
-        in Korean number words, up to INSPECT_ROUNDS looks; after the last the files go out with what is left."""
+        in Korean number words, up to SHORTS_INSPECT_ROUNDS looks; after the last the files go out with what is left."""
         plan = await self.shorts_plan(row)
         if plan is None:
             return
@@ -678,7 +681,7 @@ class VideoRunner:
         retake -= set(qa.get('retake', []))  # a scene already voiced again in number words is not voiced a third time
         screen = [i for i in issues if i['kind'] != 'audio_text' and i['fix'] != 'none']
         rounds.append({'key': key, 'issues': issues, 'heard': heard, 'findings': artifacts.get('findings', [])})
-        if (screen or retake) and len(rounds) < INSPECT_ROUNDS:
+        if (screen or retake) and len(rounds) < SHORTS_INSPECT_ROUNDS:
             fixed = plan
             if screen:
                 found = lineup(job['source'], job['plan'])
