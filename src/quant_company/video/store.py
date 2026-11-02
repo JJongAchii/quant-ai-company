@@ -111,6 +111,11 @@ def delivery_text(job, artifacts, at=None):
 
 
 LOCK = 71350301
+# A claim is short and renewed while its step runs (runner.holding): a worker that dies leaves its job to the next one
+# within LEASE (11/02 PM: out of memory at 19:12 mid-render, the Shorts went on only at 20:10). A step that ends without
+# saving keeps the job until HOLD after its claim, as the single long claim did (3 hours for a long render).
+LEASE = timedelta(minutes=5)
+HOLD = timedelta(minutes=200)
 # The stage that makes each model call (runner.check_photos, write_plan, review_plan, inspect_video), first match wins.
 LOGIN_STAGES = (('visual-photos', 'synthesizing'), ('plan', 'queued'), ('review', 'reviewing'),
                 ('visual', 'inspecting'), ('fix', 'inspecting'))
@@ -238,9 +243,15 @@ class VideoStore:
                                (list(ACTIVE), self.settings.video_upload_enabled,
                                 self.settings.video_publish_enabled)).fetchone()
             if row:
-                # Outlasts one tick (workflow: 3 hours for a long render) so the job is never claimed twice.
-                conn.execute("UPDATE video_jobs SET lease_until=now()+interval '200 minutes' WHERE id=%s", (row["id"],))
+                row['lease_until'] = conn.execute('UPDATE video_jobs SET lease_until=now()+%s WHERE id=%s RETURNING lease_until',
+                                                  (LEASE, row['id'])).fetchone()['lease_until']
             return row
+
+    def renew(self, job, held, until):
+        """Moves a claim's lease from held to until; False once a save or a wait of its step replaced it."""
+        with self.db.transaction() as conn:
+            return conn.execute('UPDATE video_jobs SET lease_until=%s WHERE id=%s AND lease_until=%s',
+                                (until, job['id'], held)).rowcount == 1
 
     def allowed(self, job):
         configured = (self.enabled() and job['source']['owner_user'] == self.settings.briefing_owner_user

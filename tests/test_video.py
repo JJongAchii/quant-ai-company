@@ -1,7 +1,9 @@
 """Real PostgreSQL; model, speech, YouTube and Slack calls are explicitly simulated."""
 
+import asyncio
 import json
 from concurrent.futures import ThreadPoolExecutor
+from datetime import timedelta
 
 import httpx
 import pytest
@@ -1004,3 +1006,54 @@ async def test_a_runtime_failure_of_the_review_is_asked_again_not_counted_as_a_c
     assert current['qa']['review_findings'] == [] and len(current['qa']['plan_attempts']) == 1
     assert [c.output_contract for c in provider.calls] == ['video_plan_v1', 'video_review_v1', 'video_review_v1']
     assert provider.calls[1].request_id != provider.calls[2].request_id
+
+
+def lease_until(store, job):
+    with store.db.transaction() as conn:
+        return conn.execute('SELECT lease_until FROM video_jobs WHERE id=%s', (job['id'],)).fetchone()['lease_until']
+
+
+def lease_left(store, job):
+    with store.db.transaction() as conn:
+        return conn.execute('SELECT lease_until-now() AS left FROM video_jobs WHERE id=%s', (job['id'],)).fetchone()['left']
+
+
+def test_a_worker_that_dies_mid_step_leaves_its_episode_to_the_next_within_minutes(brief, video):  # noqa: F811
+    """11/02 PM: the video worker ran out of memory at 19:12 mid-render. A claim held for 200 minutes (the Shorts': 60)
+    kept the restarted worker off the job; the Shorts went on only at 20:10."""
+    store, _ = video
+    job = new_job(brief, video)
+    assert store.claim()['id'] == job['id']
+    # The worker dies here: nothing renews or clears its claim.
+    assert store.claim() is None
+    assert timedelta(0) < lease_left(store, job) <= timedelta(minutes=5)
+
+
+@pytest.mark.parametrize('ending, left', [('nothing', (timedelta(minutes=190), timedelta(minutes=200))),
+                                          ('wait', (timedelta(seconds=100), timedelta(seconds=120))),
+                                          ('save', None)])
+async def test_a_running_step_keeps_its_claim_and_its_own_ending_stands(brief, video, monkeypatch, ending, left):  # noqa: F811
+    store, _ = video
+    job = new_job(brief, video)
+    monkeypatch.setattr('quant_company.video.runner.RENEW_SECONDS', .05)
+    runner = VideoRunner(store.company, provider=SimulatedProvider())
+    held = []
+
+    async def step(current):
+        held.append(lease_until(store, current))
+        await asyncio.sleep(.3)
+        held.append(lease_until(store, current))
+        if ending == 'wait':
+            await asyncio.to_thread(store.wait, current, 120, 'render_in_progress')
+        elif ending == 'save':
+            await asyncio.to_thread(store.save, current, current['state'])
+        await asyncio.sleep(.2)  # a renewal due after the ending changes nothing
+
+    runner.step = step
+    await runner.tick()
+    assert held[1] > held[0]  # renewed while the step ran
+    if left is None:
+        assert lease_until(store, job) is None
+    else:
+        # A step that saves nothing waits as long as before (200 minutes); a step's own wait stands.
+        assert left[0] < lease_left(store, job) <= left[1]

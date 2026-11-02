@@ -169,6 +169,9 @@ flowchart LR
 - 다음 본편 작업이 생기면 끝나지 않은 Shorts는 포기하고 스레드에 한 줄 남긴다.
 - 본편 다음 회차를 위해 월 크레딧 80을 남길 수 없으면 Shorts는 만들지 않는다.
 - `deploy/release.py`는 Shorts가 작업 중일 때(쓰기·검토·음성·렌더·검수 단계에서 lease가 남은 동안) video-worker를 교체하지 않고 기다린다.
+- 작업을 잡으면 lease는 5분이고, 단계가 도는 동안 1분마다 갱신한다. 작업기가 죽으면(메모리 초과 등) 다시 켜진 작업기가
+  5분 안에 이어받는다. 저장하지 않고 끝난 단계만 잡은 뒤 60분(본편 200분)까지 기다린다(`runner.holding`).
+  11/02 마감: 19:12 메모리 초과로 작업기가 죽었고, 60분 lease 때문에 20:10에야 이어졌다.
 
 렌더와 전달
 - 렌더는 작업 서버에서 `shorts_design/` 템플릿으로 한다. Fargate 렌더 이미지에 들어가지 않으므로 Shorts 변경은 렌더 이미지
@@ -291,6 +294,9 @@ Claude 실행기 로그인과 usage credits 확인은 [Claude runtime 최초 연
 `media-auth`는 0700, 토큰/YouTube client 파일은 0600이다. 파일을 Git에 넣지 않는다.
 video 이미지에 Chromium, FFmpeg, 한국어 Noto 폰트와 영상 optional dependencies가 들어 있다.
 Whisper small은 `/state/models`에 캐시한다. 첫 다운로드와 최초 렌더링을 미리 끝낸다.
+Shorts 렌더의 음성 정렬은 별도 프로세스에서 하고, 정렬이 끝나면 화면을 찍기 전에 그 프로세스를 닫는다
+(`video/speech_process.py`). 11/02까지는 렌더마다 모델을 작업기 안에 새로 올렸다. 작업기가 한 편에 약 0.2GB씩
+돌려주지 못해 며칠 뒤 3.2GB가 됐고, 렌더가 더해져 한도 3.5GB를 넘었다(10/30 아침·11/02 마감).
 기본 worker 한도는 1.5 CPU/1536MiB다. 2GB 서버에는 켜지 않는다. 8GB(권장)·4GB 메모리 설정은
 [8GB 예시](../deploy/lightsail-8gb.env.example)·[4GB 예시](../deploy/lightsail-4gb.env.example), 서버 이전은
 [서버 요금제 변경 안내](server-migration.md)를 따른다. 렌더 속도는 `quant-company video bench`로 잰다. 추가 서버 구매·사양 변경을 자동으로 수행하지 않는다.
@@ -460,7 +466,7 @@ quant-company video retry --job-id JOB_UUID --note '기존 음성 task와 로컬
 크레딧 요청이나 새 업로드를 자동 재전송하는 복구 명령은 없다. Claude 실행기의 `busy`와 `quota`는 실행 전에
 반환되는 명시적 거절이므로 모델 호출 예약을 반환하고 같은 요청 ID로 재시도한다(`busy` 최대 60초,
 `quota` 최대 15분 뒤). 대기 중에도 마감으로 제작을 끝내지 않는다. 응답 대기 시간이 지나면 같은 요청 ID로 다시 묻는다.
-영상 대본·검토 요청의 실행기 프로세스 한도는 2시간, 출력 스트림 한도는 32MiB다(직원 검토는 300초·1MiB). worker는 한 번에 120초까지 기다린다. 서버 렌더링(fallback)을 위해 한 번의 tick은 3시간, 작업 lease는 200분이다. Fargate 렌더는 tick마다 상태만 묻는다. 직원 검토는 계속 `claude-opus-5`를 쓴다.
+영상 대본·검토 요청의 실행기 프로세스 한도는 2시간, 출력 스트림 한도는 32MiB다(직원 검토는 300초·1MiB). worker는 한 번에 120초까지 기다린다. 서버 렌더링(fallback)을 위해 한 번의 tick은 3시간이다. 작업 lease는 5분이고 단계가 도는 동안 갱신하며, 저장하지 않고 끝난 단계는 잡은 뒤 200분까지 둔다. Fargate 렌더는 tick마다 상태만 묻는다. 직원 검토는 계속 `claude-opus-5`를 쓴다.
 실행기의 `claude/jobs/video-<job>-<phase>.json` receipt와 DB 효과 행을 먼저 대사한다.
 
 ### 검사와 수정 (소유자 결정 2026-10-12: 검사 결과로 제작을 멈추지 않는다)
