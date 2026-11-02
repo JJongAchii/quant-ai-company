@@ -55,6 +55,7 @@ from .shorts import (
     shorts_prompt,
     shorts_violations,
 )
+from .shorts_store import HOLD as SHORTS_HOLD
 from .shorts_store import ShortsStore
 from .store import UncertainEffect, VideoStore
 from .youtube import YouTube
@@ -89,8 +90,42 @@ SHORTS_INSPECT_ROUNDS = 2
 SHORTS_RETRY = 1800
 SHORTS_CREDIT_RESERVE = 80
 REVIEW_PHASES = frozenset({'review', 'visual'})
+# How often a running step renews its claim (holding; store.LEASE).
+RENEW_SECONDS = 60
 # ProviderRequest's prompt limit: a previous script version that would not fit is left out of the revision request.
 PROMPT_LIMIT = next(m.max_length for m in ProviderRequest.model_fields['prompt'].metadata if hasattr(m, 'max_length'))
+
+
+@contextlib.asynccontextmanager
+async def holding(store, row, hold):
+    """Renews a claim's short lease (store.LEASE) while its step runs, so only a live worker keeps the job. A step that
+    saves or waits sets its own; one that ends with neither keeps the job until hold after the claim."""
+    keep, held, stop = datetime.now(UTC) + hold, row['lease_until'], asyncio.Event()
+
+    async def renew():
+        nonlocal held
+        while True:
+            with contextlib.suppress(TimeoutError):
+                await asyncio.wait_for(stop.wait(), RENEW_SECONDS)
+                return
+            until = datetime.now(UTC) + store_module.LEASE
+            try:
+                renewed = await asyncio.to_thread(store.renew, row, held, until)
+            except Exception:  # noqa: BLE001 - the database briefly away: the lease still runs, the next round tries
+                continue
+            if not renewed:
+                return
+            held = until
+
+    task = asyncio.create_task(renew())
+    try:
+        yield
+    finally:
+        stop.set()
+        await task
+        # Not kept (the database away): the job is only claimed again sooner.
+        with contextlib.suppress(Exception):
+            await asyncio.to_thread(store.renew, row, held, keep)
 
 
 class BrandUnavailable(ValueError):
@@ -420,7 +455,8 @@ class VideoRunner:
                 raise ValueError("Frozen briefing source changed")
             if not self.store.allowed(job):
                 raise PolicyError('Video production account or source policy changed')
-            await self.step(job)
+            async with holding(self.store, job, store_module.HOLD):
+                await self.step(job)
         except UncertainEffect:
             await asyncio.to_thread(self.store.save, job, "uncertain", error="external_effect_requires_reconciliation")
             await asyncio.to_thread(self.store.alert, job)
@@ -453,7 +489,8 @@ class VideoRunner:
         try:
             if digest(job["source"]) != job["source_digest"] or not self.store.allowed(job):
                 raise PolicyError('Video production account or source policy changed')
-            await self.shorts_step(row, job)
+            async with holding(self.shorts, row, SHORTS_HOLD):
+                await self.shorts_step(row, job)
         except ShortsSuperseded:
             # The next episode started mid-render: the next claim gives this cut up with its note.
             await asyncio.to_thread(self.shorts.wait, row, 5, 'superseded')

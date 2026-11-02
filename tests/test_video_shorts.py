@@ -1,12 +1,13 @@
 """Daily Shorts: the cut's contract and checks, a real Chromium/FFmpeg vertical render, and the production flow on real
 PostgreSQL. Model, speech, alignment and Slack's HTTP API are simulated fixtures; nothing here calls them."""
 
+import asyncio
 import copy
 import importlib.util
 import json
 import re
 import subprocess
-from datetime import date
+from datetime import date, timedelta
 
 import pytest
 from psycopg.types.json import Jsonb
@@ -48,6 +49,7 @@ from quant_company.video.shorts import (
 )
 from quant_company.video.shorts_store import ACTIVE as SHORTS_ACTIVE
 from quant_company.video.shorts_store import ShortsStore
+from quant_company.video.speech_process import SpeechProcess
 
 from .test_briefing import brief  # noqa: F401
 from .test_video import body_source, good_review, video  # noqa: F401
@@ -462,6 +464,28 @@ def multi_cut(tmp_path, titles, chapters, skip=(), photo_first=()):
 # A short agenda take is held for the list; the outro is held for its button. One take per scene of the fixture cut
 # (opener, agenda, its one issue, outro).
 TAKES = [4, 1, 8, 4]
+
+
+def test_the_speech_process_ends_before_the_frames_are_captured(tmp_path):
+    """11/02 PM: the alignment model's memory and the frames' together ran the worker out of memory (speech_process)."""
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    assert isinstance(ShortsRenderer(settings).aligner, SpeechProcess)
+    events = []
+
+    class Closing(WordAligner):
+        def close(self):
+            events.append('close')
+
+    renderer = ShortsRenderer(settings, Closing())
+    capture = renderer._capture
+
+    def capturing(*args):
+        events.append('frames')
+        return capture(*args)
+
+    renderer._capture = capturing
+    renderer.render(job, shorts(), episode().model_dump(mode='json'), tmp_path / 'out', tones(tmp_path, TAKES, ffmpeg))
+    assert events == ['close', 'frames']
 
 
 def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
@@ -1016,6 +1040,39 @@ async def test_a_briefing_without_numbered_issues_spends_no_turn(brief, video, t
                      (json.dumps(source), digest(source), job['id']))
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
     assert row['state'] == 'skipped' and row['error'] == 'too_few_issues' and not shorts_calls(provider, 'shorts')
+
+
+def shorts_lease_left(store, job):
+    with store.db.transaction() as conn:
+        return conn.execute('SELECT lease_until-now() AS left FROM video_shorts WHERE job_id=%s', (job['id'],)).fetchone()['left']
+
+
+async def test_a_worker_that_dies_mid_cut_leaves_it_to_the_next_within_minutes(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    """11/02 PM: the video worker ran out of memory at 19:12 mid-render; the cut's 60-minute claim held it until 20:10."""
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    shorts_store = ShortsStore(store.company)
+    assert shorts_store.claim()['state'] == 'writing'
+    # The worker dies here: nothing renews or clears its claim.
+    assert shorts_store.claim() is None
+    assert timedelta(0) < shorts_lease_left(store, job) <= timedelta(minutes=5)
+
+    # A live worker renews it while the step runs; a step that saves nothing keeps the cut for its hour, as before.
+    with store.db.transaction() as conn:
+        conn.execute('UPDATE video_shorts SET lease_until=NULL WHERE job_id=%s', (job['id'],))
+    monkeypatch.setattr(runner_module, 'RENEW_SECONDS', .05)
+    runner, held = VideoRunner(store.company, provider, speech), []
+
+    async def step(row, current):
+        held.append(shorts_store.get(row['job_id'])['lease_until'])
+        await asyncio.sleep(.3)
+        held.append(shorts_store.get(row['job_id'])['lease_until'])
+
+    runner.shorts_step = step
+    await runner.tick()
+    assert held[1] > held[0]
+    assert timedelta(minutes=55) < shorts_lease_left(store, job) <= timedelta(minutes=60)
 
 
 async def test_the_episode_goes_first_and_a_late_cut_is_given_up(brief, video, tmp_path, monkeypatch):  # noqa: F811

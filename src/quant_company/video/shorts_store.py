@@ -14,6 +14,8 @@ from .store import ACTIVE as EPISODE_ACTIVE
 from .store import EDITION_NAMES, KST, LOCK, VideoStore
 
 ACTIVE = ('writing', 'reviewing', 'synthesizing', 'rendering', 'inspecting')
+# A step that ends without saving keeps the cut this long after its claim (video.store.LEASE, runner.holding).
+HOLD = timedelta(minutes=60)
 # The next episode is usually in production then (briefs at about 07:45 and 16:10-17:25, then about 1.5 hours of
 # script, speech and render): a cut takes no step that would hold the video worker or the Claude lane. A window
 # (its edition kind is the third value) ends early once that day's episode of its kind is delivered (claim).
@@ -98,8 +100,8 @@ class ShortsStore:
                     AND (lease_until IS NULL OR lease_until<now()) ORDER BY created_at LIMIT 1 FOR UPDATE SKIP LOCKED""",
                                    (list(ACTIVE),)).fetchone()
                 if row:
-                    conn.execute("UPDATE video_shorts SET lease_until=now()+interval '60 minutes' WHERE job_id=%s",
-                                 (row['job_id'],))
+                    row['lease_until'] = conn.execute("""UPDATE video_shorts SET lease_until=now()+%s WHERE job_id=%s
+                        RETURNING lease_until""", (video_store.LEASE, row['job_id'])).fetchone()['lease_until']
         for gone in given_up:
             self.note(gone['job_id'], '쇼츠는 다음 회차 제작이 시작돼 만들지 않았습니다.')
         return row
@@ -127,6 +129,12 @@ class ShortsStore:
             if not conn.execute('UPDATE video_shorts SET ' + ','.join(assignments) + ' WHERE job_id=%s AND state=%s',
                                 (*parameters, row['job_id'], row['state'])).rowcount:
                 raise PolicyError('Shorts changed while processing')
+
+    def renew(self, row, held, until):
+        """Moves a claim's lease from held to until; False once a save or a wait of its step replaced it."""
+        with self.db.transaction() as conn:
+            return conn.execute('UPDATE video_shorts SET lease_until=%s WHERE job_id=%s AND lease_until=%s',
+                                (until, row['job_id'], held)).rowcount == 1
 
     def wait(self, row, seconds, reason):
         with self.db.transaction() as conn:

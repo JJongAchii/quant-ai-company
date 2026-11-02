@@ -40,8 +40,9 @@ from .episode import (
 from .illustrations import library_entries
 from .lineup import ISSUE_CHAPTERS, lineup
 from .motion import CHROMIUM_ARGS, FPS, captions, word_times
-from .render import Aligner, RenderInProgress, checksum, music_track, probe, quality_probe, run, spoken
+from .render import RenderInProgress, checksum, music_track, probe, quality_probe, run, spoken
 from .render import mix_music as mix
+from .speech_process import SpeechProcess
 from .upload import INSTRUCTION
 
 WIDTH, HEIGHT = 1080, 1920
@@ -610,7 +611,7 @@ class ShortsRenderer:
 
     def __init__(self, settings, aligner=None):
         self.settings, self.stop, self._library = settings, None, None
-        self.aligner = aligner or Aligner(settings.video_alignment_model, settings.video_alignment_threads)
+        self.aligner = aligner or SpeechProcess(settings.video_alignment_model, settings.video_alignment_threads)
 
     @property
     def library(self):
@@ -754,7 +755,12 @@ class ShortsRenderer:
                 'pictures': pictures, 'ep': ep, 'heard': heard}
 
     def _render(self, job, plan, episode, directory, audio_paths, texts=None):
-        built = self.build(job, plan, episode, directory, audio_paths, texts)
+        try:
+            built = self.build(job, plan, episode, directory, audio_paths, texts)
+        finally:
+            # The speech is aligned: its process gives back its memory before the frames take theirs (speech_process).
+            if hasattr(self.aligner, 'close'):
+                self.aligner.close()
         page, scenes, cues, total, findings = (built[k] for k in ('page', 'scenes', 'captions', 'total', 'findings'))
         frames = int(total * FPS)
         layout, stills, broken = self._capture(page / 'index.html', scenes, frames, directory)
