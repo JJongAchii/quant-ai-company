@@ -125,8 +125,10 @@ class Settings(BaseSettings):
     video_render_attempts: int = Field(default=3, ge=1, le=6)
     # Hard limit per render task (the task exits itself; the worker stops it 10 minutes later at the latest).
     video_render_timeout_minutes: int = Field(default=90, ge=10, le=360)
-    # 증시story playlist; when empty the description omits the "▶ 증시story 모아보기" lines.
-    video_playlist_url: str = "https://www.youtube.com/playlist?list=PLbCkACCer37U"
+    # The series playlist; when empty the description omits the "▶ 그래서, 오늘장 모아보기" lines. The old 증시story playlist
+    # (PLbCkACCer37U) belongs to the 뭐든story channel; the briefings moved to their own channel on 2026-11-04, so the line
+    # stays out until that channel has a playlist.
+    video_playlist_url: str = ""
     # Morning review-ready target (HH:MM KST); public approval still expires at 09:00 KST.
     # YouTube publish times the owner targets (KST). Work starts the moment the brief body is delivered; the files
     # must be in the brief thread VIDEO_PUBLISH_LEAD_MINUTES earlier. Morning: 07:00 while New York is on daylight

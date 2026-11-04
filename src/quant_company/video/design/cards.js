@@ -262,15 +262,17 @@ const CARDS = {
        <div style="font-size:22px;font-weight:700;line-height:1.35"><span class="muted">${d.cost_head}</span><div data-cost style="color:var(--y);font-size:${d.cost.length > 24 ? 24 : 30}px;font-weight:700;text-wrap:balance;white-space:pre-line;margin-top:4px">${d.cost}</div></div></div></div>`;
   },
 
-  // The channel's fixed opening and closing (motion.py BRAND), never written by the script.
+  // The channel's fixed opening and closing (motion.py BRAND), never written by the script. The wordmark underlines
+  // its first phrase ('그래서,') with a yellow stroke, like the channel art.
   sting(d) {
-    return `<div class="sting"><img src="${EP.logo || 'logo_mark.png'}" alt="" data-in="0"><div class="name" data-in="0.15">${d.title}</div>
-      <div class="series" data-in="0.3">${d.series}</div></div>`;
+    const name = d.title.replace(/^([^,\s]+,)/, '<span class="mk">$1</span>');
+    return `<div class="sting"><img src="${EP.logo || 'brand_mark.svg'}" alt="" data-in="0"><div class="name" data-in="0.15">${name}</div>
+      <div class="series" data-in="0.3">${d.series || EP.brand_label || ''}</div></div>`;
   },
 
   endcard(d) {
     const svg = (path, fill = 'none') => `<svg width="64" height="64" viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">${path}</svg>`;
-    return `<div class="endcard"><div class="mark" data-in="0.05"><img src="${EP.logo || 'logo_mark.png'}" alt="">${d.title}</div>
+    return `<div class="endcard"><div class="mark" data-in="0.05"><img src="${EP.logo || 'brand_mark.svg'}" alt="">${d.title}</div>
       <div class="btns"><div class="ebtn sub" data-in="0.15">${svg('<path d="M8 5v14l11-7z"/>', 'currentColor')}<div class="w"><span class="w1">구독</span><span class="w2">구독중 ✓</span></div></div>
       <div class="ebtn like" data-in="0.25">${svg('<path d="M7 11v9H4v-9h3zm0 0 4-7a2 2 0 0 1 3 2l-1 4h5a2 2 0 0 1 2 2.3l-1.3 6A2 2 0 0 1 16.7 20H7"/>')}</div>
       <div class="ebtn bell" data-in="0.35">${svg('<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4l2-2zM10 20a2 2 0 0 0 4 0"/>')}</div></div>

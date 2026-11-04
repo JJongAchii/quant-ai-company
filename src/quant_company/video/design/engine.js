@@ -48,7 +48,7 @@ function boot(){
  // Load every weight now so document.fonts.ready (awaited before the first seek) covers text in hidden scenes too.
  for(const w of [500,600,700,800]) document.fonts.load(`${w} 40px Pretendard`);
  for(const w of [600,700,800]) document.fonts.load(`${w} 40px BarlowC`);
- $('#brand').textContent=EP.brand_name||'뭐든story'; if(EP.logo) $('#logo').src=EP.logo;
+ $('#brand').textContent=EP.brand_name||'그래서, 오늘장'; if(EP.logo) $('#logo').src=EP.logo;
  $('#bl').textContent=EP.brand_label||''; $('#dd').textContent=EP.date_label||''; $('#ds').textContent=EP.sample_mark||'';
  CH=EP.chapter_names; $('#chapters').innerHTML=CH.map(c=>`<span class="tab">${c}</span>`).join('')+'<i id="ul"></i>';
  $('#tlab').textContent=EP.ticker.label;
