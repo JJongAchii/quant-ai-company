@@ -86,7 +86,7 @@ x-db-env: &db-env
   # Evening brief email (docs/newsletter.md); the app password reaches dispatch alone, through its mount below.
   NEWSLETTER_ENABLED: ${NEWSLETTER_ENABLED:-false}
   NEWSLETTER_FROM_ADDRESS: ${NEWSLETTER_FROM_ADDRESS:-}
-  NEWSLETTER_FROM_NAME: ${NEWSLETTER_FROM_NAME:-뭐든story}
+  NEWSLETTER_FROM_NAME: ${NEWSLETTER_FROM_NAME:-그래서, 오늘장}
   NEWSLETTER_SMTP_HOST: ${NEWSLETTER_SMTP_HOST:-smtp.gmail.com}
   NEWSLETTER_SMTP_PORT: ${NEWSLETTER_SMTP_PORT:-587}
   NEWSLETTER_IMAP_HOST: ${NEWSLETTER_IMAP_HOST:-imap.gmail.com}

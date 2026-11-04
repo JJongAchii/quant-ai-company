@@ -588,7 +588,7 @@ def test_newsletter_password_reaches_only_dispatch_and_its_settings_reach_every_
     assert settings.newsletter_enabled and settings.newsletter_from_address == "sender.fixture@gmail.com"
     assert (settings.newsletter_smtp_host, settings.newsletter_smtp_port, settings.newsletter_imap_host) == (
         "smtp.gmail.com", 587, "imap.gmail.com")
-    assert settings.newsletter_from_name == "뭐든story"
+    assert settings.newsletter_from_name == "그래서, 오늘장"
     assert str(settings.newsletter_password_file) == "/run/newsletter/app_password"
     assert settings.newsletter_channel_url == "https://www.youtube.com/@anything-story"
     for name in ("codex-runtime", "claude-runtime"):
