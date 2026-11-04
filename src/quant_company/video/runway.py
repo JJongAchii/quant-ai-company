@@ -58,11 +58,14 @@ class RunwaySpeech:
             raise ValueError("Explicit credit balance required for daily production")
         return data
 
-    async def submit(self, text, voice, model):
+    async def submit(self, text, voice, model, voice_id=None):
+        """A library voice (voice_id, eleven_v4 only in the MCP schema) replaces the preset voice; never both."""
         if model not in SPEECH_LIMITS or not 1 <= len(text) <= SPEECH_LIMITS[model]:
             raise ValueError("Unsupported narration")
-        result = await self.call("generate_speech", {"text": text, "voice": voice, "model": model,
-                                "languageCode": "ko", "name": "daily-brief narration"})
+        if voice_id and model != "eleven_v4":
+            raise ValueError("Library voices need eleven_v4")
+        result = await self.call("generate_speech", {"text": text, **({"voiceId": voice_id} if voice_id else {"voice": voice}),
+                                "model": model, "languageCode": "ko", "name": "daily-brief narration"})
         if not result.get("taskId"):
             raise ValueError("Generation returned no task ID; reconcile before resubmission")
         return result

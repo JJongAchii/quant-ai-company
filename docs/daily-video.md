@@ -2,7 +2,7 @@
 
 뭐든story의 시장 브리핑 영상은 **Slack에 발송된 브리핑 본문**(daily-brief edition의 rendered 본문)만으로 만든다.
 기사 원문·수집 묶음·초안은 대본 작성기와 검사기에 전달하지 않는다. AM·PM 회차가 커밋·발송되면 서버의 video worker가
-대본·장면·모션 렌더·Vincent 내레이션·단어 단위 자막·썸네일·업로드 문안을 만들고, 기본 설정에서는 **완성 파일을
+대본·장면·모션 렌더·Runway 내레이션·단어 단위 자막·썸네일·업로드 문안을 만들고, 기본 설정에서는 **완성 파일을
 그 회차 brief 스레드로 전달**한다. 소유자가 전체 시청 후 YouTube에 직접 올린다. YouTube API 업로드는 구현돼 있지만
 `VIDEO_UPLOAD_ENABLED=false`(기본)로 꺼져 있다(Google OAuth 앱이 Testing·미검증 상태라 업로드가 비공개로 잠긴다).
 [daily video 제작 기준](DAILY_VIDEO_PRODUCTION_STANDARD.md)과 [디자인 명세](DAILY_BRIEF_DESIGN_SPEC.md)를 따른다.
@@ -14,7 +14,7 @@ flowchart LR
     S --> P[본문 줄 번호로 대본·장면 작성 · 검토]
     P --> C[Runway 계정·잔액·월/회차 한도 확인]
     C -->|불가| X[중단 · 스레드 알림 · 유료 전환 없음]
-    C --> V[Runway Vincent 장면별 음성]
+    C --> V[Runway 장면별 음성]
     V --> R[1080p 모션 렌더 · 자막 · 썸네일 · upload.txt · 기술 검사]
     R -->|VIDEO_UPLOAD_ENABLED=false| F[brief 스레드에 MP4·PNG·SRT·upload.txt 전달]
     R -->|true| Y[YouTube 비공개 업로드 → Slack 공개 승인]
@@ -195,7 +195,7 @@ Runway 음성은 OAuth로 `https://mcp.runwayml.com/mcp`에 연결한다.
 따르면 이 MCP는 웹 계정 크레딧을 사용한다. `dev.runwayml.com/mcp`와 직접 유료 API로 전환하지 않는다.
 기존 ChatGPT 앱 연결 토큰이 서버로 자동 이관되지는 않으므로 서버에서 처음 한 번 로그인한다.
 
-음성 모델은 `eleven_v4`(`VIDEO_SPEECH_MODEL`), 기본 voice는 Runway preset `Vincent`로, 손 제작본과 같다.
+음성 모델은 `eleven_v4`(`VIDEO_SPEECH_MODEL`), 목소리는 Runway 음성 라이브러리의 Anna Kim(`VIDEO_VOICE_ID`, 2026-11-04 소유자 선택)이다. 그 전에는 preset `Vincent`였다.
 2026-10-12 서버에서 MCP `generate_speech`의 `tools/list` 스키마를 조회해 `eleven_v3`·`eleven_multilingual_v2`·`eleven_v4`
 선택지를 확인했다. `eleven_v4`는 유료 플랜이 필요하고 호출당 최대 2,500자다(장면 내레이션은 최대 600자). 현재 확인한 MCP 조건인
 문자 50개당 1 credit을 **장면별 올림**으로 예약한다. 실제 한국어 발음·서비스 조건은 첫 비공개
@@ -336,7 +336,8 @@ docker compose -f deploy/compose.yaml -f deploy/video.compose.yaml exec video-wo
 | `VIDEO_REASONING_EFFORT` | xhigh | 대본 작성·화면 카드 수정의 추론 강도(high/xhigh/max). 새 작업의 policy에 고정 |
 | `VIDEO_REVIEW_EFFORT` | max | 대본 검토·최종 화면 검수·채널 전략 리포트의 추론 강도. 새 작업의 policy에 고정(이전 작업은 단일 강도 유지) |
 | `VIDEO_MODEL_RUNTIME_URL` | http://claude-runtime:8080 | 기존 Claude 실행기 내부 주소 |
-| `VIDEO_VOICE` | Vincent | Runway preset voice; 첫 실제 샘플에서 한국어 발음 확인 |
+| `VIDEO_VOICE` | Anna Kim (배포 기본값) | `VIDEO_VOICE_ID`가 있으면 접수 기록의 이름표로만 쓴다. ID가 비어 있으면 Runway preset 이름(예: Vincent)으로 만든다 |
+| `VIDEO_VOICE_ID` | uyVNoMrnUku1dZyVEXwD (배포 기본값) | Runway 음성 라이브러리 ID(search_voices, eleven_v4 전용). 소유자 선택 2026-11-04: Anna Kim(젊은 여성, 차분하고 또렷함, 서울). preset 대신 이 목소리로 만들고 새 작업의 policy에 고정한다. 바꾸면 고정 문구(BRAND)도 새 목소리로 다시 녹음된다 |
 | `VIDEO_ALIGNMENT_MODEL` | small | 실제 음성 검증·자막 시점용 로컬 모델/경로 |
 | `VIDEO_TEMPLATE` | motion-v2 | 카드·모션 고정 틀. text-v1은 이전 글 화면 |
 | `VIDEO_RENDER_WORKERS` | 2 | 프레임 캡처 프로세스 수. 8GB 서버 2(아침 06:50 목표), 작은 서버 1 |

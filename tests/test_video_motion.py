@@ -815,6 +815,10 @@ async def test_the_fixed_lines_are_recorded_once_and_framed_into_the_render(brie
     requests = brand_requests(job)
     other = brand_requests({**job, 'policy': {**job['policy'], 'voice': 'Other'}})
     assert brand_file(store.settings, 'sting', other['sting']) != brand_file(store.settings, 'sting', requests['sting'])
+    # A library voice is another recording too; a preset-voice job's requests carry no voice_id, so their keys hold.
+    library = brand_requests({**job, 'policy': {**job['policy'], 'voice_id': 'lib123'}})
+    assert 'voice_id' not in requests['sting'] and library['sting']['voice_id'] == 'lib123'
+    assert brand_file(store.settings, 'sting', library['sting']) != brand_file(store.settings, 'sting', requests['sting'])
 
 
 async def test_an_episode_never_waits_for_the_fixed_lines(brief, video, tmp_path, monkeypatch):  # noqa: F811

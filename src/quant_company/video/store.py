@@ -196,6 +196,7 @@ class VideoStore:
         identity = stable("video:" + str(edition["id"]) + ":1")
         target, deadline = edition_times(edition, self.settings)
         policy = {"version": POLICY_VERSION, "voice": self.settings.video_voice,
+                  **({"voice_id": self.settings.video_voice_id} if self.settings.video_voice_id else {}),
                   "speech_model": self.settings.video_speech_model, "model": self.settings.video_model,
                   "effort": self.settings.video_reasoning_effort, "review_effort": self.settings.video_review_effort,
                   "workspace_id": self.settings.video_runway_workspace_id,

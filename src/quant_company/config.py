@@ -87,6 +87,9 @@ class Settings(BaseSettings):
     video_monthly_credit_limit: int = Field(default=1500, ge=0, le=100000)
     video_episode_credit_limit: int = Field(default=100, ge=0, le=500)
     video_voice: str = "Vincent"
+    # A Runway voice-library ID (search_voices) for eleven_v4. When set, speech is generated with it instead of the
+    # preset named by video_voice, which then only labels the receipts. Frozen into each new job's policy.
+    video_voice_id: str = Field(default="", pattern=r"^[A-Za-z0-9_-]{0,64}$")
     # Script and review run on the isolated Claude subscription runtime, never the Codex lane.
     video_model: Literal["claude-opus-5", "claude-opus-5-5"] = "claude-opus-5-5"
     # Frozen into each new job's policy; jobs created before keep the effort they were requested with.
