@@ -1,22 +1,29 @@
 <!doctype html><html lang="ko"><meta charset="utf-8"><style>
 @font-face{font-family:P;font-weight:800;src:url(fonts/Pretendard-ExtraBold.woff2)}@font-face{font-family:P;font-weight:700;src:url(fonts/Pretendard-Bold.woff2)}
-*{margin:0;box-sizing:border-box}body{width:1280px;height:720px;overflow:hidden;font-family:P;word-break:keep-all;color:#FCF1DB;
-background:radial-gradient(ellipse 80% 70% at 35% 45%,#0A2A63 0%,#011A43 55%,#00112E 100%)}
+/* 그래서, 오늘장 (2026-11-04): the episode's studio look. A lit navy set with a floor grid receding toward a horizon
+   glow, yellow as the only accent, red and blue only for a rise or a fall, a glass brand bar. */
+*{margin:0;box-sizing:border-box}body{position:relative;width:1280px;height:720px;overflow:hidden;font-family:P;word-break:keep-all;color:#FFFFFF;
+background:radial-gradient(700px 480px at 12% -8%,rgba(64,128,255,.55),transparent 62%),radial-gradient(600px 420px at 70% 10%,rgba(0,196,255,.18),transparent 60%),
+linear-gradient(180deg,#0B1C4A 0%,#071538 55%,#040B22 100%)}
+.floor{position:absolute;left:-40%;right:-40%;top:470px;height:700px;transform-origin:50% 0;transform:perspective(420px) rotateX(64deg);
+background:linear-gradient(rgba(120,170,255,.16) 2px,transparent 2px) 0 0/100% 64px,linear-gradient(90deg,rgba(120,170,255,.16) 2px,transparent 2px) 0 0/64px 100%;
+-webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 16%,rgba(0,0,0,.5) 55%,transparent 85%)}
 .img{position:absolute;right:0;top:0;width:560px;height:620px;background:url({{image}}) center/cover;
 -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 35%)}
-.badge{position:absolute;left:56px;top:52px;background:#FDC749;color:#011A43;font-weight:800;font-size:34px;padding:10px 22px;border-radius:14px}
+.badge{position:absolute;left:56px;top:52px;background:linear-gradient(180deg,#FFE070,#FFC928);color:#13130F;font-weight:800;font-size:34px;padding:10px 26px;border-radius:999px;box-shadow:0 6px 18px rgba(255,200,40,.32)}
 /* The question and the stat share one column above the bar, so a longer question pushes the stat down instead of covering
    it (10/14 AM: a third line covered the stat); fit() shrinks the question to two lines inside the column. The question
    keeps the line break the script wrote (10/16 PM: '외국인 사고 기관 / 던졌다 바닥 신호일까?' was balanced across it). */
 .copy{position:absolute;left:56px;top:150px;width:760px;height:450px;display:flex;flex-direction:column;justify-content:center;gap:24px}
-.q{font-size:104px;font-weight:800;line-height:1.12;letter-spacing:-.03em;text-wrap:balance;white-space:pre-line}
-.q b{color:#FDC749}.n{padding-left:4px;font-size:40px;font-weight:700;color:#FCF1DB}.n.up{color:#FF5C6C}.n.dn{color:#5EA0FF}
-.bar{position:absolute;left:0;right:0;bottom:0;height:100px;background:#00112E;border-top:3px solid #FDC749;display:flex;align-items:center;padding:0 56px;gap:16px;font-size:34px;font-weight:800}
-.bar img{height:58px}.bar span{color:#FDC749;font-weight:700;font-size:30px}.s{margin-left:auto;font-size:22px;color:#FF9FB0;font-weight:700}
+.q{font-size:104px;font-weight:800;line-height:1.12;letter-spacing:-.03em;text-wrap:balance;white-space:pre-line;text-shadow:0 4px 30px rgba(0,8,30,.7)}
+.q b{color:#FFD43B;text-shadow:0 0 30px rgba(255,212,59,.35),0 4px 30px rgba(0,8,30,.7)}
+.n{padding-left:4px;font-size:40px;font-weight:700;color:#EEF2FA}.n.up{color:#FF5C66}.n.dn{color:#5E9BFF}
+.bar{position:absolute;left:0;right:0;bottom:0;height:100px;background:linear-gradient(180deg,rgba(14,30,72,.94),rgba(5,12,32,.97));border-top:1px solid rgba(255,255,255,.18);box-shadow:0 -10px 30px rgba(0,4,16,.45);display:flex;align-items:center;padding:0 56px;gap:16px;font-size:34px;font-weight:800}
+.bar img{height:58px;filter:drop-shadow(0 0 12px rgba(255,212,59,.35))}.bar span{color:#FFD43B;font-weight:700;font-size:30px}.s{margin-left:auto;font-size:22px;color:#FF9FB0;font-weight:700}
 /* Watched-progress strip along the bottom edge, styled like YouTube's resume bar (owner request 2026-10-12). */
 .resume{position:absolute;left:0;right:0;bottom:0;height:12px;background:rgba(255,255,255,.45);z-index:5}
 .resume i{display:block;height:100%;width:50%;background:#FF0000}
-</style><div class="img"></div><div class="badge">{{date}}</div>
+</style><div class="floor"></div><div class="img"></div><div class="badge">{{date}}</div>
 <div class="copy"><div class="q">{{question}}</div><div class="n {{stat_dir}}">{{stat}}</div></div>
 <div class="bar"><img src="brand_mark.svg">그래서, 오늘장<span>{{brand}}</span><div class="s">{{mark}}</div></div>
 <div class="resume"><i></i></div>
