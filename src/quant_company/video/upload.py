@@ -30,7 +30,7 @@ SIGNATURE = '그래서, 오늘장 · 매 거래일 아침과 장 마감 뒤에 �
 SIGNUP_URL = 'https://forms.gle/JffyKEoKmSCNFKsJ8'
 SIGNUP_LEAD = f'📩 구독자 전용 · 매일 아침·마감 증시 리포트를 메일로 받아보세요\n👉 {SIGNUP_URL}\n\n'
 SIGNUP_COMMENT = f'📩 구독자 전용 매일 증시 리포트 메일 신청: {SIGNUP_URL}'
-BASE_TAGS = ('#그래서오늘장', '#증시')
+BASE_TAGS = ('#그래서오늘장', '#오늘장')
 FIXED_TAGS = ('그래서 오늘장', '그래서오늘장')
 TIMING = {'am': '장전', 'intraday': '장중', 'close': '마감'}
 # Production/tool wording never appears on screen, in narration or in the upload copy (owner rule). Market topics

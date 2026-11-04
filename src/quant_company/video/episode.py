@@ -525,7 +525,7 @@ so write counts and ordinals in Korean words (세 가지, 첫째) and never put 
 a scene that shows a regular-session close value, summary3 included, shows '""" + CLOSE_LABEL + """' on screen and one that
 shows investor flows shows '""" + FLOW_LABEL + """'; the ticker has 3-12 items whose numbers are in its cited lines and
 a label with 종가 when those are regular-session closes; hashtags are one or two #word tokens of letters, digits or Hangul
-only (no spaces or symbols, never #그래서오늘장 or #증시); tags are 13-23 plain keywords without # or commas; every tag and
+only (no spaces or symbols, never #그래서오늘장 or #오늘장); tags are 13-23 plain keywords without # or commas; every tag and
 hashtag word appears in the episode text as written (spacing aside) or is one of the general market keywords: """ + ', '.join(GENERAL_TAGS) + '.'
 
 

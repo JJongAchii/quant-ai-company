@@ -6,14 +6,16 @@ const NS='http://www.w3.org/2000/svg';
 const el=(tag,attrs={},html='')=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(html)e.innerHTML=html;return e;};
 
 /* ---------- motion language (spec §5, template v5): one main movement per scene, then the frame holds still.
-   Lines rise out of their own baseline (14 frames), lines and bars draw (36 / 18 frames), the camera moves sideways
-   between scenes (22 frames). No count-ups, zooms, pops, glow or particles. Start times sit on a 6-frame grid. ---------- */
+   Lines rise out of their own baseline (14 frames), panels stand up from a slight backward tilt (18 frames), lines and
+   bars draw (36 / 18 frames), the camera moves sideways between scenes (22 frames) and the set behind it moves slower
+   (weave 0.10x, floor 0.25x), which gives the depth. No count-ups, zooms, pops or particles. Start times sit on a
+   6-frame grid. ---------- */
 const FPS=30;
 function bez(x1,y1,x2,y2){const cx=3*x1,bx=3*(x2-x1)-cx,ax=1-cx-bx,cy=3*y1,by=3*(y2-y1)-cy,ay=1-cy-by;
  const X=t=>((ax*t+bx)*t+cx)*t,Y=t=>((ay*t+by)*t+cy)*t,dX=t=>(3*ax*t+2*bx)*t+cx;
  return x=>{if(x<=0)return 0;if(x>=1)return 1;let t=x;for(let i=0;i<8;i++){const d=dX(t);if(Math.abs(d)<1e-6)break;t-=(X(t)-x)/d;}return Y(clamp(t));};}
 const REV=bez(0.16,1,0.3,1), CAM=bez(0.65,0,0.35,1), DRAW=bez(0.33,0,0.25,1);
-const REVEAL=14/FPS, MOVE=22/FPS, BAR=18/FPS, TAB=12/FPS, HL=12/FPS, TICKER=70;
+const REVEAL=14/FPS, PANEL=18/FPS, MOVE=22/FPS, BAR=18/FPS, TAB=12/FPS, HL=12/FPS, TICKER=70;
 // The camera leaves a scene 0.1 s before its end; the next scene's own motion waits until the camera has landed.
 const LEAVE=0.1, SETTLE=MOVE-LEAVE-0.2;
 const grid=s=>Math.round(s*FPS/6)*6/FPS;
@@ -65,11 +67,14 @@ function fillTicker(){const tr=$('#track');tr.innerHTML=TK;const one=Math.max(1,
  const n=Math.ceil((1920+one)/one)+1;tr.innerHTML=TK.repeat(n);tkW=one;}
 
 // A line of text rises out of its own baseline: it starts one line-height low, clipped at its final bottom edge, so
-// the top of the letters shows first. Panels and pictures (taller than 160px) do not travel; they only fade in.
+// the top of the letters shows first. Panels and pictures (taller than 160px) stand up instead: they start tilted 9°
+// back and 46px low, hinged at their bottom edge, and fade in as they rise (owner, 2026-11-04: 'more three-dimensional').
+const big=e=>(e.__h??(e.__h=e.offsetHeight))>160;
 function revealHTML(e,k){
- if(k>=1){if(e.__r){e.style.clipPath='';e.style.transform='';e.style.opacity='';e.__r=0;}return;}
- e.__r=1; const h=e.__h??(e.__h=e.offsetHeight);
- if(h>160){e.style.opacity=k.toFixed(3);return;}
+ if(k>=1){if(e.__r){e.style.clipPath='';e.style.transform='';e.style.transformOrigin='';e.style.opacity='';e.__r=0;}return;}
+ e.__r=1;
+ if(big(e)){const q=1-k;e.style.opacity=k.toFixed(3);e.style.transformOrigin='50% 100%';
+  e.style.transform=`perspective(1600px) translateY(${(46*q).toFixed(1)}px) rotateX(${(9*q).toFixed(2)}deg)`;return;}
  const p=((1-k)*100).toFixed(2);
  e.style.opacity=k>0?1:0; e.style.transform=`translateY(${p}%)`; e.style.clipPath=`inset(-12px -80px ${p}% -80px)`;
 }
@@ -77,7 +82,7 @@ function revealSVG(e,k){e.style.opacity=k.toFixed(3);e.setAttribute('transform',
 
 function animate(scn,lt){
  for(const e of $$('[data-in],[data-pop]',scn)){const s=grid(+(e.dataset.in||e.dataset.pop).split(',')[0]);
-  if(e instanceof SVGElement) revealSVG(e,REV(prog(lt,s,10/FPS))); else revealHTML(e,REV(prog(lt,s,REVEAL)));}
+  if(e instanceof SVGElement) revealSVG(e,REV(prog(lt,s,10/FPS))); else revealHTML(e,REV(prog(lt,s,big(e)?PANEL:REVEAL)));}
  for(const e of $$('[data-count]',scn)) if(e.textContent!==e.dataset.target) e.textContent=e.dataset.target;
  for(const e of $$('[data-bar]',scn)){const s=grid(+e.dataset.bar.split(',')[0]);e.style.transform=`scaleX(${DRAW(prog(lt,s,BAR))})`;}
  for(const e of $$('[data-vbar]',scn)){const s=grid(+e.dataset.vbar.split(',')[0]);const p=DRAW(prog(lt,s,BAR));
@@ -124,6 +129,10 @@ function seek(t){
   if(SEEK[scn.dataset.type]) SEEK[scn.dataset.type](scn,lt);
   animate(scn,lt);
  });
+ // The set behind the stage follows the camera at a fraction of its travel: far things move less.
+ let cam=0; scenes.forEach((scn,i)=>{if(i>0) cam+=CAM(prog(t,+scn.dataset.t0-LEAVE,MOVE));});
+ document.body.style.setProperty('--wx',(-cam*1920*0.10).toFixed(1)+'px');
+ const floor=$('#bg .floor'); if(floor) floor.style.backgroundPosition=`0 0, ${(-cam*1920*0.25).toFixed(1)}px 0`;
  if(!cur) cur=scenes[t<0?0:last];
  top=clamp(top); $('#top').style.opacity=top.toFixed(3); document.body.classList.toggle('full',top===0);
  tabs(t,cur?cur.dataset.ch:'');

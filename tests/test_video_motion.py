@@ -191,7 +191,7 @@ def test_motion_render_frames_layout_credits_and_artifact_binding(tmp_path):
     assert '검토용 샘플' not in (tmp_path / 'out' / 'upload.txt').read_text()
     assert '📅 2026.09.22 | 미국 증시' in upload and '자료 기준: 2026.09.22 07:30 (한국시간) · 장전' in upload
     # The old 증시story playlist belongs to the 뭐든story channel: no playlist line until the new channel has one.
-    assert '00:00 반도체가 이끌었다' in upload and '#그래서오늘장 #증시 #반도체' in upload and '모아보기' not in upload
+    assert '00:00 반도체가 이끌었다' in upload and '#그래서오늘장 #오늘장 #반도체' in upload and '모아보기' not in upload
     assert 'https://www.cnbc.com/fixture-market-report.html' in upload
     assert not (tmp_path / 'out' / 'page').exists() and not list((tmp_path / 'out').glob('part-*.mp4'))
     assert not (tmp_path / 'out' / 'narration.wav').exists() and (tmp_path / 'out' / 'video.mp4').exists()
@@ -431,7 +431,7 @@ def test_upload_copy_template_and_checks():
     text = result['description']
     assert text.startswith(copy.lead + '\n' + copy.intro + '\n\n📅 2026.09.22 | 미국 증시')
     assert '▶ 그래서, 오늘장 모아보기\nhttps://www.youtube.com/playlist?list=fixture' in text
-    assert text.endswith('그래서, 오늘장 · 매 거래일 아침과 장 마감 뒤에 만나요.\n\n#그래서오늘장 #증시 #반도체')
+    assert text.endswith('그래서, 오늘장 · 매 거래일 아침과 장 마감 뒤에 만나요.\n\n#그래서오늘장 #오늘장 #반도체')
     for broken in (dict(result, title=copy.title), dict(result, description=text.replace('00:10', '00:03')),
                    dict(result, description=text + '\nhttps://example.invalid/guess'), dict(result, tags=result['tags'][:5])):
         with pytest.raises(ValueError):

@@ -408,7 +408,7 @@ def test_the_performance_prompt_asks_for_studio_edits_in_plain_words():
     from quant_company.video.analytics_contracts import performance_prompt
 
     prompt = performance_prompt({"video": {"title": "t"}})
-    for rule in ("changes", "YouTube Studio", "100", "· 오늘의 증시story", "field names", "median of its own kind"):
+    for rule in ("changes", "YouTube Studio", "100", "· <series>", "그래서, 오늘장", "field names", "median of its own kind"):
         assert rule in prompt, rule
 
 

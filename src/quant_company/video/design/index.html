@@ -209,7 +209,8 @@ body::after{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;o
 #cap .box{color:#E4EAF6}
 /* Depth (owner, 2026-11-04: 'more modern, more three-dimensional'): studio with depth. A lit set behind the cards (two coloured key lights, a perspective floor grid that
    recedes toward a horizon glow), glass panels with a light rim and a deep drop, rounded corners, glossy bars, a
-   yellow pill for the lead chip, numerals with a cool sheen. Static: nothing in the backdrop moves. */
+   yellow pill for the lead chip, numerals with a cool sheen. The set moves only with the camera, slower than the
+   stage (engine.js sets --wx and the floor offset). */
 :root{--r:18px;--glass:linear-gradient(155deg,rgba(255,255,255,.13) 0%,rgba(255,255,255,.05) 38%,rgba(255,255,255,.02) 100%),
   linear-gradient(180deg,rgba(22,48,108,.78),rgba(10,26,64,.82));
   --rim:inset 0 1px 0 rgba(255,255,255,.28),inset 0 0 0 1px rgba(255,255,255,.09),inset 0 -1px 0 rgba(0,0,0,.25);
@@ -220,7 +221,7 @@ body::before{background:
   radial-gradient(760px 520px at 96% 8%,rgba(0,196,255,.22),transparent 60%),
   radial-gradient(1500px 420px at 50% 74%,rgba(56,110,230,.30),transparent 70%),
   linear-gradient(180deg,#0B1C4A 0%,#071538 52%,#040B22 100%)}
-body::after{opacity:.35}
+body::after{opacity:.35;background-position:var(--wx,0px) 0,0 0}
 #bg{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
 #bg .floor{position:absolute;left:-40%;right:-40%;top:58%;height:900px;transform-origin:50% 0;
   transform:perspective(520px) rotateX(64deg);
