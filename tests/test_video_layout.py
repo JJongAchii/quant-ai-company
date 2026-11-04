@@ -147,15 +147,17 @@ def test_counter_names_its_own_panel_heading(tmp_path):
     assert [k['text'] for k in found['diesel']['kicker']] == ['◆ 다르게 볼 점']
 
 
-def test_summary_icons_take_named_sizes_and_stats_show_their_direction(tmp_path):
+# Template v5 (2026-11-04) draws no pictograms: a summary item is a badge and a caption, and the icon name a script writes
+# is ignored. The index numbers stay uncovered, captions and badges stay inside their cards.
+def test_summary_items_stay_in_their_cards_and_stats_show_their_direction(tmp_path):
     plan = plan_with(scene('summary', '요약', 'summary3', SUMMARY))
     covered = r"""() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block');
       return [...scn.querySelectorAll('.spot .num')].map(n=>{const r=n.getBoundingClientRect();
         const top=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2); return n.contains(top);});}"""
     found = measure(tmp_path, plan, {'icon': '.spot svg', 'cap': '.spot-item .cap', 'badge': '.badge', 'card': '.paper',
                                      'value': '.stat .v'}, probe=covered)['summary']
-    assert len(found['icon']) == 6 and all(i['h'] <= 120 for i in found['icon']), [i['h'] for i in found['icon']]
-    assert all(cap['t'] >= icon['b'] - 1 for icon, cap in zip(found['icon'], found['cap'], strict=True))
+    assert not found['icon'] and len(found['cap']) == 6, (found['icon'], found['cap'])
+    assert all(any(inside(c, card) for card in found['card']) for c in found['cap'])
     assert all(found['probe']) and len(found['probe']) == 3
     assert all(any(inside(b, card) for card in found['card']) for b in found['badge'])
     assert [v['text'] for v in found['value']][:2] == ['▼ 5.46%', '▼ 1.43%']
@@ -183,7 +185,7 @@ def test_long_values_shrink_to_fit_their_block(tmp_path):
     crowded = {**DIESEL, 'blocks': [*DIESEL['blocks'], {'x': 900, 'label': '정유 마진', 'value': '배럴당 35달러 안팎까지',
                                                         'sub': '전년 대비 크게 확대'}]}
     plan = plan_with(scene('diesel', '핵심 이슈', 'counter', crowded))
-    found = measure(tmp_path, plan, {'panel': '.glass', 'block': '[data-block]', 'fit': '[data-fit]'})['diesel']
+    found = measure(tmp_path, plan, {'panel': '.glass', 'block': '[data-block]', 'fit': '[data-block] [data-fit]'})['diesel']
     assert not [q for q in found['qa'] if q[0] in {'outside-stage', 'overlap'}], found['qa']
     assert len(found['fit']) == 3 and all(f['sw'] <= f['cw'] + 1 for f in found['fit'])
     assert all(inside(b, found['panel'][0]) for b in found['block'])
@@ -488,7 +490,7 @@ def test_summary_stats_line_up_across_cards_when_one_title_takes_two_lines(tmp_p
     assert len({round(c['h']) for c in found['card']}) == 1, [c['h'] for c in found['card']]
 
 
-@pytest.mark.parametrize('direction,colour', [('up', '#FF5C6C'), ('dn', '#5EA0FF'), (None, '#FDC749')])
+@pytest.mark.parametrize('direction,colour', [('up', '#FF5C66'), ('dn', '#5E9BFF'), (None, '#FFD43B')])
 def test_the_compare_arrow_takes_the_colour_of_its_direction(tmp_path, direction, colour):
     data = {**KOFIX, 'arrow_dir': direction} if direction else KOFIX
     found = measure(tmp_path, plan_with(scene('kofix', '함께 볼 이슈', 'compare', data)), {}, probe=ARROW)['kofix']
@@ -533,8 +535,9 @@ FLOW = r"""() => {const scn=[...document.querySelectorAll('.scene')].find(s=>s.s
   const text=n=>{const w=document.createTreeWalker(n,NodeFilter.SHOW_TEXT); let b=0,x;
     while((x=w.nextNode())){if(!x.textContent.trim()) continue; const rg=document.createRange(); rg.selectNodeContents(x);
       b=Math.max(b,rg.getBoundingClientRect().bottom);} return b;};
+  const foot=scn.querySelector('.glass');
   return {nodes:[...scn.querySelectorAll('.paper')].map(n=>({...R(n),text:text(n)})),
-          arrows:[...scn.querySelectorAll('path[marker-end]')].map(R), foot:R(scn.querySelector('.glass'))};}"""
+          arrows:[...scn.querySelectorAll('path[marker-end]')].map(R), foot:foot&&R(foot)};}"""
 
 
 def test_flow_cards_grow_to_hold_a_three_line_note(tmp_path):

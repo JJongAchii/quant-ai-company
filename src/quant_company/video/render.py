@@ -131,7 +131,7 @@ def document(heading, lines, cutoff, *, thumbnail=False):
             ".body{border-left:6px solid #b17535;padding-left:3vw}"
             "p{font-size:4.3vh;line-height:1.55;margin:2vh 0;word-break:keep-all;overflow-wrap:anywhere}"
             "p:first-child{font-weight:700;color:#854f20}footer{margin-top:auto;font-size:2.2vh;color:#57635f}"
-            "</style><div class='page'><div class='brand'>뭐든story · 아침 시장 브리핑</div>"
+            "</style><div class='page'><div class='brand'>그래서, 오늘장 · 아침 시장 브리핑</div>"
             f"<h1>{escape(heading)}</h1><div class='body'>{content}</div>"
             f"<footer>자료 기준 {escape(str(cutoff))}</footer></div></html>")
 

@@ -76,6 +76,12 @@ async def test_runway_web_workspace_credit_and_task_contract():
     assert calls[-1][1]['model'] == 'eleven_v4'
     with pytest.raises(ValueError):
         await runway.submit('가' * 2501, 'Vincent', 'eleven_v4')  # MCP schema: eleven_v4 takes at most 2500 characters
+    assert 'voiceId' not in calls[-1][1] and calls[-1][1]['voice'] == 'Vincent'
+    # A library voice (owner, 2026-11-04: a younger voice than Vincent) goes as voiceId, never alongside a preset.
+    assert (await runway.submit('합성 음성 테스트', 'Library', 'eleven_v4', voice_id='lib123'))['taskId'] == 'known-task'
+    assert calls[-1][1]['voiceId'] == 'lib123' and 'voice' not in calls[-1][1]
+    with pytest.raises(ValueError):
+        await runway.submit('합성 음성 테스트', 'Library', 'eleven_multilingual_v2', voice_id='lib123')
 
 
 @pytest.mark.parametrize('url', ['http://www.googleapis.com/upload/youtube/v3/videos',
@@ -186,7 +192,17 @@ def test_video_requires_claude_script_model():
         Settings(_env_file=None, database_url='postgresql://unused', briefing_enabled=True, briefing_publish_enabled=True,
                  briefing_channel_id='C1', briefing_owner_user='U1', slack_allowed_users=['U1'],
                  video_enabled=True, video_runway_workspace_id=1, video_model='gpt-6-astra')
-    assert Settings(_env_file=None).video_voice == 'Vincent'
+    assert Settings(_env_file=None).video_voice == 'Vincent' and Settings(_env_file=None).video_voice_id == ''
+    from quant_company.video.store import voice_policy
+
+    # A library voice takes eleven_v4 even on a host that still runs the preset on multilingual v2; a preset keeps it.
+    old = Settings(_env_file=None, video_speech_model='eleven_multilingual_v2')
+    assert voice_policy(old) == {'voice': 'Vincent', 'speech_model': 'eleven_multilingual_v2'}
+    anna = Settings(_env_file=None, video_voice='Anna Kim', video_voice_id='uyVNoMrnUku1dZyVEXwD',
+                    video_speech_model='eleven_multilingual_v2')
+    assert voice_policy(anna) == {'voice': 'Anna Kim', 'voice_id': 'uyVNoMrnUku1dZyVEXwD', 'speech_model': 'eleven_v4'}
+    with pytest.raises(ValueError):
+        Settings(_env_file=None, video_voice_id='a b')
     assert Settings(_env_file=None).video_model == 'claude-opus-5-5'
     assert Settings(_env_file=None).video_reasoning_effort == 'xhigh'
     assert Settings(_env_file=None).video_review_effort == 'max'

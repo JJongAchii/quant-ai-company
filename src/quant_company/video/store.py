@@ -19,6 +19,15 @@ LOG = logging.getLogger(__name__)
 ENQUEUE_FAILED = "video_enqueue_failed"
 
 
+def voice_policy(settings):
+    """The voice fields frozen into a new job. A Runway library voice (VIDEO_VOICE_ID) exists only in eleven_v4, so it
+    takes that model even where the host still sets VIDEO_SPEECH_MODEL=eleven_multilingual_v2 for the preset voice;
+    otherwise every take of the job would be refused (2026-11-04, the switch to Anna Kim)."""
+    if settings.video_voice_id:
+        return {"voice": settings.video_voice, "voice_id": settings.video_voice_id, "speech_model": "eleven_v4"}
+    return {"voice": settings.video_voice, "speech_model": settings.video_speech_model}
+
+
 def _clock(value, default):
     hour, minute = map(int, (value or default).split(":"))
     return time(hour, minute)
@@ -195,8 +204,7 @@ class VideoStore:
         # Edition IDs differ per kind, so the morning and closing videos of one day never share a job.
         identity = stable("video:" + str(edition["id"]) + ":1")
         target, deadline = edition_times(edition, self.settings)
-        policy = {"version": POLICY_VERSION, "voice": self.settings.video_voice,
-                  "speech_model": self.settings.video_speech_model, "model": self.settings.video_model,
+        policy = {"version": POLICY_VERSION, **voice_policy(self.settings), "model": self.settings.video_model,
                   "effort": self.settings.video_reasoning_effort, "review_effort": self.settings.video_review_effort,
                   "workspace_id": self.settings.video_runway_workspace_id,
                   "youtube_channel": self.settings.video_youtube_channel_id, "template": self.settings.video_template,

@@ -1,4 +1,4 @@
-"""증시story upload copy (docs/DAILY_BRIEF_DESIGN_SPEC.md §15): fixed title prefix, description template,
+"""Briefing upload copy (docs/DAILY_BRIEF_DESIGN_SPEC.md §15): fixed title prefix, description template,
 chapters from the rendered timeline, references from the delivered brief body's source list, bounded tags."""
 
 import re
@@ -8,10 +8,12 @@ from pydantic import Field, field_validator
 
 from ..contracts import StrictModel
 
-# Owner decision 2026-10-10: the series name moves to the end of the title.
-#   PM: '<key number/stock + question or next-session point> | <M월 D일> 마감 · 오늘의 증시story'
-#   AM: '<one overnight number + one of today's events> | <M월 D일> 아침 · 오늘의 증시story'
-SERIES = '오늘의 증시story'
+# Owner decision 2026-10-10: the series name moves to the end of the title. Since 2026-11-04 the briefings have their
+# own channel, '그래서, 오늘장' (until then '오늘의 증시story' on 뭐든story).
+#   PM: '<key number/stock + question or next-session point> | <M월 D일> 마감 · 그래서, 오늘장'
+#   AM: '<one overnight number + one of today's events> | <M월 D일> 아침 · 그래서, 오늘장'
+SERIES = '그래서, 오늘장'
+OLD_SERIES = '오늘의 증시story'
 EDITION_WORD = {'am': '아침', 'close': '마감'}
 SUFFIX_MAX = len(' | 12월 31일 마감 · ' + SERIES)
 SUFFIX = re.compile(r' \| (\d{1,2})월 (\d{1,2})일 (아침|마감) · ' + re.escape(SERIES) + '$')
@@ -20,16 +22,16 @@ INSTRUCTION = re.compile(r'매수하세요|매도하세요|사세요|파세요|�
 CLOSING = ('──────────\n\n'
            '오늘 시장에 무슨 일이 있었는지,\n'
            '어떤 소식이 주가를 움직였는지.\n'
-           '증시story에서 그 앞뒤 이야기를 함께 짚어봅니다.\n\n'
+           '그래서, 오늘장에서 그 앞뒤 이야기를 함께 짚어봅니다.\n\n'
            '궁금한 시장 이야기나 다음에 다뤘으면 하는 주제가 있다면 댓글로 남겨주세요.')
-SIGNATURE = '세상의 뭐든, 이야기로 만나다. 뭐든story.'
+SIGNATURE = '그래서, 오늘장 · 매 거래일 아침과 장 마감 뒤에 만나요.'
 # The subscriber report mail signup (owner, 2026-10-20): two lines on top of the description and a last line under the
 # pinned comment, added by the renderer after the copy checks (the form is no brief reference, so check() rejects it).
 SIGNUP_URL = 'https://forms.gle/JffyKEoKmSCNFKsJ8'
 SIGNUP_LEAD = f'📩 구독자 전용 · 매일 아침·마감 증시 리포트를 메일로 받아보세요\n👉 {SIGNUP_URL}\n\n'
 SIGNUP_COMMENT = f'📩 구독자 전용 매일 증시 리포트 메일 신청: {SIGNUP_URL}'
-BASE_TAGS = ('#증시story', '#뭐든story')
-FIXED_TAGS = ('증시story', '뭐든story')
+BASE_TAGS = ('#그래서오늘장', '#오늘장')
+FIXED_TAGS = ('그래서 오늘장', '그래서오늘장')
 TIMING = {'am': '장전', 'intraday': '장중', 'close': '마감'}
 # Production/tool wording never appears on screen, in narration or in the upload copy (owner rule). Market topics
 # such as "AI 반도체" stay allowed; only phrases about how the episode was made are rejected.
@@ -51,7 +53,7 @@ class UploadCopy(StrictModel):
     @field_validator('title')
     @classmethod
     def hook(cls, value):
-        if '|' in value or SERIES in value or '증시story' in value:
+        if '|' in value or SERIES in value or OLD_SERIES in value:
             raise ValueError('Title is the hook only; the service appends the date, edition and series name')
         return value
 
@@ -91,7 +93,7 @@ def compose(copy, day, asof, edition, chapters, refs, playlist_url='', strict=Tr
         lines += ['', '📚 참고 자료'] + refs
     lines += ['', CLOSING, '']
     if playlist_url:
-        lines += ['▶ 증시story 모아보기', playlist_url, '']
+        lines += [f'▶ {SERIES} 모아보기', playlist_url, '']
     lines += [SIGNATURE, '', ' '.join(BASE_TAGS + tuple(copy.hashtags))]
     title = f'{copy.title} | {day.month}월 {day.day}일 {EDITION_WORD.get(edition, "아침")} · {SERIES}'
     tags = list(dict.fromkeys(copy.tags)) + list(FIXED_TAGS)
@@ -124,8 +126,8 @@ def check(result, refs_allowed=frozenset(), playlist_url=''):
     seconds = [int(m) * 60 + int(s) for m, s in times]
     if len(seconds) < 3 or seconds[0] != 0 or any(b - a < 10 for a, b in zip(seconds, seconds[1:], strict=False)):
         raise ValueError('Chapters start at 00:00, list at least three and are at least 10 seconds apart')
-    if not re.search(r'^#증시story #뭐든story( #[0-9A-Za-z가-힣]{1,20}){1,2}$', text, flags=re.M):
-        raise ValueError('Hashtag line must be #증시story #뭐든story plus one or two topic tags')
+    if not re.search('^' + re.escape(' '.join(BASE_TAGS)) + r'( #[0-9A-Za-z가-힣]{1,20}){1,2}$', text, flags=re.M):
+        raise ValueError(f"Hashtag line must be {' '.join(BASE_TAGS)} plus one or two topic tags")
     urls = set(re.findall(r'https?://\S+', text)) - ({playlist_url} if playlist_url else set())
     if not urls <= set(refs_allowed):
         raise ValueError('Reference URL is not from the delivered brief body')

@@ -43,7 +43,7 @@ from .motion import CHROMIUM_ARGS, FPS, captions, word_times
 from .render import RenderInProgress, checksum, music_track, probe, quality_probe, run, spoken
 from .render import mix_music as mix
 from .speech_process import SpeechProcess
-from .upload import INSTRUCTION
+from .upload import BASE_TAGS, INSTRUCTION, SERIES
 
 WIDTH, HEIGHT = 1080, 1920
 # The narration voice reads ~6.7 characters per second (episode.py), plus 0.5 s of lead and tail per scene. The hook is
@@ -248,7 +248,7 @@ class ShortsPlan(StrictModel):
         if any(re.search(r'[+-]\d', x) for x in spoken_lines):
             raise ValueError('Read signs as words in narration')
         # The series suffix would attach the Shorts to the episode in the performance analysis (analytics_store._match).
-        if '|' in self.title or '증시story' in self.title:
+        if '|' in self.title or SERIES in self.title or '증시story' in self.title:
             raise ValueError('The Shorts title carries no series name')
         return self
 
@@ -578,7 +578,7 @@ def upload_text(plan, job, credits):
     sources = ('[사진 출처]\n' + '\n'.join(credits) + '\n\n') if credits else ''
     return (f"[제목]\n{plan.title}\n\n[설명]\n{plan.description}\n"
             "📩 구독자 전용 · 매일 아침·마감 증시 리포트 메일 신청은 채널 프로필 링크에서\n\n"
-            f"본편: {int(day[5:7])}월 {int(day[8:10])}일 {edition} 브리핑 · 오늘의 증시story\n\n{sources}#Shorts #증시story #뭐든story\n\n"
+            f"본편: {int(day[5:7])}월 {int(day[8:10])}일 {edition} 브리핑 · {SERIES}\n\n{sources}#Shorts {' '.join(BASE_TAGS)}\n\n"
             f"[고정 댓글]\n{plan.hook.question} 여러분은 어떻게 보세요? 댓글로 남겨 주세요.\n\n"
             "[업로드 메모]\nYouTube Studio에서 이 Shorts의 '관련 동영상'을 같은 날 본편으로 지정해 주세요. "
             "[고정 댓글]을 달고 고정해 주세요.\n")
@@ -644,7 +644,7 @@ class ShortsRenderer:
         shutil.copytree(files('quant_company.video').joinpath('shorts_design'), page, dirs_exist_ok=True)
         design = files('quant_company.video').joinpath('design')
         shutil.copytree(design.joinpath('fonts'), page / 'fonts', dirs_exist_ok=True)
-        shutil.copy2(design.joinpath('logo_mark.png'), page / 'logo_mark.png')
+        shutil.copy2(design.joinpath('brand_mark.svg'), page / 'brand_mark.svg')
         (page / 'img').mkdir(exist_ok=True)
         return page
 

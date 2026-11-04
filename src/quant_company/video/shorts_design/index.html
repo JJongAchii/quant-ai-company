@@ -92,11 +92,57 @@ em{font-style:normal;color:var(--gold)}
 /* Captions: the spoken script, above YouTube's bottom controls. */
 #cap{position:absolute;left:70px;width:870px;top:1340px;height:160px;display:flex;align-items:center;justify-content:center}
 #capbox{max-width:870px;padding:14px 28px;border-radius:22px;background:rgba(0,12,34,.86);font-size:44px;font-weight:700;line-height:1.36;text-align:center;opacity:0;text-wrap:balance;box-shadow:0 8px 30px rgba(0,8,24,.35)}
+/* 그래서, 오늘장 (2026-11-04): the episode's studio look in 9:16. Studio navy, glass panels with a lit rim and a deep
+   shadow, yellow as the only accent (red and blue only for a rise or a fall), Barlow Condensed numerals, and a floor grid
+   that recedes toward a horizon glow under the text. Pictures, their placement and the safe area are unchanged. */
+@font-face{font-family:'BarlowC';font-weight:700;src:url(fonts/BarlowCondensed-Bold.woff2) format('woff2');}
+@font-face{font-family:'BarlowC';font-weight:800;src:url(fonts/BarlowCondensed-ExtraBold.woff2) format('woff2');}
+:root{--navy-900:#040B22;--navy:#0A1A40;--gold:#FFD43B;--cream:#EEF2FA;--muted:#AEBBDB;--up:#FF5C66;--dn:#5E9BFF;--r:28px;
+ --glass:linear-gradient(155deg,rgba(255,255,255,.14) 0%,rgba(255,255,255,.05) 38%,rgba(255,255,255,.02) 100%),
+  linear-gradient(180deg,rgba(20,44,100,.88),rgba(8,20,52,.92));
+ --rim:inset 0 1px 0 rgba(255,255,255,.28),inset 0 0 0 1px rgba(255,255,255,.10),inset 0 -1px 0 rgba(0,0,0,.25);
+ --drop:0 28px 60px -18px rgba(0,4,16,.8),0 8px 18px rgba(0,4,16,.4);
+ --pill:linear-gradient(180deg,#FFE070,#FFC928);--pillglow:0 6px 18px rgba(255,200,40,.32)}
+.bg .shade{background:linear-gradient(180deg,rgba(4,11,34,.7) 0%,rgba(4,11,34,.1) 13%,rgba(4,11,34,.12) 22%,rgba(4,11,34,.62) 32%,rgba(4,11,34,.78) 42%,rgba(4,11,34,.88) 56%,rgba(4,11,34,.94) 74%,#040B22 100%)}
+.bg.blur .shade{background:linear-gradient(180deg,rgba(4,11,34,.6) 0%,rgba(4,11,34,.2) 14%,rgba(4,11,34,.4) 24%,rgba(4,11,34,.68) 34%,rgba(4,11,34,.82) 50%,rgba(4,11,34,.9) 70%,rgba(4,11,34,.94) 86%,#040B22 100%)}
+.bg.nophoto{background:radial-gradient(900px 760px at 14% 6%,rgba(64,128,255,.55),transparent 62%),
+  radial-gradient(700px 640px at 96% 24%,rgba(0,196,255,.20),transparent 60%),linear-gradient(180deg,#0B1C4A 0%,#071538 55%,#040B22 100%)}
+.bg.nophoto::after{background-image:repeating-linear-gradient(118deg,rgba(255,255,255,.03) 0 1px,transparent 1px 14px);background-size:auto}
+#floor{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+#floor .plane{position:absolute;left:-50%;right:-50%;top:1210px;height:1200px;transform-origin:50% 0;transform:perspective(700px) rotateX(64deg);
+  background:linear-gradient(rgba(120,170,255,.18) 2px,transparent 2px) 0 0/100% 84px,linear-gradient(90deg,rgba(120,170,255,.18) 2px,transparent 2px) 0 0/84px 100%;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 16%,rgba(0,0,0,.5) 55%,transparent 85%)}
+#floor .horizon{position:absolute;left:0;right:0;top:1060px;height:300px;background:radial-gradient(60% 50% at 50% 50%,rgba(90,150,255,.22),transparent 70%)}
+/* header: a yellow pill for the edition, a glowing progress line */
+#badge{background:var(--pill);color:#13130F;border-radius:999px;box-shadow:var(--pillglow)}
+#segs div{background:rgba(255,255,255,.22)}
+#segs i{background:var(--gold);box-shadow:0 0 10px rgba(255,212,59,.7)}
+#qbar{background:var(--glass);border-left:0;border-radius:999px;padding:7px 22px;box-shadow:var(--rim),0 8px 24px rgba(0,4,16,.45)}
+.credit{background:rgba(5,14,40,.78);border:1px solid rgba(255,255,255,.18);border-radius:12px}
+/* glass panels */
+.row,.card,.card.brief,.sigs,.mailrow,.pill{background:var(--glass);border:0;box-shadow:var(--rim),var(--drop)}
+.row,.card,.sigs{border-radius:var(--r)}
+.pill,.mailrow{border-radius:999px}
+.card{position:relative}
+.card::before{content:'';position:absolute;left:0;top:28px;bottom:28px;width:8px;border-radius:0 4px 4px 0;background:var(--gold);box-shadow:0 0 16px rgba(255,212,59,.6)}
+.sig+.sig{border-top-color:rgba(255,255,255,.12)}
+.kicker{background:var(--pill);border:0;color:#13130F;border-radius:999px;box-shadow:var(--pillglow)}
+.row b,.pill b{background:var(--pill);color:#13130F;font-family:'BarlowC','Pretendard',sans-serif;box-shadow:var(--pillglow)}
+/* numerals: Barlow Condensed, a soft glow in their colour */
+.num .v{font-family:'BarlowC','Pretendard',sans-serif;font-size:11em;letter-spacing:-.01em;text-shadow:0 0 30px rgba(255,212,59,.35),0 4px 20px rgba(0,8,24,.6)}
+.num .v.up{text-shadow:0 0 30px rgba(255,92,102,.3),0 4px 20px rgba(0,8,24,.6)}
+.num .v.dn{text-shadow:0 0 30px rgba(94,155,255,.3),0 4px 20px rgba(0,8,24,.6)}
+.tag{border-radius:14px}
+.tag.k0,.tag.k2{background:rgba(255,255,255,.10);color:#E3EAF8}
+.tag.k1{background:rgba(255,212,59,.16);color:#FFE38A}
+.play{background:var(--pill);color:#13130F;border-radius:999px;box-shadow:0 12px 36px rgba(255,200,40,.35)}
+#capbox{background:linear-gradient(180deg,rgba(14,30,72,.92),rgba(5,12,32,.94));border-radius:24px;box-shadow:var(--rim),0 10px 30px rgba(0,4,16,.45)}
 </style>
 </head><body>
 <div id="bgs"></div>
+<div id="floor" aria-hidden="true"><i class="horizon"></i><i class="plane"></i></div>
 <div id="stage"></div>
-<div id="top"><img src="logo_mark.png" alt="">뭐든story<span id="badge"></span></div>
+<div id="top"><img src="brand_mark.svg" alt="">그래서, 오늘장<span id="badge"></span></div>
 <div id="segs"></div>
 <div id="qbar"></div>
 <div id="cap"><div id="capbox"></div></div>

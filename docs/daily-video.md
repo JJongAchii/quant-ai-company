@@ -2,7 +2,7 @@
 
 뭐든story의 시장 브리핑 영상은 **Slack에 발송된 브리핑 본문**(daily-brief edition의 rendered 본문)만으로 만든다.
 기사 원문·수집 묶음·초안은 대본 작성기와 검사기에 전달하지 않는다. AM·PM 회차가 커밋·발송되면 서버의 video worker가
-대본·장면·모션 렌더·Vincent 내레이션·단어 단위 자막·썸네일·업로드 문안을 만들고, 기본 설정에서는 **완성 파일을
+대본·장면·모션 렌더·Runway 내레이션·단어 단위 자막·썸네일·업로드 문안을 만들고, 기본 설정에서는 **완성 파일을
 그 회차 brief 스레드로 전달**한다. 소유자가 전체 시청 후 YouTube에 직접 올린다. YouTube API 업로드는 구현돼 있지만
 `VIDEO_UPLOAD_ENABLED=false`(기본)로 꺼져 있다(Google OAuth 앱이 Testing·미검증 상태라 업로드가 비공개로 잠긴다).
 [daily video 제작 기준](DAILY_VIDEO_PRODUCTION_STANDARD.md)과 [디자인 명세](DAILY_BRIEF_DESIGN_SPEC.md)를 따른다.
@@ -14,7 +14,7 @@ flowchart LR
     S --> P[본문 줄 번호로 대본·장면 작성 · 검토]
     P --> C[Runway 계정·잔액·월/회차 한도 확인]
     C -->|불가| X[중단 · 스레드 알림 · 유료 전환 없음]
-    C --> V[Runway Vincent 장면별 음성]
+    C --> V[Runway 장면별 음성]
     V --> R[1080p 모션 렌더 · 자막 · 썸네일 · upload.txt · 기술 검사]
     R -->|VIDEO_UPLOAD_ENABLED=false| F[brief 스레드에 MP4·PNG·SRT·upload.txt 전달]
     R -->|true| Y[YouTube 비공개 업로드 → Slack 공개 승인]
@@ -177,7 +177,7 @@ flowchart LR
 - 렌더는 작업 서버에서 `shorts_design/` 템플릿으로 한다. Fargate 렌더 이미지에 들어가지 않으므로 Shorts 변경은 렌더 이미지
   교체 없이 배포된다.
 - 같은 스레드에 쇼츠 영상(MP4)·자막(SRT)·업로드 문안을 올리고, 업로드가 필요한 메시지라 소유자를 태그한다.
-- 제목에는 시리즈 이름("| …오늘의 증시story")을 붙이지 않는다. 그래서 본편 성과 분석에 섞이지 않는다.
+- 제목에는 시리즈 이름("| …그래서, 오늘장", 예전 "오늘의 증시story")을 붙이지 않는다. 그래서 본편 성과 분석에 섞이지 않는다.
 - 업로드 뒤 Studio에서 '관련 동영상'을 같은 날 본편으로 지정한다.
 
 ## 비용과 계정
@@ -195,7 +195,7 @@ Runway 음성은 OAuth로 `https://mcp.runwayml.com/mcp`에 연결한다.
 따르면 이 MCP는 웹 계정 크레딧을 사용한다. `dev.runwayml.com/mcp`와 직접 유료 API로 전환하지 않는다.
 기존 ChatGPT 앱 연결 토큰이 서버로 자동 이관되지는 않으므로 서버에서 처음 한 번 로그인한다.
 
-음성 모델은 `eleven_v4`(`VIDEO_SPEECH_MODEL`), 기본 voice는 Runway preset `Vincent`로, 손 제작본과 같다.
+음성 모델은 `eleven_v4`(`VIDEO_SPEECH_MODEL`), 목소리는 Runway 음성 라이브러리의 Anna Kim(`VIDEO_VOICE_ID`, 2026-11-04 소유자 선택)이다. 그 전에는 preset `Vincent`였다.
 2026-10-12 서버에서 MCP `generate_speech`의 `tools/list` 스키마를 조회해 `eleven_v3`·`eleven_multilingual_v2`·`eleven_v4`
 선택지를 확인했다. `eleven_v4`는 유료 플랜이 필요하고 호출당 최대 2,500자다(장면 내레이션은 최대 600자). 현재 확인한 MCP 조건인
 문자 50개당 1 credit을 **장면별 올림**으로 예약한다. 실제 한국어 발음·서비스 조건은 첫 비공개
@@ -336,13 +336,14 @@ docker compose -f deploy/compose.yaml -f deploy/video.compose.yaml exec video-wo
 | `VIDEO_REASONING_EFFORT` | xhigh | 대본 작성·화면 카드 수정의 추론 강도(high/xhigh/max). 새 작업의 policy에 고정 |
 | `VIDEO_REVIEW_EFFORT` | max | 대본 검토·최종 화면 검수·채널 전략 리포트의 추론 강도. 새 작업의 policy에 고정(이전 작업은 단일 강도 유지) |
 | `VIDEO_MODEL_RUNTIME_URL` | http://claude-runtime:8080 | 기존 Claude 실행기 내부 주소 |
-| `VIDEO_VOICE` | Vincent | Runway preset voice; 첫 실제 샘플에서 한국어 발음 확인 |
+| `VIDEO_VOICE` | Anna Kim (배포 기본값) | `VIDEO_VOICE_ID`가 있으면 접수 기록의 이름표로만 쓴다. ID가 비어 있으면 Runway preset 이름(예: Vincent)으로 만든다 |
+| `VIDEO_VOICE_ID` | uyVNoMrnUku1dZyVEXwD (배포 기본값) | Runway 음성 라이브러리 ID(search_voices, eleven_v4 전용). 소유자 선택 2026-11-04: Anna Kim(젊은 여성, 차분하고 또렷함, 서울). preset 대신 이 목소리로 만들고 새 작업의 policy에 고정한다. 바꾸면 고정 문구(BRAND)도 새 목소리로 다시 녹음된다 |
 | `VIDEO_ALIGNMENT_MODEL` | small | 실제 음성 검증·자막 시점용 로컬 모델/경로 |
 | `VIDEO_TEMPLATE` | motion-v2 | 카드·모션 고정 틀. text-v1은 이전 글 화면 |
 | `VIDEO_RENDER_WORKERS` | 2 | 프레임 캡처 프로세스 수. 8GB 서버 2(아침 06:50 목표), 작은 서버 1 |
 | `VIDEO_AM_PUBLISH_DST` / `VIDEO_AM_PUBLISH_STD` / `VIDEO_PM_PUBLISH` | 07:00 / 07:50 / 18:00 | 유튜브 공개 목표(KST). 아침은 뉴욕 서머타임 여부로 고른다 |
 | `VIDEO_PUBLISH_LEAD_MINUTES` | 10 | 공개 몇 분 전까지 파일을 스레드에 올릴지. 작업은 본문 발송 즉시 시작하고, 늦어도 완성되면 바로 올리며 늦은 시간을 한 줄 적는다. 지연돼도 제작은 계속한다 |
-| `VIDEO_PLAYLIST_URL` | 증시story 재생목록 | 설명란 "증시story 모아보기" 주소 |
+| `VIDEO_PLAYLIST_URL` | 빈 값 | 설명란 "그래서, 오늘장 모아보기" 주소. 예전 증시story 재생목록은 뭐든story 채널 것이라 새 채널 재생목록을 만들면 넣는다 |
 | `VIDEO_RETENTION_DAYS` | 14 | 작업 종료 뒤 최종 파일 보관 일수 |
 | `VIDEO_MIN_FREE_GB` | 10 | 이보다 여유가 적으면 새 회차를 시작하지 않음 |
 | `VIDEO_ANALYTICS_ENABLED` | false | 공개 업로드의 성과 분석([성과 분석](#성과-분석)). YouTube 채널 ID·브리핑 소유자·전용 성과 채널이 필요 |
@@ -518,14 +519,14 @@ flowchart LR
 - 수집: video worker 프로세스 안의 별도 루프(`video-analytics` 레인)가 30분마다 돈다.
   YouTube 토큰은 이 컨테이너(media-auth)에만 있다. 외부 쓰기는 Reporting API 작업 생성뿐이며, 보고서 종류마다
   한 번 만들고 영수증(`video_report_jobs`)을 남긴다. 나머지는 모두 읽기다(월요일 벤치마크 읽기 포함).
-- 측정 대상: 제목에 `오늘의 증시story`가 들어간 본편과 그 회차의 Shorts다.
+- 측정 대상: 제목에 `그래서, 오늘장`(2026-11-04 전에는 `오늘의 증시story`)이 들어간 본편과 그 회차의 Shorts다.
   - Shorts 제목에는 시리즈 이름이 없다. 컷이 만든 제목과 같은 업로드를 그 컷에 연결한다(`matched_by='shorts_title'`,
     `edition_kind='shorts'`). 소유자가 붙인 해시태그(`#Shorts`)는 빼고 비교한다.
   - 업로드보다 먼저 만들어졌고 아직 다른 업로드가 연결되지 않은 컷만 고른다. 아침·마감 컷 제목이 같으면 최근 컷이다.
   - Shorts는 본편 작업의 `job_id`를 함께 쓰고, 장면별 이탈은 Shorts manifest의 장면으로 잰다. 한 작업에 업로드가
     여럿일 수 있다.
   - 채널의 다른 시리즈(`[역사story]` 등)는 업로드 목록에만 남고 측정·카드·리포트에서 빠진다. 시리즈 이름을 지우고
-    올린 회차는 `link`로 작업에 연결하면 측정한다. 회차는 지금 형식(`… | 10월 13일 마감 · 오늘의 증시story`)과
+    올린 회차는 `link`로 작업에 연결하면 측정한다. 회차는 지금 형식(`… | 11월 4일 마감 · 그래서, 오늘장`), 11월 3일까지 쓰던 `· 오늘의 증시story` 꼬리와
     10월 12일까지 쓰던 형식(`[오늘의 증시story] … | 10월 8일 마감 브리핑`)을 모두 읽는다.
 - 노출수·CTR은 Reporting API에만 있다. 작업을 만든 뒤 약 이틀 안에 과거 30일 보고서가 채워지고, 매일 약 2일
   늦게 새 보고서가 나온다. 과거분은 최근 날짜부터 온다(2026-10-14 첫 보고서는 이틀 전인 10월 12일치였다).
@@ -547,7 +548,7 @@ flowchart LR
     중앙값이고, 모자라면 "기준 부족"이다. 진단은 Claude(`video_performance_v1`, 실제 썸네일 첨부,
     `VIDEO_REASONING_EFFORT`)가 한다. Shorts 카드는 Shorts 대본(훅, 이슈)을 본다.
   - 바꿔볼 것: Studio에 그대로 붙여 넣을 제목, 설명 첫 줄, 태그 최대 3개와 근거 한 줄이다. 새 제목은 100자 이내이고
-    그 회차의 꼬리표(`| M월 D일 아침|마감 · 오늘의 증시story`)로 끝나야 한다. 다른 회차로 읽히는 제목은 서비스가 버린다.
+    그 회차의 꼬리표(`| M월 D일 아침|마감 · 그래서, 오늘장`)로 끝나야 한다. 다른 회차로 읽히는 제목은 서비스가 버린다.
   - 자세한 진단(비교 구간, 유입 상위, 검색어 상위, 가장 가파른 장면, 강점·약점·가설)은 카드의 Slack 수신이 확인된
     뒤 그 스레드의 첫 답글로 붙는다. 카드를 보낸 tick 다음 tick은 2분 뒤에 돈다.
   - 진단이 실패하면 수치와 유입·검색어만으로 올리고 스레드 답글은 없다. 7일 갱신은 같은 스레드에 수치로 단다.
