@@ -193,6 +193,14 @@ def test_video_requires_claude_script_model():
                  briefing_channel_id='C1', briefing_owner_user='U1', slack_allowed_users=['U1'],
                  video_enabled=True, video_runway_workspace_id=1, video_model='gpt-6-astra')
     assert Settings(_env_file=None).video_voice == 'Vincent' and Settings(_env_file=None).video_voice_id == ''
+    from quant_company.video.store import voice_policy
+
+    # A library voice takes eleven_v4 even on a host that still runs the preset on multilingual v2; a preset keeps it.
+    old = Settings(_env_file=None, video_speech_model='eleven_multilingual_v2')
+    assert voice_policy(old) == {'voice': 'Vincent', 'speech_model': 'eleven_multilingual_v2'}
+    anna = Settings(_env_file=None, video_voice='Anna Kim', video_voice_id='uyVNoMrnUku1dZyVEXwD',
+                    video_speech_model='eleven_multilingual_v2')
+    assert voice_policy(anna) == {'voice': 'Anna Kim', 'voice_id': 'uyVNoMrnUku1dZyVEXwD', 'speech_model': 'eleven_v4'}
     with pytest.raises(ValueError):
         Settings(_env_file=None, video_voice_id='a b')
     assert Settings(_env_file=None).video_model == 'claude-opus-5-5'
