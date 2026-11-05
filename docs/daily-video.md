@@ -174,8 +174,18 @@ flowchart LR
   11/02 마감: 19:12 메모리 초과로 작업기가 죽었고, 60분 lease 때문에 20:10에야 이어졌다.
 
 렌더와 전달
-- 렌더는 작업 서버에서 `shorts_design/` 템플릿으로 한다. Fargate 렌더 이미지에 들어가지 않으므로 Shorts 변경은 렌더 이미지
-  교체 없이 배포된다.
+- 렌더는 본편처럼 Fargate 태스크에서 `shorts_design/` 템플릿으로 한다(소유자 결정 2026-11-05: 서버 2코어에서 한 번에 약
+  13분, 화면 검수 뒤 다시 렌더하면 두 번이 걸려 쇼츠 전체가 45분이었다). 아래 "렌더링 위치"의 시도·토큰·fallback 규칙을
+  그대로 쓰고, 기록은 `video_shorts.qa.render`에 남긴다. 입력(`in/shorts.json`이 있으면 Shorts)에는 컷 계획, 잘라 온 본편
+  계획, 장면별 음성과 그 문장, 음악, 라이브러리, 그리고 **이 회차 본편에 쓴 사진 파일과 기록**(`qa.illustrations`)이
+  들어간다. 태스크는 사진을 서버와 같은 경로(`/state/video/<job>/illustrations/`)에 두고 서버와 같은 `cut_pictures`로
+  고르므로, 쇼츠 배경은 서버에서 렌더할 때와 똑같이 본편 사진이다. 태스크는 `VIDEO_RENDER_WORKERS`개 브라우저로 프레임을
+  나눠 찍어 이어 붙인다(같은 프레임, 다시 인코딩하지 않음). 서버 렌더는 지금처럼 브라우저 하나로 찍고 다음 회차가 시작되면
+  멈춘다. 원격 렌더 중 다음 회차가 시작되면 태스크를 멈추고 같은 방식으로 포기한다. 마지막 시도까지 실패하면 서버에서
+  렌더한다(`qa.render_local`). 쇼츠 manifest의 `renderer`(`SHORTS_RENDERER_DIGEST`: shorts.py·`shorts_design/`·본편
+  렌더러)가 서버 코드와 다르면 전달 글의 화면 지적 첫 줄에 "Render image code … differs"가 붙는다.
+- `video.remote`가 `video/shorts.py`를 불러오므로 Shorts 렌더 코드나 `shorts_design/`을 바꾸면 렌더 이미지도 새로 만들어야
+  한다(`release.py`의 render_required).
 - 같은 스레드에 쇼츠 영상(MP4)·자막(SRT)·업로드 문안을 올리고, 업로드가 필요한 메시지라 소유자를 태그한다.
 - 제목에는 시리즈 이름("| …그래서, 오늘장", 예전 "오늘의 증시story")을 붙이지 않는다. 그래서 본편 성과 분석에 섞이지 않는다.
 - 업로드 뒤 Studio에서 '관련 동영상'을 같은 날 본편으로 지정한다.

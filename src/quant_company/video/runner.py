@@ -43,6 +43,7 @@ from .render import Renderer, RenderInProgress, korean_numbers, probe, spoken, v
 from .runway import RETAKE_RESERVE, RunwaySpeech, download_audio, speech_credits
 from .shorts import CHECKS as SHORTS_CHECKS
 from .shorts import (
+    SHORTS_RENDERER_DIGEST,
     ShortsPlan,
     ShortsRenderer,
     ShortsSuperseded,
@@ -682,6 +683,12 @@ class VideoRunner:
         directory = self.settings.video_artifact_dir / str(job['id']) / ('shorts-' + digest(
             {'plan': row['plan'], 'takes': [k for k, _ in takes]})[:16])
         directory.mkdir(parents=True, exist_ok=True)
+        qa = dict(row['qa'] or {})
+        if self.settings.video_render_backend == 'remote' and not qa.get('render_local'):
+            artifacts = await self.shorts_render_remote(row, job, plan, takes, directory, [r['text'] for _, r in takes], qa)
+            if artifacts is not None:
+                await asyncio.to_thread(self.shorts.save, row, 'inspecting', artifacts=artifacts, qa=qa)
+            return
         paths = await self.fetch_audio(job, takes, directory)
         try:
             renderer = self.shorts_renderer or ShortsRenderer(self.settings)
@@ -747,7 +754,7 @@ class VideoRunner:
                 await asyncio.to_thread(self.shorts.save, row, 'synthesizing' if retake else 'rendering',
                                         plan=fixed.model_dump(mode='json'), qa=qa)
                 return
-        qa['inspection_findings'] = [f"{i['scene']}: {i['detail']}" for i in issues] + (
+        qa['inspection_findings'] = list(qa.get('render_findings', [])) + [f"{i['scene']}: {i['detail']}" for i in issues] + (
             [f'{scene}: speech-to-text mismatch' for scene in heard] if visual is None else [])
         await asyncio.to_thread(self.shorts.save, row, 'inspecting', qa=qa)
         await asyncio.to_thread(self.shorts.deliver, {**row, 'qa': qa}, job, artifacts)
@@ -986,7 +993,60 @@ class VideoRunner:
 
     async def render_remote(self, job, plan, takes, directory, texts, qa, brand=None):
         """One Fargate task per attempt, asked again on later ticks like a model turn. Spot reclaims resume from the
-        scenes already in S3; after the last attempt the episode renders here (it is always produced).
+        scenes already in S3; after the last attempt the episode renders here (it is always produced)."""
+
+        async def upload():
+            paths = await self.fetch_audio(job, takes, directory)
+            await asyncio.to_thread(self.remote().upload_inputs, job, plan, paths, texts, directory.name, brand)
+
+        async def save():
+            await asyncio.to_thread(self.store.update_qa, job, qa)
+
+        async def wait(seconds, reason):
+            await save()
+            await asyncio.to_thread(self.store.wait, job, seconds, reason)
+
+        artifacts = await self.fargate(job, directory, qa, upload, save, wait)
+        if artifacts is not None:
+            code = str(artifacts.get('renderer') or 'unknown')
+            qa['render_findings'] = [] if code == RENDERER_DIGEST else [
+                f"Render image code {code[:12]} differs from the worker's {RENDERER_DIGEST[:12]}: rebuild the render image"]
+        return artifacts
+
+    async def shorts_render_remote(self, row, job, plan, takes, directory, texts, qa):
+        """The cut on Fargate (owner, 2026-11-05: on the worker it took 13 minutes a render), like the episode: a task
+        per attempt watched on later ticks, the cut rendered here after the last. A newer episode stops it."""
+
+        async def upload():
+            paths = await self.fetch_audio(job, takes, directory)
+            await asyncio.to_thread(self.remote().upload_shorts_inputs, job, plan, job['plan'], paths, texts,
+                                    directory.name)
+
+        async def save():
+            await asyncio.to_thread(self.shorts.save, row, 'rendering', qa=qa)
+
+        async def wait(seconds, reason):
+            await save()
+            await asyncio.to_thread(self.shorts.wait, row, seconds, reason)
+
+        if await asyncio.to_thread(self.shorts.superseded, job['id']):
+            current = next((a for a in (qa.get('render') or {}).get('attempts', []) if 'outcome' not in a), None)
+            if current and current.get('task'):
+                with contextlib.suppress(Exception):
+                    await asyncio.to_thread(self.remote().stop, current['task'], 'superseded by the next episode')
+            raise ShortsSuperseded()
+        artifacts = await self.fargate(job, directory, qa, upload, save, wait)
+        if artifacts is not None:
+            code = str(artifacts.get('renderer') or 'unknown')
+            qa['render_findings'] = [] if code == SHORTS_RENDERER_DIGEST else [
+                f"Render image code {code[:12]} differs from the worker's {SHORTS_RENDERER_DIGEST[:12]}: "
+                "rebuild the render image"]
+        return artifacts
+
+    async def fargate(self, job, directory, qa, upload, save, wait):
+        """The attempts of one render key in qa['render']: the artifacts once a task delivered them, else None (asked
+        again later, or qa['render_local'] after the last attempt). upload() freezes the inputs once; save() and
+        wait(seconds, reason) keep qa with the episode or the cut.
 
         The attempt is recorded before RunTask, so a launch whose answer was lost is asked again with the same client
         token (ECS starts at most one task per token) instead of being replayed as a new paid task."""
@@ -999,10 +1059,6 @@ class VideoRunner:
         qa['render'] = state
         remote, limit = self.remote(), self.settings.video_render_attempts
         current = attempts[-1] if attempts and 'outcome' not in attempts[-1] else None
-
-        async def wait(seconds, reason):
-            await asyncio.to_thread(self.store.update_qa, job, qa)
-            await asyncio.to_thread(self.store.wait, job, seconds, reason)
 
         if current and current.get('task'):
             try:
@@ -1035,9 +1091,6 @@ class VideoRunner:
                     current.update(outcome='failed', reason=f'collect: {type(error).__name__}: {error}'[:300])
                 else:
                     current.update(outcome='completed', finished_at=datetime.now(UTC).isoformat())
-                    code = str(artifacts.get('renderer') or 'unknown')
-                    qa['render_findings'] = [] if code == RENDERER_DIGEST else [
-                        f"Render image code {code[:12]} differs from the worker's {RENDERER_DIGEST[:12]}: rebuild the render image"]
                     return artifacts
             else:
                 current.update(outcome='failed', stop_code=status.get('stop_code'), reason=status.get('reason'))
@@ -1048,9 +1101,8 @@ class VideoRunner:
         if current is not None:
             try:
                 if not await asyncio.to_thread(remote.inputs_ready, job, directory.name):
-                    paths = await self.fetch_audio(job, takes, directory)
-                    await asyncio.to_thread(remote.upload_inputs, job, plan, paths, texts, directory.name, brand)
-                await asyncio.to_thread(self.store.update_qa, job, qa)  # the receipt precedes the paid call
+                    await upload()
+                await save()  # the receipt precedes the paid call
                 current['task'] = await asyncio.to_thread(remote.launch, job, directory.name, len(attempts))
                 current['launched_at'] = datetime.now(UTC).isoformat()
                 await wait(60, 'render_remote')
@@ -1119,7 +1171,7 @@ class VideoRunner:
                 await asyncio.to_thread(self.store.save, job, 'synthesizing' if retake else 'rendering',
                                         plan=fixed.model_dump(mode='json'), qa=qa)
                 return
-        qa['inspection_findings'] = [f"{i['scene']}: {i['detail']}" for i in issues] + (
+        qa['inspection_findings'] = list(qa.get('render_findings', [])) + [f"{i['scene']}: {i['detail']}" for i in issues] + (
             [f'{scene}: speech-to-text mismatch' for scene in heard] if visual is None else [])
         await asyncio.to_thread(self.store.update_qa, job, qa)
         job = {**job, 'qa': qa}
