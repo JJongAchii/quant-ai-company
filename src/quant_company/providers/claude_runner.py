@@ -93,6 +93,8 @@ API_FIRST = frozenset({"video_shorts_v1", "newsletter_v1", "video_performance_v1
 SHORTS_REQUEST = re.compile(r"^video-[0-9a-f-]{36}-shorts-")
 SHORTS_SHARED = frozenset({"video_review_v1", "video_visual_review_v1"})
 API_SLOTS = 2
+# An API-only turn the lane refused (off, capped, paused or overloaded) is asked again after this long.
+API_ONLY_WAIT = 300
 UNCERTAIN_PAUSE_SECONDS = 1800
 # API outcomes that may have executed: the same request ID never goes to the API again (spec 9-3).
 API_SPENT = frozenset({"consumed", "uncertain", "timeout"})
@@ -104,9 +106,14 @@ REVIEW_INVALID = "Claude output did not satisfy the independent review contract.
 class ClaudeRequest(ProviderRequest):
     output_contract: Literal[ProviderRequest.model_fields["output_contract"].annotation.__args__ + CLAUDE_ONLY] = (
         "agent_decision")
+    # The API credit lane or nothing: the runtime never gives this turn the shared CLI slot and answers busy (nothing
+    # ran) when the API cannot take it. The email asks this way while an episode holds the slot (owner, 2026-11-05).
+    api_only: bool = False
 
     @model_validator(mode="after")
     def scoped_output(self):
+        if self.api_only and not api_first(self):
+            raise ValueError("Only API-first work may ask for the API lane alone")
         if self.output_contract not in CLAUDE_ONLY:
             return super().scoped_output()
         if (not self.request_id.startswith("newsletter-") or self.web_search or self.session is not None
@@ -591,6 +598,17 @@ class ClaudeRunner:
                 raise ProviderFault("uncertain", "A Claude API call was interrupted; it will not be repeated.")
             return await self._run_cli(request, path, digest)
         attempts = attempts_of(receipt)
+        if getattr(request, "api_only", False):
+            lane = self._lane(request, attempts, "api_first")
+            if lane is not None:
+                restore = receipt or {"provider": "claude", "request_id": request.request_id, "input_digest": digest,
+                                      "state": "deferred", "retry_at": time.time(), "backend": "api"}
+                try:
+                    return await self._run_api(request, path, digest, attempts, lane, restore)
+                except ApiNotExecuted:
+                    pass
+            raise ProviderFault("busy", "The API lane could not take this turn; it never goes to the subscription.",
+                                API_ONLY_WAIT)
         if api_first(request):
             lane = self._lane(request, attempts, "api_first")
             if lane is not None:
