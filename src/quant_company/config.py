@@ -152,7 +152,7 @@ class Settings(BaseSettings):
     # missing or empty file leaves sending and the unsubscribe inbox inactive.
     newsletter_enabled: bool = False
     newsletter_from_address: str = Field(default="", pattern=r"^(|[^@\s<>]+@[^@\s<>]+\.[A-Za-z]{2,})$")
-    newsletter_from_name: str = Field(default="뭐든story", min_length=1, max_length=40)
+    newsletter_from_name: str = Field(default="그래서, 오늘장", min_length=1, max_length=40)
     newsletter_smtp_host: str = "smtp.gmail.com"
     newsletter_smtp_port: int = Field(default=587, ge=1, le=65535)
     newsletter_imap_host: str = "imap.gmail.com"
