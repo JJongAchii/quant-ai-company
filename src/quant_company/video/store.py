@@ -400,6 +400,13 @@ class VideoStore:
             conn.execute("""UPDATE video_effects SET state='failed',receipt=%s,completed_at=now()
                 WHERE id=%s AND kind='model' AND state='running'""", (Jsonb(receipt), str(job['id']) + ':' + key))
 
+    def effect_digest(self, job, key):
+        """The input digest an effect was first asked with, in any state; None before it was asked."""
+        with self.db.transaction() as conn:
+            row = conn.execute('SELECT request_digest FROM video_effects WHERE id=%s',
+                               (str(job['id']) + ':' + key,)).fetchone()
+        return row['request_digest'] if row else None
+
     def effect_receipt(self, job, key, state):
         with self.db.transaction() as conn:
             row = conn.execute('SELECT receipt FROM video_effects WHERE id=%s AND state=%s',
