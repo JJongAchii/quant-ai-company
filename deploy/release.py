@@ -589,7 +589,8 @@ KST = timezone(timedelta(hours=9))
 # for other names) records that commit as VIDEO_RENDER_ACCEPTED; later commits are compared with it instead.
 RENDER_ENTRY = "quant_company.video.remote"
 RENDER_FILES = ("deploy/Dockerfile.render", "deploy/render.json", "pyproject.toml", "uv.lock")
-RENDER_ASSETS = "src/quant_company/video/design/"
+# The episode's design and, since the task renders the Shorts too (2026-11-05), the Shorts page.
+RENDER_ASSETS = ("src/quant_company/video/design/", "src/quant_company/video/shorts_design/")
 # Host files a release does not install. A change is reported for the operator; it does not hold the release.
 OPERATOR_FILES = ("deploy/*.service", "deploy/*.timer", "deploy/Caddyfile", "deploy/storage_cleanup.py",
                   "deploy/init-database.sh", "deploy/bootstrap-host.sh", "deploy/provision.py", "deploy/*.example*")

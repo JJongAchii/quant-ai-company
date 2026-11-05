@@ -489,6 +489,27 @@ def test_the_speech_process_ends_before_the_frames_are_captured(tmp_path):
     assert events == ['close', 'frames']
 
 
+def test_a_cut_captured_by_several_browsers_is_the_cut_one_browser_captures(tmp_path):
+    """The Fargate task captures the cut with its 16 vCPU (owner, 2026-11-05); the frames are the same ones, joined."""
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    plan, episode_json = shorts(), episode().model_dump(mode='json')
+    paths = tones(tmp_path, TAKES, ffmpeg)
+    one = ShortsRenderer(settings, WordAligner()).render(job, plan, episode_json, tmp_path / 'one', paths)
+    many = ShortsRenderer(settings, WordAligner()).render(job, plan, episode_json, tmp_path / 'many', paths, workers=3)
+    assert many['frames'] == one['frames'] and many['duration'] == pytest.approx(one['duration'], abs=0.05)
+    assert many['renderer'] == one['renderer'] == shorts_module.SHORTS_RENDERER_DIGEST
+    frames = [re.findall(r'frame=\s*(\d+)', subprocess.run(
+        [ffmpeg, '-i', str(tmp_path / d / 'shorts.mp4'), '-map', '0:v:0', '-f', 'null', '-'], capture_output=True,
+        text=True, check=True).stderr)[-1] for d in ('one', 'many')]
+    assert frames[0] == frames[1] == str(one['frames'])
+    compared = subprocess.run([ffmpeg, '-i', str(tmp_path / 'one' / 'shorts.mp4'), '-i', str(tmp_path / 'many' / 'shorts.mp4'),
+                               '-lavfi', 'psnr', '-f', 'null', '-'], capture_output=True, text=True, check=True).stderr
+    average = re.search(r'average:(\S+)', compared).group(1)
+    assert average == 'inf' or float(average) > 40, compared[-300:]
+    assert not list((tmp_path / 'many').glob('range-*')) and not (tmp_path / 'many' / 'ranges.txt').exists()
+    verify_artifacts(many, tmp_path)
+
+
 def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
     plan = shorts()

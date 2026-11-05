@@ -499,6 +499,13 @@ def test_render_inputs_follow_the_render_task_imports(tmp_path):
                      "video/render.py", "video/frames.py"}
 
 
+def test_the_shorts_page_is_a_render_input_like_the_episode_design():
+    # The Fargate task renders the Shorts too (2026-11-05): its page template changes what the render image draws.
+    assert release.render_changes(["src/quant_company/video/shorts_design/index.html",
+                                   "src/quant_company/video/design/app.js", "docs/daily-video.md"], []) == [
+        "src/quant_company/video/shorts_design/index.html", "src/quant_company/video/design/app.js"]
+
+
 def test_windows_are_korean_time():
     assert release.in_window(IN_WINDOW, release.WINDOWS) and not release.in_window(OUT_OF_WINDOW, release.WINDOWS)
     assert release.in_window(datetime(2026, 10, 14, 11, 0, tzinfo=UTC), release.WINDOWS)  # 20:00 KST

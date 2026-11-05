@@ -363,3 +363,153 @@ async def test_a_render_made_by_other_renderer_code_is_reported(brief, video, tm
     assert current['qa']['render_findings'] == [
         f"Render image code 000000000000 differs from the worker's {RENDERER_DIGEST[:12]}: rebuild the render image"]
     assert "렌더: Render image code" in delivery_text(current, current['artifacts'])
+
+
+# ---- Shorts on Fargate (owner, 2026-11-05: the 13-minute render on the worker, twice, made the Shorts 45 minutes) ----
+
+class TaskShortsRenderer:
+    """The Shorts renderer inside the task: records what it was given and writes the cut's files like ShortsRenderer."""
+
+    def __init__(self, renderer_code=None):
+        from quant_company.video.shorts import SHORTS_RENDERER_DIGEST
+
+        self.code, self.seen = renderer_code or SHORTS_RENDERER_DIGEST, {}
+
+    def render(self, job, plan, episode, directory, paths, stop=None, texts=None, music=None, workers=1):
+        from .test_video_shorts import ShortsFileRenderer
+
+        self.seen.update(job=job, plan=plan, episode=episode, paths=[p.read_bytes() for p in paths], stop=stop,
+                         texts=texts, music=(music.name, music.read_bytes()) if music else None, workers=workers,
+                         directory=directory)
+        manifest = ShortsFileRenderer().render(job, plan, episode, directory, paths, texts=texts)
+        manifest = {k: v for k, v in manifest.items() if k != 'digest'} | {'renderer': self.code}
+        from quant_company.video.contracts import digest
+
+        manifest['digest'] = digest(manifest)
+        (directory / 'manifest.json').write_text(json.dumps(manifest))
+        return manifest
+
+
+def test_a_shorts_travels_with_its_episode_pictures_and_music_and_renders_in_the_task(tmp_path):
+    import hashlib
+    from datetime import date
+
+    from quant_company.config import Settings
+    from quant_company.video.remote import RemoteRender
+    from quant_company.video.shorts import ShortsPlan
+
+    from .test_video_shorts import shorts
+
+    s3 = FakeS3()
+    settings = Settings(_env_file=None, video_artifact_dir=tmp_path / 'video', video_asset_dir=tmp_path / 'assets',
+                        video_render_bucket='render-bucket')
+    (tmp_path / 'assets' / 'music').mkdir(parents=True)
+    (tmp_path / 'assets' / 'photos').mkdir()
+    (tmp_path / 'assets' / 'photos' / 'lib.jpg').write_bytes(b'library-photo')
+    (tmp_path / 'assets' / 'manifest.json').write_text(json.dumps({'lib': {'file': 'photos/lib.jpg', 'kind': '자료사진'}}))
+    for name in ('a.mp3', 'b.mp3'):
+        (tmp_path / 'assets' / 'music' / name).write_bytes(name.encode())
+    # The episode's own photo, found and checked for this episode (video/photos.py): the Shorts shows the same file.
+    folder = tmp_path / 'video' / 'job-1' / 'illustrations'
+    folder.mkdir(parents=True)
+    (folder / 'gen-1.jpg').write_bytes(b'episode-photo')
+    made = {'gen-1': {'file': 'gen-1.jpg', 'sha256': hashlib.sha256(b'episode-photo').hexdigest(), 'kind': '자료사진',
+                      'author': 'A', 'license': 'CC BY 4.0'}}
+    job = {'id': 'job-1', 'source': {'day': '2026-10-20', 'edition_kind': 'am'}, 'policy': {'template': 'motion-v2'},
+           'qa': {'illustrations': made}, 'plan': episode().model_dump(mode='json')}
+    plan = shorts()
+    audio = []
+    for i in range(4):
+        audio.append(tmp_path / f's{i}.mp3')
+        audio[-1].write_bytes(f'take-{i}'.encode())
+    texts = [f'말 {i}' for i in range(4)]
+    remote = RemoteRender(settings, s3=s3, ecs=FakeECS())
+    assert remote.upload_shorts_inputs(job, plan, job['plan'], audio, texts, 'shorts-abc') is True
+    assert remote.upload_shorts_inputs(job, plan, job['plan'], audio, texts, 'shorts-abc') is False  # same key, same inputs
+    assert remote.inputs_ready(job, 'shorts-abc')
+    # The task, with its own empty folders as in the render image and the image's 16 capture workers.
+    task = Settings(_env_file=None, video_artifact_dir=tmp_path / 'task', video_asset_dir=tmp_path / 'task-assets',
+                    video_render_workers=16)
+    renderer = TaskShortsRenderer()
+    s3.puts.clear()
+    result = render_task(task, 's3://render-bucket/render/job-1/shorts-abc', s3=s3, renderer=renderer)
+    seen = renderer.seen
+    assert isinstance(seen['plan'], ShortsPlan) and seen['plan'] == plan and seen['episode'] == job['plan']
+    assert seen['paths'] == [f'take-{i}'.encode() for i in range(4)] and seen['texts'] == texts
+    assert seen['stop'] is None and seen['workers'] == 16
+    chosen = ['a.mp3', 'b.mp3'][date(2026, 10, 20).toordinal() % 2]
+    assert seen['music'] == (chosen, chosen.encode())
+    # The episode's picture lands where the worker keeps it, checksum and all, and the library is the worker's.
+    assert seen['job']['illustrations'] == made and seen['directory'] == tmp_path / 'task' / 'job-1' / 'shorts-abc'
+    assert (tmp_path / 'task' / 'job-1' / 'illustrations' / 'gen-1.jpg').read_bytes() == b'episode-photo'
+    assert (tmp_path / 'task-assets' / 'photos' / 'lib.jpg').read_bytes() == b'library-photo'
+    assert not (tmp_path / 'task-assets' / 'music').exists()
+    # Every delivered file and review frame goes up, the manifest last.
+    out = 'render/job-1/shorts-abc/out/'
+    manifest = json.loads(Storage(s3, 'render-bucket').get(out + 'manifest.json'))
+    assert s3.puts[-1] == out + 'manifest.json' and result['manifest'] == out + 'manifest.json'
+    assert {out + n for n in manifest['files']} | {out + f['file'] for f in manifest['review']['frames']} <= set(s3.puts)
+
+
+async def shorts_on_fargate(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from .test_video_shorts import delivered_episode
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    settings = remote_settings(store, tmp_path)
+    settings.video_shorts_enabled = True
+    s3, ecs = FakeS3(), FakeECS()
+    monkeypatch.setattr(remote_module, 'boto3_clients', lambda s: (s3, ecs))
+    monkeypatch.setattr('quant_company.video.runner.download_audio', lambda url, path: path.write_bytes(b'speech'))
+    return store, settings, job, provider, speech, s3, ecs
+
+
+async def test_a_shorts_renders_on_fargate_and_is_collected(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from .test_video_shorts import ShortsFileRenderer, shorts_ticks
+
+    store, settings, job, provider, speech, s3, ecs = await shorts_on_fargate(brief, video, tmp_path, monkeypatch)
+    local = ShortsFileRenderer()
+    row = await shorts_ticks(store, provider, speech, local, job)
+    assert row['state'] == 'rendering' and row['error'] == 'render_remote' and local.calls == []
+    assert len(ecs.runs) == 1  # one task, watched on later ticks
+    run = ecs.runs[0]
+    prefix = run['overrides']['containerOverrides'][0]['command'][-1].split('render-bucket/', 1)[1]
+    assert prefix.startswith(f"render/{job['id']}/shorts-") and ('render-bucket', prefix + '/in/shorts.json') in s3.objects
+    assert run['capacityProviderStrategy'] == [{'capacityProvider': 'FARGATE_SPOT', 'weight': 1}]
+    task = TaskShortsRenderer()
+    simulate_task(s3, settings, run, task)
+    assert task.seen['workers'] == settings.video_render_workers
+    ecs.finish(row['qa']['render']['attempts'][-1]['task'])
+    row = await shorts_ticks(store, provider, speech, local, job)
+    assert row['state'] == 'delivering', row['error']
+    assert local.calls == [] and row['qa']['render']['attempts'][0]['outcome'] == 'completed'
+    assert row['artifacts']['renderer'] == task.code and row['qa']['inspection_findings'] == []
+
+
+async def test_a_shorts_falls_back_to_the_worker_after_its_last_attempt(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from .test_video_shorts import ShortsFileRenderer, shorts_ticks
+
+    store, settings, job, provider, speech, s3, ecs = await shorts_on_fargate(brief, video, tmp_path, monkeypatch)
+    settings.video_render_attempts = 1
+    local = ShortsFileRenderer()
+    row = await shorts_ticks(store, provider, speech, local, job)
+    ecs.finish(row['qa']['render']['attempts'][-1]['task'], code=1, reason='Essential container exited')
+    row = await shorts_ticks(store, provider, speech, local, job)
+    # Always produced: after the last attempt the cut renders on the worker as before.
+    assert row['state'] == 'delivering', row['error']
+    assert len(local.calls) == 1 and row['qa']['render_local'] is True
+    assert row['qa']['render']['attempts'][0]['outcome'] == 'failed'
+
+
+async def test_a_shorts_rendered_by_other_shorts_code_says_so_in_the_thread(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    """2026-10-13 for the episode: the Fargate image ran older code than the worker and nothing said so."""
+    from .test_video_shorts import ShortsFileRenderer, shorts_ticks
+
+    store, settings, job, provider, speech, s3, ecs = await shorts_on_fargate(brief, video, tmp_path, monkeypatch)
+    local = ShortsFileRenderer()
+    row = await shorts_ticks(store, provider, speech, local, job)
+    simulate_task(s3, settings, ecs.runs[0], TaskShortsRenderer(renderer_code='0' * 64))
+    ecs.finish(row['qa']['render']['attempts'][-1]['task'])
+    row = await shorts_ticks(store, provider, speech, local, job)
+    assert row['state'] == 'delivering', row['error']
+    assert row['qa']['inspection_findings'][0].startswith('Render image code 000000000000 differs')
