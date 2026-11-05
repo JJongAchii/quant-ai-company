@@ -543,3 +543,16 @@ def test_status_text_shows_the_api_line(ops):
     with ops.db.transaction() as conn:
         assert set(live_status(conn, now=now())["host"]["claude_api"]) == {
             "state", "spent_31d_usd", "cap_usd", "paused", "key_present", "last_refusal"}
+
+
+def test_openai_api_allowance_and_subscription_route_are_visible_without_secrets(ops):
+    snapshot(ops, openai_api={"reason": "subscription_budget_or_pause", "grant_id": "synthetic-cycle",
+        "budget_usd": 100, "accounted_usd": 99.5, "calls": 20, "paused_until": 0,
+        "expires_at": "2026-12-01T00:00:00Z", "updated_at": now().timestamp(),
+        "api_key": "SECRET-SYNTHETIC-KEY"})
+    with ops.db.transaction() as conn:
+        state = live_status(conn, now=now())
+    text = status_text(state)
+    assert "OpenAI 무료 API: 예약 포함 $99.50 / $100.00" in text
+    assert "구독 전환(예산·대기)" in text
+    assert "SECRET" not in json.dumps(state) + text

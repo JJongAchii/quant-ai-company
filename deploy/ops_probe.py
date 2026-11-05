@@ -233,6 +233,18 @@ def claude_api(path=STATE / 'claude/jobs/.api/status.json'):
     return value
 
 
+def openai_api(path=STATE / 'codex/jobs/openai-api/status.json'):
+    """Only non-secret, runtime-reported API allowance facts; never reads the key or grant configuration."""
+    try:
+        value = json.loads(path.read_text())
+    except FileNotFoundError:
+        return None
+    if not isinstance(value, dict):
+        raise ValueError('OpenAI API status is not an object')
+    return {key: value.get(key) for key in ('reason', 'grant_id', 'budget_usd', 'accounted_usd',
+                                           'expires_at', 'calls', 'paused_until', 'updated_at')}
+
+
 def release_status(path=RELEASE_STATUS, link=CURRENT_RELEASE):
     """The release tool's last report (docs/adr/0045), reduced to what the ops watch alerts on; None until installed.
 
@@ -329,6 +341,10 @@ def snapshot(now=None, *, synthetic=False):
         value['claude_api'] = claude_api()
     except (OSError, ValueError) as error:
         value['probe_errors'].append('claude-api:' + type(error).__name__)
+    try:
+        value['openai_api'] = openai_api()
+    except (OSError, ValueError) as error:
+        value['probe_errors'].append('openai-api:' + type(error).__name__)
     return value
 
 

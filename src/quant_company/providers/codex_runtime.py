@@ -36,7 +36,12 @@ def runner_from_environment() -> CodexRunner:
         config = RunnerConfig(codex_home=Path(home), jobs_dir=Path(jobs),
                               backup_codex_home=Path(os.environ["CODEX_BACKUP_HOME"]) if os.environ.get("CODEX_BACKUP_HOME") else None,
                               codex_bin=os.environ.get("CODEX_BIN", "codex"),
-                              timeout_seconds=float(os.environ.get("CODEX_TIMEOUT_SECONDS", "900")))
+                              timeout_seconds=float(os.environ.get("CODEX_TIMEOUT_SECONDS", "900")),
+                              api_enabled=os.environ.get("OPENAI_API_ENABLED", "false").lower() == "true",
+                              api_key_file=Path(os.environ["OPENAI_API_KEY_FILE"])
+                              if os.environ.get("OPENAI_API_KEY_FILE") else None,
+                              api_grant_file=Path(os.environ["OPENAI_API_GRANT_FILE"])
+                              if os.environ.get("OPENAI_API_GRANT_FILE") else None)
     except ValueError:
         raise ProviderFault("unavailable", "The Codex runtime configuration is invalid.") from None
     return CodexRunner(config)

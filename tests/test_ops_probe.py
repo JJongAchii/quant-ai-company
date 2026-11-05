@@ -254,3 +254,13 @@ def test_probe_reads_the_lane_status_and_tolerates_absence(tmp_path):
     path.write_text("{")
     with pytest.raises(ValueError):
         probe.claude_api(path)
+
+
+def test_openai_api_status_never_copies_unknown_or_secret_fields(tmp_path):
+    path = tmp_path / "openai-status.json"
+    assert probe.openai_api(path) is None
+    path.write_text(json.dumps({"reason": "api_completed", "budget_usd": 100, "accounted_usd": 10,
+                                "api_key": "SECRET-SYNTHETIC-KEY"}))
+    result = probe.openai_api(path)
+    assert result["budget_usd"] == 100 and result["accounted_usd"] == 10
+    assert "SECRET" not in json.dumps(result) and "api_key" not in result

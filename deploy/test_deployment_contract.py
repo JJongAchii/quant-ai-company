@@ -612,3 +612,20 @@ def test_no_service_reaches_temporal():
     assert "compose.yaml" in files
     for name in files:
         assert "temporal" not in (DEPLOY / name).read_text().lower(), name
+
+
+def test_openai_credits_overlay_defaults_off_and_shares_only_budget_config():
+    config = compose_config("quant-feed", overlays=("openai-credits.compose.yaml",))
+    services = config["services"]
+    for name in ("codex-runtime", "quant-codex-runtime"):
+        runtime = services[name]
+        assert runtime["environment"]["OPENAI_API_ENABLED"] == "false"
+        assert "OPENAI_API_KEY" not in runtime["environment"]
+        mount = next(v for v in runtime["volumes"] if v["target"] == "/etc/quant-company/openai-credits")
+        assert mount["read_only"]
+        assert mount["source"].endswith("/openai-credits")
+        assert {s["source"] for s in runtime["secrets"]} == {"model_runtime_token"}
+    for name in ("api", "worker", "slack-socket", "postgres"):
+        assert not any("openai-credits" in v["target"] for v in services[name].get("volumes", []))
+    manifest = json.loads((DEPLOY / "release.json").read_text())
+    assert "openai-credits.compose.yaml" in manifest["compose_files"]
