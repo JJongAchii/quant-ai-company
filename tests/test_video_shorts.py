@@ -117,8 +117,9 @@ def test_a_cut_is_a_hook_one_to_seven_issues_and_a_close():
     for issues in ([], [{**issue, 'id': f'issue-{n}', 'issue': 1} for n in range(8)]):
         with pytest.raises(ValueError, match='issues'):
             ShortsPlan.model_validate({**plan, 'issues': issues})
-    with pytest.raises(ValueError, match='series name'):
-        ShortsPlan.model_validate({**plan, 'title': '반도체가 이끌었다 | 9월 22일 아침 · 오늘의 증시story'})
+    for title in ('반도체가 이끌었다 | 9월 22일 아침 · 오늘의 증시story', '반도체가 이끌었다 · 그래서, 오늘장'):
+        with pytest.raises(ValueError, match='series name'):
+            ShortsPlan.model_validate({**plan, 'title': title})
     with pytest.raises(ValueError, match='unique'):
         ShortsPlan.model_validate({**plan, 'issues': [issue, issue]})
     with pytest.raises(ValueError, match='fixed scenes'):  # the cut's own scene IDs

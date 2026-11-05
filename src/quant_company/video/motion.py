@@ -45,6 +45,11 @@ MIN_SCENE = {'map': 11.0, 'flow': 5.5, 'cold_open': 6.0, 'summary3': 6.0, 'count
 CHAPTER_TITLES = {'': '오프닝', '요약': '오늘 꼭 알아야 할 세 가지', '시장': '시장 한눈에', '핵심 이슈': '핵심 이슈',
                   '함께 볼 이슈': '함께 볼 이슈', '일정': '일정과 확인할 신호'}
 WEEKDAYS = '월화수목금토일'
+# The channel's name and mark in the fixed top bar, the opening and the closing (owner, 2026-11-04: the briefings move
+# to their own channel '그래서, 오늘장'; 뭐든story stays the history channel). brand_mark.svg is its profile mark.
+CHANNEL = {'name': '그래서, 오늘장', 'logo': 'brand_mark.svg'}
+# Caption box height above which a cue took three lines: two 34px lines at line-height 1.35, plus slack.
+CAPTION_TWO_LINES = 2 * 34 * 1.35 + 20
 # Edition label in the fixed top bar (spec §14): the source edition decides it, never the model.
 EDITIONS = {'am': '아침 시장 브리핑', 'close': '마감 브리핑'}
 
@@ -57,13 +62,14 @@ SIGNS = {'up': '▲', 'dn': '▼'}
 LEAD_SIGN, TRAIL_SIGN = re.compile(r'^\s*([▲▼])\s*'), re.compile(r'\s*([▲▼])\s*$')
 
 # The channel's fixed opening and closing (owner, 2026-10-19): the same line, voice and picture in every episode. They
-# are not part of the written plan; the renderer adds them around it. 'say' is what the speech model reads ('story' in
-# Korean letters, so it is not read as English), 'show' is the caption.
-BRAND = {'sting': {'say': '안녕하세요, 뭐든 스토리입니다.', 'show': '안녕하세요, 뭐든story입니다.', 'lead': 0.25, 'tail': 0.45,
-                   'min': 2.0, 'data': {'title': '뭐든story', 'series': '오늘의 증시story'}},
+# are not part of the written plan; the renderer adds them around it. 'say' is what the speech model reads, 'show' is
+# the caption. The opening line is the channel's sting '그래서, 오늘장입니다.' (owner, 2026-11-04); under the name the
+# opening shows the edition (아침 시장 브리핑, 마감 브리핑).
+BRAND = {'sting': {'say': '그래서, 오늘장입니다.', 'show': '그래서, 오늘장입니다.', 'lead': 0.25, 'tail': 0.45,
+                   'min': 2.0, 'data': {'title': CHANNEL['name'], 'series': ''}},
          'endcard': {'say': '오늘 영상이 도움이 되셨다면 구독과 좋아요, 알림 설정 부탁드려요.',
                      'show': '오늘 영상이 도움이 되셨다면 구독과 좋아요, 알림 설정 부탁드려요.', 'lead': 0.3, 'tail': 1.0,
-                     'min': 4.5, 'data': {'title': '뭐든story'}}}
+                     'min': 4.5, 'data': {'title': CHANNEL['name']}}}
 
 
 def renderer_digest(root):
@@ -131,7 +137,7 @@ QA_JS = r"""() => {
  while((n=walker.nextNode())){ if(!n.textContent.trim()) continue; const e=n.parentElement; const rg=document.createRange(); rg.selectNodeContents(n);
   const r=rg.getBoundingClientRect(); let o=1,q=e; while(q&&q!==scn){o*=+getComputedStyle(q).opacity; q=q.parentElement;}
   if(r.width>0&&r.height>0&&o>0.5) boxes.push({e,r,t:n.textContent.trim().slice(0,30)}); }
- for(const c of scn.querySelectorAll('.paper,.glass')){const r=c.getBoundingClientRect(); const inner=boxes.filter(b=>c.contains(b.e));
+ for(const c of scn.querySelectorAll('.paper,.glass,.panel')){const r=c.getBoundingClientRect(); const inner=boxes.filter(b=>c.contains(b.e));
   if(inner.length && r.height>300){const bottom=Math.max(...inner.map(b=>b.r.bottom)); if((r.bottom-bottom)/r.height>0.25 && !c.querySelector('img,svg[viewBox]')) out.push(['empty-bottom',c.textContent.trim().slice(0,30)]);}
   if(c.scrollHeight>c.clientHeight+2 && !c.classList.contains('imgbox') && ![...c.querySelectorAll('svg[viewBox]')].some(s=>!s.closest('.ico'))) out.push(['card-overflow',c.textContent.trim().slice(0,30)]);}
  for(const b of boxes) if(b.r.right>stage.right+1||b.r.bottom>stage.bottom+1||b.r.left<stage.left-1) out.push(['outside-stage',b.t]);
@@ -437,7 +443,8 @@ class MotionRenderer:
         ticker = plan.ticker.model_dump(mode='json')
         self.sign_conflicts += single_arrows('', {}, ticker)
         ep = {'date_label': f"{day:%m.%d} {WEEKDAYS[day.weekday()]}", 'asof': '',
-              'sample_mark': sample, 'brand_label': EDITIONS.get(job['source'].get('edition_kind', 'am'), EDITIONS['am']), 'chapter_names': chapter_names(scenes),
+              'sample_mark': sample, 'brand_name': CHANNEL['name'], 'logo': CHANNEL['logo'],
+              'brand_label': EDITIONS.get(job['source'].get('edition_kind', 'am'), EDITIONS['am']), 'chapter_names': chapter_names(scenes),
               'ticker': ticker, 'scenes': scenes, 'total': total, 'changes': changes,
               'captions': all_captions}
         (page / 'episode.js').write_text('window.EP=' + json.dumps(ep, ensure_ascii=False) + ';')
@@ -552,7 +559,7 @@ class MotionRenderer:
                         stills.append({'scene': scene['id'], 'file': name})
                     for a, b, _ in (c for c in all_captions if scene['t0'] <= c[0] < scene['t1']):
                         tab.evaluate(f'seek({(a + b) / 2})')
-                        if tab.evaluate("document.querySelector('#capbox').getBoundingClientRect().height") > 2 * 40 * 1.35 + 30:
+                        if tab.evaluate("document.querySelector('#capbox').getBoundingClientRect().height") > CAPTION_TWO_LINES:
                             found.append(['caption-3-lines', ''])
                     if found:
                         issues[scene['id']] = found

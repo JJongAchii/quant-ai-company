@@ -2,7 +2,6 @@
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 const eo = p => 1 - Math.pow(1 - p, 4);
-const back = p => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); };
 const prog = (lt, s, d) => clamp((lt - s) / d);
 const ARROW = { up: '▲', dn: '▼' };
 // Each picture zooms toward its own point, so consecutive scenes do not move alike.
@@ -19,9 +18,9 @@ const gold = s => esc(nobreak(tie(s))).replace(/(\d(?:[\d,.]*\d)?\s?(?:%p|%|bp|�
 // The arrow comes from the direction field only: an arrow the script wrote is never drawn, and a +/- sign is dropped
 // only where the arrow replaces it (a level of -0.2% keeps its minus).
 const bare = (s, dir) => String(s).replace(dir ? /^\s*[▲▼+\-]\s*/ : /^\s*[▲▼]\s*/, '');
-const PLAY = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M6 3.5v17l14.5-8.5z"/></svg>';
-const MAIL = '<svg viewBox="0 0 24 24" fill="none" stroke="#FDC749" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.2"/><path d="M3.6 6.6 12 13l8.4-6.4"/></svg>';
-const DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15M5.5 12.5 12 19l6.5-6.5"/></svg>';
+const PLAY = '<svg viewBox="0 0 24 24" fill="#13130F"><path d="M6 3.5v17l14.5-8.5z"/></svg>';
+const MAIL = '<svg viewBox="0 0 24 24" fill="none" stroke="#FFD43B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.2"/><path d="M3.6 6.6 12 13l8.4-6.4"/></svg>';
+const DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="#13130F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15M5.5 12.5 12 19l6.5-6.5"/></svg>';
 // A headline with a comma breaks after its first one, where its first phrase ends ('나스닥 1.11% 반등, / AI 칩 살 돈엔
 // 금리 10% 이상', not '… 반등, AI 칩 / 살 돈엔 …'); fit() keeps the break only where both parts fit a line each.
 const headline = s => {
@@ -166,13 +165,17 @@ function seek(t) {
     if (img && (i === cur || (i === cur - 1 && fading))) img.style.transform = `scale(${(1 + 0.08 * clamp(lt / len)).toFixed(4)})`;
     scenes[i].style.display = i === cur ? 'block' : 'none';
     if (i !== cur) return;
+    // Panels (a card, the signals) stand up from a slight backward tilt as they rise, like the episode's (2026-11-04).
     for (const e of $$('[data-in]', scenes[i])) {
       const [s, d = 0.4, dy = 30, dx = 0] = e.dataset.in.split(',').map(Number); const p = eo(prog(lt, s, d));
-      e.style.opacity = p; e.style.transform = `translate(${((1 - p) * dx).toFixed(1)}px,${((1 - p) * dy).toFixed(1)}px)`;
+      const tilt = e.classList.contains('card') || e.classList.contains('sigs') ? `perspective(1600px) rotateX(${((1 - p) * 9).toFixed(2)}deg) ` : '';
+      e.style.opacity = p; e.style.transformOrigin = tilt ? '50% 100%' : '';
+      e.style.transform = `${tilt}translate(${((1 - p) * dx).toFixed(1)}px,${((1 - p) * dy).toFixed(1)}px)`;
     }
+    // A number or the button grows the last few percent into place, without overshoot (the episode has no pops).
     for (const e of $$('[data-pop]', scenes[i])) {
-      const [s, d = 0.4] = e.dataset.pop.split(',').map(Number); const p = prog(lt, s, d);
-      e.style.opacity = p > 0 ? Math.min(1, p * 3) : 0; e.style.transform = `scale(${p > 0 ? back(p) : 0.001})`;
+      const [s, d = 0.4] = e.dataset.pop.split(',').map(Number); const p = eo(prog(lt, s, d));
+      e.style.opacity = p; e.style.transform = `scale(${(0.92 + 0.08 * p).toFixed(4)})`;
     }
   });
   const q = $('#qbar'), shown = EP.question && QBAR.includes(EP.scenes[cur].type);

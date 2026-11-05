@@ -153,8 +153,15 @@ def render_key(job, takes, images, brand=None):
                                **({'brand': brand} if brand else {})})[:20]
 
 
+def voice(job):
+    """The speech request's voice fields. voice_id appears only when the job's policy froze one, so the takes and brand
+    lines of jobs on a preset voice keep their keys."""
+    policy = job['policy']
+    return {'voice': policy['voice'], **({'voice_id': policy['voice_id']} if policy.get('voice_id') else {})}
+
+
 def brand_requests(job):
-    return {name: {'text': line['say'], 'voice': job['policy']['voice'], 'model': job['policy']['speech_model']}
+    return {name: {'text': line['say'], **voice(job), 'model': job['policy']['speech_model']}
             for name, line in BRAND.items()}
 
 
@@ -784,7 +791,7 @@ class VideoRunner:
                  *((i.id, i.narration) for i in plan.issues), ('outro', outro_line(plan.close))]
         texts = [korean_numbers(text) if scene in retake else spoken(text) for scene, text in lines]
         return [(f"shorts-speech-{i}-{digest(text)[:12]}",
-                 {"text": text, "voice": job["policy"]["voice"], "model": job["policy"]["speech_model"]})
+                 {"text": text, **voice(job), "model": job["policy"]["speech_model"]})
                 for i, text in enumerate(texts)]
 
     def last_version(self, job, attempts):
@@ -905,7 +912,7 @@ class VideoRunner:
         result = []
         for index, scene in enumerate(plan.scenes):
             text = korean_numbers(scene.narration) if getattr(scene, 'id', None) in retake else spoken(scene.narration)
-            request = {"text": text, "voice": job["policy"]["voice"], "model": job["policy"]["speech_model"]}
+            request = {"text": text, **voice(job), "model": job["policy"]["speech_model"]}
             result.append((await asyncio.to_thread(self.store.take_key, job, index, request), request))
         return result
 

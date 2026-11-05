@@ -1,55 +1,33 @@
 let CH=[];
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
-const eo=p=>1-Math.pow(1-p,4);              // ease-out quart ~ cubic-bezier(.2,.8,.2,1)
-const eio=p=>p<.5?8*p*p*p*p:1-Math.pow(-2*p+2,4)/2;
-const back=p=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(p-1,3)+c1*Math.pow(p-1,2);};
 const prog=(lt,s,d)=>clamp((lt-s)/d);
 const NS='http://www.w3.org/2000/svg';
 const el=(tag,attrs={},html='')=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(html)e.innerHTML=html;return e;};
 
-
-/* ---------- pictogram library (64 grid, stroke) ---------- */
-const ICONS={
- chartUp:['<path d="M8 56H56"/>','<rect x="12" y="40" width="8" height="12" rx="1.5"/>','<rect x="26" y="31" width="8" height="21" rx="1.5"/>','<rect x="40" y="22" width="8" height="30" rx="1.5"/>','<path d="M10 29L24 19L34 24L52 9"/>','<path d="M43 9H52V18"/>'],
- chip:['<rect x="16" y="16" width="32" height="32" rx="5"/>','<rect x="25" y="25" width="14" height="14" rx="2"/>','<path d="M24 16V9M32 16V9M40 16V9M24 55V48M32 55V48M40 55V48M16 24H9M16 32H9M16 40H9M55 24H48M55 32H48M55 40H48"/>'],
- memory:['<rect x="6" y="18" width="52" height="24" rx="3"/>','<rect x="11" y="23" width="8" height="12" rx="1"/>','<rect x="23" y="23" width="8" height="12" rx="1"/>','<rect x="35" y="23" width="8" height="12" rx="1"/>','<rect x="47" y="23" width="6" height="12" rx="1"/>','<path d="M10 42V50M18 42V50M26 42V50M38 42V50M46 42V50M54 42V50"/>'],
- calendar:['<rect x="9" y="13" width="46" height="42" rx="6"/>','<path d="M9 25H55"/>','<path d="M21 8V18M43 8V18"/>','<path d="M19 35H25M30 35H36M41 35H47M19 45H25M30 45H36"/>'],
- cal8:['<rect x="9" y="13" width="46" height="42" rx="6"/>','<path d="M9 25H55"/>','<path d="M21 8V18M43 8V18"/>','<text x="32" y="50" text-anchor="middle" font-size="22" font-weight="800" stroke="none" fill="COLOR">8</text>'],
- ship:['<path d="M5 40H59L52 52H12Z"/>','<path d="M38 40V27H51V40"/>','<path d="M42 27V20H46V27"/>','<path d="M13 40V34H32V40"/>','<path d="M4 59C8 56 12 56 16 59S24 62 28 59S36 56 40 59S48 62 52 59S58 57 60 58"/>'],
- doc:['<path d="M16 7H38L50 19V57H16Z"/>','<path d="M38 7V19H50"/>','<path d="M23 31H43M23 39H43M23 47H35"/>'],
- bank:['<path d="M8 22L32 9L56 22Z"/>','<path d="M11 27H53"/>','<path d="M16 31V48M27 31V48M37 31V48M48 31V48"/>','<path d="M8 54H56"/>'],
- drop:['<path d="M32 7C32 7 15 28 15 39A17 17 0 0 0 49 39C49 28 32 7 32 7Z"/>','<path d="M24 41A8 8 0 0 0 31 48"/>'],
- bolt:['<path d="M36 6L15 36H30L27 58L49 27H34Z"/>'],
- basket:['<path d="M7 25H57L51 53H13Z"/>','<path d="M20 25L28 10M44 25L36 10"/>','<path d="M24 32V46M32 32V46M40 32V46"/>'],
- clock:['<circle cx="32" cy="34" r="22"/>','<path d="M32 21V34L41 40"/>','<path d="M26 6H38M32 6V12"/>'],
- percent:['<circle cx="19" cy="19" r="7"/>','<circle cx="45" cy="45" r="7"/>','<path d="M48 13L16 51"/>'],
- shield:['<path d="M32 6L53 14V30C53 44 43 52 32 58C21 52 11 44 11 30V14Z"/>','<path d="M23 31L30 38L42 25"/>'],
- gauge:['<path d="M9 44A23 23 0 0 1 55 44"/>','<path d="M32 44L45 27"/>','<circle cx="32" cy="44" r="3.5"/>','<path d="M14 52H50"/>'],
- balance:['<path d="M32 10V54"/>','<path d="M14 18H50"/>','<path d="M14 18L6 36H22Z"/>','<path d="M50 18L42 36H58Z"/>','<path d="M22 54H42"/>'],
- check:['<path d="M12 33L26 47L52 18"/>'],
- globe:['<circle cx="32" cy="32" r="23"/>','<path d="M9 32H55"/>','<path d="M32 9C24 18 24 46 32 55C40 46 40 18 32 9Z"/>'],
-};
-function icon(name,size=64,color='#FDC749',ds=null,dd=0.8,sw=3.6){
- const prims=ICONS[name].map(p=>{p=p.replace(/COLOR/g,color);
-   if(ds!==null && /^<(path|rect|circle|line|polyline|polygon)/.test(p)) p=p.replace(/^<(\w+)/,`<$1 data-draw="${ds},${dd}"`);
-   return p;}).join('');
- return `<svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${prims}</svg>`;
-}
-function injectIcons(root=document){
- for(const e of $$('[data-icon]',root)){const [n,s,c,ds,dd]=e.dataset.icon.split(',');e.innerHTML=icon(n,Number.isFinite(+s)&&+s>0?+s:64,c,ds!==undefined?+ds:null,dd!==undefined?+dd:0.8);e.classList.add('ico');e.removeAttribute('data-icon');}
-}
+/* ---------- motion language (spec §5, template v5): one main movement per scene, then the frame holds still.
+   Lines rise out of their own baseline (14 frames), panels stand up from a slight backward tilt (18 frames), lines and
+   bars draw (36 / 18 frames), the camera moves sideways between scenes (22 frames) and the set behind it moves slower
+   (weave 0.10x, floor 0.25x), which gives the depth. No count-ups, zooms, pops or particles. Start times sit on a
+   6-frame grid. ---------- */
+const FPS=30;
+function bez(x1,y1,x2,y2){const cx=3*x1,bx=3*(x2-x1)-cx,ax=1-cx-bx,cy=3*y1,by=3*(y2-y1)-cy,ay=1-cy-by;
+ const X=t=>((ax*t+bx)*t+cx)*t,Y=t=>((ay*t+by)*t+cy)*t,dX=t=>(3*ax*t+2*bx)*t+cx;
+ return x=>{if(x<=0)return 0;if(x>=1)return 1;let t=x;for(let i=0;i<8;i++){const d=dX(t);if(Math.abs(d)<1e-6)break;t-=(X(t)-x)/d;}return Y(clamp(t));};}
+const REV=bez(0.16,1,0.3,1), CAM=bez(0.65,0,0.35,1), DRAW=bez(0.33,0,0.25,1);
+const REVEAL=14/FPS, PANEL=18/FPS, MOVE=22/FPS, BAR=18/FPS, TAB=12/FPS, HL=12/FPS, TICKER=70;
+// The camera leaves a scene 0.1 s before its end; the next scene's own motion waits until the camera has landed.
+const LEAVE=0.1, SETTLE=MOVE-LEAVE-0.2;
+const grid=s=>Math.round(s*FPS/6)*6/FPS;
 
 /* ---------- fit: [data-fit] text shrinks until it fits its box (2026-10-13 PM: '배럴당 1~2달러', '19.6%' ran off screen).
-   Measured once, at the first seek (the renderer awaits document.fonts.ready first), with count-ups at their targets. */
+   Measured once, at the first seek (the renderer awaits document.fonts.ready first). */
 let fitted=false;
 function fitText(){
  for(const scn of $$('.scene')){const shown=scn.style.display;scn.style.display='block';
-  for(const e of $$('[data-fit]',scn)){const counters=$$('[data-count]',e),kept=counters.map(c=>c.textContent);
-   counters.forEach(c=>{c.textContent=c.dataset.target;});
+  for(const e of $$('[data-fit]',scn)){
    let size=parseFloat(getComputedStyle(e).fontSize);const floor=size*0.45;
-   while(e.scrollWidth>e.clientWidth+1&&size>floor){size*=0.94;e.style.fontSize=size.toFixed(1)+'px';}
-   counters.forEach((c,i)=>{c.textContent=kept[i];});}
+   while(e.scrollWidth>e.clientWidth+1&&size>floor){size*=0.94;e.style.fontSize=size.toFixed(1)+'px';}}
   // Values shown side by side share the smallest fitted size (10/14 PM: each counter value shrank on its own, so the
   // shortest number, '4000명', was drawn the largest beside '28만3000명' and read as the biggest change).
   const groups={};
@@ -61,75 +39,109 @@ function fitText(){
   for(const box of $$('[data-fitbox]',scn)){const inner=box.firstElementChild;let z=1;
    while(inner&&box.scrollHeight>box.clientHeight+1&&z>0.62){z-=0.04;inner.style.zoom=z.toFixed(2);}}
   scn.style.display=shown;}
+ fillTicker();
 }
 
 /* ---------- boot: fixed frame + scenes from EP ---------- */
-const PARTS=[];
+let TK='';
+function tickerItem(it){const up=it.dir==='up';
+ return `<span class="it">${it.name}${it.value?`<span class="v tnum">${it.value}</span>`:''}<span class="c ${up?'upn':'dnn'} tnum">${up?'▲':'▼'}${it.change}</span>${it.note?`<span style="margin-left:10px">${it.note}</span>`:''}</span><i class="dot"></i>`;}
 function boot(){
  // Load every weight now so document.fonts.ready (awaited before the first seek) covers text in hidden scenes too.
  for(const w of [500,600,700,800]) document.fonts.load(`${w} 40px Pretendard`);
- for(let i=0;i<28;i++){const d=document.createElement('i');const s=2+(i%3);d.style.width=d.style.height=s+'px';$('#parts').appendChild(d);
-  PARTS.push({e:d,x0:(i*733)%1960,y0:110+((i*397)%780),v:6+((i*37)%12),a:8+((i*53)%26),ph:i*0.7,o:0.10+((i*13)%10)/50});}
- $('#dd').textContent=EP.date_label; $('#da').textContent=EP.asof?'자료 기준 '+EP.asof:''; $('#ds').textContent=EP.sample_mark||''; if(EP.brand_label) $('#bl').textContent=EP.brand_label;
- CH=EP.chapter_names; $('#chapters').innerHTML=CH.map(c=>`<div class="pill"><i></i><b>${c}</b></div>`).join('');
+ for(const w of [600,700,800]) document.fonts.load(`${w} 40px BarlowC`);
+ $('#brand').textContent=EP.brand_name||'그래서, 오늘장'; if(EP.logo) $('#logo').src=EP.logo;
+ $('#bl').textContent=EP.brand_label||''; $('#dd').textContent=EP.date_label||''; $('#ds').textContent=EP.sample_mark||'';
+ CH=EP.chapter_names; $('#chapters').innerHTML=CH.map(c=>`<span class="tab">${c}</span>`).join('')+'<i id="ul"></i>';
  $('#tlab').textContent=EP.ticker.label;
- const tk=EP.ticker.items.map(it=>{const up=it.dir==='up';return `<span class="it"><span class="n">${it.name}</span>${it.value?`<span class="v tnum">${it.value}</span>`:''}<span class="${up?'upn':'dnn'} tnum">${up?'▲':'▼'} ${it.change}</span>${it.note?`<span class="n" style="margin-left:10px;font-weight:600">${it.note}</span>`:''}</span>`}).join('');
- $('#track').innerHTML=tk+tk;
+ TK=EP.ticker.items.map(tickerItem).join(''); $('#track').innerHTML=TK;
  const stage=$('#stage');
  for(const sc of EP.scenes){const d=document.createElement('div');d.className=sc.brand?'scene full':'scene';d.dataset.t0=sc.t0;d.dataset.t1=sc.t1;d.dataset.ch=sc.chapter;d.dataset.id=sc.id;d.dataset.type=sc.type;
   d.innerHTML=CARDS[sc.type](sc.data,sc);stage.appendChild(d);}
- injectIcons();
  for(const f of POST) f();
 }
 
-// Balanced caption lines are shorter than the 1500px box; the box shrinks to its widest line (plus padding).
+// The ticker repeats its items until one loop plus the screen width is covered, so it never shows a gap.
+let tkW=0;
+function fillTicker(){const tr=$('#track');tr.innerHTML=TK;const one=Math.max(1,tr.scrollWidth);
+ const n=Math.ceil((1920+one)/one)+1;tr.innerHTML=TK.repeat(n);tkW=one;}
+
+// A line of text rises out of its own baseline: it starts one line-height low, clipped at its final bottom edge, so
+// the top of the letters shows first. Panels and pictures (taller than 160px) stand up instead: they start tilted 9°
+// back and 46px low, hinged at their bottom edge, and fade in as they rise (owner, 2026-11-04: 'more three-dimensional').
+const big=e=>(e.__h??(e.__h=e.offsetHeight))>160;
+function revealHTML(e,k){
+ if(k>=1){if(e.__r){e.style.clipPath='';e.style.transform='';e.style.transformOrigin='';e.style.opacity='';e.__r=0;}return;}
+ e.__r=1;
+ if(big(e)){const q=1-k;e.style.opacity=k.toFixed(3);e.style.transformOrigin='50% 100%';
+  e.style.transform=`perspective(1600px) translateY(${(46*q).toFixed(1)}px) rotateX(${(9*q).toFixed(2)}deg)`;return;}
+ const p=((1-k)*100).toFixed(2);
+ e.style.opacity=k>0?1:0; e.style.transform=`translateY(${p}%)`; e.style.clipPath=`inset(-12px -80px ${p}% -80px)`;
+}
+function revealSVG(e,k){e.style.opacity=k.toFixed(3);e.setAttribute('transform',`translate(0,${((1-k)*10).toFixed(2)})`);}
+
+function animate(scn,lt){
+ for(const e of $$('[data-in],[data-pop]',scn)){const s=grid(+(e.dataset.in||e.dataset.pop).split(',')[0]);
+  if(e instanceof SVGElement) revealSVG(e,REV(prog(lt,s,10/FPS))); else revealHTML(e,REV(prog(lt,s,big(e)?PANEL:REVEAL)));}
+ for(const e of $$('[data-count]',scn)) if(e.textContent!==e.dataset.target) e.textContent=e.dataset.target;
+ for(const e of $$('[data-bar]',scn)){const s=grid(+e.dataset.bar.split(',')[0]);e.style.transform=`scaleX(${DRAW(prog(lt,s,BAR))})`;}
+ for(const e of $$('[data-vbar]',scn)){const s=grid(+e.dataset.vbar.split(',')[0]);const p=DRAW(prog(lt,s,BAR));
+  if(!e.dataset.y){e.dataset.y=e.getAttribute('y');e.dataset.h=e.getAttribute('height');}const H=+e.dataset.h*p;e.setAttribute('height',H);e.setAttribute('y',+e.dataset.y+(+e.dataset.h-H));}
+ for(const e of $$('[data-draw]',scn)){const [s0,d=1.2]=e.dataset.draw.split(',').map(Number);const L=e.__L||(e.__L=e.getTotalLength()+1);const p=DRAW(prog(lt,grid(s0),d));e.style.strokeDasharray=`${L} ${L}`;e.style.strokeDashoffset=L*(1-p);e.style.opacity=p>0?1:0;}
+ for(const e of $$('[data-follow]',scn)){const [sel,s,d]=e.dataset.follow.split(',');const path=$(sel,scn);const L=path.__L||(path.__L=path.getTotalLength());const p=DRAW(prog(lt,grid(+s),+d));const q=path.getPointAtLength(Math.min(L-1,L*p));e.setAttribute('transform',`translate(${q.x},${q.y})`);e.style.opacity=p>0?1:0;}
+ for(const e of $$('[data-hl]',scn)){const k=DRAW(prog(lt,grid(+e.dataset.hl),HL));e.style.backgroundSize=`${(k*100).toFixed(1)}% 22%`;}
+}
+
+function tabs(t,curCh){
+ const tabsEl=$$('.tab'), ul=$('#ul'); if(!ul) return;
+ // The chapter shown TAB seconds ago: the underline slides from it to the current chapter.
+ const at=x=>{let c='';for(const scn of $$('.scene')){if(x>=+scn.dataset.t0&&x<+scn.dataset.t1){c=scn.dataset.ch;break;}}return c;};
+ let from=curCh,k=1;
+ for(let f=1;f<=12;f++){const c=at(t-f/FPS);if(c!==curCh){from=c;k=REV((f-1)/12);break;}}
+ const rect=c=>{const i=CH.indexOf(c);if(i<0)return null;const e=tabsEl[i];return [e.offsetLeft,e.offsetWidth];};
+ const a=rect(from),b=rect(curCh);
+ tabsEl.forEach((e,i)=>e.classList.toggle('on',CH[i]===curCh));
+ if(!b){ul.style.width='0px';return;}
+ const [x0,w0]=a||[b[0],0];
+ ul.style.left=(x0+(b[0]-x0)*k)+'px'; ul.style.width=(w0+(b[1]-w0)*k)+'px';
+}
+
+// Balanced caption lines are shorter than the box; the box shrinks to its widest line.
 function hug(box){box.style.width='';const rg=document.createRange();rg.selectNodeContents(box);let l=Infinity,r=-Infinity;
  for(const q of rg.getClientRects()){if(q.width<1)continue;l=Math.min(l,q.left);r=Math.max(r,q.right);}
- if(r>l){const cs=getComputedStyle(box);box.style.width=Math.ceil(r-l+parseFloat(cs.paddingLeft)+parseFloat(cs.paddingRight)+2)+'px';}}
+ if(r>l) box.style.width=Math.ceil(r-l+2)+'px';}
 
-let tkW=0;
-function count(e,p){const tg=e.dataset.target;const dec=(tg.split('.')[1]||'').length;const v=parseFloat(tg.replace(/,/g,''))*eo(p);
- let s=v.toFixed(dec); if(tg.includes(',')){const [a,b]=s.split('.');s=a.replace(/\B(?=(\d{3})+(?!\d))/g,',')+(b!==undefined?'.'+b:'');} e.textContent=s;}
 function seek(t){
  if(!fitted){fitted=true;fitText();}
- // background
- $('#glow').style.transform=`translate(${360+220*Math.sin(t*2*Math.PI/60)}px,${40+60*Math.cos(t*2*Math.PI/60)}px)`;
- for(const q of PARTS){const x=((q.x0+t*q.v)%1960)-20, y=q.y0+q.a*Math.sin(t*0.35+q.ph);q.e.style.transform=`translate(${x}px,${y}px)`;q.e.style.opacity=q.o*(0.6+0.4*Math.sin(t*0.8+q.ph));}
- let curCh='',full=false;
- for(const scn of $$('.scene')){
-  const t0=+scn.dataset.t0,t1=+scn.dataset.t1, vis=t>=t0&&t<t1; scn.style.display=vis?'block':'none'; if(!vis)continue;
-  curCh=scn.dataset.ch; const lt=t-t0; full=scn.classList.contains('full');
+ const scenes=$$('.scene'), last=scenes.length-1;
+ let cur=null, top=1;
+ scenes.forEach((scn,i)=>{
+  const t0=+scn.dataset.t0,t1=+scn.dataset.t1;
+  const start=i===0?t0:t0-LEAVE, end=i===last?t1:t1-LEAVE+MOVE;
+  const vis=t>=start&&t<end; scn.style.display=vis?'block':'none';
+  if(t>=t0&&t<t1) cur=scn;
+  if(!vis) return;
+  const kin=i===0?1:CAM(prog(t,t0-LEAVE,MOVE)), kout=i===last?0:CAM(prog(t,t1-LEAVE,MOVE));
+  scn.style.transform=(kin<1||kout>0)?`translateX(${((1-kin)*1920-kout*1920).toFixed(1)}px)`:'';
+  // The top bar belongs to the briefing: it fades out while the camera moves onto the fixed opening or closing.
+  if(scn.classList.contains('full')) top=Math.min(top,1-kin+kout);
+  const lt=t-t0-(i===0?0:SETTLE);
   if(SEEK[scn.dataset.type]) SEEK[scn.dataset.type](scn,lt);
-  const ex=clamp((t-(t1-0.4))/0.4); scn.style.opacity=1-ex*ex; scn.style.transform=`translateY(${-20*ex}px)`;
-  for(const e of $$('[data-in]',scn)){const [s,d=0.5,dy=40]=e.dataset.in.split(',').map(Number);const p=eo(prog(lt,s,d));e.style.opacity=p;
-   if(e instanceof SVGElement){e.setAttribute('transform',`translate(0,${(1-p)*dy})`);} else e.style.transform=`translateY(${(1-p)*dy}px) scale(${0.98+0.02*p})`;}
-  for(const e of $$('[data-pop]',scn)){const [s,d=0.45]=e.dataset.pop.split(',').map(Number);const p=prog(lt,s,d);e.style.opacity=p>0?Math.min(1,p*3):0;e.style.transform=`scale(${p>0?back(p):0.001})`;}
-  for(const e of $$('[data-count]',scn)){const [s,d=0.9]=e.dataset.count.split(',').map(Number);count(e,prog(lt,s,d));}
-  for(const e of $$('[data-bar]',scn)){const [s,d=0.8]=e.dataset.bar.split(',').map(Number);e.style.transform=`scaleX(${eo(prog(lt,s,d))})`;}
-  for(const e of $$('[data-vbar]',scn)){const [s,d=0.8]=e.dataset.vbar.split(',').map(Number);const p=eo(prog(lt,s,d));
-   if(!e.dataset.y){e.dataset.y=e.getAttribute('y');e.dataset.h=e.getAttribute('height');}const H=+e.dataset.h*p;e.setAttribute('height',H);e.setAttribute('y',+e.dataset.y+(+e.dataset.h-H));}
-  for(const e of $$('[data-draw]',scn)){const [s,d=1.2]=e.dataset.draw.split(',').map(Number);const L=e.__L||(e.__L=e.getTotalLength()+1);const p=eio(prog(lt,s,d));e.style.strokeDasharray=`${L} ${L}`;e.style.strokeDashoffset=L*(1-p);e.style.opacity=p>0?1:0;}
-  for(const e of $$('[data-follow]',scn)){const [sel,s,d]=e.dataset.follow.split(',');const path=$(sel,scn);const L=path.__L||(path.__L=path.getTotalLength());const p=eio(prog(lt,+s,+d));const q=path.getPointAtLength(Math.min(L-1,L*p));e.setAttribute('transform',`translate(${q.x},${q.y})`);e.style.opacity=p>0?1:0;}
-  for(const e of $$('[data-pulse]',scn)){const k=(lt%2)/2;e.setAttribute('r',30+50*k);e.style.opacity=lt<1.4?0:(1-k);}
-  for(const e of $$('[data-led]',scn)){const ph=+e.dataset.led;e.style.opacity=0.35+0.65*(0.5+0.5*Math.sin(2*Math.PI*(lt*0.6+ph)));}
-  for(const e of $$('[data-kb]',scn)){const [d=13,z=0.06]=e.dataset.kb.split(',').map(Number);e.style.transform=`scale(${1+z*clamp(lt/d)})`;}
-  const g=$('#illuG',scn); if(g){
-   if(!g.dataset.base){const b=g.getBBox();const k=Math.min(680/b.width,400/b.height)*0.97;g.dataset.base=[350-(b.x+b.width/2)*k,222-(b.y+b.height/2)*k,k].join(',');}
-   const [bx,by,bs]=g.dataset.base.split(',').map(Number);const z=1+0.06*clamp(lt/13);g.setAttribute('transform',`translate(${350+(bx-350)*z},${222+(by-222)*z}) scale(${bs*z})`);}
- }
- document.body.classList.toggle('full',full);
- // chapters
- $$('.pill').forEach((p,i)=>{const on=CH[i]===curCh;p.querySelector('i').style.opacity=on?1:0;p.style.color=on?'#011A43':'';p.style.borderColor=on?'#FDC749':'';});
- $('#prog').style.width=(clamp(t/EP.total)*1920)+'px';
- // wipe at chapter changes
- const changes=EP.changes; let w=0,wx=-200;
- for(const c of changes){const p=(t-(c-0.35))/0.8;if(p>=0&&p<=1){w=Math.sin(Math.PI*p);wx=-200+p*2320;}}
- $('#wipe').style.opacity=w*0.55;$('#wipe').style.transform=`translateX(${wx}px)`;
- // captions
+  animate(scn,lt);
+ });
+ // The set behind the stage follows the camera at a fraction of its travel: far things move less.
+ let cam=0; scenes.forEach((scn,i)=>{if(i>0) cam+=CAM(prog(t,+scn.dataset.t0-LEAVE,MOVE));});
+ document.body.style.setProperty('--wx',(-cam*1920*0.10).toFixed(1)+'px');
+ const floor=$('#bg .floor'); if(floor) floor.style.backgroundPosition=`0 0, ${(-cam*1920*0.25).toFixed(1)}px 0`;
+ if(!cur) cur=scenes[t<0?0:last];
+ top=clamp(top); $('#top').style.opacity=top.toFixed(3); document.body.classList.toggle('full',top===0);
+ tabs(t,cur?cur.dataset.ch:'');
+ // captions rise out of their band
  const cb=$('#capbox'); const c=EP.captions.find(c=>t>=c[0]&&t<c[1]);
- if(c){if(cb.dataset.k!==String(c[0])){cb.innerHTML=c[2];cb.dataset.k=String(c[0]);hug(cb);}cb.style.opacity=Math.min(1,(t-c[0])/0.18,(c[1]-t)/0.18);}else cb.style.opacity=0;
- // ticker
- if(!tkW)tkW=$('#track').scrollWidth/2;
- $('#track').style.transform=`translateX(${300-((t*80)%tkW)}px)`;
+ if(c){if(cb.dataset.k!==String(c[0])){cb.style.transform='';cb.innerHTML=c[2];cb.dataset.k=String(c[0]);hug(cb);}const k=REV(prog(t,c[0],REVEAL));
+  cb.style.opacity=1;cb.style.transform=k<1?`translateY(${((1-k)*100).toFixed(1)}%)`:'';}
+ else {cb.style.opacity=0;cb.style.transform='';}
+ // ticker: constant speed, independent of the scenes
+ if(tkW) $('#track').style.transform=`translateX(${(300-((t*TICKER)%tkW)).toFixed(1)}px)`;
 }
 window.seek=seek;
