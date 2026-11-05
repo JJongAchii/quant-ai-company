@@ -832,15 +832,60 @@ def video_job(store, edition, state):
 
 
 @pytest.mark.integration
-async def test_no_email_turn_starts_while_the_video_needs_the_model(mail, brief):  # noqa: F811
+@pytest.mark.parametrize("state", ["queued", "reviewing", "synthesizing", "inspecting"])
+async def test_an_email_turn_beside_a_video_needing_the_model_is_api_only(mail, brief, state):  # noqa: F811
+    # Owner, 2026-11-05: the email is written while the episode works, on the API lane only (it never takes the
+    # subscription slot the episode holds), so the morning email goes out about 07:35 instead of after 08:15.
     store, _ = mail
     edition = commit_pm(brief)
     writer, provider = await write(store, v5_draft())
-    for state in ("queued", "reviewing", "synthesizing", "inspecting"):
-        video_job(store, edition, state)
-        assert await writer.tick() == {"state": "idle"} and not provider.calls, state
-    video_job(store, edition, "rendering")
+    video_job(store, edition, state)
     assert (await writer.tick())["state"] == "ready" and len(provider.calls) == 1
+    assert provider.calls[0].api_only is True
+
+
+@pytest.mark.integration
+async def test_an_email_turn_with_no_video_needing_the_model_may_use_either_lane(mail, brief):  # noqa: F811
+    store, _ = mail
+    edition = commit_pm(brief)
+    writer, provider = await write(store, v5_draft())
+    video_job(store, edition, "rendering")
+    assert (await writer.tick())["state"] == "ready" and provider.calls[0].api_only is False
+
+
+@pytest.mark.integration
+async def test_an_api_only_email_turn_the_lane_refuses_waits_without_using_an_attempt(mail, brief):  # noqa: F811
+    store, clock = mail
+    edition = commit_pm(brief)
+    refused = ProviderFault("busy", "simulated: the API lane cannot take this turn now", 300)
+    writer, provider = await write(store, refused, v5_draft())
+    video_job(store, edition, "reviewing")
+    assert await writer.tick() == {"issue": str(issue_of(store, edition)["id"]), "state": "waiting", "code": "api_lane"}
+    first = provider.calls[0]
+    issue = issue_of(store, edition)
+    assert first.api_only and [a["outcome"] for a in issue["attempts"]] == ["yielded"] and issue["request"] is None
+    clock["at"] += timedelta(minutes=4)
+    assert await writer.tick() == {"state": "idle"} and len(provider.calls) == 1  # waits five minutes
+    video_job(store, edition, "rendering")
+    clock["at"] += timedelta(minutes=2)
+    # A new request once the episode leaves the model: it may now use the subscription like before.
+    assert (await writer.tick())["state"] == "ready"
+    assert provider.calls[1].request_id == first.request_id[:-1] + "2" and provider.calls[1].api_only is False
+    assert [a["outcome"] for a in issue_of(store, edition)["attempts"]] == ["yielded", "passed"]
+
+
+@pytest.mark.integration
+async def test_an_api_only_email_turn_is_never_cancelled_for_the_video(mail, brief):  # noqa: F811
+    store, clock = mail
+    edition = commit_pm(brief)
+    pending = ProviderFault("pending", "simulated: still running", 20)
+    writer, provider = await write(store, pending, v5_draft())
+    video_job(store, edition, "inspecting")
+    await writer.tick()
+    first = provider.calls[0].request_id
+    clock["at"] += timedelta(seconds=30)
+    assert (await writer.tick())["state"] == "ready"
+    assert provider.cancelled == [] and [c.request_id for c in provider.calls] == [first, first]
 
 
 @pytest.mark.integration
@@ -875,13 +920,14 @@ async def test_newsletter_does_not_yield_a_turn_the_runtime_kept(mail, brief):  
     before = issue_of(store, edition)
     video_job(store, edition, "inspecting")
     clock["at"] += timedelta(seconds=30)
-    assert await writer.tick() == {"state": "idle"}
-    # The turn runs on the API lane and holds no shared slot: it is asked about, never given up.
-    assert provider.cancelled == [first] and provider.cancel_scopes == [True] and len(provider.calls) == 1
+    assert (await writer.tick())["state"] == "ready"
+    # The turn runs on the API lane and holds no shared slot: it is asked about, never given up, and asked again by
+    # its own ID for its result.
+    assert provider.cancelled == [first] and provider.cancel_scopes == [True]
+    assert [c.request_id for c in provider.calls] == [first, first]
     issue = issue_of(store, edition)
-    assert len(issue["attempts"]) == len(before["attempts"]) and issue["request"] is not None
-    assert issue["request"]["request_id"] == first
-    assert "yielded" not in [a["outcome"] for a in issue["attempts"]]
+    assert len(before["attempts"]) == 0 and [(a["request_id"], a["outcome"]) for a in issue["attempts"]] == [
+        (first, "passed")]
 
 
 @pytest.mark.integration
@@ -937,16 +983,14 @@ async def test_an_api_email_turn_kept_for_the_video_is_used_by_its_id_after_it_c
     first = issue_of(store, edition)["request"]["request_id"]
     video_job(store, edition, "inspecting")
     clock["at"] += timedelta(seconds=30)
-    assert await writer.tick() == {"state": "idle"}  # kept: the API turn holds no shared slot
-    api.gate.set()
-    assert (await asyncio.gather(*provider.open))[0].usage["billing_mode"] == "api_credit"
-    clock["at"] += timedelta(seconds=30)
-    # The shared-only cancel now answers completed: the finished result waits under its ID, nothing is yielded.
-    assert await writer.tick() == {"state": "idle"}
+    # Kept: the API turn holds no shared slot; asked again by its ID, it is still running.
+    assert (await writer.tick())["code"] == "pending" and len(api.seen) == 1
     issue = issue_of(store, edition)
     assert issue["attempts"] == [] and issue["request"]["request_id"] == first
-    video_job(store, edition, "rendering")
-    clock["at"] += timedelta(minutes=2)
+    api.gate.set()
+    assert all(r.usage["billing_mode"] == "api_credit" for r in await asyncio.gather(*provider.open))
+    clock["at"] += timedelta(seconds=30)
+    # The shared-only cancel now answers completed and the finished result is read under its ID; nothing is yielded.
     assert (await writer.tick())["state"] == "ready"
     issue = issue_of(store, edition)
     assert [(a["request_id"], a["outcome"]) for a in issue["attempts"]] == [(first, "passed")]

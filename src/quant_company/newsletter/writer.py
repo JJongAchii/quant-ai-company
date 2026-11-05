@@ -1,12 +1,14 @@
 """Writes the email on claude-runtime, in the video worker (the process that already holds that runtime's token).
 
 One turn per tick, with its own queue and records: a failure here never touches a video job or the brief. The
-runtime has one slot and the edition's video comes first, so no turn starts while an episode needs the model, and a
-turn the fallback replaced is cancelled (its output is never used). The request is frozen before it is sent, so a turn
-still running is asked again by the same ID."""
+runtime has one subscription slot and the edition's video comes first: a turn asked while an episode needs the model is
+API-only (owner, 2026-11-05: the email is written beside the episode, not after it), and a turn the fallback replaced
+is cancelled (its output is never used). The request is frozen before it is sent, so a turn still running is asked
+again by the same ID."""
 
 import asyncio
 import logging
+from datetime import timedelta
 
 from pydantic import ValidationError
 
@@ -24,6 +26,9 @@ LOG = logging.getLogger(__name__)
 EFFORT = "high"
 MODEL_WAIT_SECONDS = 120
 WAITS = {"busy": 20, "quota": 900, "pending": 20, "unavailable": 60, "auth": 300}
+# An API-only turn the lane could not take: asked again as a new request after this long, API-only again only while the
+# episode still needs the model.
+LANE_WAIT = timedelta(minutes=5)
 
 
 class NewsletterWriter:
@@ -52,7 +57,7 @@ class NewsletterWriter:
         feedback = (last.get("findings") or [f"{last['outcome']}: {last.get('detail', '')}"]) if last else []
         request = ClaudeRequest(request_id=identity, model=self.settings.video_model, reasoning_effort=EFFORT,
                                 prompt=prompt(issue["source"], written[-1]["draft"] if written else None, feedback),
-                                output_contract="newsletter_v1")
+                                output_contract="newsletter_v1", api_only=self.store.video_needs_model())
         self.store.freeze_request(issue, request.model_dump(mode="json"))
         return request
 
@@ -101,6 +106,11 @@ class NewsletterWriter:
         try:
             response = await self.provider.run(request)
         except ProviderFault as error:
+            if error.code == "busy" and request.api_only:
+                # The API lane could not take it and nothing reached the subscription: a new request later, decided
+                # again then (no attempt used).
+                await asyncio.to_thread(self.store.yielded, issue, request.request_id, wait=LANE_WAIT)
+                return {"state": "waiting", "code": "api_lane"}
             if error.code in WAITS:
                 # Nothing was produced (or the turn still runs): the same request is asked again later.
                 await asyncio.to_thread(self.store.defer, issue, error.retry_after_seconds or WAITS[error.code],

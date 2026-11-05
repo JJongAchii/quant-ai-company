@@ -177,6 +177,9 @@ def request_digest(request: ProviderRequest) -> str:
         material.pop("attachments", None)
     if request.brief_deadline_unix is None:
         material.pop('brief_deadline_unix', None)
+    if not material.get("api_only"):
+        # claude-runtime's API-only flag (ClaudeRequest): every other request keeps its digest.
+        material.pop("api_only", None)
     canonical = json.dumps(material, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(canonical.encode()).hexdigest()
 

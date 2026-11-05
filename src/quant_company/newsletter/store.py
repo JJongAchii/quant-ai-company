@@ -26,8 +26,9 @@ AM_FALLBACK_BY = time(8, 40)
 # Regular sends of an edition start within this window; a flag switched on later never mails an old edition.
 SEND_WINDOW = timedelta(hours=12)
 AUTO_ATTEMPTS, TEST_ATTEMPTS = 3, 1
-# claude-runtime runs one turn at a time and the edition's video comes first: no email turn starts while an episode of
-# the last day is in a stage that calls the model (video/store.py LOGIN_STAGES).
+# The episode holds claude-runtime's one subscription slot while an episode of the last day is in a stage that calls
+# the model (video/store.py LOGIN_STAGES). An email turn asked then is API-only (owner, 2026-11-05): it runs beside the
+# episode on the API lane, or waits when the lane cannot take it; it never takes the episode's slot.
 VIDEO_MODEL_STATES = ("queued", "reviewing", "synthesizing", "inspecting")
 VIDEO_NEEDS_MODEL = """EXISTS (SELECT 1 FROM video_jobs v WHERE v.state=ANY(%(video_states)s)
     AND v.created_at>%(video_since)s)"""
@@ -134,17 +135,17 @@ class NewsletterStore:
             return bool(conn.execute("SELECT 1 FROM newsletter_issues WHERE state='writing' LIMIT 1").fetchone())
 
     def claim_writing(self, at=None):
-        """The next issue the writer may ask claude-runtime about: before its fallback time, attempts left, either an
-        automatic issue with the flag on or a waiting test send, and no episode needing the model."""
+        """The next issue the writer may ask claude-runtime about: before its fallback time, attempts left, and either an
+        automatic issue with the flag on or a waiting test send. An episode needing the model only makes the turn
+        API-only (video_needs_model)."""
         at = at or utcnow()
         with self.db.transaction() as conn:
             row = conn.execute(f"""SELECT * FROM newsletter_issues i WHERE state='writing' AND next_at<=%(at)s
                 AND (lease_until IS NULL OR lease_until<%(at)s) AND fallback_at>%(at)s AND {WRITTEN}<max_attempts
                 AND ((auto AND %(enabled)s) OR EXISTS (SELECT 1 FROM newsletter_sends s WHERE s.issue_id=i.id
                      AND s.kind='test' AND s.state='pending'))
-                AND NOT {VIDEO_NEEDS_MODEL}
                 ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1""",
-                               {"at": at, "enabled": self.settings.newsletter_enabled, **video_window(at)}).fetchone()
+                               {"at": at, "enabled": self.settings.newsletter_enabled}).fetchone()
             if row:
                 conn.execute("UPDATE newsletter_issues SET lease_until=%s WHERE id=%s", (at + timedelta(minutes=15), row["id"]))
             return row
@@ -174,21 +175,29 @@ class NewsletterStore:
                                (Jsonb(draft.model_dump(mode="json")), Jsonb([as_json(record)]), issue["id"])).fetchone()
             return bool(row)
 
+    def video_needs_model(self, at=None):
+        """Whether an episode of the last day holds the subscription slot now: a new email turn is then API-only."""
+        at = at or utcnow()
+        with self.db.transaction() as conn:
+            return conn.execute(f"SELECT {VIDEO_NEEDS_MODEL} AS busy", video_window(at)).fetchone()["busy"]
+
     def in_flight_while_video(self, at=None):
-        """Emails whose frozen turn may hold the runtime slot while an episode needs the model."""
+        """Emails whose frozen turn may hold the runtime slot while an episode needs the model (an API-only turn never
+        does)."""
         at = at or utcnow()
         with self.db.transaction() as conn:
             return conn.execute(f"""SELECT * FROM newsletter_issues WHERE state='writing' AND request IS NOT NULL
-                AND {VIDEO_NEEDS_MODEL}""", video_window(at)).fetchall()
+                AND NOT coalesce((request->>'api_only')::boolean, false) AND {VIDEO_NEEDS_MODEL}""",
+                                video_window(at)).fetchall()
 
-    def yielded(self, issue, request_id, at=None):
+    def yielded(self, issue, request_id, at=None, wait=timedelta(minutes=1)):
         """The turn was given up for the video: a new request later, without using an attempt."""
         at = at or utcnow()
         record = {"n": len(issue["attempts"]) + 1, "request_id": request_id, "outcome": "yielded", "at": at.isoformat()}
         with self.db.transaction() as conn:
             conn.execute("""UPDATE newsletter_issues SET attempts=attempts||%s::jsonb,request=NULL,next_at=%s,
                 updated_at=now() WHERE id=%s AND state='writing'""",
-                         (Jsonb([record]), at + timedelta(minutes=1), issue["id"]))
+                         (Jsonb([record]), at + wait, issue["id"]))
 
     def cancels(self):
         with self.db.transaction() as conn:
