@@ -1001,8 +1001,9 @@ def test_the_thumbnail_names_its_edition_and_carries_the_watched_progress_strip(
 
     html = files('quant_company.video').joinpath('design', 'thumbnail.html').read_text()
     assert '아침 시장 브리핑' not in html and '{{brand}}' in html  # the close edition reads 마감 브리핑
-    # Every thumbnail carries the red strip at half width along its bottom edge (owner request 2026-10-12).
-    assert '<div class="resume"><i></i></div>' in html and 'width:50%;background:#FF0000' in html
+    # Every thumbnail carries the red strip along its bottom edge (owner request 2026-10-12): half its width until the
+    # owner asked for a tenth on 2026-11-05.
+    assert '<div class="resume"><i></i></div>' in html and 'width:10%;background:#FF0000' in html
 
 
 async def test_an_uncertain_model_turn_is_a_failed_attempt_and_the_episode_is_still_delivered(brief, video, tmp_path,  # noqa: F811
