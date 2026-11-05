@@ -20,9 +20,10 @@ background:linear-gradient(rgba(120,170,255,.16) 2px,transparent 2px) 0 0/100% 6
 .n{padding-left:4px;font-size:40px;font-weight:700;color:#EEF2FA}.n.up{color:#FF5C66}.n.dn{color:#5E9BFF}
 .bar{position:absolute;left:0;right:0;bottom:0;height:100px;background:linear-gradient(180deg,rgba(14,30,72,.94),rgba(5,12,32,.97));border-top:1px solid rgba(255,255,255,.18);box-shadow:0 -10px 30px rgba(0,4,16,.45);display:flex;align-items:center;padding:0 56px;gap:16px;font-size:34px;font-weight:800}
 .bar img{height:58px;filter:drop-shadow(0 0 12px rgba(255,212,59,.35))}.bar span{color:#FFD43B;font-weight:700;font-size:30px}.s{margin-left:auto;font-size:22px;color:#FF9FB0;font-weight:700}
-/* Watched-progress strip along the bottom edge, styled like YouTube's resume bar (owner request 2026-10-12). */
+/* Watched-progress strip along the bottom edge, styled like YouTube's resume bar (owner request 2026-10-12); the red
+   part is a tenth of the width (owner, 2026-11-05; it was half). */
 .resume{position:absolute;left:0;right:0;bottom:0;height:12px;background:rgba(255,255,255,.45);z-index:5}
-.resume i{display:block;height:100%;width:50%;background:#FF0000}
+.resume i{display:block;height:100%;width:10%;background:#FF0000}
 </style><div class="floor"></div><div class="img"></div><div class="badge">{{date}}</div>
 <div class="copy"><div class="q">{{question}}</div><div class="n {{stat_dir}}">{{stat}}</div></div>
 <div class="bar"><img src="brand_mark.svg">그래서, 오늘장<span>{{brand}}</span><div class="s">{{mark}}</div></div>
