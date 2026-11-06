@@ -723,27 +723,37 @@ async def produce_inspected(store, tmp_path, monkeypatch, provider, renderer, br
 async def test_a_new_job_carries_the_owner_craft_rules_in_its_script_and_review_prompts(brief, video, tmp_path, monkeypatch):  # noqa: F811
     # Owner, 2026-10-22: hook, one metaphor, short thumbnail text, a closing question (video/craft.py), frozen per job.
     from quant_company.video.contracts import VisualReview
-    from quant_company.video.craft import CRAFT_GUIDE, CRAFT_VERSION, OUTLOOK, VERSIONS, with_craft
+    from quant_company.video.craft import (
+        CRAFT_GUIDE,
+        CRAFT_VERSION,
+        OUTLOOK,
+        VERSIONS,
+        recent_block,
+        with_craft,
+    )
 
     store, _ = video
     store.settings.video_upload_enabled = store.settings.video_publish_enabled = False
     provider = InspectingProvider(visual=[VisualReview(passed=True, issues=[])])
     job, _speech = await produce_inspected(store, tmp_path, monkeypatch, provider, InspectedRenderer(), brief)
     assert job['state'] == 'delivering', job['error']
-    assert job['policy']['craft'] == CRAFT_VERSION
+    assert job['policy']['craft'] == CRAFT_VERSION == 3
     script = next(c for c in provider.calls if c.output_contract == 'video_episode_v1').prompt
     rules, data = script.rsplit('\n', 1)
-    assert rules.endswith(VERSIONS[CRAFT_VERSION][0]) and json.loads(data)['lines']  # the data stays the last line
-    # Version 2 (owner, 10/22): the close states the outlook, conditions and direction only.
-    assert rules.endswith(CRAFT_GUIDE + OUTLOOK) and 'never a level, size or timed move' in OUTLOOK
+    # Version 3 (owner, 11/06) ends with the recent hooks it must not echo; the data stays the last line.
+    assert rules.endswith(VERSIONS[CRAFT_VERSION][0] + recent_block([])) and json.loads(data)['lines']
+    # Version 2 (owner, 10/22): the close states the outlook, conditions and direction only; version 3 keeps it.
+    assert OUTLOOK in VERSIONS[3][0] and 'never a level, size or timed move' in OUTLOOK
     assert 'Leave the base case out when the lines give no basis' in OUTLOOK and "line's own strength" in OUTLOOK
     review = next(c for c in provider.calls if c.output_contract == 'video_review_v1').prompt
     plan = episode()  # the lengths are measured by the service, not counted by the reviewer
     assert f'the title hook is {len(plan.upload.title)} characters, the thumbnail text {len(plan.thumbnail)})' in review
-    assert review.endswith('or a view the lines do not give.')
-    # A job frozen with version 1 keeps version 1's text after the change.
-    plain = rules[:-len(CRAFT_GUIDE + OUTLOOK) - 1] + '\n' + data
-    assert with_craft(plain, {'craft': 1}) == rules[:-len(OUTLOOK)] + '\n' + data
+    assert review.endswith('or repeats the opening, the ending or the shape of a recent hook: none.')
+    # Jobs frozen with versions 1 and 2 keep their text after the change.
+    head = rules[:-len(VERSIONS[3][0] + recent_block([])) - 1]
+    plain = head + '\n' + data
+    assert with_craft(plain, {'craft': 2}) == head + '\n' + CRAFT_GUIDE + OUTLOOK + '\n' + data
+    assert with_craft(plain, {'craft': 1}) == head + '\n' + CRAFT_GUIDE + '\n' + data
 
 
 async def test_a_job_created_before_the_craft_rules_keeps_its_prompts(brief, video, tmp_path, monkeypatch):  # noqa: F811

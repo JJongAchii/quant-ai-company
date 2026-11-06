@@ -107,6 +107,9 @@ class Settings(BaseSettings):
     video_alignment_threads: int = Field(default=2, ge=1, le=16)
     # motion-v2: fixed card/motion template (docs/DAILY_BRIEF_DESIGN_SPEC.md); text-v1: the earlier text slides.
     video_template: Literal["motion-v2", "text-v1"] = "motion-v2"
+    # Each motion episode's thumbnail is designed for that episode by Claude and drawn on the worker (owner, 2026-11-06;
+    # video/thumbnail.py); false keeps the template thumbnail. Frozen into each new job's policy.
+    video_thumbnail_design: bool = True
     video_asset_dir: Path = Path("/var/lib/quant-company/video-assets")
     video_render_workers: int = Field(default=1, ge=1, le=16)
     # Story-specific pictures from the separate Codex image runtime (subscription; empty URL = library images only).

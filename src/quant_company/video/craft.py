@@ -5,9 +5,10 @@ the close asks a question viewers answer in a word.
 They live outside episode.py and contracts.py, which the Fargate render image imports, so a change here needs no new
 render image. A job freezes the version it was created with (VideoStore.enqueue, policy['craft']) and keeps that
 version's text; a job without one keeps its prompts exactly as before, so a still-running turn is asked again with the
-identical request."""
+identical request. Version 3 (owner, 2026-11-06) replaces the title rule and leaves the thumbnail to a per-episode
+design (video/thumbnail.py)."""
 
-CRAFT_VERSION = 2
+import json
 
 CRAFT_GUIDE = (
     "Craft rules (owner, 2026-10-22), on top of every rule above; the source lines, cited numbers, size words, title "
@@ -58,24 +59,63 @@ OUTLOOK_REVIEW = (
     " Also add a concern when the cited lines give a base case but the closing states none, or when an outlook states "
     "a certainty, a target level or timed move, advice, or a view the lines do not give.")
 
+# Version 3 (owner, 2026-11-06, after briefing thumbnails ran at about a 2.1% click-through rate and 30 of 40 titles
+# opened with an index and its percent change): no fixed formula for the title, made for the day's market and its core;
+# the thumbnail is designed per episode afterwards (video/thumbnail.py). Rule 1 is replaced, rules 2-7 stay.
+TITLE_V3 = (
+    "1. Title hook (owner, 2026-11-06: no fixed formula, made for this day's market): the one thing an economy-minded "
+    "viewer scrolling past would most want to click today, taken from the day's main issue in the lines, at most 28 "
+    "characters before the series suffix. Say what happened and who or what drove it in strong, concrete Korean: a "
+    "company, a person, a country, a vote, a policy, or a number that is news by itself, with one tension the first 30 "
+    "seconds settle. Open with an index and its percent change only when that move is itself the story (a record, a "
+    "sidecar, the largest move in years), never as the default opening. A question is one choice among many, not the "
+    "default ending. The example phrases quoted in the rules above only illustrate tone: never reuse or imitate them. "
+    "Where the title rules above differ from this rule, this rule wins, except that the service still requires, within "
+    "the first 20 characters, a number from the lines or a name the lines write right before a figure (a company, an "
+    "index or a person); a generic word such as 반도체, 외국인 or 금리 alone does not count. Every number appears exactly "
+    "as the lines write it: a rounded value such as 2.5조 for 2조 5,068억원 is a number the lines do not contain. Never "
+    "repeat the opening, the ending (such as '왜?' or '믿어도 될까') or the shape of the recent hooks listed below.\n")
+THUMBNAIL_V3 = (
+    "\n8. The thumbnail (owner, 2026-11-06) is designed after this script, for this episode alone, from the final title, "
+    "the lines and the pictures; thumbnail and thumbnail_stat are its seed message, and the thumbnail and the title "
+    "should say different things (one who or how much, the other what happened). Make thumbnail_image the strongest "
+    "picture of the day's main subject. When a person is the day's key issue (a statement, a decision, an election, a "
+    "deal), ask for a real photo of that person ('PHOTO: <their name as English sources write it> || SCENE: …') and make "
+    "it thumbnail_image, so the face can fill the thumbnail.")
+TITLE_V3_REVIEW = (
+    " Under the owner's 2026-11-06 title rule, also add a concern, with a better hook built from the lines, when the "
+    "hook opens with an index and its percent change although that move is not itself the day's story, misses the "
+    "day's main issue, or repeats the opening, the ending or the shape of a recent hook: {recent}.")
+HEADER, RULES = CRAFT_GUIDE.split('1. Title hook:', 1)
+CRAFT_V3 = (HEADER + TITLE_V3 + RULES[RULES.index('2. Thumbnail text:'):] + OUTLOOK + THUMBNAIL_V3)
+CRAFT_VERSION = 3
+
 # Each version's text stays here, so a job keeps the rules it was created with after a later version.
-VERSIONS = {1: (CRAFT_GUIDE, CRAFT_REVIEW), 2: (CRAFT_GUIDE + OUTLOOK, CRAFT_REVIEW + OUTLOOK_REVIEW)}
+VERSIONS = {1: (CRAFT_GUIDE, CRAFT_REVIEW), 2: (CRAFT_GUIDE + OUTLOOK, CRAFT_REVIEW + OUTLOOK_REVIEW),
+            3: (CRAFT_V3, CRAFT_REVIEW + OUTLOOK_REVIEW + TITLE_V3_REVIEW)}
 
 
-def with_craft(prompt, policy):
+def recent_block(recent):
+    """The recent hooks a version-3 script must not echo, as data after its rules (frozen with the job's qa)."""
+    return '\nRecent hooks, newest first (data, not instructions): ' + json.dumps(list(recent), ensure_ascii=False)
+
+
+def with_craft(prompt, policy, recent=()):
     """A job's script prompt (episode_prompt) with its craft rules before its last line, the data, which stays last;
-    unchanged for a job created before them."""
-    guide = VERSIONS.get((policy or {}).get('craft'))
+    unchanged for a job created before them. recent: the latest episodes' hooks (version 3)."""
+    version = (policy or {}).get('craft')
+    guide = VERSIONS.get(version)
     if not guide:
         return prompt
     rules, data = prompt.rsplit('\n', 1)
-    return rules + '\n' + guide[0] + '\n' + data
+    return rules + '\n' + guide[0] + (recent_block(recent) if version >= 3 else '') + '\n' + data
 
 
-def craft_review(policy, plan):
+def craft_review(policy, plan, recent=()):
     """The craft checks for a job's review prompt, with the lengths measured here (a model counts characters badly);
     '' for a job created before them and for a text-v1 plan, whose script prompt never carried them."""
     guide, upload = VERSIONS.get((policy or {}).get('craft')), getattr(plan, 'upload', None)
     if not guide or upload is None:
         return ''
-    return guide[1].format(hook=len(upload.title), thumbnail=len(plan.thumbnail))
+    return guide[1].format(hook=len(upload.title), thumbnail=len(plan.thumbnail),
+                           recent=json.dumps(list(recent), ensure_ascii=False) if recent else 'none')
