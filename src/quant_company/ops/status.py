@@ -110,7 +110,7 @@ def host(conn, now=None):
                                                              "key_present", "last_refusal")}
     if api := payload.get("openai_api"):
         value["openai_api"] = {key: api.get(key) for key in ("reason", "grant_id", "budget_usd",
-            "accounted_usd", "expires_at", "calls", "paused_until", "updated_at")}
+            "accounted_usd", "budget_mode", "expires_at", "calls", "paused_until", "updated_at")}
     return value
 
 
@@ -273,8 +273,11 @@ def status_text(value):
                  "subscription_budget_or_pause": "구독 전환(예산·대기)",
                  "subscription_api_refused": "구독 전환(API 거절)",
                  "reservation_exceeded": "예산 대사 필요"}.get(api.get("reason"), "확인 필요")
-        lines.append(f"🤖 OpenAI 무료 API: 예약 포함 ${api.get('accounted_usd') or 0:.2f} / "
-                     f"${api.get('budget_usd') or 0:.2f} · 만료 {kst(api.get('expires_at'))}"
+        monthly = api.get("budget_mode") == "owner_monthly_cap"
+        label = "OpenAI API 월예산" if monthly else "OpenAI 무료 API"
+        boundary = "예산 갱신" if monthly else "만료"
+        lines.append(f"🤖 {label}: 예약 포함 ${api.get('accounted_usd') or 0:.2f} / "
+                     f"${api.get('budget_usd') or 0:.2f} · {boundary} {kst(api.get('expires_at'))}"
                      f" · 최근 판단 {route}")
     for item in value["briefings"][:2]:
         label = BRIEF_STATES.get(item["state"], item["state"])

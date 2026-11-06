@@ -16,7 +16,7 @@ from quant_company.contracts import ProviderFault, ProviderRequest, ProviderSess
 from quant_company.providers.codex_release import SUPPORTED_CLI_VERSION
 from quant_company.providers.codex_runner import CodexRunner, RunnerConfig, atomic_json, request_digest
 from quant_company.providers.codex_runtime import create_app, runner_from_environment
-from quant_company.providers.openai_credits import CreditGrant, cost_ceiling, request_body
+from quant_company.providers.openai_credits import CreditGrant, MonthlyApiBudget, cost_ceiling, request_body
 from tests.test_codex_runtime import FAKE_CODEX
 
 
@@ -337,3 +337,77 @@ async def test_api_enabled_subscription_continuation_preserves_numeric_session_u
     assert not calls and len(cli_calls()) == 2
     receipt = json.loads((config.jobs_dir / (second.request_id + ".json")).read_text())
     assert receipt["session_usage"] == {"input_tokens": 30, "output_tokens": 10}
+
+
+def monthly_policy(cap=120):
+    return {"version": 2, "budget_id": "owner-monthly-api", "monthly_cap_usd": cap,
+            "api_spend_authorized": True}
+
+
+@pytest.mark.parametrize("at,start,end", [
+    ("2026-11-06T00:00:00Z", "2026-11-01T00:00:00+09:00", "2026-12-01T00:00:00+09:00"),
+    ("2026-12-31T15:00:00Z", "2027-01-01T00:00:00+09:00", "2027-02-01T00:00:00+09:00"),
+    ("2028-02-28T15:00:00Z", "2028-02-01T00:00:00+09:00", "2028-03-01T00:00:00+09:00"),
+])
+def test_monthly_budget_uses_kst_calendar_not_assumed_credit_expiry(at, start, end):
+    policy = MonthlyApiBudget.model_validate(monthly_policy())
+    window = policy.window(datetime.fromisoformat(at).timestamp())
+    assert window.starts_at.isoformat() == start and window.expires_at.isoformat() == end
+    assert window.budget_usd == 120 and window.budget_mode == "owner_monthly_cap"
+    assert "free_only_confirmed" not in window.model_dump()
+
+
+def test_monthly_budget_requires_authorization_and_cannot_exceed_owner_cap():
+    for change in ({"monthly_cap_usd": 120.01}, {"monthly_cap_usd": 0},
+                   {"api_spend_authorized": False}, {"api_spend_authorized": 1}):
+        with pytest.raises(ValueError):
+            MonthlyApiBudget.model_validate({**monthly_policy(), **change})
+
+
+async def test_monthly_cap_exhaustion_uses_subscription_then_resumes_new_month(credit_runtime):
+    runner, request, calls, cli_calls, _, config, _ = credit_runtime
+    config.api_grant_file.write_text(json.dumps(monthly_policy()))
+    moment = [datetime.fromisoformat("2026-11-06T00:00:00Z").timestamp()]
+    runtime = runner()
+    runtime.api_lane.clock = lambda: moment[0]
+    window = MonthlyApiBudget.model_validate(monthly_policy()).window(moment[0])
+    with runtime.api_lane.locked(window) as ledger:
+        ledger["entries"]["previous-staff-work"] = {"reserved": 120, "settled": 120}
+    result = await runtime.run(request)
+    assert result.usage["billing_mode"] == "subscription" and not calls
+    moment[0] = datetime.fromisoformat("2026-11-30T15:00:00Z").timestamp()
+    next_request = request.model_copy(update={"request_id": str(uuid4())})
+    result = await runtime.run(next_request)
+    assert result.usage["api_budget_mode"] == "owner_monthly_cap"
+    assert result.usage["api_grant_id"].endswith("2026-12")
+    assert len(calls) == 1 and len(cli_calls()) == 1
+    status = json.loads((config.jobs_dir / "openai-api/status.json").read_text())
+    assert status["budget_mode"] == "owner_monthly_cap" and status["budget_usd"] == 120
+
+
+async def test_monthly_budget_works_without_free_grant_expiry_or_balance_confirmation(credit_runtime):
+    runner, request, calls, cli_calls, _, config, _ = credit_runtime
+    config.api_grant_file.write_text(json.dumps(monthly_policy()))
+    result = await runner().run(request)
+    assert result.usage["api_budget_mode"] == "owner_monthly_cap"
+    assert len(calls) == 1 and not cli_calls()
+
+
+async def test_monthly_api_credit_refusal_pauses_until_next_month_without_purchase(credit_runtime):
+    runner, request, calls, cli_calls, _, config, _ = credit_runtime
+    config.api_grant_file.write_text(json.dumps(monthly_policy()))
+    moment = [datetime.fromisoformat("2026-11-06T00:00:00Z").timestamp()]
+
+    def denied(req):
+        calls.append(req)
+        return httpx.Response(429, json={"error": {"code": "credit_balance_exhausted"}})
+
+    runtime = runner(httpx.MockTransport(denied))
+    runtime.api_lane.clock = lambda: moment[0]
+    for _ in range(2):
+        result = await runtime.run(request.model_copy(update={"request_id": str(uuid4())}))
+        assert result.usage["billing_mode"] == "subscription"
+    assert len(calls) == 1
+    moment[0] = datetime.fromisoformat("2026-11-30T15:00:00Z").timestamp()
+    await runtime.run(request.model_copy(update={"request_id": str(uuid4())}))
+    assert len(calls) == 2 and len(cli_calls()) == 3

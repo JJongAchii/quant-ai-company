@@ -241,7 +241,7 @@ def openai_api(path=STATE / 'codex/jobs/openai-api/status.json'):
         return None
     if not isinstance(value, dict):
         raise ValueError('OpenAI API status is not an object')
-    return {key: value.get(key) for key in ('reason', 'grant_id', 'budget_usd', 'accounted_usd',
+    return {key: value.get(key) for key in ('reason', 'grant_id', 'budget_usd', 'accounted_usd', 'budget_mode',
                                            'expires_at', 'calls', 'paused_until', 'updated_at')}
 
 

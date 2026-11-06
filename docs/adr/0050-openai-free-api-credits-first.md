@@ -1,23 +1,23 @@
-# 0050: Confirmed free OpenAI API credits before ChatGPT subscription
+# 0050: Owner-capped OpenAI API budget before ChatGPT subscription
 
-Date: 2026-11-05. Status: implementation proposed; disabled until owner billing facts and operator activation.
+Date: 2026-11-05; updated 2026-11-06. Status: proposed implementation; production activation pending.
 
-The owner asks to use the Pro subscription's expiring API benefit before the staff's signed-in Codex allowance.
-The benefit covers direct Responses API usage and excludes API-key Codex usage. Keep the official ChatGPT
-CLI authentication boundary and add an explicitly enabled direct Responses transport in the isolated runtime.
+The owner requests API-first staff execution followed by the existing signed-in Codex subscription. On November 6
+the owner explicitly replaces the grant-expiry prerequisite with an assumed **$120 monthly service spend cap**.
+This authorizes bounded API spend; it does not establish that every API charge is covered by a free subscription benefit.
 
-A remaining-credit grant has an immutable ID, explicit start/expiry, a maximum $200 allowance and an operator
-confirmation of free-only organization billing. It is not a balance scraped from credentials or an automatically
-renewing $200 assumption. Both runtime containers reserve and settle against the same durable locked ledger.
-Routing is service-owned, with existing input digests, typed proposals and canonical request receipts.
-Legacy wire provider=codex continues to identify the company model family; usage.backend and billing_mode
-distinguish actual Responses API execution from the official Codex CLI. No API key enters the CLI environment.
+Version 2 policy has a stable budget ID, monthly_cap_usd at most 120, and explicit api_spend_authorized=true.
+It derives an immutable KST calendar-month window and ID, using the shared durable locked ledger. No billing-cycle
+dates or free-only assertion are required. Version 1 confirmed-expiring-grant policies remain compatible.
+The service reserves conservative maximum cost before dispatch, settles bounded token usage and preserves unknown
+reservations. API budget exhaustion or explicit nonexecuting rejection uses the subscription; possibly executed
+requests never automatically replay. Credit exhaustion pauses API until the next monthly window, without purchasing credits.
 
-Only requests with validated prices and no pinned continuation/native search/images may use the API.
-Explicit pre-execution denials or an unavailable allowance use the subscription. Potentially executed requests
-never automatically replay on either route. Budget includes pending reservations, 30m cache writes and
-long-context rates; output reasoning is not counted twice. Unknown outcomes keep reservations.
+Preserve selected models/effort, input digests, account revisions, typed proposals and canonical receipts. Model family
+provider=codex remains wire-compatible; usage.backend, api_budget_mode and billing_mode identify the actual path.
+Native search, pinned continuations, images, backup accounts and unpriced/legacy-effort requests keep their subscription path.
+No API key enters the CLI environment. Operator status says API monthly budget rather than verified free credits.
 
-The default-off release adds no service, database credential, host unit or render change. Activation files and
-the runtime.env switch go to the release operator with the reviewed, CI-green main SHA. No host edits are made
-by this development task. See [runbook](../runbooks/openai-credits.md) for exact paths and activation facts.
+Production follows the reviewed-main release path. The release operator receives the final main SHA, the existing key
+through a private file, the exact version 2 policy and OPENAI_API_ENABLED=true. Development does not edit the host.
+See [runbook](../runbooks/openai-credits.md) for activation and reconciliation.

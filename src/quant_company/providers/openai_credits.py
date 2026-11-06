@@ -1,6 +1,6 @@
 """Owner-enabled Responses API credits before the existing ChatGPT subscription.
 
-The grant is an operator-confirmed remaining allowance, not an inferred OpenAI balance.
+An owner-approved monthly spend cap or a confirmed grant bounds API use; neither reads the OpenAI balance.
 All four runtime lanes and both containers share the locked, durable grant ledger.
 """
 
@@ -12,7 +12,7 @@ import math
 import re
 import time
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Literal
 
@@ -62,6 +62,39 @@ class CreditGrant(StrictModel):
                 or not 0 < (self.expires_at - self.starts_at).total_seconds() <= 32 * 86400):
             raise ValueError("Use an explicit, timezone-aware subscription credit cycle")
         return self
+
+
+class MonthlyBudgetWindow(StrictModel):
+    version: Literal[2] = 2
+    grant_id: str
+    budget_usd: float
+    starts_at: datetime
+    expires_at: datetime
+    budget_mode: Literal["owner_monthly_cap"] = "owner_monthly_cap"
+
+
+class MonthlyApiBudget(StrictModel):
+    version: Literal[2]
+    budget_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,60}$")
+    monthly_cap_usd: float = Field(gt=0, le=120, allow_inf_nan=False)
+    api_spend_authorized: Literal[True]
+
+    @field_validator("api_spend_authorized", mode="before")
+    @classmethod
+    def explicit_authorization(cls, value):
+        if value is not True:
+            raise ValueError("Explicit monthly API spend authorization is required")
+        return value
+
+    def window(self, now):
+        # The owner chose a calendar-month service cap, not the provider's unknown grant expiry.
+        kst = timezone(timedelta(hours=9))
+        moment = datetime.fromtimestamp(now, kst)
+        start = datetime(moment.year, moment.month, 1, tzinfo=kst)
+        year, month = ((moment.year + 1, 1) if moment.month == 12 else (moment.year, moment.month + 1))
+        end = datetime(year, month, 1, tzinfo=kst)
+        return MonthlyBudgetWindow(grant_id=f"{self.budget_id}-{moment:%Y-%m}",
+            budget_usd=self.monthly_cap_usd, starts_at=start, expires_at=end)
 
 
 def rounded(value):
@@ -171,6 +204,7 @@ class OpenAICreditLane:
     def status(self, grant, ledger, reason):
         atomic_json(self.directory / "status.json", {"reason": reason, "grant_id": grant.grant_id,
                     "budget_usd": grant.budget_usd, "accounted_usd": self.total(ledger),
+                    "budget_mode": getattr(grant, "budget_mode", "confirmed_free_grant"),
                     "expires_at": grant.expires_at.isoformat(), "calls": len(ledger["entries"]),
                     "paused_until": ledger["paused_until"], "updated_at": self.clock()})
 
@@ -178,7 +212,10 @@ class OpenAICreditLane:
         try:
             if not self.grant_file or not self.key_file or self.grant_file.stat().st_size > 16384:
                 return None
-            grant = CreditGrant.model_validate(strict_json(self.grant_file.read_bytes()))
+            policy = strict_json(self.grant_file.read_bytes())
+            grant = (MonthlyApiBudget.model_validate(policy).window(self.clock())
+                     if isinstance(policy, dict) and policy.get("version") == 2
+                     else CreditGrant.model_validate(policy))
             if not grant.starts_at.timestamp() <= self.clock() < grant.expires_at.timestamp() - timeout:
                 return None
             if self.key_file.stat().st_size > 1024:
@@ -215,7 +252,8 @@ class OpenAICreditLane:
                    "state": "running", "started_at": self.clock(), "backend": "responses_api",
                    "account": {"profile": profile, "revision": revision},
                    "requested_execution": {"model": request.model, "reasoning_effort": request.reasoning_effort},
-                   "api_grant_id": grant.grant_id, "api_reserved_usd": reserve}
+                   "api_grant_id": grant.grant_id, "api_reserved_usd": reserve,
+                   "api_budget_mode": getattr(grant, "budget_mode", "confirmed_free_grant")}
         # Pin the request before reserving, including across a grant renewal or a crash.
         # A crash here may require reconciliation, but can never hide an earlier dispatch.
         atomic_json(path, receipt)
@@ -255,6 +293,7 @@ class OpenAICreditLane:
             result = typed_result(request, data, usage)
             result = result.model_copy(update={"usage": {**result.usage, "backend": "responses_api",
                 "billing_mode": "api_credit", "api_grant_id": grant.grant_id,
+                "api_budget_mode": getattr(grant, "budget_mode", "confirmed_free_grant"),
                 "budget_charge_usd": charge, "budget_charge_is_upper_bound": True, "actual_model": data["model"]}})
             atomic_json(path, {**receipt, "state": "complete", "completed_at": self.clock(),
                                "result": result.model_dump(mode="json")})

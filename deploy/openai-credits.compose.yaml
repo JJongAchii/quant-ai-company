@@ -1,4 +1,4 @@
-# Shared, owner-confirmed credits. Both runtimes use the same durable jobs ledger.
+# Shared, owner-authorized API budget. Both runtimes use the same durable jobs ledger.
 # The operator supplies key + grant only when activating (docs/runbooks/openai-credits.md).
 services:
   codex-runtime:

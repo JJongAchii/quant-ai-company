@@ -556,3 +556,15 @@ def test_openai_api_allowance_and_subscription_route_are_visible_without_secrets
     assert "OpenAI 무료 API: 예약 포함 $99.50 / $100.00" in text
     assert "구독 전환(예산·대기)" in text
     assert "SECRET" not in json.dumps(state) + text
+
+
+def test_monthly_api_budget_does_not_claim_verified_free_credits(ops):
+    snapshot(ops, openai_api={"reason": "api_completed", "budget_mode": "owner_monthly_cap",
+        "grant_id": "owner-monthly-api-2026-11", "budget_usd": 120, "accounted_usd": 5,
+        "expires_at": "2026-12-01T00:00:00+09:00", "calls": 10, "paused_until": 0,
+        "updated_at": now().timestamp()})
+    with ops.db.transaction() as conn:
+        value = live_status(conn, now=now())
+    text = status_text(value)
+    assert "OpenAI API 월예산" in text and "$5.00 / $120.00" in text
+    assert "예산 갱신" in text and "OpenAI 무료 API" not in text
