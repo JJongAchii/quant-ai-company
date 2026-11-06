@@ -360,6 +360,8 @@ async def test_motion_jobs_request_the_episode_contract_with_the_reviewed_librar
     assert CONTENT[:40] not in request.prompt and 'Synthetic closing report' not in request.prompt
     assert '"b001"' in request.prompt and 'outlet_on_card' in request.prompt
     assert "never say '보도에 따르면'" in request.prompt  # owner, 2026-10-19: sources are shown on screen only
+    # 11/01-11/06: most review concerns were card lines cut from a briefing sentence that dropped its condition.
+    assert "keeps that sentence's condition or caveat" in request.prompt
     assert state == 'reviewing'
     assert EpisodePlan.model_validate(store.get(job['id'])['plan']).ticker.label == '정규장 종가'
 
@@ -383,6 +385,7 @@ async def test_a_rejected_script_is_revised_from_its_last_version_with_the_revie
     """10/14 AM: every retry rewrote the episode from scratch (scene IDs changed each time), so a finding fixed in one
     scene came back in another, and a failed check dropped the reviewer's eleven concerns from the next request."""
     from quant_company.video.contracts import VideoReview
+    from quant_company.video.episode import ScriptFix
 
     from .test_video import ScriptedProvider, good_review, release
 
@@ -390,16 +393,49 @@ async def test_a_rejected_script_is_revised_from_its_last_version_with_the_revie
     concern = VideoReview(facts=True, numbers=True, conditions=True, coverage=True, readability=False, concerns=['결론이 늦게 나옴'])
     unbound = episode().model_dump(mode='json')
     unbound['scenes'][2]['data']['tiles'][0]['change'] = '2.5%'
-    provider = ScriptedProvider([episode(), concern, EpisodePlan.model_validate(unbound), episode(), good_review()])
-    for _ in range(5):
+    # The revision in place fails the checks too (an unbound number), so the whole script is rewritten.
+    fix = ScriptFix(scenes=[EpisodePlan.model_validate(unbound).scenes[2]])
+    provider = ScriptedProvider([episode(), concern, fix, EpisodePlan.model_validate(unbound), episode(), good_review()])
+    for _ in range(6):
         release(store, job)
         await VideoRunner(store.company, provider=provider).tick()
     assert store.get(job['id'])['state'] == 'synthesizing'
+    assert [a['outcome'] for a in store.get(job['id'])['qa']['plan_attempts']] == ['passed', 'revise_failed', 'check_failed', 'passed']
     first, revised, again = sent_episodes(provider)
     assert 'previous_version' not in first
     assert revised['previous_version'] == episode().model_dump(mode='json') and '결론이 늦게 나옴' in revised['revision_feedback']
     assert again['previous_version']['scenes'][2]['data']['tiles'][0]['change'] == '2.5%'
     assert 'Unbound number' in again['revision_feedback'] and '결론이 늦게 나옴' in again['revision_feedback']
+
+
+async def test_review_concerns_are_fixed_in_place_not_by_rewriting_the_script(brief, video, tmp_path):  # noqa: F811
+    """11/01-11/06: every episode's first review had 10-15 concerns, and each was answered by rewriting the whole script
+    (7-16 minutes at xhigh) before the second review. A revision in place changes only the scenes a concern names."""
+    from quant_company.video.contracts import VideoReview
+    from quant_company.video.episode import ScriptFix
+
+    from .test_video import ScriptedProvider, good_review, release
+
+    store, job = motion_job(brief, video, tmp_path)
+    concern = VideoReview(facts=True, numbers=True, conditions=False, coverage=True, readability=True,
+                          concerns=['[flow] 조건이 빠져 실제보다 확정적으로 읽힘'])
+    scene = episode().scenes[4].model_copy(update={'narration': episode().scenes[4].narration + ' 다만 조건이 남아 있어요.'})
+    provider = ScriptedProvider([episode(), concern, ScriptFix(scenes=[scene]), good_review()])
+    for _ in range(4):
+        release(store, job)
+        await VideoRunner(store.company, provider=provider).tick()
+    current = store.get(job['id'])
+    assert current['state'] == 'synthesizing'
+    assert [a['outcome'] for a in current['qa']['plan_attempts']] == ['passed', 'revised']
+    assert [c.output_contract for c in provider.calls] == ['video_episode_v1', 'video_review_v1', 'video_script_fix_v1',
+                                                          'video_review_v1']
+    revision = provider.calls[2]
+    assert revision.request_id.endswith('-revise') and '조건이 빠져' in revision.prompt
+    plan = EpisodePlan.model_validate(current['plan'])
+    assert plan.scenes[4].narration.endswith('다만 조건이 남아 있어요.')
+    assert [s for i, s in enumerate(plan.scenes) if i != 4] == [s for i, s in enumerate(episode().scenes) if i != 4]
+    # The second review reads the revised script.
+    assert '다만 조건이 남아 있어요.' in provider.calls[3].prompt
 
 
 async def test_a_previous_version_that_does_not_fit_the_prompt_is_left_out(brief, video, tmp_path, monkeypatch):  # noqa: F811
@@ -778,6 +814,24 @@ async def test_final_visual_review_fixes_cards_rerenders_and_delivers(brief, vid
     assert renderer.renders == 2 and len(scene_takes(speech)) == len(episode().scenes)  # narration unchanged: no new takes
     assert next(s for s in job['plan']['scenes'] if s['id'] == 'head')['data']['title'] == '반도체 주도'
     assert len(job['qa']['inspections']) == 2 and job['qa']['inspection_findings'] == []
+
+
+async def test_the_episode_is_looked_at_twice_and_goes_out_with_what_the_second_look_left(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    """11/01-11/06: all eleven episodes took three looks and two re-renders (about 13 minutes each round) and none passed;
+    like the Shorts since 10/30, one fix and re-render, then the files go out with the second look's findings."""
+    from quant_company.video.contracts import VisualReview
+    from quant_company.video.episode import ScreenFix
+
+    store, _ = video
+    issue = {'scene': 'head', 'kind': 'layout', 'detail': 'title wraps', 'fix': 'shorten the title'}
+    fixes = [ScreenFix(scenes=[{'id': 'head', 'data': {**episode().scenes[3].data, 'title': title}}]) for title in ('반도체 주도', '반도체')]
+    provider = InspectingProvider(visual=[VisualReview(passed=False, issues=[issue])] * 3, fixes=fixes)
+    renderer = InspectedRenderer()
+    job, _speech = await produce_inspected(store, tmp_path, monkeypatch, provider, renderer, brief)
+    assert job['state'] == 'uploading', job['error']
+    contracts = [c.output_contract for c in provider.calls]
+    assert contracts.count('video_visual_review_v1') == 2 and contracts.count('video_screen_fix_v1') == 1
+    assert renderer.renders == 2 and job['qa']['inspection_findings'] == ['head: title wraps']
 
 
 class BrandRenderer(InspectedRenderer):

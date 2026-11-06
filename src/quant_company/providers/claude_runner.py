@@ -139,9 +139,9 @@ def allowed_models(request):
 def output_schema(request):
     """The only structured outputs this tool-free runtime may produce, keyed by the frozen request contract."""
     if request.output_contract in {"video_plan_v1", "video_review_v1", "video_episode_v1", "video_visual_review_v1",
-                                   "video_screen_fix_v1", "video_shorts_v1"}:
+                                   "video_screen_fix_v1", "video_script_fix_v1", "video_shorts_v1"}:
         from ..video.contracts import VideoPlan, VideoReview, VisualReview
-        from ..video.episode import EpisodePlan, ScreenFix
+        from ..video.episode import EpisodePlan, ScreenFix, ScriptFix
         from ..video.shorts import ShortsPlan
 
         return {"video_plan_v1": (VideoPlan, "Video plan", "영상 대본 작성 완료"),
@@ -149,6 +149,7 @@ def output_schema(request):
                 "video_review_v1": (VideoReview, "Video adaptation review", "영상 각색 검토 완료"),
                 "video_visual_review_v1": (VisualReview, "Video visual review", "영상 화면 검수 완료"),
                 "video_screen_fix_v1": (ScreenFix, "Video screen fix", "영상 화면 수정 완료"),
+                "video_script_fix_v1": (ScriptFix, "Video script revision", "영상 대본 부분 수정 완료"),
                 "video_shorts_v1": (ShortsPlan, "Video Shorts cut", "쇼츠 대본 작성 완료")}[request.output_contract]
     if request.output_contract in {"video_performance_v1", "video_weekly_v1", "video_answer_v1"}:
         from ..video.analytics_contracts import StrategyReport, VideoAnswer, VideoPerformance
