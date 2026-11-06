@@ -190,8 +190,9 @@ def test_motion_render_frames_layout_credits_and_artifact_binding(tmp_path):
     assert manifest['title'].endswith(' | 9월 22일 아침 · 그래서, 오늘장') and manifest['tags'][-2:] == ['그래서 오늘장', '그래서오늘장']
     assert '검토용 샘플' not in (tmp_path / 'out' / 'upload.txt').read_text()
     assert '📅 2026.09.22 | 미국 증시' in upload and '자료 기준: 2026.09.22 07:30 (한국시간) · 장전' in upload
-    # The old 증시story playlist belongs to the 뭐든story channel: no playlist line until the new channel has one.
-    assert '00:00 반도체가 이끌었다' in upload and '#그래서오늘장 #오늘장 #반도체' in upload and '모아보기' not in upload
+    # The default links the briefing playlist on the briefings' own channel (2026-11-06), never 뭐든story's PLbCkACCer37U.
+    assert '00:00 반도체가 이끌었다' in upload and '#그래서오늘장 #오늘장 #반도체' in upload
+    assert '▶ 그래서, 오늘장 모아보기\nhttps://www.youtube.com/playlist?list=PLAMiTJ2pkjHY' in upload and 'PLbCkACCer37U' not in upload
     assert 'https://www.cnbc.com/fixture-market-report.html' in upload
     assert not (tmp_path / 'out' / 'page').exists() and not list((tmp_path / 'out').glob('part-*.mp4'))
     assert not (tmp_path / 'out' / 'narration.wav').exists() and (tmp_path / 'out' / 'video.mp4').exists()
@@ -722,27 +723,37 @@ async def produce_inspected(store, tmp_path, monkeypatch, provider, renderer, br
 async def test_a_new_job_carries_the_owner_craft_rules_in_its_script_and_review_prompts(brief, video, tmp_path, monkeypatch):  # noqa: F811
     # Owner, 2026-10-22: hook, one metaphor, short thumbnail text, a closing question (video/craft.py), frozen per job.
     from quant_company.video.contracts import VisualReview
-    from quant_company.video.craft import CRAFT_GUIDE, CRAFT_VERSION, OUTLOOK, VERSIONS, with_craft
+    from quant_company.video.craft import (
+        CRAFT_GUIDE,
+        CRAFT_VERSION,
+        OUTLOOK,
+        VERSIONS,
+        recent_block,
+        with_craft,
+    )
 
     store, _ = video
     store.settings.video_upload_enabled = store.settings.video_publish_enabled = False
     provider = InspectingProvider(visual=[VisualReview(passed=True, issues=[])])
     job, _speech = await produce_inspected(store, tmp_path, monkeypatch, provider, InspectedRenderer(), brief)
     assert job['state'] == 'delivering', job['error']
-    assert job['policy']['craft'] == CRAFT_VERSION
+    assert job['policy']['craft'] == CRAFT_VERSION == 3
     script = next(c for c in provider.calls if c.output_contract == 'video_episode_v1').prompt
     rules, data = script.rsplit('\n', 1)
-    assert rules.endswith(VERSIONS[CRAFT_VERSION][0]) and json.loads(data)['lines']  # the data stays the last line
-    # Version 2 (owner, 10/22): the close states the outlook, conditions and direction only.
-    assert rules.endswith(CRAFT_GUIDE + OUTLOOK) and 'never a level, size or timed move' in OUTLOOK
+    # Version 3 (owner, 11/06) ends with the recent hooks it must not echo; the data stays the last line.
+    assert rules.endswith(VERSIONS[CRAFT_VERSION][0] + recent_block([])) and json.loads(data)['lines']
+    # Version 2 (owner, 10/22): the close states the outlook, conditions and direction only; version 3 keeps it.
+    assert OUTLOOK in VERSIONS[3][0] and 'never a level, size or timed move' in OUTLOOK
     assert 'Leave the base case out when the lines give no basis' in OUTLOOK and "line's own strength" in OUTLOOK
     review = next(c for c in provider.calls if c.output_contract == 'video_review_v1').prompt
     plan = episode()  # the lengths are measured by the service, not counted by the reviewer
     assert f'the title hook is {len(plan.upload.title)} characters, the thumbnail text {len(plan.thumbnail)})' in review
-    assert review.endswith('or a view the lines do not give.')
-    # A job frozen with version 1 keeps version 1's text after the change.
-    plain = rules[:-len(CRAFT_GUIDE + OUTLOOK) - 1] + '\n' + data
-    assert with_craft(plain, {'craft': 1}) == rules[:-len(OUTLOOK)] + '\n' + data
+    assert review.endswith('or repeats the opening, the ending or the shape of a recent hook: none.')
+    # Jobs frozen with versions 1 and 2 keep their text after the change.
+    head = rules[:-len(VERSIONS[3][0] + recent_block([])) - 1]
+    plain = head + '\n' + data
+    assert with_craft(plain, {'craft': 2}) == head + '\n' + CRAFT_GUIDE + OUTLOOK + '\n' + data
+    assert with_craft(plain, {'craft': 1}) == head + '\n' + CRAFT_GUIDE + '\n' + data
 
 
 async def test_a_job_created_before_the_craft_rules_keeps_its_prompts(brief, video, tmp_path, monkeypatch):  # noqa: F811
@@ -1001,8 +1012,9 @@ def test_the_thumbnail_names_its_edition_and_carries_the_watched_progress_strip(
 
     html = files('quant_company.video').joinpath('design', 'thumbnail.html').read_text()
     assert '아침 시장 브리핑' not in html and '{{brand}}' in html  # the close edition reads 마감 브리핑
-    # Every thumbnail carries the red strip at half width along its bottom edge (owner request 2026-10-12).
-    assert '<div class="resume"><i></i></div>' in html and 'width:50%;background:#FF0000' in html
+    # Every thumbnail carries the red strip along its bottom edge (owner request 2026-10-12): half its width until the
+    # owner asked for a tenth on 2026-11-05.
+    assert '<div class="resume"><i></i></div>' in html and 'width:10%;background:#FF0000' in html
 
 
 async def test_an_uncertain_model_turn_is_a_failed_attempt_and_the_episode_is_still_delivered(brief, video, tmp_path,  # noqa: F811

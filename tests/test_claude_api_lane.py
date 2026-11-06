@@ -29,7 +29,8 @@ from quant_company.providers.claude_runner import (
     ClaudeRunner,
     runner_from_environment,
 )
-from quant_company.providers.codex_runner import ProcessRunner
+from quant_company.providers.client import wire_payload
+from quant_company.providers.codex_runner import ProcessRunner, request_digest
 
 from .newsletter_fixtures import v5_draft
 from .test_claude_runtime import fake_claude  # noqa: F401 - the fake CLI fixture drives the subscription path
@@ -762,6 +763,48 @@ async def test_api_call_runs_while_the_cli_slot_is_busy(lane):
     assert len(calls()) == 1
     await runner.cancel(video().request_id)
     assert held.cancelled()
+
+
+def api_only_email(n=1):
+    return ClaudeRequest(**email(n).model_dump() | {"api_only": True})
+
+
+async def test_an_api_only_turn_runs_on_the_api_while_the_cli_slot_is_busy(lane):
+    # The email beside the episode (owner, 2026-11-05): it runs on the API while the episode holds the CLI slot.
+    config, configure, calls = lane
+    cli_video(configure, delay=10)
+    api = Api(ok(v5_draft().model_dump(mode="json")))
+    runner = make_runner(config, api)
+    held = asyncio.create_task(runner.run(video()))
+    await until(calls)
+    result = await runner.run(api_only_email())
+    assert result.usage["billing_mode"] == "api_credit" and len(api.seen) == 1 and len(calls()) == 1
+    assert tried(config, api_only_email()) == [("api", "complete")]
+    await runner.cancel(video().request_id)
+    assert held.cancelled()
+
+
+@pytest.mark.parametrize("change", ["disabled", "cap", "overloaded", "server_error"])
+async def test_an_api_only_turn_the_lane_cannot_take_never_reaches_the_subscription(lane, change):
+    config, configure, calls = lane
+    cli_email(configure)
+    config = replace(config, api_enabled=False) if change == "disabled" else (
+        replace(config, api_cap_usd=1.0) if change == "cap" else config)
+    api = Api(refusal({"overloaded": 529, "server_error": 500}.get(change, 529)))
+    with pytest.raises(ProviderFault) as refused:
+        await make_runner(config, api).run(api_only_email())
+    assert refused.value.code == "busy" and refused.value.retry_after_seconds > 0
+    assert calls() == []  # the subscription slot was never asked for
+    assert len(api.seen) == (1 if change in {"overloaded", "server_error"} else 0)
+
+
+def test_api_only_is_for_api_first_work_and_leaves_every_other_request_as_it_was():
+    with pytest.raises(ValueError):
+        ClaudeRequest(**video().model_dump(), api_only=True)
+    plain = ClaudeRequest(**email().model_dump())
+    assert plain.api_only is False and request_digest(plain) == request_digest(email())
+    assert "api_only" not in wire_payload(plain) and wire_payload(api_only_email())["api_only"] is True
+    assert request_digest(api_only_email()) != request_digest(email())
 
 
 async def test_shared_only_cancel_keeps_an_api_turn_and_cancels_a_cli_turn(lane):

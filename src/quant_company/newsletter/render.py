@@ -13,15 +13,19 @@ from urllib.parse import quote
 
 from .contracts import KIND_NAMES, edition_label
 
-# Read in place; the brand mark stays where the video design keeps it.
-LOGO = Path(__file__).resolve().parent.parent / "video" / "design" / "logo_mark.png"
-LOGO_CID = "logo@newsletter.anything-story"
+# The briefings have their own channel since 2026-11-04, 「그래서, 오늘장」 (뭐든story stays the history channel). The mark
+# is the channel's (video/design/brand_mark.svg drawn to a 132px PNG, since mail clients do not show SVG); it lives here,
+# outside video/design, so the email's assets never change the render image.
+BRAND = "그래서, 오늘장"
+LOGO = Path(__file__).resolve().parent / "brand_mark.png"
+LOGO_CID = "mark@newsletter.geuraeseo-oneuljang"
 UNSUBSCRIBE_SUBJECT = "수신거부"
 FONT = "-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',Arial,sans-serif"
-INK, NAVY, CREAM, GOLD, LABEL = "#1B2440", "#011A43", "#FCF1DB", "#FDC749", "#9B6B00"
+# The channel's colours: its navy, its yellow (a darker yellow for small labels on white), white on the navy header.
+INK, NAVY, CREAM, GOLD, LABEL = "#1B2440", "#0A1830", "#FFFFFF", "#FFD43B", "#8A6A00"
 UP, DOWN, MUTED, SOFT, LINE = "#D7263D", "#1E5EFF", "#7A86A8", "#4A5578", "#E8ECF4"
-INTRO = "뭐든story는 매 거래일 아침과 장 마감 후 국내 증시의 주요 내용을 정리해 보내 드립니다."
-CONSENT = "이 메일은 뭐든story 리포트 수신에 동의하신 분께 발송됩니다."
+INTRO = f"{BRAND}은 매 거래일 아침과 장 마감 후 국내 증시의 주요 내용을 정리해 보내 드립니다."
+CONSENT = f"이 메일은 {BRAND} 리포트 수신에 동의하신 분께 발송됩니다."
 DISCLAIMER = "투자 권유가 아닌 정보 제공용 자료이며, 투자 판단과 책임은 본인에게 있습니다."
 # A sender in the reader's contacts keeps the report in the inbox (owner, 2026-10-20); the configured address.
 SAFE_SENDER = "받은편지함에서 놓치지 않으려면 {sender}을(를) 연락처에 추가해 주세요."
@@ -32,8 +36,8 @@ def subject(draft, day, kind="pm"):
 
 
 def masthead(day, kind):
-    """The header's right label and the plain text's first line."""
-    return f"{edition_label(day)} {'아침' if kind == 'am' else '장 마감'} · 오늘의 증시story"
+    """The header's right label and the plain text's first line, beside the channel name: the subject's edition."""
+    return f"{edition_label(day)} {KIND_NAMES[kind]} 브리핑"
 
 
 def unsubscribe_url(sender):
@@ -161,7 +165,7 @@ def html(draft, *, day, sender, channel_url, kind="pm", logo_src=f"cid:{LOGO_CID
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background:#FFFFFF;border-radius:10px;font-family:{FONT};color:{INK};">
 <tr><td style="background:{NAVY};padding:18px 22px 20px;border-radius:10px 10px 0 0;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-<td style="font-size:15px;font-weight:800;color:{CREAM};"><img src="{logo_src}" alt="" height="22" style="height:22px;vertical-align:middle;margin-right:8px;border:0;">뭐든story</td>
+<td style="font-size:15px;font-weight:800;color:{CREAM};"><img src="{logo_src}" alt="" height="22" style="height:22px;vertical-align:middle;margin-right:8px;border:0;">{BRAND}</td>
 <td align="right" style="font-size:12px;font-weight:600;color:#AEB7D4;">{masthead(day, kind)}</td>
 </tr></table>
 <h1 style="font-size:23px;line-height:1.35;font-weight:800;margin:14px 0 6px;color:#FFFFFF;letter-spacing:-.02em;">{e(draft.headline)}{accent}</h1>
@@ -170,7 +174,7 @@ def html(draft, *, day, sender, channel_url, kind="pm", logo_src=f"cid:{LOGO_CID
 {section("오늘의 시장", market)}
 {section("주요 이슈", issues)}
 {company}{outlook}{calendar}
-{section("", f'<a href="{e(channel_url)}" style="display:inline-block;background:#E62117;color:#FFFFFF;font-weight:800;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:14px;">▶ 영상으로 보기</a>', "text-align:center;")}
+{section("", f'<a href="{e(channel_url)}" style="display:inline-block;background:{GOLD};color:#111111;font-weight:800;padding:10px 20px;border-radius:999px;text-decoration:none;font-size:14px;">▶ 영상으로 보기</a>', "text-align:center;")}
 <tr><td style="padding:16px 22px;font-size:11.5px;line-height:1.65;color:{MUTED};background:#F7F8FB;border-radius:0 0 10px 10px;">
 {e(INTRO)} {e(CONSENT)}<br>{e(DISCLAIMER)}<br>{e(SAFE_SENDER.format(sender=sender))}<br><a href="{unsubscribe}" style="color:{SOFT};">수신 거부</a>
 </td></tr>
@@ -181,7 +185,7 @@ def html(draft, *, day, sender, channel_url, kind="pm", logo_src=f"cid:{LOGO_CID
 
 def text(draft, *, day, sender, channel_url, kind="pm"):
     m = draft.market
-    out = [f"뭐든story · {masthead(day, kind)}", "", f"{draft.headline} {draft.accent}".strip(),
+    out = [f"{BRAND} · {masthead(day, kind)}", "", f"{draft.headline} {draft.accent}".strip(),
            "", draft.lead, "", "[오늘의 시장]", m.heading]
     if m.swing:
         s = m.swing

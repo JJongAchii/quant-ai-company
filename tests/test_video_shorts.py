@@ -489,6 +489,27 @@ def test_the_speech_process_ends_before_the_frames_are_captured(tmp_path):
     assert events == ['close', 'frames']
 
 
+def test_a_cut_captured_by_several_browsers_is_the_cut_one_browser_captures(tmp_path):
+    """The Fargate task captures the cut with its 16 vCPU (owner, 2026-11-05); the frames are the same ones, joined."""
+    ffmpeg, settings, job = render_fixture(tmp_path)
+    plan, episode_json = shorts(), episode().model_dump(mode='json')
+    paths = tones(tmp_path, TAKES, ffmpeg)
+    one = ShortsRenderer(settings, WordAligner()).render(job, plan, episode_json, tmp_path / 'one', paths)
+    many = ShortsRenderer(settings, WordAligner()).render(job, plan, episode_json, tmp_path / 'many', paths, workers=3)
+    assert many['frames'] == one['frames'] and many['duration'] == pytest.approx(one['duration'], abs=0.05)
+    assert many['renderer'] == one['renderer'] == shorts_module.SHORTS_RENDERER_DIGEST
+    frames = [re.findall(r'frame=\s*(\d+)', subprocess.run(
+        [ffmpeg, '-i', str(tmp_path / d / 'shorts.mp4'), '-map', '0:v:0', '-f', 'null', '-'], capture_output=True,
+        text=True, check=True).stderr)[-1] for d in ('one', 'many')]
+    assert frames[0] == frames[1] == str(one['frames'])
+    compared = subprocess.run([ffmpeg, '-i', str(tmp_path / 'one' / 'shorts.mp4'), '-i', str(tmp_path / 'many' / 'shorts.mp4'),
+                               '-lavfi', 'psnr', '-f', 'null', '-'], capture_output=True, text=True, check=True).stderr
+    average = re.search(r'average:(\S+)', compared).group(1)
+    assert average == 'inf' or float(average) > 40, compared[-300:]
+    assert not list((tmp_path / 'many').glob('range-*')) and not (tmp_path / 'many' / 'ranges.txt').exists()
+    verify_artifacts(many, tmp_path)
+
+
 def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
     ffmpeg, settings, job = render_fixture(tmp_path)
     plan = shorts()
@@ -1081,8 +1102,8 @@ async def test_the_episode_goes_first_and_a_late_cut_is_given_up(brief, video, t
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
     shorts_store = ShortsStore(store.company)
-    with store.db.transaction() as conn:
-        conn.execute("UPDATE video_jobs SET state='rendering' WHERE id=%s", (job['id'],))
+    with store.db.transaction() as conn:  # its script is still under review: nothing to cut yet
+        conn.execute("UPDATE video_jobs SET state='reviewing' WHERE id=%s", (job['id'],))
     assert shorts_store.claim() is None and shorts_store.get(job['id']) is None  # an episode is in production
     with store.db.transaction() as conn:
         conn.execute("UPDATE video_jobs SET state='delivered' WHERE id=%s", (job['id'],))
@@ -1181,6 +1202,261 @@ async def test_the_close_cut_starts_once_the_close_episode_is_out(brief, video, 
     assert ShortsStore(store.company).claim() is None
     clock['at'] = datetime(2026, 9, 22, 18, 30, tzinfo=ZoneInfo('Asia/Seoul'))
     assert ShortsStore(store.company).claim()['state'] == 'writing'
+
+
+def in_production(store, job, state='inspecting', edition='close'):
+    """The episode back in production past its script, its own step holding its lease (like an episode whose visual
+    review is running). A closing episode by default: its cut waits for it, while a morning cut goes first (FIRST)."""
+    with store.db.transaction() as conn:
+        conn.execute("""UPDATE video_jobs SET state=%s,lease_until=now()+interval '1 hour',
+            policy=jsonb_set(policy,'{edition}',to_jsonb(%s::text)) WHERE id=%s""", (state, edition, job['id']))
+
+
+def deliver(store, job, plan_sql='plan'):
+    """The dispatcher's receipt of the episode files; plan_sql: the delivered plan as its final edits left it."""
+    with store.db.transaction() as conn:
+        conn.execute(f"UPDATE video_jobs SET state='delivered',lease_until=NULL,plan={plan_sql} WHERE id=%s", (job['id'],))
+        conn.execute('UPDATE video_shorts SET lease_until=NULL WHERE job_id=%s', (job['id'],))
+
+
+def api_only(calls):
+    return [getattr(c, 'api_only', False) for c in calls]
+
+
+def on_fargate(monkeypatch, store, renderer):
+    """Renders on the render task (production): simulated by the file renderer instead of an ECS task."""
+    store.settings.video_render_backend = 'remote'
+
+    async def remote(self, row, job, plan, takes, directory, texts, qa):
+        paths = await self.fetch_audio(job, takes, directory)
+        return renderer.render(job, plan, job['plan'], directory, paths, None, texts)
+    monkeypatch.setattr('quant_company.video.runner.VideoRunner.shorts_render_remote', remote)
+
+
+async def shorts_until(store, provider, speech, job, states, limit=12):
+    """Shorts ticks until the cut reaches one of the states."""
+    shorts_store = ShortsStore(store.company)
+    for _ in range(limit):
+        await VideoRunner(store.company, provider, speech).tick()
+        with store.db.transaction() as conn:
+            conn.execute('UPDATE video_shorts SET lease_until=NULL WHERE job_id=%s', (job['id'],))
+        row = shorts_store.get(job['id'])
+        if row and row['state'] in states:
+            return row
+    return shorts_store.get(job['id'])
+
+
+async def test_a_cut_is_written_beside_its_episode_once_the_script_is_final(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    # Owner, 2026-11-05: the cut is written and reviewed while its episode is still in production, voiced and rendered
+    # once the episode is out.
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    shorts_store = ShortsStore(store.company)
+    in_production(store, job, 'reviewing')  # its script may still change
+    assert shorts_store.claim() is None and shorts_store.get(job['id']) is None
+    in_production(store, job, 'rendering')
+    row = shorts_store.claim()
+    assert row['state'] == 'writing'
+    # Written against the episode as it is now; its final edits are checked after the delivery.
+    assert row['qa']['episode'] == {'plan': job['plan'], 'concerns': job['qa'].get('review_findings', [])}
+    with store.db.transaction() as conn:
+        conn.execute("UPDATE video_shorts SET state='synthesizing',lease_until=NULL")
+    assert shorts_store.claim() is None  # written and reviewed: the voice waits for the episode
+    deliver(store, job)
+    assert shorts_store.claim()['state'] == 'synthesizing'
+
+
+async def test_a_morning_cut_goes_out_before_its_episode_once_its_pictures_are_final(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    # Owner, 2026-11-06: the morning cut is voiced, rendered and inspected beside its episode, so it can be up before
+    # the market opens; it waits only until the episode's pictures are final (the episode is rendering).
+    from quant_company.video.shorts_store import delivery_text
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    shorts_store = ShortsStore(store.company)
+    in_production(store, job, 'rendering', edition='am')
+    assert shorts_store.claim()['state'] == 'writing'
+    with store.db.transaction() as conn:
+        conn.execute("UPDATE video_shorts SET state='synthesizing',lease_until=NULL")
+    in_production(store, job, 'synthesizing', edition='am')  # the episode's pictures may still change
+    assert shorts_store.claim() is None
+    in_production(store, job, 'rendering', edition='am')
+    assert shorts_store.claim()['state'] == 'synthesizing'
+    with store.db.transaction() as conn:
+        conn.execute("UPDATE video_shorts SET state='writing',lease_until=NULL")
+    in_production(store, job, 'inspecting', edition='am')
+    takes, renderer = len(speech.calls), ShortsFileRenderer()
+    on_fargate(monkeypatch, store, renderer)
+    row = await shorts_ticks(store, provider, speech, renderer, job)
+    assert row['state'] == 'delivering', row['error']
+    assert store.get(job['id'])['state'] == 'inspecting'  # out before its episode
+    assert len(speech.calls) - takes == 4 and len(renderer.calls) == 1
+    # Every turn of the cut keeps off the episode's subscription slot while the episode runs.
+    assert api_only(shorts_calls(provider, 'shorts')) == api_only(shorts_calls(provider, 'visual')) == [True]
+    with store.db.transaction() as conn:
+        text = conn.execute("SELECT text FROM messages WHERE kind='video_shorts' ORDER BY created_at DESC LIMIT 1").fetchone()
+    assert '본편보다 먼저 준비됐습니다' in text['text']
+    assert '본편보다 먼저' in delivery_text(job, {'title': 't'}, early=True)
+    assert '본편보다 먼저' not in delivery_text(job, {'title': 't'})
+
+
+async def test_a_morning_cut_meets_the_episodes_later_edits_before_it_goes_out(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    # Review of the morning-first change: the episode's final check can still edit its screens after the cut was
+    # checked; the cut never goes out with a number the episode took off.
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    in_production(store, job, 'inspecting', edition='am')
+    renderer = ShortsFileRenderer()
+    on_fargate(monkeypatch, store, renderer)
+    row = await shorts_until(store, provider, speech, job, ('inspecting',))
+    assert row['state'] == 'inspecting' and len(renderer.calls) == 1
+    with store.db.transaction() as conn:  # the episode's screen fix changed a number the cut shows
+        conn.execute("UPDATE video_jobs SET plan=replace(plan::text,'1.92','1.95')::jsonb WHERE id=%s", (job['id'],))
+    row = await shorts_until(store, provider, speech, job, ('writing', 'delivering'))
+    assert row['state'] == 'writing'  # never delivered against the old episode
+    second = await shorts_until(store, provider, speech, job, ('reviewing', 'synthesizing'), limit=2)
+    prompt = shorts_calls(provider, 'shorts')[-1].prompt
+    assert "Number ['1.92'] in issue semis is not in the delivered episode" in prompt and second is not None
+    assert ShortsStore(store.company).get(job['id'])['qa']['episode']['plan'] == store.get(job['id'])['plan']
+
+
+async def test_a_morning_look_the_api_lane_refuses_is_asked_again_as_a_new_request(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    from quant_company.video.contracts import VisualReview
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    in_production(store, job, 'inspecting', edition='am')
+    renderer = ShortsFileRenderer()
+    on_fargate(monkeypatch, store, renderer)
+    refused = ProviderFault('busy', 'The API lane could not take this turn.', 300)
+    provider.shorts_queues['visual'] = [refused, refused, VisualReview(passed=True, issues=[])]
+    row = await shorts_until(store, provider, speech, job, ('inspecting',))
+    for _ in range(2):
+        await VideoRunner(store.company, provider, speech).tick()
+        with store.db.transaction() as conn:
+            conn.execute('UPDATE video_shorts SET lease_until=NULL WHERE job_id=%s', (job['id'],))
+    assert ShortsStore(store.company).get(job['id'])['qa']['look_refused'] == 2
+    deliver(store, job)  # the episode is out: the look may now take either lane
+    row = await shorts_ticks(store, provider, speech, renderer, job)
+    assert row['state'] == 'delivering', row['error']
+    looks = shorts_calls(provider, 'visual')
+    assert [c.request_id.rsplit('shorts-', 1)[1] for c in looks] == ['visual-1', 'visual-1-r1', 'visual-1-r2']
+    assert api_only(looks) == [True, True, False]
+
+
+async def test_a_morning_cut_never_renders_on_the_worker_while_its_episode_runs(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    in_production(store, job, 'inspecting', edition='am')
+    renderer = ShortsFileRenderer()  # the worker's own render (no render task configured)
+    row = await shorts_until(store, provider, speech, job, ('rendering',))
+    await shorts_until(store, provider, speech, job, ('inspecting',), limit=2)
+    row = ShortsStore(store.company).get(job['id'])
+    assert row['state'] == 'rendering' and row['error'] == 'episode_first' and not renderer.calls
+
+
+async def test_a_cut_beside_its_episode_asks_the_api_lane_alone_and_is_voiced_after_the_episode(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    in_production(store, job)
+    takes, renderer = len(speech.calls), ShortsFileRenderer()
+    row = await shorts_ticks(store, provider, speech, renderer, job, limit=4)
+    assert row['state'] == 'synthesizing' and len(speech.calls) == takes and not renderer.calls
+    # The episode keeps the subscription's single slot: the cut's turns never take it while the episode runs.
+    assert api_only(shorts_calls(provider, 'shorts')) == api_only(shorts_calls(provider, 'review')) == [True]
+    deliver(store, job)
+    row = await shorts_ticks(store, provider, speech, renderer, job)
+    assert row['state'] == 'delivering', row['error']
+    assert len(speech.calls) - takes == 4 and len(renderer.calls) == 1
+    assert api_only(shorts_calls(provider, 'visual')) == [False] and len(shorts_calls(provider, 'shorts')) == 1
+
+
+async def test_a_turn_the_api_lane_refuses_beside_the_episode_uses_no_attempt(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    in_production(store, job)
+    refused = ProviderFault('busy', 'The API lane could not take this turn.', 300)
+    provider.queues['video_shorts_v1'] = [refused, shorts()]
+    provider.shorts_queues['review'] = [refused, good_review()]
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=6)
+    assert row['state'] == 'synthesizing', row['error']
+    assert [a['outcome'] for a in row['qa']['attempts']] == ['lane_refused', 'passed']
+    assert [r.get('outcome', r['passed']) for r in row['qa']['review_rounds']] == ['lane_refused', True]
+    assert row['qa']['review_findings'] == []
+    # Nothing ran: the next ask is a new request, so once the episode is out it may take either lane.
+    assert [c.request_id.rsplit('-', 1)[-1] for c in shorts_calls(provider, 'shorts')] == ['1', '2']
+    assert [c.request_id.rsplit('-', 1)[-1] for c in shorts_calls(provider, 'review')] == ['1', '2']
+
+
+async def test_a_turn_still_running_when_the_episode_is_out_is_asked_again_as_it_was_sent(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    in_production(store, job)
+    provider.queues['video_shorts_v1'] = [ProviderFault('pending', 'The model turn is still running.', 30), shorts()]
+    await VideoRunner(store.company, provider, speech).tick()
+    assert ShortsStore(store.company).get(job['id'])['error'] == 'model_pending'
+    deliver(store, job)
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'delivering', row['error']
+    first, again = shorts_calls(provider, 'shorts')
+    # The runtime keys the turn by its ID and input: the same request again, or the answer would be lost.
+    assert first.request_id == again.request_id and api_only([first, again]) == [True, True]
+
+
+async def test_a_cut_written_beside_its_episode_is_checked_against_the_delivered_one(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    in_production(store, job)
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=4)
+    assert row['state'] == 'synthesizing'
+    # The final editor reworded a title after the cut was written; every number the cut shows is still there.
+    deliver(store, job, "jsonb_set(plan,'{upload,title}',to_jsonb((plan->'upload'->>'title')||' !'))")
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job)
+    assert row['state'] == 'delivering', row['error']
+    assert len(shorts_calls(provider, 'shorts')) == 1
+    assert row['qa']['episode']['plan'] == store.get(job['id'])['plan']
+
+
+async def test_a_cut_the_delivered_episode_no_longer_supports_is_written_again(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    in_production(store, job)
+    row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=4)
+    assert row['state'] == 'synthesizing'
+    # The final editor's fix took the cut's 1.92% off the episode's screens.
+    deliver(store, job, "replace(plan::text,'1.92','1.95')::jsonb")
+    takes = len(speech.calls)
+    for _ in range(2):
+        await VideoRunner(store.company, provider, speech).tick()
+        with store.db.transaction() as conn:
+            conn.execute('UPDATE video_shorts SET lease_until=NULL WHERE job_id=%s', (job['id'],))
+    assert len(speech.calls) == takes  # nothing voiced from the cut the episode no longer supports
+    first, second = shorts_calls(provider, 'shorts')
+    assert "Number ['1.92'] in issue semis is not in the delivered episode" in second.prompt
+    assert '1.95' in second.prompt and api_only([second]) == [False]
+    assert ShortsStore(store.company).get(job['id'])['qa']['episode']['plan'] == store.get(job['id'])['plan']
+
+
+def test_a_turn_beside_the_episode_hands_the_worker_back_within_seconds(video):  # noqa: F811
+    from pydantic import SecretStr
+
+    store, _ = video
+    store.settings.model_runtime_token = SecretStr('simulated-token')
+    runner = VideoRunner(store.company)
+    # claude-runtime keeps running a turn the client stopped waiting for: the cut asks, and the episode's next step
+    # runs while the turn thinks.
+    assert runner.early_provider.timeout_seconds == runner_module.EARLY_WAIT_SECONDS
+    assert runner_module.EARLY_WAIT_SECONDS <= 10 < runner.provider.timeout_seconds
 
 
 async def test_a_lost_completion_keeps_the_file_receipt(brief, video, tmp_path, monkeypatch):  # noqa: F811

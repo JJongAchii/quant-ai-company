@@ -22,6 +22,25 @@ FAULT_MESSAGES = {
 }
 
 
+def wire_payload(request: ProviderRequest) -> dict:
+    """The request as sent: an unset optional field is left out, so ordinary requests keep their original wire shape."""
+    payload = request.model_dump(mode="json")
+    if request.output_contract == "agent_decision":
+        # Legacy callers remain compatible with older runtime deployments.
+        payload.pop("output_contract", None)
+    # Other pinned subscription runtimes still use the older strict request
+    # schema. Ordinary requests retain their original wire shape.
+    if request.session is None:
+        payload.pop("session", None)
+    if not request.attachments:
+        payload.pop("attachments", None)
+    if request.brief_deadline_unix is None:
+        payload.pop('brief_deadline_unix', None)
+    if not payload.get("api_only"):  # claude-runtime only (ClaudeRequest)
+        payload.pop("api_only", None)
+    return payload
+
+
 class RuntimeClient:
     def __init__(self, base_url: str, token: str, timeout_seconds: float = 360, *,
                  transport: httpx.AsyncBaseTransport | None = None, expected_provider: str = "codex"):
@@ -98,18 +117,7 @@ class RuntimeClient:
 
     async def run(self, request: ProviderRequest, *, account: dict | None = None) -> ProviderResponse:
         headers = {"Authorization": f"Bearer {self.token}"}
-        payload = request.model_dump(mode="json")
-        if request.output_contract == "agent_decision":
-            # Legacy callers remain compatible with older runtime deployments.
-            payload.pop("output_contract", None)
-        # Other pinned subscription runtimes still use the older strict request
-        # schema. Ordinary requests retain their original wire shape.
-        if request.session is None:
-            payload.pop("session", None)
-        if not request.attachments:
-            payload.pop("attachments", None)
-        if request.brief_deadline_unix is None:
-            payload.pop('brief_deadline_unix', None)
+        payload = wire_payload(request)
         if account is not None:
             headers.update({"X-Company-Account": account["profile"], "X-Company-Account-Revision": str(account["revision"])})
         from quant_company.briefing.execution import timeout_seconds

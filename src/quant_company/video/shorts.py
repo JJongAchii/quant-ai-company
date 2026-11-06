@@ -10,12 +10,14 @@ and rendered here from its own template (shorts_design/). It never enters the Fa
 render inputs stay as they are."""
 
 import fcntl
+import hashlib
 import json
 import math
 import os
 import re
 import shutil
 import subprocess
+from concurrent.futures import ProcessPoolExecutor
 from importlib.resources import files
 from pathlib import Path
 from typing import Literal
@@ -39,13 +41,29 @@ from .episode import (
 )
 from .illustrations import library_entries
 from .lineup import ISSUE_CHAPTERS, lineup
-from .motion import CHROMIUM_ARGS, FPS, captions, word_times
+from .motion import CHROMIUM_ARGS, FPS, RENDERER_DIGEST, captions, word_times
 from .render import RenderInProgress, checksum, music_track, probe, quality_probe, run, spoken
 from .render import mix_music as mix
 from .speech_process import SpeechProcess
 from .upload import BASE_TAGS, INSTRUCTION, SERIES
 
 WIDTH, HEIGHT = 1080, 1920
+
+
+def shorts_renderer_digest(root):
+    """SHA-256 over the code that turns a cut into frames: this module, the Shorts page and the episode renderer it
+    borrows captions from (motion.RENDERER_DIGEST)."""
+    root = Path(root)
+    code = hashlib.sha256(RENDERER_DIGEST.encode())
+    for path in sorted([root / 'shorts.py', *(p for p in (root / 'shorts_design').rglob('*') if p.is_file())]):
+        code.update(str(path.relative_to(root)).encode() + b'\0' + path.read_bytes())
+    return code.hexdigest()
+
+
+# Every Shorts manifest reports it; a cut rendered on Fargate by other code says so in its thread (runner).
+SHORTS_RENDERER_DIGEST = shorts_renderer_digest(Path(__file__).parent)
+# Frames per capture process when the cut is split across several (the Fargate task's 16 vCPU).
+RANGE_FRAMES = 150
 # The narration voice reads ~6.7 characters per second (episode.py), plus 0.5 s of lead and tail per scene. The hook is
 # one breath after the date line (owner, 10/20: an 11.5-s opener was too long): with the 19-character date line, a
 # 32-character hook makes an opener of ~8 s at the longest. Every briefing issue is carried (owner, 2026-10-26), so the
@@ -610,7 +628,7 @@ class ShortsRenderer:
     """One browser, frame by frame: a Shorts is about 2,000 frames, small enough for the worker itself."""
 
     def __init__(self, settings, aligner=None):
-        self.settings, self.stop, self._library = settings, None, None
+        self.settings, self.stop, self._library, self.music, self.workers = settings, None, None, None, 1
         self.aligner = aligner or SpeechProcess(settings.video_alignment_model, settings.video_alignment_threads)
 
     @property
@@ -621,11 +639,13 @@ class ShortsRenderer:
             self._library = json.loads(path.read_text()) if path.exists() else {}
         return self._library
 
-    def render(self, job, plan, episode, directory, audio_paths, stop=None, texts=None):
+    def render(self, job, plan, episode, directory, audio_paths, stop=None, texts=None, music=None, workers=1):
         """episode: the delivered EpisodePlan as JSON. audio_paths: one take per scene (opener, agenda, each issue,
         outro); texts: what each take says (a misread scene is voiced again in Korean number words), else the scenes'
-        spoken narration. stop: asked every few seconds of frames; True gives the render up (ShortsSuperseded)."""
-        self.stop = stop
+        spoken narration. stop: asked every few seconds of frames; True gives the render up (ShortsSuperseded).
+        music: the bed's file (a remote render's, from its inputs), else render.music_track. workers: capture
+        processes (the Fargate task's; the worker itself captures with one browser and can be stopped)."""
+        self.stop, self.music, self.workers = stop, music, workers
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
         lock = os.open(directory / '.render.lock', os.O_CREAT | os.O_RDWR, 0o600)
@@ -764,6 +784,8 @@ class ShortsRenderer:
         page, scenes, cues, total, findings = (built[k] for k in ('page', 'scenes', 'captions', 'total', 'findings'))
         frames = int(total * FPS)
         layout, stills, broken = self._capture(page / 'index.html', scenes, frames, directory)
+        if self.workers > 1:
+            self._capture_ranges(page / 'index.html', frames, directory)
         findings += [f'Shorts picture could not be shown: {src}' for src in broken]
         for scene_id, found in layout.items():
             findings.append(f'Shorts layout in scene {scene_id}: ' + '; '.join(' '.join(x) for x in found)[:300])
@@ -778,7 +800,7 @@ class ShortsRenderer:
         narration = directory / 'narration.wav'
         run([ffmpeg, '-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', str(directory / 'aud.txt'),
              '-af', 'loudnorm=I=-16:TP=-2.0:LRA=11,alimiter=limit=0.79:level=false', '-ar', '48000', str(narration)])
-        sound, music, track = narration, None, music_track(self.settings, job)
+        sound, music, track = narration, None, self.music or music_track(self.settings, job)
         if track is not None:
             sound, music, found = mix_music(self.settings, directory, narration, total, track)
             findings += found
@@ -805,17 +827,30 @@ class ShortsRenderer:
         names = ['shorts.mp4', 'shorts.srt', 'shorts-upload.txt', 'shorts-plan.json']
         manifest = {'title': plan.title, 'duration': duration, 'qa_passed': True, 'fps': FPS, 'frames': frames, 'size': [WIDTH, HEIGHT],
                     'findings': findings, 'audio_quality': measured, 'review': {'frames': stills, 'audio': built['heard']},
-                    'music': music,
+                    'music': music, 'renderer': SHORTS_RENDERER_DIGEST,
                     'pictures': built['pictures'],
                     'scenes': [{**{k: s[k] for k in ('id', 'type', 't0', 't1')},
                                 **({'tier': s['data']['tier']} if s['type'] == 'issue' else {})} for s in scenes],
                     'files': {n: checksum(directory / n) for n in names}, 'directory': str(directory)}
         manifest['digest'] = digest(manifest)
         (directory / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
-        for path in [*directory.glob('aud-*.wav'), directory / 'silent.mp4', narration, directory / 'mixed.wav', directory / 'aud.txt']:
+        for path in [*directory.glob('aud-*.wav'), *directory.glob('range-*.mp4'), directory / 'ranges.txt',
+                     directory / 'silent.mp4', narration, directory / 'mixed.wav', directory / 'aud.txt']:
             path.unlink(missing_ok=True)
         shutil.rmtree(page, ignore_errors=True)
         return manifest
+
+    def _capture_ranges(self, index, frames, directory):
+        """silent.mp4 from frame ranges captured side by side, one browser per process, joined without re-encoding."""
+        count = max(1, min(self.workers, math.ceil(frames / RANGE_FRAMES)))
+        bounds = [round(frames * k / count) for k in range(count + 1)]
+        ranges = [(str(index), bounds[k], bounds[k + 1], str(directory / f'range-{k:02}.mp4'), self.settings.video_ffmpeg)
+                  for k in range(count)]
+        with ProcessPoolExecutor(count) as pool:
+            list(pool.map(capture_range, *zip(*ranges, strict=True)))
+        (directory / 'ranges.txt').write_text(''.join(f"file '{Path(r[3]).name}'\n" for r in ranges))
+        run([self.settings.video_ffmpeg, '-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', str(directory / 'ranges.txt'),
+             '-c', 'copy', str(directory / 'silent.mp4')])
 
     def _capture(self, index, scenes, frames, directory):
         from playwright.sync_api import sync_playwright
@@ -843,6 +878,8 @@ class ShortsRenderer:
                     name = f"review/{number:02}-{scene['id']}.jpg"
                     tab.screenshot(path=str(directory / name), type='jpeg', quality=70)
                     stills.append({'scene': scene['id'], 'file': name})
+                if self.workers > 1:
+                    return issues, stills, broken
                 encoder = subprocess.Popen([self.settings.video_ffmpeg, '-y', '-loglevel', 'error', '-f', 'image2pipe',
                                             '-framerate', str(FPS), '-c:v', 'mjpeg', '-i', '-', '-c:v', 'libx264', '-preset',
                                             'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', '-threads', '2',
@@ -860,3 +897,30 @@ class ShortsRenderer:
             finally:
                 browser.close()
         return issues, stills, broken
+
+
+def capture_range(index, start, end, out, ffmpeg):
+    """Frames [start, end) of the cut's page into one H.264 file (a capture process of ShortsRenderer._capture_ranges)."""
+    from playwright.sync_api import sync_playwright
+
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(args=CHROMIUM_ARGS)
+        try:
+            tab = browser.new_page(viewport={'width': WIDTH, 'height': HEIGHT}, device_scale_factor=1)
+            tab.route('http*://**/*', lambda route: route.abort())
+            tab.goto(Path(index).as_uri())
+            tab.evaluate('document.fonts.ready')
+            tab.evaluate('pictures()')
+            tab.wait_for_timeout(300)
+            encoder = subprocess.Popen([ffmpeg, '-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', str(FPS),
+                                        '-c:v', 'mjpeg', '-i', '-', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18',
+                                        '-pix_fmt', 'yuv420p', '-threads', '2', str(out)], stdin=subprocess.PIPE)
+            for i in range(start, end):
+                tab.evaluate(f'seek({i / FPS})')
+                encoder.stdin.write(tab.screenshot(type='jpeg', quality=80))
+            encoder.stdin.close()
+            if encoder.wait():
+                raise ValueError('Shorts frame encoding failed')
+        finally:
+            browser.close()
+    return out

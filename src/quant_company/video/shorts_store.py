@@ -1,7 +1,13 @@
 """Records of the daily Shorts (video/shorts.py): one cut per delivered episode, in the episode's Slack thread.
 
-The episode always goes first: a cut starts only when no episode is in production and is given up once the next
-episode has started (design §7). Its paid steps use the episode's effect receipts (video_effects, job_id = episode)."""
+The episode always goes first: a cut takes a step only when no episode step is due, and is given up once the next
+episode has started (design §7). Its script is written and reviewed beside its own episode once that episode's script
+is final (owner, 2026-11-05), on the API lane alone (runner), against the episode as it was then (qa.episode); the
+episode is checked again before the voice. A closing cut is voiced and rendered once its episode is delivered. A
+morning cut (FIRST, owner 2026-11-06) is voiced, rendered, inspected and delivered beside its episode once the
+episode's pictures are final, so it can be up before the market opens; it meets the episode's latest edits again
+before its render and before its delivery. Its paid steps use the episode's effect receipts (video_effects, job_id =
+episode)."""
 
 from datetime import UTC, datetime, time, timedelta
 
@@ -14,10 +20,19 @@ from .store import ACTIVE as EPISODE_ACTIVE
 from .store import EDITION_NAMES, KST, LOCK, VideoStore
 
 ACTIVE = ('writing', 'reviewing', 'synthesizing', 'rendering', 'inspecting')
+# The steps a cut takes beside its episode, and the episode's states once its script passed review (it never goes
+# back to writing then; its later edits change screen text and pictures, which the delivery check covers).
+EARLY = ('writing', 'reviewing')
+SCRIPTED = ('synthesizing', 'rendering', 'inspecting', 'delivering')
+# Owner, 2026-11-06: the morning cut goes out before its episode, so it can be up before the market opens. Once the
+# episode's pictures are final (it is rendering or later) the cut is voiced, rendered, inspected and delivered beside it;
+# the closing cut still waits for its episode.
+FIRST = ('am',)
+PICTURED = ('rendering', 'inspecting', 'delivering')
 # A step that ends without saving keeps the cut this long after its claim (video.store.LEASE, runner.holding).
 HOLD = timedelta(minutes=60)
-# The next episode is usually in production then (briefs at about 07:45 and 16:10-17:25, then about 1.5 hours of
-# script, speech and render): a cut takes no step that would hold the video worker or the Claude lane. A window
+# The next episode is usually in production then (briefs at about 07:20 and 16:10-17:25, then about 1.5 hours of
+# script, speech and render): only the episode's own cut takes steps beside it (_beside), on the API lane. A window
 # (its edition kind is the third value) ends early once that day's episode of its kind is delivered (claim).
 QUIET = ((time(6, 30), time(9, 30), 'am'), (time(15, 30), time(19, 0), 'close'))
 
@@ -41,10 +56,10 @@ def names(job):
     return [(source, stem + suffix, title) for source, suffix, title in FILES]
 
 
-def delivery_text(job, artifacts, script_findings=(), review_findings=(), inspection_findings=()):
+def delivery_text(job, artifacts, script_findings=(), review_findings=(), inspection_findings=(), early=False):
     """What is left when the cut goes out anyway (owner, 10/20 PM: never skipped on its checks): the checks after its
     last version, the reviewer's concerns after the last review, the final editor's after the last look at the frames,
-    and the renderer's own findings."""
+    and the renderer's own findings. early: a morning cut ready before its episode (FIRST)."""
     findings = ([f'대본: {f}' for f in script_findings] + [f'검토: {f}' for f in review_findings]
                 + [f'화면: {f}' for f in inspection_findings] + [f'화면·음성: {f}' for f in artifacts.get('findings') or []])
     check = '자동 검사 통과' if not findings else f'자동 검사 지적 {len(findings)}건(아래, 제작은 계속함)'
@@ -53,7 +68,9 @@ def delivery_text(job, artifacts, script_findings=(), review_findings=(), inspec
     return (f"쇼츠 준비 완료 · {EDITION_NAMES.get(job['source'].get('edition_kind'), '브리핑')}\n{artifacts.get('title', '')}\n"
             f"길이 {round(artifacts.get('duration', 0))}초 · 이슈 {issues}개 · 세로 1080×1920 · {check}\n" + notes +
             "첨부: 쇼츠 영상(MP4) · 자막(SRT) · 업로드 문안\n"
-            "업로드 후 YouTube Studio에서 '관련 동영상'을 오늘 본편으로 지정해 주세요.")
+            + ("본편보다 먼저 준비됐습니다. 본편은 화면 검수를 마치는 대로 따로 옵니다. 본편을 올린 뒤 YouTube Studio에서 "
+               "'관련 동영상'을 오늘 본편으로 지정해 주세요." if early else
+               "업로드 후 YouTube Studio에서 '관련 동영상'을 오늘 본편으로 지정해 주세요."))
 
 
 class ShortsStore:
@@ -65,7 +82,8 @@ class ShortsStore:
         return self.settings.video_shorts_enabled and self.video.enabled()
 
     def claim(self):
-        """The next due step of a cut, starting the cut of the latest delivered episode when there is none."""
+        """The next due step of a cut, starting the cut of the latest delivered episode when there is none, or of the
+        episode in production once its script is final (_beside)."""
         if not self.enabled():
             return None
         with self.db.transaction() as conn:
@@ -74,15 +92,16 @@ class ShortsStore:
                 updated_at=now() FROM video_jobs j WHERE j.id=s.job_id AND s.state=ANY(%s)
                 AND EXISTS (SELECT 1 FROM video_jobs n WHERE n.created_at>j.created_at) RETURNING s.job_id""",
                                     (list(ACTIVE),)).fetchall()
-            latest = conn.execute('SELECT state,source FROM video_jobs ORDER BY created_at DESC LIMIT 1').fetchone()
+            latest = conn.execute("""SELECT id,state,source,policy->>'edition' AS edition,
+                created_at>now()-interval '24 hours' AS recent FROM video_jobs ORDER BY created_at DESC LIMIT 1""").fetchone()
             delivered = latest['source'] if latest and latest['state'] == 'delivered' else None
-            # An episode in production goes first; one stuck for a day (a lost brief post) does not stop the cuts.
-            # So does any mail that still waits for the model (newsletter/store.py, at most until its fallback_at).
-            if (quiet(video_store.utcnow(), delivered) or conn.execute("""SELECT 1 FROM video_jobs WHERE state=ANY(%s)
-                    AND created_at>now()-interval '24 hours' LIMIT 1""", (list(EPISODE_ACTIVE),)).fetchone()
-                    or conn.execute("""SELECT 1 FROM newsletter_issues WHERE state='writing' AND fallback_at>now()
-                    LIMIT 1""").fetchone()):
+            if conn.execute("SELECT 1 FROM newsletter_issues WHERE state='writing' AND fallback_at>now() LIMIT 1").fetchone():
+                # Any mail that still waits for the model goes first (newsletter/store.py, at most until its fallback_at).
                 row = None
+            elif quiet(video_store.utcnow(), delivered) or conn.execute("""SELECT 1 FROM video_jobs WHERE state=ANY(%s)
+                    AND created_at>now()-interval '24 hours' LIMIT 1""", (list(EPISODE_ACTIVE),)).fetchone():
+                # An episode in production goes first; one stuck for a day (a lost brief post) does not stop the cuts.
+                row = self._beside(conn, latest)
             else:
                 # A cut given up on older checks gets one more look at what it already wrote (Runner.shorts_step).
                 conn.execute("""UPDATE video_shorts s SET state='writing',error=NULL,qa=s.qa||'{"recheck": true}'
@@ -96,15 +115,33 @@ class ShortsStore:
                     AND j.policy->>'template'='motion-v2' AND j.policy->>'delivery'='slack'
                     AND NOT EXISTS (SELECT 1 FROM video_jobs n WHERE n.created_at>j.created_at)
                     ON CONFLICT DO NOTHING""")
-                row = conn.execute("""SELECT * FROM video_shorts WHERE state=ANY(%s)
-                    AND (lease_until IS NULL OR lease_until<now()) ORDER BY created_at LIMIT 1 FOR UPDATE SKIP LOCKED""",
-                                   (list(ACTIVE),)).fetchone()
-                if row:
-                    row['lease_until'] = conn.execute("""UPDATE video_shorts SET lease_until=now()+%s WHERE job_id=%s
-                        RETURNING lease_until""", (video_store.LEASE, row['job_id'])).fetchone()['lease_until']
+                # A cut begun beside its episode is voiced only once that episode is delivered.
+                row = conn.execute("""SELECT s.* FROM video_shorts s JOIN video_jobs j ON j.id=s.job_id
+                    WHERE s.state=ANY(%s) AND (j.state='delivered' OR (s.state=ANY(%s) AND j.state=ANY(%s)))
+                    AND (s.lease_until IS NULL OR s.lease_until<now()) ORDER BY s.created_at LIMIT 1
+                    FOR UPDATE OF s SKIP LOCKED""", (list(ACTIVE), list(EARLY), list(SCRIPTED))).fetchone()
+            if row:
+                row['lease_until'] = conn.execute("""UPDATE video_shorts SET lease_until=now()+%s WHERE job_id=%s
+                    RETURNING lease_until""", (video_store.LEASE, row['job_id'])).fetchone()['lease_until']
         for gone in given_up:
             self.note(gone['job_id'], '쇼츠는 다음 회차 제작이 시작돼 만들지 않았습니다.')
         return row
+
+    @staticmethod
+    def _beside(conn, latest):
+        """The writing or review of the newest episode's own cut while that episode is in production past its script,
+        begun against the episode as it is then (qa.episode: its plan and its review's open findings); a morning cut
+        (FIRST) takes every later step too once the episode's pictures are final."""
+        if not latest or latest['state'] not in SCRIPTED or not latest['recent']:
+            return None
+        conn.execute("""INSERT INTO video_shorts(job_id,qa) SELECT j.id,jsonb_build_object('episode',jsonb_build_object(
+            'plan',j.plan,'concerns',COALESCE(j.qa->'review_findings','[]'::jsonb))) FROM video_jobs j
+            WHERE j.id=%s AND j.policy->>'template'='motion-v2' AND j.policy->>'delivery'='slack'
+            ON CONFLICT DO NOTHING""", (latest['id'],))
+        states = ACTIVE if latest.get('edition') in FIRST and latest['state'] in PICTURED else EARLY
+        return conn.execute("""SELECT * FROM video_shorts WHERE job_id=%s AND state=ANY(%s)
+            AND (lease_until IS NULL OR lease_until<now()) FOR UPDATE SKIP LOCKED""",
+                            (latest['id'], list(states))).fetchone()
 
     def superseded(self, job_id):
         with self.db.transaction() as conn:
@@ -172,8 +209,10 @@ class ShortsStore:
             mid = stable(f"video-shorts:{job['id']}")
             # Ready files wait for the owner's upload: the message mentions the owner (2026-10-19 tag rule).
             qa = current['qa'] or {}
+            episode = conn.execute('SELECT state FROM video_jobs WHERE id=%s', (job['id'],)).fetchone()
             text = delivery_text(job, artifacts, qa.get('shipped_with_findings', []), qa.get('review_findings', []),
-                                 qa.get('inspection_findings', []))
+                                 qa.get('inspection_findings', []),
+                                 early=episode['state'] not in ('delivering', 'delivered'))
             self.company._message(conn, project, None, 'market_brief', 'video_shorts', text, message_id=mid, notify_owner=True)
             conn.execute("""UPDATE video_shorts SET state='delivering',artifacts=%s,delivery_message_id=%s,error=NULL,
                 lease_until=NULL,updated_at=now() WHERE job_id=%s""", (Jsonb(artifacts), mid, row['job_id']))

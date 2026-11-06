@@ -105,8 +105,6 @@ class RemoteRender:
         return self.storage.exists(self.prefix(job, key) + '/in/ready.json')
 
     def upload_inputs(self, job, plan, audio_paths, texts, key, brand=None):
-        from .render import music_track
-
         storage, base = self.storage, self.prefix(job, key) + '/in/'
         if storage.exists(base + 'ready.json'):
             return False  # the same render key always has the same inputs
@@ -144,8 +142,16 @@ class RemoteRender:
         for name, path in (brand or {}).items():
             storage.put(base + f'brand-{name}.mp3', Path(path).read_bytes())
         storage.put(base + 'brand.json', json.dumps(sorted(brand or {})).encode())
-        # The music bed (render.music_track) travels on its own: the library copy below leaves the music folder out, so
-        # the task renders with exactly this track or none. A track the worker cannot read renders without one.
+        self._music(storage, base, job)
+        storage.put(base + 'assets.tar.gz', self._library(extra))
+        storage.put(base + 'ready.json', json.dumps({'scenes': len(audio_paths), 'at': time.time()}).encode())
+        return True
+
+    def _music(self, storage, base, job):
+        """The music bed (render.music_track) travels on its own: the library copy leaves the music folder out, so the
+        task renders with exactly this track or none. A track the worker cannot read renders without one."""
+        from .render import music_track
+
         track, bed = music_track(self.settings, job), None
         try:
             bed = track.read_bytes() if track else None
@@ -154,6 +160,9 @@ class RemoteRender:
         if bed is not None:
             storage.put(base + 'music.mp3', bed)
         storage.put(base + 'music.json', json.dumps(track.name if bed is not None else None).encode())
+
+    def _library(self, extra=None):
+        """The reviewed library as a tar.gz without its music, with extra {asset: (manifest entry, file)} added."""
         buffer = io.BytesIO()
         library_dir = Path(self.settings.video_asset_dir)
         left_out = {'./music', *(['./manifest.json'] if extra else [])}
@@ -168,8 +177,31 @@ class RemoteRender:
                 info = tarfile.TarInfo('./manifest.json')
                 info.size, info.mtime = len(data), int(time.time())
                 archive.addfile(info, io.BytesIO(data))
-        storage.put(base + 'assets.tar.gz', buffer.getvalue())
-        storage.put(base + 'ready.json', json.dumps({'scenes': len(audio_paths), 'at': time.time()}).encode())
+        return buffer.getvalue()
+
+    def upload_shorts_inputs(self, job, plan, episode, audio_paths, texts, key):
+        """A Shorts cut (owner, 2026-11-05): its plan, the delivered episode it was cut from, one take per scene and
+        what each says, the music bed and the library, plus the pictures made for this episode with their records.
+        In the task they land at the worker's own paths, so the cut shows exactly the episode's pictures."""
+        storage, base = self.storage, self.prefix(job, key) + '/in/'
+        if storage.exists(base + 'ready.json'):
+            return False  # the same render key always has the same inputs
+        made = (job.get('qa') or {}).get('illustrations') or {}
+        folder = Path(self.settings.video_artifact_dir) / str(job['id']) / 'illustrations'
+        frozen = {'id': str(job['id']), 'source': job['source'], 'policy': job['policy'], 'illustrations': made}
+        storage.put(base + 'job.json', json.dumps(frozen, ensure_ascii=False, default=str).encode())
+        storage.put(base + 'shorts.json', plan.model_dump_json().encode())
+        storage.put(base + 'episode.json', json.dumps(episode, ensure_ascii=False).encode())
+        storage.put(base + 'texts.json', json.dumps(texts, ensure_ascii=False).encode())
+        for index, path in enumerate(audio_paths):
+            storage.put(base + f'speech-{index:02}.mp3', Path(path).read_bytes())
+        for entry in made.values():
+            picture = folder / Path(entry.get('file') or '').name if entry.get('file') else None
+            if picture is not None and picture.is_file():
+                storage.put(base + 'illustrations/' + picture.name, picture.read_bytes())
+        self._music(storage, base, job)
+        storage.put(base + 'assets.tar.gz', self._library())
+        storage.put(base + 'ready.json', json.dumps({'scenes': len(audio_paths), 'shorts': True, 'at': time.time()}).encode())
         return True
 
     def launch(self, job, key, attempt):
@@ -248,6 +280,68 @@ class Syncer:
                 pass
 
 
+def fetch_shared(settings, storage, inputs, job, directory):
+    """What every render takes from its inputs besides its plan and speech: this episode's pictures at the worker's
+    paths, the library, the alignment model and the music bed (its path, or None)."""
+    music = None
+    if storage.exists(inputs + 'music.json') and (name := json.loads(storage.get(inputs + 'music.json'))):
+        music = directory / 'music' / Path(name).name
+        music.parent.mkdir(exist_ok=True)
+        music.write_bytes(storage.get(inputs + 'music.mp3'))
+    for entry in (job.get('illustrations') or {}).values():
+        if entry.get('file'):
+            picture = directory.parent / 'illustrations' / Path(entry['file']).name
+            picture.parent.mkdir(parents=True, exist_ok=True)
+            picture.write_bytes(storage.get(inputs + 'illustrations/' + Path(entry['file']).name))
+    assets = Path(settings.video_asset_dir)
+    assets.mkdir(parents=True, exist_ok=True)
+    with tarfile.open(fileobj=io.BytesIO(storage.get(inputs + 'assets.tar.gz')), mode='r:gz') as archive:
+        archive.extractall(assets, filter='data')
+    model = Path(settings.video_alignment_model)
+    if model.is_absolute() and not model.exists():
+        for name in storage.keys(f'models/{model.name}/'):
+            target = model / name.split(f'models/{model.name}/', 1)[1]
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(storage.get(name))
+    return music
+
+
+def shorts_task(settings, storage, prefix, renderer=None):
+    """A Shorts cut in the task: about 2,000 frames, captured by VIDEO_RENDER_WORKERS browsers side by side. A reclaimed
+    task loses the cut (a minute of work); the next attempt renders it again. The files go up, the manifest last."""
+    from .shorts import ShortsPlan, ShortsRenderer
+
+    key = prefix.rsplit('/', 1)[-1]
+    inputs, out = prefix + '/in/', prefix + '/out/'
+    job = json.loads(storage.get(inputs + 'job.json'))
+    plan = ShortsPlan.model_validate_json(storage.get(inputs + 'shorts.json'))
+    episode = json.loads(storage.get(inputs + 'episode.json'))
+    texts = json.loads(storage.get(inputs + 'texts.json'))
+    directory = Path(settings.video_artifact_dir) / job['id'] / key
+    directory.mkdir(parents=True, exist_ok=True)
+    audio = []
+    for index in range(len(texts)):
+        path = directory / f'speech-{index:02}.mp3'
+        path.write_bytes(storage.get(inputs + f'speech-{index:02}.mp3'))
+        audio.append(path)
+    music = fetch_shared(settings, storage, inputs, job, directory)
+
+    def interrupted(signum=None, frame=None):
+        os._exit(143 if signum else 124)
+
+    signal.signal(signal.SIGTERM, interrupted)
+    watchdog = threading.Timer(settings.video_render_timeout_minutes * 60, interrupted)
+    watchdog.daemon = True
+    watchdog.start()
+    artifacts = (renderer or ShortsRenderer(settings)).render(job, plan, episode, directory, audio, None, texts,
+                                                             music=music, workers=settings.video_render_workers)
+    watchdog.cancel()
+    for name in dict.fromkeys([*artifacts['files'], *(f['file'] for f in (artifacts.get('review') or {}).get('frames', []))]):
+        storage.put(out + name, (directory / name).read_bytes())
+    storage.put(out + 'manifest.json', json.dumps(artifacts, ensure_ascii=False, indent=2).encode())
+    return {'manifest': out + 'manifest.json', 'duration': artifacts.get('duration')}
+
+
 def render_task(settings, uri, s3=None, renderer=None):
     """Entry point inside the Fargate task (quant-company video render-task --prefix s3://...)."""
     from .episode import plan_class
@@ -257,6 +351,8 @@ def render_task(settings, uri, s3=None, renderer=None):
     if s3 is None:
         s3 = boto3_clients(settings)[0]
     storage = Storage(s3, bucket)
+    if storage.exists(prefix + '/in/shorts.json'):
+        return shorts_task(settings, storage, prefix, renderer)
     key = prefix.rsplit('/', 1)[-1]
     inputs, out = prefix + '/in/', prefix + '/out/'
     job = json.loads(storage.get(inputs + 'job.json'))
@@ -273,26 +369,7 @@ def render_task(settings, uri, s3=None, renderer=None):
     for name in (json.loads(storage.get(inputs + 'brand.json')) if storage.exists(inputs + 'brand.json') else []):
         brand[name] = directory / f'brand-{name}.mp3'
         brand[name].write_bytes(storage.get(inputs + f'brand-{name}.mp3'))
-    music = None
-    if storage.exists(inputs + 'music.json') and (name := json.loads(storage.get(inputs + 'music.json'))):
-        music = directory / 'music' / Path(name).name
-        music.parent.mkdir(exist_ok=True)
-        music.write_bytes(storage.get(inputs + 'music.mp3'))
-    for entry in (job.get('illustrations') or {}).values():
-        if entry.get('file'):
-            picture = directory.parent / 'illustrations' / Path(entry['file']).name
-            picture.parent.mkdir(parents=True, exist_ok=True)
-            picture.write_bytes(storage.get(inputs + 'illustrations/' + entry['file']))
-    assets = Path(settings.video_asset_dir)
-    assets.mkdir(parents=True, exist_ok=True)
-    with tarfile.open(fileobj=io.BytesIO(storage.get(inputs + 'assets.tar.gz')), mode='r:gz') as archive:
-        archive.extractall(assets, filter='data')
-    model = Path(settings.video_alignment_model)
-    if model.is_absolute() and not model.exists():
-        for name in storage.keys(f'models/{model.name}/'):
-            target = model / name.split(f'models/{model.name}/', 1)[1]
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(storage.get(name))
+    music = fetch_shared(settings, storage, inputs, job, directory)
     syncer, resumed = Syncer(storage, directory, out), 0
     # Resume: a previous (interrupted) task's scenes, alignment and layout are reused as they are (and not re-uploaded).
     for name in storage.keys(out):

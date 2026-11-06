@@ -121,7 +121,10 @@ def plan_summary(job):
     plan, artifacts = (job or {}).get("plan") or {}, (job or {}).get("artifacts") or {}
     scenes = plan.get("scenes") or []
     upload = plan.get("upload") or {}
-    return {"thumbnail_text": " / ".join(x for x in (plan.get("thumbnail"), plan.get("thumbnail_stat")) if x) or None,
+    # A designed thumbnail (2026-11-06) shows its own words; the plan's seed text is what a template thumbnail showed.
+    designed = (artifacts.get("thumbnail") or {}).get("texts")
+    return {"thumbnail_text": " / ".join(designed) if designed else
+            " / ".join(x for x in (plan.get("thumbnail"), plan.get("thumbnail_stat")) if x) or None,
             "cold_open": scenes[0].get("narration") if scenes else None,
             "lead": upload.get("lead") or plan.get("introduction"), "stories": upload.get("stories"),
             "scenes": [{k: s.get(k) for k in ("type", "heading", "t0", "t1")} for s in artifacts.get("scenes") or []]

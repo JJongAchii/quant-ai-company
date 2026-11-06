@@ -367,12 +367,12 @@ def test_masking_and_command_parsing():
 
 def test_html_and_plain_text_follow_the_approved_layout():
     draft = v5_draft()
-    data = render.message(draft, day=PM_DAY.isoformat(), sender=SENDER, name="뭐든story", to=OWNER_MAIL,
+    data = render.message(draft, day=PM_DAY.isoformat(), sender=SENDER, name="그래서, 오늘장", to=OWNER_MAIL,
                           message_id="<fixture@gmail.com>", channel_url="https://www.youtube.com/@anything-story",
                           logo=b"\x89PNG fixture").as_bytes()
     parsed = email.message_from_bytes(data, policy=default)
     assert parsed["Subject"] == "코스피, 3.2% 급락 출발 후 1.8% 상승 마감 | 10/19 마감 브리핑"
-    assert parsed["From"].addresses[0].display_name == "뭐든story" and parsed["Message-ID"] == "<fixture@gmail.com>"
+    assert parsed["From"].addresses[0].display_name == "그래서, 오늘장" and parsed["Message-ID"] == "<fixture@gmail.com>"
     assert parsed["List-Unsubscribe"] == f"<mailto:{SENDER}?subject=%EC%88%98%EC%8B%A0%EA%B1%B0%EB%B6%80>"
     assert parsed.get_content_type() == "multipart/alternative"
     plain, related = parsed.get_payload()
@@ -832,15 +832,60 @@ def video_job(store, edition, state):
 
 
 @pytest.mark.integration
-async def test_no_email_turn_starts_while_the_video_needs_the_model(mail, brief):  # noqa: F811
+@pytest.mark.parametrize("state", ["queued", "reviewing", "synthesizing", "inspecting"])
+async def test_an_email_turn_beside_a_video_needing_the_model_is_api_only(mail, brief, state):  # noqa: F811
+    # Owner, 2026-11-05: the email is written while the episode works, on the API lane only (it never takes the
+    # subscription slot the episode holds), so the morning email goes out about 07:35 instead of after 08:15.
     store, _ = mail
     edition = commit_pm(brief)
     writer, provider = await write(store, v5_draft())
-    for state in ("queued", "reviewing", "synthesizing", "inspecting"):
-        video_job(store, edition, state)
-        assert await writer.tick() == {"state": "idle"} and not provider.calls, state
-    video_job(store, edition, "rendering")
+    video_job(store, edition, state)
     assert (await writer.tick())["state"] == "ready" and len(provider.calls) == 1
+    assert provider.calls[0].api_only is True
+
+
+@pytest.mark.integration
+async def test_an_email_turn_with_no_video_needing_the_model_may_use_either_lane(mail, brief):  # noqa: F811
+    store, _ = mail
+    edition = commit_pm(brief)
+    writer, provider = await write(store, v5_draft())
+    video_job(store, edition, "rendering")
+    assert (await writer.tick())["state"] == "ready" and provider.calls[0].api_only is False
+
+
+@pytest.mark.integration
+async def test_an_api_only_email_turn_the_lane_refuses_waits_without_using_an_attempt(mail, brief):  # noqa: F811
+    store, clock = mail
+    edition = commit_pm(brief)
+    refused = ProviderFault("busy", "simulated: the API lane cannot take this turn now", 300)
+    writer, provider = await write(store, refused, v5_draft())
+    video_job(store, edition, "reviewing")
+    assert await writer.tick() == {"issue": str(issue_of(store, edition)["id"]), "state": "waiting", "code": "api_lane"}
+    first = provider.calls[0]
+    issue = issue_of(store, edition)
+    assert first.api_only and [a["outcome"] for a in issue["attempts"]] == ["yielded"] and issue["request"] is None
+    clock["at"] += timedelta(minutes=4)
+    assert await writer.tick() == {"state": "idle"} and len(provider.calls) == 1  # waits five minutes
+    video_job(store, edition, "rendering")
+    clock["at"] += timedelta(minutes=2)
+    # A new request once the episode leaves the model: it may now use the subscription like before.
+    assert (await writer.tick())["state"] == "ready"
+    assert provider.calls[1].request_id == first.request_id[:-1] + "2" and provider.calls[1].api_only is False
+    assert [a["outcome"] for a in issue_of(store, edition)["attempts"]] == ["yielded", "passed"]
+
+
+@pytest.mark.integration
+async def test_an_api_only_email_turn_is_never_cancelled_for_the_video(mail, brief):  # noqa: F811
+    store, clock = mail
+    edition = commit_pm(brief)
+    pending = ProviderFault("pending", "simulated: still running", 20)
+    writer, provider = await write(store, pending, v5_draft())
+    video_job(store, edition, "inspecting")
+    await writer.tick()
+    first = provider.calls[0].request_id
+    clock["at"] += timedelta(seconds=30)
+    assert (await writer.tick())["state"] == "ready"
+    assert provider.cancelled == [] and [c.request_id for c in provider.calls] == [first, first]
 
 
 @pytest.mark.integration
@@ -875,13 +920,14 @@ async def test_newsletter_does_not_yield_a_turn_the_runtime_kept(mail, brief):  
     before = issue_of(store, edition)
     video_job(store, edition, "inspecting")
     clock["at"] += timedelta(seconds=30)
-    assert await writer.tick() == {"state": "idle"}
-    # The turn runs on the API lane and holds no shared slot: it is asked about, never given up.
-    assert provider.cancelled == [first] and provider.cancel_scopes == [True] and len(provider.calls) == 1
+    assert (await writer.tick())["state"] == "ready"
+    # The turn runs on the API lane and holds no shared slot: it is asked about, never given up, and asked again by
+    # its own ID for its result.
+    assert provider.cancelled == [first] and provider.cancel_scopes == [True]
+    assert [c.request_id for c in provider.calls] == [first, first]
     issue = issue_of(store, edition)
-    assert len(issue["attempts"]) == len(before["attempts"]) and issue["request"] is not None
-    assert issue["request"]["request_id"] == first
-    assert "yielded" not in [a["outcome"] for a in issue["attempts"]]
+    assert len(before["attempts"]) == 0 and [(a["request_id"], a["outcome"]) for a in issue["attempts"]] == [
+        (first, "passed")]
 
 
 @pytest.mark.integration
@@ -937,16 +983,14 @@ async def test_an_api_email_turn_kept_for_the_video_is_used_by_its_id_after_it_c
     first = issue_of(store, edition)["request"]["request_id"]
     video_job(store, edition, "inspecting")
     clock["at"] += timedelta(seconds=30)
-    assert await writer.tick() == {"state": "idle"}  # kept: the API turn holds no shared slot
-    api.gate.set()
-    assert (await asyncio.gather(*provider.open))[0].usage["billing_mode"] == "api_credit"
-    clock["at"] += timedelta(seconds=30)
-    # The shared-only cancel now answers completed: the finished result waits under its ID, nothing is yielded.
-    assert await writer.tick() == {"state": "idle"}
+    # Kept: the API turn holds no shared slot; asked again by its ID, it is still running.
+    assert (await writer.tick())["code"] == "pending" and len(api.seen) == 1
     issue = issue_of(store, edition)
     assert issue["attempts"] == [] and issue["request"]["request_id"] == first
-    video_job(store, edition, "rendering")
-    clock["at"] += timedelta(minutes=2)
+    api.gate.set()
+    assert all(r.usage["billing_mode"] == "api_credit" for r in await asyncio.gather(*provider.open))
+    clock["at"] += timedelta(seconds=30)
+    # The shared-only cancel now answers completed and the finished result is read under its ID; nothing is yielded.
     assert (await writer.tick())["state"] == "ready"
     issue = issue_of(store, edition)
     assert [(a["request_id"], a["outcome"]) for a in issue["attempts"]] == [(first, "passed")]
@@ -1106,9 +1150,10 @@ def test_the_morning_fallback_time_is_08_40_at_the_latest_and_never_under_45_min
 
 
 def test_the_morning_prompt_has_its_own_guide_and_the_closing_prompt_is_unchanged():
-    # The PM guide as PM requests were frozen with before the morning email (bcc60ab).
+    # The PM guide, pinned so a change to it is deliberate: as frozen before the morning email (bcc60ab), with only the
+    # newsletter's name changed to 그래서, 오늘장 (2026-11-04). A turn already asked keeps its frozen request.
     assert hashlib.sha256(contracts.GUIDE.encode()).hexdigest() == (
-        "5a0b7421693056bfbffc66b1efa134c291282c2d065880d72162313d7624634a")
+        "275132a3523757328a7f597d0a628fece6c64af3b0cc5f37c468110151ef1528")
     pm = {key: value for key, value in contracts.source(pm_row()).items() if key != "outlook"}  # frozen before 10/22
     assert pm["kind"] == "pm" and contracts.prompt(pm).startswith(contracts.GUIDE + "\nDATA:\n")
     legacy = {key: value for key, value in pm.items() if key != "kind"}  # frozen before the morning email
@@ -1128,10 +1173,10 @@ def test_the_morning_subject_and_header_name_the_morning():
     assert render.subject(draft, "2026-10-20").endswith("| 10/20 마감 브리핑")
     page = render.html(draft, day="2026-10-20", sender=SENDER, channel_url="https://example.com", kind="am")
     text = render.text(draft, day="2026-10-20", sender=SENDER, channel_url="https://example.com", kind="am")
-    assert "10/20 아침 · 오늘의 증시story" in page and "장 마감 · 오늘의 증시story" not in page
-    assert text.startswith("뭐든story · 10/20 아침 · 오늘의 증시story\n") and "10/20 아침 브리핑</title>" in page
+    assert "10/20 아침 브리핑</td>" in page and "마감 브리핑</td>" not in page and "뭐든story" not in page
+    assert text.startswith("그래서, 오늘장 · 10/20 아침 브리핑\n") and "10/20 아침 브리핑</title>" in page
     closing = render.html(draft, day="2026-10-20", sender=SENDER, channel_url="https://example.com")
-    assert "10/20 장 마감 · 오늘의 증시story" in closing
+    assert "10/20 마감 브리핑</td>" in closing
     assert "아침과 장 마감 후" in render.INTRO and render.INTRO in page and render.INTRO in closing
 
 
@@ -1195,8 +1240,8 @@ async def test_a_morning_edition_is_written_with_its_guide_and_mailed_as_the_mor
     sent = email.message_from_bytes(smtp.to(OWNER_MAIL)[0], policy=default)
     assert sent["Subject"] == "S&P 500 1.92% 상승, 5,300 마감 | 09/22 아침 브리핑"
     plain, related = sent.get_payload()
-    assert plain.get_content().startswith("뭐든story · 09/22 아침 · 오늘의 증시story")
-    assert "09/22 아침 · 오늘의 증시story" in related.get_payload()[0].get_content()
+    assert plain.get_content().startswith("그래서, 오늘장 · 09/22 아침 브리핑")
+    assert "09/22 아침 브리핑</td>" in related.get_payload()[0].get_content()
     notices = [n["text"] for n in outbox(store, "newsletter_status")]
     assert len(notices) == 1 and notices[0].startswith("아침 브리핑 메일 · 09/22 · 1명 발송 · 정해진 시간 안에")
 

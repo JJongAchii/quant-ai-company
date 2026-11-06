@@ -70,6 +70,25 @@ flowchart LR
   - 원문 줄·숫자·크기 표현·제목 규칙·권유 금지가 우선한다.
   - 회차는 만들어질 때 `policy.craft` 버전을 고정한다. 그 전에 만든 회차는 프롬프트가 그대로라, 진행 중인 모델 요청이 같은 요청으로 다시 나간다.
   - `episode.py`·`contracts.py`(렌더 이미지 입력) 밖에 두어서, 이 규칙을 바꿔도 렌더 이미지를 다시 빌드하지 않는다.
+
+제목 3판과 회차별 썸네일(소유자 결정 2026-11-06, [ADR 0050](adr/0050-episode-thumbnail-designed-per-episode.md))
+- 계기: 브리핑 본편 40편의 썸네일 클릭률이 평균 약 2.1%였고 계속 떨어졌다. 제목 40개 중 30개가 '지수 X.XX%'로 시작했고,
+  썸네일은 모두 같은 틀(남색 배경·흐린 사진·작은 숫자 줄)이었다.
+- 제목(`policy.craft` 3): 정해진 공식 없이 그날 핵심 이슈에서 경제에 관심 있는 시청자가 가장 누르고 싶을 한 가지를 쓴다.
+  지수와 등락률로 여는 것은 그 움직임 자체가 뉴스일 때만이다. 예시 문구는 따라 쓰지 않는다. 최근 회차 훅 8개를 보여 주고
+  같은 시작·끝말('왜?'·'믿어도 될까')·모양을 되풀이하면 검토가 지적한다. 앞 20자 숫자·이름 검사(`check_title`)와 숫자는
+  원문 그대로라는 규칙은 그대로다.
+- 썸네일(`policy.thumbnail` 1, `VIDEO_THUMBNAIL_DESIGN`, 기본 켬): 그림이 준비되면(목소리 녹음 전) Claude가 그 회차만의 썸네일을
+  작은 HTML/CSS 페이지로 짠다(`video_thumbnail_v1`, claude-runtime 전용 계약). 인물이 핵심인 날은 그 사람 얼굴을 크게 쓴다.
+  - 서비스 검사: 제공한 그림·글꼴·로고 말고는 아무것도 불러오지 않고 스크립트가 없어야 한다. 모든 숫자는 원문에 있어야 하고,
+    '급락'·'폭락'·'장중'·권유 금지 규칙을 지킨다.
+  - 이 서버에서 Chromium으로 그린 뒤 글자를 잰다: 168px 추천 칸에서 읽히는지(가장 큰 줄 90px, 모든 줄 30px 이상),
+    화면 밖·빨간 진행 줄·재생 시간 표시(오른쪽 아래)에 걸리지 않는지, 글자가 40자를 넘지 않는지.
+  - 통과하면 Claude(검토 effort)가 원본·추천 칸 크기·최근 썸네일과 나란히 본다. 지적이 있으면 다시 짜고, 3번째 뒤(또는
+    시작 25분 뒤)에는 지적이 가장 적은 것을 남은 지적과 함께 내보낸다. 원문 규칙을 어긴 디자인은 내보내지 않고, 내보낼
+    것이 없으면 기존 틀 썸네일이 나간다(제작은 멈추지 않는다). 빨간 진행 줄은 그린 뒤에 서비스가 칠한다.
+  - 렌더가 끝나면 이 파일이 렌더의 `thumbnail.png`를 대신하고 매니페스트 해시를 다시 계산한다. 렌더 이미지는 바뀌지 않는다.
+  - 마지막 화면 검수는 이미 검수한 썸네일을 다시 보지 않는다. 남은 썸네일 지적은 Slack 전달 글의 화면 검수 줄에 붙는다.
 - Shorts 제목도 숫자나 이름 하나와 긴장 하나로, 약 40자 이내로 쓴다.
 
 모든 본편은 채널 고정 장면으로 시작하고 끝난다(소유자 결정 2026-10-19, `motion.BRAND`).
@@ -152,7 +171,8 @@ flowchart LR
 - 작성·검토·검수·화면 수정은 모두 API 크레딧 레인을 먼저 쓴다(소유자 2026-10-23, 요청 ID `video-<job>-shorts-…`). 31일 $190
   상한에 닿으면 구독으로 간다.
 - Shorts 검토·검수는 본편 검토(max)가 아니라 작성과 같은 xhigh다(10/27 시안 측정: 같은 대본에서 xhigh 5분, max 15분, 같은 핵심을 잡음;
-  사장님 10/28 결정 위임). Shorts 한 편은 본편 전달 뒤 약 45~60분, API 크레딧 약 $4~5다.
+  사장님 10/28 결정 위임). Shorts 한 편은 API 크레딧 약 $4~5다. 대본을 본편 곁에서 미리 쓰므로(아래 '본편 우선') 본편 전달 뒤에는
+  대조·음성·렌더·검수만 남는다(11/05 시험: Fargate 렌더 2분 47초). 미리 쓰기 전에는 본편 전달 뒤 약 45~60분이었다.
 - 본편처럼 검사·검토·검수 때문에 건너뛰지 않는다(소유자 결정 2026-10-20 저녁). 최대 5번 쓰고(유실된 턴은 세지 않음), 그래도 지적이
   남으면 지적이 가장 적은 판(같으면 나중 판)으로 만든다. 남은 지적은 전달 메시지에 "대본: …", "검토: …", "화면: …"으로 적는다.
 - 쓸 수 있는 판이 하나도 없으면(모두 거부·형식 오류·유실) 30분마다 한 번씩 다시 쓴다. 다음 본편이 시작되면 그때 포기한다.
@@ -162,8 +182,20 @@ flowchart LR
 - 브리핑에 번호 이슈가 없는 회차(사실 나열형)는 만들지 않는다(`too_few_issues`).
 
 본편 우선
-- 본편이 제작 중이면 Shorts 단계는 기다린다.
-- 메일이 모델을 기다리는 동안(작성 중이고 `newsletter_issues.fallback_at` 전)에도 Shorts 단계는 기다린다.
+- 본편이 제작 중이면 Shorts의 음성·렌더·검수 단계는 기다린다.
+- 본편 곁에서 미리 쓴다(사장님 2026-11-05). 본편 대본이 검토를 통과하면(`synthesizing`·`rendering`·`inspecting`·`delivering`)
+  그 회차 Shorts의 작성과 검토를 시작한다(`shorts_store._beside`). 음성·렌더는 본편이 전달된 뒤에 한다.
+  - 이때 Shorts 턴은 API 레인만 쓴다(`ClaudeRequest.api_only`). 본편이 구독의 단일 차례를 그대로 쓴다. API가 받지 않으면
+    (꺼짐·상한·혼잡) 아무것도 실행되지 않은 것이므로 시도로 세지 않고(`lane_refused`) 5분 뒤 새 요청으로 묻는다.
+  - 턴을 넘기고 5초 안에 돌아온다(`EARLY_WAIT_SECONDS`). claude-runtime은 같은 요청 ID로 턴을 계속 돌리므로, 작업기는 그사이
+    본편의 다음 단계를 한다.
+  - 본편이 전달될 때 아직 돌던 턴은 처음 보낸 그대로(API 전용) 다시 묻는다. 요청이 달라지면 실행기 영수증과 맞지 않아
+    답을 잃는다(`asked_api_only`).
+  - 대본은 시작할 때의 본편(`qa.episode`: 계획과 본편 검토의 남은 지적)을 기준으로 쓴다. 본편 화면 검수가 그 뒤에 화면 글자나
+    사진을 고쳐도 같은 턴은 같은 지시로 다시 묻는다.
+  - 본편이 전달되면 음성 전에 전달된 본편과 다시 대조한다(`shorts_recheck`). 고친 본편이 Shorts 규칙을 새로 깨면(예: Shorts가 보여 주는
+    숫자가 본편 화면에서 빠짐) 그 지적을 넣어 다시 쓰고 검토한다. 깨지 않으면 바로 음성으로 간다. 사진은 렌더 때 전달된 본편에서 고른다.
+- 메일이 모델을 기다리는 동안(작성 중이고 `newsletter_issues.fallback_at` 전)에는 Shorts 단계가 모두 기다린다.
 - 아침(06:30~09:30)·마감(15:30~19:00) 시간대에는 다음 본편을 위해 기다린다. 그날 그 시간대의 본편(아침 편·마감 편)이
   전달되면 시간대가 끝나기 전이라도 바로 시작한다(`shorts_store.QUIET`).
 - 다음 본편 작업이 생기면 끝나지 않은 Shorts는 포기하고 스레드에 한 줄 남긴다.
@@ -174,8 +206,18 @@ flowchart LR
   11/02 마감: 19:12 메모리 초과로 작업기가 죽었고, 60분 lease 때문에 20:10에야 이어졌다.
 
 렌더와 전달
-- 렌더는 작업 서버에서 `shorts_design/` 템플릿으로 한다. Fargate 렌더 이미지에 들어가지 않으므로 Shorts 변경은 렌더 이미지
-  교체 없이 배포된다.
+- 렌더는 본편처럼 Fargate 태스크에서 `shorts_design/` 템플릿으로 한다(소유자 결정 2026-11-05: 서버 2코어에서 한 번에 약
+  13분, 화면 검수 뒤 다시 렌더하면 두 번이 걸려 쇼츠 전체가 45분이었다). 아래 "렌더링 위치"의 시도·토큰·fallback 규칙을
+  그대로 쓰고, 기록은 `video_shorts.qa.render`에 남긴다. 입력(`in/shorts.json`이 있으면 Shorts)에는 컷 계획, 잘라 온 본편
+  계획, 장면별 음성과 그 문장, 음악, 라이브러리, 그리고 **이 회차 본편에 쓴 사진 파일과 기록**(`qa.illustrations`)이
+  들어간다. 태스크는 사진을 서버와 같은 경로(`/state/video/<job>/illustrations/`)에 두고 서버와 같은 `cut_pictures`로
+  고르므로, 쇼츠 배경은 서버에서 렌더할 때와 똑같이 본편 사진이다. 태스크는 `VIDEO_RENDER_WORKERS`개 브라우저로 프레임을
+  나눠 찍어 이어 붙인다(같은 프레임, 다시 인코딩하지 않음). 서버 렌더는 지금처럼 브라우저 하나로 찍고 다음 회차가 시작되면
+  멈춘다. 원격 렌더 중 다음 회차가 시작되면 태스크를 멈추고 같은 방식으로 포기한다. 마지막 시도까지 실패하면 서버에서
+  렌더한다(`qa.render_local`). 쇼츠 manifest의 `renderer`(`SHORTS_RENDERER_DIGEST`: shorts.py·`shorts_design/`·본편
+  렌더러)가 서버 코드와 다르면 전달 글의 화면 지적 첫 줄에 "Render image code … differs"가 붙는다.
+- `video.remote`가 `video/shorts.py`를 불러오므로 Shorts 렌더 코드나 `shorts_design/`을 바꾸면 렌더 이미지도 새로 만들어야
+  한다(`release.py`의 render_required).
 - 같은 스레드에 쇼츠 영상(MP4)·자막(SRT)·업로드 문안을 올리고, 업로드가 필요한 메시지라 소유자를 태그한다.
 - 제목에는 시리즈 이름("| …그래서, 오늘장", 예전 "오늘의 증시story")을 붙이지 않는다. 그래서 본편 성과 분석에 섞이지 않는다.
 - 업로드 뒤 Studio에서 '관련 동영상'을 같은 날 본편으로 지정한다.
@@ -195,7 +237,8 @@ Runway 음성은 OAuth로 `https://mcp.runwayml.com/mcp`에 연결한다.
 따르면 이 MCP는 웹 계정 크레딧을 사용한다. `dev.runwayml.com/mcp`와 직접 유료 API로 전환하지 않는다.
 기존 ChatGPT 앱 연결 토큰이 서버로 자동 이관되지는 않으므로 서버에서 처음 한 번 로그인한다.
 
-음성 모델은 `eleven_v4`(`VIDEO_SPEECH_MODEL`), 목소리는 Runway 음성 라이브러리의 Anna Kim(`VIDEO_VOICE_ID`, 2026-11-04 소유자 선택)이다. 그 전에는 preset `Vincent`였다.
+음성 모델은 `eleven_v4`(`VIDEO_SPEECH_MODEL`), 목소리는 Runway 음성 라이브러리의 Chris - Warm and Clear(`VIDEO_VOICE_ID`, 2026-11-05 소유자 선택)이다. 그 전에는
+Anna Kim(2026-11-04), 그보다 전에는 preset `Vincent`였다.
 2026-10-12 서버에서 MCP `generate_speech`의 `tools/list` 스키마를 조회해 `eleven_v3`·`eleven_multilingual_v2`·`eleven_v4`
 선택지를 확인했다. `eleven_v4`는 유료 플랜이 필요하고 호출당 최대 2,500자다(장면 내레이션은 최대 600자). 현재 확인한 MCP 조건인
 문자 50개당 1 credit을 **장면별 올림**으로 예약한다. 실제 한국어 발음·서비스 조건은 첫 비공개
@@ -336,14 +379,14 @@ docker compose -f deploy/compose.yaml -f deploy/video.compose.yaml exec video-wo
 | `VIDEO_REASONING_EFFORT` | xhigh | 대본 작성·화면 카드 수정의 추론 강도(high/xhigh/max). 새 작업의 policy에 고정 |
 | `VIDEO_REVIEW_EFFORT` | max | 대본 검토·최종 화면 검수·채널 전략 리포트의 추론 강도. 새 작업의 policy에 고정(이전 작업은 단일 강도 유지) |
 | `VIDEO_MODEL_RUNTIME_URL` | http://claude-runtime:8080 | 기존 Claude 실행기 내부 주소 |
-| `VIDEO_VOICE` | Anna Kim (배포 기본값) | `VIDEO_VOICE_ID`가 있으면 접수 기록의 이름표로만 쓴다. ID가 비어 있으면 Runway preset 이름(예: Vincent)으로 만든다 |
-| `VIDEO_VOICE_ID` | uyVNoMrnUku1dZyVEXwD (배포 기본값) | Runway 음성 라이브러리 ID(search_voices, eleven_v4 전용). 소유자 선택 2026-11-04: Anna Kim(젊은 여성, 차분하고 또렷함, 서울). preset 대신 이 목소리로 만들고 새 작업의 policy에 고정한다. 바꾸면 고정 문구(BRAND)도 새 목소리로 다시 녹음된다 |
+| `VIDEO_VOICE` | Chris (배포 기본값) | `VIDEO_VOICE_ID`가 있으면 접수 기록의 이름표로만 쓴다. ID가 비어 있으면 Runway preset 이름(예: Vincent)으로 만든다 |
+| `VIDEO_VOICE_ID` | PDoCXqBQFGsvfO0hNkEs (배포 기본값) | Runway 음성 라이브러리 ID(search_voices, eleven_v4 전용). 소유자 선택 2026-11-05: Chris - Warm and Clear(젊은 남성, 밝고 또렷함, 서울; 그 전 2026-11-04 Anna Kim). preset 대신 이 목소리로 만들고 새 작업의 policy에 고정한다. 바꾸면 고정 문구(BRAND)도 새 목소리로 다시 녹음된다 |
 | `VIDEO_ALIGNMENT_MODEL` | small | 실제 음성 검증·자막 시점용 로컬 모델/경로 |
 | `VIDEO_TEMPLATE` | motion-v2 | 카드·모션 고정 틀. text-v1은 이전 글 화면 |
 | `VIDEO_RENDER_WORKERS` | 2 | 프레임 캡처 프로세스 수. 8GB 서버 2(아침 06:50 목표), 작은 서버 1 |
 | `VIDEO_AM_PUBLISH_DST` / `VIDEO_AM_PUBLISH_STD` / `VIDEO_PM_PUBLISH` | 07:00 / 07:50 / 18:00 | 유튜브 공개 목표(KST). 아침은 뉴욕 서머타임 여부로 고른다 |
 | `VIDEO_PUBLISH_LEAD_MINUTES` | 10 | 공개 몇 분 전까지 파일을 스레드에 올릴지. 작업은 본문 발송 즉시 시작하고, 늦어도 완성되면 바로 올리며 늦은 시간을 한 줄 적는다. 지연돼도 제작은 계속한다 |
-| `VIDEO_PLAYLIST_URL` | 빈 값 | 설명란 "그래서, 오늘장 모아보기" 주소. 예전 증시story 재생목록은 뭐든story 채널 것이라 새 채널 재생목록을 만들면 넣는다 |
+| `VIDEO_PLAYLIST_URL` | `https://www.youtube.com/playlist?list=PLAMiTJ2pkjHY` | 설명란 "그래서, 오늘장 모아보기" 주소. 「그래서, 오늘장」 채널(@sotodaysmarket)의 브리핑 재생목록이다(2026-11-06). 빈 값이면 그 두 줄을 뺀다. 업로드는 손으로 하므로 새 영상은 올릴 때 이 재생목록을 고른다 |
 | `VIDEO_RETENTION_DAYS` | 14 | 작업 종료 뒤 최종 파일 보관 일수 |
 | `VIDEO_MIN_FREE_GB` | 10 | 이보다 여유가 적으면 새 회차를 시작하지 않음 |
 | `VIDEO_ANALYTICS_ENABLED` | false | 공개 업로드의 성과 분석([성과 분석](#성과-분석)). YouTube 채널 ID·브리핑 소유자·전용 성과 채널이 필요 |
