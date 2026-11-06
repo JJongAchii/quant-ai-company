@@ -41,7 +41,7 @@ from .episode import (
 )
 from .illustrations import library_entries
 from .lineup import ISSUE_CHAPTERS, lineup
-from .motion import CHROMIUM_ARGS, FPS, RENDERER_DIGEST, captions, word_times
+from .motion import CHROMIUM_ARGS, FPS, RENDERER_DIGEST, captions, credit_author, word_times
 from .render import RenderInProgress, checksum, music_track, probe, quality_probe, run, spoken
 from .render import mix_music as mix
 from .speech_process import SpeechProcess
@@ -175,7 +175,7 @@ def cut_pictures(job, episode, plan, settings, library, issues):
         path = Path(asset['file'])
         if not path.is_absolute():
             path = Path(settings.video_asset_dir) / path
-        credit = f"자료사진 · {asset.get('author', '')} · {asset.get('license', '')}" if asset.get('kind') == '자료사진' else ''
+        credit = f"자료사진 · {credit_author(asset.get('author'))} · {asset.get('license', '')}" if asset.get('kind') == '자료사진' else ''
         return {'path': str(path), 'credit': credit}
 
     covered = {i.number: i.scene_ids for i in issues}

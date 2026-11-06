@@ -92,6 +92,28 @@ def chapter_names(scenes):
     return [c for c in CHAPTER_TITLES if c and c in used]
 
 
+# Ticker prices in one format: '29만3500원' beside '1,393,000' read as two kinds of number (11/04 PM, 11/05 PM).
+MAN = re.compile(r'(\d+)만(\d{1,4})?(원?)')
+PLAIN = re.compile(r'(\d{4,})(\.\d+)?(원|달러|엔|위안|유로|포인트)?')
+
+
+def ticker_number(value):
+    """'29만3500원' -> '293,500원', '4113.5' -> '4,113.5'; any other value is kept as written."""
+    man = MAN.fullmatch(value.replace(',', ''))
+    if man:
+        return f"{int(man[1]) * 10000 + int(man[2] or 0):,}{man[3]}"
+    plain = PLAIN.fullmatch(value)
+    return f"{int(plain[1]):,}{plain[2] or ''}{plain[3] or ''}" if plain else value
+
+
+# The Commons author field ends with its links' words: 'mattbuck (category)' (11/06 AM).
+LINK_WORDS = re.compile(r'\s*\((?:category|talk|contribs|talk\s*[|·]\s*contribs|page does not exist)\)', re.I)
+
+
+def credit_author(name):
+    return LINK_WORDS.sub('', name or '').strip()
+
+
 def single_arrows(kind, data, ticker=None):
     """Strips script-written signs where the template adds one; returns where a written sign contradicted the direction
     field (a finding: the screen follows the direction field)."""
@@ -341,7 +363,7 @@ class MotionRenderer:
                 holder['file'] = 'img/' + name
                 # Real photos keep their credit chip; generated pictures and illustrations carry none (spec §14; owner,
                 # 2026-10-13: no 'AI 생성 이미지' text on screen).
-                holder['credit'] = f"자료사진 · {asset['author']} · {asset['license']}" if asset['kind'] == '자료사진' else ''
+                holder['credit'] = f"자료사진 · {credit_author(asset['author'])} · {asset['license']}" if asset['kind'] == '자료사진' else ''
                 used[name] = asset
             data['id'] = scene.id
             self.sign_conflicts += single_arrows(scene.type, data)
@@ -442,6 +464,8 @@ class MotionRenderer:
         # No collection or article clock time on screen (spec §14); the description keeps the data basis.
         ticker = plan.ticker.model_dump(mode='json')
         self.sign_conflicts += single_arrows('', {}, ticker)
+        for item in ticker['items']:
+            item['value'] = ticker_number(item['value'])
         ep = {'date_label': f"{day:%m.%d} {WEEKDAYS[day.weekday()]}", 'asof': '',
               'sample_mark': sample, 'brand_name': CHANNEL['name'], 'logo': CHANNEL['logo'],
               'brand_label': EDITIONS.get(job['source'].get('edition_kind', 'am'), EDITIONS['am']), 'chapter_names': chapter_names(scenes),
@@ -622,7 +646,7 @@ class MotionRenderer:
             description = copy['description']
             findings.append('Upload copy: the mail signup lines would pass the YouTube description limit; left out')
         photos = [a for a in used.values() if a['kind'] == '자료사진']
-        credits = ''.join(f"\n- {a['subject']} · {a['author']} · {a['license']}"
+        credits = ''.join(f"\n- {a['subject']} · {credit_author(a['author'])} · {a['license']}"
                           + (f" ({a['license_url']})" if a.get('license_url') else '')
                           + f"\n  원본: {a['source']}" + (f"\n  변경: {a['changes']}" if a.get('changes') else '')
                           for a in photos)
