@@ -42,6 +42,8 @@ TEMPLATE_FINDING = 'Thumbnail text exceeds safe screen area'  # the template thu
 FONTS = {'P': {500: 'Pretendard-Medium', 600: 'Pretendard-SemiBold', 700: 'Pretendard-Bold', 800: 'Pretendard-ExtraBold'},
          'B': {600: 'BarlowCondensed-SemiBold', 700: 'BarlowCondensed-Bold', 800: 'BarlowCondensed-ExtraBold'}}
 MARK = 'mark.svg'
+VOID = frozenset({'br', 'img'})
+DESIGN_MINUTES = 25  # after this, no new design or look starts: the fewest findings go out (production never waits)
 
 
 class ThumbnailDesign(StrictModel):
@@ -57,7 +59,7 @@ TAGS = frozenset({'div', 'span', 'p', 'b', 'strong', 'em', 'i', 'u', 's', 'small
                   'path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'text', 'tspan', 'defs',
                   'lineargradient', 'radialgradient', 'stop', 'clippath', 'mask', 'filter', 'fegaussianblur',
                   'feoffset', 'feflood', 'fecomposite', 'femerge', 'femergenode', 'fedropshadow', 'fecolormatrix'})
-ATTRS = frozenset({'class', 'id', 'style', 'src', 'alt', 'viewbox', 'xmlns', 'd', 'fill', 'stroke', 'stroke-width',
+ATTRS = frozenset({'class', 'id', 'style', 'src', 'viewbox', 'xmlns', 'd', 'fill', 'stroke', 'stroke-width',
                    'stroke-linecap', 'stroke-linejoin', 'stroke-dasharray', 'fill-opacity', 'stroke-opacity', 'opacity',
                    'x', 'y', 'x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'r', 'rx', 'ry', 'fx', 'fy', 'width', 'height',
                    'points', 'transform', 'offset', 'stop-color', 'stop-opacity', 'gradientunits', 'gradienttransform',
@@ -78,9 +80,24 @@ class Page(HTMLParser):
 
     def __init__(self, allowed):
         super().__init__(convert_charrefs=True)
-        self.allowed, self.problems, self.texts = allowed, [], []
+        self.allowed, self.problems, self.texts, self.open = allowed, [], [], []
 
     def handle_starttag(self, tag, attrs):
+        self.check(tag, attrs)
+        if tag not in VOID:
+            self.open.append(tag)
+
+    def handle_startendtag(self, tag, attrs):
+        self.check(tag, attrs)
+
+    def handle_endtag(self, tag):
+        # One closing tag too many would close the service's canvas and leave the rest outside every check.
+        if self.open and self.open[-1] == tag:
+            self.open.pop()
+        else:
+            self.problems.append(f'Unbalanced markup: </{tag}> does not close the open <{self.open[-1] if self.open else "canvas"}>')
+
+    def check(self, tag, attrs):
         if tag not in TAGS:
             self.problems.append(f'Tag not allowed in the thumbnail: <{tag}>')
             return
@@ -99,8 +116,6 @@ class Page(HTMLParser):
             elif UNSAFE.search(value) or ('url(' in value.lower() and not re.fullmatch(r'\s*url\(#[\w-]+\)\s*', value)):
                 self.problems.append(f'Value not allowed in the thumbnail ({name}={value[:40]})')
 
-    handle_startendtag = handle_starttag
-
     def handle_data(self, data):
         text = re.sub(r'\s+', ' ', data).strip()
         if text:
@@ -112,6 +127,10 @@ def css_problems(css, allowed):
     found = []
     if '<' in css:
         found.append('Markup is not allowed in the thumbnail styles')
+    if '/*' in css:
+        found.append('Comments are not allowed in the thumbnail styles')
+    if re.search(r'list-style|list-item|counter', css, re.I):
+        found.append('List markers and counters are not allowed: every word must be in the markup')
     if '@' in css:
         found.append('At-rules are not allowed in the thumbnail styles (the fonts are provided)')
     if UNSAFE.search(URL.sub('', css)):
@@ -130,7 +149,13 @@ def markup(design, offered):
     parser = Page(allowed)
     parser.feed(design.html)
     parser.close()
-    problems = parser.problems + css_problems(design.css, allowed)
+    problems = list(parser.problems)
+    if re.search(r'<[!?]', design.html):
+        # Comments, declarations and CDATA are read differently by Chromium and by this parser.
+        problems.append('Comments and declarations are not allowed in the thumbnail markup')
+    if parser.open:
+        problems.append(f'Unbalanced markup: <{parser.open[-1]}> is never closed')
+    problems += css_problems(design.css, allowed)
     if design.picture and design.picture not in {p['id'] for p in offered}:
         problems.append(f'Picture {design.picture} was not offered')
     return parser.texts, list(dict.fromkeys(problems))
@@ -336,21 +361,33 @@ def check_request(job, plan, attempt, recent):
 
 
 def page(design):
-    """The drawn page: the service's fonts and canvas, the design, then the owner's progress strip over it."""
+    """The drawn page: the service's fonts and canvas with the design in it. The owner's progress strip is painted onto
+    the screenshot afterwards (strip), so no style of the design can move or hide it."""
     faces = ''.join(f"@font-face{{font-family:{family};font-weight:{weight};src:url(fonts/{name}.woff2)}}"
                     for family, weights in FONTS.items() for weight, name in weights.items())
     return ('<!doctype html><html lang="ko"><meta charset="utf-8"><style>' + faces +
             f"*{{margin:0;padding:0;box-sizing:border-box}}html,body{{width:{WIDTH}px;height:{HEIGHT}px;overflow:hidden;"
             "background:#000}body{position:relative;font-family:P,sans-serif;color:#fff;word-break:keep-all}"
             f"#canvas{{position:absolute;left:0;top:0;width:{WIDTH}px;height:{HEIGHT}px;overflow:hidden}}"
-            f"#strip{{position:absolute;left:0;right:0;bottom:0;height:{STRIP}px;background:rgba(255,255,255,.45);"
-            f"z-index:2147483647}}#strip i{{display:block;height:100%;width:{STRIP_SHARE:.0%};background:#FF0000}}"
-            '</style><style>' + design.css + '</style><div id="canvas">' + design.html +
-            '</div><div id="strip"><i></i></div></html>')
+            '</style><style>' + design.css + '</style><div id="canvas">' + design.html + '</div></html>')
+
+
+def strip(path):
+    """Paints the owner's watched-progress strip along the bottom edge: a translucent white bar with its red tenth
+    (owner, 2026-10-12 and 2026-11-05), as design/thumbnail.html draws it."""
+    from PIL import Image
+
+    with Image.open(path) as opened:
+        image = opened.convert('RGB')
+    band = image.crop((0, HEIGHT - STRIP, WIDTH, HEIGHT))
+    band = Image.blend(band, Image.new('RGB', band.size, (255, 255, 255)), 0.45)
+    band.paste((255, 0, 0), (0, 0, round(WIDTH * STRIP_SHARE), STRIP))
+    image.paste(band, (0, HEIGHT - STRIP))
+    image.save(path)
 
 
 MEASURE = """(() => {
-  const out = [], walker = document.createTreeWalker(document.getElementById('canvas'), NodeFilter.SHOW_TEXT);
+  const out = [], walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
     const node = walker.currentNode, text = node.textContent.replace(/\\s+/g, ' ').trim();
     if (!text) continue;
@@ -359,17 +396,26 @@ MEASURE = """(() => {
     let rects = [...range.getClientRects()].filter(r => r.width > 0 && r.height > 0);
     if (!rects.length) { const r = element.getBoundingClientRect(); if (r.width > 0 && r.height > 0) rects = [r]; }
     let hidden = style.visibility === 'hidden' || style.display === 'none' || !rects.length;
-    for (let e = element; e && e.id !== 'canvas'; e = e.parentElement)
+    for (let e = element; e && e !== document.body; e = e.parentElement)
       if (parseFloat(getComputedStyle(e).opacity) < 0.05) hidden = true;
     out.push({text, hidden, rects: rects.map(r => [r.left, r.top, r.right, r.bottom])});
   }
-  return out;
+  // Words drawn without a text node (CSS content, list markers) and markup that left the canvas are refused.
+  const generated = [...document.body.querySelectorAll('*')].some(e => ['::before', '::after', '::marker'].some(
+    p => !['none', 'normal', '""'].includes(getComputedStyle(e, p).content)) || getComputedStyle(e).display.includes('list-item'));
+  const shape = [...document.body.children].map(e => e.id).join(',') === 'canvas';
+  return {texts: out, generated, shape};
 })()"""
 
 
-def measure_problems(measured):
-    """(drawn texts, problems) from the text boxes of the drawn page."""
+def measure_problems(measured, generated=False, shape=True):
+    """(drawn texts, problems) from the text boxes of the drawn page; generated: words drawn without a text node;
+    shape: the design stayed inside the service's canvas."""
     found, heights = [], []
+    if generated:
+        found.append('Generated text (CSS content or list markers): every word must be in the markup')
+    if not shape:
+        found.append("The design's markup left the canvas")
     visible = [m for m in measured if not m['hidden']]
     if len(visible) < len(measured):
         found.append('Hidden text in the thumbnail')
@@ -418,29 +464,33 @@ def draw(design, offered, folder, name):
         try:
             # The page runs no script of its own (the checks refuse any; this makes sure); measuring still works.
             tab = browser.new_context(viewport={'width': WIDTH, 'height': HEIGHT}, java_script_enabled=False).new_page()
-            tab.route(re.compile(r'^(?!file:)'), lambda route: route.abort())
-            tab.goto((work / 'index.html').as_uri())
+            prefix = work.resolve().as_uri() + '/'
+            # Only the page's own folder loads: no web request and no other file on this host.
+            tab.route('**/*', lambda route: route.continue_() if route.request.url.startswith(prefix) else route.abort())
+            tab.goto(prefix + 'index.html')
             tab.evaluate('document.fonts.ready.then(() => true)')
             measured = tab.evaluate(MEASURE)
             tab.screenshot(path=str(out))
         finally:
             browser.close()
-    texts, problems = measure_problems(measured)
+    strip(out)
+    texts, problems = measure_problems(measured['texts'], measured['generated'], measured['shape'])
     return {'file': str(out), 'sha256': checksum(out), 'texts': texts, 'problems': problems}
 
 
-def final(attempt):
+def final(attempt, note=()):
     """What goes out: the drawn file and the findings it still carries."""
     return {'key': attempt['key'], 'file': attempt['file'], 'sha256': attempt['sha256'],
             'texts': attempt.get('texts', []), 'person': (attempt.get('design') or {}).get('person', ''),
-            'findings': [f'thumbnail: {x}' for x in attempt.get('problems', []) + attempt.get('issues', [])]}
+            'findings': [f'thumbnail: {x}' for x in [*attempt.get('problems', []), *attempt.get('issues', []), *note]]}
 
 
 def best(attempts):
-    """After the last design: the drawn one with the fewest findings (the later one on a tie), else the template."""
-    drawn = [(n, a) for n, a in enumerate(attempts) if a.get('file')]
+    """After the last design: the drawn one with the fewest findings (the later one on a tie), else the template. A
+    design whose words broke a rule of the lines (attempt['facts']) never goes out: the template is always factual."""
+    drawn = [(n, a) for n, a in enumerate(attempts) if a.get('file') and not a.get('facts')]
     if not drawn:
-        return {'template': True, 'findings': ['thumbnail: no design could be drawn; the template thumbnail went out']}
+        return {'template': True, 'findings': ['thumbnail: no design passed the checks; the template thumbnail went out']}
     _, pick = min(drawn, key=lambda x: (len(x[1].get('problems', [])) + len(x[1].get('issues', [])), -x[0]))
     return final(pick)
 

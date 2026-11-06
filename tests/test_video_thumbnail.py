@@ -49,6 +49,14 @@ def needs_browser():
     (HTML, CSS + ".x{background:u\\72l(pic-1.jpg)}", 'load or run'),
     ('<a href="https://x">a</a>', CSS, '<a>'),
     ('<svg xmlns="http://evil.example/ns"><path d="M0 0"/></svg>', CSS, 'xmlns'),
+    # Read differently by Chromium and by the parser, or drawing words no text node holds (review of PR #226).
+    ('<!--><img src="/etc/host.png"><!-- -->', CSS, 'Comments and declarations'),
+    ('<![CDATA[ > <img src="/x.png"> ]]>', CSS, 'Comments and declarations'),
+    ('<div class="h">반도체</div></div><div class="x">폭락 99%</div>', CSS, 'Unbalanced markup'),
+    ('<div class="h">반도체', CSS, 'is never closed'),
+    ('<img src="pic-1.jpg" alt="지금 매수">', CSS, 'Attribute not allowed in the thumbnail: alt'),
+    (HTML, CSS + '.h::after{content/**/:" 지금 매수 99%"}', 'Comments are not allowed'),
+    (HTML, CSS + '.h{display:list-item;list-style-type:"지금 매수 ";list-style-position:inside}', 'List markers'),
 ])
 def test_a_design_that_could_load_run_or_hide_anything_is_refused(html, css, refused):
     _, problems = thumbs.markup(design(html, css), PICTURE)
@@ -105,10 +113,21 @@ def test_a_design_is_drawn_with_the_service_fonts_its_picture_and_the_owners_red
     with Image.open(drawn['file']) as image:
         assert image.size == (1280, 720)
         assert image.getpixel((40, 715))[:3] == (255, 0, 0)  # the red part of the strip, a tenth of the width
+        assert image.getpixel((40, 700))[:3] != (255, 0, 0) and image.getpixel((140, 715))[:3] != (255, 0, 0)
         assert image.getpixel((640, 715))[0] > 100 and image.getpixel((640, 715))[1] > 100  # the grey rest
         assert max(abs(a - b) for a, b in zip(image.getpixel((1200, 60))[:3], (20, 60, 120), strict=True)) <= 3  # the picture loaded
     small = design(html='<div class="h">작다</div>', css='.h{position:absolute;left:10px;top:10px;font:700 20px P}')
     assert any('too small' in p for p in thumbs.draw(small, offered, tmp_path / 'out', '2')['problems'])
+    # The strip is painted on the picture: no style of the design can move or hide it.
+    moved = thumbs.draw(design(css=CSS + 'div{top:0!important}#strip{display:none}'), offered, tmp_path / 'out', '3')
+    with Image.open(moved['file']) as image:
+        assert image.getpixel((40, 715))[:3] == (255, 0, 0)
+    # Words drawn without a text node are found when the page is drawn as well.
+    marker = thumbs.draw(design(css=CSS + '.n::before{content:"▲"}'.replace('content:', 'content :')), offered,
+                         tmp_path / 'out', '4')
+    assert 'Generated text (CSS content or list markers): every word must be in the markup' in marker['problems']
+    plain = thumbs.draw(design(css=CSS + '.bg::after{content:"";position:absolute;inset:0}'), offered, tmp_path / 'out', '5')
+    assert plain['problems'] == []
 
 
 def test_best_keeps_the_design_with_the_fewest_findings_or_the_template():
@@ -119,6 +138,11 @@ def test_best_keeps_the_design_with_the_fewest_findings_or_the_template():
     assert thumbs.best(attempts) == {'key': 'thumb-3', 'file': 'c.png', 'sha256': 'c' * 64, 'texts': ['코스피'],
                                      'person': '파월', 'findings': ['thumbnail: face small → crop']}
     assert thumbs.best([attempts[1]])['template'] is True
+    # A design whose words broke a rule of the lines never goes out, however few its other findings.
+    wrong = {'key': 'thumb', 'file': 'a.png', 'sha256': 'a' * 64, 'facts': ['Number the lines do not contain: 2.5'],
+             'problems': ['Number the lines do not contain: 2.5'], 'done': True}
+    assert thumbs.best([wrong])['template'] is True
+    assert thumbs.final(attempts[2], ['look skipped'])['findings'][-1] == 'thumbnail: look skipped'
 
 
 def test_install_swaps_the_template_thumbnail_and_keeps_the_manifest_verifiable(tmp_path):
@@ -156,6 +180,8 @@ class ThumbnailProvider:
         self.calls.append(request)
         if request.output_contract == 'video_thumbnail_v1':
             value = self.designs.pop(0) if len(self.designs) > 1 else self.designs[0]
+            if isinstance(value, Exception):
+                raise value
         elif '-visual-thumb' in request.request_id:
             value = self.looks.pop(0) if len(self.looks) > 1 else self.looks[0]
         else:
@@ -280,3 +306,32 @@ def test_analytics_reads_the_words_a_designed_thumbnail_showed():
     assert plan_summary({'plan': plan})['thumbnail_text'] == '반도체가 끌었다 / S&P 500 ▲ 1.92%'
     designed = {'plan': plan, 'artifacts': {'thumbnail': {'designed': 'thumb', 'texts': ['이 사람 당선에', '−5.28%']}}}
     assert plan_summary(designed)['thumbnail_text'] == '이 사람 당선에 / −5.28%'
+
+
+async def test_a_design_turn_asked_again_sends_the_same_request_and_the_stage_keeps_to_its_time(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    pytest.importorskip('PIL')
+    from quant_company.contracts import ProviderFault
+
+    store, _ = video
+    store.settings.video_upload_enabled = store.settings.video_publish_enabled = False
+    store.settings.video_thumbnail_design = True
+    monkeypatch.setattr('quant_company.video.runner.VideoRunner.draw_thumbnail', fake_draw())
+    pending = ProviderFault('pending', 'The model turn is still running.', 30)
+    provider = ThumbnailProvider([pending, design(css=PLAIN)], [VisualReview(passed=True, issues=[])])
+    job, _ = await produce_inspected(store, tmp_path, monkeypatch, provider, InspectedRenderer(), brief)
+    assert job['state'] == 'delivering', job['error']
+    first, again = [c for c in provider.calls if c.output_contract == 'video_thumbnail_v1']
+    assert first.request_id == again.request_id and first.model_dump() == again.model_dump()
+    assert job['qa']['thumbnail']['final']['key'] == 'thumb' and 'started' in job['qa']['thumbnail']
+
+
+async def test_a_stage_out_of_time_sends_the_template_and_never_holds_the_episode(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    store, _ = video
+    store.settings.video_upload_enabled = store.settings.video_publish_enabled = False
+    store.settings.video_thumbnail_design = True
+    monkeypatch.setattr(thumbs, 'DESIGN_MINUTES', -1)
+    provider = ThumbnailProvider([design(css=PLAIN)], [VisualReview(passed=True, issues=[])])
+    job, _ = await produce_inspected(store, tmp_path, monkeypatch, provider, InspectedRenderer(), brief)
+    assert job['state'] == 'delivering', job['error']
+    assert not [c for c in provider.calls if c.output_contract == 'video_thumbnail_v1']
+    assert job['qa']['thumbnail']['final']['template'] is True and 'thumbnail' not in job['artifacts']

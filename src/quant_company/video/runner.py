@@ -401,11 +401,20 @@ class VideoRunner:
             return False
         attempts = [dict(a) for a in state.get('attempts', [])]
         folder = self.settings.video_artifact_dir / str(job['id']) / 'thumbnail'
-        if 'recent' not in state:  # frozen once, so every turn and re-ask shows the same thumbnails
-            state['recent'] = await asyncio.to_thread(self.store.recent_thumbnail_files, job)
+        if 'recent' not in state:
+            # Frozen and saved before any turn, so a turn asked again shows the same thumbnails; the clock starts.
+            state.update(recent=await asyncio.to_thread(self.store.recent_thumbnail_files, job),
+                         started=datetime.now(UTC).isoformat())
+            qa['thumbnail'] = state
+            await asyncio.to_thread(self.store.update_qa, job, qa)
+        over = (datetime.now(UTC) - datetime.fromisoformat(state['started'])).total_seconds() > thumbs.DESIGN_MINUTES * 60
         current = attempts[-1] if attempts and not attempts[-1].get('done') else None
-        if current is None and len(attempts) >= thumbs.DESIGNS:
+        if current is None and (len(attempts) >= thumbs.DESIGNS or over):
             state['final'] = thumbs.best(attempts)
+        elif current is not None and over:
+            # Out of time before the look: a design every check passed goes out, the skipped look noted.
+            current['done'] = True
+            state['final'] = thumbs.final(current, ['look skipped: the design time ran out'])
         elif current is None:
             number = len(attempts) + 1
             attempt = {'key': attempt_key('thumb', number)}
@@ -432,8 +441,9 @@ class VideoRunner:
                         except Exception as error:  # noqa: BLE001 - Chromium failed: another design, then the template
                             attempt['problems'] = [f'drawing failed: {type(error).__name__}'[:200]]
                         else:
+                            facts = thumbs.fact_problems(drawn['texts'], job['source'])
                             attempt.update(file=drawn['file'], sha256=drawn['sha256'], texts=drawn['texts'],
-                                           problems=thumbs.fact_problems(drawn['texts'], job['source']) + drawn['problems'])
+                                           facts=facts, problems=facts + drawn['problems'])
             # Only a drawn design without findings is looked at; any other is followed by the next design.
             attempt['done'] = bool(attempt.get('problems')) or not attempt.get('file')
             attempts.append(attempt)
