@@ -819,9 +819,10 @@ class VideoRunner:
         await asyncio.to_thread(self.shorts.save, row, 'rendering')
 
     async def shorts_recheck(self, row, job, plan):
-        """A cut written beside its episode meets the delivered episode before any voice: it is written against that
-        one from now on, and a rule the episode's final edits broke (a number taken off its screens) sends it back to be
-        written again with that finding. True when this step saved."""
+        """A cut written beside its episode meets the episode as it is before any voice (delivered, or still in
+        production for a morning cut that goes first): it is written against that one from now on, and a rule the
+        episode's edits broke (a number taken off its screens) sends it back to be written again with that finding.
+        True when this step saved."""
         qa = dict(row['qa'] or {})
         frozen = qa.get('episode')
         if not frozen or digest(frozen['plan']) == digest(job['plan']):
@@ -836,7 +837,8 @@ class VideoRunner:
 
     async def shorts_render(self, row, job):
         plan = await self.shorts_plan(row)
-        if plan is None:
+        # A morning cut renders beside its episode (shorts_store.FIRST): it meets the episode's latest edits first.
+        if plan is None or await self.shorts_recheck(row, job, plan):
             return
         takes = self.shorts_takes(job, plan, (row['qa'] or {}).get('retake', ()))
         # A cut voiced before a release changed its fixed lines (10/21: the read list, the mail invitation) voices
@@ -844,10 +846,17 @@ class VideoRunner:
         if not all([await asyncio.to_thread(self.store.effect_receipt, job, k, 'completed') for k, _ in takes]):
             await asyncio.to_thread(self.shorts.save, row, 'synthesizing')
             return
+        # A cut begun beside its episode renders against the episode it was checked with: an edited episode is a new
+        # render, never the inputs a task already holds for the old one.
+        basis = {'episode': digest(job['plan'])} if (row['qa'] or {}).get('episode') else {}
         directory = self.settings.video_artifact_dir / str(job['id']) / ('shorts-' + digest(
-            {'plan': row['plan'], 'takes': [k for k, _ in takes]})[:16])
+            {'plan': row['plan'], 'takes': [k for k, _ in takes], **basis})[:16])
         directory.mkdir(parents=True, exist_ok=True)
         qa = dict(row['qa'] or {})
+        if job['state'] in SHORTS_SCRIPTED and (self.settings.video_render_backend != 'remote' or qa.get('render_local')):
+            # A render on this worker would hold the episode in production for many minutes: the episode goes first.
+            await asyncio.to_thread(self.shorts.wait, row, 120, 'episode_first')
+            return
         if self.settings.video_render_backend == 'remote' and not qa.get('render_local'):
             artifacts = await self.shorts_render_remote(row, job, plan, takes, directory, [r['text'] for _, r in takes], qa)
             if artifacts is not None:
@@ -871,12 +880,16 @@ class VideoRunner:
         if plan is None:
             return
         qa, artifacts, policy = dict(row['qa'] or {}), row['artifacts'], job['policy']
+        # A morning cut inspected beside its episode in production (shorts_store.FIRST) keeps off the episode's slot,
+        # and its fix is written against the episode it was checked with (cut_basis), so a turn asked again is identical.
+        beside, basis = job['state'] in SHORTS_SCRIPTED, cut_basis(row, job)
         rounds = qa.setdefault('inspections', [])
         directory = verify_artifacts(artifacts, self.settings.video_artifact_dir)
         review = artifacts.get('review') or {}
         frames = [f for f in review.get('frames', []) if (directory / f['file']).is_file()]
         heard = review.get('audio') or {}
-        key = f'shorts-visual-{len(rounds) + 1}'
+        refused = qa.get('look_refused', 0)
+        key = f'shorts-visual-{len(rounds) + 1}' + (f'-r{refused}' if refused else '')
         issues, visual = [], None
         if frames:
             attachments = [ProviderAttachment(name=f"frame-{n:02}" + Path(f['file']).suffix,
@@ -887,8 +900,17 @@ class VideoRunner:
                                                  heard)
             try:
                 visual = await self.model(job, key, prompt, VisualReview, 'video_visual_review_v1', attachments,
-                                          effort=shorts_effort(policy))
+                                          effort=shorts_effort(policy), api_only=beside)
                 issues = [i.model_dump() for i in visual.issues]
+            except ProviderFault as error:
+                if not (beside and error.code == 'busy'):
+                    raise
+                # Nothing ran: the look is asked again as a new request, so once the episode is out it may take
+                # either lane (a refused turn asked again under its key would stay on the API lane alone).
+                qa['look_refused'] = refused + 1
+                await asyncio.to_thread(self.shorts.save, row, 'inspecting', qa=qa)
+                await asyncio.to_thread(self.shorts.wait, row, error.retry_after_seconds or 300, 'api_lane')
+                return
             except ModelRejected as rejected:
                 issues = [{'scene': 'opener', 'kind': 'other', 'detail': f'Visual review unavailable: {rejected.detail}',
                            'fix': 'none'}]
@@ -899,17 +921,23 @@ class VideoRunner:
         if (screen or retake) and len(rounds) < SHORTS_INSPECT_ROUNDS:
             fixed = plan
             if screen:
-                found = lineup(job['source'], job['plan'])
+                episode = basis['plan']
+                found = lineup(job['source'], episode)
                 try:
                     patch = await self.model(job, f'shorts-fix-{len(rounds)}', shorts_review.fix_prompt(
-                        job['source'], job['plan'], found, plan, screen), ShortsPlan, contract='video_shorts_v1')
+                        job['source'], episode, found, plan, screen), ShortsPlan, contract='video_shorts_v1',
+                                             api_only=beside)
                     candidate, _ = settle(shorts_review.keep_spoken(plan, patch), job['source'])
                     # A fix that breaks a rule the cut kept is not taken: the screen stays as it was.
-                    if fix_adds_findings(shorts_violations(plan, job['source'], job['plan'], found),
-                                         shorts_violations(candidate, job['source'], job['plan'], found)):
+                    if fix_adds_findings(shorts_violations(plan, job['source'], episode, found),
+                                         shorts_violations(candidate, job['source'], episode, found)):
                         rounds[-1]['fix_reverted'] = True
                     else:
                         fixed = candidate
+                except ProviderFault as error:
+                    if not (beside and error.code == 'busy'):
+                        raise
+                    rounds[-1]['fix_error'] = 'The API lane refused the fix beside the episode; the screen stays as it was.'
                 except (ModelRejected, ValueError) as error:
                     rounds[-1]['fix_error'] = str(getattr(error, 'detail', error))[:500]
             qa['retake'] = sorted(set(qa.get('retake', [])) | retake)
@@ -921,6 +949,12 @@ class VideoRunner:
         qa['inspection_findings'] = list(qa.get('render_findings', [])) + [f"{i['scene']}: {i['detail']}" for i in issues] + (
             [f'{scene}: speech-to-text mismatch' for scene in heard] if visual is None else [])
         await asyncio.to_thread(self.shorts.save, row, 'inspecting', qa=qa)
+        if beside:
+            # The episode may have been edited during the look: the cut goes out only against its latest version.
+            row = await asyncio.to_thread(self.shorts.get, row['job_id'])
+            job = await asyncio.to_thread(self.store.get, row['job_id'])
+            if await self.shorts_recheck(row, job, plan):
+                return
         await asyncio.to_thread(self.shorts.deliver, {**row, 'qa': qa}, job, artifacts)
 
     def shorts_fallback(self, job, attempts, issues):
