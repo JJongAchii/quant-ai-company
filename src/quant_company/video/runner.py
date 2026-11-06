@@ -13,10 +13,11 @@ from pydantic import ValidationError
 
 from ..company import PolicyError
 from ..contracts import ProviderAttachment, ProviderFault, ProviderRequest
-from ..providers.claude_runner import ClaudeRequest
+from ..providers.claude_runner import CLAUDE_ONLY, ClaudeRequest
 from ..providers.client import RuntimeClient
 from . import shorts_review
 from . import store as store_module
+from . import thumbnail as thumbs
 from .contracts import (
     VideoReview,
     VisualReview,
@@ -394,6 +395,90 @@ class VideoRunner:
             await asyncio.to_thread(self.store.save, job, 'synthesizing')
         return True
 
+    async def design_thumbnail(self, job, plan):
+        """The episode's own thumbnail (owner, 2026-11-06; video/thumbnail.py), one model turn per tick: a design is
+        checked and drawn on this host, then looked at beside the latest thumbnails, and a finding gets another design.
+        After the last design the one with the fewest findings goes out with them; none drawn keeps the template's.
+        True while that work remains."""
+        qa = dict(job.get('qa') or {})
+        state = dict(qa.get('thumbnail') or {})
+        if 'final' in state:
+            return False
+        attempts = [dict(a) for a in state.get('attempts', [])]
+        folder = self.settings.video_artifact_dir / str(job['id']) / 'thumbnail'
+        if 'recent' not in state:
+            # Frozen and saved before any turn, so a turn asked again shows the same thumbnails; the clock starts.
+            state.update(recent=await asyncio.to_thread(self.store.recent_thumbnail_files, job),
+                         started=datetime.now(UTC).isoformat())
+            qa['thumbnail'] = state
+            await asyncio.to_thread(self.store.update_qa, job, qa)
+        over = (datetime.now(UTC) - datetime.fromisoformat(state['started'])).total_seconds() > thumbs.DESIGN_MINUTES * 60
+        current = attempts[-1] if attempts and not attempts[-1].get('done') else None
+        if current is None and (len(attempts) >= thumbs.DESIGNS or over):
+            state['final'] = thumbs.best(attempts)
+        elif current is not None and over:
+            # Out of time before the look: a design every check passed goes out, the skipped look noted.
+            current['done'] = True
+            state['final'] = thumbs.final(current, ['look skipped: the design time ran out'])
+        elif current is None:
+            number = len(attempts) + 1
+            attempt = {'key': attempt_key('thumb', number)}
+            try:
+                offered = await asyncio.to_thread(self.thumbnail_pictures, job, plan)
+                prompt, attachments = await asyncio.to_thread(thumbs.design_request, job, plan, offered, state['recent'],
+                                                              attempts[-1] if attempts else None)
+            except Exception as error:  # noqa: BLE001 - an unreadable picture: this design is lost, not the episode
+                offered, prompt, attachments = [], None, []
+                attempt['problems'] = [f'pictures unreadable: {type(error).__name__}: {error}'[:200]]
+            if prompt is not None:
+                try:
+                    design = await self.model(job, attempt['key'], prompt, thumbs.ThumbnailDesign, thumbs.CONTRACT,
+                                              attachments)
+                except ModelRejected as rejected:
+                    attempt['problems'] = [f'design unavailable: {rejected.code}']
+                else:
+                    texts, problems = thumbs.markup(design, offered)
+                    attempt.update(design=design.model_dump(mode='json'), texts=texts, problems=problems)
+                    if not problems:  # a page the checks refused is never drawn
+                        folder.mkdir(parents=True, exist_ok=True)
+                        try:
+                            drawn = await asyncio.to_thread(self.draw_thumbnail, design, offered, folder, str(number))
+                        except Exception as error:  # noqa: BLE001 - Chromium failed: another design, then the template
+                            attempt['problems'] = [f'drawing failed: {type(error).__name__}'[:200]]
+                        else:
+                            facts = thumbs.fact_problems(drawn['texts'], job['source'])
+                            attempt.update(file=drawn['file'], sha256=drawn['sha256'], texts=drawn['texts'],
+                                           facts=facts, problems=facts + drawn['problems'])
+            # Only a drawn design without findings is looked at; any other is followed by the next design.
+            attempt['done'] = bool(attempt.get('problems')) or not attempt.get('file')
+            attempts.append(attempt)
+        else:
+            key = attempt_key('visual-thumb', len(attempts))
+            try:
+                prompt, attachments = await asyncio.to_thread(thumbs.check_request, job, plan, current, state['recent'])
+                look = await self.model(job, key, prompt, VisualReview, 'video_visual_review_v1', attachments)
+                current['issues'] = [f'{i.detail} → {i.fix}' for i in look.issues]
+                passed = look.passed and not look.issues
+            except ModelRejected as rejected:
+                # Production never waits on the look: a design every check passed goes out, the missing look noted.
+                current['issues'], passed = [f'look unavailable: {rejected.code}'], True
+            except OSError as error:  # the drawn file cannot be shown: no look, so another design
+                current['issues'], passed = [f'look unavailable: {type(error).__name__}'], False
+            current['done'] = True
+            if passed:
+                state['final'] = thumbs.final(current)
+        state['attempts'] = attempts
+        qa['thumbnail'] = state
+        await asyncio.to_thread(self.store.update_qa, job, qa)
+        await asyncio.to_thread(self.store.save, job, 'synthesizing')  # releases the lease for the next tick
+        return True
+
+    def thumbnail_pictures(self, job, plan):
+        return thumbs.pictures(job, plan, self.settings, MotionRenderer(self.settings).library)
+
+    def draw_thumbnail(self, design, offered, folder, name):
+        return thumbs.draw(design, offered, folder, name)
+
     def renderer_for(self, job):
         if self._renderer is not None:
             return self._renderer
@@ -446,9 +531,11 @@ class VideoRunner:
         # Reviews may think longer than writing; jobs frozen before the split use their single effort for both.
         effort = effort or (policy.get("review_effort", policy.get("effort", "high")) if phase in REVIEW_PHASES
                             else policy.get("effort", "high"))
-        request = ProviderRequest(request_id=f"video-{job['id']}-{key}", model=policy["model"],
-                                  reasoning_effort=effort, prompt=prompt,
-                                  output_contract=contract or f"video_{phase}_v1", attachments=list(attachments))
+        contract = contract or f"video_{phase}_v1"
+        # A contract only claude-runtime serves (the designed thumbnail) is asked as its ClaudeRequest.
+        request = (ClaudeRequest if contract in CLAUDE_ONLY else ProviderRequest)(
+            request_id=f"video-{job['id']}-{key}", model=policy["model"], reasoning_effort=effort, prompt=prompt,
+            output_contract=contract, attachments=list(attachments))
         provider = self.early_provider if api_only else self.provider
         if api_only or await asyncio.to_thread(self.asked_api_only, job, key, request):
             request = ClaudeRequest.model_validate(request.model_dump() | {'api_only': True})
@@ -737,9 +824,10 @@ class VideoRunner:
         await asyncio.to_thread(self.shorts.save, row, 'rendering')
 
     async def shorts_recheck(self, row, job, plan):
-        """A cut written beside its episode meets the delivered episode before any voice: it is written against that
-        one from now on, and a rule the episode's final edits broke (a number taken off its screens) sends it back to be
-        written again with that finding. True when this step saved."""
+        """A cut written beside its episode meets the episode as it is before any voice (delivered, or still in
+        production for a morning cut that goes first): it is written against that one from now on, and a rule the
+        episode's edits broke (a number taken off its screens) sends it back to be written again with that finding.
+        True when this step saved."""
         qa = dict(row['qa'] or {})
         frozen = qa.get('episode')
         if not frozen or digest(frozen['plan']) == digest(job['plan']):
@@ -754,7 +842,8 @@ class VideoRunner:
 
     async def shorts_render(self, row, job):
         plan = await self.shorts_plan(row)
-        if plan is None:
+        # A morning cut renders beside its episode (shorts_store.FIRST): it meets the episode's latest edits first.
+        if plan is None or await self.shorts_recheck(row, job, plan):
             return
         takes = self.shorts_takes(job, plan, (row['qa'] or {}).get('retake', ()))
         # A cut voiced before a release changed its fixed lines (10/21: the read list, the mail invitation) voices
@@ -762,10 +851,17 @@ class VideoRunner:
         if not all([await asyncio.to_thread(self.store.effect_receipt, job, k, 'completed') for k, _ in takes]):
             await asyncio.to_thread(self.shorts.save, row, 'synthesizing')
             return
+        # A cut begun beside its episode renders against the episode it was checked with: an edited episode is a new
+        # render, never the inputs a task already holds for the old one.
+        basis = {'episode': digest(job['plan'])} if (row['qa'] or {}).get('episode') else {}
         directory = self.settings.video_artifact_dir / str(job['id']) / ('shorts-' + digest(
-            {'plan': row['plan'], 'takes': [k for k, _ in takes]})[:16])
+            {'plan': row['plan'], 'takes': [k for k, _ in takes], **basis})[:16])
         directory.mkdir(parents=True, exist_ok=True)
         qa = dict(row['qa'] or {})
+        if job['state'] in SHORTS_SCRIPTED and (self.settings.video_render_backend != 'remote' or qa.get('render_local')):
+            # A render on this worker would hold the episode in production for many minutes: the episode goes first.
+            await asyncio.to_thread(self.shorts.wait, row, 120, 'episode_first')
+            return
         if self.settings.video_render_backend == 'remote' and not qa.get('render_local'):
             artifacts = await self.shorts_render_remote(row, job, plan, takes, directory, [r['text'] for _, r in takes], qa)
             if artifacts is not None:
@@ -789,12 +885,16 @@ class VideoRunner:
         if plan is None:
             return
         qa, artifacts, policy = dict(row['qa'] or {}), row['artifacts'], job['policy']
+        # A morning cut inspected beside its episode in production (shorts_store.FIRST) keeps off the episode's slot,
+        # and its fix is written against the episode it was checked with (cut_basis), so a turn asked again is identical.
+        beside, basis = job['state'] in SHORTS_SCRIPTED, cut_basis(row, job)
         rounds = qa.setdefault('inspections', [])
         directory = verify_artifacts(artifacts, self.settings.video_artifact_dir)
         review = artifacts.get('review') or {}
         frames = [f for f in review.get('frames', []) if (directory / f['file']).is_file()]
         heard = review.get('audio') or {}
-        key = f'shorts-visual-{len(rounds) + 1}'
+        refused = qa.get('look_refused', 0)
+        key = f'shorts-visual-{len(rounds) + 1}' + (f'-r{refused}' if refused else '')
         issues, visual = [], None
         if frames:
             attachments = [ProviderAttachment(name=f"frame-{n:02}" + Path(f['file']).suffix,
@@ -805,8 +905,17 @@ class VideoRunner:
                                                  heard)
             try:
                 visual = await self.model(job, key, prompt, VisualReview, 'video_visual_review_v1', attachments,
-                                          effort=shorts_effort(policy))
+                                          effort=shorts_effort(policy), api_only=beside)
                 issues = [i.model_dump() for i in visual.issues]
+            except ProviderFault as error:
+                if not (beside and error.code == 'busy'):
+                    raise
+                # Nothing ran: the look is asked again as a new request, so once the episode is out it may take
+                # either lane (a refused turn asked again under its key would stay on the API lane alone).
+                qa['look_refused'] = refused + 1
+                await asyncio.to_thread(self.shorts.save, row, 'inspecting', qa=qa)
+                await asyncio.to_thread(self.shorts.wait, row, error.retry_after_seconds or 300, 'api_lane')
+                return
             except ModelRejected as rejected:
                 issues = [{'scene': 'opener', 'kind': 'other', 'detail': f'Visual review unavailable: {rejected.detail}',
                            'fix': 'none'}]
@@ -817,17 +926,23 @@ class VideoRunner:
         if (screen or retake) and len(rounds) < SHORTS_INSPECT_ROUNDS:
             fixed = plan
             if screen:
-                found = lineup(job['source'], job['plan'])
+                episode = basis['plan']
+                found = lineup(job['source'], episode)
                 try:
                     patch = await self.model(job, f'shorts-fix-{len(rounds)}', shorts_review.fix_prompt(
-                        job['source'], job['plan'], found, plan, screen), ShortsPlan, contract='video_shorts_v1')
+                        job['source'], episode, found, plan, screen), ShortsPlan, contract='video_shorts_v1',
+                                             api_only=beside)
                     candidate, _ = settle(shorts_review.keep_spoken(plan, patch), job['source'])
                     # A fix that breaks a rule the cut kept is not taken: the screen stays as it was.
-                    if fix_adds_findings(shorts_violations(plan, job['source'], job['plan'], found),
-                                         shorts_violations(candidate, job['source'], job['plan'], found)):
+                    if fix_adds_findings(shorts_violations(plan, job['source'], episode, found),
+                                         shorts_violations(candidate, job['source'], episode, found)):
                         rounds[-1]['fix_reverted'] = True
                     else:
                         fixed = candidate
+                except ProviderFault as error:
+                    if not (beside and error.code == 'busy'):
+                        raise
+                    rounds[-1]['fix_error'] = 'The API lane refused the fix beside the episode; the screen stays as it was.'
                 except (ModelRejected, ValueError) as error:
                     rounds[-1]['fix_error'] = str(getattr(error, 'detail', error))[:500]
             qa['retake'] = sorted(set(qa.get('retake', [])) | retake)
@@ -839,6 +954,12 @@ class VideoRunner:
         qa['inspection_findings'] = list(qa.get('render_findings', [])) + [f"{i['scene']}: {i['detail']}" for i in issues] + (
             [f'{scene}: speech-to-text mismatch' for scene in heard] if visual is None else [])
         await asyncio.to_thread(self.shorts.save, row, 'inspecting', qa=qa)
+        if beside:
+            # The episode may have been edited during the look: the cut goes out only against its latest version.
+            row = await asyncio.to_thread(self.shorts.get, row['job_id'])
+            job = await asyncio.to_thread(self.store.get, row['job_id'])
+            if await self.shorts_recheck(row, job, plan):
+                return
         await asyncio.to_thread(self.shorts.deliver, {**row, 'qa': qa}, job, artifacts)
 
     def shorts_fallback(self, job, attempts, issues):
@@ -918,17 +1039,21 @@ class VideoRunner:
                 qa['illustrations_offered'] = bool(self.settings.video_image_runtime_url)
                 if 'recent_thumbnails' not in qa:  # frozen once, so every attempt and re-ask sends the same list
                     qa['recent_thumbnails'] = await asyncio.to_thread(self.store.thumbnail_history, job)
+                if 'recent_hooks' not in qa and (job['policy'].get('craft') or 0) >= 3:  # frozen once, likewise
+                    qa['recent_hooks'] = await asyncio.to_thread(self.store.recent_hooks, job)
                 await asyncio.to_thread(self.store.update_qa, job, qa)
             illustrations = qa.get('illustrations_offered', False)
             # shorts lessons belong to the cut (shorts_step): left out, an older job's prompt stays byte-identical.
             lessons = [x for x in job['policy'].get('lessons', ()) if x.get('scope') != 'shorts']
             recent = qa.get('recent_thumbnails') or []
             previous = await asyncio.to_thread(self.last_version, job, attempts)
+            hooks = qa.get('recent_hooks') or ()
             prompt = with_craft(episode_prompt(job['source'], feedback, library, illustrations=illustrations,
-                                               lessons=lessons, previous=previous, recent_thumbnails=recent), job['policy'])
+                                               lessons=lessons, previous=previous, recent_thumbnails=recent),
+                                job['policy'], hooks)
             if len(prompt) > PROMPT_LIMIT:
                 prompt = with_craft(episode_prompt(job['source'], feedback, library, illustrations=illustrations,
-                                                   lessons=lessons, recent_thumbnails=recent), job['policy'])
+                                                   lessons=lessons, recent_thumbnails=recent), job['policy'], hooks)
             contract = 'video_episode_v1'
         else:
             prompt, contract = production_prompt(job['source'], feedback), None
@@ -1023,7 +1148,8 @@ class VideoRunner:
         key = attempt_key('review', len(rounds) + 1)
         plan = plan_class(job).model_validate(job['plan'])
         try:
-            review = await self.model(job, key, review_prompt(job['source'], plan) + craft_review(job['policy'], plan), VideoReview)
+            review = await self.model(job, key, review_prompt(job['source'], plan)
+                                      + craft_review(job['policy'], plan, qa.get('recent_hooks') or ()), VideoReview)
             concerns = list(review.concerns) + [f'{name} check failed' for name in REVIEW_CHECKS if not getattr(review, name)]
         except ModelRejected as rejected:
             lost = sum(r.get('outcome') in RUNTIME_OUTCOMES for r in rounds)
@@ -1263,6 +1389,9 @@ class VideoRunner:
         directory = verify_artifacts(artifacts, self.settings.video_artifact_dir)
         review = artifacts.get('review') or {'frames': [], 'audio': {}}
         frames = [f for f in review['frames'] if (directory / f['file']).is_file()]
+        if artifacts.get('thumbnail'):
+            # The designed thumbnail was looked at when it was made (design_thumbnail); the screen fix cannot redraw it.
+            frames = [f for f in frames if f['scene'] != 'thumbnail']
         plan = plan_class(job).model_validate(job['plan'])
         key = attempt_key('visual', len(rounds) + 1)
         issues, visual = [], None
@@ -1307,7 +1436,8 @@ class VideoRunner:
                                         plan=fixed.model_dump(mode='json'), qa=qa)
                 return
         qa['inspection_findings'] = list(qa.get('render_findings', [])) + [f"{i['scene']}: {i['detail']}" for i in issues] + (
-            [f'{scene}: speech-to-text mismatch' for scene in heard] if visual is None else [])
+            [f'{scene}: speech-to-text mismatch' for scene in heard] if visual is None else []) + list(
+            ((qa.get('thumbnail') or {}).get('final') or {}).get('findings', []))
         await asyncio.to_thread(self.store.update_qa, job, qa)
         job = {**job, 'qa': qa}
         if job['policy'].get('delivery', 'youtube') == 'slack':
@@ -1326,6 +1456,9 @@ class VideoRunner:
             plan = plan_class(job).model_validate(job["plan"])
             if (template(job) == 'motion-v2' and getattr(plan, 'illustrations', None)
                     and self.settings.video_image_runtime_url and await self.illustrate(job, plan)):
+                return
+            if (template(job) == 'motion-v2' and job['policy'].get('thumbnail')
+                    and await self.design_thumbnail(job, plan)):
                 return
             # Account lookup does not spend credits. Check the entire expected episode before submission.
             # Runway unavailable or logged out stops here with an alert; there is no paid API fallback.
@@ -1382,6 +1515,9 @@ class VideoRunner:
                     await asyncio.to_thread(self.store.wait, job, 120, 'render_in_progress')
                     return
                 library = getattr(renderer, 'library', None) or {}
+            if job['policy'].get('thumbnail'):
+                chosen = ((job.get('qa') or {}).get('thumbnail') or {}).get('final')
+                artifacts = await asyncio.to_thread(thumbs.install, artifacts, chosen)
             await asyncio.to_thread(self.store.record_assets, job, plan, library)
             await asyncio.to_thread(self.store.save, job, 'inspecting', artifacts=artifacts,
                                     artifact_digest=artifacts['digest'], qa=qa)

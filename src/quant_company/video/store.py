@@ -10,6 +10,7 @@ from psycopg.types.json import Jsonb
 from ..company import PolicyError, as_json, stable
 from .contracts import POLICY_VERSION, VideoAction, VideoReview, digest
 from .craft import CRAFT_VERSION
+from .thumbnail import VERSION as THUMBNAIL_VERSION
 
 KST = ZoneInfo("Asia/Seoul")
 NY = ZoneInfo("America/New_York")
@@ -216,6 +217,9 @@ class VideoStore:
                   "delivery": "youtube" if self.settings.video_upload_enabled else "slack",
                   # The owner's craft rules this job's prompts carry (video/craft.py), frozen like the lessons.
                   "craft": CRAFT_VERSION}
+        if self.settings.video_thumbnail_design and self.settings.video_template == 'motion-v2':
+            # The episode's own thumbnail (owner, 2026-11-06; video/thumbnail.py), frozen like the craft rules.
+            policy["thumbnail"] = THUMBNAIL_VERSION
         if self.settings.video_analytics_enabled:
             from .analytics_store import AnalyticsStore
 
@@ -741,6 +745,31 @@ class VideoStore:
                     record['library'] = item.get('fallback', '')
             if record not in out:
                 out.append(record)
+            if len(out) >= limit:
+                break
+        return out
+
+    def recent_hooks(self, job, limit=8):
+        """The latest episodes' title hooks, newest first: a version-3 script must not echo their opening, ending or
+        shape (owner, 2026-11-06: 30 of 40 titles opened with an index and its percent change)."""
+        with self.db.transaction() as conn:
+            rows = conn.execute("""SELECT plan->'upload'->>'title' AS hook FROM video_jobs
+                WHERE id<>%s AND plan->'upload'->>'title' IS NOT NULL ORDER BY created_at DESC LIMIT 40""",
+                                (str(job['id']),)).fetchall()
+        return list(dict.fromkeys(r['hook'] for r in rows if r['hook']))[:limit]
+
+    def recent_thumbnail_files(self, job, limit=4):
+        """The latest delivered episodes' thumbnail files, newest first, for the designer and the look to compare
+        against (owner, 2026-11-06: every briefing thumbnail had looked the same)."""
+        with self.db.transaction() as conn:
+            rows = conn.execute("""SELECT artifacts->>'directory' AS directory
+                FROM video_jobs WHERE id<>%s AND artifacts IS NOT NULL AND artifacts->>'directory' IS NOT NULL
+                ORDER BY created_at DESC LIMIT 20""", (str(job['id']),)).fetchall()
+        root, out = Path(self.settings.video_artifact_dir).resolve(), []
+        for row in rows:
+            path = Path(row['directory']) / 'thumbnail.png'
+            if path.resolve().is_relative_to(root) and path.is_file() and str(path) not in out:
+                out.append(str(path))
             if len(out) >= limit:
                 break
         return out

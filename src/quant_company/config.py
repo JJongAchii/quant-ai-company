@@ -107,6 +107,9 @@ class Settings(BaseSettings):
     video_alignment_threads: int = Field(default=2, ge=1, le=16)
     # motion-v2: fixed card/motion template (docs/DAILY_BRIEF_DESIGN_SPEC.md); text-v1: the earlier text slides.
     video_template: Literal["motion-v2", "text-v1"] = "motion-v2"
+    # Each motion episode's thumbnail is designed for that episode by Claude and drawn on the worker (owner, 2026-11-06;
+    # video/thumbnail.py); false keeps the template thumbnail. Frozen into each new job's policy.
+    video_thumbnail_design: bool = True
     video_asset_dir: Path = Path("/var/lib/quant-company/video-assets")
     video_render_workers: int = Field(default=1, ge=1, le=16)
     # Story-specific pictures from the separate Codex image runtime (subscription; empty URL = library images only).
@@ -125,10 +128,9 @@ class Settings(BaseSettings):
     video_render_attempts: int = Field(default=3, ge=1, le=6)
     # Hard limit per render task (the task exits itself; the worker stops it 10 minutes later at the latest).
     video_render_timeout_minutes: int = Field(default=90, ge=10, le=360)
-    # The series playlist; when empty the description omits the "▶ 그래서, 오늘장 모아보기" lines. The old 증시story playlist
-    # (PLbCkACCer37U) belongs to the 뭐든story channel; the briefings moved to their own channel on 2026-11-04, so the line
-    # stays out until that channel has a playlist.
-    video_playlist_url: str = ""
+    # The series playlist on the briefings' own channel (@sotodaysmarket, made 2026-11-06), linked under "▶ 그래서, 오늘장
+    # 모아보기" in every description; empty omits those lines. The old 증시story playlist (PLbCkACCer37U) is 뭐든story's.
+    video_playlist_url: str = "https://www.youtube.com/playlist?list=PLAMiTJ2pkjHY"
     # Morning review-ready target (HH:MM KST); public approval still expires at 09:00 KST.
     # YouTube publish times the owner targets (KST). Work starts the moment the brief body is delivered; the files
     # must be in the brief thread VIDEO_PUBLISH_LEAD_MINUTES earlier. Morning: 07:00 while New York is on daylight
@@ -156,7 +158,7 @@ class Settings(BaseSettings):
     newsletter_smtp_host: str = "smtp.gmail.com"
     newsletter_smtp_port: int = Field(default=587, ge=1, le=65535)
     newsletter_imap_host: str = "imap.gmail.com"
-    newsletter_channel_url: str = Field(default="https://www.youtube.com/@anything-story", pattern=r"^https://\S+$")
+    newsletter_channel_url: str = Field(default="https://www.youtube.com/@sotodaysmarket", pattern=r"^https://\S+$")
     newsletter_password_file: Path | None = None
     briefing_calendar_overrides_file: Path | None = None
     # Public chart reads after the US close; off until the briefing data worker is qualified for it.

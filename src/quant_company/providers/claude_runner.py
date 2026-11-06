@@ -67,7 +67,7 @@ class ClaudeConfig:
     def process_limit(self, request):
         if request.output_contract == "agent_decision":
             return self.timeout_seconds
-        return self.newsletter_timeout_seconds if request.output_contract in CLAUDE_ONLY else self.video_timeout_seconds
+        return self.newsletter_timeout_seconds if request.output_contract == "newsletter_v1" else self.video_timeout_seconds
 
 
 def environment(config, source):
@@ -83,7 +83,8 @@ def environment(config, source):
 
 # Contracts only this runtime serves. contracts.py is also a render-task input (release.render_changes), so a contract
 # no other runtime knows is added here: the render image and codex-runtime stay as they are.
-CLAUDE_ONLY = ("newsletter_v1",)
+# video_thumbnail_v1: the episode thumbnail designed per episode (owner, 2026-11-06; video/thumbnail.py).
+CLAUDE_ONLY = ("newsletter_v1", "video_thumbnail_v1")
 # Contracts the owner approved for the API credit lane first; every other contract uses the subscription first and
 # reaches the API only when the subscription refused before running anything (auth or quota).
 API_FIRST = frozenset({"video_shorts_v1", "newsletter_v1", "video_performance_v1", "video_weekly_v1",
@@ -116,6 +117,12 @@ class ClaudeRequest(ProviderRequest):
             raise ValueError("Only API-first work may ask for the API lane alone")
         if self.output_contract not in CLAUDE_ONLY:
             return super().scoped_output()
+        if self.output_contract == "video_thumbnail_v1":
+            # A video turn like the visual review: tool-free, and it looks at the episode's pictures.
+            if (not self.request_id.startswith("video-") or self.web_search or self.session is not None
+                    or self.brief_deadline_unix is not None):
+                raise ValueError("Thumbnail output requires a tool-free video request")
+            return self
         if (not self.request_id.startswith("newsletter-") or self.web_search or self.session is not None
                 or self.attachments or self.brief_deadline_unix is not None):
             raise ValueError("Newsletter output requires a tool-free newsletter request")
@@ -158,6 +165,10 @@ def output_schema(request):
                 "video_weekly_v1": (StrategyReport, "Channel strategy report", "채널 전략 리포트 작성 완료"),
                 "video_answer_v1": (VideoAnswer, "Video performance answer", "영상 성과 답변 완료")}[
             request.output_contract]
+    if request.output_contract == "video_thumbnail_v1":
+        from ..video.thumbnail import ThumbnailDesign
+
+        return ThumbnailDesign, "Video thumbnail", "썸네일 구성 완료"
     if request.output_contract == "newsletter_v1":
         from ..newsletter.contracts import NewsletterDraft
 

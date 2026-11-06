@@ -126,7 +126,7 @@ Message-ID는 (에디션, 수신자)마다 고정이다. 성공하면 `sent`로 
 | `NEWSLETTER_FROM_NAME` | `그래서, 오늘장` | 보낸 사람 이름 |
 | `NEWSLETTER_SMTP_HOST`, `NEWSLETTER_SMTP_PORT` | `smtp.gmail.com`, `587` | STARTTLS로 접속 |
 | `NEWSLETTER_IMAP_HOST` | `imap.gmail.com` | 수신 거부 메일 확인(993) |
-| `NEWSLETTER_CHANNEL_URL` | `https://www.youtube.com/@anything-story` | 영상으로 보기 버튼 |
+| `NEWSLETTER_CHANNEL_URL` | `https://www.youtube.com/@sotodaysmarket` | 영상으로 보기 버튼(「그래서, 오늘장」 채널) |
 | `NEWSLETTER_PASSWORD_FILE` | dispatch에만 `/run/newsletter/app_password` | compose에 고정. runtime.env에 넣지 않는다. |
 
 ### 앱 비밀번호 파일
