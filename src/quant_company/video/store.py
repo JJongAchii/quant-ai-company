@@ -96,7 +96,8 @@ def delivery_text(job, artifacts, at=None):
                 + [f"화면 검수: {f}" for f in qa.get("inspection_findings", [])]
                 + [f"렌더: {f}" for f in qa.get("render_findings", [])]
                 + [f"화면·음성: {f}" for f in artifacts.get("findings", [])])
-    attempts = len(qa.get("plan_attempts", [])) or 1
+    # A revision in place (runner.revise_plan, 11/06) is not a version written.
+    attempts = sum(not a.get("key", "").startswith("revise") for a in qa.get("plan_attempts", [])) or 1
     check = "자동 검사 통과" if not findings else f"자동 검사 지적 {len(findings)}건(아래, 제작은 계속함)"
     notes = "".join(f"• {f[:180]}\n" for f in findings[:8]) + (f"• 외 {len(findings) - 8}건\n" if len(findings) > 8 else "")
     # Generated pictures carry no on-screen label (owner, 2026-10-13); remote renders receive them as library pictures,
@@ -126,7 +127,7 @@ LOCK = 71350301
 LEASE = timedelta(minutes=5)
 HOLD = timedelta(minutes=200)
 # The stage that makes each model call (runner.check_photos, write_plan, review_plan, inspect_video), first match wins.
-LOGIN_STAGES = (('visual-photos', 'synthesizing'), ('plan', 'queued'), ('review', 'reviewing'),
+LOGIN_STAGES = (('visual-photos', 'synthesizing'), ('plan', 'queued'), ('revise', 'queued'), ('review', 'reviewing'),
                 ('visual', 'inspecting'), ('fix', 'inspecting'))
 ACTIVE = ("queued", "reviewing", "synthesizing", "rendering", "inspecting", "uploading", "approved")
 # Only these states expire at publish_deadline; production states continue however late they run.

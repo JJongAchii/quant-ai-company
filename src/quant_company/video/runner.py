@@ -975,28 +975,37 @@ class VideoRunner:
         key = attempt_key('revise', sum(a['key'].startswith('revise') for a in attempts) + 1)
         concerns = list(qa['revision'])
         plan = plan_class(job).model_validate(job['plan'])
-        library = dict(qa['library']) if qa.get('library') else None
+        library = dict(qa['library']) if 'library' in qa else None
         prompt = with_craft(script_fix_prompt(job['source'], plan, concerns), job['policy'])
-        revised = None
-        try:
-            fix = await self.model(job, key, prompt, ScriptFix, 'video_script_fix_v1')
-            reverted = []
-            revised = proposal(job, apply_script_fix(plan, fix, library, reverted))
-            findings = plan_findings(job, revised, library, photos=qa.get('illustrations_offered', False),
-                                     recent=qa.get('recent_thumbnails') or [])
-            findings += coverage_findings(job['source'], revised.model_dump(mode='json'))
-            findings += [f'Scene {scene}: image outside the library' for scene in reverted]
-        except ModelRejected as rejected:
-            lost = sum(a['outcome'] in RUNTIME_OUTCOMES for a in attempts)
-            if rejected.code in RUNTIME_OUTCOMES and lost < PLAN_RUNTIME_RETRIES:
-                # The runtime lost the turn: the same revision is asked again as a new request after a pause.
-                qa['plan_attempts'] = attempts + [{'key': key, 'outcome': rejected.code, 'findings': []}]
-                await asyncio.to_thread(self.store.save, job, 'queued', qa=qa)
-                await asyncio.to_thread(self.store.wait, job, min(180, 30 * (lost + 1)), 'model_retry')
-                return
-            findings = [f'Output contract: {rejected.detail}' if rejected.detail else f'Model {rejected.code}']
-        except ValueError as error:
-            findings = [str(error)[:300]]
+        revised, findings = None, []
+        if len(prompt) > PROMPT_LIMIT:
+            findings = ['The revision request exceeds the prompt limit']
+        else:
+            try:
+                fix = await self.model(job, key, prompt, ScriptFix, 'video_script_fix_v1')
+            except ModelRejected as rejected:
+                lost = sum(a['outcome'] in RUNTIME_OUTCOMES for a in attempts)
+                if rejected.code in RUNTIME_OUTCOMES and lost < PLAN_RUNTIME_RETRIES:
+                    # The runtime lost the turn: the same revision is asked again as a new request after a pause.
+                    qa['plan_attempts'] = attempts + [{'key': key, 'outcome': rejected.code, 'findings': []}]
+                    await asyncio.to_thread(self.store.save, job, 'queued', qa=qa)
+                    await asyncio.to_thread(self.store.wait, job, min(180, 30 * (lost + 1)), 'model_retry')
+                    return
+                findings = [f'Output contract: {rejected.detail}' if rejected.detail else f'Model {rejected.code}']
+            else:
+                try:
+                    reverted = []
+                    revised = proposal(job, apply_script_fix(plan, fix, library, reverted))
+                    if revised.model_dump(mode='json') == plan.model_dump(mode='json'):
+                        # A concern it cannot express (a new or reordered scene) comes back as no change at all.
+                        findings = ['The revision changed nothing']
+                    else:
+                        findings = plan_findings(job, revised, library, photos=qa.get('illustrations_offered', False),
+                                                 recent=qa.get('recent_thumbnails') or [])
+                        findings += coverage_findings(job['source'], revised.model_dump(mode='json'))
+                        findings += [f'Scene {scene}: image outside the library' for scene in reverted]
+                except ValueError as error:
+                    findings = [str(error)[:300]]
         outcome = 'revised' if revised is not None and not findings else 'revise_failed'
         qa['plan_attempts'] = attempts + [{'key': key, 'outcome': outcome, 'findings': findings[:30]}]
         qa.pop('revision')

@@ -438,6 +438,28 @@ async def test_review_concerns_are_fixed_in_place_not_by_rewriting_the_script(br
     assert '다만 조건이 남아 있어요.' in provider.calls[3].prompt
 
 
+async def test_a_revision_that_changes_nothing_leaves_the_concerns_to_a_rewrite(brief, video, tmp_path):  # noqa: F811
+    """A concern a revision cannot express (a new or reordered scene) came back as an empty fix: the second review would
+    read the same script and the episode would ship with the concerns."""
+    from quant_company.video.contracts import VideoReview
+    from quant_company.video.episode import ScriptFix
+
+    from .test_video import ScriptedProvider, good_review, release
+
+    store, job = motion_job(brief, video, tmp_path)
+    concern = VideoReview(facts=True, numbers=True, conditions=True, coverage=False, readability=True, concerns=['장면 순서를 바꿔야 함'])
+    provider = ScriptedProvider([episode(), concern, ScriptFix(), episode(), good_review()])
+    for _ in range(5):
+        release(store, job)
+        await VideoRunner(store.company, provider=provider).tick()
+    current = store.get(job['id'])
+    assert current['state'] == 'synthesizing'
+    attempts = current['qa']['plan_attempts']
+    assert [a['outcome'] for a in attempts] == ['passed', 'revise_failed', 'passed']
+    assert attempts[1]['findings'] == ['The revision changed nothing']
+    assert '장면 순서를 바꿔야 함' in sent_episodes(provider)[1]['revision_feedback']
+
+
 async def test_a_previous_version_that_does_not_fit_the_prompt_is_left_out(brief, video, tmp_path, monkeypatch):  # noqa: F811
     from quant_company.video import runner as runner_module
 
@@ -1191,7 +1213,8 @@ def test_ticker_prices_share_one_number_format():
 
     assert ticker_number('29만3500원') == '293,500원' and ticker_number('23만1,000') == '231,000'
     assert ticker_number('10만원') == '100,000원' and ticker_number('4113.5') == '4,113.5'
-    for kept in ('1,393,000', '24,315', '1,334.3원', '3.95%', '90.52', '', '678.41'):
+    for kept in ('1,393,000', '24,315', '1,334.3원', '3.95%', '90.52', '', '678.41', '1조6168억원', '1억2000만', '2026년',
+                 '29만 3500원', '10/30'):
         assert ticker_number(kept) == kept
 
 
@@ -1201,6 +1224,7 @@ def test_a_photo_credit_drops_the_link_words_of_its_source_page():
 
     assert credit_author('mattbuck (category)') == 'mattbuck'
     assert credit_author('Jane Doe (talk | contribs)') == 'Jane Doe' and credit_author('Reuters') == 'Reuters'
+    assert credit_author('Jane Doe (talk · contribs)') == 'Jane Doe' and credit_author(None) == ''
 
 
 # Scenes as the 11/04-11/06 scripts wrote them; each drew a problem the final editor reported in every round.
@@ -1228,7 +1252,7 @@ LAYOUT_SCENES = [
          'then': '긴축·신용 동반 부담 판단 약화 가능 · 다만 일시적 반등에 그치면 다시 판단이 어렵습니다'}]}),
     ('bars', {'chips': ['실적'], 'title': '이익은 두 회사에 몰렸다', 'unit_note': '직전 분기 대비', 'rows': [
         {'name': '전체 99곳', 'n': 37.6, 'label': '▲37.6%'}, {'name': '두 회사 제외 97곳', 'n': 8.82, 'label': '▼8.82%'}],
-              'side': {'title': '실적 발표 99곳', 'rows': [['영업이익 전년 대비', '▲326.6%'], ['하회·적자 전환', '50곳(50.5%)']],
+              'side': {'title': '실적 발표 99곳', 'rows': [['영업이익 전년 대비', '▲326.6%'], ['코스닥', '▼3.2%'], ['하회·적자 전환', '50곳(50.5%)']],
                        'signal': '두 회사를 뺀 이익이 다시 늘어나는지'}}),
     ('compare', {'chips': ['반도체'], 'title': '같은 반도체, 엇갈린 외국인 수급', 'chart_title': '등락률', 'chart_source': 'KRX',
                  'tiles': [{'label': 'SK하이닉스', 'value': '4,482억원', 'sub': '순매수'}, {'label': '삼성전자', 'value': '1,382억원', 'sub': '순매도'}],
@@ -1249,7 +1273,8 @@ LAYOUT_JS = r"""() => {
  for(const row of scn.querySelectorAll('.sig')){ const b=row.getBoundingClientRect();
   for(const e of row.querySelectorAll('.sthen,.sconds')){ const r=e.getBoundingClientRect(); if(r.bottom>b.bottom+1||r.top<b.top-1) out.push('out of its row: '+e.textContent.slice(0,16));}}
  const bars=[...scn.querySelectorAll('.bar')].map(b=>({left:b.getBoundingClientRect().left, colour:getComputedStyle(b).backgroundColor}));
- return {problems: out, bars, rising: scn.querySelectorAll('rect[data-vbar]').length};}"""
+ const values=[...scn.querySelectorAll('.num')].map(e=>[e.textContent.trim(), e.className]);
+ return {problems: out, bars, values, rising: scn.querySelectorAll('rect[data-vbar]').length};}"""
 
 
 def laid_out(tmp_path, scenes, design=None):
@@ -1293,5 +1318,8 @@ def test_card_text_wraps_whole_and_stays_in_its_row_and_bars_follow_their_labels
     red, blue = 'rgb(255, 92, 102)', 'rgb(94, 155, 255)'
     rise, fall = bars['bars'][:2]
     assert rise['colour'] == red and fall['colour'] == blue and fall['left'] < rise['left']
+    # A side value written as a pair without n takes the colour of its own arrow.
+    side = dict(bars['values'])
+    assert 'dnn' in side['▼3.2%'] and 'upn' in side['▲326.6%'] and 'upn' not in side['50곳(50.5%)']
     # A rise and a fall are never two bars standing up from one baseline.
     assert compare['rising'] == 0 and sorted(b['colour'] for b in compare['bars']) == sorted([red, blue])

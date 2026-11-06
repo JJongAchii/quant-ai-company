@@ -14,8 +14,8 @@ const TOP = 140, H = 580;
 const two = n => String(n).padStart(2, '0');
 // A bar's direction is the one its label shows (11/04 PM, 11/05 AM: '▼8.82%' written with a positive n was drawn as a
 // red rise); with no arrow or sign in the label, the sign of n decides.
-const signed = r => { const l = String(r.label ?? '').trim();
-  return (/▼|^[-−]/.test(l) ? -1 : /▲|^\+/.test(l) ? 1 : Math.sign(+r.n || 0) || 1) * Math.abs(+r.n || 0); };
+const falls = r => { const l = String(r.label ?? '').trim(); return /▼|^[-−]/.test(l) || (!/▲|^\+/.test(l) && +r.n < 0); };
+const signed = r => (falls(r) ? -1 : 1) * Math.abs(+r.n || 0);
 
 function header(d) {
   const chips = (d.chips || []).map((c, i) => `<span class="${i === 0 && d.gold !== false ? 'k0' : ''}">${c}</span>`);
@@ -250,7 +250,7 @@ const CARDS = {
       const sv = sr.map(signed), m = Math.max(...sv.map(Math.abs)) || 1, hw = 150, c2 = 330;
       let g = bars ? `<div style="position:absolute;left:${c2}px;top:84px;width:1px;height:186px;background:var(--rule2)"></div>` : '';
       sr.forEach((r, i) => {
-        const y = 96 + i * 58, w = Math.abs(sv[i]) / m * hw, neg = sv[i] < 0;
+        const y = 96 + i * 58, w = Math.abs(sv[i]) / m * hw, neg = falls(r);
         g += `<div style="position:absolute;left:38px;top:${y + 2}px;font-size:28px;font-weight:700">${r.name ?? ''}</div>`;
         if (bars) g += `<div class="bar" style="top:${y}px;height:38px;${neg ? `left:${c2 - w}px;transform-origin:right` : `left:${c2 + 1}px;transform-origin:left`};width:${w}px;background:${neg ? 'var(--dn)' : 'var(--up)'}" data-bar="${(0.7 + i * 0.06).toFixed(2)}"></div>`;
         g += `<div class="num ${bars || /[▲▼]/.test(r.label) ? (neg ? 'dnn' : 'upn') : ''}" style="position:absolute;top:${y + 1}px;right:38px;font-size:30px" data-in="${(1.0 + i * 0.06).toFixed(2)}">${r.label ?? ''}</div>`;
