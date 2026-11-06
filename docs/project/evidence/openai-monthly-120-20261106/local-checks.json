@@ -1,0 +1,43 @@
+{
+  "recorded_at": "2026-11-06T05:29:18.402868+00:00",
+  "tested_commit": "33bf415ddaf406db777bc06704abadaac8c39487",
+  "integrated_main": "7dda5b6b18b59ab68f783b8f3ccf1194be9af920",
+  "owner_policy": "API first, KST calendar-month service cap $120, then existing subscription; no grant-expiry prerequisite",
+  "test_command": ".venv/bin/pytest -q tests/test_openai_credits.py tests/test_codex_runtime.py tests/test_codex_config_probe.py tests/test_accounts.py tests/test_ops.py tests/test_ops_probe.py tests/test_claude_api_lane.py tests/test_release_tool.py deploy/test_deployment_contract.py",
+  "result": {
+    "passed": 451,
+    "skipped": 3,
+    "duration_seconds": 144.34
+  },
+  "checks": {
+    "repository_ruff": "passed",
+    "diff_check": "passed"
+  },
+  "environment": {
+    "postgresql": "real disposable local PostgreSQL 14",
+    "compose": "real CLI configuration checks",
+    "model_transport": "mocked Responses HTTP plus real synthetic CLI subprocesses",
+    "skips": "3 explicitly opt-in real Codex configuration probes"
+  },
+  "live_key_check": "Sol and Astra model information GET returned HTTP 200; no inference request",
+  "production": {
+    "changed_by_this_task": false,
+    "pr": 220,
+    "review": "pending",
+    "key_file_observed": false,
+    "policy_file_observed": false,
+    "enabled_setting_observed": null
+  },
+  "source_sha256": {
+    "src/quant_company/providers/openai_credits.py": "398ac5ca566929604fe6b2ea3446fb03477c081ab84d21ed3a27372d7bf43404",
+    "src/quant_company/providers/codex_runner.py": "1b2bb369a4ff51b6a27c79ffe513cf40edc5440eae86bb6648fbaaee499ff197",
+    "src/quant_company/providers/codex_runtime.py": "fa1f27525fd57e635813af0d62c915db97f0660a72e350c02c0b8e2ec706e38f",
+    "src/quant_company/ops/status.py": "85bb95fb964bb801c24b269d7816d9a574c6bae78c7c82cf1d13fb9068602406",
+    "deploy/openai-credits.compose.yaml": "7283ca1365d465209f8a584cdbb19c315d307b35e2f8cf29aff82d916f22e3b2",
+    "deploy/ops_probe.py": "39835a577c6da8f151a51b087423cd965c9316c5ad0fb0cc6a261fdb4d732084",
+    "deploy/release.json": "383e7d4828b0503b60344ec73fdf068b02e782e9842397da46b20b57acf4d55b",
+    "tests/test_openai_credits.py": "8ef694034c307db97eb7e3cd43bb2a3537498236b171774b98c7d9c62ab5f88f",
+    "tests/test_ops.py": "4ba158aa7a4d748f369cb8fab7f96934627c282594660d5531e4d8e7dddfa62d",
+    "tests/test_ops_probe.py": "3baa0aa946a8cba5928a1e3c2e07365c0bbb8cd279d67d59ff46f51c1db3883a"
+  }
+}

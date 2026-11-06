@@ -1,0 +1,37 @@
+{
+  "target_main_sha": "pending-reviewed-PR-220-merge-and-main-CI",
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/220",
+  "files": [
+    {
+      "source": "~/.config/quant-company/openai-api-key",
+      "target": "/var/lib/quant-company/openai-credits/api_key",
+      "owner": "10001:10001",
+      "mode": "0400",
+      "secret": true
+    },
+    {
+      "source": "monthly-budget-policy.json",
+      "target": "/var/lib/quant-company/openai-credits/grant.json",
+      "owner": "10001:10001",
+      "mode": "0400",
+      "secret": false
+    }
+  ],
+  "directory": {
+    "path": "/var/lib/quant-company/openai-credits",
+    "owner": "10001:10001",
+    "mode": "0750"
+  },
+  "runtime_env_values": {
+    "OPENAI_API_ENABLED": "true"
+  },
+  "added_services": [],
+  "removed_services": [],
+  "host_units": [],
+  "render_changes": [],
+  "verification": [
+    "release.py reports the reviewed main SHA with no drift",
+    "first runtime receipt identifies responses_api and owner_monthly_cap",
+    "budget or explicit balance refusal routes subsequent eligible work to codex_cli"
+  ]
+}

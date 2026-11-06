@@ -1,25 +1,27 @@
-# OpenAI credit-first staff execution validation
+# OpenAI API-first staff execution validation
 
-2026-11-05. Implementation prepared for review; default off. Production activation and live API qualification pending.
+2026-11-06. The owner requests a **$120 KST calendar-month service cap**, then the existing subscription.
+The latest version 2 policy no longer requires the provider's actual credit expiry or a free-only billing assertion.
+It does not guarantee all charges are offset by the Pro benefit. The owner confirmed auto recharge is disabled.
 
-The owner requests API-budget-first execution followed by the existing ChatGPT subscription. The isolated runtime
-now reserves a confirmed, expiring free-credit allowance before a direct Responses API request. A known refusal or
-unavailable allowance uses the subscription; uncertain or already executed calls never automatically replay.
+Local qualification after integrating production main 7dda5b6: **451 passed, 3 skipped** in 144.34s; repository Ruff
+and diff checks passed. Real disposable PostgreSQL 14 and real Compose configuration are used. Responses HTTP
+and subscription inference are simulated (the latter uses real synthetic subprocesses). The skipped tests are
+explicitly opt-in real Codex configuration probes. Key file mode 0600 and model metadata GET authentication were
+also confirmed; these are not an inference or provider-billing qualification.
 
-Local verification: **283 passed, 3 skipped** in 74.19s; repository Ruff and diff checks passed. This combines real
-disposable PostgreSQL 14, real Compose configuration validation, a mocked Responses transport and real isolated
-synthetic CLI subprocesses. The three skips are opt-in real Codex configuration probes. This is not evidence of
-actual benefit activation, model API billing, a production release or real Slack integration.
+Coverage includes the $120 authorization limit, KST month/year/leap-month boundaries, budget exhaustion to
+subscription, retrying API after the next month, shared reservations, explicit API refusals, ambiguous-call replay
+prevention, existing sessions/effort, account routing and non-secret operational display. Existing Claude API,
+release, account and operator-status regressions passed.
 
-Coverage includes concurrent shared reservations, expiry and missing setup, strict free-only confirmation,
-budget/credit refusal to subscription, cached results after disabling API, cancellation/timeouts/5xx, crash windows,
-immutable grants, selected model/effort, numeric subscription continuation usage, private gateway compatibility,
-read-only deployment mounts and secret-free owner status. Existing provider/account/ops tests also passed.
+Production was only inspected. It was running CI-green main 7dda5b6, with no drift. API key/policy files and the
+enable setting were absent at inspection. PR #220 has not been reviewed or merged. Review, CI-green main release
+and the release operator's key/policy/switch installation are still required by AGENTS.md; this evidence does not
+claim the server was switched.
 
-The release adds a default-off overlay to the existing two model containers; it adds no service, host unit or render
-image requirement. The operator needs the actual remaining grant, expiry, free-only billing confirmation and key
-before enabling it, after a reviewed CI-green main release. Development did not change production.
-
-- [Machine-readable receipt](evidence/openai-credit-first-20261105/local-checks.json)
+- [Latest check receipt](evidence/openai-monthly-120-20261106/local-checks.json)
+- [Exact monthly policy](evidence/openai-monthly-120-20261106/monthly-budget-policy.json)
+- [Operator handoff, target main SHA pending review/merge](evidence/openai-monthly-120-20261106/operator-handoff.json)
 - [Activation and reconciliation runbook](../runbooks/openai-credits.md)
-- [Architecture decision](../adr/0050-openai-free-api-credits-first.md)
+- [Earlier version 1 grant-policy tests](evidence/openai-credit-first-20261105/local-checks.json)
