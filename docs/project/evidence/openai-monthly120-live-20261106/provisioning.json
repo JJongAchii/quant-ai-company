@@ -1,0 +1,22 @@
+{
+  "target_main_sha": "f9a19b4b9cfbf661a5056c332daff4f8e6babb8c",
+  "provisioned_at": "2026-11-06T06:28:08.116632+00:00",
+  "policy": {
+    "version": 2,
+    "budget_id": "owner-monthly-api-120",
+    "monthly_cap_usd": 120,
+    "api_spend_authorized": true
+  },
+  "key_installed": true,
+  "key_mode": "0400",
+  "key_uid": 10001,
+  "qualification_budget_accounted_usd": 0.019636,
+  "previous_auto_mode": "true",
+  "api_enabled": true,
+  "auto_release_mode": "paused",
+  "main_ci": {
+    "sha": "f9a19b4b9cfbf661a5056c332daff4f8e6babb8c",
+    "run": "https://github.com/JJongAchii/quant-ai-company/actions/runs/42172273165",
+    "completed_at": "2026-11-06T06:27:37Z"
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "verified_at": "2026-11-06T06:41:38.595105+00:00",
+  "main_sha": "f9a19b4b9cfbf661a5056c332daff4f8e6babb8c",
+  "checks": [
+    {
+      "service": "codex-runtime",
+      "release_sha": "f9a19b4b9cfbf661a5056c332daff4f8e6babb8c",
+      "api_enabled": true,
+      "read_only_secret_mount": true,
+      "health": "ok"
+    },
+    {
+      "service": "quant-codex-runtime",
+      "release_sha": "f9a19b4b9cfbf661a5056c332daff4f8e6babb8c",
+      "api_enabled": true,
+      "read_only_secret_mount": true,
+      "health": "ok"
+    }
+  ],
+  "probes": [
+    {
+      "request_id": "op-live-f9a19b4-main-sol-v1",
+      "service": "codex-runtime",
+      "model": "gpt-6.1-sol",
+      "state": "complete",
+      "usage": {
+        "input_tokens": 1204,
+        "cached_input_tokens": 0,
+        "output_tokens": 26,
+        "reasoning_output_tokens": 0,
+        "backend": "responses_api",
+        "billing_mode": "api_credit",
+        "api_grant_id": "owner-monthly-api-120-2026-11",
+        "api_budget_mode": "owner_monthly_cap",
+        "budget_charge_usd": 0.00327,
+        "budget_charge_is_upper_bound": true,
+        "actual_model": "gpt-6.1-sol"
+      },
+      "valid_decision": true,
+      "expected_backend": "responses_api"
+    },
+    {
+      "request_id": "quant-feed-op-live-f9a19b4-astra-v1",
+      "service": "quant-codex-runtime",
+      "model": "gpt-6-astra",
+      "state": "complete",
+      "usage": {
+        "input_tokens": 1204,
+        "cached_input_tokens": 0,
+        "output_tokens": 26,
+        "reasoning_output_tokens": 0,
+        "backend": "responses_api",
+        "billing_mode": "api_credit",
+        "api_grant_id": "owner-monthly-api-120-2026-11",
+        "api_budget_mode": "owner_monthly_cap",
+        "budget_charge_usd": 0.01635,
+        "budget_charge_is_upper_bound": true,
+        "actual_model": "gpt-6-astra"
+      },
+      "valid_decision": true,
+      "expected_backend": "responses_api"
+    },
+    {
+      "request_id": "op-live-f9a19b4-subscription-sol-v1",
+      "service": "codex-runtime",
+      "model": "gpt-6.1-sol",
+      "state": "complete",
+      "usage": {
+        "input_tokens": 8046,
+        "cached_input_tokens": 5888,
+        "output_tokens": 28,
+        "reasoning_output_tokens": 0,
+        "backend": "codex_cli",
+        "billing_mode": "subscription"
+      },
+      "valid_decision": true,
+      "expected_backend": "codex_cli"
+    }
+  ],
+  "monthly_budget": {
+    "accounted_usd": 0.460219,
+    "budget_mode": "owner_monthly_cap",
+    "budget_usd": 120.0,
+    "calls": 9,
+    "expires_at": "2026-12-01T00:00:00+09:00",
+    "grant_id": "owner-monthly-api-120-2026-11",
+    "paused_until": 0,
+    "reason": "api_completed",
+    "updated_at": 1793947293.836092
+  },
+  "ok": true
+}

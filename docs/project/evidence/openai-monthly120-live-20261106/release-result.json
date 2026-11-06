@@ -1,0 +1,48 @@
+{
+  "checked_at": "2026-11-06T06:28:33+00:00",
+  "mode": "release",
+  "current": "f9a19b4b9cfbf661a5056c332daff4f8e6babb8c",
+  "target": null,
+  "latest_green": {
+    "sha": "f9a19b4b9cfbf661a5056c332daff4f8e6babb8c",
+    "run": "https://github.com/JJongAchii/quant-ai-company/actions/runs/42172273165",
+    "completed_at": "2026-11-06T06:27:37Z"
+  },
+  "drift": [],
+  "failed_commit": null,
+  "operator_release": true,
+  "owner_approved_pr": 220,
+  "render": {
+    "commit": "cc80d9716740487776ad25b50bf5390ad92f0d42",
+    "accepted": null,
+    "task_definition": "quant-company-render:17"
+  },
+  "action": "released",
+  "detail": null,
+  "started_at": "2026-11-06T06:28:33+00:00",
+  "step": null,
+  "released": {
+    "commit": "f9a19b4b9cfbf661a5056c332daff4f8e6babb8c",
+    "services": [
+      "data-watch-worker",
+      "housing-feed-worker",
+      "tech-feed-worker",
+      "quant-codex-runtime",
+      "quant-feed-worker",
+      "codex-runtime",
+      "video-image-runtime",
+      "claude-runtime",
+      "account-gateway",
+      "maintenance",
+      "api",
+      "slack-socket",
+      "worker",
+      "dispatch",
+      "briefing-data-worker",
+      "news-worker",
+      "video-worker"
+    ],
+    "finished_at": "2026-11-06T06:41:27+00:00"
+  },
+  "pruned": []
+}
