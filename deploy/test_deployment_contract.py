@@ -590,7 +590,7 @@ def test_newsletter_password_reaches_only_dispatch_and_its_settings_reach_every_
         "smtp.gmail.com", 587, "imap.gmail.com")
     assert settings.newsletter_from_name == "그래서, 오늘장"
     assert str(settings.newsletter_password_file) == "/run/newsletter/app_password"
-    assert settings.newsletter_channel_url == "https://www.youtube.com/@anything-story"
+    assert settings.newsletter_channel_url == "https://www.youtube.com/@sotodaysmarket"
     for name in ("codex-runtime", "claude-runtime"):
         assert not any(key.startswith("NEWSLETTER_") for key in services[name]["environment"])
     assert compose_config()["services"]["dispatch"]["environment"]["NEWSLETTER_ENABLED"] == "false"
