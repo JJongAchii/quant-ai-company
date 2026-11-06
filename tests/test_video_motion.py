@@ -190,8 +190,9 @@ def test_motion_render_frames_layout_credits_and_artifact_binding(tmp_path):
     assert manifest['title'].endswith(' | 9월 22일 아침 · 그래서, 오늘장') and manifest['tags'][-2:] == ['그래서 오늘장', '그래서오늘장']
     assert '검토용 샘플' not in (tmp_path / 'out' / 'upload.txt').read_text()
     assert '📅 2026.09.22 | 미국 증시' in upload and '자료 기준: 2026.09.22 07:30 (한국시간) · 장전' in upload
-    # The old 증시story playlist belongs to the 뭐든story channel: no playlist line until the new channel has one.
-    assert '00:00 반도체가 이끌었다' in upload and '#그래서오늘장 #오늘장 #반도체' in upload and '모아보기' not in upload
+    # The default links the briefing playlist on the briefings' own channel (2026-11-06), never 뭐든story's PLbCkACCer37U.
+    assert '00:00 반도체가 이끌었다' in upload and '#그래서오늘장 #오늘장 #반도체' in upload
+    assert '▶ 그래서, 오늘장 모아보기\nhttps://www.youtube.com/playlist?list=PLAMiTJ2pkjHY' in upload and 'PLbCkACCer37U' not in upload
     assert 'https://www.cnbc.com/fixture-market-report.html' in upload
     assert not (tmp_path / 'out' / 'page').exists() and not list((tmp_path / 'out').glob('part-*.mp4'))
     assert not (tmp_path / 'out' / 'narration.wav').exists() and (tmp_path / 'out' / 'video.mp4').exists()
