@@ -1129,3 +1129,115 @@ def test_a_card_names_its_outlet_with_or_without_the_word_news():
     assert shows_outlet(['SBS 보도'], ['SBS 뉴스']) and shows_outlet(['CNBC · 연합뉴스'], ['연합뉴스'])
     assert shows_outlet(['연합뉴스·이투데이'], ['이투데이']) and not shows_outlet(['연합뉴스'], ['SBS 뉴스'])
     assert not shows_outlet(['브리핑 분석'], ['SBS 뉴스'])
+
+
+def test_ticker_prices_share_one_number_format():
+    """11/04 PM, 11/05 PM, 11/06 AM: '23만1,000' and '29만3500원' sat beside '1,393,000', and '금 4113.5' had no comma."""
+    from quant_company.video.motion import ticker_number
+
+    assert ticker_number('29만3500원') == '293,500원' and ticker_number('23만1,000') == '231,000'
+    assert ticker_number('10만원') == '100,000원' and ticker_number('4113.5') == '4,113.5'
+    for kept in ('1,393,000', '24,315', '1,334.3원', '3.95%', '90.52', '', '678.41'):
+        assert ticker_number(kept) == kept
+
+
+def test_a_photo_credit_drops_the_link_words_of_its_source_page():
+    """11/06 AM: '자료사진 · mattbuck (category) · CC BY-SA 4.0' showed the Commons author field's category link."""
+    from quant_company.video.motion import credit_author
+
+    assert credit_author('mattbuck (category)') == 'mattbuck'
+    assert credit_author('Jane Doe (talk | contribs)') == 'Jane Doe' and credit_author('Reuters') == 'Reuters'
+
+
+# Scenes as the 11/04-11/06 scripts wrote them; each drew a problem the final editor reported in every round.
+LAYOUT_SCENES = [
+    ('flow', {'chips': ['AI 투자'], 'title': '주민투표에서 메모리 발주까지', 'nodes': [
+        {'big': '41건', 'sub': '노스다코타 하우드 1건 빼고 모두 반대', 'head': '데이터센터 제한 주민투표', 'chips': ['화요일 · 10개 주'], 'source': 'CNBC'},
+        {'big': '공약 단계', 'sub': '주민 보호 법률 마련 전까지 · 시행된 중단은 아님', 'head': '주지사 당선인, 신규 승인 중단 공약', 'chips': ['텍사스'], 'source': '이투데이'},
+        {'big': 'HBM·D램·낸드', 'sub': '삼성전자·SK하이닉스 · 건설·가동 지연 시', 'head': '메모리 발주 지연 가능성', 'chips': ['한국 반도체'], 'source': '이투데이'}],
+        'foot': {'chip': '전력망 변수', 'text': '전력망 비용 부담 확대는 투자를 위축시킬 수 있다'}}),
+    ('counter', {'chips': ['방산'], 'title': '라인메탈 전망 하향, 수요가 사라졌나', 'kicker': '다르게 볼 점', 'topic': '계약 지연과 현금 유입 시점',
+                 'source': 'CNBC', 'blocks': [
+        {'sub': '기존 137억~142억유로 · 8월 이후 두 번째 하향', 'label': '2026년 매출 전망', 'value': '약 132억유로'},
+        {'sub': '3분기 매출 32%·영업이익 62% 증가 · 전년 동기 대비', 'gold': True, 'label': '분기 말 수주잔고', 'value': '780억유로'},
+        {'dir': 'dn', 'sub': '장 초반 하락 · 원인: 계약 지연·포탄 인수시험 차질', 'label': '주가 · 장중', 'value': '17% 넘게'}],
+                 'rows': [{'text': '계약 체결·선수금 유입 시 수요 소멸보다 시점 이연에 가까울 수 있음', 'source': 'CNBC'}]}),
+    ('signals', {'chips': ['일정'], 'title': '다음 장, 이 네 가지를 보세요', 'disclaimer': '투자 권유가 아닌 정보 제공 목적입니다.',
+                 'note': '브리핑의 시각 · 자동차 상승만으로는 시장 회복을 판단하기 어렵습니다', 'rows': [
+        {'topic': '반도체·외국인', 'conds': ['반도체 낙폭 축소', '외국인 매도 완화'],
+         'then': '추가 하락 위험 축소 가능 · 다만 일시적 반등에 그치면 다시 판단이 어렵습니다'},
+        {'topic': '데이터센터 승인', 'conds': ['투자 유지 합의', '승인 재개 구체화'],
+         'then': '메모리 발주 지연 우려 약화 가능 · 다만 일시적 반등에 그치면 다시 판단이 어렵습니다'},
+        {'topic': '호르무즈 해협', 'conds': ['해협 개방 공식 합의', '통항 정상화·유가 상승분 반납'],
+         'then': '공급 위험 재부각 해석 약화 가능 · 다만 일시적 반등에 그치면 다시 판단이 어렵습니다'},
+        {'topic': '물가·신용', 'conds': ['에너지 외 품목·임금 확산 진정', '소기업 대출 기준·위험 가산금리 완화'],
+         'then': '긴축·신용 동반 부담 판단 약화 가능 · 다만 일시적 반등에 그치면 다시 판단이 어렵습니다'}]}),
+    ('bars', {'chips': ['실적'], 'title': '이익은 두 회사에 몰렸다', 'unit_note': '직전 분기 대비', 'rows': [
+        {'name': '전체 99곳', 'n': 37.6, 'label': '▲37.6%'}, {'name': '두 회사 제외 97곳', 'n': 8.82, 'label': '▼8.82%'}],
+              'side': {'title': '실적 발표 99곳', 'rows': [['영업이익 전년 대비', '▲326.6%'], ['하회·적자 전환', '50곳(50.5%)']],
+                       'signal': '두 회사를 뺀 이익이 다시 늘어나는지'}}),
+    ('compare', {'chips': ['반도체'], 'title': '같은 반도체, 엇갈린 외국인 수급', 'chart_title': '등락률', 'chart_source': 'KRX',
+                 'tiles': [{'label': 'SK하이닉스', 'value': '4,482억원', 'sub': '순매수'}, {'label': '삼성전자', 'value': '1,382억원', 'sub': '순매도'}],
+                 'bars': [{'n': 2.22, 'label': '▲2.22%', 'name': 'SK하이닉스'}, {'n': 4.13, 'label': '▼4.13%', 'name': '삼성전자'}],
+                 'arrow_text': '같은 업종, 다른 방향', 'extra': [['코스피 외국인', '757억원 순매수']]}),
+]
+
+LAYOUT_JS = r"""() => {
+ const scn=[...document.querySelectorAll('.scene')].find(s=>s.style.display==='block'); const out=[];
+ const w=document.createTreeWalker(scn,NodeFilter.SHOW_TEXT); let n; const rg=document.createRange();
+ while((n=w.nextNode())){ const s=n.textContent; if(!s.trim()||n.parentElement.closest('svg')) continue;
+  if(/undefined|NaN/.test(s)) out.push('undefined: '+s.trim());
+  const starts=[]; let top=null;
+  for(let i=0;i<s.length;i++){ if(/\s/.test(s[i])) continue; rg.setStart(n,i); rg.setEnd(n,i+1); const r=rg.getBoundingClientRect();
+   if(r.width<0.5) continue; if(top===null||r.top>top+r.height*0.5){starts.push(i); top=r.top;} }
+  for(const i of starts.slice(1)) if(s[i]==='·') out.push('line starts with a dot: '+s.slice(i,i+12));
+  if(starts.length>1 && s.slice(starts[starts.length-1]).replace(/\s/g,'').length<=2) out.push('lone last word: '+s.trim());}
+ for(const row of scn.querySelectorAll('.sig')){ const b=row.getBoundingClientRect();
+  for(const e of row.querySelectorAll('.sthen,.sconds')){ const r=e.getBoundingClientRect(); if(r.bottom>b.bottom+1||r.top<b.top-1) out.push('out of its row: '+e.textContent.slice(0,16));}}
+ const bars=[...scn.querySelectorAll('.bar')].map(b=>({left:b.getBoundingClientRect().left, colour:getComputedStyle(b).backgroundColor}));
+ return {problems: out, bars, rising: scn.querySelectorAll('rect[data-vbar]').length};}"""
+
+
+def laid_out(tmp_path, scenes, design=None):
+    """Each scene's settled frame measured in Chromium, from the template alone (no audio, no images)."""
+    import shutil
+    from importlib.resources import files
+
+    from playwright.sync_api import sync_playwright
+
+    from quant_company.video.motion import CHROMIUM_ARGS
+
+    page = tmp_path / 'page'
+    shutil.copytree(design or files('quant_company.video').joinpath('design'), page)
+    rows = [{'id': f's{i}', 'chapter': '핵심 이슈', 'type': kind, 'narration': '', 'data': {**data, 'id': f's{i}'},
+             't0': i * 10.0, 't1': i * 10.0 + 10} for i, (kind, data) in enumerate(scenes)]
+    ep = {'date_label': '11.06 금', 'asof': '', 'sample_mark': '', 'brand_name': '그래서, 오늘장', 'logo': '', 'brand_label': '아침',
+          'chapter_names': ['핵심 이슈'], 'ticker': {'label': '종가', 'items': [{'name': '금', 'value': '4,113.5', 'change': '1.0%', 'dir': 'up'}]},
+          'scenes': rows, 'total': len(rows) * 10.0, 'changes': [], 'captions': []}
+    (page / 'episode.js').write_text('window.EP=' + json.dumps(ep, ensure_ascii=False) + ';')
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(args=CHROMIUM_ARGS)
+        tab = browser.new_page(viewport={'width': 1920, 'height': 1080})
+        tab.goto((page / 'index.html').as_uri())
+        tab.evaluate('document.fonts.ready')
+        found = []
+        for row in rows:
+            tab.evaluate(f"seek({row['t1'] - 0.6})")
+            found.append(tab.evaluate(LAYOUT_JS))
+        browser.close()
+    return found
+
+
+def test_card_text_wraps_whole_and_stays_in_its_row_and_bars_follow_their_labels(tmp_path):
+    """The final editor's most frequent findings (11/01-11/06: text out of its row, a lone last word, a line opening with
+    '·', a fall drawn as a red rise, 'undefined' rows) are the template's to prevent, not a round of fixes each."""
+    if not importlib.util.find_spec('playwright'):
+        pytest.skip('Install optional video dependencies and Chromium')
+    flow, counter, signals, bars, compare = laid_out(tmp_path, LAYOUT_SCENES)
+    for scene in (flow, counter, signals, bars, compare):
+        assert scene['problems'] == []
+    red, blue = 'rgb(255, 92, 102)', 'rgb(94, 155, 255)'
+    rise, fall = bars['bars'][:2]
+    assert rise['colour'] == red and fall['colour'] == blue and fall['left'] < rise['left']
+    # A rise and a fall are never two bars standing up from one baseline.
+    assert compare['rising'] == 0 and sorted(b['colour'] for b in compare['bars']) == sorted([red, blue])

@@ -12,6 +12,10 @@ const src = s => s ? `<span class="src">${s}</span>` : '';
 const DOT = '<i class="kd"></i>';
 const TOP = 140, H = 580;
 const two = n => String(n).padStart(2, '0');
+// A bar's direction is the one its label shows (11/04 PM, 11/05 AM: '▼8.82%' written with a positive n was drawn as a
+// red rise); with no arrow or sign in the label, the sign of n decides.
+const signed = r => { const l = String(r.label ?? '').trim();
+  return (/▼|^[-−]/.test(l) ? -1 : /▲|^\+/.test(l) ? 1 : Math.sign(+r.n || 0) || 1) * Math.abs(+r.n || 0); };
 
 function header(d) {
   const chips = (d.chips || []).map((c, i) => `<span class="${i === 0 && d.gold !== false ? 'k0' : ''}">${c}</span>`);
@@ -172,19 +176,32 @@ const CARDS = {
 
   compare(d) {
     // The arrow is red or blue only when the script says the measure rose or fell; other comparisons draw it yellow
-    // (2026-10-16 AM: a fixed blue arrow made the KOFIX '0.25%p 상승' read as a fall). Bars stop at 180px so the arrow
-    // label stays clear of the chart title and its source.
-    const [a, b] = d.bars, max = Math.max(a.n, b.n), BH = 180;
-    const ha = BH * a.n / max, hb = BH * b.n / max;
+    // (2026-10-16 AM: a fixed blue arrow made the KOFIX '0.25%p 상승' read as a fall). Bars stop at 162px so the arrow
+    // label stays clear of the chart title and its source; the arrow ends above the second value's label, never on it
+    // (11/06 AM: its head covered the '6' of '614억6000만').
+    const [a, b] = d.bars, BH = 162;
     const ac = d.arrow_dir === 'up' ? '#FF5C66' : d.arrow_dir === 'dn' ? '#5E9BFF' : '#FFD43B';
     const tiles = d.tiles.map((t, i) => `<div class="ctile" data-in="${(0.5 + i * 0.15).toFixed(2)}">
        <div class="row" style="gap:12px"><span class="lab">${t.label}</span>${src(t.source)}</div>
        <div class="num ${t.dir ? C(t.dir) : ''}" style="font-size:48px;margin-top:8px">${t.dir ? arrow(t.dir) + ' ' : ''}${t.value}</div>
        <div class="note" style="margin-top:6px">${t.sub}</div></div>`).join('');
-    return header(d) + `<div class="paper" style="left:0;top:${TOP}px;width:800px;height:${H}px;padding:20px 36px;display:flex;flex-direction:column;justify-content:center" data-in="0.2">${tiles}</div>
-     <div class="glass fill" style="left:840px;top:${TOP}px;width:888px;height:${H}px;padding:30px 44px" data-in="0.3">
-      <div class="row" style="gap:12px"><span class="lab strong">${d.chart_title}</span>${src(d.chart_source)}</div>
-      <svg width="800" height="320" style="margin-top:48px;overflow:visible">
+    const [va, vb] = [a, b].map(signed);
+    let chart;
+    if (va < 0 || vb < 0) {
+      // A fall is never drawn as a rising bar (11/03, 11/05 AM: '▼4.13%' stood taller than '▲2.22%' under an upward
+      // arrow): with a fall in the pair, both go on one axis, rises to the right in red, falls to the left in blue.
+      const max = Math.max(Math.abs(va), Math.abs(vb)) || 1, half = 200, x0 = 225 + half;
+      chart = `<div style="position:relative;height:320px;margin-top:48px"><div style="position:absolute;left:${x0}px;top:20px;width:1px;height:220px;background:var(--rule2)"></div>`
+        + [[a, va], [b, vb]].map(([r, v], i) => {
+          const y = 40 + i * 110, w = Math.max(4, Math.abs(v) / max * half), neg = v < 0;
+          return `<div style="position:absolute;left:0;top:${y + 4}px;width:${x0 - half - 18}px;text-align:right;font-size:28px;font-weight:700;line-height:1.2">${r.name}</div>`
+            + (v !== 0 ? `<div class="bar" style="top:${y}px;height:64px;${neg ? `left:${x0 - w}px;transform-origin:right` : `left:${x0 + 1}px;transform-origin:left`};width:${w}px;background:${neg ? 'var(--dn)' : 'var(--up)'}" data-bar="${(0.6 + i * 0.3).toFixed(2)}"></div>` : '')
+            + `<div class="num ${v === 0 ? 'muted' : neg ? 'dnn' : 'upn'}" style="position:absolute;top:${y + 8}px;left:${neg || v === 0 ? x0 + 18 : x0 + w + 16}px;font-size:40px;white-space:nowrap" data-in="${(1.1 + i * 0.2).toFixed(2)}">${r.label}</div>`;
+        }).join('')
+        + `<div style="position:absolute;left:0;right:0;top:270px;font-size:26px;font-weight:700;color:${ac}" data-role="arrow-text" data-in="1.8">${d.arrow_text}</div></div>`;
+    } else {
+      const max = Math.max(va, vb) || 1, ha = BH * va / max, hb = BH * vb / max;
+      chart = `<svg width="800" height="320" style="margin-top:48px;overflow:visible">
        <defs><marker id="ahc_${d.id}" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1,1 L10,6 L1,11" fill="none" stroke="${ac}" stroke-width="2.5"/></marker></defs>
        <line x1="60" y1="282" x2="752" y2="282" stroke="#3A4C70" stroke-width="2"/>
        <rect x="151" y="${282 - ha}" width="190" height="${ha}" fill="#8E9AB0" data-vbar="0.6"/>
@@ -193,24 +210,29 @@ const CARDS = {
        <text x="566" y="${282 - hb - 16}" text-anchor="middle" font-size="40" font-weight="700" fill="#FFD43B" data-in="1.3">${b.label}</text>
        <text x="246" y="320" text-anchor="middle" font-size="25" font-weight="500" fill="#AEB7C7">${a.name}</text>
        <text x="566" y="320" text-anchor="middle" font-size="25" font-weight="500" fill="#AEB7C7">${b.name}</text>
-       <path d="M352,${282 - ha - 52} C392,${282 - ha - 82} 432,${282 - ha - 78} 462,${282 - hb - 50}" fill="none" stroke="${ac}" stroke-width="3" marker-end="url(#ahc_${d.id})" data-role="arrow" data-draw="1.5,0.6"/>
-       <text x="407" y="${Math.max(4, Math.min(282 - ha, 282 - hb) - 100)}" text-anchor="middle" font-size="24" font-weight="700" fill="${ac}" data-role="arrow-text" data-in="1.8">${d.arrow_text}</text></svg>
+       <path d="M352,${282 - ha - 72} C392,${282 - ha - 102} 432,${282 - hb - 100} 462,${282 - hb - 72}" fill="none" stroke="${ac}" stroke-width="3" marker-end="url(#ahc_${d.id})" data-role="arrow" data-draw="1.5,0.6"/>
+       <text x="407" y="${Math.max(4, Math.min(282 - ha, 282 - hb) - 118)}" text-anchor="middle" font-size="24" font-weight="700" fill="${ac}" data-role="arrow-text" data-in="1.8">${d.arrow_text}</text></svg>`;
+    }
+    return header(d) + `<div class="paper" style="left:0;top:${TOP}px;width:800px;height:${H}px;padding:20px 36px;display:flex;flex-direction:column;justify-content:center" data-in="0.2">${tiles}</div>
+     <div class="glass fill" style="left:840px;top:${TOP}px;width:888px;height:${H}px;padding:30px 44px" data-in="0.3">
+      <div class="row" style="gap:12px"><span class="lab strong">${d.chart_title}</span>${src(d.chart_source)}</div>
+      ${chart}
       <div style="display:flex;gap:18px;margin-top:22px" data-in="2.0">${d.extra.map(e => `<div data-extra class="xtile"><div class="note">${e[0]}</div><div class="num one" data-fit style="font-size:40px;margin-top:4px">${e[1]}</div></div>`).join('')}</div></div>`;
   },
 
   // Diverging bars (rise red, fall blue) from one axis; optional photo on the left or a small second chart on the right.
   bars(d) {
     const W = d.image ? 1000 : (d.side ? 1020 : 1728), X = d.image ? 728 : 0, n = d.rows.length;
-    const max = Math.max(...d.rows.map(r => Math.abs(r.n))) || 1;
+    const rowsN = d.rows.map(signed), max = Math.max(...rowsN.map(Math.abs)) || 1;
     const nameW = d.name_w || 300, gap = d.gap || Math.min(76, Math.floor(470 / n)), bh = Math.min(44, gap - 22);
     // name column | negative bars | axis | positive bars + value. Negative values sit just right of the axis.
     const half = Math.floor((W - 36 - nameW - 20 - 230) / 2), x0 = 36 + nameW + 20 + half;
     let h = `<div class="lab" style="position:absolute;left:36px;top:28px">${d.unit_note}</div><div style="position:absolute;left:${x0}px;top:80px;width:1px;height:${n * gap + 10}px;background:var(--rule2)"></div>`;
     d.rows.forEach((r, i) => {
-      const y = 90 + i * gap, w = Math.max(4, Math.abs(r.n) / max * half), neg = r.n < 0;
+      const v = rowsN[i], y = 90 + i * gap, w = Math.max(4, Math.abs(v) / max * half), neg = v < 0;
       h += `<div style="position:absolute;left:36px;top:${r.tag ? y - 6 : y + (bh - 34) / 2}px;width:${nameW}px;font-size:28px;font-weight:700;line-height:1.15">${r.name}${r.tag ? `<div class="note" style="font-size:18px;margin-top:2px">${r.tag}</div>` : ''}</div>`;
-      if (r.n !== 0) h += `<div class="bar" style="top:${y}px;height:${bh}px;${neg ? `left:${x0 - w}px;transform-origin:right` : `left:${x0 + 1}px;transform-origin:left`};width:${w}px;background:${neg ? 'var(--dn)' : 'var(--up)'}" data-bar="${(0.4 + i * 0.06).toFixed(2)}"></div>`;
-      h += `<div class="num ${r.n === 0 ? 'muted' : neg ? 'dnc' : 'upc'}" style="position:absolute;top:${y + (bh - 36) / 2}px;left:${neg || r.n === 0 ? x0 + 16 : x0 + w + 14}px;font-size:28px;white-space:nowrap" data-in="${(0.8 + i * 0.06).toFixed(2)}">${r.label}</div>`;
+      if (v !== 0) h += `<div class="bar" style="top:${y}px;height:${bh}px;${neg ? `left:${x0 - w}px;transform-origin:right` : `left:${x0 + 1}px;transform-origin:left`};width:${w}px;background:${neg ? 'var(--dn)' : 'var(--up)'}" data-bar="${(0.4 + i * 0.06).toFixed(2)}"></div>`;
+      h += `<div class="num ${v === 0 ? 'muted' : neg ? 'dnc' : 'upc'}" style="position:absolute;top:${y + (bh - 36) / 2}px;left:${neg || v === 0 ? x0 + 16 : x0 + w + 14}px;font-size:28px;white-space:nowrap" data-in="${(0.8 + i * 0.06).toFixed(2)}">${r.label}</div>`;
     });
     let left = '';
     if (d.image) {
@@ -221,13 +243,17 @@ const CARDS = {
     }
     let side = '';
     if (d.side) {
-      const m = Math.max(...d.side.rows.map(r => Math.abs(r.n))) || 1, hw = 150, c2 = 330;
-      let g = `<div style="position:absolute;left:${c2}px;top:84px;width:1px;height:186px;background:var(--rule2)"></div>`;
-      d.side.rows.forEach((r, i) => {
-        const y = 96 + i * 58, w = Math.abs(r.n) / m * hw, neg = r.n < 0;
-        g += `<div style="position:absolute;left:38px;top:${y + 2}px;font-size:28px;font-weight:700">${r.name}</div>`;
-        g += `<div class="bar" style="top:${y}px;height:38px;${neg ? `left:${c2 - w}px;transform-origin:right` : `left:${c2 + 1}px;transform-origin:left`};width:${w}px;background:${neg ? 'var(--dn)' : 'var(--up)'}" data-bar="${(0.7 + i * 0.06).toFixed(2)}"></div>`;
-        g += `<div class="num ${neg ? 'dnn' : 'upn'}" style="position:absolute;top:${y + 1}px;right:38px;font-size:30px" data-in="${(1.0 + i * 0.06).toFixed(2)}">${r.label}</div>`;
+      // Rows may come as [name, label] pairs, and without n they are a list of values with no bars (11/04 PM, 11/05 PM:
+      // pairs drew 'undefined' on every row).
+      const sr = d.side.rows.map(r => Array.isArray(r) ? { name: r[0], label: r[1], n: r[2] } : r);
+      const bars = sr.some(r => Number.isFinite(+r.n) && r.n !== null && r.n !== '');
+      const sv = sr.map(signed), m = Math.max(...sv.map(Math.abs)) || 1, hw = 150, c2 = 330;
+      let g = bars ? `<div style="position:absolute;left:${c2}px;top:84px;width:1px;height:186px;background:var(--rule2)"></div>` : '';
+      sr.forEach((r, i) => {
+        const y = 96 + i * 58, w = Math.abs(sv[i]) / m * hw, neg = sv[i] < 0;
+        g += `<div style="position:absolute;left:38px;top:${y + 2}px;font-size:28px;font-weight:700">${r.name ?? ''}</div>`;
+        if (bars) g += `<div class="bar" style="top:${y}px;height:38px;${neg ? `left:${c2 - w}px;transform-origin:right` : `left:${c2 + 1}px;transform-origin:left`};width:${w}px;background:${neg ? 'var(--dn)' : 'var(--up)'}" data-bar="${(0.7 + i * 0.06).toFixed(2)}"></div>`;
+        g += `<div class="num ${bars || /[▲▼]/.test(r.label) ? (neg ? 'dnn' : 'upn') : ''}" style="position:absolute;top:${y + 1}px;right:38px;font-size:30px" data-in="${(1.0 + i * 0.06).toFixed(2)}">${r.label ?? ''}</div>`;
       });
       side = `<div class="glass fill" style="left:1060px;top:${TOP}px;width:668px;height:${H}px" data-in="0.3">
         <div class="lab" style="position:absolute;left:38px;top:32px">${d.side.title}</div>${g}

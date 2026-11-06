@@ -34,6 +34,11 @@ function fitText(){
   for(const e of $$('[data-fit-group]',scn))(groups[e.dataset.fitGroup]??=[]).push(e);
   for(const g of Object.values(groups)){const min=Math.min(...g.map(e=>parseFloat(getComputedStyle(e).fontSize)));
    g.forEach(e=>{e.style.fontSize=min.toFixed(1)+'px';});}
+  // Text in a fixed-height row or card shrinks until it stays inside it (11/05 PM, 11/06 AM: a signals row's reading ran
+  // to four lines, out of its row and into the next).
+  for(const row of $$('.sig',scn)) for(const e of $$('.sthen,.sconds',row)){
+   let size=parseFloat(getComputedStyle(e).fontSize);const floor=size*0.78;
+   while(e.offsetHeight>row.clientHeight-12&&size>floor){size*=0.95;e.style.fontSize=size.toFixed(1)+'px';}}
   // A [data-fitbox] region scales its content down until it fits the region's height (10/14 AM: the map panel's text ran
   // over its cost box and down to the captions).
   for(const box of $$('[data-fitbox]',scn)){const inner=box.firstElementChild;let z=1;
@@ -59,6 +64,15 @@ function boot(){
  for(const sc of EP.scenes){const d=document.createElement('div');d.className=sc.brand?'scene full':'scene';d.dataset.t0=sc.t0;d.dataset.t1=sc.t1;d.dataset.ch=sc.chapter;d.dataset.id=sc.id;d.dataset.type=sc.type;
   d.innerHTML=CARDS[sc.type](sc.data,sc);stage.appendChild(d);}
  for(const f of POST) f();
+ tidyText(stage);
+}
+
+/* ---------- line breaks: a ' · ' separator stays at the end of its line, never starts the next one (11/06 AM: '· 8월 이후
+   두 번째 하향' opened a line). Counted values ([data-count]) keep their text. ---------- */
+function tidyText(root){
+ const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const nodes=[];let n;
+ while((n=w.nextNode())) if(n.textContent.includes('·')&&!n.parentElement.closest('[data-count],svg')) nodes.push(n);
+ for(const t of nodes) t.textContent=t.textContent.replace(/[ \u00a0]+·[ \u00a0]+/g,'\u00a0· ').replace(/(\S)·/g,'$1\u2060·');
 }
 
 // The ticker repeats its items until one loop plus the screen width is covered, so it never shows a gap.
