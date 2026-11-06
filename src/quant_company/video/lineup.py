@@ -4,7 +4,7 @@
 The briefing's numbered issues ('*1. 제목* · 기간' in its 주요 이슈 section) are the lineup, in their own order. An
 episode scene in an issue chapter covers an issue when it cites any of that issue's lines, the heading line included;
 the chapter of its first covering scene that is about it sets how deep the Shorts goes (핵심 이슈: what happened, why,
-what it means; 함께 볼 이슈: one number and one line). Nothing here is a render input: video/remote.py and its imports never import it."""
+what it means; 함께 볼 이슈: one number and one line). The Shorts cut imports it, so it is a render input of the task."""
 
 import html
 import re
@@ -23,6 +23,7 @@ class LineupIssue(NamedTuple):
     claim_ids: tuple[str, ...]
     scene_ids: tuple[str, ...]
     tier: str
+    about: tuple[str, ...] = ()  # the scenes of scene_ids about this issue (they come first): its pictures' scenes
 
 
 def briefing_issues(source):
@@ -68,7 +69,8 @@ def lineup(source, episode):
         tier = 'brief'
         if covering and covering[0]['chapter'] == ISSUE_CHAPTERS[0] and core < CORE_MAX:
             tier, core = 'core', core + 1
-        found.append(LineupIssue(number, title, ids, tuple(s['id'] for s in covering), tier))
+        found.append(LineupIssue(number, title, ids, tuple(s['id'] for s in covering), tier,
+                                 tuple(s['id'] for s in covering if about[s['id']] == number)))
     return found
 
 
