@@ -13,10 +13,11 @@ from pydantic import ValidationError
 
 from ..company import PolicyError
 from ..contracts import ProviderAttachment, ProviderFault, ProviderRequest
-from ..providers.claude_runner import ClaudeRequest
+from ..providers.claude_runner import CLAUDE_ONLY, ClaudeRequest
 from ..providers.client import RuntimeClient
 from . import shorts_review
 from . import store as store_module
+from . import thumbnail as thumbs
 from .contracts import (
     VideoReview,
     VisualReview,
@@ -389,6 +390,80 @@ class VideoRunner:
             await asyncio.to_thread(self.store.save, job, 'synthesizing')
         return True
 
+    async def design_thumbnail(self, job, plan):
+        """The episode's own thumbnail (owner, 2026-11-06; video/thumbnail.py), one model turn per tick: a design is
+        checked and drawn on this host, then looked at beside the latest thumbnails, and a finding gets another design.
+        After the last design the one with the fewest findings goes out with them; none drawn keeps the template's.
+        True while that work remains."""
+        qa = dict(job.get('qa') or {})
+        state = dict(qa.get('thumbnail') or {})
+        if 'final' in state:
+            return False
+        attempts = [dict(a) for a in state.get('attempts', [])]
+        folder = self.settings.video_artifact_dir / str(job['id']) / 'thumbnail'
+        if 'recent' not in state:  # frozen once, so every turn and re-ask shows the same thumbnails
+            state['recent'] = await asyncio.to_thread(self.store.recent_thumbnail_files, job)
+        current = attempts[-1] if attempts and not attempts[-1].get('done') else None
+        if current is None and len(attempts) >= thumbs.DESIGNS:
+            state['final'] = thumbs.best(attempts)
+        elif current is None:
+            number = len(attempts) + 1
+            attempt = {'key': attempt_key('thumb', number)}
+            try:
+                offered = await asyncio.to_thread(self.thumbnail_pictures, job, plan)
+                prompt, attachments = await asyncio.to_thread(thumbs.design_request, job, plan, offered, state['recent'],
+                                                              attempts[-1] if attempts else None)
+            except Exception as error:  # noqa: BLE001 - an unreadable picture: this design is lost, not the episode
+                offered, prompt, attachments = [], None, []
+                attempt['problems'] = [f'pictures unreadable: {type(error).__name__}: {error}'[:200]]
+            if prompt is not None:
+                try:
+                    design = await self.model(job, attempt['key'], prompt, thumbs.ThumbnailDesign, thumbs.CONTRACT,
+                                              attachments)
+                except ModelRejected as rejected:
+                    attempt['problems'] = [f'design unavailable: {rejected.code}']
+                else:
+                    texts, problems = thumbs.markup(design, offered)
+                    attempt.update(design=design.model_dump(mode='json'), texts=texts, problems=problems)
+                    if not problems:  # a page the checks refused is never drawn
+                        folder.mkdir(parents=True, exist_ok=True)
+                        try:
+                            drawn = await asyncio.to_thread(self.draw_thumbnail, design, offered, folder, str(number))
+                        except Exception as error:  # noqa: BLE001 - Chromium failed: another design, then the template
+                            attempt['problems'] = [f'drawing failed: {type(error).__name__}'[:200]]
+                        else:
+                            attempt.update(file=drawn['file'], sha256=drawn['sha256'], texts=drawn['texts'],
+                                           problems=thumbs.fact_problems(drawn['texts'], job['source']) + drawn['problems'])
+            # Only a drawn design without findings is looked at; any other is followed by the next design.
+            attempt['done'] = bool(attempt.get('problems')) or not attempt.get('file')
+            attempts.append(attempt)
+        else:
+            key = attempt_key('visual-thumb', len(attempts))
+            try:
+                prompt, attachments = await asyncio.to_thread(thumbs.check_request, job, plan, current, state['recent'])
+                look = await self.model(job, key, prompt, VisualReview, 'video_visual_review_v1', attachments)
+                current['issues'] = [f'{i.detail} → {i.fix}' for i in look.issues]
+                passed = look.passed and not look.issues
+            except ModelRejected as rejected:
+                # Production never waits on the look: a design every check passed goes out, the missing look noted.
+                current['issues'], passed = [f'look unavailable: {rejected.code}'], True
+            except OSError as error:  # the drawn file cannot be shown: no look, so another design
+                current['issues'], passed = [f'look unavailable: {type(error).__name__}'], False
+            current['done'] = True
+            if passed:
+                state['final'] = thumbs.final(current)
+        state['attempts'] = attempts
+        qa['thumbnail'] = state
+        await asyncio.to_thread(self.store.update_qa, job, qa)
+        await asyncio.to_thread(self.store.save, job, 'synthesizing')  # releases the lease for the next tick
+        return True
+
+    def thumbnail_pictures(self, job, plan):
+        return thumbs.pictures(job, plan, self.settings, MotionRenderer(self.settings).library)
+
+    def draw_thumbnail(self, design, offered, folder, name):
+        return thumbs.draw(design, offered, folder, name)
+
     def renderer_for(self, job):
         if self._renderer is not None:
             return self._renderer
@@ -441,9 +516,11 @@ class VideoRunner:
         # Reviews may think longer than writing; jobs frozen before the split use their single effort for both.
         effort = effort or (policy.get("review_effort", policy.get("effort", "high")) if phase in REVIEW_PHASES
                             else policy.get("effort", "high"))
-        request = ProviderRequest(request_id=f"video-{job['id']}-{key}", model=policy["model"],
-                                  reasoning_effort=effort, prompt=prompt,
-                                  output_contract=contract or f"video_{phase}_v1", attachments=list(attachments))
+        contract = contract or f"video_{phase}_v1"
+        # A contract only claude-runtime serves (the designed thumbnail) is asked as its ClaudeRequest.
+        request = (ClaudeRequest if contract in CLAUDE_ONLY else ProviderRequest)(
+            request_id=f"video-{job['id']}-{key}", model=policy["model"], reasoning_effort=effort, prompt=prompt,
+            output_contract=contract, attachments=list(attachments))
         provider = self.early_provider if api_only else self.provider
         if api_only or await asyncio.to_thread(self.asked_api_only, job, key, request):
             request = ClaudeRequest.model_validate(request.model_dump() | {'api_only': True})
@@ -911,17 +988,21 @@ class VideoRunner:
                 qa['illustrations_offered'] = bool(self.settings.video_image_runtime_url)
                 if 'recent_thumbnails' not in qa:  # frozen once, so every attempt and re-ask sends the same list
                     qa['recent_thumbnails'] = await asyncio.to_thread(self.store.thumbnail_history, job)
+                if 'recent_hooks' not in qa and (job['policy'].get('craft') or 0) >= 3:  # frozen once, likewise
+                    qa['recent_hooks'] = await asyncio.to_thread(self.store.recent_hooks, job)
                 await asyncio.to_thread(self.store.update_qa, job, qa)
             illustrations = qa.get('illustrations_offered', False)
             # shorts lessons belong to the cut (shorts_step): left out, an older job's prompt stays byte-identical.
             lessons = [x for x in job['policy'].get('lessons', ()) if x.get('scope') != 'shorts']
             recent = qa.get('recent_thumbnails') or []
             previous = await asyncio.to_thread(self.last_version, job, attempts)
+            hooks = qa.get('recent_hooks') or ()
             prompt = with_craft(episode_prompt(job['source'], feedback, library, illustrations=illustrations,
-                                               lessons=lessons, previous=previous, recent_thumbnails=recent), job['policy'])
+                                               lessons=lessons, previous=previous, recent_thumbnails=recent),
+                                job['policy'], hooks)
             if len(prompt) > PROMPT_LIMIT:
                 prompt = with_craft(episode_prompt(job['source'], feedback, library, illustrations=illustrations,
-                                                   lessons=lessons, recent_thumbnails=recent), job['policy'])
+                                                   lessons=lessons, recent_thumbnails=recent), job['policy'], hooks)
             contract = 'video_episode_v1'
         else:
             prompt, contract = production_prompt(job['source'], feedback), None
@@ -967,7 +1048,8 @@ class VideoRunner:
         key = attempt_key('review', len(rounds) + 1)
         plan = plan_class(job).model_validate(job['plan'])
         try:
-            review = await self.model(job, key, review_prompt(job['source'], plan) + craft_review(job['policy'], plan), VideoReview)
+            review = await self.model(job, key, review_prompt(job['source'], plan)
+                                      + craft_review(job['policy'], plan, qa.get('recent_hooks') or ()), VideoReview)
             concerns = list(review.concerns) + [f'{name} check failed' for name in REVIEW_CHECKS if not getattr(review, name)]
         except ModelRejected as rejected:
             lost = sum(r.get('outcome') in RUNTIME_OUTCOMES for r in rounds)
@@ -1205,6 +1287,9 @@ class VideoRunner:
         directory = verify_artifacts(artifacts, self.settings.video_artifact_dir)
         review = artifacts.get('review') or {'frames': [], 'audio': {}}
         frames = [f for f in review['frames'] if (directory / f['file']).is_file()]
+        if artifacts.get('thumbnail'):
+            # The designed thumbnail was looked at when it was made (design_thumbnail); the screen fix cannot redraw it.
+            frames = [f for f in frames if f['scene'] != 'thumbnail']
         plan = plan_class(job).model_validate(job['plan'])
         key = attempt_key('visual', len(rounds) + 1)
         issues, visual = [], None
@@ -1249,7 +1334,8 @@ class VideoRunner:
                                         plan=fixed.model_dump(mode='json'), qa=qa)
                 return
         qa['inspection_findings'] = list(qa.get('render_findings', [])) + [f"{i['scene']}: {i['detail']}" for i in issues] + (
-            [f'{scene}: speech-to-text mismatch' for scene in heard] if visual is None else [])
+            [f'{scene}: speech-to-text mismatch' for scene in heard] if visual is None else []) + list(
+            ((qa.get('thumbnail') or {}).get('final') or {}).get('findings', []))
         await asyncio.to_thread(self.store.update_qa, job, qa)
         job = {**job, 'qa': qa}
         if job['policy'].get('delivery', 'youtube') == 'slack':
@@ -1268,6 +1354,9 @@ class VideoRunner:
             plan = plan_class(job).model_validate(job["plan"])
             if (template(job) == 'motion-v2' and getattr(plan, 'illustrations', None)
                     and self.settings.video_image_runtime_url and await self.illustrate(job, plan)):
+                return
+            if (template(job) == 'motion-v2' and job['policy'].get('thumbnail')
+                    and await self.design_thumbnail(job, plan)):
                 return
             # Account lookup does not spend credits. Check the entire expected episode before submission.
             # Runway unavailable or logged out stops here with an alert; there is no paid API fallback.
@@ -1324,6 +1413,9 @@ class VideoRunner:
                     await asyncio.to_thread(self.store.wait, job, 120, 'render_in_progress')
                     return
                 library = getattr(renderer, 'library', None) or {}
+            if job['policy'].get('thumbnail'):
+                chosen = ((job.get('qa') or {}).get('thumbnail') or {}).get('final')
+                artifacts = await asyncio.to_thread(thumbs.install, artifacts, chosen)
             await asyncio.to_thread(self.store.record_assets, job, plan, library)
             await asyncio.to_thread(self.store.save, job, 'inspecting', artifacts=artifacts,
                                     artifact_digest=artifacts['digest'], qa=qa)

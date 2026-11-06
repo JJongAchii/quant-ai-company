@@ -24,6 +24,7 @@ def test_video_profile_defaults_off_and_isolates_media_credentials():
     assert '/state/media-auth' in mounts and '/state/video' in mounts and '/state/video-assets' in mounts
     assert next(m for m in media['volumes'] if m['target'] == '/state/video-assets')['read_only']
     assert media['environment']['VIDEO_TEMPLATE'] == 'motion-v2'
+    assert media['environment']['VIDEO_THUMBNAIL_DESIGN'] == 'true'  # owner, 2026-11-06: designed per episode
     assert not any('slack' in str(s) or 'lake' in str(s) for s in media['secrets'])
     assert media['read_only'] and media['pids_limit'] == 256
     for name, service in services.items():

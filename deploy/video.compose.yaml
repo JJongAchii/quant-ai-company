@@ -22,6 +22,9 @@ x-video-env: &video-env
   VIDEO_CREDENTIALS_DIR: /state/media-auth
   VIDEO_ALIGNMENT_MODEL: ${VIDEO_ALIGNMENT_MODEL:-small}
   VIDEO_TEMPLATE: ${VIDEO_TEMPLATE:-motion-v2}
+  # Owner, 2026-11-06: each episode's thumbnail is designed for that day's market (video/thumbnail.py); false keeps
+  # the template thumbnail for new jobs.
+  VIDEO_THUMBNAIL_DESIGN: ${VIDEO_THUMBNAIL_DESIGN:-true}
   VIDEO_ASSET_DIR: /state/video-assets
   VIDEO_RENDER_WORKERS: ${VIDEO_RENDER_WORKERS:-1}
   VIDEO_AM_PUBLISH_DST: ${VIDEO_AM_PUBLISH_DST:-07:00}
