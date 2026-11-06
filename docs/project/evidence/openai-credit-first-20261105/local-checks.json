@@ -1,0 +1,44 @@
+{
+  "recorded_at": "2026-11-05T02:19:57.490493+00:00",
+  "base_commit": "e51206e155d8faf31c4c5ebdf871a619a844dbdd",
+  "test_command": ".venv/bin/pytest -q tests/test_openai_credits.py tests/test_codex_runtime.py tests/test_codex_config_probe.py tests/test_accounts.py tests/test_ops.py tests/test_ops_probe.py deploy/test_deployment_contract.py",
+  "result": {
+    "passed": 283,
+    "skipped": 3,
+    "duration_seconds": 74.19
+  },
+  "checks": {
+    "ruff_check_repository": "passed",
+    "git_diff_check": "passed"
+  },
+  "environment": {
+    "postgresql": "real disposable PostgreSQL 14, separate local cluster",
+    "compose": "real Docker Compose CLI v5.3.1 config validation",
+    "responses_api": "httpx.MockTransport; no real or paid API call",
+    "codex": "real subprocess with synthetic Codex executable; no real model inference",
+    "skips": "3 explicitly opt-in real-Codex configuration probes"
+  },
+  "deployment": {
+    "production_changed": false,
+    "default_enabled": false,
+    "activation_pending": [
+      "reviewed PR merged to CI-green main",
+      "actual free remaining allowance and expiry",
+      "free-only organization billing confirmation",
+      "operator-owned API key and grant files"
+    ]
+  },
+  "source_sha256": {
+    "src/quant_company/providers/openai_credits.py": "af495273c70d9de09243e6376219845852e34d5cb1b4f9506dcffa897dd71001",
+    "src/quant_company/providers/codex_runner.py": "cfba6f87ae185531c1a613ef4c9bde3d4c24d85e5b24e1cf0dfdad24a849fdb9",
+    "src/quant_company/providers/codex_runtime.py": "fa1f27525fd57e635813af0d62c915db97f0660a72e350c02c0b8e2ec706e38f",
+    "src/quant_company/ops/status.py": "73e99b72aa17ec31f1cd7ccc221c53d49a96da25931d12ad4c142d858fe2ce20",
+    "deploy/openai-credits.compose.yaml": "733c24ec056708a636313e4a6fe8f6b77dcc1dd27a17edff6b45494a0a06c346",
+    "deploy/release.json": "383e7d4828b0503b60344ec73fdf068b02e782e9842397da46b20b57acf4d55b",
+    "deploy/ops_probe.py": "46cab66ad40c7f46bd0fbe02027cd17cebfea28bed74c14ed73aa498658485bf",
+    "tests/test_openai_credits.py": "67179e2dbc6eda040af23b76ad663541b9ee0404f7fe12b754eca07a682a450c",
+    "tests/test_ops.py": "3e1c12ade01498e28f26ec357a023c17e96c45018706d28321893deea742cc0b",
+    "tests/test_ops_probe.py": "3baa0aa946a8cba5928a1e3c2e07365c0bbb8cd279d67d59ff46f51c1db3883a",
+    "deploy/test_deployment_contract.py": "0e9706a8faf5e710453be5c66861adcce8dbc0909f127520ccef1bcf4c5ef096"
+  }
+}

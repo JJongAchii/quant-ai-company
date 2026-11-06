@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "budget_id": "owner-monthly-api-120",
+  "monthly_cap_usd": 120,
+  "api_spend_authorized": true
+}

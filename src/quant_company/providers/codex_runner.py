@@ -213,6 +213,9 @@ class RunnerConfig:
     max_stdout_bytes: int = MAX_STDOUT_BYTES
     max_stderr_bytes: int = MAX_STDERR_BYTES
     backup_codex_home: Path | None = None
+    api_enabled: bool = False
+    api_key_file: Path | None = None
+    api_grant_file: Path | None = None
 
     def __post_init__(self) -> None:
         if not math.isfinite(self.timeout_seconds) or not 0 < self.timeout_seconds <= 3600:
@@ -529,11 +532,16 @@ def parse_result(request: ProviderRequest, process: ProcessResult, quota_retry_s
 
 class CodexRunner:
     def __init__(self, config: RunnerConfig, *, process_runner: ProcessRunner | None = None,
-                 environment: Mapping[str, str] | None = None):
+                 environment: Mapping[str, str] | None = None, api_transport=None, api_clock=time.time):
         self.config = config
         self.process = process_runner or ProcessRunner()
         self.environment = dict(os.environ if environment is None else environment)
         self._active: dict[str, asyncio.Task] = {}
+        from .openai_credits import OpenAICreditLane
+
+        self.api_lane = (OpenAICreditLane(config.jobs_dir / "openai-api", config.api_grant_file,
+                                         config.api_key_file, transport=api_transport, clock=api_clock)
+                         if config.api_enabled else None)
 
     def _timeout_seconds(self, request):
         from quant_company.briefing.execution import timeout_seconds
@@ -559,6 +567,10 @@ class CodexRunner:
                 if result.request_id != request_id:
                     raise ValueError("Mismatched result")
                 return result
+            if receipt["state"] == "api_refused":
+                if receipt.get("backend") != "responses_api" or receipt.get("not_executed") is not True:
+                    raise ValueError("Unverified API refusal")
+                return None
             if receipt["state"] == "deferred":
                 previous = receipt.get("account", {"profile": "primary", "revision": 0})
                 if (previous["profile"] not in {"primary", "backup"} or type(previous["revision"]) is not int
@@ -686,6 +698,11 @@ class CodexRunner:
             if cached is not None:
                 return cached
             self._active[request.request_id] = asyncio.current_task()
+            if self.api_lane is not None:
+                result = await self.api_lane.run(request, receipt_path, digest, profile, revision,
+                                                 self._timeout_seconds(request))
+                if result is not None:
+                    return result
             config = self.account_config(profile)
             env = safe_environment(config, self.environment)
             if not config.codex_home.is_dir():
@@ -743,6 +760,9 @@ class CodexRunner:
 
                         receipt["session_usage"] = dict(result.usage)
                         result = result.model_copy(update={"usage": turn_usage(result.usage, session["usage"])})
+                    if self.api_lane is not None:
+                        result = result.model_copy(update={"usage": {**result.usage,
+                            "backend": "codex_cli", "billing_mode": "subscription"}})
                     atomic_json(receipt_path, {**receipt, "state": "complete", "completed_at": time.time(),
                                                "result": result.model_dump(mode="json")})
                     if session is not None:
@@ -795,7 +815,8 @@ class CodexRunner:
                     return "uncertain"
                 if receipt.get("state") == "complete":
                     return "completed"
-                if receipt.get("state") == "running":
+                if (receipt.get("state") == "running"
+                        or receipt.get("state") == "failed" and receipt.get("backend") == "responses_api"):
                     return "uncertain"
             except (ValueError, TypeError, AttributeError):
                 return "uncertain"

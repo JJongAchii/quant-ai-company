@@ -9,7 +9,8 @@
     "trend-feed.compose.yaml",
     "video.compose.yaml",
     "video-render.compose.yaml",
-    "video-image.compose.yaml"
+    "video-image.compose.yaml",
+    "openai-credits.compose.yaml"
   ],
   "build": ["api", "maintenance", "worker", "codex-runtime", "claude-runtime", "video-worker"],
   "groups": [

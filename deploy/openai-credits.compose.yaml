@@ -1,0 +1,17 @@
+# Shared, owner-authorized API budget. Both runtimes use the same durable jobs ledger.
+# The operator supplies key + grant only when activating (docs/runbooks/openai-credits.md).
+services:
+  codex-runtime:
+    environment:
+      OPENAI_API_ENABLED: ${OPENAI_API_ENABLED:-false}
+      OPENAI_API_KEY_FILE: /etc/quant-company/openai-credits/api_key
+      OPENAI_API_GRANT_FILE: /etc/quant-company/openai-credits/grant.json
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/openai-credits:/etc/quant-company/openai-credits:ro
+  quant-codex-runtime:
+    environment:
+      OPENAI_API_ENABLED: ${OPENAI_API_ENABLED:-false}
+      OPENAI_API_KEY_FILE: /etc/quant-company/openai-credits/api_key
+      OPENAI_API_GRANT_FILE: /etc/quant-company/openai-credits/grant.json
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/openai-credits:/etc/quant-company/openai-credits:ro
