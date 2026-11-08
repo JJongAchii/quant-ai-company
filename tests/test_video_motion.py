@@ -795,7 +795,7 @@ async def test_a_new_job_carries_the_owner_craft_rules_in_its_script_and_review_
     provider = InspectingProvider(visual=[VisualReview(passed=True, issues=[])])
     job, _speech = await produce_inspected(store, tmp_path, monkeypatch, provider, InspectedRenderer(), brief)
     assert job['state'] == 'delivering', job['error']
-    assert job['policy']['craft'] == CRAFT_VERSION == 3
+    assert job['policy']['craft'] == CRAFT_VERSION == 4
     script = next(c for c in provider.calls if c.output_contract == 'video_episode_v1').prompt
     rules, data = script.rsplit('\n', 1)
     # Version 3 (owner, 11/06) ends with the recent hooks it must not echo; the data stays the last line.
@@ -806,10 +806,14 @@ async def test_a_new_job_carries_the_owner_craft_rules_in_its_script_and_review_
     review = next(c for c in provider.calls if c.output_contract == 'video_review_v1').prompt
     plan = episode()  # the lengths are measured by the service, not counted by the reviewer
     assert f'the title hook is {len(plan.upload.title)} characters, the thumbnail text {len(plan.thumbnail)})' in review
-    assert review.endswith('or repeats the opening, the ending or the shape of a recent hook: none.')
-    # Jobs frozen with versions 1 and 2 keep their text after the change.
-    head = rules[:-len(VERSIONS[3][0] + recent_block([])) - 1]
+    assert 'or repeats the opening, the ending or the shape of a recent hook: none.' in review
+    # Version 4 (owner, 11/09): plain words, one point, no comma-joined stories, no date on the thumbnail.
+    assert review.endswith('carries a date or weekday or only recaps figures.')
+    assert "Never join two stories with a comma" in VERSIONS[4][0] and VERSIONS[4][0].startswith(VERSIONS[3][0])
+    # Jobs frozen with versions 1 to 3 keep their text after the change.
+    head = rules[:-len(VERSIONS[CRAFT_VERSION][0] + recent_block([])) - 1]
     plain = head + '\n' + data
+    assert with_craft(plain, {'craft': 3}) == head + '\n' + VERSIONS[3][0] + recent_block([]) + '\n' + data
     assert with_craft(plain, {'craft': 2}) == head + '\n' + CRAFT_GUIDE + OUTLOOK + '\n' + data
     assert with_craft(plain, {'craft': 1}) == head + '\n' + CRAFT_GUIDE + '\n' + data
 

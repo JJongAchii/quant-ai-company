@@ -6,7 +6,7 @@ They live outside episode.py and contracts.py, which the Fargate render image im
 render image. A job freezes the version it was created with (VideoStore.enqueue, policy['craft']) and keeps that
 version's text; a job without one keeps its prompts exactly as before, so a still-running turn is asked again with the
 identical request. Version 3 (owner, 2026-11-06) replaces the title rule and leaves the thumbnail to a per-episode
-design (video/thumbnail.py)."""
+design (video/thumbnail.py); version 4 (owner, 2026-11-09) adds plain words for the title and the thumbnail text."""
 
 import json
 
@@ -88,11 +88,27 @@ TITLE_V3_REVIEW = (
     "day's main issue, or repeats the opening, the ending or the shape of a recent hook: {recent}.")
 HEADER, RULES = CRAFT_GUIDE.split('1. Title hook:', 1)
 CRAFT_V3 = (HEADER + TITLE_V3 + RULES[RULES.index('2. Thumbnail text:'):] + OUTLOOK + THUMBNAIL_V3)
-CRAFT_VERSION = 3
+
+# Version 4 (owner, 2026-11-09, on the 11/06 and 11/07 episodes: "제목과 문구도 이상해 … 유튜브 시청자들이 우리 영상을
+# 보고 싶게끔"): the hooks joined two stories with a comma or led with jargon ('규제는 아직, SK하이닉스는 10.76% 급락',
+# '메타 잉여현금흐름 마이너스, 반도체 반등의 한계'). Version 3 stays as it is, plus this rule.
+PLAIN_WORDS = (
+    "\n9. Plain words (owner, 2026-11-09: \"제목과 문구도 이상해 … 시청자들이 우리 영상을 보고 싶게끔\"): the title hook and "
+    "the thumbnail text are in everyday Korean a casual investor gets at a glance, about one subject and one point. Never "
+    "join two stories with a comma (in the spirit of what to avoid: '규제는 아직, SK하이닉스는 10.76% 급락'). No jargon "
+    "(잉여현금흐름, 경상수지, 담보비율 …) unless the day's story is that word, then say what it means. The thumbnail text "
+    "carries no date or weekday and is not a recap of figures: it names what is at stake for the viewer or the question "
+    "the video answers.")
+PLAIN_WORDS_REVIEW = (
+    " Under the owner's 2026-11-09 rule, also add a concern, with a better version built from the lines, when the title "
+    "hook or the thumbnail text joins two stories with a comma, uses jargon a casual viewer would not get, or the "
+    "thumbnail text carries a date or weekday or only recaps figures.")
+CRAFT_VERSION = 4
 
 # Each version's text stays here, so a job keeps the rules it was created with after a later version.
 VERSIONS = {1: (CRAFT_GUIDE, CRAFT_REVIEW), 2: (CRAFT_GUIDE + OUTLOOK, CRAFT_REVIEW + OUTLOOK_REVIEW),
-            3: (CRAFT_V3, CRAFT_REVIEW + OUTLOOK_REVIEW + TITLE_V3_REVIEW)}
+            3: (CRAFT_V3, CRAFT_REVIEW + OUTLOOK_REVIEW + TITLE_V3_REVIEW),
+            4: (CRAFT_V3 + PLAIN_WORDS, CRAFT_REVIEW + OUTLOOK_REVIEW + TITLE_V3_REVIEW + PLAIN_WORDS_REVIEW)}
 
 
 def recent_block(recent):

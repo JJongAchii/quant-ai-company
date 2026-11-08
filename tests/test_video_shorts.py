@@ -529,6 +529,7 @@ def test_a_vertical_cut_renders_inside_the_shorts_safe_area(tmp_path):
     assert pictures['semis']['credit'] == '' and not any('without a picture' in f for f in manifest['findings'])
     upload = (tmp_path / 'out' / 'shorts-upload.txt').read_text()
     assert plan.title in upload and '#Shorts' in upload and '관련 동영상' in upload and '|' not in upload.split('\n')[1]
+    assert '[태그]\n반도체, S&P 500, 나스닥 종합' in upload  # the episode's tags (owner, 2026-11-09)
     srt = (tmp_path / 'out' / 'shorts.srt').read_text()
     assert '9월 22일 아침 브리핑입니다.' in srt and '오늘 이슈는 한 가지입니다.' in srt and '정리하면' in srt
     assert '자세한 분석은 본편에서' in srt and '프로필 링크에서 신청하세요.' in srt  # the end screen (owner, 10/21, 10/27)
@@ -1916,3 +1917,20 @@ async def test_a_step_clears_the_reason_of_the_last_wait(brief, video, tmp_path,
         conn.execute('UPDATE video_shorts SET lease_until=NULL WHERE job_id=%s', (job['id'],))
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=1)
     assert row['state'] == 'reviewing' and row['error'] is None
+
+
+def test_the_shorts_upload_copy_carries_the_episodes_tags():
+    # Owner, 2026-11-09: the Shorts upload copy gives the same tags as its episode's, ready to paste.
+    from quant_company.video.shorts import upload_text
+    from quant_company.video.upload import FIXED_TAGS
+
+    from .test_video_motion import episode
+
+    delivered = episode().model_dump(mode='json')
+    text = upload_text(shorts(), {'source': {'day': '2026-09-22', 'edition_kind': 'am'}}, [], delivered)
+    tags = list(dict.fromkeys(delivered['upload']['tags'])) + list(FIXED_TAGS)
+    assert f"[태그]\n{', '.join(tags)}\n" in text  # the episode's upload.txt line (motion.py)
+    assert text.index('[설명]') < text.index('[태그]') < text.index('[고정 댓글]')
+    # An episode without upload copy (a facts edition) leaves the section out.
+    assert '[태그]' not in upload_text(shorts(), {'source': {'day': '2026-09-22', 'edition_kind': 'am'}}, [],
+                                      {k: v for k, v in delivered.items() if k != 'upload'})
