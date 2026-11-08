@@ -38,6 +38,8 @@ def test_visual_prompt_lists_the_frames_and_keeps_the_owner_rules():
                            {'semis': 'heard 1.92 as 192'})
     assert '1=opener, 2=semis' in prompt.replace('image ', '') and OWNER_DESIGN_RULES in prompt
     assert 'heard 1.92 as 192' in prompt and 'audio_text' in prompt and 'top ~220 px' in prompt
+    # An issue without a picture of its own shows the plain background by design (owner, 2026-11-06).
+    assert "an issue scene on the plain blue background has no picture of its own" in prompt
 
 
 def test_fix_prompt_lists_the_screen_issues():

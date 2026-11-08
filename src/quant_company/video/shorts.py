@@ -158,15 +158,15 @@ def asset_ids(value):
 
 
 def cut_pictures(job, episode, plan, settings, library, issues):
-    """{'hook', 'issues', 'nearby', 'cover'}: {'path', 'credit'} or None per picture, resolved as the episode's own render
-    does (this episode's pictures first, then the reviewed library). An issue shows the first picture of the episode
-    scenes that covered it (issues: its lineup); 'nearby' lists, per issue, the pictures of the other scenes in their
-    chapter, nearest first, for an issue without its own (spec: the same chapter's other picture before the
-    thumbnail's). An issue the episode did not cover has neither. The hook and the blurred cover show the episode's
-    thumbnail picture, else the first issue picture, else the first picture any scene of the episode shows."""
+    """{'hook', 'issues', 'cover'}: the hook and the cover {'path', 'credit'} or None, resolved as the episode's own
+    render does (this episode's pictures first, then the reviewed library); 'issues' lists, per issue, the pictures of
+    the episode scenes about it (issues: its lineup), in episode order, each once. A scene that cites the issue but is
+    about another lends it none, and nothing else stands in: the cut has only two chapters, so 'the same chapter's
+    picture' was another issue's (owner, 2026-11-06: the plain background instead). The hook and the blurred cover
+    show the episode's thumbnail picture, else the first issue picture, else the first picture any scene shows."""
     made = library_entries(job, plan_class(job).model_validate(episode), settings, library)
     scenes = episode['scenes']
-    by_id, order = {s['id']: s for s in scenes}, {s['id']: n for n, s in enumerate(scenes)}
+    by_id = {s['id']: s for s in scenes}
 
     def picture(asset_id):
         asset = made.get(asset_id) or library.get(asset_id)
@@ -178,22 +178,17 @@ def cut_pictures(job, episode, plan, settings, library, issues):
         credit = f"자료사진 · {credit_author(asset.get('author'))} · {asset.get('license', '')}" if asset.get('kind') == '자료사진' else ''
         return {'path': str(path), 'credit': credit}
 
-    covered = {i.number: i.scene_ids for i in issues}
-
-    def nearby(issue):
-        cited = [order[sid] for sid in covered.get(issue.issue, ()) if sid in order]
-        chapters = {scenes[n].get('chapter') for n in cited}
-        others = sorted((n for n, s in enumerate(scenes) if s.get('chapter') in chapters and n not in cited),
-                        key=lambda n: (min(abs(n - c) for c in cited), n))
-        return [p for n in others for p in [picture(next(asset_ids(scenes[n].get('data')), None))] if p]
-
+    about = {i.number: i.about for i in issues}
     issues = []
     for issue in plan.issues:
-        ids = (a for sid in covered.get(issue.issue, ()) for a in asset_ids((by_id.get(sid) or {}).get('data')))
-        issues.append(picture(next(ids, None)))
-    hook = (picture(episode.get('thumbnail_image')) or next((p for p in issues if p), None)
+        own = {}
+        for asset_id in (a for sid in about.get(issue.issue, ()) for a in asset_ids((by_id.get(sid) or {}).get('data'))):
+            if found := picture(asset_id):
+                own.setdefault(found['path'], found)
+        issues.append(list(own.values()))
+    hook = (picture(episode.get('thumbnail_image')) or next((p for own in issues for p in own), None)
             or next((p for s in scenes for p in [picture(next(asset_ids(s.get('data')), None))] if p), None))
-    return {'hook': hook, 'issues': issues, 'nearby': [nearby(i) for i in plan.issues], 'cover': hook}
+    return {'hook': hook, 'issues': issues, 'cover': hook}
 
 
 def issue_scenes(episode):
@@ -689,30 +684,28 @@ class ShortsRenderer:
 
     def _pictures(self, job, plan, episode, scenes, page, issues):
         """bg, blur and credit per scene, each picture copied once into page/img: the opener shows the episode's picture
-        sharp, each issue its own; an issue without one shows, blurred, a picture of another scene in its chapter (one
-        the scene before it does not show, if there is one), else the cover. The agenda and the outro show the cover
-        blurred. The credit is the shown picture's own."""
+        sharp, each issue the first of its own that no earlier issue shows, else the plain background, which is the
+        design and no finding (owner, 2026-11-06: never another issue's picture, never one behind two issues). The
+        agenda and the outro show the cover blurred. The credit is the shown picture's own."""
         found = cut_pictures(job, episode, plan, self.settings, self.library, issues)
 
         def usable(picture):
             return picture if picture and Path(picture['path']).is_file() else None
 
         cover = usable(found['cover'])
-        chosen = [(usable(found['hook']) or cover, False), (cover, True)]
-        for own, nearby in zip(found['issues'], found['nearby'], strict=True):
-            if usable(own):
-                chosen.append((own, False))
-                continue
-            before = (chosen[-1][0] or {}).get('path')
-            near = [p for p in map(usable, nearby) if p]
-            fresh = [p for p in near if p['path'] != before]
-            chosen.append(((fresh or near or [cover])[0], True))
+        chosen, shown = [(usable(found['hook']) or cover, False), (cover, True)], set()
+        for own in found['issues']:
+            picture = next((p for p in map(usable, own) if p and p['path'] not in shown), None)
+            if picture:
+                shown.add(picture['path'])
+            chosen.append((picture, False))
         chosen.append((cover, True))
         names, pictures, findings = {}, [], []
         for scene, (picture, blur) in zip(scenes, chosen, strict=True):
             if picture is None:
                 scene.update(bg=None, blur=False, credit='')
-                findings.append(f"Shorts scene without a picture: {scene['id']}")
+                if scene['type'] != 'issue':
+                    findings.append(f"Shorts scene without a picture: {scene['id']}")
                 continue
             path = Path(picture['path'])
             if str(path) not in names:

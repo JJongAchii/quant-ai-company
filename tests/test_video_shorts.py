@@ -630,7 +630,7 @@ def test_a_sparse_library_entry_cannot_raise_the_credit(tmp_path):
     raw['scenes'][3]['data']['image'] = {'asset': 'fixture-photo'}  # the issue's headline card shows the photo
     job = {'id': 'fixture', 'source': source(), 'policy': {'template': 'motion-v2'}}
     pictures = cut_pictures(job, raw, shorts(), settings, shelf, lineup(source(), raw))
-    assert pictures['issues'][0]['credit'] == '자료사진 ·  · '
+    assert pictures['issues'][0][0]['credit'] == '자료사진 ·  · '
 
 
 def test_every_scene_has_a_picture(tmp_path):
@@ -640,47 +640,82 @@ def test_every_scene_has_a_picture(tmp_path):
     built = ShortsRenderer(settings, WordAligner()).build(job, plan, bare, tmp_path / 'out', paths)
     shown = scene_classes(built['page'])
     # No thumbnail picture: the cover is issue 1's own picture (its photo card), sharp behind the opener and blurred
-    # behind the agenda and the outro; issue 2 has none in its chapter either, so it shows the cover blurred.
+    # behind the agenda and the outro; issue 2 has no picture of its own, so it shows the plain background, which is
+    # the design and no finding (owner, 2026-11-06).
     assert {i: (bg, blur) for i, (bg, blur, _) in shown.items()} == {
         'opener': ('img/photo.png', False), 'agenda': ('img/photo.png', True), 'issue-1': ('img/photo.png', False),
-        'issue-2': ('img/photo.png', True), 'outro': ('img/photo.png', True)}
-    assert not any('nophoto' in cls for *_, cls in shown.values()) and not any('picture' in f for f in built['findings'])
-    # No picture anywhere (no reviewed library, no episode picture): a gradient, never a bare frame, and a finding.
+        'issue-2': (None, False), 'outro': ('img/photo.png', True)}
+    assert [i for i, (*_, cls) in shown.items() if 'nophoto' in cls] == ['issue-2']
+    assert not any('picture' in f for f in built['findings'])
+    assert 'issue-2' not in {p['scene'] for p in built['pictures']}  # no credit for a picture not shown
+    # No picture anywhere (no reviewed library, no episode picture): a gradient, never a bare frame, and a finding for
+    # the scenes that always show the cover.
     settings.video_asset_dir = tmp_path / 'empty'
     built = ShortsRenderer(settings, WordAligner()).build(job, plan, bare, tmp_path / 'none', paths)
     shown = scene_classes(built['page'])
     assert all(bg is None and 'nophoto' in cls for bg, _, cls in shown.values()), shown
     assert [f for f in built['findings'] if 'picture' in f] == [
-        f'Shorts scene without a picture: {i}' for i in ('opener', 'agenda', 'issue-1', 'issue-2', 'outro')]
+        f'Shorts scene without a picture: {i}' for i in ('opener', 'agenda', 'outro')]
 
 
-def test_an_issue_without_a_picture_takes_one_from_its_chapter_before_the_cover(tmp_path):
+def test_an_issue_without_its_own_picture_shows_the_plain_background_not_another_issues(tmp_path):
+    """11/06 AM: four issues showed other issues' pictures (a server rack behind the oil tanker issue), as the cut's two
+    chapters made 'the same chapter's picture' another issue's (owner, 2026-11-06: the plain background instead)."""
     ffmpeg, settings, job, episode_json, plan = multi_cut(
         tmp_path, PM_TITLES[:3], {1: '핵심 이슈', 2: '함께 볼 이슈', 3: '함께 볼 이슈'}, photo_first=(3,))
     raw = without_pictures(episode_json, 'issue-2')  # issue 2's only card has no picture; issue 3's shares its chapter
     shelf = json.loads((tmp_path / 'assets' / 'manifest.json').read_text())
-    issues = lineup(job['source'], raw)
-    nearby = cut_pictures(job, raw, plan, settings, shelf, issues)['nearby']
-    assert [[p['path'].rsplit('/', 1)[1] for p in n] for n in nearby] == [[], ['photo.png'], []]
+    pictures = cut_pictures(job, raw, plan, settings, shelf, lineup(job['source'], raw))
+    assert [[p['path'].rsplit('/', 1)[1] for p in own] for own in pictures['issues']] == [
+        ['illu.png', 'photo.png'], [], ['photo.png']]
     built = ShortsRenderer(settings, WordAligner()).build(job, plan, raw, tmp_path / 'out', tones(tmp_path, [4, 1, 6, 3, 3, 3], ffmpeg))
     shown = scene_classes(built['page'])
     assert {i: (bg, blur) for i, (bg, blur, _) in shown.items()} == {
         'opener': ('img/illu.png', False), 'agenda': ('img/illu.png', True), 'issue-1': ('img/illu.png', False),
-        'issue-2': ('img/photo.png', True), 'issue-3': ('img/photo.png', False), 'outro': ('img/illu.png', True)}
+        'issue-2': (None, False), 'issue-3': ('img/photo.png', False), 'outro': ('img/illu.png', True)}
     credits = {p['scene']: p['credit'] for p in built['pictures']}
-    assert credits['issue-2'] == credits['issue-3'] == '자료사진 · Fixture Author · CC BY 4.0' and credits['issue-1'] == ''
+    assert 'issue-2' not in credits and credits['issue-3'] == '자료사진 · Fixture Author · CC BY 4.0'
+    assert not any('picture' in f for f in built['findings'])
 
 
-def test_an_issue_without_scenes_takes_the_cover(tmp_path):
+def test_a_scene_about_another_issue_lends_its_picture_to_none(tmp_path):
+    """11/06 AM: the oil issue showed the AI scene's server rack, a scene about AI that also cited an oil line."""
+    ffmpeg, settings, job, episode_json, plan = multi_cut(tmp_path, PM_TITLES[:2], {1: '핵심 이슈', 2: '함께 볼 이슈'})
+    raw = without_pictures(episode_json, 'issue-2')
+    two = lineup(job['source'], raw)[1]
+    view = next(s for s in raw['scenes'] if s['id'] == 'issue-1-view')
+    view['claim_ids'].append(two.claim_ids[1])  # still about issue 1 (two of its lines), and it covers issue 2 too
+    found = lineup(job['source'], raw)
+    assert found[1].scene_ids == ('issue-2', 'issue-1-view') and found[1].about == ('issue-2',)
+    assert found[0].about == ('issue-1', 'issue-1-view')
+    shelf = json.loads((tmp_path / 'assets' / 'manifest.json').read_text())
+    assert cut_pictures(job, raw, plan, settings, shelf, found)['issues'][1] == []
+
+
+def test_two_issues_never_show_the_same_picture(tmp_path):
+    """11/03 PM: one chip photo behind three issues. An issue whose first picture an earlier issue shows takes its next
+    own one, else the plain background."""
+    ffmpeg, settings, job, episode_json, plan = multi_cut(
+        tmp_path, PM_TITLES[:3], {1: '핵심 이슈', 2: '핵심 이슈', 3: '함께 볼 이슈'})
+    built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode_json, tmp_path / 'out',
+                                                          tones(tmp_path, [4, 1, 6, 6, 3, 3], ffmpeg))
+    shown = scene_classes(built['page'])
+    # Each 핵심 이슈 has its headline card (the illustration) and its photo card; issue 3 only the illustration.
+    assert {i: shown[i][:2] for i in ('issue-1', 'issue-2', 'issue-3')} == {
+        'issue-1': ('img/illu.png', False), 'issue-2': ('img/photo.png', False), 'issue-3': (None, False)}
+    assert not any('picture' in f for f in built['findings'])
+
+
+def test_an_issue_without_scenes_shows_the_plain_background(tmp_path):
     ffmpeg, settings, job, episode_json, plan = multi_cut(tmp_path, PM_TITLES[:2], {1: '핵심 이슈', 2: '함께 볼 이슈'},
                                                           skip=(2,))
     assert lineup(job['source'], episode_json)[1].scene_ids == ()
     shelf = json.loads((tmp_path / 'assets' / 'manifest.json').read_text())
     pictures = cut_pictures(job, episode_json, plan, settings, shelf, lineup(job['source'], episode_json))
-    assert pictures['issues'][1] is None and pictures['nearby'][1] == []
+    assert pictures['issues'][1] == []
     built = ShortsRenderer(settings, WordAligner()).build(job, plan, episode_json, tmp_path / 'out',
                                                           tones(tmp_path, [4, 1, 6, 3, 3], ffmpeg))
-    assert scene_classes(built['page'])['issue-2'][:2] == ('img/illu.png', True)
+    assert scene_classes(built['page'])['issue-2'][:2] == (None, False)
 
 
 def test_the_headline_breaks_after_its_first_comma(tmp_path):
@@ -1591,13 +1626,13 @@ def test_cut_pictures_follow_the_lineup_scenes(tmp_path):
     raw = episode().model_dump(mode='json')
     plan = shorts()
     pictures = cut_pictures(job, raw, plan, settings, shelf, lineup(source(), raw))
-    assert pictures['issues'][0] == {'path': str(tmp_path / 'assets' / 'illu.png'), 'credit': ''}
-    assert pictures['hook'] == pictures['cover'] == pictures['issues'][0]  # the episode thumbnail is fixture-illustration
+    assert pictures['issues'][0][0] == {'path': str(tmp_path / 'assets' / 'illu.png'), 'credit': ''}
+    assert pictures['hook'] == pictures['cover'] == pictures['issues'][0][0]  # the episode thumbnail is fixture-illustration
     # Without the headline card's picture and the thumbnail, the issue shows its next cited card's (the photo).
     raw = without_pictures({**raw, 'thumbnail_image': ''}, 'head')
     pictures = cut_pictures(job, raw, plan, settings, shelf, lineup(source(), raw))
-    assert pictures['issues'][0]['path'] == str(tmp_path / 'assets' / 'photo.png')
-    assert pictures['issues'][0]['credit'] == '자료사진 · Fixture Author · CC BY 4.0' and pictures['hook'] == pictures['issues'][0]
+    assert pictures['issues'][0][0]['path'] == str(tmp_path / 'assets' / 'photo.png')
+    assert pictures['issues'][0][0]['credit'] == '자료사진 · Fixture Author · CC BY 4.0' and pictures['hook'] == pictures['issues'][0][0]
 
 
 def test_takes_open_with_the_date_and_close_with_the_outro():
