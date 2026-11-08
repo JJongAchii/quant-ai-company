@@ -29,12 +29,15 @@ from .contracts import (
 from .craft import craft_review, with_craft
 from .episode import (
     ScreenFix,
+    ScriptFix,
     apply_screen_fix,
+    apply_script_fix,
     episode_prompt,
     fresh_library,
     plan_class,
     plan_findings,
     screen_fix_prompt,
+    script_fix_prompt,
     template,
     tidy_tags,
 )
@@ -80,7 +83,9 @@ RUNTIME_OUTCOMES = frozenset({'uncertain', 'timeout'})
 PLAN_RUNTIME_RETRIES = 8
 REVIEW_RUNTIME_RETRIES = 4
 REVIEW_CHECKS = ('facts', 'numbers', 'conditions', 'coverage', 'readability')
-INSPECT_ROUNDS = 3
+# Two looks at the rendered frames: one fix and re-render, then the files go out with what is left (11/01-11/06: all
+# eleven episodes took three looks and two re-renders, about 13 minutes a round, and none passed), like the Shorts.
+INSPECT_ROUNDS = 2
 # The fixed opening and closing lines (motion.BRAND) are recorded once per voice and kept for every later episode. Raise
 # the take to record them again when the owner rejects one: the kept file and its receipt keys carry it.
 BRAND_TAKE = 1
@@ -1014,6 +1019,8 @@ class VideoRunner:
         the findings and the open review concerns; after the last attempt the version with the fewest findings is
         produced anyway and its remaining findings travel with the files."""
         qa = dict(job.get('qa') or {})
+        if qa.get('revision') and job.get('plan') and template(job) == 'motion-v2':
+            return await self.revise_plan(job, qa)
         attempts = list(qa.get('plan_attempts', []))
         number = len(attempts) + 1
         key = attempt_key('plan', number)
@@ -1085,6 +1092,55 @@ class VideoRunner:
         qa['plan_findings'] = best['findings']
         await asyncio.to_thread(self.store.save, job, 'reviewing', plan=plan.model_dump(mode='json'), qa=qa)
 
+    async def revise_plan(self, job, qa):
+        """The reviewer's concerns fixed in place (ScriptFix): only the scenes they name change, the version goes back to
+        the reviewer. A revision that fails the checks or cannot be applied leaves the concerns to a full rewrite
+        (write_plan), as before 11/06."""
+        attempts = list(qa.get('plan_attempts', []))
+        key = attempt_key('revise', sum(a['key'].startswith('revise') for a in attempts) + 1)
+        concerns = list(qa['revision'])
+        plan = plan_class(job).model_validate(job['plan'])
+        library = dict(qa['library']) if 'library' in qa else None
+        prompt = with_craft(script_fix_prompt(job['source'], plan, concerns), job['policy'])
+        revised, findings = None, []
+        if len(prompt) > PROMPT_LIMIT:
+            findings = ['The revision request exceeds the prompt limit']
+        else:
+            try:
+                fix = await self.model(job, key, prompt, ScriptFix, 'video_script_fix_v1')
+            except ModelRejected as rejected:
+                lost = sum(a['outcome'] in RUNTIME_OUTCOMES for a in attempts)
+                if rejected.code in RUNTIME_OUTCOMES and lost < PLAN_RUNTIME_RETRIES:
+                    # The runtime lost the turn: the same revision is asked again as a new request after a pause.
+                    qa['plan_attempts'] = attempts + [{'key': key, 'outcome': rejected.code, 'findings': []}]
+                    await asyncio.to_thread(self.store.save, job, 'queued', qa=qa)
+                    await asyncio.to_thread(self.store.wait, job, min(180, 30 * (lost + 1)), 'model_retry')
+                    return
+                findings = [f'Output contract: {rejected.detail}' if rejected.detail else f'Model {rejected.code}']
+            else:
+                try:
+                    reverted = []
+                    revised = proposal(job, apply_script_fix(plan, fix, library, reverted))
+                    if revised.model_dump(mode='json') == plan.model_dump(mode='json'):
+                        # A concern it cannot express (a new or reordered scene) comes back as no change at all.
+                        findings = ['The revision changed nothing']
+                    else:
+                        findings = plan_findings(job, revised, library, photos=qa.get('illustrations_offered', False),
+                                                 recent=qa.get('recent_thumbnails') or [])
+                        findings += coverage_findings(job['source'], revised.model_dump(mode='json'))
+                        findings += [f'Scene {scene}: image outside the library' for scene in reverted]
+                except ValueError as error:
+                    findings = [str(error)[:300]]
+        outcome = 'revised' if revised is not None and not findings else 'revise_failed'
+        qa['plan_attempts'] = attempts + [{'key': key, 'outcome': outcome, 'findings': findings[:30]}]
+        qa.pop('revision')
+        if outcome == 'revised':
+            qa['plan_findings'] = []
+            await asyncio.to_thread(self.store.save, job, 'reviewing', plan=revised.model_dump(mode='json'), qa=qa)
+            return
+        # qa['feedback'] already carries the concerns (review_plan): the next tick rewrites from the last full version.
+        await asyncio.to_thread(self.store.save, job, 'queued', qa=qa)
+
     async def review_plan(self, job):
         """The reviewer's concerns are fixed by another script version; production continues either way."""
         qa = dict(job.get('qa') or {})
@@ -1110,6 +1166,8 @@ class VideoRunner:
         reviewed = sum(r.get('outcome') not in RUNTIME_OUTCOMES for r in rounds)
         if concerns and reviewed < REVIEW_ROUNDS and written_attempts(qa) < PLAN_ATTEMPTS:
             qa['feedback'] = repair_feedback(job['feedback'], qa.get('plan_findings', []) + concerns)
+            if template(job) == 'motion-v2' and review is not None:
+                qa['revision'] = concerns  # revise_plan first; the feedback is for a rewrite if the revision fails
             await asyncio.to_thread(self.store.save, job, 'queued', qa=qa)
             return
         qa['review_findings'] = concerns
