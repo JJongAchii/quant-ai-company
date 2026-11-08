@@ -19,8 +19,8 @@ from .test_video_motion import InspectedRenderer, episode, produce_inspected
 PICTURE = [{'id': 'gen-1', 'name': 'pic-1.jpg', 'file': '/nonexistent/pic.jpg', 'kind': '자료사진', 'subject': '반도체',
             'width': 1600, 'height': 900}]
 CSS = ('.bg{position:absolute;inset:0;background:url(pic-1.jpg) center/cover}'
-       '.h{position:absolute;left:56px;top:140px;font:800 120px P;color:#fff}'
-       '.n{position:absolute;left:56px;top:330px;font:800 150px B;color:#FF4D4D}')
+       '.h{position:absolute;left:56px;top:140px;font:800 96px P;color:#fff}'
+       '.n{position:absolute;left:56px;top:300px;font:800 88px B;color:#FF4D4D}')
 HTML = '<div class="bg"></div><div class="h">반도체가 끌었다</div><div class="n">▲1.92%</div>'
 # The episode fixture offers no picture file: its designs draw on a gradient.
 PLAIN = ('.bg{position:absolute;inset:0;background:linear-gradient(120deg,#08142f,#203a7a)}'
@@ -97,8 +97,23 @@ def test_measurements_flag_unreadable_cut_off_and_badge_covered_words():
     assert "Words run off the thumbnail or under the strip: '밖으로'" in problems
     _, problems = thumbs.measure_problems([{'text': '작다', 'hidden': False, 'rects': [[0, 0, 100, 60]]}])
     assert problems == ['No line big enough to read at feed size (largest 60 px; needs 90)']
-    _, problems = thumbs.measure_problems([{'text': '가' * 41, 'hidden': False, 'rects': [[0, 0, 1000, 120]]}])
-    assert problems == ['Too many words for a thumbnail (41 characters; at most 40)']
+    _, problems = thumbs.measure_problems([{'text': '가' * 27, 'hidden': False, 'rects': [[0, 0, 1000, 110]]}])
+    assert problems == ['Too many words for a thumbnail (27 characters; at most 26)']
+
+
+def test_measurements_flag_shouting_words_and_a_second_number():
+    # Owner, 2026-11-09, on the first designed thumbnails (150-240 px numbers, two numbers joined by an arrow):
+    # "글자랑 숫자가 너무 크고 … 구식 같아 보여".
+    _, problems = thumbs.measure_problems([{'text': '서킷브레이커', 'hidden': False, 'rects': [[56, 100, 830, 300]]},
+                                           {'text': '▼6.02%', 'hidden': False, 'rects': [[300, 420, 980, 700]]}])
+    assert problems == ["Words too big: 200 px tall, at most 120 (about a 100 px font): '서킷브레이커'",
+                        "Words too big: 280 px tall, at most 120 (about a 100 px font): '▼6.02%'"]
+    _, problems = thumbs.measure_problems([{'text': '나스닥 ▼5.5%', 'hidden': False, 'rects': [[56, 60, 700, 170]]},
+                                           {'text': '▲1.09%', 'hidden': False, 'rects': [[760, 60, 1100, 170]]}])
+    assert problems == ['More than one number on the thumbnail (5.5, 1.09): keep the one that is the story']
+    texts, problems = thumbs.measure_problems([{'text': '반등은 했는데', 'hidden': False, 'rects': [[56, 380, 700, 494]]},
+                                               {'text': '코스피 ▼6.02%', 'hidden': False, 'rects': [[56, 520, 500, 566]]}])
+    assert problems == [] and texts == ['반등은 했는데', '코스피 ▼6.02%']
 
 
 def test_a_design_is_drawn_with_the_service_fonts_its_picture_and_the_owners_red_strip(tmp_path):
@@ -335,3 +350,13 @@ async def test_a_stage_out_of_time_sends_the_template_and_never_holds_the_episod
     assert job['state'] == 'delivering', job['error']
     assert not [c for c in provider.calls if c.output_contract == 'video_thumbnail_v1']
     assert job['qa']['thumbnail']['final']['template'] is True and 'thumbnail' not in job['artifacts']
+
+
+def test_the_design_and_the_look_ask_for_a_current_editorial_thumbnail():
+    # Owner, 2026-11-09: "글자랑 숫자가 너무 크고, 제목과 문구도 이상해 … 보고 싶게끔 … 구식 같아 보여".
+    for rule in ('76 to 100 px', 'At most one number', 'no highlighter box', 'everyday Korean',
+                 'not a recap of figures', 'weekday', '구식 같아'):
+        assert rule in thumbs.DESIGN_RULES, rule
+    for issue in ('shout', 'more than one number', 'dated', 'jargon', 'reason to watch'):
+        assert issue in thumbs.CHECK_RULES, issue
+    assert "a number's size" not in thumbs.CHECK_RULES  # the look may now ask for smaller numbers

@@ -45,7 +45,7 @@ from .motion import CHROMIUM_ARGS, FPS, RENDERER_DIGEST, captions, credit_author
 from .render import RenderInProgress, checksum, music_track, probe, quality_probe, run, spoken
 from .render import mix_music as mix
 from .speech_process import SpeechProcess
-from .upload import BASE_TAGS, INSTRUCTION, SERIES
+from .upload import BASE_TAGS, FIXED_TAGS, INSTRUCTION, SERIES
 
 WIDTH, HEIGHT = 1080, 1920
 
@@ -585,14 +585,18 @@ def shorts_violations(plan, source, episode, issues):
     return found
 
 
-def upload_text(plan, job, credits):
+def upload_text(plan, job, credits, episode=None):
+    """The Shorts upload copy; episode: the delivered EpisodePlan as JSON, whose tags the Shorts takes as they are
+    (owner, 2026-11-09), in the episode's upload.txt order (upload.compose)."""
     day = str(job['source']['day'])
     edition = EDITION_WORDS.get(job['source'].get('edition_kind'), '')
     sources = ('[사진 출처]\n' + '\n'.join(credits) + '\n\n') if credits else ''
+    copied = ((episode or {}).get('upload') or {}).get('tags')
+    tags = f"[태그]\n{', '.join(list(dict.fromkeys(copied)) + list(FIXED_TAGS))}\n\n" if copied else ''
     return (f"[제목]\n{plan.title}\n\n[설명]\n{plan.description}\n"
             "📩 구독자 전용 · 매일 아침·마감 증시 리포트 메일 신청은 채널 프로필 링크에서\n\n"
             f"본편: {int(day[5:7])}월 {int(day[8:10])}일 {edition} 브리핑 · {SERIES}\n\n{sources}#Shorts {' '.join(BASE_TAGS)}\n\n"
-            f"[고정 댓글]\n{plan.hook.question} 여러분은 어떻게 보세요? 댓글로 남겨 주세요.\n\n"
+            f"{tags}[고정 댓글]\n{plan.hook.question} 여러분은 어떻게 보세요? 댓글로 남겨 주세요.\n\n"
             "[업로드 메모]\nYouTube Studio에서 이 Shorts의 '관련 동영상'을 같은 날 본편으로 지정해 주세요. "
             "[고정 댓글]을 달고 고정해 주세요.\n")
 
@@ -815,7 +819,7 @@ class ShortsRenderer:
         (directory / 'shorts.srt').write_text('\n'.join(f'{i + 1}\n{stamp(a)} --> {stamp(b)}\n{re.sub("<[^>]+>", "", c)}\n'
                                                          for i, (a, b, c) in enumerate(cues)))
         credits = list(dict.fromkeys(p['credit'] for p in built['pictures'] if p['credit']))
-        (directory / 'shorts-upload.txt').write_text(upload_text(plan, job, credits))
+        (directory / 'shorts-upload.txt').write_text(upload_text(plan, job, credits, episode))
         (directory / 'shorts-plan.json').write_text(plan.model_dump_json(indent=2))
         names = ['shorts.mp4', 'shorts.srt', 'shorts-upload.txt', 'shorts-plan.json']
         manifest = {'title': plan.title, 'duration': duration, 'qa_passed': True, 'fps': FPS, 'frames': frames, 'size': [WIDTH, HEIGHT],

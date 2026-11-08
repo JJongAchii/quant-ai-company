@@ -37,7 +37,11 @@ WIDTH, HEIGHT = 1280, 720
 STRIP, STRIP_SHARE = 12, 0.10
 BADGE = (1130, 630)  # YouTube's duration badge covers the bottom-right corner from here
 FEED = (168, 94)  # the suggested-videos column
-MIN_LINE, MIN_HEADLINE, MAX_CHARS = 30, 90, 40  # drawn line heights in pixels; visible characters
+MIN_LINE, MIN_HEADLINE, MAX_CHARS = 30, 90, 26  # drawn line heights in pixels; visible characters
+# Owner, 2026-11-09, on the first designs (150-240 px numbers): "글자랑 숫자가 너무 크고". A line is drawn about 1.2
+# times its font size tall, so 120 px is about a 100 px font.
+MAX_LINE = 120
+NUMBER = re.compile(r'\d[\d,]*(?:\.\d+)?')
 TEMPLATE_FINDING = 'Thumbnail text exceeds safe screen area'  # the template thumbnail's own check (motion._thumbnail)
 FONTS = {'P': {500: 'Pretendard-Medium', 600: 'Pretendard-SemiBold', 700: 'Pretendard-Bold', 800: 'Pretendard-ExtraBold'},
          'B': {600: 'BarlowCondensed-SemiBold', 700: 'BarlowCondensed-Bold', 800: 'BarlowCondensed-ExtraBold'}}
@@ -270,25 +274,34 @@ def edition_words(job):
 DESIGN_RULES = """You design the YouTube thumbnail of one episode of 「그래서, 오늘장」, the channel's Korean stock-market
 briefing, for this episode alone. The owner's words (2026-11-06): "정해진 제한된 수의 틀 안에서 돌려쓰는 것보다도 썸네일과
 문구와 제목만으로 현재 시장에 아주 적합한 것을 노출함으로써 … 이목과 어그로를 끌면서 무조건 클릭하고 싶게끔 … 핵심에 딱
-맞아야" and "인물이 중요 이슈였던 날은 얼굴이 크게 나와야". There is no template: choose the picture, its crop, the words,
-their size, colour and place for today's core issue, so that an economy-minded viewer scrolling a phone feed stops and
-taps. Earlier thumbnails all looked alike (navy frame, faded photo, small number line) and were rarely clicked.
+맞아야" and "인물이 중요 이슈였던 날은 얼굴이 크게 나와야". After the first designed thumbnails (2026-11-09): "글자랑 숫자가
+너무 크고, 제목과 문구도 이상해 … 유튜브 시청자들이 우리 영상을 보고 싶게끔 … 디자인도 별로고 내용도 별로야. 뭔가 구식 같아
+보여". Those shouted: 150-240 px numbers, two numbers joined by an arrow, words in yellow and black highlighter boxes, a
+generic product shot, and words that recapped figures ('나스닥 · 목요일 ▼5.5% → 금요일 ▲1.09%') instead of giving a
+reason to watch. Before them, every thumbnail sat in the same navy frame with a faded photo and was rarely clicked.
 
-What works on a phone: one focal point (a face when a person is the story, one big number when the size is the story,
-otherwise the object or place the story is about), two or three big lines at most, strong contrast (a dark scrim or
-shadow behind words on a busy picture), and words that make the viewer need the video. Keep the main message to about 14
-characters besides one number and, if needed, one short kicker or caption; at most 40 visible characters in all. Every
-line must be readable at 168 pixels wide: the biggest line at least 90 px tall, nothing under 30 px.
+The look: a current, editorial thumbnail, as a premium economy channel makes it today, not a 2010s clickbait one. One
+full-bleed picture of the story's real subject (a face when a person is the story; otherwise the company, product, place
+or scene the story is about, never a generic stock image when a story picture is offered), in natural colour, sharp,
+cropped so the subject is large, with the words on calm space beside it. A soft dark gradient only where the words sit;
+no frame, no panel, no sticker, no highlighter box behind words, no clip-art arrow, no bevel, glow or heavy outline (a
+soft shadow is enough). White words and at most one accent colour. Margins of at least 56 px.
+
+The words: one headline of one or two short lines, in everyday Korean a casual investor gets at a glance, that names
+the stake or the open question this video answers (why should I care today?). It is not a recap of figures, not a date
+or weekday, not the title again, and no jargon (잉여현금흐름, 경상수지, 담보비율 …) unless the story is that word, then
+said in plain words. Optionally one short kicker line above or below it: a person's name and role, or the one number.
+At most one number on the thumbnail. Sizes: the headline 76 to 100 px (Pretendard 800), the number no bigger than the
+headline, a kicker 30 to 40 px; nothing bigger than 100 px and nothing under 26 px. Keep the main message to about 14
+characters, and at most 26 visible characters in all. The thumbnail and the title say different things: one shows who
+or what is at stake, the other what happened. Make it clearly unlike the recent thumbnails attached (picture, colour,
+layout). Korean convention: red for a rise and blue for a fall, for the number only. No date badge and no channel name;
+the brand mark (mark.svg) may appear small (at most 64 px) or not at all.
 
 When a person is the day's key issue and their photo is offered, the face fills a large part of the frame (at least 40%
 of its height), sharp and never covered by words; caption the person with name and role from the lines when Korean
 viewers may not know them. Crop the picture with CSS (background-size and background-position, or object-fit and
 object-position on an img) using its pixel size given below.
-
-The thumbnail and the title say different things: one shows who or how much, the other what happened. Make it clearly
-unlike the recent thumbnails attached (picture, colour, layout). Korean convention: red for a rise and blue for a fall,
-for numbers and arrows only. No date badge and no channel name; the brand mark (mark.svg) may appear small (at most 64
-px) or not at all.
 
 Facts bind as in the script: every number exactly as the lines write it (a rounded or computed value is a number the
 lines do not contain and is refused); '급락' only for an index fall of at least 2% or a stock fall of at least 3% in the
@@ -300,10 +313,10 @@ description carries it).
 The page: html is the content of a 1280x720 canvas (position: relative, overflow hidden, black background) and css
 styles it. Fonts: 'P' (Pretendard 500/600/700/800, for Korean) and 'B' (Barlow Condensed 600/700/800, for numerals).
 Pictures: the file names below, by url(<name>) in css or <img src="<name>">; mark.svg is the brand mark. Inline SVG may
-draw shapes (arrows, stamps, rings). Not allowed and refused: scripts, event handlers, links, any other file or URL,
-at-rules (@font-face, @import, @media), backslashes, and CSS content text (every word must be in the markup). The service
-draws the owner's red progress strip along the bottom 12 px over everything: keep words above it, and keep the
-bottom-right corner (from x 1130, y 630) free of words for YouTube's duration badge.
+draw simple shapes. Not allowed and refused: scripts, event handlers, links, any other file or URL, at-rules
+(@font-face, @import, @media), backslashes, and CSS content text (every word must be in the markup). The service draws
+the owner's red progress strip along the bottom 12 px over everything: keep words above it, and keep the bottom-right
+corner (from x 1130, y 630) free of words for YouTube's duration badge.
 
 Answer with idea (one line: why a viewer taps, in the day's terms), person (the person whose face the picture shows,
 '' when none), picture (the id of the offered picture used, '' when none), html and css."""
@@ -339,14 +352,18 @@ goes out. Image 1 is the thumbnail at full size; image 2 is how the suggestions 
 the remaining images are the channel's latest thumbnails. The owner wants each thumbnail made for that day's market, an
 attention-grabbing hook that still hits the day's core issue, and the face large when a person is the story.
 
-Report an issue (scene 'thumbnail') only for what would stop a viewer from getting it in one second or would mislead:
-words not readable in image 2; words cut off, overlapping each other, covering a face or the key object; a face that is
-small, cut awkwardly or covered on a day a person is the story; a stretched, pixelated or badly cropped picture; a claim
-or number the lines do not support, or a person or picture that does not match the story; a thumbnail that is not about
-the day's main issue or contradicts the title; a look so close to a recent thumbnail that a subscriber would think they
-had seen it. Give each issue a concrete fix. Never ask to tone down a hook, a number's size or a strong word the lines
-support. The red strip along the bottom edge, the small brand mark and the missing date are the owner's design: never
-report them. passed is true when nothing above needs fixing."""
+Report an issue (scene 'thumbnail') only for what would stop a viewer from getting it in one second, would mislead or
+would make the channel look dated: words not readable in image 2; words cut off, overlapping each other, covering a
+face or the key object; a face that is small, cut awkwardly or covered on a day a person is the story; a stretched,
+pixelated or badly cropped picture; a claim or number the lines do not support, or a person or picture that does not
+match the story; a thumbnail that is not about the day's main issue or contradicts the title; a look so close to a
+recent thumbnail that a subscriber would think they had seen it. The owner also found the first designs dated
+(2026-11-09: "글자랑 숫자가 너무 크고 … 구식 같아 보여"), so also report: words or a number so big they shout or crowd
+the picture; more than one number, numbers joined by an arrow, or more than two groups of words; highlighter boxes,
+stickers, clip-art or a cluttered, dated look; jargon a casual viewer would not get, or words that only recap figures
+or dates and give no reason to watch; a generic picture when the story has a real subject. Give each issue a concrete
+fix. Never ask to tone down a hook or a strong word the lines support. The red strip along the bottom edge, the small
+brand mark and the missing date are the owner's design: never report them. passed is true when nothing above needs fixing."""
 
 
 def check_request(job, plan, attempt, recent):
@@ -429,6 +446,13 @@ def measure_problems(measured, generated=False, shape=True):
                 found.append(f"Words under YouTube's duration badge (bottom-right corner): '{quote}'")
             if bottom - top < MIN_LINE:
                 found.append(f"Words too small to read in the feed ({round(bottom - top)} px tall): '{quote}'")
+    for m in visible:
+        tallest = max((bottom - top for _, top, _, bottom in m['rects']), default=0)
+        if tallest > MAX_LINE:
+            found.append(f"Words too big: {round(tallest)} px tall, at most {MAX_LINE} (about a 100 px font): '{m['text'][:24]}'")
+    numbers = NUMBER.findall(' '.join(m['text'] for m in visible))
+    if len(numbers) > 1:
+        found.append(f"More than one number on the thumbnail ({', '.join(numbers)}): keep the one that is the story")
     if not visible:
         found.append('The thumbnail has no words')
     elif max(heights) < MIN_HEADLINE:
