@@ -72,7 +72,9 @@ def reconcile(store, identity, key, receipt, note):
 
 RETRYABLE = {'video_stage_failed:rendering': 'rendering', 'video_stage_failed:uploading': 'uploading',
              # Runway was unreachable at the free account check: no speech request was sent.
-             'runway_unavailable': 'synthesizing', 'runway_account': 'synthesizing'}
+             'runway_unavailable': 'synthesizing', 'runway_account': 'synthesizing',
+             # Low disk held the episode before it started (VideoStore.hold_for_disk): nothing was sent or charged.
+             'insufficient_disk': 'queued'}
 
 
 def retry(store, identity, note):

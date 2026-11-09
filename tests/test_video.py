@@ -797,6 +797,21 @@ async def test_low_disk_blocks_new_episodes_without_charges(brief, video, monkey
         assert conn.execute('SELECT count(*) AS n FROM video_effects').fetchone()['n'] == 0
 
 
+async def test_an_episode_held_for_disk_starts_again_after_space_is_freed(brief, video, monkeypatch):  # noqa: F811
+    from quant_company.video.recovery import retry
+
+    store, _ = video
+    job = new_job(brief, video)
+    monkeypatch.setattr('quant_company.video.runner.free_gb', lambda path: 2.0)
+    await VideoRunner(store.company, provider=SimulatedProvider()).tick()
+    assert retry(store, str(job['id']), '빌드 캐시를 정리해 디스크 여유를 확보한 뒤 다시 시작')['state'] == 'queued'
+    current = store.get(job['id'])
+    assert current['state'] == 'queued' and current['error'] is None
+    with store.db.transaction() as conn:
+        assert conn.execute('SELECT count(*) AS n FROM video_reconciliations WHERE job_id=%s',
+                            (job['id'],)).fetchone()['n'] == 1
+
+
 def test_delivery_text_states_publish_time_and_a_late_finish():
     from datetime import datetime, timedelta
 
