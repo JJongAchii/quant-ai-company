@@ -128,9 +128,10 @@ class Settings(BaseSettings):
     video_render_attempts: int = Field(default=3, ge=1, le=6)
     # Hard limit per render task (the task exits itself; the worker stops it 10 minutes later at the latest).
     video_render_timeout_minutes: int = Field(default=90, ge=10, le=360)
-    # The series playlist on the briefings' own channel (@sotodaysmarket, made 2026-11-06), linked under "▶ 그래서, 오늘장
-    # 모아보기" in every description; empty omits those lines. The old 증시story playlist (PLbCkACCer37U) is 뭐든story's.
-    video_playlist_url: str = "https://www.youtube.com/playlist?list=PLAMiTJ2pkjHY"
+    # 뭐든story's 증시story playlist, linked under "▶ 오늘의 증시story 모아보기" in every description; empty omits those
+    # lines. From 2026-11-06 to 2026-11-10 it was the 그래서, 오늘장 channel's (PLAMiTJ2pkjHY); the briefings are back on
+    # 뭐든story since (owner, 2026-11-10).
+    video_playlist_url: str = "https://www.youtube.com/playlist?list=PLbCkACCer37U"
     # Morning review-ready target (HH:MM KST); public approval still expires at 09:00 KST.
     # YouTube publish times the owner targets (KST). Work starts the moment the brief body is delivered; the files
     # must be in the brief thread VIDEO_PUBLISH_LEAD_MINUTES earlier. Morning: 07:00 while New York is on daylight
@@ -154,11 +155,11 @@ class Settings(BaseSettings):
     # missing or empty file leaves sending and the unsubscribe inbox inactive.
     newsletter_enabled: bool = False
     newsletter_from_address: str = Field(default="", pattern=r"^(|[^@\s<>]+@[^@\s<>]+\.[A-Za-z]{2,})$")
-    newsletter_from_name: str = Field(default="그래서, 오늘장", min_length=1, max_length=40)
+    newsletter_from_name: str = Field(default="뭐든story", min_length=1, max_length=40)
     newsletter_smtp_host: str = "smtp.gmail.com"
     newsletter_smtp_port: int = Field(default=587, ge=1, le=65535)
     newsletter_imap_host: str = "imap.gmail.com"
-    newsletter_channel_url: str = Field(default="https://www.youtube.com/@sotodaysmarket", pattern=r"^https://\S+$")
+    newsletter_channel_url: str = Field(default="https://www.youtube.com/@anything-story", pattern=r"^https://\S+$")
     newsletter_password_file: Path | None = None
     briefing_calendar_overrides_file: Path | None = None
     # Public chart reads after the US close; off until the briefing data worker is qualified for it.

@@ -367,12 +367,12 @@ def test_masking_and_command_parsing():
 
 def test_html_and_plain_text_follow_the_approved_layout():
     draft = v5_draft()
-    data = render.message(draft, day=PM_DAY.isoformat(), sender=SENDER, name="그래서, 오늘장", to=OWNER_MAIL,
+    data = render.message(draft, day=PM_DAY.isoformat(), sender=SENDER, name="뭐든story", to=OWNER_MAIL,
                           message_id="<fixture@gmail.com>", channel_url="https://www.youtube.com/@anything-story",
                           logo=b"\x89PNG fixture").as_bytes()
     parsed = email.message_from_bytes(data, policy=default)
     assert parsed["Subject"] == "코스피, 3.2% 급락 출발 후 1.8% 상승 마감 | 10/19 마감 브리핑"
-    assert parsed["From"].addresses[0].display_name == "그래서, 오늘장" and parsed["Message-ID"] == "<fixture@gmail.com>"
+    assert parsed["From"].addresses[0].display_name == "뭐든story" and parsed["Message-ID"] == "<fixture@gmail.com>"
     assert parsed["List-Unsubscribe"] == f"<mailto:{SENDER}?subject=%EC%88%98%EC%8B%A0%EA%B1%B0%EB%B6%80>"
     assert parsed.get_content_type() == "multipart/alternative"
     plain, related = parsed.get_payload()
@@ -1150,10 +1150,11 @@ def test_the_morning_fallback_time_is_08_40_at_the_latest_and_never_under_45_min
 
 
 def test_the_morning_prompt_has_its_own_guide_and_the_closing_prompt_is_unchanged():
-    # The PM guide, pinned so a change to it is deliberate: as frozen before the morning email (bcc60ab), with only the
-    # newsletter's name changed to 그래서, 오늘장 (2026-11-04). A turn already asked keeps its frozen request.
+    # The PM guide, pinned so a change to it is deliberate: as frozen before the morning email (bcc60ab). Its name was
+    # 그래서, 오늘장 from 2026-11-04 to 2026-11-10 and is 뭐든story again, the very text frozen then. A turn already
+    # asked keeps its frozen request.
     assert hashlib.sha256(contracts.GUIDE.encode()).hexdigest() == (
-        "275132a3523757328a7f597d0a628fece6c64af3b0cc5f37c468110151ef1528")
+        "5a0b7421693056bfbffc66b1efa134c291282c2d065880d72162313d7624634a")
     pm = {key: value for key, value in contracts.source(pm_row()).items() if key != "outlook"}  # frozen before 10/22
     assert pm["kind"] == "pm" and contracts.prompt(pm).startswith(contracts.GUIDE + "\nDATA:\n")
     legacy = {key: value for key, value in pm.items() if key != "kind"}  # frozen before the morning email
@@ -1173,11 +1174,15 @@ def test_the_morning_subject_and_header_name_the_morning():
     assert render.subject(draft, "2026-10-20").endswith("| 10/20 마감 브리핑")
     page = render.html(draft, day="2026-10-20", sender=SENDER, channel_url="https://example.com", kind="am")
     text = render.text(draft, day="2026-10-20", sender=SENDER, channel_url="https://example.com", kind="am")
-    assert "10/20 아침 브리핑</td>" in page and "마감 브리핑</td>" not in page and "뭐든story" not in page
-    assert text.startswith("그래서, 오늘장 · 10/20 아침 브리핑\n") and "10/20 아침 브리핑</title>" in page
+    # The masthead as before 11-04 (owner, 2026-11-10: back to 뭐든story).
+    assert "10/20 아침 · 오늘의 증시story" in page and "장 마감 · 오늘의 증시story" not in page and "오늘장" not in page
+    assert text.startswith("뭐든story · 10/20 아침 · 오늘의 증시story\n") and "10/20 아침 브리핑</title>" in page
     closing = render.html(draft, day="2026-10-20", sender=SENDER, channel_url="https://example.com")
-    assert "10/20 마감 브리핑</td>" in closing
+    assert "10/20 장 마감 · 오늘의 증시story" in closing
+    assert "background:#E62117;color:#FFFFFF" in closing and f"background:{render.NAVY}" in closing  # the old colours
+    assert (render.NAVY, render.GOLD, render.CREAM) == ("#011A43", "#FDC749", "#FCF1DB")
     assert "아침과 장 마감 후" in render.INTRO and render.INTRO in page and render.INTRO in closing
+    assert render.INTRO.startswith("뭐든story는 ") and render.LOGO.name == "logo_mark.png"  # back on 뭐든story, 2026-11-10
 
 
 def test_the_outlook_closes_the_email_in_conditions_and_direction():
@@ -1240,8 +1245,8 @@ async def test_a_morning_edition_is_written_with_its_guide_and_mailed_as_the_mor
     sent = email.message_from_bytes(smtp.to(OWNER_MAIL)[0], policy=default)
     assert sent["Subject"] == "S&P 500 1.92% 상승, 5,300 마감 | 09/22 아침 브리핑"
     plain, related = sent.get_payload()
-    assert plain.get_content().startswith("그래서, 오늘장 · 09/22 아침 브리핑")
-    assert "09/22 아침 브리핑</td>" in related.get_payload()[0].get_content()
+    assert plain.get_content().startswith("뭐든story · 09/22 아침 · 오늘의 증시story")
+    assert "09/22 아침 · 오늘의 증시story" in related.get_payload()[0].get_content()
     notices = [n["text"] for n in outbox(store, "newsletter_status")]
     assert len(notices) == 1 and notices[0].startswith("아침 브리핑 메일 · 09/22 · 1명 발송 · 정해진 시간 안에")
 

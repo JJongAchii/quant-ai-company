@@ -1919,6 +1919,19 @@ async def test_a_step_clears_the_reason_of_the_last_wait(brief, video, tmp_path,
     assert row['state'] == 'reviewing' and row['error'] is None
 
 
+def test_the_shorts_carry_the_anything_story_brand(tmp_path):
+    # Owner, 2026-11-10: the briefings go back to 뭐든story, its logo and name on screen and in the copy.
+    from quant_company.video.shorts import ShortsRenderer, upload_text
+
+    page = ShortsRenderer._page(ShortsRenderer.__new__(ShortsRenderer), tmp_path)
+    html = (page / 'index.html').read_text()
+    assert '<img src="logo_mark.png" alt="">뭐든story<span id="badge"></span>' in html and '오늘장' not in html
+    assert (page / 'logo_mark.png').is_file() and not (page / 'brand_mark.svg').exists()
+    text = upload_text(shorts(), {'source': {'day': '2026-09-22', 'edition_kind': 'am'}}, [], {})
+    assert '본편: 9월 22일 아침 브리핑 · 오늘의 증시story' in text and '#Shorts #증시story #뭐든story' in text
+    assert '오늘장' not in text
+
+
 def test_the_shorts_upload_copy_carries_the_episodes_tags():
     # Owner, 2026-11-09: the Shorts upload copy gives the same tags as its episode's, ready to paste.
     from quant_company.video.shorts import upload_text

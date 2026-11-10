@@ -40,11 +40,11 @@ def final_files(root):
     root.mkdir(parents=True, exist_ok=True)
     files = {'video.mp4': b'simulated-video' * 1000, 'thumbnail.png': b'simulated-thumbnail',
              'subtitles.srt': b'1\n00:00:00,000 --> 00:00:01,000\nSynthetic caption\n',
-             'upload.txt': '[제목]\nS&P 500 1.92% 상승 | 9월 22일 아침 · 그래서, 오늘장\n'.encode()}
+             'upload.txt': '[제목]\nS&P 500 1.92% 상승 | 9월 22일 아침 · 오늘의 증시story\n'.encode()}
     for name, content in files.items():
         (root/name).write_bytes(content)
     manifest = {'directory': str(root), 'qa_passed': True, 'human_watched': False, 'duration': 272.,
-                'title': 'S&P 500 1.92% 상승 | 9월 22일 아침 · 그래서, 오늘장',
+                'title': 'S&P 500 1.92% 상승 | 9월 22일 아침 · 오늘의 증시story',
                 'files': {n: checksum(root/n) for n in files}}
     manifest['digest'] = digest(manifest)
     return manifest

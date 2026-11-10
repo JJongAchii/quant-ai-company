@@ -442,7 +442,8 @@ class VideoRunner:
                     if not problems:  # a page the checks refused is never drawn
                         folder.mkdir(parents=True, exist_ok=True)
                         try:
-                            drawn = await asyncio.to_thread(self.draw_thumbnail, design, offered, folder, str(number))
+                            drawn = await asyncio.to_thread(self.draw_thumbnail, design, offered, folder, str(number),
+                                                            thumbs.bar_label(job))
                         except Exception as error:  # noqa: BLE001 - Chromium failed: another design, then the template
                             attempt['problems'] = [f'drawing failed: {type(error).__name__}'[:200]]
                         else:
@@ -476,8 +477,8 @@ class VideoRunner:
     def thumbnail_pictures(self, job, plan):
         return thumbs.pictures(job, plan, self.settings, MotionRenderer(self.settings).library)
 
-    def draw_thumbnail(self, design, offered, folder, name):
-        return thumbs.draw(design, offered, folder, name)
+    def draw_thumbnail(self, design, offered, folder, name, label=''):
+        return thumbs.draw(design, offered, folder, name, label)
 
     def renderer_for(self, job):
         if self._renderer is not None:
