@@ -65,7 +65,7 @@ def test_a_design_that_could_load_run_or_hide_anything_is_refused(html, css, ref
 
 def test_a_clean_design_lists_its_words_and_may_draw_shapes():
     html = HTML + ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" class="a"><path d="M0 0L10 10" fill="url(#g)"/>'
-                   '<text x="1" y="9">S&amp;P</text></svg><img src="mark.svg" class="m">')
+                   '<text x="1" y="9">S&amp;P</text></svg><img src="mark.png" class="m">')
     texts, problems = thumbs.markup(design(html, CSS + '.a{align-content:center}.m{width:48px}'), PICTURE)
     assert problems == [] and texts == ['반도체가 끌었다', '▲1.92%', 'S&P']
     _, problems = thumbs.markup(design(picture='gen-2'), PICTURE)
@@ -83,7 +83,7 @@ def test_the_words_follow_the_episodes_number_size_and_advice_rules():
     assert thumbs.fact_problems(['AI 생성 화면'], source) == ['Production or AI wording on the thumbnail']
 
 
-def test_measurements_flag_unreadable_cut_off_and_badge_covered_words():
+def test_measurements_flag_unreadable_cut_off_and_bar_covered_words():
     drawn = [{'text': '반도체가 끌었다', 'hidden': False, 'rects': [[56, 140, 900, 280]]},
              {'text': '작은 글씨', 'hidden': False, 'rects': [[56, 400, 200, 420]]},
              {'text': '모서리', 'hidden': False, 'rects': [[1150, 650, 1270, 700]]},
@@ -93,8 +93,9 @@ def test_measurements_flag_unreadable_cut_off_and_badge_covered_words():
     assert texts == ['반도체가 끌었다', '작은 글씨', '모서리', '밖으로']
     assert 'Hidden text in the thumbnail' in problems
     assert "Words too small to read in the feed (20 px tall): '작은 글씨'" in problems
-    assert "Words under YouTube's duration badge (bottom-right corner): '모서리'" in problems
-    assert "Words run off the thumbnail or under the strip: '밖으로'" in problems
+    # YouTube's duration badge sits on the channel bar (2026-11-10), so words there are under the bar.
+    assert "Words run off the thumbnail or under the channel bar: '모서리'" in problems
+    assert "Words run off the thumbnail or under the channel bar: '밖으로'" in problems
     _, problems = thumbs.measure_problems([{'text': '작다', 'hidden': False, 'rects': [[0, 0, 100, 60]]}])
     assert problems == ['No line big enough to read at feed size (largest 60 px; needs 90)']
     _, problems = thumbs.measure_problems([{'text': '가' * 27, 'hidden': False, 'rects': [[0, 0, 1000, 110]]}])
@@ -105,7 +106,7 @@ def test_measurements_flag_shouting_words_and_a_second_number():
     # Owner, 2026-11-09, on the first designed thumbnails (150-240 px numbers, two numbers joined by an arrow):
     # "글자랑 숫자가 너무 크고 … 구식 같아 보여".
     _, problems = thumbs.measure_problems([{'text': '서킷브레이커', 'hidden': False, 'rects': [[56, 100, 830, 300]]},
-                                           {'text': '▼6.02%', 'hidden': False, 'rects': [[300, 420, 980, 700]]}])
+                                           {'text': '▼6.02%', 'hidden': False, 'rects': [[300, 320, 980, 600]]}])
     assert problems == ["Words too big: 200 px tall, at most 120 (about a 100 px font): '서킷브레이커'",
                         "Words too big: 280 px tall, at most 120 (about a 100 px font): '▼6.02%'"]
     _, problems = thumbs.measure_problems([{'text': '나스닥 ▼5.5%', 'hidden': False, 'rects': [[56, 60, 700, 170]]},
@@ -143,6 +144,46 @@ def test_a_design_is_drawn_with_the_service_fonts_its_picture_and_the_owners_red
     assert 'Generated text (CSS content or list markers): every word must be in the markup' in marker['problems']
     plain = thumbs.draw(design(css=CSS + '.bg::after{content:"";position:absolute;inset:0}'), offered, tmp_path / 'out', '5')
     assert plain['problems'] == []
+
+
+def test_every_design_carries_the_anything_story_bar_along_the_bottom(tmp_path):
+    # Owner, 2026-11-10: "지금 제작 구조는 모두 유지하되 화면 하단에 옛날에 뭐든 story 로고 및 고정 표시줄이 있었는데
+    # 그거만 다시 추가". The service paints the bar like the strip, so no style of the design can move or hide it.
+    needs_browser()
+    from PIL import Image
+
+    picture = tmp_path / 'source.jpg'
+    Image.new('RGB', (1600, 900), (200, 200, 200)).save(picture)
+    offered = [{**PICTURE[0], 'file': str(picture)}]
+    drawn = thumbs.draw(design(css=CSS + '#bar{display:none}div{z-index:99}'), offered, tmp_path / 'out', '1',
+                        '아침 시장 브리핑')
+    assert drawn['problems'] == [] and drawn['texts'] == ['반도체가 끌었다', '▲1.92%']  # the bar's words are the service's
+
+    def near(pixel, colour):
+        return max(abs(a - b) for a, b in zip(pixel[:3], colour, strict=True)) <= 12
+
+    with Image.open(drawn['file']) as image:
+        assert near(image.getpixel((640, 621)), (0xFD, 0xC7, 0x49))  # the yellow rule on top of the bar
+        assert near(image.getpixel((1000, 650)), (0x00, 0x11, 0x2E)) and near(image.getpixel((1000, 690)), (0x00, 0x11, 0x2E))
+        logo = [image.getpixel((x, y)) for x in range(56, 122) for y in range(636, 704)]
+        assert sum(r > 200 and 150 < g < 230 and b < 140 for r, g, b in logo) > 300  # the yellow book of 뭐든story
+        words = [image.getpixel((x, y)) for x in range(140, 420) for y in range(645, 695)]
+        assert sum(min(p) > 200 for p in words) > 150  # '뭐든story' in white
+        assert image.getpixel((40, 715))[:3] == (255, 0, 0)  # the red strip still runs over it
+        assert near(image.getpixel((640, 300)), (200, 200, 200))  # the design above it is untouched
+    low = design(html='<div class="bg"></div><div class="h">반도체가 끌었다</div>',
+                 css=CSS.replace('top:140px', 'top:600px'))
+    assert any('under the channel bar' in p for p in thumbs.draw(low, offered, tmp_path / 'out', '2')['problems'])
+
+
+def test_the_design_leaves_the_bottom_to_the_anything_story_bar():
+    for rule in ('뭐든story', 'bottom 100 px', 'y 620'):
+        assert rule in thumbs.DESIGN_RULES, rule
+    assert '오늘장' not in thumbs.DESIGN_RULES and '뭐든story bar' in thumbs.CHECK_RULES
+    assert thumbs.bar_label({'source': {'edition_kind': 'am'}, 'policy': {}}) == '아침 시장 브리핑'
+    assert thumbs.bar_label({'source': {'edition_kind': 'close'}, 'policy': {}}) == '마감 브리핑'
+    _, problems = thumbs.measure_problems([{'text': '반도체가 끌었다', 'hidden': False, 'rects': [[56, 560, 700, 660]]}])
+    assert problems == ["Words run off the thumbnail or under the channel bar: '반도체가 끌었다'"]
 
 
 def test_best_keeps_the_design_with_the_fewest_findings_or_the_template():
@@ -208,7 +249,7 @@ class ThumbnailProvider:
 
 
 def fake_draw(problems=()):
-    def draw(self, design, offered, folder, name):
+    def draw(self, design, offered, folder, name, label=''):
         from PIL import Image
 
         from quant_company.video.render import checksum

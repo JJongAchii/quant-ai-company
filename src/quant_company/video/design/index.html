@@ -23,7 +23,7 @@ svg text{font-family:'Pretendard',sans-serif}
 
 /* top bar: mark, channel name, edition and date; chapter tabs on the right with the yellow underline */
 #top{position:absolute;left:var(--m);right:var(--m);top:0;height:110px;display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--rule);z-index:5;background:var(--bg)}
-#top img{width:48px;height:48px;border-radius:50%}
+#top img{height:54px;width:auto}
 #brand{font-size:30px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
 #bl{font-size:22px;font-weight:500;color:var(--sub);margin-left:6px;white-space:nowrap}
 #dd{font-size:22px;font-weight:500;color:var(--gray);white-space:nowrap}
@@ -155,14 +155,14 @@ body.full #top{visibility:hidden}
 
 /* the channel's fixed opening and closing */
 .sting{position:absolute;left:var(--m);top:300px}
-.sting img{width:150px;height:150px;border-radius:50%}
+.sting img{height:150px;width:auto}
 .sting .name{font-size:92px;font-weight:700;letter-spacing:-.03em;line-height:1.2;margin-top:50px}
 .sting .series{font-size:30px;font-weight:500;color:var(--sub);margin-top:22px}
 .sting .name{font-weight:800}
 .sting .mk{position:relative;z-index:0}
 .sting .mk::after{content:'';position:absolute;left:-.04em;right:.02em;bottom:.06em;height:.2em;background:var(--y);z-index:-1}
 .endcard .mark{position:absolute;left:var(--m);top:250px;display:flex;align-items:center;gap:22px;font-size:56px;font-weight:700;letter-spacing:-.02em}
-.endcard .mark img{width:76px;height:76px;border-radius:50%}
+.endcard .mark img{height:76px;width:auto}
 .endcard .btns{position:absolute;left:var(--m);top:450px;display:flex;align-items:center;gap:36px}
 .ebtn{position:relative;height:120px;display:flex;align-items:center;justify-content:center;gap:20px;font-size:50px;font-weight:700;border:2px solid var(--rule2);color:var(--fg)}
 .ebtn.sub{padding:0 52px 0 44px;background:var(--y);border-color:var(--y);color:#111}
@@ -277,12 +277,12 @@ svg rect{rx:10px}
 #ticker .tlab b{border-radius:6px;background:linear-gradient(180deg,#FFE070,#FFC928)}
 #cap .box{color:#EEF2FA;text-shadow:0 2px 12px rgba(0,6,24,.8)}
 /* opening and closing: the mark floats over its own light */
-.sting img,.endcard .mark img{box-shadow:0 0 0 6px rgba(255,212,59,.10),0 20px 60px rgba(255,200,40,.25)}
+.sting img,.endcard .mark img{filter:drop-shadow(0 16px 40px rgba(255,200,40,.28))}
 .ebtn{border-radius:16px}
 </style>
 </head><body>
 <div id="bg" aria-hidden="true"><i class="horizon"></i><i class="floor"></i></div>
-<div id="top"><img id="logo" src="brand_mark.svg" alt=""><div id="brand"></div><div id="bl"></div><div id="dd"></div><div id="ds"></div>
+<div id="top"><img id="logo" src="logo_mark.png" alt=""><div id="brand"></div><div id="bl"></div><div id="dd"></div><div id="ds"></div>
 <div id="chapters"></div></div>
 <div id="stage"></div>
 <div id="cap"><div class="box" id="capbox"></div></div>

@@ -574,7 +574,7 @@ so write counts and ordinals in Korean words (세 가지, 첫째) and never put 
 a scene that shows a regular-session close value, summary3 included, shows '""" + CLOSE_LABEL + """' on screen and one that
 shows investor flows shows '""" + FLOW_LABEL + """'; the ticker has 3-12 items whose numbers are in its cited lines and
 a label with 종가 when those are regular-session closes; hashtags are one or two #word tokens of letters, digits or Hangul
-only (no spaces or symbols, never #그래서오늘장 or #오늘장); tags are 13-23 plain keywords without # or commas; every tag and
+only (no spaces or symbols, never #증시story or #뭐든story); tags are 13-23 plain keywords without # or commas; every tag and
 hashtag word appears in the episode text as written (spacing aside) or is one of the general market keywords: """ + ', '.join(GENERAL_TAGS) + '.'
 
 
@@ -608,8 +608,8 @@ def check_plan(job, plan, library=None):
 
 
 TITLE_GUIDE = (
-    "upload.title is the hook only; the service appends ' | {M}월 {D}일 마감 · 그래서, 오늘장' (PM) or "
-    "' | {M}월 {D}일 아침 · 그래서, 오늘장' (AM). PM hook: the key number or stock plus the contradiction question or the "
+    "upload.title is the hook only; the service appends ' | {M}월 {D}일 마감 · 오늘의 증시story' (PM) or "
+    "' | {M}월 {D}일 아침 · 오늘의 증시story' (AM). PM hook: the key number or stock plus the contradiction question or the "
     "next-session point. AM hook: one overnight number plus one of today's events. Its first 20 characters contain the "
     "day's number or a stock name from the lines. If it asks a question, the first 30 seconds (cold_open and the start "
     "of the summary) begin answering it. '급락' only for an index fall of 2% or more or a stock fall of 3% or more; an "

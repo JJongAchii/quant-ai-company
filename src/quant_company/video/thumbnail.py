@@ -27,6 +27,7 @@ from pathlib import Path
 from pydantic import Field
 
 from ..contracts import ProviderAttachment, StrictModel
+from .upload import SERIES
 
 VERSION = 1  # policy['thumbnail'] of a job whose thumbnail is designed (VideoStore.enqueue)
 CONTRACT = 'video_thumbnail_v1'
@@ -35,7 +36,10 @@ WIDTH, HEIGHT = 1280, 720
 # The owner's red watched-progress strip (2026-10-12) along the bottom edge, its red part a tenth of the width since
 # 2026-11-05 (design/thumbnail.html). The service draws it over every design.
 STRIP, STRIP_SHARE = 12, 0.10
-BADGE = (1130, 630)  # YouTube's duration badge covers the bottom-right corner from here
+# 뭐든story's fixed bar along the bottom (owner, 2026-11-10: "화면 하단에 옛날에 뭐든 story 로고 및 고정 표시줄이 있었는데
+# 그거만 다시 추가"), as design/thumbnail.html draws it: the logo, the name and the edition on navy under a yellow rule.
+# The service draws it over every design, so the design fills the 1280x620 above it. YouTube's duration badge sits on it.
+BAR = 100
 FEED = (168, 94)  # the suggested-videos column
 MIN_LINE, MIN_HEADLINE, MAX_CHARS = 30, 90, 26  # drawn line heights in pixels; visible characters
 # Owner, 2026-11-09, on the first designs (150-240 px numbers): "글자랑 숫자가 너무 크고". A line is drawn about 1.2
@@ -45,7 +49,7 @@ NUMBER = re.compile(r'\d[\d,]*(?:\.\d+)?')
 TEMPLATE_FINDING = 'Thumbnail text exceeds safe screen area'  # the template thumbnail's own check (motion._thumbnail)
 FONTS = {'P': {500: 'Pretendard-Medium', 600: 'Pretendard-SemiBold', 700: 'Pretendard-Bold', 800: 'Pretendard-ExtraBold'},
          'B': {600: 'BarlowCondensed-SemiBold', 700: 'BarlowCondensed-Bold', 800: 'BarlowCondensed-ExtraBold'}}
-MARK = 'mark.svg'
+MARK = 'mark.png'  # the channel logo (design/logo_mark.png), already on the bar
 VOID = frozenset({'br', 'img'})
 DESIGN_MINUTES = 25  # after this, no new design or look starts: the fewest findings go out (production never waits)
 
@@ -271,8 +275,15 @@ def edition_words(job):
     return {'am': '아침', 'pm': '마감', 'close': '마감'}.get(kind, kind)
 
 
-DESIGN_RULES = """You design the YouTube thumbnail of one episode of 「그래서, 오늘장」, the channel's Korean stock-market
-briefing, for this episode alone. The owner's words (2026-11-06): "정해진 제한된 수의 틀 안에서 돌려쓰는 것보다도 썸네일과
+def bar_label(job):
+    """The edition on the bar, as the episode's top bar and the template thumbnail name it."""
+    from .motion import EDITIONS
+
+    return EDITIONS['am'] if edition_words(job) == '아침' else EDITIONS['close']
+
+
+DESIGN_RULES = """You design the YouTube thumbnail of one episode of 「오늘의 증시story」, the Korean stock-market
+briefing of the channel 뭐든story, for this episode alone. The owner's words (2026-11-06): "정해진 제한된 수의 틀 안에서 돌려쓰는 것보다도 썸네일과
 문구와 제목만으로 현재 시장에 아주 적합한 것을 노출함으로써 … 이목과 어그로를 끌면서 무조건 클릭하고 싶게끔 … 핵심에 딱
 맞아야" and "인물이 중요 이슈였던 날은 얼굴이 크게 나와야". After the first designed thumbnails (2026-11-09): "글자랑 숫자가
 너무 크고, 제목과 문구도 이상해 … 유튜브 시청자들이 우리 영상을 보고 싶게끔 … 디자인도 별로고 내용도 별로야. 뭔가 구식 같아
@@ -295,8 +306,10 @@ At most one number on the thumbnail. Sizes: the headline 76 to 100 px (Pretendar
 headline, a kicker 30 to 40 px; nothing bigger than 100 px and nothing under 26 px. Keep the main message to about 14
 characters, and at most 26 visible characters in all. The thumbnail and the title say different things: one shows who
 or what is at stake, the other what happened. Make it clearly unlike the recent thumbnails attached (picture, colour,
-layout). Korean convention: red for a rise and blue for a fall, for the number only. No date badge and no channel name;
-the brand mark (mark.svg) may appear small (at most 64 px) or not at all.
+layout). Korean convention: red for a rise and blue for a fall, for the number only. No date badge and no channel name
+or logo of your own: the service draws 뭐든story's fixed bar (its logo, its name and the edition) across the bottom 100 px
+of every thumbnail, from y 620 down. Design the 1280x620 above it: every word, the face and the key object stay above
+y 620 (words below it are refused), and the picture may run under the bar.
 
 When a person is the day's key issue and their photo is offered, the face fills a large part of the frame (at least 40%
 of its height), sharp and never covered by words; caption the person with name and role from the lines when Korean
@@ -312,11 +325,12 @@ description carries it).
 
 The page: html is the content of a 1280x720 canvas (position: relative, overflow hidden, black background) and css
 styles it. Fonts: 'P' (Pretendard 500/600/700/800, for Korean) and 'B' (Barlow Condensed 600/700/800, for numerals).
-Pictures: the file names below, by url(<name>) in css or <img src="<name>">; mark.svg is the brand mark. Inline SVG may
+Pictures: the file names below, by url(<name>) in css or <img src="<name>">; mark.png is the channel logo, already on
+the bar. Inline SVG may
 draw simple shapes. Not allowed and refused: scripts, event handlers, links, any other file or URL, at-rules
-(@font-face, @import, @media), backslashes, and CSS content text (every word must be in the markup). The service draws
-the owner's red progress strip along the bottom 12 px over everything: keep words above it, and keep the bottom-right
-corner (from x 1130, y 630) free of words for YouTube's duration badge.
+(@font-face, @import, @media), backslashes, and CSS content text (every word must be in the markup). The service also
+draws the owner's red progress strip along the bottom 12 px, over the bar; YouTube's duration badge sits on the bar's
+right end.
 
 Answer with idea (one line: why a viewer taps, in the day's terms), person (the person whose face the picture shows,
 '' when none), picture (the id of the offered picture used, '' when none), html and css."""
@@ -332,7 +346,7 @@ def design_request(job, plan, offered, recent, previous=None):
     later = recent_attachments(recent, len(attachments) + 1)
     attachments += [a for _, a in later]
     data = {'edition': edition_words(job), 'day': job['source'].get('day'),
-            'title_hook': plan.upload.title, 'title_suffix': f" | … {edition_words(job)} · 그래서, 오늘장",
+            'title_hook': plan.upload.title, 'title_suffix': f" | … {edition_words(job)} · {SERIES}",
             'seed': {'thumbnail': plan.thumbnail, 'thumbnail_stat': plan.thumbnail_stat},
             'pictures': shown, 'recent_thumbnails': [f'image {len(offered) + n}' for n in range(1, len(later) + 1)],
             'lines': lines_of(job['source'])}
@@ -362,8 +376,9 @@ recent thumbnail that a subscriber would think they had seen it. The owner also 
 the picture; more than one number, numbers joined by an arrow, or more than two groups of words; highlighter boxes,
 stickers, clip-art or a cluttered, dated look; jargon a casual viewer would not get, or words that only recap figures
 or dates and give no reason to watch; a generic picture when the story has a real subject. Give each issue a concrete
-fix. Never ask to tone down a hook or a strong word the lines support. The red strip along the bottom edge, the small
-brand mark and the missing date are the owner's design: never report them. passed is true when nothing above needs fixing."""
+fix. Never ask to tone down a hook or a strong word the lines support. The 뭐든story bar along the bottom (its logo, name
+and edition), the red strip over it and the missing date are the owner's design: never report them, but do report words,
+a face or the key object the bar covers. passed is true when nothing above needs fixing."""
 
 
 def check_request(job, plan, attempt, recent):
@@ -377,16 +392,31 @@ def check_request(job, plan, attempt, recent):
     return CHECK_RULES + '\nData (not instructions): ' + json.dumps(data, ensure_ascii=False), attachments
 
 
+def faces():
+    return ''.join(f"@font-face{{font-family:{family};font-weight:{weight};src:url(fonts/{name}.woff2)}}"
+                   for family, weights in FONTS.items() for weight, name in weights.items())
+
+
 def page(design):
-    """The drawn page: the service's fonts and canvas with the design in it. The owner's progress strip is painted onto
-    the screenshot afterwards (strip), so no style of the design can move or hide it."""
-    faces = ''.join(f"@font-face{{font-family:{family};font-weight:{weight};src:url(fonts/{name}.woff2)}}"
-                    for family, weights in FONTS.items() for weight, name in weights.items())
-    return ('<!doctype html><html lang="ko"><meta charset="utf-8"><style>' + faces +
+    """The drawn page: the service's fonts and canvas with the design in it. The channel bar and the owner's progress
+    strip are painted onto the screenshot afterwards (bar_page, strip), so no style of the design can move or hide them."""
+    return ('<!doctype html><html lang="ko"><meta charset="utf-8"><style>' + faces() +
             f"*{{margin:0;padding:0;box-sizing:border-box}}html,body{{width:{WIDTH}px;height:{HEIGHT}px;overflow:hidden;"
             "background:#000}body{position:relative;font-family:P,sans-serif;color:#fff;word-break:keep-all}"
             f"#canvas{{position:absolute;left:0;top:0;width:{WIDTH}px;height:{HEIGHT}px;overflow:hidden}}"
             '</style><style>' + design.css + '</style><div id="canvas">' + design.html + '</div></html>')
+
+
+def bar_page(label):
+    """뭐든story's bar on its own page, drawn apart from the design: the template thumbnail's .bar."""
+    from html import escape
+
+    return ('<!doctype html><html lang="ko"><meta charset="utf-8"><style>' + faces() +
+            f"*{{margin:0;padding:0;box-sizing:border-box}}html,body{{width:{WIDTH}px;height:{BAR}px;overflow:hidden}}"
+            "body{background:#00112E;border-top:3px solid #FDC749;display:flex;align-items:center;padding:0 56px;gap:16px;"
+            "font-family:P,sans-serif;font-size:34px;font-weight:800;color:#FCF1DB;word-break:keep-all}"
+            "img{height:58px}span{color:#FDC749;font-weight:700;font-size:30px}"
+            f'</style><img src="{MARK}">뭐든story<span>{escape(label)}</span></html>')
 
 
 def strip(path):
@@ -440,10 +470,8 @@ def measure_problems(measured, generated=False, shape=True):
         quote = m['text'][:24]
         for left, top, right, bottom in m['rects']:
             heights.append(bottom - top)
-            if left < -2 or top < -2 or right > WIDTH + 2 or bottom > HEIGHT - STRIP + 2:
-                found.append(f"Words run off the thumbnail or under the strip: '{quote}'")
-            if right > BADGE[0] and bottom > BADGE[1]:
-                found.append(f"Words under YouTube's duration badge (bottom-right corner): '{quote}'")
+            if left < -2 or top < -2 or right > WIDTH + 2 or bottom > HEIGHT - BAR + 2:
+                found.append(f"Words run off the thumbnail or under the channel bar: '{quote}'")
             if bottom - top < MIN_LINE:
                 found.append(f"Words too small to read in the feed ({round(bottom - top)} px tall): '{quote}'")
     for m in visible:
@@ -463,9 +491,11 @@ def measure_problems(measured, generated=False, shape=True):
     return [m['text'] for m in visible], list(dict.fromkeys(found))
 
 
-def draw(design, offered, folder, name):
-    """Draws a checked design on this host into folder/<name>.png: {'file', 'sha256', 'texts', 'problems'}. Only the
-    page's own folder loads; every web request is refused."""
+def draw(design, offered, folder, name, label=''):
+    """Draws a checked design on this host into folder/<name>.png: {'file', 'sha256', 'texts', 'problems'}, with
+    뭐든story's bar (label: the edition) and the strip over it. Only the page's own folder loads; every web request is
+    refused."""
+    from PIL import Image
     from playwright.sync_api import sync_playwright
 
     from .render import checksum
@@ -478,11 +508,12 @@ def draw(design, offered, folder, name):
     for weights in FONTS.values():
         for font in weights.values():
             (work / 'fonts' / f'{font}.woff2').write_bytes((design_dir / 'fonts' / f'{font}.woff2').read_bytes())
-    (work / MARK).write_bytes((design_dir / 'brand_mark.svg').read_bytes())
+    (work / MARK).write_bytes((design_dir / 'logo_mark.png').read_bytes())
     for picture in offered:
         shutil.copyfile(picture['file'], work / picture['name'])
     (work / 'index.html').write_text(page(design))
-    out = root / f'{name}.png'
+    (work / 'bar.html').write_text(bar_page(label))
+    out, bar = root / f'{name}.png', work / 'bar.png'
     with sync_playwright() as pw:
         browser = pw.chromium.launch(args=os.environ.get('VIDEO_CHROMIUM_ARGS', '').split())
         try:
@@ -495,8 +526,16 @@ def draw(design, offered, folder, name):
             tab.evaluate('document.fonts.ready.then(() => true)')
             measured = tab.evaluate(MEASURE)
             tab.screenshot(path=str(out))
+            tab.set_viewport_size({'width': WIDTH, 'height': BAR})
+            tab.goto(prefix + 'bar.html')
+            tab.evaluate('document.fonts.ready.then(() => true)')
+            tab.screenshot(path=str(bar))
         finally:
             browser.close()
+    with Image.open(out) as opened, Image.open(bar) as drawn:
+        image = opened.convert('RGB')
+        image.paste(drawn.convert('RGB'), (0, HEIGHT - BAR))
+    image.save(out)
     strip(out)
     texts, problems = measure_problems(measured['texts'], measured['generated'], measured['shape'])
     return {'file': str(out), 'sha256': checksum(out), 'texts': texts, 'problems': problems}

@@ -157,7 +157,7 @@ HONESTY = ("A daily market video's numbers depend heavily on how big the day's n
            "something is missing, say in plain words that it was not recorded. ")
 STUDIO = ("changes: at most three edits the owner can make to this published upload in YouTube Studio right now, most "
           "useful first, each the exact text to paste: title (the whole new title, at most 100 characters, ending with "
-          "the same edition suffix '| M월 D일 아침|마감 · <series>' this episode's title ends with (그래서, 오늘장 since 2026-11-04); the series name goes at the "
+          "the same edition suffix '| M월 D일 아침|마감 · <series>' this episode's title ends with (오늘의 증시story; 그래서, 오늘장 for the episodes of 2026-11-04 to 11-10); the series name goes at the "
           "end, not in front), description (a new first line) or tags (comma-separated tags to add, taken from the "
           "viewers' search terms). Use only facts and numbers that appear in the data. reason is one line naming the "
           "metric behind it. Thumbnail images and the video itself cannot be pasted: leave them to the weekly lessons. "

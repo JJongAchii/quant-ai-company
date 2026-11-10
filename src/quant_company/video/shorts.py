@@ -45,7 +45,7 @@ from .motion import CHROMIUM_ARGS, FPS, RENDERER_DIGEST, captions, credit_author
 from .render import RenderInProgress, checksum, music_track, probe, quality_probe, run, spoken
 from .render import mix_music as mix
 from .speech_process import SpeechProcess
-from .upload import BASE_TAGS, FIXED_TAGS, INSTRUCTION, SERIES
+from .upload import BASE_TAGS, FIXED_TAGS, INSTRUCTION, OLD_SERIES, SERIES
 
 WIDTH, HEIGHT = 1080, 1920
 
@@ -261,7 +261,7 @@ class ShortsPlan(StrictModel):
         if any(re.search(r'[+-]\d', x) for x in spoken_lines):
             raise ValueError('Read signs as words in narration')
         # The series suffix would attach the Shorts to the episode in the performance analysis (analytics_store._match).
-        if '|' in self.title or SERIES in self.title or '증시story' in self.title:
+        if '|' in self.title or SERIES in self.title or OLD_SERIES in self.title or '증시story' in self.title:
             raise ValueError('The Shorts title carries no series name')
         return self
 
@@ -663,7 +663,7 @@ class ShortsRenderer:
         shutil.copytree(files('quant_company.video').joinpath('shorts_design'), page, dirs_exist_ok=True)
         design = files('quant_company.video').joinpath('design')
         shutil.copytree(design.joinpath('fonts'), page / 'fonts', dirs_exist_ok=True)
-        shutil.copy2(design.joinpath('brand_mark.svg'), page / 'brand_mark.svg')
+        shutil.copy2(design.joinpath('logo_mark.png'), page / 'logo_mark.png')
         (page / 'img').mkdir(exist_ok=True)
         return page
 

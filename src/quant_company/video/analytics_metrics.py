@@ -22,9 +22,9 @@ OUTLIER = {"views": (2.0, 0.5), "ctr": (1.5, 2 / 3), "hook_30s": (1.3, 0.77)}
 OUTLIER_MIN = 3
 VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
 # upload.compose: "<hook> | {M}월 {D}일 {아침|마감} · 오늘의 증시story" (series name last since 2026-10-10).
-# Since 2026-11-04 the series is the channel '그래서, 오늘장'; earlier uploads end with '오늘의 증시story'.
-SERIES = "그래서, 오늘장"
-OLD_SERIES = "오늘의 증시story"
+# From 2026-11-04 to 2026-11-10 the briefings went out as '그래서, 오늘장'; before and since, '오늘의 증시story'.
+SERIES = "오늘의 증시story"
+OLD_SERIES = "그래서, 오늘장"
 TITLE = re.compile(r"\|\s*(\d{1,2})월\s+(\d{1,2})일\s+(아침|마감)\s*·\s*(?:그래서, 오늘장|오늘의 증시story)\s*$")
 # Until 12 October 2026: "[오늘의 증시story] … | 10월 8일 마감 브리핑".
 LEGACY_TITLE = re.compile(r"^\s*\[오늘의 증시story\].*\|\s*(\d{1,2})월\s+(\d{1,2})일\s+(아침|마감)\s*브리핑\s*$")
