@@ -34,8 +34,8 @@ def subject(draft, day, kind="pm"):
 
 
 def masthead(day, kind):
-    """The header's right label and the plain text's first line, beside the channel name: the subject's edition."""
-    return f"{edition_label(day)} {KIND_NAMES[kind]} 브리핑"
+    """The header's right label and the plain text's first line, beside the channel name."""
+    return f"{edition_label(day)} {'아침' if kind == 'am' else '장 마감'} · 오늘의 증시story"
 
 
 def unsubscribe_url(sender):

@@ -53,7 +53,7 @@ class UploadCopy(StrictModel):
     @field_validator('title')
     @classmethod
     def hook(cls, value):
-        if '|' in value or SERIES in value or OLD_SERIES in value:
+        if '|' in value or '증시story' in value or OLD_SERIES in value:
             raise ValueError('Title is the hook only; the service appends the date, edition and series name')
         return value
 
@@ -93,7 +93,7 @@ def compose(copy, day, asof, edition, chapters, refs, playlist_url='', strict=Tr
         lines += ['', '📚 참고 자료'] + refs
     lines += ['', CLOSING, '']
     if playlist_url:
-        lines += [f'▶ {SERIES} 모아보기', playlist_url, '']
+        lines += ['▶ 증시story 모아보기', playlist_url, '']
     lines += [SIGNATURE, '', ' '.join(BASE_TAGS + tuple(copy.hashtags))]
     title = f'{copy.title} | {day.month}월 {day.day}일 {EDITION_WORD.get(edition, "아침")} · {SERIES}'
     tags = list(dict.fromkeys(copy.tags)) + list(FIXED_TAGS)

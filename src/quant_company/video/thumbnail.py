@@ -49,7 +49,7 @@ NUMBER = re.compile(r'\d[\d,]*(?:\.\d+)?')
 TEMPLATE_FINDING = 'Thumbnail text exceeds safe screen area'  # the template thumbnail's own check (motion._thumbnail)
 FONTS = {'P': {500: 'Pretendard-Medium', 600: 'Pretendard-SemiBold', 700: 'Pretendard-Bold', 800: 'Pretendard-ExtraBold'},
          'B': {600: 'BarlowCondensed-SemiBold', 700: 'BarlowCondensed-Bold', 800: 'BarlowCondensed-ExtraBold'}}
-MARK = 'mark.png'  # the channel logo (design/logo_mark.png), already on the bar
+MARK = 'mark.png'  # the channel logo (design/logo_mark.png) on the bar; a design may not load it
 VOID = frozenset({'br', 'img'})
 DESIGN_MINUTES = 25  # after this, no new design or look starts: the fewest findings go out (production never waits)
 
@@ -115,7 +115,7 @@ class Page(HTMLParser):
                 self.problems.append(f'Attribute not allowed in the thumbnail: {name}')
             elif name == 'src':
                 if tag != 'img' or value not in self.allowed:
-                    self.problems.append(f'Only the offered pictures and {MARK} may be loaded (src={value[:40]})')
+                    self.problems.append(f'Only the offered pictures may be loaded (src={value[:40]})')
             elif name == 'style':
                 self.problems += css_problems(value, self.allowed)
             elif name == 'xmlns':
@@ -145,7 +145,7 @@ def css_problems(css, allowed):
         found.append('Styles may not load or run anything')
     for _, target in URL.findall(css):
         if target not in allowed and not re.fullmatch(r'#[\w-]+', target):
-            found.append(f'Only the offered pictures and {MARK} may be loaded (url({target[:40]}))')
+            found.append(f'Only the offered pictures may be loaded (url({target[:40]}))')
     if CONTENT.search(css):
         found.append('Generated text (CSS content) is not allowed: every word must be in the markup')
     return found
@@ -153,7 +153,7 @@ def css_problems(css, allowed):
 
 def markup(design, offered):
     """(texts, problems) of a design's page before it is drawn; a design with any problem here is never drawn."""
-    allowed = {p['name'] for p in offered} | {MARK}
+    allowed = {p['name'] for p in offered}  # the logo (MARK) is the bar's alone
     parser = Page(allowed)
     parser.feed(design.html)
     parser.close()
@@ -325,8 +325,7 @@ description carries it).
 
 The page: html is the content of a 1280x720 canvas (position: relative, overflow hidden, black background) and css
 styles it. Fonts: 'P' (Pretendard 500/600/700/800, for Korean) and 'B' (Barlow Condensed 600/700/800, for numerals).
-Pictures: the file names below, by url(<name>) in css or <img src="<name>">; mark.png is the channel logo, already on
-the bar. Inline SVG may
+Pictures: the file names below, by url(<name>) in css or <img src="<name>">. The channel logo is the bar's alone. Inline SVG may
 draw simple shapes. Not allowed and refused: scripts, event handlers, links, any other file or URL, at-rules
 (@font-face, @import, @media), backslashes, and CSS content text (every word must be in the markup). The service also
 draws the owner's red progress strip along the bottom 12 px, over the bar; YouTube's duration badge sits on the bar's

@@ -402,7 +402,7 @@ docker compose -f deploy/compose.yaml -f deploy/video.compose.yaml exec video-wo
 | `VIDEO_RENDER_WORKERS` | 2 | 프레임 캡처 프로세스 수. 8GB 서버 2(아침 06:50 목표), 작은 서버 1 |
 | `VIDEO_AM_PUBLISH_DST` / `VIDEO_AM_PUBLISH_STD` / `VIDEO_PM_PUBLISH` | 07:00 / 07:50 / 18:00 | 유튜브 공개 목표(KST). 아침은 뉴욕 서머타임 여부로 고른다 |
 | `VIDEO_PUBLISH_LEAD_MINUTES` | 10 | 공개 몇 분 전까지 파일을 스레드에 올릴지. 작업은 본문 발송 즉시 시작하고, 늦어도 완성되면 바로 올리며 늦은 시간을 한 줄 적는다. 지연돼도 제작은 계속한다 |
-| `VIDEO_PLAYLIST_URL` | `https://www.youtube.com/playlist?list=PLbCkACCer37U` | 설명란 "오늘의 증시story 모아보기" 주소. 뭐든story 채널의 증시story 재생목록이다(2026-11-10부터 다시; 11/6~11/10에는 「그래서, 오늘장」 채널의 PLAMiTJ2pkjHY). 빈 값이면 그 두 줄을 뺀다. 업로드는 손으로 하므로 새 영상은 올릴 때 이 재생목록을 고른다 |
+| `VIDEO_PLAYLIST_URL` | `https://www.youtube.com/playlist?list=PLbCkACCer37U` | 설명란 "증시story 모아보기" 주소. 뭐든story 채널의 증시story 재생목록이다(2026-11-10부터 다시; 11/6~11/10에는 「그래서, 오늘장」 채널의 PLAMiTJ2pkjHY). 빈 값이면 그 두 줄을 뺀다. 업로드는 손으로 하므로 새 영상은 올릴 때 이 재생목록을 고른다 |
 | `VIDEO_RETENTION_DAYS` | 14 | 작업 종료 뒤 최종 파일 보관 일수 |
 | `VIDEO_MIN_FREE_GB` | 10 | 이보다 여유가 적으면 새 회차를 시작하지 않음 |
 | `VIDEO_ANALYTICS_ENABLED` | false | 공개 업로드의 성과 분석([성과 분석](#성과-분석)). YouTube 채널 ID·브리핑 소유자·전용 성과 채널이 필요 |

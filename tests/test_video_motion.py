@@ -192,7 +192,7 @@ def test_motion_render_frames_layout_credits_and_artifact_binding(tmp_path):
     assert '📅 2026.09.22 | 미국 증시' in upload and '자료 기준: 2026.09.22 07:30 (한국시간) · 장전' in upload
     # Back on 뭐든story (owner, 2026-11-10): its 증시story playlist, never the 그래서, 오늘장 channel's PLAMiTJ2pkjHY.
     assert '00:00 반도체가 이끌었다' in upload and '#증시story #뭐든story #반도체' in upload
-    assert '▶ 오늘의 증시story 모아보기\nhttps://www.youtube.com/playlist?list=PLbCkACCer37U' in upload and 'PLAMiTJ2pkjHY' not in upload
+    assert '▶ 증시story 모아보기\nhttps://www.youtube.com/playlist?list=PLbCkACCer37U' in upload and 'PLAMiTJ2pkjHY' not in upload
     assert '세상의 뭐든, 이야기로 만나다. 뭐든story.' in upload and '오늘장' not in upload
     assert 'https://www.cnbc.com/fixture-market-report.html' in upload
     assert not (tmp_path / 'out' / 'page').exists() and not list((tmp_path / 'out').glob('part-*.mp4'))
@@ -249,6 +249,8 @@ def test_the_fixed_opening_and_closing_frame_the_episode_without_moving_its_chap
         plain['chapters'][1]['start'] + scenes[0]['t1'], abs=.01)
     srt = (tmp_path / 'out' / 'subtitles.srt').read_text()
     assert srt.split('\n')[2] == '안녕하세요, 뭐든story입니다.' and '구독과 좋아요, 알림 설정 부탁드려요.' in srt
+    from quant_company.video.motion import BRAND
+    assert BRAND['sting']['say'] == '안녕하세요, 뭐든 스토리입니다.'  # 'story' in Korean letters for the voice
     # Checked on screen like every card, but never sent to the visual review.
     assert not (tmp_path / 'out' / 'layout-qa.json').exists()
     assert not any(f['scene'].startswith('brand-') for f in manifest['review']['frames'])
@@ -490,7 +492,7 @@ def test_upload_copy_template_and_checks():
     result = compose(copy, date(2026, 9, 22), datetime(2026, 9, 22, 7, 30), 'am', chapters, refs, 'https://www.youtube.com/playlist?list=fixture')
     text = result['description']
     assert text.startswith(copy.lead + '\n' + copy.intro + '\n\n📅 2026.09.22 | 미국 증시')
-    assert '▶ 오늘의 증시story 모아보기\nhttps://www.youtube.com/playlist?list=fixture' in text
+    assert '▶ 증시story 모아보기\nhttps://www.youtube.com/playlist?list=fixture' in text
     assert '증시story에서 그 앞뒤 이야기를 함께 짚어봅니다.' in text
     assert text.endswith('세상의 뭐든, 이야기로 만나다. 뭐든story.\n\n#증시story #뭐든story #반도체')
     for broken in (dict(result, title=copy.title), dict(result, description=text.replace('00:10', '00:03')),
@@ -514,7 +516,10 @@ def test_title_puts_the_series_name_last_and_fits_100_characters():
     assert am['title'] == copy.title + ' | 9월 22일 아침 · 오늘의 증시story'
     pm = upload.compose(copy, date(2026, 10, 8), datetime(2026, 10, 8, 16, 30), 'close', chapters, [])
     assert pm['title'].endswith(' | 10월 8일 마감 · 오늘의 증시story') and len(pm['title']) <= 100
-    assert upload.UploadCopy.model_fields['title'].metadata[-1].max_length == 100 - upload.SUFFIX_MAX
+    assert upload.UploadCopy.model_fields['title'].metadata[-1].max_length == 100 - upload.SUFFIX_MAX == 73
+    for hook in ('증시story가 본 반도체', '그래서, 오늘장 반도체'):  # no series name, old or new, in the hook
+        with pytest.raises(ValueError, match='hook only'):
+            upload.UploadCopy.model_validate({**copy.model_dump(mode='json'), 'title': hook})
     for broken in ('[오늘의 증시story] 반도체가 이끌었다', '반도체가 이끌었다 | 9월 22일 아침 브리핑',
                    '반도체가 이끌었다 | 9월 22일 아침 · 그래서, 오늘장'):  # the 2026-11-04..10 series
         with pytest.raises(ValueError, match='오늘의 증시story'):

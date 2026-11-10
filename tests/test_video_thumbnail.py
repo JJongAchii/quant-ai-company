@@ -65,8 +65,8 @@ def test_a_design_that_could_load_run_or_hide_anything_is_refused(html, css, ref
 
 def test_a_clean_design_lists_its_words_and_may_draw_shapes():
     html = HTML + ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" class="a"><path d="M0 0L10 10" fill="url(#g)"/>'
-                   '<text x="1" y="9">S&amp;P</text></svg><img src="mark.png" class="m">')
-    texts, problems = thumbs.markup(design(html, CSS + '.a{align-content:center}.m{width:48px}'), PICTURE)
+                   '<text x="1" y="9">S&amp;P</text></svg>')
+    texts, problems = thumbs.markup(design(html, CSS + '.a{align-content:center}'), PICTURE)
     assert problems == [] and texts == ['반도체가 끌었다', '▲1.92%', 'S&P']
     _, problems = thumbs.markup(design(picture='gen-2'), PICTURE)
     assert problems == ['Picture gen-2 was not offered']
@@ -182,6 +182,10 @@ def test_the_design_leaves_the_bottom_to_the_anything_story_bar():
     assert '오늘장' not in thumbs.DESIGN_RULES and '뭐든story bar' in thumbs.CHECK_RULES
     assert thumbs.bar_label({'source': {'edition_kind': 'am'}, 'policy': {}}) == '아침 시장 브리핑'
     assert thumbs.bar_label({'source': {'edition_kind': 'close'}, 'policy': {}}) == '마감 브리핑'
+    # The logo is the bar's: a design may not draw it again (2026-11-10).
+    for html, css in (('<img src="mark.png">', CSS), ('<div class="m"></div>', CSS + '.m{background:url(mark.png)}')):
+        _, problems = thumbs.markup(design(HTML + html, css), PICTURE)
+        assert any('may be loaded' in p for p in problems), problems
     _, problems = thumbs.measure_problems([{'text': '반도체가 끌었다', 'hidden': False, 'rects': [[56, 560, 700, 660]]}])
     assert problems == ["Words run off the thumbnail or under the channel bar: '반도체가 끌었다'"]
 
@@ -251,6 +255,8 @@ class ThumbnailProvider:
 def fake_draw(problems=()):
     def draw(self, design, offered, folder, name, label=''):
         from PIL import Image
+
+        assert label in ('아침 시장 브리핑', '마감 브리핑')  # the edition reaches the bar
 
         from quant_company.video.render import checksum
 
