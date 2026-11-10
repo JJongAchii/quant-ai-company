@@ -280,6 +280,7 @@ def auto_host(host, monkeypatch):
     monkeypatch.setattr(release, "verify", lambda sha, runner=None: [{"service": "api", "ok": True}])
     monkeypatch.setattr(release, "production_busy", lambda runner=None: [])
     monkeypatch.setattr(release, "host_free", lambda: True)
+    monkeypatch.setattr(release, "free_gb", lambda: 100.0)
     steps = []
     monkeypatch.setattr(release, "build", lambda sha, runner=None: steps.append(("build", sha)))
     monkeypatch.setattr(release, "migrate", lambda sha, runner=None: steps.append(("migrate", sha)))
@@ -535,6 +536,112 @@ def test_prune_keeps_recent_current_running_and_protected_releases(host):
     assert removed == [names[3]] and not (release.RELEASES / names[3]).exists()
     assert ["docker", "image", "rm", f"quant-company-video:{names[3]}"] in calls
     assert all((release.RELEASES / n).exists() for n in names if n != names[3])
+
+
+ECR = "061039802347.dkr.ecr.ap-northeast-2.amazonaws.com/quant-company-render"
+
+
+def test_old_render_images_go_but_the_render_commits_and_a_fresh_build_stay():
+    # 2026-11-10: eleven render images nothing used held about 33 GB; the Fargate task pulls its image from ECR.
+    accepted = "5454e3d" + "0" * 33
+    images = [(f"{ECR}:{SHA}", "2026-11-08 18:43:38"), (f"quant-company-render:{SHA}", "2026-11-08 18:43:38"),
+              (f"{ECR}:{OLD}", "2026-11-05 06:41:10"), (f"quant-company-render:{OLD}", "2026-11-05 06:41:10"),
+              (f"{ECR}:5454e3d-main", "2026-10-20 01:00:00"),  # a hand-made tag of the accepted commit
+              (f"{ECR}:fa7084f-fargate16", "2026-10-20 01:00:00"),
+              (f"{ECR}:{'c' * 40}", "2026-11-09 12:00:00"),  # built 15 hours ago: maybe still on its way to ECR
+              (f"{ECR}:a-test", "2026-10-20 01:00:00"),  # too short to name the protected commit aaaa…
+              (f"{ECR}:0000000-old", "2026-10-20 01:00:00"),  # inside the accepted commit, not its start
+              ("quant-company-render:<none>", "2026-10-20 01:00:00"),  # pulled by digest: nothing to untag
+              (f"quant-company-video:{OLD}", "2026-11-05 06:41:10"), ("<none>:<none>", "2026-10-01 00:00:00")]
+    removed = []
+
+    def runner(args, env=None, input=None, check=True, timeout=None):
+        if args[:3] == ["docker", "image", "ls"]:
+            return "".join(f"{tag}|{at} +0000 UTC\n" for tag, at in images)
+        if args[:3] == ["docker", "image", "rm"]:
+            return removed.append(args[3]) or ""
+        raise AssertionError(args)
+
+    gone = release.prune_render({SHA, accepted, None}, runner=runner, now=datetime(2026, 11, 10, 3, tzinfo=UTC))
+    assert gone == removed == [f"{ECR}:{OLD}", f"quant-company-render:{OLD}", f"{ECR}:fa7084f-fargate16",
+                               f"{ECR}:a-test", f"{ECR}:0000000-old"]
+
+
+def test_a_release_frees_space_before_building_or_waits_for_disk(auto_host, monkeypatch):
+    # 2026-11-10 10:32 KST: a build took the host from 19 to 8.8 GiB free and the video worker held every episode.
+    configure(RELEASE_AUTO_ENABLED="true", VIDEO_RENDER_COMMIT=OLD)
+    free, freed = [], []
+    monkeypatch.setattr(release, "free_gb", lambda: free.pop(0) if len(free) > 1 else free[0])
+
+    def prune(keep=3, protect=(), runner=None, unbuilt_only=False):
+        return [] if unbuilt_only else freed.append(("releases", keep, set(protect))) or ["old-release"]
+
+    monkeypatch.setattr(release, "prune", prune)
+    monkeypatch.setattr(release, "prune_render", lambda protect, runner=None, now=None:
+                        freed.append(("render", set(protect))) or ["old-render"])
+    github = FakeGitHub(CHANGED)
+    free[:] = [15.0, 15.0]  # short of 10 GB for the video worker plus 13 GB for the build, before and after pruning
+    status = release.auto(github, runner=no_docker, now=IN_WINDOW)
+    assert status["action"] == "waiting_for_disk" and status["failed_commit"] is None and auto_host == []
+    assert "15.0 GB free" in status["detail"] and "23 GB" in status["detail"] and not release.progress_file().exists()
+    assert freed == [("releases", 3, {SHA, OLD}), ("render", {SHA, OLD})]
+    freed.clear()
+    free[:] = [15.0, 30.0]  # pruning made the room
+    status = release.auto(github, runner=no_docker, now=IN_WINDOW)
+    assert status["action"] == "released" and auto_host[0] == ("build", SHA)
+    assert status["pruned"] == ["old-release", "old-release"] and status["pruned_images"] == ["old-render", "old-render"]
+
+
+def test_a_release_with_room_prunes_nothing_first_and_an_image_of_the_commit_proves_no_build(monkeypatch):
+    monkeypatch.setattr(release, "prune", lambda **kwargs: pytest.fail("nothing to free"))
+    monkeypatch.setattr(release, "prune_render", lambda *args, **kwargs: pytest.fail("nothing to free"))
+    monkeypatch.setattr(release, "free_gb", lambda: 40.0)
+    assert release.room(SHA, {"VIDEO_MIN_FREE_GB": "10"}, runner=no_docker) == ([], [])
+    # The operator's render image (or one image of a build that died) carries the commit too: still 13 GB to go.
+    monkeypatch.setattr(release, "free_gb", lambda: 15.0)
+    monkeypatch.setattr(release, "prune", lambda **kwargs: [])
+    monkeypatch.setattr(release, "prune_render", lambda *args, **kwargs: [])
+    tagged = lambda args, **kwargs: f"quant-company-render:{SHA}|2026-11-10 01:00:00 +0000 UTC\n"  # noqa: E731
+    with pytest.raises(release.LowDisk):
+        release.room(SHA, {}, runner=tagged)
+
+
+def test_a_resumed_release_finishes_whatever_the_disk(auto_host, monkeypatch):
+    # Its services already run the commit and its images exist: holding it would leave production split.
+    configure(RELEASE_AUTO_ENABLED="true")
+    release.write_json(release.progress_file(), {"phase": "releasing", "target": SHA, "previous": OLD,
+                                                 "started_at": "2026-10-14T02:00:00+00:00"})
+    (release.RELEASES / SHA).mkdir()
+    for path, content in CHANGED.items():
+        (release.RELEASES / SHA / path).parent.mkdir(parents=True, exist_ok=True)
+        (release.RELEASES / SHA / path).write_text(content)
+    monkeypatch.setattr(release, "moved", lambda sha, services, runner=None: ["api"])
+    monkeypatch.setattr(release, "free_gb", lambda: 1.0)
+    status = release.auto(FakeGitHub(CHANGED), runner=no_docker, now=OUT_OF_WINDOW)
+    assert status["action"] == "released" and auto_host[0] == ("build", SHA)
+
+
+def test_a_cleanup_error_before_the_build_is_reported_not_held_as_a_failed_commit(auto_host, monkeypatch):
+    configure(RELEASE_AUTO_ENABLED="true")
+    monkeypatch.setattr(release, "free_gb", lambda: 1.0)
+
+    def broken(keep=3, protect=(), runner=None, unbuilt_only=False):
+        if not unbuilt_only:
+            raise OSError("rmtree: Directory not empty")
+        return []
+
+    monkeypatch.setattr(release, "prune", broken)
+    status = release.auto(FakeGitHub(CHANGED), runner=no_docker, now=IN_WINDOW)
+    assert status["action"] == "error" and status["failed_commit"] is None and "restored" not in status
+    assert auto_host == [] and not release.progress_file().exists()
+
+
+def test_a_report_only_check_frees_nothing_on_a_full_disk(auto_host, monkeypatch):
+    monkeypatch.setattr(release, "free_gb", lambda: 1.0)
+    monkeypatch.setattr(release, "prune", lambda keep=3, protect=(), runner=None, unbuilt_only=False:
+                        [] if unbuilt_only else pytest.fail("report mode deletes nothing"))
+    monkeypatch.setattr(release, "prune_render", lambda *args, **kwargs: pytest.fail("report mode deletes nothing"))
+    assert release.auto(FakeGitHub(CHANGED), runner=no_docker, now=IN_WINDOW)["action"] == "would_release"
 
 
 def test_a_video_waiting_for_approval_does_not_hold_a_release():

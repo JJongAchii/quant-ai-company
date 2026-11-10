@@ -325,6 +325,8 @@ ECR은 최근 5개 이미지만 남긴다. AWS Budgets `quant-company-render-mon
 이미지 갱신: `docker build --provenance=false -f deploy/Dockerfile.render .`(linux/amd64) → ECR에 새 태그로 push →
 digest로 스택의 `ImageUri`를 바꾸면 새 태스크 정의 revision이 생긴다(이전 revision은 남는다) → worker의
 `VIDEO_RENDER_TASK_DEFINITION`을 그 revision으로 바꾼다. worker와 렌더 이미지는 같은 소스 버전으로 만든다.
+호스트에 남은 렌더 이미지는 릴리스가 정리한다. `VIDEO_RENDER_COMMIT`·`VIDEO_RENDER_ACCEPTED`의 이미지와 이틀이 안 된 이미지만
+남긴다. 그러니 새 이미지는 이틀 안에 push하고 `VIDEO_RENDER_COMMIT`을 바꾼다(2026-11-10, ADR 0045).
 
 ## 서버 준비
 

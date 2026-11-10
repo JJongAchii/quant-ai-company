@@ -61,6 +61,10 @@ class Busy(ReleaseError):
     """Production work or another host operation is in the way; nothing is wrong with the release."""
 
 
+class LowDisk(Busy):
+    """Building would leave less free space than the video worker needs to start an episode (VIDEO_MIN_FREE_GB)."""
+
+
 class NeedsOperator(ReleaseError):
     """The release needs a host step this tool does not take (quant-data, host values, new or removed services)."""
 
@@ -882,9 +886,63 @@ def prune(keep=3, protect=(), runner=run, unbuilt_only=False):
     return removed
 
 
-def release_to(status, target, previous, values, runner=run):
+RENDER_REPOSITORY = "quant-company-render"  # deploy/Dockerfile.render, built here and pushed to ECR
+RENDER_KEEP_DAYS = 2
+# Free GB a full build takes: images and build cache (2026-11-10: 19 GiB free before, 8.8 GiB after the release).
+BUILD_GB = 13
+
+
+def prune_render(protect, runner=run, now=None):
+    """Local render images other than a PROTECTed commit's (about 3.2 GB each). The Fargate task pulls its image from
+    ECR, so a copy here only serves the next push: one built in the last RENDER_KEEP_DAYS may still be on its way."""
+    now, removed = now or datetime.now(UTC), []
+    commits = [c for c in protect if c]
+    for line in runner(["docker", "image", "ls", "--format", "{{.Repository}}:{{.Tag}}|{{.CreatedAt}}"],
+                       check=False).splitlines():
+        tag, _, created = line.partition("|")
+        repository, _, version = tag.rpartition(":")
+        head = version.partition("-")[0]  # hand-made tags name a short commit: 5454e3d-main
+        if (repository.rpartition("/")[2] != RENDER_REPOSITORY or version == "<none>"
+                or len(head) >= 7 and any(c.startswith(head) for c in commits)):
+            continue
+        try:
+            age = now - datetime.strptime(created[:25], "%Y-%m-%d %H:%M:%S %z")
+        except ValueError:  # an image whose age is unknown stays
+            continue
+        if age >= timedelta(days=RENDER_KEEP_DAYS):
+            runner(["docker", "image", "rm", tag], check=False)
+            removed.append(tag)
+    return removed
+
+
+def free_gb():
+    return shutil.disk_usage(STATE).free / 1e9  # the video worker's measure, on its own directory's filesystem
+
+
+def room(target, values, runner=run):
+    """Make room to build TARGET without taking the video worker below VIDEO_MIN_FREE_GB, where it starts no episode:
+    old releases and render images go first. Short of that the release waits (LowDisk) and production is untouched.
+    Pruning to 3 counts the unbuilt TARGET, so it removes what the prune after a successful release would."""
+    keep = float(values.get("VIDEO_MIN_FREE_GB") or 10)
+    if free_gb() >= keep + BUILD_GB:
+        return [], []
+    protect = {target, values.get("VIDEO_RENDER_COMMIT"), values.get("VIDEO_RENDER_ACCEPTED")} - {None, ""}
+    freed = prune(keep=3, protect=protect, runner=runner), prune_render(protect, runner=runner)
+    if (free := free_gb()) < keep + BUILD_GB:
+        raise LowDisk(f"{free:.1f} GB free after pruning; building {target[:12]} needs {keep + BUILD_GB:g} GB "
+                      f"({BUILD_GB} GB for its images, {keep:g} GB the video worker keeps)")
+    return freed
+
+
+def release_to(status, target, previous, values, runner=run, resuming=False):
     """Build, migrate, apply every group, activate. Busy (quiet or lock) leaves the rest to the next run; any other
-    failure returns the services that moved to the release they replaced, and the commit is not tried again."""
+    failure returns the services that moved to the release they replaced, and the commit is not tried again.
+    A new release first needs room to build (a resumed one runs on images it built): short of it nothing starts, and
+    an error while pruning is the run's error, not the commit's."""
+    try:
+        pruned, images = ([], []) if resuming else room(target, values, runner=runner)
+    except LowDisk as exc:
+        return {**status, "action": "waiting_for_disk", "detail": str(exc)[-600:]}
     started = status.get("started_at") or status["checked_at"]
     write_json(progress_file(), {"phase": "releasing", "target": target, "previous": previous, "started_at": started})
     status = {**status, "action": "releasing", "detail": None, "started_at": started}
@@ -916,11 +974,13 @@ def release_to(status, target, previous, values, runner=run):
             progress_file().unlink(missing_ok=True)
         return {**status, "action": "failed", "failed_commit": target, "detail": detail, "restored": restored}
     progress_file().unlink(missing_ok=True)
-    pruned = prune(protect={values.get("VIDEO_RENDER_COMMIT"), values.get("VIDEO_RENDER_ACCEPTED")}, runner=runner)
+    protect = {values.get("VIDEO_RENDER_COMMIT"), values.get("VIDEO_RENDER_ACCEPTED")}
+    pruned += prune(protect=protect, runner=runner)
+    images += prune_render(protect, runner=runner)
     return {**status, "action": "released", "current": target, "target": None, "failed_commit": None, "drift": [],
             "step": None, "released": {"commit": target, "services": released,
                                        "finished_at": datetime.now(UTC).isoformat(timespec="seconds")},
-            "pruned": pruned}
+            "pruned": pruned, "pruned_images": images}
 
 
 def decide(status, previous, values, now, github, runner=run):
@@ -986,7 +1046,7 @@ def decide(status, previous, values, now, github, runner=run):
         return {**status, "action": "waiting_for_lock", "detail": "a backup or another release holds the host lock"}
     if status["mode"] != "release":
         return {**status, "action": "would_resume" if resuming else "would_release"}
-    return release_to(status, target, current, values, runner=runner)
+    return release_to(status, target, current, values, runner=runner, resuming=resuming)
 
 
 def auto(github=None, runner=run, now=None, retry=False):

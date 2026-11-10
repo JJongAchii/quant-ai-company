@@ -28,7 +28,7 @@ PUBLICATION_HOURS = 6
 RELEASE_ALERTS = {"failed": "릴리스 실패", "error": "릴리스 점검 오류", "render_required": "렌더 이미지 교체 필요",
                   "operator_required": "운영자 조치 필요", "held_for_drift": "운영이 릴리스와 달라 반영 보류",
                   "drift": "운영이 릴리스와 다름", "refused": "main이 운영 커밋의 후손이 아님",
-                  "no_green_main": "CI를 통과한 main을 찾지 못함"}
+                  "no_green_main": "CI를 통과한 main을 찾지 못함", "waiting_for_disk": "디스크 부족으로 반영 보류"}
 RELEASE_STALE = timedelta(minutes=45)
 RELEASE_INCOMPLETE = timedelta(hours=1)
 RELEASE_RUNNING = timedelta(hours=2)
@@ -241,6 +241,9 @@ def release_findings(release, now, paused=None):
         if action == "render_required":
             lines.append(f"렌더 입력 {release.get('render_files') or '?'}개가 렌더 이미지 커밋과 다릅니다. "
                          "렌더 이미지와 작업 정의를 먼저 바꿔야 이어서 반영됩니다.")
+        if action == "waiting_for_disk":
+            lines.append("오래된 릴리스와 렌더 이미지를 지워도 빌드할 자리가 모자랍니다. "
+                         "디스크를 비우면 15분마다 도는 점검이 이어서 반영합니다. 영상 제작은 그대로 이어집니다.")
         severity = "critical" if action == "failed" and restored and not restored.get("ok") else "warning"
         # Each attempt at a commit (a --retry included) has its own start, so each failed attempt is reported.
         attempt = f":{release.get('started_at') or 'restore'}" if action == "failed" else ""
