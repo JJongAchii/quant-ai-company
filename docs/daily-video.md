@@ -454,6 +454,11 @@ docker compose -f deploy/compose.yaml -f deploy/video.compose.yaml exec video-wo
 
 출력된 URL을 노트북 브라우저에서 열어 기존 Runway 계정으로 승인한다. 토큰은 `media-auth/runway-*.json`(0600)에만 저장된다.
 만료·폐기되면 같은 명령으로 다시 로그인한다(이때 작업은 `runway_unavailable`로 멈춰 있고 스레드 알림이 온다).
+브라우저가 `invalid client_id`를 보이면 Runway가 예전 앱 등록을 지운 것이다. `runway-client.json`과 `runway-tokens.json`을
+지우지 말고 이름을 바꿔 두면 다음 로그인이 앱을 새로 등록한다(2026-11-10, 10월 10일 등록이 한 달 만에 거절됨).
+로그인 뒤 `video retry`(멈춘 회차)나 `video reconcile`(`uncertain` 회차)은 그 회차 자신의 미확인 요청만 기다리고, 옆에서 만드는
+Shorts의 요청(`shorts-*`)은 기다리지 않는다. Shorts는 본편이 제작 중이거나 전달된 뒤에만 다음 단계로 가므로, 기다리면 둘 다
+멈춘다(2026-11-10 아침 회차).
 
 **3. YouTube 자격 증명(나중에 켤 때만)**
 소유자 노트북의 `~/.config/quant-company/video/youtube-client.json`·`youtube-tokens.json`에 해당하는 파일은 서버의
