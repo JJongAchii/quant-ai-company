@@ -317,6 +317,15 @@ async def test_release_report_alerts_once_per_action_and_target(ops, credentials
     assert not any("해소" in call["text"] for call in calls)
 
 
+async def test_a_release_waiting_for_disk_is_announced(ops, credentials):
+    watch, (box, calls) = OpsWatch(ops), sender(ops, credentials)
+    snapshot(ops, release=release("waiting_for_disk", detail="15.0 GB free; building aaaaaaaaaaaa needs 23 GB"))
+    assert watch.tick()["findings"] == [f"release:waiting_for_disk:{'a' * 40}"]
+    watch.tick()
+    await drain(box)
+    assert calls[0]["text"].startswith("🟠 *디스크 부족으로 반영 보류 · aaaaaaa*") and "15.0 GB free" in calls[0]["text"]
+
+
 def test_release_waits_are_quiet_and_stalls_lag_and_failed_restores_are_findings(ops):
     watch = OpsWatch(ops)
     snapshot(ops, release=release("waiting_for_quiet", detail="worker turn", latest_green={
