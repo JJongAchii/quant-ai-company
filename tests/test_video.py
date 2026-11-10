@@ -812,17 +812,30 @@ async def test_an_episode_held_for_disk_starts_again_after_space_is_freed(brief,
                             (job['id'],)).fetchone()['n'] == 1
 
 
-def test_an_episode_restarts_while_its_shorts_waits_on_the_model(brief, video):  # noqa: F811
+@pytest.mark.parametrize('form', [str, lambda identity: str(identity).upper()])
+def test_an_episode_restarts_while_its_shorts_waits_on_the_model(brief, video, form):  # noqa: F811
     from quant_company.video.recovery import retry
 
     store, _ = video
     job = new_job(brief, video)
     store.begin_effect(job, 'shorts-3', {}, 'model')
     store.save(job, 'blocked', error='runway_unavailable')
-    assert retry(store, str(job['id']), 'Runway 재로그인 후 무료 계정 확인부터 다시 진행')['state'] == 'synthesizing'
+    assert retry(store, form(job['id']), 'Runway 재로그인 후 무료 계정 확인부터 다시 진행')['state'] == 'synthesizing'
     with store.db.transaction() as conn:
         assert conn.execute("SELECT state FROM video_effects WHERE id=%s",
                             (f"{job['id']}:shorts-3",)).fetchone()['state'] == 'running'
+
+
+def test_reconciling_an_episode_does_not_wait_on_its_shorts(brief, video):  # noqa: F811
+    from quant_company.video.recovery import reconcile
+
+    store, _ = video
+    job = new_job(brief, video)
+    store.begin_effect(job, 'speech-0', {}, 'speech', 1)
+    store.begin_effect(job, 'shorts-3', {}, 'model')
+    store.save(job, 'uncertain', error='external_effect_requires_reconciliation')
+    assert reconcile(store, str(job['id']), 'speech-0', {'taskId': 'original-task'},
+                     'Runway 작업 기록에서 원래 음성 task를 찾아 대조함')['state'] == 'synthesizing'
 
 
 def test_delivery_text_states_publish_time_and_a_late_finish():

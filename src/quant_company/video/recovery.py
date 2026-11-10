@@ -40,6 +40,14 @@ def receipt_stage(job, key, receipt):
     raise ValueError('Unknown or mismatched effect receipt')
 
 
+def unresolved(conn, job):
+    """A request of the episode itself still awaiting its outcome. A fixed line's receipt (kind 'brand') belongs to
+    every episode, never to one episode's recovery. The Shorts cut resolves its own requests and moves on only while
+    its episode is in production (ShortsStore.claim): waiting on them here would hold both for ever."""
+    return conn.execute("""SELECT 1 FROM video_effects WHERE job_id=%s AND state='running' AND kind<>'brand'
+        AND id NOT LIKE %s LIMIT 1""", (job['id'], f"{job['id']}:shorts-%")).fetchone()
+
+
 def reconcile(store, identity, key, receipt, note):
     if len(note.strip()) < 20 or len(note) > 2000 or not isinstance(receipt, dict):
         raise ValueError('Reconciliation requires a verified receipt and a meaningful audit note')
@@ -59,10 +67,7 @@ def reconcile(store, identity, key, receipt, note):
                      (job['id'], key, note, Jsonb(receipt)))
         if key == 'upload-session':
             conn.execute('UPDATE video_jobs SET upload_session=%s WHERE id=%s', (receipt['session'], job['id']))
-        # A fixed line's receipt (kind 'brand') belongs to every episode, never to one episode's recovery.
-        unresolved = conn.execute("""SELECT 1 FROM video_effects WHERE job_id=%s AND state='running' AND kind<>'brand'
-            LIMIT 1""", (job['id'],)).fetchone()
-        state = 'uncertain' if unresolved else stage
+        state = 'uncertain' if unresolved(conn, job) else stage
         if video_store.utcnow() >= job['publish_deadline'] and state in video_store.APPROVAL:
             state = 'expired'
         conn.execute('UPDATE video_jobs SET state=%s,error=NULL,lease_until=NULL,updated_at=now() WHERE id=%s',
@@ -93,12 +98,8 @@ def retry(store, identity, note):
     with store.db.transaction() as conn:
         conn.execute('SELECT pg_advisory_xact_lock(%s)', (LOCK,))
         job = conn.execute('SELECT * FROM video_jobs WHERE id=%s FOR UPDATE', (identity,)).fetchone()
-        # The Shorts cut resolves its own requests, and moves on only while its episode is in production
-        # (ShortsStore.claim): waiting on them here would hold both for ever.
         if (not job or job['state'] != 'blocked' or not store.allowed(job)
-                or job['error'] not in RETRYABLE
-                or conn.execute("""SELECT 1 FROM video_effects WHERE job_id=%s AND state='running' AND kind<>'brand'
-                    AND id NOT LIKE %s""", (identity, f'{identity}:shorts-%')).fetchone()):
+                or job['error'] not in RETRYABLE or unresolved(conn, job)):
             raise PolicyError('Only known tasks, local rendering or the same upload session may be retried')
         stage = RETRYABLE[job['error']]
         if stage == 'uploading' and not job['upload_session']:

@@ -289,8 +289,6 @@ DB의 계획·영수증·파일 해시는 남는다. 영상 볼륨 여유가 `VI
 시작하지 않고 `blocked`(insufficient_disk)로 두며 brief 스레드에 한 번 알린다. 크레딧은 쓰지 않는다.
 공간을 확보한 뒤 운영자가 `quant-company video retry --job-id <id> --note "<사유>"`로 그 회차를 `queued`로 되돌리면
 처음부터 제작한다(2026-11-09, 그날 아침 회차가 빌드 이미지로 디스크가 찬 사이에 멈춤).
-재시작은 그 회차 자신의 미확인 요청만 기다리고, 옆에서 만드는 Shorts의 요청(`shorts-*`)은 기다리지 않는다. Shorts는 본편이
-제작 중이거나 전달된 뒤에만 다음 단계로 가므로, 기다리면 둘 다 멈춘다(2026-11-10 아침 회차).
 고정 댓글 문안은 업로드 패키지에 제공하며 댓글 자동 게시·고정은 이 버전에 포함하지 않았다.
 업로드 문안의 설명 맨 위 두 줄과 고정 댓글 마지막 줄에 구독자 리포트 메일 신청 링크(`upload.SIGNUP_URL`)가 붙는다
 (소유자 결정 2026-10-20). 서비스가 붙이는 고정 문구라 문안 검사 뒤에 붙이며, YouTube에 올리는 설명에도 같은 두 줄이 들어간다.
@@ -458,6 +456,9 @@ docker compose -f deploy/compose.yaml -f deploy/video.compose.yaml exec video-wo
 만료·폐기되면 같은 명령으로 다시 로그인한다(이때 작업은 `runway_unavailable`로 멈춰 있고 스레드 알림이 온다).
 브라우저가 `invalid client_id`를 보이면 Runway가 예전 앱 등록을 지운 것이다. `runway-client.json`과 `runway-tokens.json`을
 지우지 말고 이름을 바꿔 두면 다음 로그인이 앱을 새로 등록한다(2026-11-10, 10월 10일 등록이 한 달 만에 거절됨).
+로그인 뒤 `video retry`(멈춘 회차)나 `video reconcile`(`uncertain` 회차)은 그 회차 자신의 미확인 요청만 기다리고, 옆에서 만드는
+Shorts의 요청(`shorts-*`)은 기다리지 않는다. Shorts는 본편이 제작 중이거나 전달된 뒤에만 다음 단계로 가므로, 기다리면 둘 다
+멈춘다(2026-11-10 아침 회차).
 
 **3. YouTube 자격 증명(나중에 켤 때만)**
 소유자 노트북의 `~/.config/quant-company/video/youtube-client.json`·`youtube-tokens.json`에 해당하는 파일은 서버의
