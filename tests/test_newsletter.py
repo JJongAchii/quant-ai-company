@@ -1246,7 +1246,7 @@ async def test_a_morning_edition_is_written_with_its_guide_and_mailed_as_the_mor
     assert sent["Subject"] == "S&P 500 1.92% 상승, 5,300 마감 | 09/22 아침 브리핑"
     plain, related = sent.get_payload()
     assert plain.get_content().startswith("뭐든story · 09/22 아침 · 오늘의 증시story")
-    assert "09/22 아침 브리핑</td>" in related.get_payload()[0].get_content()
+    assert "09/22 아침 · 오늘의 증시story" in related.get_payload()[0].get_content()
     notices = [n["text"] for n in outbox(store, "newsletter_status")]
     assert len(notices) == 1 and notices[0].startswith("아침 브리핑 메일 · 09/22 · 1명 발송 · 정해진 시간 안에")
 
