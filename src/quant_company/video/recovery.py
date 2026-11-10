@@ -93,10 +93,12 @@ def retry(store, identity, note):
     with store.db.transaction() as conn:
         conn.execute('SELECT pg_advisory_xact_lock(%s)', (LOCK,))
         job = conn.execute('SELECT * FROM video_jobs WHERE id=%s FOR UPDATE', (identity,)).fetchone()
+        # The Shorts cut resolves its own requests, and moves on only while its episode is in production
+        # (ShortsStore.claim): waiting on them here would hold both for ever.
         if (not job or job['state'] != 'blocked' or not store.allowed(job)
                 or job['error'] not in RETRYABLE
-                or conn.execute("SELECT 1 FROM video_effects WHERE job_id=%s AND state='running' AND kind<>'brand'",
-                                (identity,)).fetchone()):
+                or conn.execute("""SELECT 1 FROM video_effects WHERE job_id=%s AND state='running' AND kind<>'brand'
+                    AND id NOT LIKE %s""", (identity, f'{identity}:shorts-%')).fetchone()):
             raise PolicyError('Only known tasks, local rendering or the same upload session may be retried')
         stage = RETRYABLE[job['error']]
         if stage == 'uploading' and not job['upload_session']:
