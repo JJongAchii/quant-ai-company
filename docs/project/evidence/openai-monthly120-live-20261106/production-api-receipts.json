@@ -1,0 +1,104 @@
+{
+  "grant_id": "owner-monthly-api-120-2026-11",
+  "receipts": [
+    {
+      "request_id_sha256": "847ab3474439e0e27bb801261c34a7130350001fad4d08492543eb89ca2d9840",
+      "operator_probe": false,
+      "state": "complete",
+      "model": "gpt-6.1-sol",
+      "backend": "responses_api",
+      "budget_reserved_usd": 0.763853,
+      "budget_settled_usd": 0.053023,
+      "input_tokens": 12597,
+      "output_tokens": 2153
+    },
+    {
+      "request_id_sha256": "3780c883c23a18f33cf7dd085a0e2c553be9ee91e441042dc029f58304b9ac1e",
+      "operator_probe": true,
+      "state": "complete",
+      "model": "gpt-6.1-sol",
+      "backend": "responses_api",
+      "budget_reserved_usd": 0.663305,
+      "budget_settled_usd": 0.00327,
+      "input_tokens": 1204,
+      "output_tokens": 26
+    },
+    {
+      "request_id_sha256": "f998145433cae55032983897da63468e5efecdd1105af57a6a3776b9f96e8cd8",
+      "operator_probe": true,
+      "state": "complete",
+      "model": "gpt-6-astra",
+      "backend": "responses_api",
+      "budget_reserved_usd": 0.218963,
+      "budget_settled_usd": 0.016363,
+      "input_tokens": 1205,
+      "output_tokens": 26
+    },
+    {
+      "request_id_sha256": "716dbf9b37efdcecf2e5292ebb6a4ef40f10c0c1c07cd2da6aca10245d064563",
+      "operator_probe": true,
+      "state": "complete",
+      "model": "gpt-6.1-sol",
+      "backend": "responses_api",
+      "budget_reserved_usd": 0.043793,
+      "budget_settled_usd": 0.003273,
+      "input_tokens": 1205,
+      "output_tokens": 26
+    },
+    {
+      "request_id_sha256": "0c9f82a7b1d06945a1788a435b11374a0839d22290c511682fe666056a51b342",
+      "operator_probe": false,
+      "state": "complete",
+      "model": "gpt-6.1-sol",
+      "backend": "responses_api",
+      "budget_reserved_usd": 0.841708,
+      "budget_settled_usd": 0.095075,
+      "input_tokens": 19270,
+      "output_tokens": 4690
+    },
+    {
+      "request_id_sha256": "66dc4f8f6dddcd2c3b375fb64b5b672bf9d78b7f69ff1452937798236ff3f73c",
+      "operator_probe": false,
+      "state": "complete",
+      "model": "gpt-6.1-sol",
+      "backend": "responses_api",
+      "budget_reserved_usd": 0.846048,
+      "budget_settled_usd": 0.097945,
+      "input_tokens": 20014,
+      "output_tokens": 4791
+    },
+    {
+      "request_id_sha256": "a564f35c8312549bed5821480de99e554883f266fc547ed59b19accbed79ea98",
+      "operator_probe": false,
+      "state": "complete",
+      "model": "gpt-6.1-sol",
+      "backend": "responses_api",
+      "budget_reserved_usd": 0.860305,
+      "budget_settled_usd": 0.081085,
+      "input_tokens": 21226,
+      "output_tokens": 2802
+    },
+    {
+      "request_id_sha256": "08e67e36a9e1197182075a8f22a266fc168d837dd77f688dde1e4707a8b9c539",
+      "operator_probe": false,
+      "state": "complete",
+      "model": "gpt-6.1-sol",
+      "backend": "responses_api",
+      "budget_reserved_usd": 0.845045,
+      "budget_settled_usd": 0.093835,
+      "input_tokens": 19898,
+      "output_tokens": 4409
+    },
+    {
+      "request_id_sha256": "8e00854ff53f2e314b0cf6dea873582990e9b37c42a7e7a27c74b9ba52040176",
+      "operator_probe": true,
+      "state": "complete",
+      "model": "gpt-6-astra",
+      "backend": "responses_api",
+      "budget_reserved_usd": 3.316525,
+      "budget_settled_usd": 0.01635,
+      "input_tokens": 1204,
+      "output_tokens": 26
+    }
+  ]
+}

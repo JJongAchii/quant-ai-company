@@ -1,0 +1,45 @@
+{
+  "inference": "real OpenAI Responses API",
+  "probe_max_output_tokens": 2048,
+  "rows": [
+    {
+      "request_id": "op-monthly120-f9a19b4-20261106-sol-v1",
+      "model": "gpt-6.1-sol",
+      "state": "complete",
+      "usage": {
+        "input_tokens": 1205,
+        "cached_input_tokens": 0,
+        "output_tokens": 26,
+        "reasoning_output_tokens": 0,
+        "backend": "responses_api",
+        "billing_mode": "api_credit",
+        "api_grant_id": "owner-monthly-api-120-2026-11",
+        "api_budget_mode": "owner_monthly_cap",
+        "budget_charge_usd": 0.003273,
+        "budget_charge_is_upper_bound": true,
+        "actual_model": "gpt-6.1-sol"
+      },
+      "valid_decision": true
+    },
+    {
+      "request_id": "op-monthly120-f9a19b4-20261106-astra-v1",
+      "model": "gpt-6-astra",
+      "state": "complete",
+      "usage": {
+        "input_tokens": 1205,
+        "cached_input_tokens": 0,
+        "output_tokens": 26,
+        "reasoning_output_tokens": 0,
+        "backend": "responses_api",
+        "billing_mode": "api_credit",
+        "api_grant_id": "owner-monthly-api-120-2026-11",
+        "api_budget_mode": "owner_monthly_cap",
+        "budget_charge_usd": 0.016363,
+        "budget_charge_is_upper_bound": true,
+        "actual_model": "gpt-6-astra"
+      },
+      "valid_decision": true
+    }
+  ],
+  "api_errors": []
+}

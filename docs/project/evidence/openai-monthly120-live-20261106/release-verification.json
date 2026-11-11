@@ -1,0 +1,87 @@
+[
+  {
+    "service": "data-watch-worker",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "housing-feed-worker",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "tech-feed-worker",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "quant-codex-runtime",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "quant-feed-worker",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "codex-runtime",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "video-image-runtime",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "claude-runtime",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "account-gateway",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "maintenance",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "api",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "slack-socket",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "worker",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "dispatch",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "briefing-data-worker",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "news-worker",
+    "ok": true,
+    "problem": ""
+  },
+  {
+    "service": "video-worker",
+    "ok": true,
+    "problem": ""
+  }
+]
