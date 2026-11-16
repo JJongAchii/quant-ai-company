@@ -21,12 +21,12 @@
         },
         {
           "path": "tests/test_claude_company.py",
-          "sha256": "90e006faff46"
+          "sha256": "c69fbf842aff"
         }
       ],
-      "note": "직원·Quant producer-consumer와 재구성 감사 세션을 실제 PostgreSQL·모의 CLI·HTTP로 검증. 운영 배정과 배포는 아직 수행하지 않음.",
+      "note": "최종 동시 적용 검사까지 포함한 producer-consumer 72개 대상 검사 통과. 운영 배정·배포는 미수행.",
       "status": "verified",
-      "updatedAt": "2026-11-16T06:40:43.860261+00:00"
+      "updatedAt": "2026-11-16T06:48:20.090404+00:00"
     },
     "REVIEW": {
       "evidence": [
@@ -67,5 +67,5 @@
   "schemaVersion": 1,
   "slug": "company-claude-staff",
   "state": "approved",
-  "updatedAt": "2026-11-16T06:47:35.665480+00:00"
+  "updatedAt": "2026-11-16T06:48:20.090404+00:00"
 }
