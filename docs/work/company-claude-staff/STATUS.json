@@ -1,0 +1,10 @@
+{
+  "approval": null,
+  "currentIntent": "INTENT-v1.json",
+  "deliverables": {},
+  "intentDigest": null,
+  "schemaVersion": 1,
+  "slug": "company-claude-staff",
+  "state": "draft",
+  "updatedAt": "2026-11-16T06:09:31.790753+00:00"
+}

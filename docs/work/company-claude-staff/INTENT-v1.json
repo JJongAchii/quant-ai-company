@@ -1,0 +1,13 @@
+{
+  "constraints": [],
+  "createdAt": "2026-11-16T06:09:31.790583+00:00",
+  "decisionGates": [],
+  "deliverables": [],
+  "nonGoals": [],
+  "outcome": "그럼 일단 뉴스와 브리핑과 영상 제외하고는 클로드로 변경해볼까?",
+  "revision": 1,
+  "schemaVersion": 1,
+  "slug": "company-claude-staff",
+  "sourceRequest": "그럼 일단 뉴스와 브리핑과 영상 제외하고는 클로드로 변경해볼까?",
+  "stopConditions": []
+}
