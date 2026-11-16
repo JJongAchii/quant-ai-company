@@ -192,14 +192,25 @@ def check_delivery(conn, row, turns):
         raise PolicyError("audit_packet_turn_binding_invalid")
     previous = None
     thread = None
+    history = []
     for turn in turns:
         request, response = turn["request"], turn["response"]
         if request.get("session") != {"id": str(row["task_id"]), "previous_request_id": previous}:
             raise PolicyError("audit_packet_session_binding_invalid")
         actual_thread = response.get("thread_id")
-        if response.get("provider") != "fixture" and (not actual_thread or (thread and actual_thread != thread)):
+        if response.get("provider") == "claude":
+            # Claude's isolated CLI does not persist provider threads. Verify every delivered prior prompt/decision
+            # against the company ledger instead; never present this as provider-side thread attestation.
+            evidence = {"version": 1, "mode": "reconstructed_context", "id": str(row["task_id"]),
+                        "previous_request_id": previous, "history_digest": fingerprint(history)}
+            usage = response.get("usage", {})
+            if (usage.get("company_session") != evidence or usage.get("actual_model") != request["model"]
+                    or request["model"] != "claude-opus-5-5"):
+                raise PolicyError("audit_packet_claude_context_mismatch")
+        elif response.get("provider") != "fixture" and (not actual_thread or (thread and actual_thread != thread)):
             raise PolicyError("audit_packet_provider_thread_changed")
         thread = actual_thread
+        history.append({"request_id": str(turn["id"]), "prompt": request["prompt"], "decision": response["decision"]})
         previous = str(turn["id"])
     contents = {}
     previous_notes = ""

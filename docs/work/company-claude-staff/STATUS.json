@@ -1,10 +1,53 @@
 {
-  "approval": null,
+  "approval": {
+    "approvedAt": "2026-11-16T06:19:29.299931+00:00",
+    "id": "chat-owner-20261116-claude-except-news-brief-video"
+  },
   "currentIntent": "INTENT-v1.json",
-  "deliverables": {},
-  "intentDigest": null,
+  "deliverables": {
+    "IMPLEMENTATION": {
+      "evidence": [
+        {
+          "path": "src/quant_company/providers/routing.py",
+          "sha256": "0ab6f5c2b1ea"
+        },
+        {
+          "path": "src/quant_company/providers/claude_company.py",
+          "sha256": "7442ed6a1e0e"
+        },
+        {
+          "path": "src/quant_company/staff_models.py",
+          "sha256": "199f07d851b6"
+        },
+        {
+          "path": "tests/test_claude_company.py",
+          "sha256": "90e006faff46"
+        }
+      ],
+      "note": "직원·Quant producer-consumer와 재구성 감사 세션을 실제 PostgreSQL·모의 CLI·HTTP로 검증. 운영 배정과 배포는 아직 수행하지 않음.",
+      "status": "verified",
+      "updatedAt": "2026-11-16T06:40:43.860261+00:00"
+    },
+    "REVIEW": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "VALIDATION": {
+      "evidence": [
+        {
+          "path": "docs/project/evidence/claude-staff-20261116/final-focused.xml",
+          "sha256": "4b95bbd8824c"
+        }
+      ],
+      "note": "최종 대상 검사 71 passed. 전체 비-live 회귀 검사 실행 중.",
+      "status": "in_progress",
+      "updatedAt": "2026-11-16T06:40:43.956200+00:00"
+    }
+  },
+  "intentDigest": "e321a869fc37",
   "schemaVersion": 1,
   "slug": "company-claude-staff",
-  "state": "draft",
-  "updatedAt": "2026-11-16T06:09:31.790753+00:00"
+  "state": "approved",
+  "updatedAt": "2026-11-16T06:40:43.956200+00:00"
 }

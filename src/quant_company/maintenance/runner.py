@@ -394,7 +394,7 @@ class Maintainer:
             try:
                 response = await self.provider.run(ProviderRequest.model_validate(call["request"]))
             except ProviderFault as exc:
-                if exc.code in {"quota", "busy", "unavailable"}:
+                if exc.code in {"quota", "busy", "unavailable", "pending"}:
                     self.store.defer_call(call["id"], exc.code, exc.retry_after_seconds)
                     raise Deferred(exc.code) from None
                 raise ValueError("model_" + exc.code) from None

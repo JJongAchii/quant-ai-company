@@ -59,6 +59,13 @@ start = {'type': 'system', 'subtype': 'init', 'model': control.get('model', 'cla
 if control.get('no_tools_key'):
     del start['tools']
 print(json.dumps(start))
+for n, query in enumerate(control.get('searches', [])):
+    identity = 'search-' + str(n)
+    print(json.dumps({'type': 'assistant', 'message': {'content': [
+        {'type': 'tool_use', 'id': identity, 'name': 'WebSearch', 'input': {'query': query}}]}}))
+    print(json.dumps({'type': 'user', 'message': {'content': [
+        {'type': 'tool_result', 'tool_use_id': identity, 'is_error': control.get('search_error', False),
+         'content': 'Synthetic search result https://example.org/source'}]}}))
 if control.get('error'):
     print(json.dumps({'type': 'assistant', 'error': control['error'], 'message': {'usage': {'output_tokens': 0}}}))
     sys.exit(1)

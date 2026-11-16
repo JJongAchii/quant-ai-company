@@ -84,11 +84,12 @@ class ModelControl:
                     text += "\n`모델 배정 복원 번호`로 해당 고정 배정을 복원합니다."
                     outcome = "history"
                 elif action == "catalog":
-                    text = f"{account['profile']} 계정에서 확인한 모델\n" + "\n".join(
+                    text = f"{account['profile']} Codex 계정 모델 및 회사 Claude 실행 계약\n" + "\n".join(
                         f"• {item['model']}: {', '.join(item['reasoning_efforts'])}" for item in models[:30])
                     if len(models) > 30:
                         text += f"\n전체 {len(models)}개 중 처음 30개를 표시합니다. 전체 목록은 운영 조회 기록에 보존했습니다."
                     text += "\n목록 확인은 실제 추론 성공이나 잔여 사용량 보장이 아닙니다."
+                    text += "\nClaude 항목은 회사 실행 계약의 지원 모델이며 ChatGPT 계정 catalog 조회 결과가 아닙니다."
                     outcome = "catalog"
                 elif action == "task":
                     chosen = {key: command[key] for key in ("model", "reasoning_effort")}
@@ -173,6 +174,9 @@ class ModelControl:
                     self.client = RuntimeClient(self.company.settings.model_runtime_url,
                                                 self.company.settings.model_runtime_token.get_secret_value())
                 models = await self.client.models(account["profile"])
+                from .providers.routing import CLAUDE_MODELS
+
+                models = [*models, *CLAUDE_MODELS]
             except ProviderFault:
                 error = "unavailable"
         await asyncio.to_thread(self.apply, row["id"], account, models, error)

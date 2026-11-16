@@ -378,7 +378,7 @@ class QuantFeedStore:
             call = conn.execute("SELECT * FROM quant_feed_calls WHERE id=%s FOR UPDATE", (identity,)).fetchone()
             if not call or call["state"] != "running":
                 return
-            if code in {"quota", "busy", "unavailable"}:
+            if code in {"quota", "busy", "unavailable", "pending"}:
                 delay = max(60, min(seconds or 300, 604800))
                 conn.execute("UPDATE quant_feed_calls SET error=%s,next_at=now()+make_interval(secs=>%s) WHERE id=%s", (code, delay, identity))
                 if code == "quota" and not self.company.settings.model_accounts_enabled:
@@ -401,7 +401,9 @@ class QuantFeedStore:
             if saved["state"] != "running" or not self.authorized() or saved["policy_digest"] not in self.policies():
                 self.block(conn, saved, "stale_policy_or_state")
                 return {"state": "stale"}
-            if response.provider != self.company.settings.model_provider:
+            from ..providers.routing import expected_provider
+
+            if response.provider != expected_provider(self.company.settings, saved["request"]["model"]):
                 raise ValueError("quant_wrong_provider")
             if saved["stage"] in {"discover", "weekly"}:
                 result = search_result(response, saved["bundle"])

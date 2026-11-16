@@ -106,6 +106,7 @@ class Company:
         """Allowlisted configuration facts, never a dump of settings or credentials."""
         from .model_policy import effective_role
         from .owner_controls import effective_limits
+        from .providers.routing import expected_provider
         from .staff.packs import STAFF, pack
         from .staff.review_contract import REVIEW_EFFORT, REVIEW_MODEL
         from .staff.tools import TOOL_GUIDE
@@ -118,10 +119,12 @@ class Company:
             roles = {name: effective_role(self, conn, name) if name not in {TECH_FEED_AGENT, "trend_scout"} else role
                      for name, role in self.roles.items()}
         maintainer = effective_role(self, conn, "maintainer") if "engineer" in roles else None
+        providers = {expected_provider(self.settings, role.model) for key, role in roles.items()
+                     if key not in {TECH_FEED_AGENT, "trend_scout"}}
 
         return {
             "snapshot_at": now().isoformat(),
-            "model_provider": self.settings.model_provider,
+            "model_provider": next(iter(providers)) if len(providers) == 1 else "mixed",
             "model_id_meaning": "Configured model IDs and reasoning effort sent with requests; "
                                 "not provider-side model or reasoning attestation.",
             "employees": [

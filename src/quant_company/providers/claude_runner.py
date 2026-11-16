@@ -25,6 +25,7 @@ from pydantic import ValidationError, model_validator
 from ..contracts import AgentDecision, ArtifactDraft, ProviderFault, ProviderRequest, ProviderResponse
 from ..staff.review_contract import REVIEW_MODEL, IndependentReview
 from .claude_api import API_VERSION, PRICES, ApiNotExecuted, Budget, call, cost_usd, read_key, reservation_usd
+from .claude_company import company_request
 from .codex_runner import ProcessRunner, atomic_json, request_digest, strict_json
 
 LOG = logging.getLogger(__name__)
@@ -65,7 +66,7 @@ class ClaudeConfig:
             raise ValueError("Invalid Claude API cap")
 
     def process_limit(self, request):
-        if request.output_contract == "agent_decision":
+        if request.output_contract == "agent_decision" or company_request(request):
             return self.timeout_seconds
         return self.newsletter_timeout_seconds if request.output_contract == "newsletter_v1" else self.video_timeout_seconds
 
@@ -135,16 +136,22 @@ VIDEO_MODELS = frozenset({REVIEW_MODEL, "claude-opus-5-5"})
 
 def api_first(request):
     """The owner's API-first work (API_FIRST), and a Shorts editor's turn under an episode contract."""
-    return request.output_contract in API_FIRST or (request.output_contract in SHORTS_SHARED
-                                                     and bool(SHORTS_REQUEST.match(request.request_id)))
+    return not company_request(request) and (request.output_contract in API_FIRST or (
+        request.output_contract in SHORTS_SHARED and bool(SHORTS_REQUEST.match(request.request_id))))
 
 
 def allowed_models(request):
+    if company_request(request):
+        return {request.model}
     return {REVIEW_MODEL} if request.output_contract == "agent_decision" else VIDEO_MODELS
 
 
 def output_schema(request):
     """The only structured outputs this tool-free runtime may produce, keyed by the frozen request contract."""
+    if company_request(request):
+        from .claude_company import schema
+
+        return schema(request), request.output_contract, "회사 업무 응답 완료"
     if request.output_contract in {"video_plan_v1", "video_review_v1", "video_episode_v1", "video_visual_review_v1",
                                    "video_screen_fix_v1", "video_script_fix_v1", "video_shorts_v1"}:
         from ..video.contracts import VideoPlan, VideoReview, VisualReview
@@ -180,6 +187,10 @@ def output_schema(request):
 
 def stdin_payload(request):
     """Plain prompt text, or one stream-json user message carrying the frames and the prompt (no tools needed)."""
+    if company_request(request):
+        from .codex_runner import cli_prompt
+
+        return cli_prompt(request)
     if not request.attachments:
         return request.prompt.encode()
     content = [{"type": "image", "source": {"type": "base64", "media_type": a.media_type, "data": a.data}}
@@ -191,13 +202,15 @@ def command(config, request):
     # Requests frozen before explicit effort support used high; never reinterpret their identity.
     effort = request.reasoning_effort or "high"
     return [config.binary, "-p", "--safe-mode", "--model", request.model, "--effort", effort,
-            "--tools", "", "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
+            "--tools", "WebSearch" if request.web_search and company_request(request) else "",
+            "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
             "--disable-slash-commands", "--setting-sources", "", "--permission-mode", "dontAsk",
-            "--permission-prompts", "none", "--no-session-persistence", "--max-turns", "2",
+            "--permission-prompts", "none", "--no-session-persistence", "--max-turns", "6" if request.web_search else "2",
             "--settings", '{"fastMode":false,"forceLoginMethod":"claudeai"}',
             "--output-format", "stream-json", "--verbose", "--json-schema",
             json.dumps(output_schema(request)[0].model_json_schema(), separators=(",", ":"))] + (
-            ["--input-format", "stream-json"] if request.attachments else [])
+            ["--input-format", "stream-json"] if request.attachments else []) + (
+            ["--allowedTools", "WebSearch"] if request.web_search and company_request(request) else [])
 
 
 def code(value, pattern=r"[a-z_]{1,40}"):
@@ -246,12 +259,15 @@ def parse_result(request, output):
                                 f"result {kinds}" + (f", errors {causes}" if causes else "") + "); reconcile its original ID.")
         start, result = starts[0], results[0]
         if (start.get("model") != request.model or start.get("mcp_servers")
-                or set(start.get("tools", [])) - {"StructuredOutput"}):
+                or set(start.get("tools", [])) - ({"StructuredOutput", "WebSearch"}
+                    if request.web_search and company_request(request) else {"StructuredOutput"})):
             raise ProviderFault("uncertain", "Claude reported an unexpected model or tool configuration.")
         attempts = []
         for message in messages:
             for item in message.get("message", {}).get("content", []):
                 if item.get("type") == "tool_use" and item.get("name") != "StructuredOutput":
+                    if item.get("name") == "WebSearch" and request.web_search and company_request(request):
+                        continue
                     name = code(item.get("name"), r"[A-Za-z0-9_]{1,40}")
                     if not refused(events, item, start.get("tools")):
                         raise ProviderFault("uncertain", f"Claude reported a disallowed tool action ({name}).")
@@ -280,6 +296,10 @@ def parse_result(request, output):
                       billing_mode="subscription", account_usage_credits_disabled_owner_confirmed=True)
         if attempts:
             counts["refused_tool_attempts"] = attempts
+        if company_request(request):
+            from .claude_company import response, search_events
+
+            return response(request, result["structured_output"], counts, search_events(request, events))
         return structured_response(request, result["structured_output"], counts)
     except (ValueError, TypeError, KeyError, AttributeError):
         raise ProviderFault("invalid_output", REVIEW_INVALID) from None
@@ -564,6 +584,8 @@ class ClaudeRunner:
 
     async def _api_instead(self, request, path, digest, restore, fault):
         """The API takes work the subscription refused before running it; otherwise that refusal stands."""
+        if company_request(request):
+            raise fault  # New employee/Quant work has no authorization to spend API credits.
         route = "api_first" if api_first(request) else "fallback"
         lane = self._lane(request, attempts_of(restore), route)
         if lane is None:
@@ -574,7 +596,8 @@ class ClaudeRunner:
             raise fault from None
 
     async def run(self, request: ProviderRequest):
-        if request.model not in allowed_models(request) or request.web_search:
+        if (request.model not in allowed_models(request) or request.web_search and not company_request(request)
+                or company_request(request) and request.session is not None and request.web_search):
             raise ProviderFault("invalid_output", "This runtime accepts only offline Opus 5 structured requests.")
         output_schema(request)
         if request.request_id in self.claims:
@@ -677,11 +700,18 @@ class ClaudeRunner:
                            "requested_execution": {"model": request.model,
                                                    "reasoning_effort": request.reasoning_effort or "high"},
                            "backend": "subscription", "attempts": attempts}
+                payload, history = stdin_payload(request), []
+                if company_request(request):
+                    from .claude_company import session_input
+
+                    payload, history = session_input(request, directory, digest)
+                    if request.session:
+                        receipt["company_session"] = request.session.id
                 atomic_json(path, receipt)
                 self.active[request.request_id] = (asyncio.current_task(), "cli")
                 try:
                     output = await self.process.run(command(self.config, request), cwd=cwd, env=env,
-                        stdin=stdin_payload(request), timeout_seconds=self.config.process_limit(request),
+                        stdin=payload, timeout_seconds=self.config.process_limit(request),
                         max_stdout_bytes=MAX_OUTPUT if request.output_contract == "agent_decision" else VIDEO_MAX_OUTPUT,
                         max_stderr_bytes=65536)
                     # Persist the observed process boundary before parsing can reject its response.
@@ -693,6 +723,13 @@ class ClaudeRunner:
                     }}
                     atomic_json(path, receipt)
                     result = parse_result(request, output)
+                    if company_request(request) and request.session:
+                        from .claude_company import session_evidence
+
+                        result = result.model_copy(update={"usage": {
+                            **result.usage, "company_session": session_evidence(request, history)}})
+                        receipt["company_history"] = [*history, {"request_id": request.request_id,
+                            "prompt": request.prompt, "decision": result.decision.model_dump(mode="json")}]
                     atomic_json(path, {**receipt, "state": "complete", "completed_at": time.time(),
                                        "result": result.model_dump(mode="json"),
                                        "attempts": attempts + [attempt("subscription", "complete", self.clock())]})
