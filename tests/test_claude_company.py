@@ -1,6 +1,7 @@
 """Real PostgreSQL, subprocess and HTTP boundaries; model outputs and Slack are synthetic."""
 
 import json
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from uuid import uuid4
 
@@ -167,6 +168,20 @@ def test_allocation_rejects_missing_preview_digest_and_owner(company):
     company.settings.model_accounts_owner_user = "different-owner"
     with pytest.raises(PolicyError, match="owner"):
         allocate(company, StaffAllocation(operation_id="test", expected_revision=2))
+
+
+def test_concurrent_operator_retries_commit_one_revision_and_one_receipt(company):
+    allocation_office(company)
+    command = StaffAllocation(operation_id="concurrent-owner", expected_revision=2)
+    preview = allocate(company, command)
+    apply = command.model_copy(update={"dry_run": False, "plan_digest": preview["plan_digest"]})
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(lambda _: allocate(company, apply), range(2)))
+    assert sorted(result["cached"] for result in results) == [False, True]
+    assert {result["revision"] for result in results} == {3}
+    with company.db.transaction() as conn:
+        assert conn.execute("SELECT count(*) n FROM model_assignment_revisions WHERE revision=3").fetchone()["n"] == 1
+        assert conn.execute("SELECT count(*) n FROM events WHERE kind='staff_claude_allocation'").fetchone()["n"] == 1
 
 
 async def test_postgres_turn_producer_to_claude_http_consumer(company, fake_claude):

@@ -1,0 +1,234 @@
+{
+  "at": "2026-11-16T06:43:21.113974+00:00",
+  "evidence_kind": "production_read_only",
+  "model_inference_calls": 0,
+  "slack_messages_sent": 0,
+  "production_changes": 0,
+  "policy": {
+    "enabled": true,
+    "revision": 2,
+    "assignments": {
+      "data": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "source": "pinned",
+        "revision": 2
+      },
+      "director": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max",
+        "source": "pinned",
+        "revision": 2
+      },
+      "engineer": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
+        "source": "pinned",
+        "revision": 2
+      },
+      "financial_strategist": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "xhigh",
+        "source": "pinned",
+        "revision": 2
+      },
+      "maintainer": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
+        "source": "pinned",
+        "revision": 2
+      },
+      "market_brief": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "xhigh",
+        "source": "pinned",
+        "revision": 2
+      },
+      "news_screening": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "low",
+        "source": "pinned",
+        "revision": 2
+      },
+      "news_search": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "low",
+        "source": "pinned",
+        "revision": 2
+      },
+      "operations": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "medium",
+        "source": "pinned",
+        "revision": 2
+      },
+      "quant_scout": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "source": "pinned",
+        "revision": 2
+      },
+      "reporter": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "medium",
+        "source": "pinned",
+        "revision": 2
+      },
+      "researcher_crypto": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "high",
+        "source": "pinned",
+        "revision": 2
+      },
+      "researcher_global": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "high",
+        "source": "pinned",
+        "revision": 2
+      },
+      "researcher_kr": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "high",
+        "source": "pinned",
+        "revision": 2
+      },
+      "risk": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "xhigh",
+        "source": "pinned",
+        "revision": 2
+      },
+      "validator": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max",
+        "source": "pinned",
+        "revision": 2
+      }
+    },
+    "precedence": [
+      "task",
+      "pinned",
+      "default"
+    ],
+    "independent_reviewer": "Separate Claude runtime; not managed by Codex assignments"
+  },
+  "roles": [
+    {
+      "id": "director",
+      "name": "총괄",
+      "active": true,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max"
+    },
+    {
+      "id": "financial_strategist",
+      "name": "금융전략",
+      "active": true,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh"
+    },
+    {
+      "id": "researcher_kr",
+      "name": "국내시장 연구",
+      "active": true,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high"
+    },
+    {
+      "id": "researcher_global",
+      "name": "글로벌시장 연구",
+      "active": false,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high"
+    },
+    {
+      "id": "researcher_crypto",
+      "name": "가상자산 연구",
+      "active": false,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high"
+    },
+    {
+      "id": "data",
+      "name": "데이터",
+      "active": true,
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    {
+      "id": "engineer",
+      "name": "퀀트 개발",
+      "active": false,
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    },
+    {
+      "id": "validator",
+      "name": "독립 검증",
+      "active": false,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "max"
+    },
+    {
+      "id": "risk",
+      "name": "포트폴리오·리스크",
+      "active": false,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh"
+    },
+    {
+      "id": "operations",
+      "name": "플랫폼 운영",
+      "active": false,
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "medium"
+    },
+    {
+      "id": "reporter",
+      "name": "리포터",
+      "active": true,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "medium"
+    },
+    {
+      "id": "tech_scout",
+      "name": "Tech Scout",
+      "active": false,
+      "model": "gpt-5.6-luna",
+      "reasoning_effort": "low"
+    },
+    {
+      "id": "quant_scout",
+      "name": "Quant Scout",
+      "active": false,
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "high"
+    },
+    {
+      "id": "market_brief",
+      "name": "애널리스트",
+      "active": true,
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh"
+    },
+    {
+      "id": "trend_scout",
+      "name": "Trend Scout",
+      "active": false,
+      "model": "unused",
+      "reasoning_effort": "high"
+    },
+    {
+      "id": "maintainer",
+      "name": "개선 담당",
+      "active": true,
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh"
+    }
+  ],
+  "release": {
+    "current": "41b000f5c2f801bd99669fcf74aac62f7158ccad",
+    "action": "up_to_date",
+    "drift": []
+  }
+}

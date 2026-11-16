@@ -29,25 +29,43 @@
       "updatedAt": "2026-11-16T06:40:43.860261+00:00"
     },
     "REVIEW": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/runbooks/claude-staff.md",
+          "sha256": "1ed1f012a9f9"
+        },
+        {
+          "path": "docs/project/evidence/claude-staff-20261116/proposal.json",
+          "sha256": "17cfb29d7d49"
+        },
+        {
+          "path": "docs/project/CLAUDE-STAFF-20261116.md",
+          "sha256": "87d5fd164956"
+        }
+      ],
+      "note": "PR #241에 구체적인 12개 대상 제안과 적용·복원 절차를 준비했다. 외부 PR 검토·main 병합·정식 릴리스·운영 배정 적용은 아직 미수행.",
+      "status": "verified",
+      "updatedAt": "2026-11-16T06:47:35.665480+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
+          "path": "docs/project/evidence/claude-staff-20261116/validation.json",
+          "sha256": "1917a3b766a5"
+        },
+        {
           "path": "docs/project/evidence/claude-staff-20261116/final-focused.xml",
-          "sha256": "4b95bbd8824c"
+          "sha256": "305fdfe1fbc8"
         }
       ],
-      "note": "최종 대상 검사 71 passed. 전체 비-live 회귀 검사 실행 중.",
-      "status": "in_progress",
-      "updatedAt": "2026-11-16T06:40:43.956200+00:00"
+      "note": "실제 PostgreSQL 전체 비-live 3406 passed/147 skipped/1 deselected, 최종 대상 72 passed, Ruff 및 diff check 통과. 클라우드 새 계약·운영 전환은 별도 미수행.",
+      "status": "verified",
+      "updatedAt": "2026-11-16T06:47:35.579426+00:00"
     }
   },
   "intentDigest": "e321a869fc37",
   "schemaVersion": 1,
   "slug": "company-claude-staff",
   "state": "approved",
-  "updatedAt": "2026-11-16T06:40:43.956200+00:00"
+  "updatedAt": "2026-11-16T06:47:35.665480+00:00"
 }

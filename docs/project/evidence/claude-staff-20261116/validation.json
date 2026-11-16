@@ -1,0 +1,60 @@
+{
+  "at": "2026-11-16T06:47:35.420014+00:00",
+  "base_commit": "41b000f5c2f801bd99669fcf74aac62f7158ccad",
+  "implementation_commit": "f3f90de3e10f4617591cde5489cda03778faabf5",
+  "full_non_live_suite": {
+    "tests": 3553,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 147,
+    "passed": 3406,
+    "deselected": 1,
+    "seconds": 836.83
+  },
+  "final_focused_suite": {
+    "tests": 72,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 72
+  },
+  "temporal_named_cases": {
+    "total": 0,
+    "skipped": 0
+  },
+  "database": "Real disposable local PostgreSQL 14 on loopback; separate UUID database per test",
+  "cli_and_http": "Real subprocess and ASGI HTTP; synthetic Claude/Codex responses",
+  "slack": "Synthetic events only; no messages sent",
+  "new_contract_cloud_inference": false,
+  "lint": "uv run --frozen ruff check .: passed",
+  "whitespace": "git diff --check: passed",
+  "render_inputs_affected": [],
+  "new_services": [],
+  "new_secrets": [],
+  "runtime_env_changes": [],
+  "production_changes": 0,
+  "pr": "https://github.com/JJongAchii/quant-ai-company/pull/241",
+  "activation": "Pending reviewed main release and authenticated allocation preview/apply",
+  "source_sha256": {
+    "src/quant_company/api.py": "8a139919b622ee87710d81a2dafc7c872cd9a7c39b94a82d19fa0bc3c1796dc2",
+    "src/quant_company/company.py": "113fe048ff9465054fac81e4cf0ac9a97fa53f19c432e4876904c12099d8b992",
+    "src/quant_company/execution.py": "9f553f2912d8cc974175f283443a70086c142ec5d5004d34708af74c2b42740e",
+    "src/quant_company/maintenance/runner.py": "250414ff7c478794026f04b97fd2553dc1bf26ba6baa9e8cfea1092c50d32d59",
+    "src/quant_company/model_control.py": "ae3cf08f1c559c702751c8d81e7d7fd4df6de2601f52ec3daa03c5af6e026ff4",
+    "src/quant_company/providers/claude_company.py": "7442ed6a1e0e0e3e27ca3ae7a4e3c7b399f51a6808b144774d6a68d40316d2e6",
+    "src/quant_company/providers/claude_runner.py": "e0d6f71b2d9c0c5f335d787a2d4ae12137b56d442e0a6edb7ee88f6d530ca6b3",
+    "src/quant_company/providers/routing.py": "0ab6f5c2b1ea6cb20557573c2606749d8536f7301e0a681b2f43de3e486416f6",
+    "src/quant_company/quant_feed/runner.py": "91b4c01b81bb8bc74d7dee33275ca1838b438b7b9f2bc66013b4e794b51f30c9",
+    "src/quant_company/quant_feed/store.py": "5ce3825a46b02f326f0fb0bd3384bdf224dca6178e49505ed1e27f0e5e6ae9cc",
+    "src/quant_company/research/audit_delivery.py": "a663d89944e6e9066a7c3b4782fb3753be1f67e140094dfa80da35923821dbc7",
+    "src/quant_company/staff/runner.py": "aca846c3f42578e3e9053ec721970112af06fc0d67640101eaea54b63e84bb68",
+    "src/quant_company/staff/store.py": "65fabe14f93fbfee3eab5107cf3ddae37c3b722fe1310771988231dd4aa168ba",
+    "src/quant_company/staff_models.py": "199f07d851b620e7960cda2b6d7f4d2312a13248a70097bcf50071e7269a7401"
+  },
+  "evidence_sha256": {
+    "final-focused.xml": "305fdfe1fbc896bc224ea4652fa4866d06979eb58124ee9defdf6bb542cf9cc3",
+    "pytest.xml": "ee3fdee61bb79816b4cb82ebbb25e56797b259bddf77ebbf6ef4c9154bfa148c",
+    "production-before.json": "a115c86c5e7753120a1ee3b74dc81826b0b835c851b46034a2c56407a94a3aed",
+    "proposal.json": "17cfb29d7d49acf70eb8375c77323e4bce1ae2d4414e17a0b6c9b9070685abad"
+  }
+}
