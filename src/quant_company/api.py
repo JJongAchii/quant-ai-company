@@ -124,6 +124,12 @@ def create_app(settings: Settings | None = None, company: Company | None = None,
 
         return allocate(company, value, EDITORIAL_PLAN)
 
+    @app.post("/v1/model-assignments/claude-reporter", dependencies=[Depends(operator)])
+    def claude_reporter(value: StaffAllocation):
+        from .staff_models import REPORTER_PLAN, allocate
+
+        return allocate(company, value, REPORTER_PLAN)
+
     @app.post("/v1/research/jobs/{job_id}/revalidate", dependencies=[Depends(operator)])
     def research_revalidate(job_id: str, value: ResearchRevalidation):
         from uuid import UUID

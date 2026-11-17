@@ -162,7 +162,9 @@ def assess(row, folder):
             output = validate_draft(response, bundle)
             return {"domain_valid": True, "candidate_count": len(bundle["candidates"]),
                     "visible_items": len(publication_items(output.model_dump(mode="json"), bundle))}
-        output = compose(artifact(response, BriefComposition, bundle), bundle)
+        composition = artifact(response, BriefComposition, bundle)
+        placements = len(composition.fact_placements)
+        output = compose(composition, bundle)
         rejected = validate(output, bundle)
         try:
             validate_source_notes(output, bundle)
@@ -180,7 +182,7 @@ def assess(row, folder):
                 "rejected": {reason: len(ids) if isinstance(ids, list) else 1 for reason, ids in (
                     rejected.items() if isinstance(rejected, dict) else [])},
                 "rejected_items": len(rejected), "source_notes_violations": len(notes),
-                "fact_placements": len(output.fact_placements), "calendar_events": len(events),
+                "fact_placements": placements, "calendar_events": len(events),
                 "timed_events": len(timed), "timed_events_with_time_in_quote": len(stated),
                 "rendered_chars": sum(len(p) for p in parts),
                 "render_quality": {k: quality[k] for k in ("fallback", "rejected") if k in quality}}

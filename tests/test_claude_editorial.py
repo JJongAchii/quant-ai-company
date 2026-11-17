@@ -39,6 +39,8 @@ from quant_company.staff_models import (
     EDITORIAL,
     EDITORIAL_PLAN,
     PRESERVED,
+    REPORTER,
+    REPORTER_PLAN,
     TARGETS,
     StaffAllocation,
     allocate,
@@ -161,12 +163,12 @@ async def test_brief_turns_keep_their_frozen_deadline_and_a_passed_one_never_run
     assert args[args.index("--tools") + 1] == ""
 
 
-async def test_news_screen_and_review_run_on_claude_and_reject_a_codex_answer(efficient, fake_claude):  # noqa: F811
+async def test_news_screen_on_sonnet_and_review_on_opus_reject_a_codex_answer(efficient, fake_claude):  # noqa: F811
     store, _ = efficient
     config, configure, calls = fake_claude
     company = store.company
     company.settings.model_provider = "codex"
-    bind(company, news_screening=(CLAUDE_SONNET, "low"), reporter=(CLAUDE_SONNET, "medium"))
+    bind(company, news_screening=(CLAUDE_SONNET, "low"), reporter=(CLAUDE_MODEL, "medium"))
     overnight(store, suffix="claude")
     screen = NewsScreeningStore(company)
     request = screen.prepare()["request"]
@@ -177,8 +179,8 @@ async def test_news_screen_and_review_run_on_claude_and_reject_a_codex_answer(ef
         screen.commit(answer.model_copy(update={"provider": "codex"}))
     assert screen.commit(answer)["state"] != "blocked"
     review = NewsStore(company).prepare_review()["request"]
-    assert (review["model"], review["reasoning_effort"]) == (CLAUDE_SONNET, "medium")
-    configure(review=decision_of(reply(review)))
+    assert (review["model"], review["reasoning_effort"]) == (CLAUDE_MODEL, "medium")
+    configure(model=CLAUDE_MODEL, used_model=CLAUDE_MODEL, review=decision_of(reply(review)))
     answer = await client(config).run(ProviderRequest.model_validate(review))
     with pytest.raises(ValueError, match="news_unexpected_provider"):
         NewsStore(company).commit_review(answer.model_copy(update={"provider": "codex"}))
@@ -189,7 +191,7 @@ async def test_news_screen_and_review_run_on_claude_and_reject_a_codex_answer(ef
         bound = conn.execute("SELECT target,selection FROM model_execution_bindings ORDER BY target").fetchall()
         reviews = conn.execute("SELECT response FROM news_reviews").fetchall()
     assert {row["target"]: row["selection"]["model"] for row in bound} == {
-        "news_screening": CLAUDE_SONNET, "reporter": CLAUDE_SONNET}
+        "news_screening": CLAUDE_SONNET, "reporter": CLAUDE_MODEL}
     assert [row["response"]["provider"] for row in reviews] == ["claude"]
 
 
@@ -240,38 +242,49 @@ async def test_brief_edition_runs_every_phase_on_claude_opus(brief, fake_claude,
     assert BRIEFER == "market_brief"
 
 
-def test_editorial_allocation_is_reviewed_atomic_and_disjoint_from_staff(company, credentials):
-    original = allocation_office(company)
-    command_ = StaffAllocation(operation_id="owner-editorial-1", expected_revision=2)
-    preview = allocate(company, command_, EDITORIAL_PLAN)
-    assert preview["state"] == "preview"
-    for target, (model, effort) in EDITORIAL.items():
-        assert (preview["after"][target]["model"], preview["after"][target]["reasoning_effort"]) == (model, effort)
-    assert {target: preview["after"][target] for target in TARGETS} == {target: original[target] for target in TARGETS}
+def apply(company, operation, revision, plan=None):
+    command_ = StaffAllocation(operation_id=operation, expected_revision=revision)
+    preview = allocate(company, command_, *([plan] if plan else []))
     applied = allocate(company, command_.model_copy(update={"dry_run": False, "plan_digest": preview["plan_digest"]}),
-                       EDITORIAL_PLAN)
-    assert applied["revision"] == 3 and not applied["cached"]
+                       *([plan] if plan else []))
+    return preview, applied
+
+
+def test_two_stage_editorial_allocations_are_reviewed_atomic_and_disjoint_from_staff(company, credentials):
+    original = allocation_office(company)
+    preview, applied = apply(company, "owner-editorial-1", 2, EDITORIAL_PLAN)
+    assert preview["state"] == "preview" and applied["revision"] == 3 and not applied["cached"]
+    for target, (model, effort) in EDITORIAL.items():
+        assert (applied["after"][target]["model"], applied["after"][target]["reasoning_effort"]) == (model, effort)
+    # Stage 1 leaves the news desk on Codex and every staff target as it was.
+    untouched = (*TARGETS, *REPORTER)
+    assert {t: applied["after"][t] for t in untouched} == {t: original[t] for t in untouched}
     with pytest.raises(PolicyError, match="different allocation"):
-        allocate(company, StaffAllocation(operation_id="owner-editorial-1", expected_revision=2))
+        allocate(company, StaffAllocation(operation_id="owner-editorial-1", expected_revision=3), REPORTER_PLAN)
+    _, reporter = apply(company, "owner-reporter-1", 3, REPORTER_PLAN)
+    assert reporter["after"]["reporter"]["model"] == CLAUDE_MODEL and reporter["revision"] == 4
+    assert reporter["after"]["news_search"] == {**reporter["after"]["reporter"], "operation_id": "owner-reporter-1"}
+    assert {t: reporter["after"][t] for t in EDITORIAL} == {t: applied["after"][t] for t in EDITORIAL}
     # Staff afterwards leaves every editorial target as applied, whichever order the operator uses.
-    staff = StaffAllocation(operation_id="owner-staff-after", expected_revision=3)
-    staffed = allocate(company, staff.model_copy(update={"dry_run": False,
-                       "plan_digest": allocate(company, staff)["plan_digest"]}))
-    assert {target: staffed["after"][target] for target in EDITORIAL} == {
-        target: applied["after"][target] for target in EDITORIAL}
-    assert set(EDITORIAL) == set(PRESERVED)
+    _, staffed = apply(company, "owner-staff-after", 4)
+    assert {t: staffed["after"][t] for t in (*EDITORIAL, *REPORTER)} == {
+        t: reporter["after"][t] for t in (*EDITORIAL, *REPORTER)}
+    assert set(EDITORIAL) | set(REPORTER) == set(PRESERVED) and not set(EDITORIAL) & set(REPORTER)
     with company.db.transaction() as conn:
         kinds = [r["kind"] for r in conn.execute("""SELECT kind FROM events WHERE kind LIKE '%claude_allocation'
             ORDER BY created_at""").fetchall()]
         assert conn.execute("SELECT count(*) n FROM outbox").fetchone()["n"] == 0
-    assert kinds == ["editorial_claude_allocation", "staff_claude_allocation"]
+    assert kinds == ["editorial_claude_allocation", "reporter_claude_allocation", "staff_claude_allocation"]
     api = TestClient(create_app(company.settings, company, credentials))
-    assert api.post("/v1/model-assignments/claude-editorial", json=command_.model_dump()).status_code == 401
+    for path in ("claude-editorial", "claude-reporter"):
+        assert api.post(f"/v1/model-assignments/{path}", json={"operation_id": "x", "expected_revision": 4}
+                        ).status_code == 401
 
 
 def test_quant_scout_moved_from_the_staff_allocation_to_the_editorial_one():
     assert "quant_scout" not in TARGETS and "quant_scout" in PRESERVED
-    assert EDITORIAL["quant_scout"] == (CLAUDE_SONNET, "high") and EDITORIAL["market_brief"][0] == CLAUDE_MODEL
+    assert EDITORIAL["quant_scout"] == (CLAUDE_SONNET, "high") and EDITORIAL["market_brief"] == (CLAUDE_MODEL, "xhigh")
+    assert REPORTER["reporter"] == (CLAUDE_MODEL, "medium")
 
 
 # The CLI 2.1.280 shape observed in the 2026-11-17 trial (scripts/trial_claude_editorial.py).

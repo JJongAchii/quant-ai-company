@@ -16,12 +16,15 @@ TARGETS = ("director", "financial_strategist", "researcher_kr", "researcher_glob
 # operation owns a disjoint set of targets and the two apply in either order.
 PRESERVED = ("reporter", "market_brief", "news_screening", "news_search", "quant_scout")
 
-# The news desk (editing and trends share the reporter target), screening, search and Quant Scout move to Sonnet at
-# their current Codex efforts; the briefing keeps the strongest model (owner, 2026-11-17). Video, email and the
-# independent reviewer are configured elsewhere and are not model assignment targets.
-EDITORIAL = {"reporter": (CLAUDE_SONNET, "medium"), "news_screening": (CLAUDE_SONNET, "low"),
-             "news_search": (CLAUDE_SONNET, "low"), "quant_scout": (CLAUDE_SONNET, "high"),
-             "market_brief": (CLAUDE_MODEL, "xhigh")}
+# Two stages at the current Codex efforts (owner, 2026-11-17: the briefing and video come first; trends and Quant Scout
+# need not use the strongest model). Video, email and the independent reviewer are configured elsewhere.
+# 1. The briefing on Opus; screening and Quant Scout on Sonnet, whose outputs passed every domain check in the trial.
+EDITORIAL = {"market_brief": (CLAUDE_MODEL, "xhigh"), "news_screening": (CLAUDE_SONNET, "low"),
+             "quant_scout": (CLAUDE_SONNET, "high")}
+# 2. The news desk (editing and trends share the reporter target; search follows it) on Opus: Sonnet's news reviews and
+# trend set failed their domain contracts in the trial (docs/project/evidence/claude-editorial-20261117), which
+# would block those articles. Applied after the subscription's usage has been watched with stage 1 in place.
+REPORTER = {"reporter": (CLAUDE_MODEL, "medium"), "news_search": (CLAUDE_MODEL, "medium")}
 
 
 @dataclass(frozen=True)
@@ -43,8 +46,11 @@ class Plan:
 
 
 STAFF = Plan("staff_claude_allocation", TARGETS, PRESERVED, frozenset({*TARGETS, "reporter", "market_brief"}))
-EDITORIAL_PLAN = Plan("editorial_claude_allocation", tuple(EDITORIAL), TARGETS,
+EDITORIAL_PLAN = Plan("editorial_claude_allocation", tuple(EDITORIAL), (*TARGETS, *REPORTER),
                       frozenset({"reporter", "market_brief", "quant_scout"}), EDITORIAL)
+REPORTER_PLAN = Plan("reporter_claude_allocation", tuple(REPORTER), (*TARGETS, *EDITORIAL),
+                     frozenset({"reporter", "market_brief"}), REPORTER)
+EVENTS = (STAFF.event, EDITORIAL_PLAN.event, REPORTER_PLAN.event)
 
 
 class StaffAllocation(StrictModel):
@@ -63,9 +69,8 @@ def allocate(company, command, plan=STAFF):
         conn.execute("SELECT id FROM model_account_policy WHERE id=1 FOR SHARE")
         current = conn.execute("SELECT * FROM model_assignment_policy WHERE id=1 FOR UPDATE").fetchone()
         # An operation ID belongs to one allocation of any kind; reusing it for another kind is refused.
-        prior = conn.execute("""SELECT kind,detail FROM events WHERE kind IN ('staff_claude_allocation',
-            'editorial_claude_allocation') AND detail->>'operation_id'=%s ORDER BY created_at DESC LIMIT 1""",
-                             (command.operation_id,)).fetchone()
+        prior = conn.execute("""SELECT kind,detail FROM events WHERE kind=ANY(%s) AND detail->>'operation_id'=%s
+            ORDER BY created_at DESC LIMIT 1""", (list(EVENTS), command.operation_id)).fetchone()
         if prior:
             receipt = prior["detail"]
             if (prior["kind"] != plan.event or receipt["expected_revision"] != command.expected_revision

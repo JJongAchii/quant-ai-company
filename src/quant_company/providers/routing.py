@@ -6,7 +6,7 @@ import re
 from ..contracts import ProviderFault
 
 CLAUDE_MODEL = "claude-opus-5-5"
-# High-volume news desk work runs on Sonnet; the briefing, the video and staff keep Opus (owner, 2026-11-17).
+# News screening and Quant Scout run on Sonnet; the briefing, the news desk, the video and staff on Opus (2026-11-17).
 CLAUDE_SONNET = "claude-sonnet-5-5"
 CLAUDE_MODEL_IDS = frozenset({CLAUDE_MODEL, CLAUDE_SONNET})
 CLAUDE_MODELS = [{"model": model, "reasoning_efforts": ["low", "medium", "high", "xhigh", "max"]}
