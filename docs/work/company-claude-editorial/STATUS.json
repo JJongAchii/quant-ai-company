@@ -56,9 +56,23 @@
       "updatedAt": "2026-11-17T03:35:43.643774+00:00"
     },
     "REVIEW": {
-      "evidence": [],
-      "note": null,
-      "status": "pending"
+      "evidence": [
+        {
+          "path": "docs/runbooks/claude-editorial.md",
+          "sha256": "4fa6c5ca826f"
+        },
+        {
+          "path": "docs/adr/0051-editorial-desk-on-claude-slots.md",
+          "sha256": "bef43416327d"
+        },
+        {
+          "path": "docs/project/CLAUDE-EDITORIAL-20261117.md",
+          "sha256": "eed130f8ce61"
+        }
+      ],
+      "note": "PR #242(#241 위에 쌓음, https://github.com/JJongAchii/quant-ai-company/pull/242)에 2단계 배정 대상·값, 운영자 단계(CLAUDE_MEMORY_LIMIT=1536m, 1·2단계 preview/apply, 시간대), 복원, Codex 잔여 경로·이유·예상 감소를 기록. 외부 검토·병합·릴리스·배정 적용은 미수행.",
+      "status": "verified",
+      "updatedAt": "2026-11-17T03:36:49.058682+00:00"
     },
     "RUNTIME": {
       "evidence": [
@@ -111,5 +125,5 @@
   "schemaVersion": 1,
   "slug": "company-claude-editorial",
   "state": "approved",
-  "updatedAt": "2026-11-17T03:35:43.872492+00:00"
+  "updatedAt": "2026-11-17T03:36:49.058682+00:00"
 }
