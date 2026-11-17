@@ -1,0 +1,45 @@
+{
+ "measured_at": "2026-11-17T11:49+09:00",
+ "window_days": 7,
+ "source": "production receipts, read-only (codex/jobs, codex/video-image-jobs, claude/jobs); counts and seconds only",
+ "codex": {
+  "news|gpt-6-astra|medium": {
+   "calls": 801,
+   "avg_seconds": 53
+  },
+  "news-screen|gpt-6.1-sol|low": {
+   "calls": 643,
+   "avg_seconds": 28
+  },
+  "quant-feed|gpt-6.1-sol|high": {
+   "calls": 320,
+   "avg_seconds": 57
+  },
+  "news-brief|gpt-6-astra|xhigh": {
+   "calls": 55,
+   "avg_seconds": 507
+  },
+  "news-trends|gpt-6-astra|medium": {
+   "calls": 23,
+   "avg_seconds": 136
+  },
+  "company-turn|gpt-6-astra|xhigh": {
+   "calls": 14,
+   "avg_seconds": 65
+  },
+  "company-web|gpt-6-astra|xhigh": {
+   "calls": 7,
+   "avg_seconds": 53
+  },
+  "company-turn|gpt-6-astra|max": {
+   "calls": 4,
+   "avg_seconds": 51
+  }
+ },
+ "codex_video_images": 22,
+ "claude": {
+  "video": 246,
+  "newsletter": 20,
+  "video-analytics": 13
+ }
+}

@@ -42,7 +42,7 @@ from .quotations import (
 from .schedule import KST, close
 
 FORMAT_VERSION = 22
-VALIDATION_VERSION = 70
+VALIDATION_VERSION = 71
 
 WRITE = """You are Analyst writing a substantive, readable Korean daily market briefing.
 Return AgentDecision(status=complete,say='') with exactly one complete BriefProposal JSON artifact,
@@ -196,9 +196,10 @@ the event. All returned watchpoints remain in the main; observed facts appear wi
 while conditions appear with the next checks. Put all conclusion-changing qualifiers in visible text.
 
 CALENDAR AND CHECKPOINTS
-Use supplied calendar originals or exact source passages. Preserve original timezones; convert only when
-a confirmed time AND timezone exist. A date-only or weekday report is time_unconfirmed, not an inferred
-release time. Distinguish cancellations/changes and absent verification from no event.
+Use supplied calendar originals or exact source passages, only for events from 1 hour before edition.cutoff to
+7 days after it. Preserve original timezones; convert only when the cited passage states the time AND timezone,
+never a zone inferred from the issuer's country or usual hour. A date-only or weekday report is time_unconfirmed,
+not an inferred release time. Distinguish cancellations/changes and absent verification from no event.
 Assess every morning watchpoint with supported confirmed/mixed/pending outcomes, preserving its identity.
 Do not manufacture a resolution to missing data. Calendar and next checks must be concise, observable and
 useful to the reader, with the direction/event that would change the assessment.
@@ -592,8 +593,8 @@ All complete originals remain available. Never remove a fact to make the prose s
         end = instruction.index("Use exact short own-source quotes", start)
         instruction = instruction[:start] + """The service has committed the original-bound minimum facts BEFORE composition.
 Use committed_inventory: preserve every fact's complete meaning, numbers and exact Korean qualifier
-phrases in its cited reader-visible main text. Return one fact_placements entry for every supplied fact ID,
-mapping it to main_item_ids; several related facts may share a coherent paragraph. Keep source_notes=[];
+phrases in its cited reader-visible main text. Return one fact_placements entry for every supplied fact ID
+(never an empty list), mapping it to main_item_ids; several related facts may share a coherent paragraph. Keep source_notes=[];
 the service restores the immutable inventory and checks coverage. Do not copy the inventory as a new
 essay. supplemental_source_notes=[] unless the critic added previously unread originals; account only
 for those new sources there. Never use supplemental notes to replace a committed source's facts.

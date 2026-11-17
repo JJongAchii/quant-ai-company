@@ -1,0 +1,160 @@
+{
+  "purpose": "limited trial of the changed Claude configuration; not a comparison or production run",
+  "cli_version": "2.1.280 (Claude Code)",
+  "inputs": "frozen 2026-11-17 comparison inputs (company-editorial-model-eval/.local)",
+  "concurrent_calls": 5,
+  "cases": [
+    {
+      "case": 1,
+      "kind": "news",
+      "model": "claude-sonnet-5-5",
+      "effort": "medium",
+      "frozen_prompt_chars": 24592,
+      "trial_prompt_chars": 25033,
+      "instruction_changes": true,
+      "seconds": 20.9,
+      "returncode": 0,
+      "stdout_sha256": "015b4825022c31bd6efcaf2227d6fde60e0610a71ad5121eb836c8bfb2731ed8",
+      "state": "completed",
+      "provider": "claude",
+      "actual_model": "claude-sonnet-5-5",
+      "billing_mode": "subscription",
+      "tokens": {
+        "input_tokens": 2,
+        "output_tokens": 2642,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 25333
+      },
+      "domain_valid": false,
+      "domain_error": "news_attributed_reporting_not_allowed"
+    },
+    {
+      "case": 2,
+      "kind": "news",
+      "model": "claude-sonnet-5-5",
+      "effort": "medium",
+      "frozen_prompt_chars": 34618,
+      "trial_prompt_chars": 35059,
+      "instruction_changes": true,
+      "seconds": 40.5,
+      "returncode": 0,
+      "stdout_sha256": "10aacba482ba864bc5947184f5e1d628b29346158acdf3a536d89ceec08e83a3",
+      "state": "completed",
+      "provider": "claude",
+      "actual_model": "claude-sonnet-5-5",
+      "billing_mode": "subscription",
+      "tokens": {
+        "input_tokens": 2,
+        "output_tokens": 5848,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 30403
+      },
+      "domain_valid": false,
+      "domain_error": "2 validation errors for NewsReview\nitems.5\n  Value error, Publication requires facts, significance and evidence [type=value_error, input_value=<omitted>, input_type=dict]\nitems.6\n  Value error, Publication requires facts, significance and evidence [type=value_error, input_value=<omitted>, input_type=dict]"
+    },
+    {
+      "case": 3,
+      "kind": "trend",
+      "model": "claude-sonnet-5-5",
+      "effort": "medium",
+      "frozen_prompt_chars": 56176,
+      "trial_prompt_chars": 56176,
+      "instruction_changes": false,
+      "seconds": 57.1,
+      "returncode": 0,
+      "stdout_sha256": "6bded16e2bc761c0dcfb6c501da83519708db872a92927c57e17ccb16dcbbc9b",
+      "state": "completed",
+      "provider": "claude",
+      "actual_model": "claude-sonnet-5-5",
+      "billing_mode": "subscription",
+      "tokens": {
+        "input_tokens": 2,
+        "output_tokens": 8672,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 50560
+      },
+      "domain_valid": false,
+      "domain_error": "19 validation errors for TrendBriefDraft\nitems.30\n  Value error, trend_background_requires_evidence [type=value_error, input_value=<omitted>, input_type=dict]\nitems.31\n  Value error, trend_background_requires_evidence [type=value_error, input_value=<omitted>, input_type=dict]\nitems.32\n  Value error, trend_background_requires_evidence [type=value_error, input_value=<omitted>, input_type=dict]\nitems"
+    },
+    {
+      "case": 5,
+      "kind": "brief",
+      "model": "claude-opus-5-5",
+      "effort": "xhigh",
+      "frozen_prompt_chars": 87990,
+      "trial_prompt_chars": 88156,
+      "instruction_changes": true,
+      "seconds": 938.7,
+      "returncode": 0,
+      "stdout_sha256": "b0cf294f3f1ff925dcb47e9b9d57be4a3891f61616b92b7a1da165b023ed9c8d",
+      "state": "completed",
+      "provider": "claude",
+      "actual_model": "claude-opus-5-5",
+      "billing_mode": "subscription",
+      "tokens": {
+        "input_tokens": 2,
+        "output_tokens": 108673,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 65074
+      },
+      "domain_valid": false,
+      "rejected": {
+        "sum-lead": 1,
+        "ov-breadth": 1,
+        "ov-korea": 1,
+        "i6-fact": 1
+      },
+      "rejected_items": 4,
+      "source_notes_violations": 11,
+      "fact_placements": 42,
+      "calendar_events": 5,
+      "timed_events": 0,
+      "timed_events_with_time_in_quote": 0,
+      "rendered_chars": 17452,
+      "render_quality": {
+        "fallback": null,
+        "rejected": {}
+      }
+    },
+    {
+      "case": 6,
+      "kind": "brief",
+      "model": "claude-opus-5-5",
+      "effort": "xhigh",
+      "frozen_prompt_chars": 85692,
+      "trial_prompt_chars": 85858,
+      "instruction_changes": true,
+      "seconds": 1846.3,
+      "returncode": 0,
+      "stdout_sha256": "120363b2c6633934da0a7c09a2f4811977be73a61c078f8f562a28ad95735d77",
+      "state": "completed",
+      "provider": "claude",
+      "actual_model": "claude-opus-5-5",
+      "billing_mode": "subscription",
+      "tokens": {
+        "input_tokens": 4,
+        "output_tokens": 215155,
+        "cache_read_input_tokens": 5998,
+        "cache_creation_input_tokens": 127852
+      },
+      "domain_valid": false,
+      "rejected": {
+        "obs-kospi": 1,
+        "obs-kosdaq": 1,
+        "int-flows": 1,
+        "int-kosdaq": 1
+      },
+      "rejected_items": 4,
+      "source_notes_violations": 16,
+      "fact_placements": 52,
+      "calendar_events": 6,
+      "timed_events": 0,
+      "timed_events_with_time_in_quote": 0,
+      "rendered_chars": 18298,
+      "render_quality": {
+        "fallback": null,
+        "rejected": {}
+      }
+    }
+  ]
+}

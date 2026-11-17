@@ -7,6 +7,7 @@ from psycopg.types.json import Jsonb
 from ..company import as_json, fingerprint, stable
 from ..contracts import ProviderRequest
 from ..owner_controls import effective_limits
+from ..providers.routing import expected_provider
 from ..staff.packs import coaching, pack
 from ..web_tools import search_prompt, search_result
 from . import schedule
@@ -508,7 +509,7 @@ class BriefStore:
                 conn.execute("UPDATE brief_calls SET state='stale',response=%s,completed_at=%s WHERE id=%s",
                              (Jsonb(body), at, call["id"]))
                 return {"state": "stale"}
-            if response.provider != self.company.settings.model_provider:
+            if response.provider != expected_provider(self.company.settings, call["request"]["model"]):
                 raise ValueError("brief_provider_mismatch")
             if call["phase"] == "search":
                 result = search_result(response, row["bundle"]["search_arguments"])
@@ -637,7 +638,8 @@ class BriefStore:
             if not row:
                 return
             edition = conn.execute("SELECT * FROM brief_editions WHERE id=%s FOR UPDATE", (row["edition_id"],)).fetchone()
-            if code in {"busy", "quota", "unavailable"}:
+            # pending: the same request ID is still running on the runtime; ask again by that ID (never a new call).
+            if code in {"busy", "quota", "unavailable", "pending"}:
                 conn.execute("UPDATE brief_calls SET next_at=%s,error=%s WHERE id=%s",
                              (at+timedelta(seconds=max(5, min(seconds or 60, 604800))), code, identity))
             elif row["phase"] == "search":

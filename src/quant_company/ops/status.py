@@ -78,6 +78,24 @@ def attention(item, now):
     return "; ".join(reasons) or None
 
 
+# claude-runtime's last subscription report (deploy/ops_probe.claude_subscription): window name -> Korean label.
+SUBSCRIPTION_WINDOWS = {"five_hour": "5시간", "seven_day": "주간", "seven_day_opus": "주간 Opus",
+                        "seven_day_sonnet": "주간 Sonnet"}
+
+
+def current_windows(report, now):
+    """Usage windows that have not reset since the report, as fractions; a reset window is no longer known."""
+    windows = {}
+    for name, window in (report.get("windows") or {}).items():
+        if not isinstance(window, dict) or not isinstance(window.get("utilization"), (int, float)):
+            continue
+        resets = window.get("resets_at")
+        if isinstance(resets, (int, float)) and resets <= now.timestamp():
+            continue
+        windows[name] = {"utilization": window["utilization"], "resets_at": resets}
+    return {"at": report.get("at"), "status": report.get("status"), "model": report.get("model"), "windows": windows}
+
+
 def host(conn, now=None):
     now = now or utcnow()
     row = conn.execute("SELECT collected_at,payload FROM ops_host_snapshots WHERE id=1").fetchone()
@@ -108,6 +126,8 @@ def host(conn, now=None):
     if api := payload.get("claude_api"):
         value["claude_api"] = {key: api.get(key) for key in ("state", "spent_31d_usd", "cap_usd", "paused",
                                                              "key_present", "last_refusal")}
+    if subscription := payload.get("claude_subscription"):
+        value["claude_subscription"] = current_windows(subscription, now)
     if api := payload.get("openai_api"):
         value["openai_api"] = {key: api.get(key) for key in ("reason", "grant_id", "budget_usd",
             "accounted_usd", "budget_mode", "expires_at", "calls", "paused_until", "updated_at")}
@@ -215,7 +235,9 @@ def live_status(conn, project=None, now=None):
 
 
 def kst(value, with_day=False):
-    moment = stamp(value) if isinstance(value, str) else value
+    # An ISO string, a datetime, or a Unix time (the Claude runtime's status files).
+    moment = (stamp(value) if isinstance(value, str) else datetime.fromtimestamp(value, UTC)
+              if isinstance(value, (int, float)) and not isinstance(value, bool) else value)
     if not moment:
         return "-"
     local = moment.astimezone(KST)
@@ -268,6 +290,13 @@ def status_text(value):
                 and checked.timestamp() - at <= RECENT_REFUSAL.total_seconds()):
             label += f" · 최근 거절: {API_REFUSALS.get(refusal.get('reason'), refusal.get('reason'))}"
         lines.append(f"🤖 Claude API: 31일 ${api.get('spent_31d_usd') or 0:.2f} / ${api.get('cap_usd') or 0:.0f} · {label}")
+    if subscription := facts.get("claude_subscription"):
+        parts = [f"{SUBSCRIPTION_WINDOWS.get(name, name)} {window['utilization']:.0%}"
+                 + (f"(재설정 {kst(window['resets_at'], True)})" if isinstance(window.get("resets_at"), (int, float)) else "")
+                 for name, window in sorted(subscription["windows"].items())]
+        blocked = " · ⚠️ 한도 거절" if subscription.get("status") not in (None, "allowed", "allowed_warning") else ""
+        lines.append(f"🤖 Claude 구독: {' · '.join(parts) or '사용률 정보 없음'}{blocked}"
+                     f" ({kst(subscription.get('at'), True)} 호출 기준)")
     if api := facts.get("openai_api"):
         route = {"api_reserved": "API 실행 중", "api_completed": "API 우선",
                  "subscription_budget_or_pause": "구독 전환(예산·대기)",

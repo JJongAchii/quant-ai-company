@@ -293,7 +293,7 @@ async def test_batched_audit_verifies_reconstructed_context_against_postgres(mis
             check_delivery(conn, stage, turns)
 
 
-async def test_video_priority_defers_claude_company_work_but_never_codex(company, monkeypatch):
+async def test_video_priority_defers_only_shared_slot_work_and_never_codex(company, monkeypatch):
     from quant_company.newsletter.store import NewsletterStore
 
     monkeypatch.setattr(NewsletterStore, "video_needs_model", lambda _: True)
@@ -308,8 +308,10 @@ async def test_video_priority_defers_claude_company_work_but_never_codex(company
 
     codex, claude = Recorder(), Recorder()
     routed = CompanyProvider(company, codex, claude)
+    # Staff have their own Claude slot since 2026-11-17 (claude_runner.LOCKS 'company'): they no longer wait.
+    assert await routed.run(ProviderRequest(request_id="staff", model=CLAUDE_MODEL, prompt="Fixture")) == "synthetic-response"
     with pytest.raises(ProviderFault) as busy:
-        await routed.run(ProviderRequest(request_id="staff", model=CLAUDE_MODEL, prompt="Fixture"))
-    assert busy.value.code == "busy" and claude.calls == [] and routed.routes == {}
+        await routed.run(ProviderRequest(request_id="review-shared", model=CLAUDE_MODEL, prompt="Fixture"))
+    assert busy.value.code == "busy" and claude.calls == ["staff"] and routed.routes == {}
     assert await routed.run(ProviderRequest(request_id="news", model="gpt-6-astra", prompt="Fixture")) == "synthetic-response"
     assert codex.calls == ["news"]

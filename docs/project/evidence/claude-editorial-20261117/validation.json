@@ -1,0 +1,61 @@
+{
+  "at": "2026-11-17T05:30:10.997438+00:00",
+  "base_commit": "8a84a257af0e5c77e378944f81c79f374095a92a (PR #241 head)",
+  "suite_commit": "2401b922ff29dddfe72160af14668868f97cfba7",
+  "full_non_live_suite": {
+    "command": "uv run --frozen pytest -m 'not live' tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py (the CI service job)",
+    "tests": 3596,
+    "passed": 3449,
+    "skipped": 147,
+    "failures": 0,
+    "errors": 0,
+    "deselected": 1,
+    "seconds": 784.3
+  },
+  "database": "Real disposable local PostgreSQL 14 on loopback; separate database per test",
+  "cli_and_http": "Real subprocess and ASGI HTTP; synthetic Claude/Codex CLI output in tests",
+  "slack": "Synthetic events only; no messages sent",
+  "real_subscription_trial": {
+    "file": "trial.json",
+    "calls": 5,
+    "cli_version": "2.1.280 (Claude Code)"
+  },
+  "lint": "uv run --frozen ruff check .: passed",
+  "whitespace": "git diff --check: passed",
+  "render_inputs_affected": [],
+  "new_services": [],
+  "new_secrets": [],
+  "runtime_env_changes": [
+    "CLAUDE_MEMORY_LIMIT=2048m (operator; host value is 512m)"
+  ],
+  "production_changes": 0,
+  "activation": "Pending reviewed main release, the runtime.env value and the authenticated claude-editorial preview/apply",
+  "source_sha256": {
+    "deploy/.env.example": "aa4cda62a5ed9c3d50438ec7c97d706aeb814fdfe932f887d26994c801b9091c",
+    "deploy/compose.yaml": "99eb8bda9b9be0684c71452a3cfb6e7d23d661a7c490d4c6f9fc4034e0f1bb6a",
+    "deploy/lightsail-4gb.env.example": "f40b1261f4b23af4d2328218849a07b6e4fc40bb75e10587884a3a2910d60c63",
+    "deploy/lightsail-8gb.env.example": "864f6369f62405ff4e12a93f6f29554ce32851985de7ff9a9e4f9fbd480b7b4a",
+    "deploy/ops_probe.py": "e6e05f0ae2e69f1f88cc7973c5c52e39c85d80b0a9b340ff2c460df6fdc2a0c6",
+    "src/quant_company/api.py": "88acb40a9ef5c196c3045c107c511dc618112e7bd69661ccd49b7c684e56551f",
+    "src/quant_company/briefing/editor.py": "bed1f35c1c9da6854b4fbafdea0613e2180faf24c8362117ee5714ca4969ee3f",
+    "src/quant_company/briefing/inventory.py": "ecbcfb3bc8fa648fabcbf7ee81094eb002a0b7f434e94217d2c8d6a6d0d95074",
+    "src/quant_company/briefing/market_rules.py": "6cdd0c26b0ef5ac7f6c7a5d4e40d775489b4393785667cb7d4c9842ce9d203de",
+    "src/quant_company/briefing/numeric.py": "77e9430086e37cc70bf24862fc6950007e95384770e5ae05c635c7e99b2e560f",
+    "src/quant_company/briefing/qualification.py": "fd74972b15b75865de9f7cf8f0ce2a1dc13d4584eca864ae7d3c2e10f5c16bb1",
+    "src/quant_company/briefing/runner.py": "5a81daec683be9daa6a6534929f45f2528f9755365bc7fa7bd210c511de7df4a",
+    "src/quant_company/briefing/store.py": "5f9e8f77da1e0449d18d8b2dc2813898134f0125bcda186a1c7a1f8f1f3c1cbf",
+    "src/quant_company/news/discovery.py": "75f1b8c3b44ac49b5a13990214c5aabff865c186f58554b0563663bd6235e942",
+    "src/quant_company/news/editor.py": "ac47d9e548f97cc660f4cfb1ad601ec0d60f295d84684b428fda6710388c04d8",
+    "src/quant_company/news/runner.py": "3eb5fe754f6e62b2b9a95840dc98cf11507d975c8aaa7ade1ca2dc446e4fb15d",
+    "src/quant_company/news/screening.py": "54c3f6f52a1c7a5b7858328f419b47f685bc0cbc0c693d5da1e97d4c2c66779d",
+    "src/quant_company/news/store.py": "f0a98ef4eb79b1ca15d0350a5212b5579ff06b74a13a900fd32afbb5fce8b6b6",
+    "src/quant_company/ops/status.py": "804c9edc641414e433bcf2c3fe3722d7f89d479f2fea4bc6802b237b72cb95da",
+    "src/quant_company/ops/watch.py": "f40e8a93a2f6d15a70e7e48aa71d049c5bc10e047662ce05a8dbcbb4e869aaec",
+    "src/quant_company/providers/claude_company.py": "ffa03a4a442b425a6b8b5476d0bb53958f100ce46249b544194139fe6b5951ea",
+    "src/quant_company/providers/claude_runner.py": "1f3e883b6e68649d101fc066e9fe7fe9a2dd9e4ba522f7d4cb354e8eb62c2bbb",
+    "src/quant_company/providers/client.py": "e0fd2af743752211e7ee61aeca35f91c6c3a1bfba6999a73a45efd5a72efe4a6",
+    "src/quant_company/providers/routing.py": "fa85ce48bf321cd557716bfe2234b22c0d2f21f22d128d6fae98d40d15e13698",
+    "src/quant_company/staff_models.py": "b4835d8da5ad34294a1f604a5bcc2c5151477caf50f576489d81b5ac1d0431c7",
+    "src/quant_company/trend_feed/store.py": "a0dcbbde96cc4b3796d101ccddb49de7f2bb2abedcb43e028113e317b8072586"
+  }
+}

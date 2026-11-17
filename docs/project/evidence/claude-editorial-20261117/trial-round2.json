@@ -1,0 +1,150 @@
+{
+  "purpose": "round 2 of the limited trial (see module docstring); not a comparison or production run",
+  "cli_version": "2.1.280 (Claude Code)",
+  "cases": [
+    {
+      "case": "r2-news-1",
+      "kind": "news",
+      "model": "claude-opus-5-5",
+      "effort": "medium",
+      "prompt_chars": 25033,
+      "seconds": 20.0,
+      "returncode": 0,
+      "stdout_sha256": "b36132e5c50d748e487386bbead4c4d91929053097dcb6a1a74de7aa684e547d",
+      "state": "completed",
+      "provider": "claude",
+      "actual_model": "claude-opus-5-5",
+      "billing_mode": "subscription",
+      "tokens": {
+        "input_tokens": 2,
+        "output_tokens": 1806,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 22301
+      },
+      "domain_valid": true,
+      "primary_count": 4,
+      "selection_counts": {
+        "publish": 0,
+        "hold": 0,
+        "ignore": 4
+      }
+    },
+    {
+      "case": "r2-news-2",
+      "kind": "news",
+      "model": "claude-opus-5-5",
+      "effort": "medium",
+      "prompt_chars": 35059,
+      "seconds": 74.2,
+      "returncode": 0,
+      "stdout_sha256": "49288c689846c6cceff21da9a9aaa5e30aded5378a7af769b1eafaf5a668a5a4",
+      "state": "completed",
+      "provider": "claude",
+      "actual_model": "claude-opus-5-5",
+      "billing_mode": "subscription",
+      "tokens": {
+        "input_tokens": 2,
+        "output_tokens": 8019,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 27369
+      },
+      "domain_valid": true,
+      "primary_count": 8,
+      "selection_counts": {
+        "publish": 4,
+        "hold": 1,
+        "ignore": 2
+      }
+    },
+    {
+      "case": "r2-screen-1",
+      "kind": "screen",
+      "model": "claude-sonnet-5-5",
+      "effort": "low",
+      "prompt_chars": 19118,
+      "seconds": 19.8,
+      "returncode": 0,
+      "stdout_sha256": "74e9373beaa893a6a3f9f97005c1cb056a52a151d0ddd9047d81690cb0cd6633",
+      "state": "completed",
+      "provider": "claude",
+      "actual_model": "claude-sonnet-5-5",
+      "billing_mode": "subscription",
+      "tokens": {
+        "input_tokens": 2,
+        "output_tokens": 1836,
+        "cache_read_input_tokens": 4689,
+        "cache_creation_input_tokens": 17769
+      },
+      "domain_valid": true,
+      "articles": 12,
+      "kept": 10
+    },
+    {
+      "case": "r2-screen-2",
+      "kind": "screen",
+      "model": "claude-sonnet-5-5",
+      "effort": "low",
+      "prompt_chars": 16831,
+      "seconds": 15.7,
+      "returncode": 0,
+      "stdout_sha256": "06c431232eabe4af026a528d762075f763fed26e2fc4ec68bd5854f58baf8aec",
+      "state": "completed",
+      "provider": "claude",
+      "actual_model": "claude-sonnet-5-5",
+      "billing_mode": "subscription",
+      "tokens": {
+        "input_tokens": 2,
+        "output_tokens": 1417,
+        "cache_read_input_tokens": 4689,
+        "cache_creation_input_tokens": 16258
+      },
+      "domain_valid": true,
+      "articles": 9,
+      "kept": 7
+    },
+    {
+      "case": "r2-quant-1",
+      "kind": "quant",
+      "model": "claude-sonnet-5-5",
+      "effort": "high",
+      "prompt_chars": 22592,
+      "seconds": 5.3,
+      "returncode": 0,
+      "stdout_sha256": "b1e1d2e0b72b136b2918a0ad3a91ecc3895afe9f76d83b043a60464789738e94",
+      "state": "completed",
+      "provider": "claude",
+      "actual_model": "claude-sonnet-5-5",
+      "billing_mode": "subscription",
+      "tokens": {
+        "input_tokens": 2,
+        "output_tokens": 589,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 15693
+      },
+      "domain_valid": true,
+      "disposition": "reject"
+    },
+    {
+      "case": "r2-quant-2",
+      "kind": "quant",
+      "model": "claude-sonnet-5-5",
+      "effort": "high",
+      "prompt_chars": 29639,
+      "seconds": 6.9,
+      "returncode": 0,
+      "stdout_sha256": "2870429b092a9978f184d657e1bc1bd59932e42a6cd8da6797f8caf4d8f31cea",
+      "state": "completed",
+      "provider": "claude",
+      "actual_model": "claude-sonnet-5-5",
+      "billing_mode": "subscription",
+      "tokens": {
+        "input_tokens": 2,
+        "output_tokens": 737,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 18357
+      },
+      "domain_valid": true,
+      "disposition": "reject"
+    }
+  ]
+}

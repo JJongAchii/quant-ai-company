@@ -27,6 +27,7 @@ from ..staff.review_contract import REVIEW_MODEL, IndependentReview
 from .claude_api import API_VERSION, PRICES, ApiNotExecuted, Budget, call, cost_usd, read_key, reservation_usd
 from .claude_company import company_request
 from .codex_runner import ProcessRunner, atomic_json, request_digest, strict_json
+from .routing import own_lane
 
 LOG = logging.getLogger(__name__)
 
@@ -37,6 +38,11 @@ VIDEO_MAX_OUTPUT = 32 * 1024 * 1024
 FORBIDDEN_AUTH = ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL",
                   "ANTHROPIC_PROFILE", "CLAUDE_CODE_USE_BEDROCK", "CLAUDE_CODE_USE_VERTEX",
                   "CLAUDE_CODE_USE_FOUNDRY", "CLAUDE_CODE_OAUTH_TOKEN")
+
+
+# Codex served the same news desk turns with a 900-second limit; their slowest (trend sets of 100 candidates) took
+# about 4 minutes there. Bounded below the brief's phases, which carry their own deadlines.
+NEWS_DESK_SECONDS = 600
 
 
 @dataclass(frozen=True)
@@ -66,7 +72,15 @@ class ClaudeConfig:
             raise ValueError("Invalid Claude API cap")
 
     def process_limit(self, request):
-        if request.output_contract == "agent_decision" or company_request(request):
+        if company_request(request):
+            from ..briefing.execution import timeout_seconds
+
+            # A briefing phase keeps its frozen edition deadline, exactly as on Codex (codex_runner._timeout_seconds);
+            # a news desk turn gets the longest bounded company slot.
+            lane = own_lane(request)
+            return (timeout_seconds(request) if lane == "brief" else None) or (
+                NEWS_DESK_SECONDS if lane == "news" else self.timeout_seconds)
+        if request.output_contract == "agent_decision":
             return self.timeout_seconds
         return self.newsletter_timeout_seconds if request.output_contract == "newsletter_v1" else self.video_timeout_seconds
 
@@ -95,6 +109,11 @@ API_FIRST = frozenset({"video_shorts_v1", "newsletter_v1", "video_performance_v1
 SHORTS_REQUEST = re.compile(r"^video-[0-9a-f-]{36}-shorts-")
 SHORTS_SHARED = frozenset({"video_review_v1", "video_visual_review_v1"})
 API_SLOTS = 2
+# One subscription CLI call per slot. The episode and the email share the original slot; the briefing, the news desk,
+# Quant Scout and the rest of the company each have their own (owner, 2026-11-17; the lanes and lock names of
+# codex_runner), so an episode never queues behind company work. release.py counts every slot's CLI process.
+LOCKS = {None: ".runtime.lock", "brief": ".runtime-brief.lock", "news": ".runtime-news.lock",
+         "quant": ".runtime-quant.lock", "company": ".runtime-company.lock"}
 # An API-only turn the lane refused (off, capped, paused or overloaded) is asked again after this long.
 API_ONLY_WAIT = 300
 UNCERTAIN_PAUSE_SECONDS = 1800
@@ -198,6 +217,16 @@ def stdin_payload(request):
     return (json.dumps({"type": "user", "message": {"role": "user", "content": content}}) + "\n").encode()
 
 
+def cli_schema(request):
+    """A briefing phase gets the strict wire schema Codex receives (every field required, the calendar time and status
+    bound together, short quote references); its domain validation is the same either way."""
+    if company_request(request) and request.output_contract.startswith("brief_"):
+        from .codex_runner import output_schema as wire_schema
+
+        return wire_schema(request)
+    return output_schema(request)[0].model_json_schema()
+
+
 def command(config, request):
     # Requests frozen before explicit effort support used high; never reinterpret their identity.
     effort = request.reasoning_effort or "high"
@@ -208,9 +237,38 @@ def command(config, request):
             "--permission-prompts", "none", "--no-session-persistence", "--max-turns", "6" if request.web_search else "2",
             "--settings", '{"fastMode":false,"forceLoginMethod":"claudeai"}',
             "--output-format", "stream-json", "--verbose", "--json-schema",
-            json.dumps(output_schema(request)[0].model_json_schema(), separators=(",", ":"))] + (
+            json.dumps(cli_schema(request), separators=(",", ":"))] + (
             ["--input-format", "stream-json"] if request.attachments else []) + (
             ["--allowedTools", "WebSearch"] if request.web_search and company_request(request) else [])
+
+
+# The CLI reports the subscription's usage windows in a rate_limit_event (CLI 2.1.x): a utilization fraction and a
+# reset time per window (seven_day, five_hour, ...). Only those numbers and short codes are kept; the latest report
+# goes to this status file in the jobs directory, read by deploy/ops_probe.claude_subscription.
+SUBSCRIPTION_STATUS = ".subscription.json"
+
+
+def subscription_window(stdout):
+    latest = None
+    for line in stdout.splitlines():
+        try:
+            event = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(event, dict) and event.get("type") == "rate_limit_event":
+            latest = event.get("rate_limit_info") if isinstance(event.get("rate_limit_info"), dict) else latest
+    if latest is None:
+        return None
+
+    def number(value):
+        return value if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) else None
+
+    reported = latest.get("unifiedWindows") if isinstance(latest.get("unifiedWindows"), dict) else {}
+    windows = {name: {"utilization": number(window.get("utilization")), "resets_at": number(window.get("resetsAt"))}
+               for name, window in reported.items() if isinstance(window, dict) and code(name) == name}
+    return {"status": code(latest.get("status")), "type": code(latest.get("rateLimitType")),
+            "resets_at": number(latest.get("resetsAt")), "overage": code(latest.get("overageStatus")),
+            "windows": windows}
 
 
 def code(value, pattern=r"[a-z_]{1,40}"):
@@ -434,6 +492,15 @@ class ClaudeRunner:
         except Exception as error:  # noqa: BLE001 - logged by type only; the lane's own checks fail closed
             # The status file only informs operators; a failed write must not cost a result or a turn.
             LOG.warning("Claude API status file not written: %s", type(error).__name__)
+
+    def _subscription(self, directory, stdout, model):
+        """The subscription's usage windows as the CLI last reported them, for the host probe and the ops watch."""
+        try:
+            if window := subscription_window(stdout):
+                atomic_json(directory / SUBSCRIPTION_STATUS, {"at": time.time(), "model": model, **window})
+        except Exception as error:  # noqa: BLE001 - logged by type only
+            # The status file only informs operators; a failed write must not cost a result or a turn.
+            LOG.warning("Claude subscription status file not written: %s", type(error).__name__)
 
     def _key_present(self):
         """Whether the key file holds a key (never the key itself), as the status file last said it."""
@@ -673,7 +740,8 @@ class ClaudeRunner:
 
     async def _run_cli(self, request, path, digest):
         directory = path.parent
-        fd = os.open(directory / ".runtime.lock", os.O_CREAT | os.O_RDWR, 0o600)
+        fd = os.open(directory / LOCKS[own_lane(request) if company_request(request) else None],
+                     os.O_CREAT | os.O_RDWR, 0o600)
         try:
             try:
                 fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -685,6 +753,8 @@ class ClaudeRunner:
             cached = self._cached(path, digest, request.request_id, locked=True)
             if cached:
                 return cached
+            # After the receipt check, before a new one: a briefing whose frozen deadline has passed never runs.
+            limit = self.config.process_limit(request)
             env = environment(self.config, self.source)
             with tempfile.TemporaryDirectory(prefix=".review-", dir=directory) as temporary:
                 cwd = Path(temporary)
@@ -711,7 +781,7 @@ class ClaudeRunner:
                 self.active[request.request_id] = (asyncio.current_task(), "cli")
                 try:
                     output = await self.process.run(command(self.config, request), cwd=cwd, env=env,
-                        stdin=payload, timeout_seconds=self.config.process_limit(request),
+                        stdin=payload, timeout_seconds=limit,
                         max_stdout_bytes=MAX_OUTPUT if request.output_contract == "agent_decision" else VIDEO_MAX_OUTPUT,
                         max_stderr_bytes=65536)
                     # Persist the observed process boundary before parsing can reject its response.
@@ -722,6 +792,7 @@ class ClaudeRunner:
                         "stderr_bytes": len(output.stderr), "stderr_sha256": hashlib.sha256(output.stderr).hexdigest(),
                     }}
                     atomic_json(path, receipt)
+                    self._subscription(directory, output.stdout, request.model)
                     result = parse_result(request, output)
                     if company_request(request) and request.session:
                         from .claude_company import session_evidence

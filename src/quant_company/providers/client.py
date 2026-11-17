@@ -122,7 +122,8 @@ class RuntimeClient:
             headers.update({"X-Company-Account": account["profile"], "X-Company-Account-Revision": str(account["revision"])})
         from quant_company.briefing.execution import timeout_seconds
 
-        budget = timeout_seconds(request) if self.expected_provider == "codex" else None
+        # A briefing phase waits for its frozen deadline on either runtime; other requests return None here.
+        budget = timeout_seconds(request)
         wait_seconds = max(self.timeout_seconds, budget+60) if budget else self.timeout_seconds
         try:
             async with httpx.AsyncClient(timeout=wait_seconds, transport=self.transport,

@@ -66,6 +66,8 @@ for n, query in enumerate(control.get('searches', [])):
     print(json.dumps({'type': 'user', 'message': {'content': [
         {'type': 'tool_result', 'tool_use_id': identity, 'is_error': control.get('search_error', False),
          'content': 'Synthetic search result https://example.org/source'}]}}))
+if control.get('rate_limit'):
+    print(json.dumps({'type': 'rate_limit_event', 'rate_limit_info': control['rate_limit']}))
 if control.get('error'):
     print(json.dumps({'type': 'assistant', 'error': control['error'], 'message': {'usage': {'output_tokens': 0}}}))
     sys.exit(1)

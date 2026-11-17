@@ -5,7 +5,7 @@ import json
 
 from ..contracts import ProviderFault, ResearchStageOutput, StrictModel
 from .codex_runner import ProcessResult, atomic_json, cli_prompt, parse_result, quant_output_model
-from .routing import CLAUDE_MODEL
+from .routing import is_claude
 
 CONTRACTS = frozenset({"agent_decision", "research_stage_v1", "quant_brief_v1", "quant_brief_v2",
                        "quant_brief_v3", "quant_brief_v4", "quant_critique_v1", "quant_critique_v2",
@@ -18,7 +18,9 @@ class DecisionEnvelope(StrictModel):
 
 
 def company_request(request):
-    return (request.model == CLAUDE_MODEL and request.output_contract in CONTRACTS
+    # Briefing phases (brief_*) are scoped to their Analyst request IDs by ProviderRequest itself.
+    return (is_claude(request.model) and (request.output_contract in CONTRACTS
+                                          or request.output_contract.startswith("brief_"))
             and not request.request_id.startswith("review-"))
 
 
