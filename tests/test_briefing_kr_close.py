@@ -46,14 +46,16 @@ PINNED_CATALOG = Path(__file__).parent/"fixtures/qdata/catalog_d6d7d0e.py.txt"
 PINNED_CATALOG_BLOB = "9ee4f0ea7a78019a457516fc5de567316d8dccf4"
 # Computed on 1628c16 (timer/readability plus AM v7 integration) with the switch absent; scratch reproduction is the body of
 # test_switch_off_is_byte_identical_to_the_v7_base. An unrelated contract change must recompute them there.
+# 2026-11-17: the writer's calendar window/stated-timezone rule and non-empty fact_placements, and
+# VALIDATION_VERSION 71 (validator false positives); schedule, summaries, review prompt and render are unchanged.
 BASE = {
-    "early_write_prompt": "7477551908c6c7c7834b3a425e66d5fad5fc6cb4d169dd699926bc7c9fc133f3",
+    "early_write_prompt": "151f7de0effdd4c2680ff9cf7d156738e6e88891ec38263cacfd8e9ca366b20e",
     "editions": "e0137f6acff073ddf7b2497c11ed93a000d2ab4311b8446837efa5bda98a9860",
-    "policy": "15290d86bd86553bfb5ee2d6f8fefa0c438b259dd8ad8be9392fa86fe0367bdb",
+    "policy": "5af9e657c70fb8c3ca995a4de48e441dec0ce878e9b38ae9df654f1a91dce475",
     "render": "f5aa26e983100360bfc0e69044a627331d2eb6d93c538ad03920c594b70f4fbc",
     "review_prompt": "23e5f15ea565fa7f31f59e189533f35a5cdd9d86e5283e4a5eda2f2402684dbd",
     "summaries": "9e896b9237bb74c950e4a5e9cce1a80baf1ef53672732b2492be6c4b2ffe5b9a",
-    "write_prompt": "362122b5d1467de44de5108fd271ad37d0503d007e15f64e52908a922ca69830"
+    "write_prompt": "67378dbbf19b1d8e3fe512efe45e2532f3dc4f7db5cdb00a88389832d13f4b8b"
 }
 
 

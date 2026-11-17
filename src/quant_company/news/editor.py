@@ -15,6 +15,10 @@ trade/energy/commodities/supply chains, major company/industry/technology develo
 events (including consequential disasters, public-health and infrastructure events). A significant Korean
 development need not have worldwide effects. World events matter even without a market reaction.
 Select actual developments, not routine local notices, lifestyle advice, entertainment or a quota of posts.
+Judge an article by the developments it reports, not by its format. An analysis, column or explainer that reports
+checkable facts (official statistics, company results or disclosures, confirmed policy actions, market data) is not
+excluded as analysis: publish those facts with their own evidence and claim_type, and keep the author's opinions,
+forecasts and advice out of facts (a clearly conditional interpretation may go in significance).
 Group reports of the same event. For an existing offered event_id, publish only material new facts or a correction;
 explain the change. Reworded headlines and republished old events are not new developments.
 Verify dates, numbers and scope against actual retrieved content, not feed headlines alone.
