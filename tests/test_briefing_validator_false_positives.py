@@ -76,3 +76,15 @@ def test_wti_expiry_owner_and_month_only_year(text, observed, expired):
 def test_qualifier_survives_a_bracketed_alias():
     assert normalized("WSJ는") in normalized("월스트리트저널(WSJ)는 소식통을 인용해")
     assert normalized("잠정치") not in normalized("확정치(최종)")
+
+
+@pytest.mark.parametrize("draft,quotes,expected", [
+    # Found in the 2026-11-17 limited trial (docs/project/evidence/claude-editorial-20261117/trial.json).
+    ("부동산 침체가 5년째 이어졌다", ["household wealth eroding for a fifth year"], True),
+    ("비트코인은 주간 기준 6주 연속 하락했다", ["is coming off its sixth weekly decline in a row"], True),
+    ("3거래일 연속 상승했다", ["the 3rd straight session of gains"], True),
+    ("부동산 침체가 5년째 이어졌다", ["household wealth eroding for a fourth year"], False),
+    ("6주 연속 하락했다", ["its sixth monthly decline"], False),
+])
+def test_korean_running_count_matches_the_same_english_ordinal_period(draft, quotes, expected):
+    assert prose_numbers_supported(draft, quotes) is expected

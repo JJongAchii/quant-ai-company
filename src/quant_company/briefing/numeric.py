@@ -8,6 +8,12 @@ NUMBER = r"[+\-−]?\d[\d,]*(?:\.\d+)?"
 MONTHS = "January February March April May June July August September October November December".split()
 SMALL = {"십": 10, "백": 100, "천": 1000}
 LARGE = {"만": 10000, "억": 100000000, "조": 1000000000000}
+ORDINALS = ("zeroth first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth "
+            "fourteenth fifteenth sixteenth seventeenth eighteenth nineteenth twentieth").split()
+# English period words for a Korean running count (see stated_run).
+RUN_PERIODS = {"년": r"years?|yearly|annual", "주": r"weeks?|weekly", "개월": r"months?|monthly",
+               "달": r"months?|monthly", "거래일": r"sessions?|trading days?|days?", "일": r"days?|daily|sessions?",
+               "분기": r"quarters?|quarterly"}
 # Denominators whose fractions have no finite decimal, by their English ordinal (see stated_fraction).
 ORDINAL_PARTS = {3: "thirds?", 6: "sixths?", 7: "sevenths?", 8: "eighths?", 9: "ninths?", 12: "twelfths?"}
 CARDINALS = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()
@@ -295,6 +301,19 @@ def prose_numbers_supported(text, quotes):
         return " 분수 " if any(re.search(pattern, quote, re.I) for pattern in patterns for quote in quotes) else match[0]
 
     remaining = re.sub(r"(?<![\d.,])(\d{1,2})\s*분의\s*(\d{1,2})(?![\d.])", stated_fraction, remaining)
+
+    # A Korean running count ("5년째", "6주 연속") is the source's English ordinal of the same period: "for a
+    # fifth year", "its sixth weekly decline in a row", "the 3rd straight session". Never a bare quantity.
+    def stated_run(match):
+        count, unit = int(match[1]), match[2]
+        if not 0 < count < len(ORDINALS):
+            return match[0]
+        ordinal = r"(?:" + ORDINALS[count] + "|" + str(count) + r"(?:st|nd|rd|th))"
+        periods = RUN_PERIODS[unit]
+        pattern = (r"\b" + ordinal + r"[-\s]+(?:(?:straight|consecutive|successive)[-\s]+)?(?:" + periods + r")\b")
+        return " 연속 " if any(re.search(pattern, quote, re.I) for quote in quotes) else match[0]
+
+    remaining = re.sub(r"(?<![\d.,])(\d{1,2})\s*(년|주|개월|달|거래일|일|분기)\s*(?:째|연속)", stated_run, remaining)
     # A ranking is not a price or quantity: English "second-largest" supports
     # Korean "2위", but never a bare 2, a 2% change or a second-tier label.
     ranks = {1: r"(?<![\w-])(?:the\s+)?(?:largest|biggest)\b",
