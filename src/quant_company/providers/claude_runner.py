@@ -740,8 +740,6 @@ class ClaudeRunner:
 
     async def _run_cli(self, request, path, digest):
         directory = path.parent
-        # Before any receipt: a briefing whose frozen deadline has passed is refused without running (never replayed).
-        limit = self.config.process_limit(request)
         fd = os.open(directory / LOCKS[own_lane(request) if company_request(request) else None],
                      os.O_CREAT | os.O_RDWR, 0o600)
         try:
@@ -755,6 +753,8 @@ class ClaudeRunner:
             cached = self._cached(path, digest, request.request_id, locked=True)
             if cached:
                 return cached
+            # After the receipt check, before a new one: a briefing whose frozen deadline has passed never runs.
+            limit = self.config.process_limit(request)
             env = environment(self.config, self.source)
             with tempfile.TemporaryDirectory(prefix=".review-", dir=directory) as temporary:
                 cwd = Path(temporary)
