@@ -17,18 +17,19 @@ def is_claude(model):
     return model in CLAUDE_MODEL_IDS
 
 
-# The briefing, the news desk and Quant Scout run on their own Claude CLI slots (claude_runner.LOCKS), as they do on
-# Codex (codex_runner lanes): an episode never waits for them and they never wait for an episode. Matched by the
-# service-owned request ID of each pipeline, in the order Codex matches them.
+# Every company turn on Claude runs on its own CLI slot (claude_runner.LOCKS), as on Codex (codex_runner lanes): the
+# briefing, the news desk, Quant Scout and the rest of the company (staff, research). The episode and the email keep
+# the original slot to themselves, so an episode never waits for company work and company work never waits for an
+# episode (owner, 2026-11-17: the video must never be late). Matched by request ID, in the order Codex matches them.
 OWN_LANES = (("brief", re.compile(r"^news-brief-")), ("quant", re.compile(r"^quant-feed-")),
              ("news", re.compile(r"^news-")))
 
 
 def own_lane(request):
-    """'brief', 'quant' or 'news' for such a Claude turn; None for work on the shared slot (video, email, staff)."""
+    """The CLI slot of a Claude company turn: 'brief', 'quant', 'news', or 'company' for staff and research."""
     if not is_claude(request.model):
         return None
-    return next((lane for lane, pattern in OWN_LANES if pattern.match(request.request_id)), None)
+    return next((lane for lane, pattern in OWN_LANES if pattern.match(request.request_id)), "company")
 
 
 def expected_provider(settings, model):
@@ -46,7 +47,10 @@ class CompanyProvider:
         provider = self.claude if is_claude(request.model) else self.codex
         self.routes[request.request_id] = provider
         try:
-            if provider is self.claude and not own_lane(request):
+            from .claude_company import company_request
+
+            # Only work that would share the episode's slot yields to it; every company turn has a slot of its own.
+            if provider is self.claude and not company_request(request):
                 from ..newsletter.store import NewsletterStore
 
                 if await asyncio.to_thread(NewsletterStore(self.company).video_needs_model):

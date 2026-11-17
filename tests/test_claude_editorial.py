@@ -36,6 +36,7 @@ from quant_company.providers.claude_runner import (
 from quant_company.providers.codex_runner import output_schema
 from quant_company.providers.routing import CLAUDE_MODEL, CLAUDE_SONNET, CompanyProvider, own_lane
 from quant_company.staff_models import (
+    BRIEFING,
     EDITORIAL,
     EDITORIAL_PLAN,
     PRESERVED,
@@ -91,8 +92,7 @@ def test_lanes_follow_the_codex_request_prefixes():
     assert own_lane(news_request("quant-feed-x")) == "quant"
     for identity in ("news-screen-x", "news-x", "news-trends-x", "news-search-x"):
         assert own_lane(news_request(identity)) == "news"
-    assert own_lane(news_request(str(uuid4()), CLAUDE_MODEL)) is None
-    assert own_lane(news_request("video-x", CLAUDE_MODEL)) is None
+    assert own_lane(news_request(str(uuid4()), CLAUDE_MODEL)) == "company"  # staff and research
     assert own_lane(news_request("news-x", "gpt-6-astra")) is None
 
 
@@ -111,24 +111,28 @@ async def test_episode_priority_holds_only_shared_slot_work(company, monkeypatch
 
     codex, claude = Recorder(), Recorder()
     routed = CompanyProvider(company, codex, claude)
+    staff = str(uuid4())
     for identity, model in (("news-screen-a", CLAUDE_SONNET), ("news-b", CLAUDE_SONNET),
-                            ("quant-feed-c", CLAUDE_SONNET), (BRIEF+"write", CLAUDE_MODEL)):
+                            ("quant-feed-c", CLAUDE_SONNET), (BRIEF+"write", CLAUDE_MODEL), (staff, CLAUDE_MODEL)):
         assert await routed.run(news_request(identity, model)) == identity
+    # Only work that would share the episode's own slot still yields to it (none of the company's turns).
     with pytest.raises(ProviderFault) as busy:
-        await routed.run(news_request(str(uuid4()), CLAUDE_MODEL))
+        await routed.run(news_request("review-x", CLAUDE_MODEL))
     assert busy.value.code == "busy"
-    assert claude.calls == ["news-screen-a", "news-b", "quant-feed-c", BRIEF+"write"] and codex.calls == []
+    assert claude.calls == ["news-screen-a", "news-b", "quant-feed-c", BRIEF+"write", staff] and codex.calls == []
     assert await routed.run(news_request("news-d", "gpt-6-astra")) == "news-d" and codex.calls == ["news-d"]
 
 
-async def test_a_held_episode_slot_never_blocks_the_news_desk_and_slots_stay_separate(fake_claude):
+async def test_a_held_episode_slot_never_blocks_company_work_and_slots_stay_separate(fake_claude):
     config, configure, calls = fake_claude
     configure(model=CLAUDE_SONNET, used_model=CLAUDE_SONNET, review=decision_of(screen_reply({
         "request_id": "x", "prompt": "SCREEN DATA JSON:\n" + json.dumps({"articles": []})})))
     runner = ClaudeRunner(config, source_environment={"PATH": os.environ["PATH"]})
-    with held(config, None):
+    with held(config, None):  # an episode turn holds its slot
         result = await runner.run(news_request("news-screen-1"))
         assert result.provider == "claude" and result.usage["actual_model"] == CLAUDE_SONNET
+        assert (await runner.run(news_request(str(uuid4()), CLAUDE_SONNET))).provider == "claude"
+    with held(config, "company"):
         with pytest.raises(ProviderFault) as shared:
             await runner.run(news_request(str(uuid4()), CLAUDE_SONNET))
         assert shared.value.code == "busy"
@@ -137,7 +141,7 @@ async def test_a_held_episode_slot_never_blocks_the_news_desk_and_slots_stay_sep
             await runner.run(news_request("news-screen-2"))
         assert desk.value.code == "busy"
         assert (await runner.run(news_request("quant-feed-3"))).provider == "claude"
-    assert [call["args"][call["args"].index("--model") + 1] for call in calls()] == [CLAUDE_SONNET] * 2
+    assert [call["args"][call["args"].index("--model") + 1] for call in calls()] == [CLAUDE_SONNET] * 3
 
 
 async def test_brief_turns_keep_their_frozen_deadline_and_a_passed_one_never_runs(fake_claude):
@@ -269,21 +273,25 @@ def test_two_stage_editorial_allocations_are_reviewed_atomic_and_disjoint_from_s
     _, staffed = apply(company, "owner-staff-after", 4)
     assert {t: staffed["after"][t] for t in (*EDITORIAL, *REPORTER)} == {
         t: reporter["after"][t] for t in (*EDITORIAL, *REPORTER)}
-    assert set(EDITORIAL) | set(REPORTER) == set(PRESERVED) and not set(EDITORIAL) & set(REPORTER)
+    assert set(EDITORIAL) | set(REPORTER) | set(BRIEFING) == set(PRESERVED)
+    assert not (set(EDITORIAL) & set(REPORTER) or set(EDITORIAL) & set(BRIEFING) or set(REPORTER) & set(BRIEFING))
+    # The briefing stage is separate and was not applied: market_brief stays on Codex.
+    assert staffed["after"]["market_brief"] == original["market_brief"]
     with company.db.transaction() as conn:
         kinds = [r["kind"] for r in conn.execute("""SELECT kind FROM events WHERE kind LIKE '%claude_allocation'
             ORDER BY created_at""").fetchall()]
         assert conn.execute("SELECT count(*) n FROM outbox").fetchone()["n"] == 0
     assert kinds == ["editorial_claude_allocation", "reporter_claude_allocation", "staff_claude_allocation"]
     api = TestClient(create_app(company.settings, company, credentials))
-    for path in ("claude-editorial", "claude-reporter"):
+    for path in ("claude-editorial", "claude-reporter", "claude-briefing"):
         assert api.post(f"/v1/model-assignments/{path}", json={"operation_id": "x", "expected_revision": 4}
                         ).status_code == 401
 
 
 def test_quant_scout_moved_from_the_staff_allocation_to_the_editorial_one():
     assert "quant_scout" not in TARGETS and "quant_scout" in PRESERVED
-    assert EDITORIAL["quant_scout"] == (CLAUDE_SONNET, "high") and EDITORIAL["market_brief"] == (CLAUDE_MODEL, "xhigh")
+    assert EDITORIAL["quant_scout"] == (CLAUDE_SONNET, "high") and BRIEFING["market_brief"] == (CLAUDE_MODEL, "xhigh")
+    assert "market_brief" not in EDITORIAL
     assert REPORTER["reporter"] == (CLAUDE_MODEL, "medium")
 
 

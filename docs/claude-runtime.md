@@ -30,7 +30,7 @@ sudo docker compose --profile claude --env-file /var/lib/quant-company/config/ru
 COMPANY_STAFF_REVIEW_ENABLED=true
 STAFF_REVIEW_DAILY_LIMIT=2
 CLAUDE_USAGE_CREDITS_DISABLED_CONFIRMED=true
-CLAUDE_MEMORY_LIMIT=1536m
+CLAUDE_MEMORY_LIMIT=2048m
 ```
 
 `--profile maintenance --profile claude`로 claude-runtime 및 새 app 이미지를 시작한다.
@@ -95,9 +95,10 @@ Max 20x 구독자에게 주는 월 $200 API 크레딧(Console 조직에 들어�
 - 한 요청 ID는 한 번에 한 곳에서만 묻는다. 다른 경로가 같은 ID를 실행 중이면 `pending`을 돌려준다.
 - API 경로는 CLI 칸(`.runtime.lock`)을 쓰지 않는다. 자기 칸에서 최대 2건이 동시에 돈다. 마감 영상이 CLI 칸을 쓰는 동안에도
   메일, Shorts, 성과 분석은 기다리지 않는다.
-- 2026-11-17부터 브리핑(`news-brief-`), 뉴스 데스크(`news-`), Quant Scout(`quant-feed-`)의 Claude 회사 업무는 자기 CLI 칸
-  (`.runtime-brief.lock`, `.runtime-news.lock`, `.runtime-quant.lock`)을 쓴다. 영상·메일·직원은 `.runtime.lock`을 그대로 쓴다
-  ([ADR 0051](adr/0051-editorial-desk-on-claude-slots.md)). CLI가 최대 넷 동시에 돌므로 `CLAUDE_MEMORY_LIMIT=1536m`이다.
+- 2026-11-17부터 Claude 회사 업무는 모두 자기 CLI 칸을 쓴다: 브리핑(`news-brief-`, `.runtime-brief.lock`), 뉴스 데스크
+  (`news-`, `.runtime-news.lock`), Quant Scout(`quant-feed-`, `.runtime-quant.lock`), 그 밖의 직원·연구(`.runtime-company.lock`).
+  `.runtime.lock`은 영상과 메일만 쓴다. 영상은 회사 업무를 기다리지 않는다([ADR 0051](adr/0051-editorial-desk-on-claude-slots.md)).
+  CLI가 최대 다섯 동시에 돌므로 `CLAUDE_MEMORY_LIMIT=2048m`이다.
 - CLI가 알려 주는 구독 사용률(`rate_limit_event`)은 마지막 값만 `jobs/.subscription.json`에 남는다. 숫자와 짧은 코드뿐이다.
   호스트 수집기가 읽어 `상태`의 'Claude 구독' 줄과 80%·95%·한도 거절 경보가 된다.
 - 메일의 "영상에 칸 양보"(`NewsletterWriter.yield_to_video`)는 API로 도는 메일을 취소하지 않는다. 런타임이 `kept`(API로 도는 중)나

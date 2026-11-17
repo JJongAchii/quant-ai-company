@@ -16,15 +16,17 @@ TARGETS = ("director", "financial_strategist", "researcher_kr", "researcher_glob
 # operation owns a disjoint set of targets and the two apply in either order.
 PRESERVED = ("reporter", "market_brief", "news_screening", "news_search", "quant_scout")
 
-# Two stages at the current Codex efforts (owner, 2026-11-17: the briefing and video come first; trends and Quant Scout
-# need not use the strongest model). Video, email and the independent reviewer are configured elsewhere.
-# 1. The briefing on Opus; screening and Quant Scout on Sonnet, whose outputs passed every domain check in the trial.
-EDITORIAL = {"market_brief": (CLAUDE_MODEL, "xhigh"), "news_screening": (CLAUDE_SONNET, "low"),
-             "quant_scout": (CLAUDE_SONNET, "high")}
+# Separate stages at the current Codex efforts (owner, 2026-11-17: the video must never be late; trends and Quant
+# Scout need not use the strongest model). Video, email and the independent reviewer are configured elsewhere.
+# 1. Screening and Quant Scout on Sonnet, whose outputs passed every domain check in the trial.
+EDITORIAL = {"news_screening": (CLAUDE_SONNET, "low"), "quant_scout": (CLAUDE_SONNET, "high")}
 # 2. The news desk (editing and trends share the reporter target; search follows it) on Opus: Sonnet's news reviews and
 # trend set failed their domain contracts in the trial (docs/project/evidence/claude-editorial-20261117), which
 # would block those articles. Applied after the subscription's usage has been watched with stage 1 in place.
 REPORTER = {"reporter": (CLAUDE_MODEL, "medium"), "news_search": (CLAUDE_MODEL, "medium")}
+# The briefing on Opus, only once it is shown not to commit later than on Codex: the episode starts from the committed
+# briefing, and Opus xhigh compositions took 939 and 1,846 seconds in the trial (Codex writes in 9-12 minutes).
+BRIEFING = {"market_brief": (CLAUDE_MODEL, "xhigh")}
 
 
 @dataclass(frozen=True)
@@ -46,11 +48,13 @@ class Plan:
 
 
 STAFF = Plan("staff_claude_allocation", TARGETS, PRESERVED, frozenset({*TARGETS, "reporter", "market_brief"}))
-EDITORIAL_PLAN = Plan("editorial_claude_allocation", tuple(EDITORIAL), (*TARGETS, *REPORTER),
+EDITORIAL_PLAN = Plan("editorial_claude_allocation", tuple(EDITORIAL), (*TARGETS, *REPORTER, *BRIEFING),
                       frozenset({"reporter", "market_brief", "quant_scout"}), EDITORIAL)
-REPORTER_PLAN = Plan("reporter_claude_allocation", tuple(REPORTER), (*TARGETS, *EDITORIAL),
+REPORTER_PLAN = Plan("reporter_claude_allocation", tuple(REPORTER), (*TARGETS, *EDITORIAL, *BRIEFING),
                      frozenset({"reporter", "market_brief"}), REPORTER)
-EVENTS = (STAFF.event, EDITORIAL_PLAN.event, REPORTER_PLAN.event)
+BRIEFING_PLAN = Plan("briefing_claude_allocation", tuple(BRIEFING), (*TARGETS, *EDITORIAL, *REPORTER),
+                     frozenset({"reporter", "market_brief"}), BRIEFING)
+EVENTS = (STAFF.event, EDITORIAL_PLAN.event, REPORTER_PLAN.event, BRIEFING_PLAN.event)
 
 
 class StaffAllocation(StrictModel):

@@ -496,9 +496,10 @@ services:
       - ${STATE_DIR:-/var/lib/quant-company}/claude/auth:/state/auth
       - ${STATE_DIR:-/var/lib/quant-company}/claude/jobs:/state/jobs
     networks: [model, model_egress]
-    # One CLI process per slot (claude_runner.LOCKS): the shared slot, the briefing, the news desk and Quant Scout may
-    # run at once. One max-effort episode turn peaked at 266 MB (2026-11-17), so four slots need about 1.1 GB.
-    mem_limit: ${CLAUDE_MEMORY_LIMIT:-1536m}
+    # One CLI process per slot (claude_runner.LOCKS): the episode/email slot, the briefing, the news desk, Quant Scout
+    # and other company work may run at once. One max-effort episode turn peaked at 266 MB (2026-11-17): five slots
+    # need about 1.4 GB, so an episode never risks an out-of-memory kill.
+    mem_limit: ${CLAUDE_MEMORY_LIMIT:-2048m}
     cpus: 1.0
     stop_grace_period: 360s
     healthcheck:

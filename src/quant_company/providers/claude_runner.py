@@ -109,11 +109,11 @@ API_FIRST = frozenset({"video_shorts_v1", "newsletter_v1", "video_performance_v1
 SHORTS_REQUEST = re.compile(r"^video-[0-9a-f-]{36}-shorts-")
 SHORTS_SHARED = frozenset({"video_review_v1", "video_visual_review_v1"})
 API_SLOTS = 2
-# One subscription CLI call per slot. The episode, the email and staff share the original slot; the briefing, the news
-# desk and Quant Scout each have their own (owner, 2026-11-17; the same lanes and lock names as codex_runner), so an
-# episode's model stage and that work never queue behind each other. release.py counts every slot's CLI process.
+# One subscription CLI call per slot. The episode and the email share the original slot; the briefing, the news desk,
+# Quant Scout and the rest of the company each have their own (owner, 2026-11-17; the lanes and lock names of
+# codex_runner), so an episode never queues behind company work. release.py counts every slot's CLI process.
 LOCKS = {None: ".runtime.lock", "brief": ".runtime-brief.lock", "news": ".runtime-news.lock",
-         "quant": ".runtime-quant.lock"}
+         "quant": ".runtime-quant.lock", "company": ".runtime-company.lock"}
 # An API-only turn the lane refused (off, capped, paused or overloaded) is asked again after this long.
 API_ONLY_WAIT = 300
 UNCERTAIN_PAUSE_SECONDS = 1800
