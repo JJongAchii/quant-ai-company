@@ -45,7 +45,8 @@ class BriefEditor:
             return await asyncio.to_thread(self.store.commit, response)
         except ProviderFault as exc:
             await asyncio.to_thread(self.store.fault, request.request_id, exc.code, exc.retry_after_seconds)
-            return {"state": "defer" if exc.code in {"busy", "quota", "unavailable"} else "blocked", "reason": exc.code}
+            return {"state": "defer" if exc.code in {"busy", "quota", "unavailable", "pending"} else "blocked",
+                    "reason": exc.code}
         except ValueError as exc:
             # A fixed server-check label (or schema locations) and the model's own draft go to the repair retry.
             label, draft, detail = failure(exc, response)

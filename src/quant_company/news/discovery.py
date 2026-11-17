@@ -8,6 +8,7 @@ from psycopg.types.json import Jsonb
 from ..company import as_json, fingerprint
 from ..contracts import ProviderRequest
 from ..owner_controls import effective_limits
+from ..providers.routing import expected_provider
 from ..web_tools import search_prompt, search_result
 from . import schedule
 from .contracts import NEWS_TOPICS
@@ -118,7 +119,7 @@ class NewsDiscoveryStore(NewsStore):
                 conn.execute("UPDATE news_searches SET state='stale',response=%s,completed_at=now() WHERE id=%s",
                              (Jsonb(body), response.request_id))
                 return {"state": "stale"}
-            if response.provider != self.company.settings.model_provider:
+            if response.provider != expected_provider(self.company.settings, saved["request"]["model"]):
                 raise ValueError("news_unexpected_search_provider")
             receipt = search_result(response, saved["arguments"])
             added = 0
@@ -152,7 +153,7 @@ class NewsDiscoveryStore(NewsStore):
 
     def search_fault(self, identity, code, seconds=0):
         with self.db.transaction() as conn:
-            if code in {"quota", "busy", "unavailable"}:
+            if code in {"quota", "busy", "unavailable", "pending"}:
                 conn.execute("""UPDATE news_searches SET error=%s,next_at=now()+make_interval(secs=>%s)
                     WHERE id=%s AND state='running'""", (code, max(60, min(seconds or 300, 604800)), identity))
             else:

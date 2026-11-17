@@ -337,7 +337,7 @@ class TrendFeedStore:
                 conn.execute("UPDATE trend_feed_digests SET draft=%s WHERE id=%s", (Jsonb(draft), digest["id"]))
 
     def fault_call(self, call, code, seconds=0):
-        retry = code in {"busy", "quota", "unavailable"}
+        retry = code in {"busy", "quota", "unavailable", "pending"}
         at = schedule.utcnow()
         with self.db.transaction() as conn:
             conn.execute("""UPDATE trend_feed_calls SET state=%s,error=%s,next_at=%s,lease_until=NULL

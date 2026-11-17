@@ -107,7 +107,7 @@ def qualify(company, *, at=None):
                 reasons.append("core_quotes_not_collected_or_corroborated")
             edition_calls = [c for c in calls if str(c["edition_id"]) == definition.id]
             real_phases = {c["phase"] for c in edition_calls
-                           if c["state"] == "completed" and c["provider"] == "codex"}
+                           if c["state"] == "completed" and c["provider"] in {"codex", "claude"}}
             required_phases = {"write", "review"}
             if (row["bundle"] or {}).get("candidate_documents"):
                 required_phases.add("plan")

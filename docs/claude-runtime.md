@@ -30,7 +30,7 @@ sudo docker compose --profile claude --env-file /var/lib/quant-company/config/ru
 COMPANY_STAFF_REVIEW_ENABLED=true
 STAFF_REVIEW_DAILY_LIMIT=2
 CLAUDE_USAGE_CREDITS_DISABLED_CONFIRMED=true
-CLAUDE_MEMORY_LIMIT=512m
+CLAUDE_MEMORY_LIMIT=1536m
 ```
 
 `--profile maintenance --profile claude`로 claude-runtime 및 새 app 이미지를 시작한다.

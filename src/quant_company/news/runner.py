@@ -71,7 +71,7 @@ class NewsEditor:
             return await asyncio.to_thread(commit, response)
         except ProviderFault as exc:
             await asyncio.to_thread(fault, request.request_id, exc.code, exc.retry_after_seconds)
-            return {"state": "defer" if exc.code in {"quota", "busy", "unavailable"} else "blocked", "reason": exc.code}
+            return {"state": "defer" if exc.code in {"quota", "busy", "unavailable", "pending"} else "blocked", "reason": exc.code}
         except ValueError:
             await asyncio.to_thread(fault, request.request_id, "invalid_news_proposal")
             return {"state": "blocked", "reason": "invalid_news_proposal"}

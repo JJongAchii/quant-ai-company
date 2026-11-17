@@ -8,6 +8,7 @@ from psycopg.types.json import Jsonb
 from ..company import as_json, fingerprint, stable
 from ..contracts import ProviderRequest
 from ..owner_controls import effective_limits
+from ..providers.routing import expected_provider
 from . import schedule
 from .contracts import NEWS_TOPICS, NewsSource, load_sources
 from .editor import bounded_prompt, render, validate_review
@@ -280,7 +281,7 @@ class NewsStore:
 
     def fault(self, identity, code, seconds=0):
         with self.db.transaction() as conn:
-            if code in {"quota", "busy", "unavailable"}:
+            if code in {"quota", "busy", "unavailable", "pending"}:
                 delay = max(60, min(seconds or 300, 604800))
                 conn.execute("UPDATE news_reviews SET error=%s,next_at=now()+make_interval(secs=>%s) WHERE id=%s AND state='running'",
                              (code, delay, identity))
@@ -310,7 +311,7 @@ class NewsStore:
                              (Jsonb(body), response.request_id))
                 self._stale_articles(conn, response.request_id)
                 return {"state": "stale"}
-            if response.provider != self.company.settings.model_provider:
+            if response.provider != expected_provider(self.company.settings, saved["request"]["model"]):
                 raise ValueError("news_unexpected_provider")
             review = validate_review(response, saved["bundle"])
             ids = [a["id"] for a in saved["bundle"]["articles"]]

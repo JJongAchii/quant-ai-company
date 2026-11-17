@@ -9,6 +9,7 @@ from psycopg.types.json import Jsonb
 from ..company import as_json, fingerprint
 from ..contracts import ProviderRequest
 from ..owner_controls import effective_limits
+from ..providers.routing import expected_provider
 from . import schedule
 from .contracts import NewsScreening
 from .store import NewsStore
@@ -106,7 +107,7 @@ class NewsScreeningStore(NewsStore):
 
     def screen_fault(self, identity, code, seconds=0):
         with self.db.transaction() as conn:
-            if code in {"quota", "busy", "unavailable"}:
+            if code in {"quota", "busy", "unavailable", "pending"}:
                 conn.execute("""UPDATE news_triages SET error=%s,next_at=now()+make_interval(secs=>%s)
                     WHERE id=%s AND state='running'""", (code, max(60, min(seconds or 300, 604800)), identity))
             else:
@@ -128,7 +129,8 @@ class NewsScreeningStore(NewsStore):
                 conn.execute("UPDATE news_triages SET response=%s WHERE id=%s", (Jsonb(body), saved["id"]))
                 return {"state": "blocked"}
             d = response.decision
-            if (response.provider != self.company.settings.model_provider or d.status != "complete"
+            if (response.provider != expected_provider(self.company.settings, saved["request"]["model"])
+                    or d.status != "complete"
                     or len(d.artifacts) != 1 or d.tools or d.messages or d.delegations or d.memories
                     or d.follow_up or d.artifacts[0].source_ids):
                 raise ValueError("news_screen_artifact_only")
