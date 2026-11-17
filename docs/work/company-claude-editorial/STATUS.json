@@ -28,15 +28,15 @@
           "sha256": "aba190f1d560"
         }
       ],
-      "note": "검증기 오탐 9건 수정과 회귀 검사, 일정 범위·명시 시간대·fact_placements 지침, Codex 엄격 스키마·회차 마감. 시험: 아침 939초 42/42, 저녁 1846초 52/52, 시간 추정 0건. 운영 전환 미수행.",
+      "note": "검증기 오탐 9건 수정·회귀 검사, 일정 범위·명시 시간대·fact_placements 지침, Codex 엄격 스키마·회차 마감. 시험 아침 939초·저녁 1846초로 Codex보다 느려, 영상 지연 방지(소유자 2026-11-17)에 따라 브리핑 배정은 별도 단계로 보류(stopCondition).",
       "status": "verified",
-      "updatedAt": "2026-11-17T03:35:43.761084+00:00"
+      "updatedAt": "2026-11-17T05:30:31.567069+00:00"
     },
     "EDITORIAL": {
       "evidence": [
         {
           "path": "src/quant_company/staff_models.py",
-          "sha256": "e2b7e1ea5d11"
+          "sha256": "b4835d8da5ad"
         },
         {
           "path": "src/quant_company/news/editor.py",
@@ -51,38 +51,38 @@
           "sha256": "68edf60a043f"
         }
       ],
-      "note": "뉴스 선별 Sonnet low·Quant Scout Sonnet high(1단계), 뉴스 편집·트렌드·검색 Opus medium(2단계: Sonnet medium은 시험에서 계약 위반). 인용·출처 검증 유지, 분석 기사 사실 게시 지침. 운영 배정 미적용.",
+      "note": "1단계 선별 Sonnet low·Quant Scout Sonnet high, 2단계 뉴스 편집·트렌드·검색 Opus medium(Sonnet은 시험에서 계약 위반). 인용·출처 검증 유지. 운영 배정 미적용.",
       "status": "verified",
-      "updatedAt": "2026-11-17T03:35:43.643774+00:00"
+      "updatedAt": "2026-11-17T05:30:31.471304+00:00"
     },
     "REVIEW": {
       "evidence": [
         {
           "path": "docs/runbooks/claude-editorial.md",
-          "sha256": "4fa6c5ca826f"
+          "sha256": "65174c714643"
         },
         {
           "path": "docs/adr/0051-editorial-desk-on-claude-slots.md",
-          "sha256": "bef43416327d"
+          "sha256": "1386f58916df"
         },
         {
           "path": "docs/project/CLAUDE-EDITORIAL-20261117.md",
-          "sha256": "eed130f8ce61"
+          "sha256": "3a3247682760"
         }
       ],
-      "note": "PR #242(#241 위에 쌓음, https://github.com/JJongAchii/quant-ai-company/pull/242)에 2단계 배정 대상·값, 운영자 단계(CLAUDE_MEMORY_LIMIT=1536m, 1·2단계 preview/apply, 시간대), 복원, Codex 잔여 경로·이유·예상 감소를 기록. 외부 검토·병합·릴리스·배정 적용은 미수행.",
+      "note": "PR #242에 단계별 배정(1단계·2단계·보류 브리핑), 운영자 단계(CLAUDE_MEMORY_LIMIT=2048m, preview/apply, 시간대), 복원, Codex 잔여 경로·이유·예상 감소를 기록. 이 세션이 소유자 지시로 운영자 적용 진행.",
       "status": "verified",
-      "updatedAt": "2026-11-17T03:36:49.058682+00:00"
+      "updatedAt": "2026-11-17T05:30:31.754227+00:00"
     },
     "RUNTIME": {
       "evidence": [
         {
           "path": "src/quant_company/providers/routing.py",
-          "sha256": "f0dde425909b"
+          "sha256": "fa85ce48bf32"
         },
         {
           "path": "src/quant_company/providers/claude_runner.py",
-          "sha256": "0e5305d2a5ca"
+          "sha256": "1f3e883b6e68"
         },
         {
           "path": "src/quant_company/providers/claude_company.py",
@@ -90,40 +90,40 @@
         },
         {
           "path": "deploy/compose.yaml",
-          "sha256": "4a65b8a12db1"
+          "sha256": "99eb8bda9b9b"
         },
         {
           "path": "tests/test_claude_editorial.py",
-          "sha256": "ea5e5ef8030b"
+          "sha256": "b22a0387ba0f"
         }
       ],
-      "note": "브리핑·뉴스·Quant Scout 자체 CLI 자리, Opus·Sonnet 라우팅, 영상 우선 예외, 마감·600초 상한, 구독 사용률 상태·경보. 실제 PostgreSQL·subprocess·HTTP와 합성 CLI로 검증, 제한 실제 시험 11건(운영 CLI 2.1.280). 운영 배포 미수행.",
+      "note": "회사 업무 전부 자기 CLI 자리(brief·news·quant·company), 원래 자리는 영상·메일 전용, Opus·Sonnet 라우팅, 마감·600초 상한, 구독 사용률 상태·경보, 2048m. 실제 PostgreSQL·subprocess·HTTP·합성 CLI와 제한 실제 시험 11건. 운영 배포 미수행.",
       "status": "verified",
-      "updatedAt": "2026-11-17T03:35:43.530078+00:00"
+      "updatedAt": "2026-11-17T05:30:31.378061+00:00"
     },
     "VALIDATION": {
       "evidence": [
         {
           "path": "docs/project/evidence/claude-editorial-20261117/validation.json",
-          "sha256": "bd673cd2582a"
+          "sha256": "cec1d21e1d7d"
         },
         {
           "path": "docs/project/evidence/claude-editorial-20261117/pytest.xml",
-          "sha256": "5940cdf4be4b"
+          "sha256": "55b9e09e4a81"
         },
         {
           "path": "docs/project/evidence/claude-editorial-20261117/production-inventory.json",
           "sha256": "128b90422719"
         }
       ],
-      "note": "전체 비-live(tests+deploy) 3593건: 3446 통과·147 건너뜀·실패 0, Ruff·diff check 통과. 모의(합성 CLI)와 실제 구독 시험(trial*.json)을 구분해 기록.",
+      "note": "CI service 범위 3596건: 3449 통과·147 건너뜀·실패 0, Ruff·diff check 통과. 모의와 실제 구독 시험 구분 기록.",
       "status": "verified",
-      "updatedAt": "2026-11-17T03:35:43.872492+00:00"
+      "updatedAt": "2026-11-17T05:30:31.659250+00:00"
     }
   },
   "intentDigest": "fd8bcffb8f5c",
   "schemaVersion": 1,
   "slug": "company-claude-editorial",
   "state": "approved",
-  "updatedAt": "2026-11-17T03:36:49.058682+00:00"
+  "updatedAt": "2026-11-17T05:30:31.754227+00:00"
 }
