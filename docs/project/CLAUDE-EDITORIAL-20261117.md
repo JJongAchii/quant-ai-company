@@ -55,6 +55,7 @@ Plus에서 그림 생성 모델·한도를 쓸 수 있는지는 확인하지 못
   지금(아침 07:04–07:13, 마감 16:46–16:57)보다 20–40분 늦어지고, 뒤따르는 영상 시작도 그만큼 늦어질 수 있다(추정).
   시간이 문제가 되면 소유자가 `모델 지정 브리핑 claude-opus-5-5 high`로 강도를 낮출 수 있다(시험하지 않음).
   시험에서 새로 찾은 오탐(5년째·6주 연속)도 고쳤다.
-- 전체 비-live 회귀와 Ruff: [validation.json](evidence/claude-editorial-20261117/validation.json).
+- 전체 비-live 회귀(`tests`+`deploy`, 실제 PostgreSQL 14): 3,593건 중 3,446 통과·147 건너뜀·실패 0, Ruff 통과
+  ([validation.json](evidence/claude-editorial-20261117/validation.json)).
 
 장기 구독 용량, Plus의 대기 시간, 운영 배포·배정은 검증하지 않았다.

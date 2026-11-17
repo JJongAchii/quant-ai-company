@@ -1,0 +1,61 @@
+{
+  "at": "2026-11-17T03:35:24.075282+00:00",
+  "base_commit": "8a84a257af0e5c77e378944f81c79f374095a92a (PR #241 head)",
+  "suite_commit": "c5e8af9c865c3c0a789a69a2f9e00090d82b3858",
+  "full_non_live_suite": {
+    "command": "uv run --frozen pytest -m 'not live' tests deploy",
+    "tests": 3593,
+    "passed": 3446,
+    "skipped": 147,
+    "failures": 0,
+    "errors": 0,
+    "deselected": 1,
+    "seconds": 795.2
+  },
+  "database": "Real disposable local PostgreSQL 14 on loopback; separate database per test",
+  "cli_and_http": "Real subprocess and ASGI HTTP; synthetic Claude/Codex CLI output in tests",
+  "slack": "Synthetic events only; no messages sent",
+  "real_subscription_trial": {
+    "file": "trial.json",
+    "calls": 5,
+    "cli_version": "2.1.280 (Claude Code)"
+  },
+  "lint": "uv run --frozen ruff check .: passed",
+  "whitespace": "git diff --check: passed",
+  "render_inputs_affected": [],
+  "new_services": [],
+  "new_secrets": [],
+  "runtime_env_changes": [
+    "CLAUDE_MEMORY_LIMIT=1536m (operator; host value is 512m)"
+  ],
+  "production_changes": 0,
+  "activation": "Pending reviewed main release, the runtime.env value and the authenticated claude-editorial preview/apply",
+  "source_sha256": {
+    "deploy/.env.example": "433215a8359a5d36ff8f503fd5ed4df542c1abd4cc933724eadbba56ab330a90",
+    "deploy/compose.yaml": "4a65b8a12db1de2d9cabebc3a67dd7d820807bbc11173245f5ee2c906cd5c6cf",
+    "deploy/lightsail-4gb.env.example": "2720ce0d9f4cd82aa2a469f4d3ad8d415c408b6b2f5378df9b2302430a1acdaa",
+    "deploy/lightsail-8gb.env.example": "38c525a5ee1ece20c47e396edf83543d0b0a36e0d6b6e0d881eff74afea32f35",
+    "deploy/ops_probe.py": "e6e05f0ae2e69f1f88cc7973c5c52e39c85d80b0a9b340ff2c460df6fdc2a0c6",
+    "src/quant_company/api.py": "300f41039b01fae37f1edab53c2bec98e04d53ce69ae27b2c5e3b4d4c90c3940",
+    "src/quant_company/briefing/editor.py": "bed1f35c1c9da6854b4fbafdea0613e2180faf24c8362117ee5714ca4969ee3f",
+    "src/quant_company/briefing/inventory.py": "ecbcfb3bc8fa648fabcbf7ee81094eb002a0b7f434e94217d2c8d6a6d0d95074",
+    "src/quant_company/briefing/market_rules.py": "6cdd0c26b0ef5ac7f6c7a5d4e40d775489b4393785667cb7d4c9842ce9d203de",
+    "src/quant_company/briefing/numeric.py": "77e9430086e37cc70bf24862fc6950007e95384770e5ae05c635c7e99b2e560f",
+    "src/quant_company/briefing/qualification.py": "fd74972b15b75865de9f7cf8f0ce2a1dc13d4584eca864ae7d3c2e10f5c16bb1",
+    "src/quant_company/briefing/runner.py": "5a81daec683be9daa6a6534929f45f2528f9755365bc7fa7bd210c511de7df4a",
+    "src/quant_company/briefing/store.py": "5f9e8f77da1e0449d18d8b2dc2813898134f0125bcda186a1c7a1f8f1f3c1cbf",
+    "src/quant_company/news/discovery.py": "75f1b8c3b44ac49b5a13990214c5aabff865c186f58554b0563663bd6235e942",
+    "src/quant_company/news/editor.py": "ac47d9e548f97cc660f4cfb1ad601ec0d60f295d84684b428fda6710388c04d8",
+    "src/quant_company/news/runner.py": "3eb5fe754f6e62b2b9a95840dc98cf11507d975c8aaa7ade1ca2dc446e4fb15d",
+    "src/quant_company/news/screening.py": "54c3f6f52a1c7a5b7858328f419b47f685bc0cbc0c693d5da1e97d4c2c66779d",
+    "src/quant_company/news/store.py": "f0a98ef4eb79b1ca15d0350a5212b5579ff06b74a13a900fd32afbb5fce8b6b6",
+    "src/quant_company/ops/status.py": "804c9edc641414e433bcf2c3fe3722d7f89d479f2fea4bc6802b237b72cb95da",
+    "src/quant_company/ops/watch.py": "f40e8a93a2f6d15a70e7e48aa71d049c5bc10e047662ce05a8dbcbb4e869aaec",
+    "src/quant_company/providers/claude_company.py": "ffa03a4a442b425a6b8b5476d0bb53958f100ce46249b544194139fe6b5951ea",
+    "src/quant_company/providers/claude_runner.py": "0e5305d2a5cae3762a7d166771e5b1d5b36efa264b0455b24df74cdb889ae6de",
+    "src/quant_company/providers/client.py": "e0fd2af743752211e7ee61aeca35f91c6c3a1bfba6999a73a45efd5a72efe4a6",
+    "src/quant_company/providers/routing.py": "f0dde425909b9e8fe9b636102f74728d0feb435b58df53574e4c09a7d0e1285a",
+    "src/quant_company/staff_models.py": "e2b7e1ea5d1171c324e58f560cc5bc2ca669cd27dba5d5cc0a6bbc34464394e9",
+    "src/quant_company/trend_feed/store.py": "a0dcbbde96cc4b3796d101ccddb49de7f2bb2abedcb43e028113e317b8072586"
+  }
+}
