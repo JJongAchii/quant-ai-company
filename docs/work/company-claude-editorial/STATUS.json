@@ -1,10 +1,39 @@
 {
-  "approval": null,
+  "approval": {
+    "approvedAt": "2026-11-17T02:10:48.397070+00:00",
+    "id": "chat-owner-20261117-claude-editorial-optimal"
+  },
   "currentIntent": "INTENT-v1.json",
-  "deliverables": {},
-  "intentDigest": null,
+  "deliverables": {
+    "BRIEFING": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "EDITORIAL": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "REVIEW": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "RUNTIME": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    },
+    "VALIDATION": {
+      "evidence": [],
+      "note": null,
+      "status": "pending"
+    }
+  },
+  "intentDigest": "fd8bcffb8f5c",
   "schemaVersion": 1,
   "slug": "company-claude-editorial",
-  "state": "draft",
-  "updatedAt": "2026-11-17T02:10:12.930363+00:00"
+  "state": "approved",
+  "updatedAt": "2026-11-17T02:10:48.397070+00:00"
 }
