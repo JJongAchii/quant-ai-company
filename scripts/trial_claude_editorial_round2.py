@@ -24,6 +24,7 @@ from trial_claude_editorial import (
     ROOT,
     assess,
     current_texts,
+    public_error,
     replaced,
     run_case,
     write,
@@ -94,7 +95,7 @@ async def main():
                 case.update(assess(row, folder) if kind == "news" else screening_check(response, row["bundle"])
                             if kind == "screen" else quant_check(response, row["bundle"], row["stage"]))
             except ValueError as error:
-                case.update(domain_valid=False, domain_error=str(error)[:400])
+                case.update(domain_valid=False, domain_error=public_error(error))
         summary["cases"].append(case)
     write(PUBLIC, summary)
     print(json.dumps(summary, ensure_ascii=False, indent=2))

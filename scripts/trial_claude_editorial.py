@@ -103,6 +103,12 @@ def environment():
     return env
 
 
+def public_error(error):
+    """A validator's reason without the model text pydantic quotes in it (outputs stay in .local)."""
+    text = re.sub(r"input_value=.*?(?=, input_type=)", "input_value=<omitted>", str(error), flags=re.S)
+    return re.sub(r"\s*For further information visit \S+", "", text)[:400]
+
+
 def write(path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2, default=str) + "\n")
@@ -187,7 +193,7 @@ def assess(row, folder):
                 "rendered_chars": sum(len(p) for p in parts),
                 "render_quality": {k: quality[k] for k in ("fallback", "rejected") if k in quality}}
     except ValueError as error:
-        return {"domain_valid": False, "domain_error": str(error)[:400]}
+        return {"domain_valid": False, "domain_error": public_error(error)}
 
 
 async def main():

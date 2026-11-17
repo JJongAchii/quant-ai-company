@@ -50,7 +50,7 @@
         "cache_creation_input_tokens": 30403
       },
       "domain_valid": false,
-      "domain_error": "2 validation errors for NewsReview\nitems.5\n  Value error, Publication requires facts, significance and evidence [type=value_error, input_value={'disposition': 'publish'...ndependent_origins': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error\nitems.6\n  Value error, Publication requires facts, significance and evidence [type=value_error, input_val"
+      "domain_error": "2 validation errors for NewsReview\nitems.5\n  Value error, Publication requires facts, significance and evidence [type=value_error, input_value=<omitted>, input_type=dict]\nitems.6\n  Value error, Publication requires facts, significance and evidence [type=value_error, input_value=<omitted>, input_type=dict]"
     },
     {
       "case": 3,
@@ -74,7 +74,7 @@
         "cache_creation_input_tokens": 50560
       },
       "domain_valid": false,
-      "domain_error": "19 validation errors for TrendBriefDraft\nitems.30\n  Value error, trend_background_requires_evidence [type=value_error, input_value={'member_ids': ['2bb95dcc...다.', 'evidence': []}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error\nitems.31\n  Value error, trend_background_requires_evidence [type=value_error, input_value={'member_ids': ['65d94ea8...다.'"
+      "domain_error": "19 validation errors for TrendBriefDraft\nitems.30\n  Value error, trend_background_requires_evidence [type=value_error, input_value=<omitted>, input_type=dict]\nitems.31\n  Value error, trend_background_requires_evidence [type=value_error, input_value=<omitted>, input_type=dict]\nitems.32\n  Value error, trend_background_requires_evidence [type=value_error, input_value=<omitted>, input_type=dict]\nitems"
     },
     {
       "case": 5,
@@ -102,12 +102,10 @@
         "sum-lead": 1,
         "ov-breadth": 1,
         "ov-korea": 1,
-        "int-btc-drivers": 1,
-        "i5-alt": 1,
         "i6-fact": 1
       },
-      "rejected_items": 6,
-      "source_notes_violations": 25,
+      "rejected_items": 4,
+      "source_notes_violations": 11,
       "fact_placements": 42,
       "calendar_events": 5,
       "timed_events": 0,
