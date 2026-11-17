@@ -42,7 +42,8 @@ Do not write the final briefing or choose main item IDs in this phase.
 
 
 def normalized(text):
-    return re.sub(r"\s+", "", text).casefold()
+    # A bracketed alias keeps the qualifier: "WSJ는" is in "월스트리트저널(WSJ)는".
+    return re.sub(r"[\s()（）\[\]]+", "", text).casefold()
 
 
 def inventory_model(bundle):

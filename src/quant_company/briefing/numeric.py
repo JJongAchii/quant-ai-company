@@ -8,6 +8,8 @@ NUMBER = r"[+\-−]?\d[\d,]*(?:\.\d+)?"
 MONTHS = "January February March April May June July August September October November December".split()
 SMALL = {"십": 10, "백": 100, "천": 1000}
 LARGE = {"만": 10000, "억": 100000000, "조": 1000000000000}
+# Denominators whose fractions have no finite decimal, by their English ordinal (see stated_fraction).
+ORDINAL_PARTS = {3: "thirds?", 6: "sixths?", 7: "sevenths?", 8: "eighths?", 9: "ninths?", 12: "twelfths?"}
 CARDINALS = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split()
 TENS = "twenty thirty forty fifty sixty seventy eighty ninety".split()
 
@@ -189,7 +191,7 @@ def numbers(text):
 
 def reported_change_supported(value, unit, quotes):
     units = {"%": r"%(?!p|포인트)|percent(?!age|\s+points?)", "bp": r"bps?(?![A-Za-z])|basis points?", "pt": r"pt\b|points?|포인트"}
-    down = (r"하락|급락|감소|내린|내렸|내려|떨어|낮아|줄었|밀린|밀렸|빠진|빠졌|"
+    down = (r"하락|급락|감소|내린|내렸|내려|떨어|낮아|줄었|밀린|밀렸|빠진|빠졌|미끄러|"
             r"fell|fall|down|lower\b|declin\w*|lost|slid|slipped|shed|slump\w*|(?:was|were|is|are)\s+off")
     up = r"상승|오른|올랐|높아|늘었|뛴|뛰었|뛰며|rose|ris\w*|up|higher\b|gain\w*|advanced|jumped|surged"
     for quote in quotes:
@@ -208,7 +210,9 @@ def reported_change_supported(value, unit, quotes):
             direction = down if value < 0 else up
             before, after = quote[:match.start()], quote[match.end():]
             after = re.sub(r"^\s*\([^()]{0,40}\)", "", after)
-            if value < 0 and re.match(r"^\s*의?\s*낙폭(?:을|이|으로|\s|[.,]|$)", after):
+            # A coordinated list may share the magnitude noun: "각각 0.91%와 3.43%의 낙폭".
+            listed = (r"(?:\s*(?:,|와|과|및)\s*[가-힣A-Za-z·\s]{0,60}"+NUMBER+r"\s*(?:"+units[unit]+r"))*")
+            if value < 0 and re.match(r"^"+listed+r"\s*의?\s*낙폭(?:을|이|으로|\s|[.,]|$)", after):
                 return True
             if value < 0 and re.search(r"(?:내림폭|하락폭|하향폭|낙폭)(?:은|이)?\s*$", before):
                 return True
@@ -223,7 +227,7 @@ def reported_change_supported(value, unit, quotes):
             if re.search(equivalent, before, re.I):
                 return True
             # A coordinated list can share its final direction: "A 1.3%, B 2.4% 내렸다".
-            shared = (r"(?:\s*,\s*[가-힣A-Za-z·\s]{0,60}"+NUMBER+r"\s*(?:"+units[unit]+r"))+"
+            shared = (r"(?:\s*(?:,|와|과|및)\s*[가-힣A-Za-z·\s]{0,60}"+NUMBER+r"\s*(?:"+units[unit]+r"))+"
                       r"\s*(?:"+direction+r")")
             if re.match(shared, after, re.I):
                 return True
@@ -276,6 +280,21 @@ def prose_numbers_supported(text, quotes):
         return "누적분기" if any(re.search(pattern, q, re.I) for q in quotes) else match[0]
 
     remaining = re.sub(r"(?<![\d.,])1\s*[~∼–-]\s*([2-4])\s*분기", cumulative_quarters, remaining)
+
+    # A fraction with no finite decimal ("3분의 2") is one stated quantity: an own quote that states the same
+    # fraction ("two-thirds", "2/3", "3분의 2") supports it, never its digits as separate amounts.
+    def stated_fraction(match):
+        denominator, numerator = int(match[1]), int(match[2])
+        if denominator in (2, 4, 5, 10) or not 0 < numerator < denominator:
+            return match[0]
+        patterns = [rf"(?<![\d.]){numerator}\s*/\s*{denominator}(?![\d.])",
+                    rf"(?<![\d.]){denominator}\s*분의\s*{numerator}(?![\d.])"]
+        if denominator in ORDINAL_PARTS:
+            counts = [str(numerator), CARDINALS[numerator]] + (["a", "an"] if numerator == 1 else [])
+            patterns.append(r"\b(?:" + "|".join(counts) + r")[-\s]+" + ORDINAL_PARTS[denominator] + r"\b")
+        return " 분수 " if any(re.search(pattern, quote, re.I) for pattern in patterns for quote in quotes) else match[0]
+
+    remaining = re.sub(r"(?<![\d.,])(\d{1,2})\s*분의\s*(\d{1,2})(?![\d.])", stated_fraction, remaining)
     # A ranking is not a price or quantity: English "second-largest" supports
     # Korean "2위", but never a bare 2, a 2% change or a second-tier label.
     ranks = {1: r"(?<![\w-])(?:the\s+)?(?:largest|biggest)\b",
@@ -292,17 +311,25 @@ def prose_numbers_supported(text, quotes):
                            r"[-\s]+(?:largest|biggest)\b", " ", quote, flags=re.I)
         return bool(re.search(ranks[value], quote, re.I))
 
+    def rank_lists(value):
+        # "1,2위" and "1·2위" list two ranks (never the number 12): compare them as "1위·2위" on both sides.
+        return re.sub(r"(?<![\d.,])[1-9]\d?(?:\s*[·,]\s*[1-9]\d?)+(?=\s*위)",
+                      lambda m: "위·".join(re.findall(r"\d+", m[0])), value)
+
+    rank_quotes = tuple(rank_lists(quote) for quote in quotes)
+
     def check_rank(match):
         nonlocal valid
         value = int(match[1])
-        korean = r"(?<![\d.,])"+re.escape(match[1])+r"\s*위(?=$|[\s,.（(]|[의인로를은가였다])"
-        if any(re.search(korean, quote) or english_rank_supported(value, quote)
-               for quote in quotes):
+        korean = r"(?<![\d.,])"+re.escape(match[1])+r"\s*위(?=$|[\s,.（(·]|[의인로를은는가와과에도였다])"
+        if any(re.search(korean, ranked) or english_rank_supported(value, quote)
+               for quote, ranked in zip(quotes, rank_quotes, strict=True)):
             return "위"
         valid = False
         return match[0]
 
-    remaining = re.sub(r"(?<![\d.,])([1-9]\d*)\s*위(?=$|[\s,.]|[의인로를은가였다])", check_rank, remaining)
+    remaining = re.sub(r"(?<![\d.,])([1-9]\d*)\s*위(?=$|[\s,.·]|[의인로를은는가와과에도였다])", check_rank,
+                       rank_lists(remaining))
     if not valid:
         return False
     # A time such as 8:30 cannot support an August release label merely because
