@@ -22,7 +22,17 @@ from quant_company.company import PolicyError
 from quant_company.contracts import ProviderFault, ProviderRequest
 from quant_company.news.screening import NewsScreeningStore
 from quant_company.news.store import NewsStore
-from quant_company.providers.claude_runner import LOCKS, NEWS_DESK_SECONDS, ClaudeRunner, cli_schema, command
+from quant_company.ops.status import current_windows
+from quant_company.ops.watch import claude_subscription_findings
+from quant_company.providers.claude_runner import (
+    LOCKS,
+    NEWS_DESK_SECONDS,
+    SUBSCRIPTION_STATUS,
+    ClaudeRunner,
+    cli_schema,
+    command,
+    subscription_window,
+)
 from quant_company.providers.codex_runner import output_schema
 from quant_company.providers.routing import CLAUDE_MODEL, CLAUDE_SONNET, CompanyProvider, own_lane
 from quant_company.staff_models import (
@@ -262,3 +272,36 @@ def test_editorial_allocation_is_reviewed_atomic_and_disjoint_from_staff(company
 def test_quant_scout_moved_from_the_staff_allocation_to_the_editorial_one():
     assert "quant_scout" not in TARGETS and "quant_scout" in PRESERVED
     assert EDITORIAL["quant_scout"] == (CLAUDE_SONNET, "high") and EDITORIAL["market_brief"][0] == CLAUDE_MODEL
+
+
+# The CLI 2.1.280 shape observed in the 2026-11-17 trial (scripts/trial_claude_editorial.py).
+RATE_LIMIT = {"status": "allowed", "resetsAt": 1795136400, "rateLimitType": "seven_day", "overageStatus": "rejected",
+              "overageDisabledReason": "org_level_disabled", "isUsingOverage": False,
+              "unifiedWindows": {"seven_day": {"utilization": 0.83, "resetsAt": 1795136400},
+                                 "five_hour": {"utilization": 0.2, "resetsAt": 1794900000}}}
+
+
+async def test_subscription_windows_reach_the_status_file_and_the_ops_watch(fake_claude):
+    from datetime import UTC, datetime
+
+    config, configure, _ = fake_claude
+    configure(model=CLAUDE_SONNET, used_model=CLAUDE_SONNET, rate_limit=RATE_LIMIT, review=decision_of(screen_reply({
+        "request_id": "x", "prompt": "SCREEN DATA JSON:\n" + json.dumps({"articles": []})})))
+    runner = ClaudeRunner(config, source_environment={"PATH": os.environ["PATH"]})
+    await runner.run(news_request("news-screen-window"))
+    report = json.loads((config.jobs_dir / SUBSCRIPTION_STATUS).read_text())
+    assert report["model"] == CLAUDE_SONNET and report["status"] == "allowed" and report["overage"] == "rejected"
+    assert report["windows"]["seven_day"] == {"utilization": 0.83, "resets_at": 1795136400}
+    assert "org_level_disabled" not in json.dumps(report) and "isUsingOverage" not in report
+    before_reset = datetime.fromtimestamp(1794890000, UTC)
+    assert set(current_windows(report, before_reset)["windows"]) == {"seven_day", "five_hour"}
+    after_five_hours = datetime.fromtimestamp(1794950000, UTC)
+    assert set(current_windows(report, after_five_hours)["windows"]) == {"seven_day"}
+    found = claude_subscription_findings(report, before_reset)
+    assert [(f["key"], f["severity"]) for f in found] == [("claude_subscription:seven_day", "warning")]
+    report["windows"]["seven_day"]["utilization"] = 0.97
+    report["status"] = "rejected"
+    assert {(f["key"], f["severity"]) for f in claude_subscription_findings(report, before_reset)} == {
+        ("claude_subscription:limited", "critical"), ("claude_subscription:seven_day", "critical")}
+    assert claude_subscription_findings(None, before_reset) == []
+    assert subscription_window(b'not json\n{"type":"result"}') is None

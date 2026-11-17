@@ -8,7 +8,18 @@ from datetime import timedelta
 from psycopg.types.json import Jsonb
 
 from ..company import as_json, stable
-from .status import API_PAUSES, KST, LOGIN_NEEDED, VIDEO_LIVE, edition_name, kst, stamp, utcnow
+from .status import (
+    API_PAUSES,
+    KST,
+    LOGIN_NEEDED,
+    SUBSCRIPTION_WINDOWS,
+    VIDEO_LIVE,
+    current_windows,
+    edition_name,
+    kst,
+    stamp,
+    utcnow,
+)
 
 LOCK = 71350301
 TICK_SECONDS = 60
@@ -136,7 +147,28 @@ def host_findings(row, now, since=None, paused=None):
     for error in snapshot.get("probe_errors") or []:
         found.append(finding("probe:" + error.split(":")[0], "condition", "warning", "호스트 수집 일부 실패", error))
     return (found + claude_login_findings(snapshot.get("claude_login"), now) + claude_api_findings(snapshot.get("claude_api"), now)
+            + claude_subscription_findings(snapshot.get("claude_subscription"), now)
             + release_findings(snapshot.get("release"), now, paused))
+
+
+def claude_subscription_findings(report, now):
+    """deploy/ops_probe.claude_subscription. Video, the briefing and the news desk share one Claude subscription
+    (owner, 2026-11-17) with no fallback, so a window near its limit is raised before it stops all of them."""
+    if not report:
+        return []
+    found = []
+    if report.get("status") not in (None, "allowed", "allowed_warning"):
+        found.append(finding("claude_subscription:limited", "condition", "critical", "Claude 구독 한도에 걸림",
+                             "영상·브리핑·뉴스의 새 Claude 호출이 재설정까지 기다립니다. 다른 공급자로 다시 실행하지 않습니다."))
+    for name, window in current_windows(report, now)["windows"].items():
+        used = window["utilization"]
+        if used >= 0.8:
+            label = SUBSCRIPTION_WINDOWS.get(name, name)
+            resets = f"재설정 {kst(window['resets_at'], True)} KST" if window.get("resets_at") else None
+            found.append(finding("claude_subscription:" + name, "condition", "critical" if used >= 0.95 else "warning",
+                                 f"Claude 구독 {label} 사용 {used:.0%}", *filter(None, [resets]),
+                                 "영상·브리핑·뉴스가 같은 구독을 씁니다. 한도에 닿으면 모두 기다립니다."))
+    return found
 
 
 def claude_login_findings(login, now):

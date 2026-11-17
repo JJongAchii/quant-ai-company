@@ -577,3 +577,33 @@ def test_monthly_api_budget_does_not_claim_verified_free_credits(ops):
     text = status_text(value)
     assert "OpenAI API 월예산" in text and "$5.00 / $120.00" in text
     assert "예산 갱신" in text and "OpenAI 무료 API" not in text
+
+
+def subscription_status(utilization=0.21, **fields):
+    resets = (now() + timedelta(days=2)).timestamp()
+    return {"at": now().timestamp(), "model": "claude-sonnet-5-5", "status": "allowed", "type": "seven_day",
+            "resets_at": resets, "overage": "rejected",
+            "windows": {"seven_day": {"utilization": utilization, "resets_at": resets}}, **fields}
+
+
+def test_status_and_watch_show_the_shared_claude_subscription(ops):
+    watch = OpsWatch(ops)
+
+    def text(report):
+        snapshot(ops, claude_subscription=report)
+        with ops.db.transaction() as conn:
+            return status_text(live_status(conn, now=now()))
+
+    line = next(row for row in text(subscription_status()).splitlines() if row.startswith("🤖 Claude 구독"))
+    assert line.startswith("🤖 Claude 구독: 주간 21%(재설정 ") and line.endswith(" 호출 기준)")
+    assert "한도 거절" in text(subscription_status(status="rejected"))
+    assert "Claude 구독" not in text(None)
+    snapshot(ops, claude_subscription=subscription_status(0.5))
+    assert watch.tick()["findings"] == []
+    snapshot(ops, claude_subscription=subscription_status(0.85))
+    assert sorted(watch.tick()["findings"]) == ["claude_subscription:seven_day"]
+    # A window that has reset since the report is no longer known, so it raises nothing.
+    gone = subscription_status(0.99)
+    gone["windows"]["seven_day"]["resets_at"] = (now() - timedelta(minutes=1)).timestamp()
+    snapshot(ops, claude_subscription=gone)
+    assert watch.tick()["findings"] == []

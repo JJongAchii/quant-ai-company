@@ -233,6 +233,17 @@ def claude_api(path=STATE / 'claude/jobs/.api/status.json'):
     return value
 
 
+def claude_subscription(path=STATE / 'claude/jobs/.subscription.json'):
+    """The Claude subscription's usage windows as claude-runtime last saw them (rate_limit_event); None when absent."""
+    try:
+        value = json.loads(path.read_text())
+    except FileNotFoundError:
+        return None
+    if not isinstance(value, dict):
+        raise ValueError('Claude subscription status is not an object')
+    return value
+
+
 def openai_api(path=STATE / 'codex/jobs/openai-api/status.json'):
     """Only non-secret, runtime-reported API allowance facts; never reads the key or grant configuration."""
     try:
@@ -341,6 +352,10 @@ def snapshot(now=None, *, synthetic=False):
         value['claude_api'] = claude_api()
     except (OSError, ValueError) as error:
         value['probe_errors'].append('claude-api:' + type(error).__name__)
+    try:
+        value['claude_subscription'] = claude_subscription()
+    except (OSError, ValueError) as error:
+        value['probe_errors'].append('claude-subscription:' + type(error).__name__)
     try:
         value['openai_api'] = openai_api()
     except (OSError, ValueError) as error:

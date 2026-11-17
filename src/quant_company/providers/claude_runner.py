@@ -242,6 +242,35 @@ def command(config, request):
             ["--allowedTools", "WebSearch"] if request.web_search and company_request(request) else [])
 
 
+# The CLI reports the subscription's usage windows in a rate_limit_event (CLI 2.1.x): a utilization fraction and a
+# reset time per window (seven_day, five_hour, ...). Only those numbers and short codes are kept; the latest report
+# goes to this status file in the jobs directory, read by deploy/ops_probe.claude_subscription.
+SUBSCRIPTION_STATUS = ".subscription.json"
+
+
+def subscription_window(stdout):
+    latest = None
+    for line in stdout.splitlines():
+        try:
+            event = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(event, dict) and event.get("type") == "rate_limit_event":
+            latest = event.get("rate_limit_info") if isinstance(event.get("rate_limit_info"), dict) else latest
+    if latest is None:
+        return None
+
+    def number(value):
+        return value if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) else None
+
+    reported = latest.get("unifiedWindows") if isinstance(latest.get("unifiedWindows"), dict) else {}
+    windows = {name: {"utilization": number(window.get("utilization")), "resets_at": number(window.get("resetsAt"))}
+               for name, window in reported.items() if isinstance(window, dict) and code(name) == name}
+    return {"status": code(latest.get("status")), "type": code(latest.get("rateLimitType")),
+            "resets_at": number(latest.get("resetsAt")), "overage": code(latest.get("overageStatus")),
+            "windows": windows}
+
+
 def code(value, pattern=r"[a-z_]{1,40}"):
     """A CLI identifier for a private receipt; anything else could carry model text."""
     return value if isinstance(value, str) and re.fullmatch(pattern, value) else "other"
@@ -463,6 +492,15 @@ class ClaudeRunner:
         except Exception as error:  # noqa: BLE001 - logged by type only; the lane's own checks fail closed
             # The status file only informs operators; a failed write must not cost a result or a turn.
             LOG.warning("Claude API status file not written: %s", type(error).__name__)
+
+    def _subscription(self, directory, stdout, model):
+        """The subscription's usage windows as the CLI last reported them, for the host probe and the ops watch."""
+        try:
+            if window := subscription_window(stdout):
+                atomic_json(directory / SUBSCRIPTION_STATUS, {"at": time.time(), "model": model, **window})
+        except Exception as error:  # noqa: BLE001 - logged by type only
+            # The status file only informs operators; a failed write must not cost a result or a turn.
+            LOG.warning("Claude subscription status file not written: %s", type(error).__name__)
 
     def _key_present(self):
         """Whether the key file holds a key (never the key itself), as the status file last said it."""
@@ -754,6 +792,7 @@ class ClaudeRunner:
                         "stderr_bytes": len(output.stderr), "stderr_sha256": hashlib.sha256(output.stderr).hexdigest(),
                     }}
                     atomic_json(path, receipt)
+                    self._subscription(directory, output.stdout, request.model)
                     result = parse_result(request, output)
                     if company_request(request) and request.session:
                         from .claude_company import session_evidence
