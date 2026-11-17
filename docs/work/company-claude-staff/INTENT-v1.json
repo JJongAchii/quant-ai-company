@@ -1,0 +1,54 @@
+{
+  "constraints": [
+    "회사 저장소의 격리 qws에서만 변경한다.",
+    "운영 호스트를 직접 변경하지 않는다. 검토된 main PR과 정식 release 경로만 사용한다.",
+    "기존 요청·세션·재시도·영수증을 보존하며 공급자 장애 시 다른 공급자로 재실행하지 않는다.",
+    "뉴스·트렌드·브리핑·영상·음성·이미지 설정과 구독·API 예산·직원 활성 상태를 보존한다.",
+    "새 Claude 직원 업무는 구독 경로를 사용하며 API 지출 범위를 확장하지 않는다."
+  ],
+  "createdAt": "2026-11-16T06:09:31.790583+00:00",
+  "decisionGates": [],
+  "deliverables": [
+    {
+      "id": "IMPLEMENTATION",
+      "description": "Claude 직원·Quant 공급자 라우팅과 제한된 소유자 배정 전환",
+      "acceptance": [
+        "일반 직원·자료 편집·웹검색·세션을 Claude에서 처리",
+        "고정 요청별 공급자 검증·재시도·취소와 권한 검증 보존",
+        "제외 대상과 API 예산 보존"
+      ]
+    },
+    {
+      "id": "VALIDATION",
+      "description": "실제 PostgreSQL과 모의 CLI·HTTP의 producer-consumer 검증",
+      "acceptance": [
+        "전환 preview·원자적 적용·중복·revision 충돌 검사",
+        "새 Claude 및 기존 Codex·영상·독립 검토 회귀 검사",
+        "모의와 실제 모델 호출 증거를 구분"
+      ]
+    },
+    {
+      "id": "REVIEW",
+      "description": "검토 가능한 PR과 운영 전환·복원 절차",
+      "acceptance": [
+        "검증된 diff와 구체적 전환 대상 제공",
+        "실제 배포 전후를 구분하고 검토·운영자 후속 단계를 기록"
+      ]
+    }
+  ],
+  "nonGoals": [
+    "ChatGPT 플랜 변경",
+    "기존 연구 실행물 변경",
+    "직원 활성화",
+    "뉴스나 브리핑 모델 변경"
+  ],
+  "outcome": "뉴스·트렌드·브리핑·영상의 현재 공급자와 모델을 유지하고 나머지 직원·Quant Scout의 새 요청을 Claude Opus 5.5 구독으로 전환할 수 있도록 구현·검증·PR을 준비한다.",
+  "revision": 1,
+  "schemaVersion": 1,
+  "slug": "company-claude-staff",
+  "sourceRequest": "그럼 일단 뉴스와 브리핑과 영상 제외하고는 클로드로 변경해볼까?",
+  "stopConditions": [
+    "운영 전환은 main PR 검토와 CI·정식 릴리스 완료 전에는 실행하지 않는다.",
+    "인증·실제 모델 사용 가능 여부를 모의 검사로 입증했다고 표시하지 않는다."
+  ]
+}

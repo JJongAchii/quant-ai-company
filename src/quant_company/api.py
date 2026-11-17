@@ -110,6 +110,14 @@ def create_app(settings: Settings | None = None, company: Company | None = None,
         with company.db.transaction() as conn:
             return status(company, conn)
 
+    from .staff_models import StaffAllocation
+
+    @app.post("/v1/model-assignments/claude-staff", dependencies=[Depends(operator)])
+    def claude_staff(value: StaffAllocation):
+        from .staff_models import allocate
+
+        return allocate(company, value)
+
     @app.post("/v1/research/jobs/{job_id}/revalidate", dependencies=[Depends(operator)])
     def research_revalidate(job_id: str, value: ResearchRevalidation):
         from uuid import UUID

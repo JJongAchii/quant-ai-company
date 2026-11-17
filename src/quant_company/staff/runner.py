@@ -33,7 +33,7 @@ class StaffRunner:
             return await asyncio.to_thread(self.store.commit, ready["run_id"], response)
         except ProviderFault as exc:
             await asyncio.to_thread(self.store.fault, ready["run_id"], exc.code, exc.retry_after_seconds)
-            return {"state": "defer" if exc.code in {"busy", "quota", "unavailable"} else "blocked", "reason": exc.code}
+            return {"state": "defer" if exc.code in {"busy", "quota", "unavailable", "pending"} else "blocked", "reason": exc.code}
         except ValueError:
             await asyncio.to_thread(self.store.fault, ready["run_id"], "invalid_assessment_response")
             return {"state": "blocked", "reason": "invalid_assessment_response"}

@@ -159,7 +159,7 @@ class StaffStore:
 
     def fault(self, run_id, code, seconds=0):
         with self.db.transaction() as conn:
-            if code in {"quota", "busy", "unavailable"}:
+            if code in {"quota", "busy", "unavailable", "pending"}:
                 conn.execute("""UPDATE staff_runs SET next_at=now()+make_interval(secs=>%s),error=%s
                     WHERE id=%s AND state IN ('queued','running')""", (max(60, min(seconds or 300, 604800)), code, run_id))
             else:
@@ -181,7 +181,9 @@ class StaffStore:
             if run["state"] != "running" or run["owner_user"] not in self.company.settings.slack_allowed_users:
                 return {"state": "blocked", "reason": "state_or_authorization_changed"}
             decision = response.decision
-            if response.provider != self.company.settings.model_provider:
+            from ..providers.routing import expected_provider
+
+            if response.provider != expected_provider(self.company.settings, call["request"]["model"]):
                 raise ValueError("Unexpected exercise provider")
             tools = []
             violation = (bool(decision.delegations or decision.messages or decision.memories or decision.follow_up)

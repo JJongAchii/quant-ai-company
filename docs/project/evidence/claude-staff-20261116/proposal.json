@@ -1,0 +1,201 @@
+{
+  "state": "proposal_only_not_applied",
+  "operation_id": "claude-staff-20261116-owner-v1",
+  "expected_revision": 2,
+  "production_commit_observed": "41b000f5c2f801bd99669fcf74aac62f7158ccad",
+  "source_sha256": "a115c86c5e7753120a1ee3b74dc81826b0b835c851b46034a2c56407a94a3aed",
+  "changes": {
+    "director": {
+      "before": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max",
+        "source": "pinned",
+        "revision": 2
+      },
+      "after": {
+        "model": "claude-opus-5-5",
+        "reasoning_effort": "max"
+      }
+    },
+    "financial_strategist": {
+      "before": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "xhigh",
+        "source": "pinned",
+        "revision": 2
+      },
+      "after": {
+        "model": "claude-opus-5-5",
+        "reasoning_effort": "xhigh"
+      }
+    },
+    "researcher_kr": {
+      "before": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "high",
+        "source": "pinned",
+        "revision": 2
+      },
+      "after": {
+        "model": "claude-opus-5-5",
+        "reasoning_effort": "high"
+      }
+    },
+    "researcher_global": {
+      "before": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "high",
+        "source": "pinned",
+        "revision": 2
+      },
+      "after": {
+        "model": "claude-opus-5-5",
+        "reasoning_effort": "high"
+      }
+    },
+    "researcher_crypto": {
+      "before": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "high",
+        "source": "pinned",
+        "revision": 2
+      },
+      "after": {
+        "model": "claude-opus-5-5",
+        "reasoning_effort": "high"
+      }
+    },
+    "data": {
+      "before": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "source": "pinned",
+        "revision": 2
+      },
+      "after": {
+        "model": "claude-opus-5-5",
+        "reasoning_effort": "high"
+      }
+    },
+    "engineer": {
+      "before": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
+        "source": "pinned",
+        "revision": 2
+      },
+      "after": {
+        "model": "claude-opus-5-5",
+        "reasoning_effort": "xhigh"
+      }
+    },
+    "validator": {
+      "before": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "max",
+        "source": "pinned",
+        "revision": 2
+      },
+      "after": {
+        "model": "claude-opus-5-5",
+        "reasoning_effort": "max"
+      }
+    },
+    "risk": {
+      "before": {
+        "model": "gpt-6-astra",
+        "reasoning_effort": "xhigh",
+        "source": "pinned",
+        "revision": 2
+      },
+      "after": {
+        "model": "claude-opus-5-5",
+        "reasoning_effort": "xhigh"
+      }
+    },
+    "operations": {
+      "before": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "medium",
+        "source": "pinned",
+        "revision": 2
+      },
+      "after": {
+        "model": "claude-opus-5-5",
+        "reasoning_effort": "medium"
+      }
+    },
+    "maintainer": {
+      "before": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
+        "source": "pinned",
+        "revision": 2
+      },
+      "after": {
+        "model": "claude-opus-5-5",
+        "reasoning_effort": "xhigh"
+      }
+    },
+    "quant_scout": {
+      "before": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "source": "pinned",
+        "revision": 2
+      },
+      "after": {
+        "model": "claude-opus-5-5",
+        "reasoning_effort": "high"
+      }
+    }
+  },
+  "preserved_assignments": {
+    "reporter": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "medium",
+      "source": "pinned",
+      "revision": 2
+    },
+    "market_brief": {
+      "model": "gpt-6-astra",
+      "reasoning_effort": "xhigh",
+      "source": "pinned",
+      "revision": 2
+    },
+    "news_screening": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low",
+      "source": "pinned",
+      "revision": 2
+    },
+    "news_search": {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low",
+      "source": "pinned",
+      "revision": 2
+    }
+  },
+  "active_roles_preserved": {
+    "director": true,
+    "financial_strategist": true,
+    "researcher_kr": true,
+    "researcher_global": false,
+    "researcher_crypto": false,
+    "data": true,
+    "engineer": false,
+    "validator": false,
+    "risk": false,
+    "operations": false,
+    "reporter": true,
+    "tech_scout": false,
+    "quant_scout": false,
+    "market_brief": true,
+    "trend_scout": false,
+    "maintainer": true
+  },
+  "video_pipeline": "unchanged",
+  "new_claude_work_billing": "subscription_only",
+  "plan_digest": null,
+  "reason": "The authenticated API computes the apply digest after the complete reviewed main release."
+}
