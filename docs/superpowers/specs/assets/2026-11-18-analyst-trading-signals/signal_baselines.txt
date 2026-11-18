@@ -1,0 +1,44 @@
+# signal_baselines.py output, run 2026-11-18 17:20 KST
+# lake: local ~/Quant/data-lake clean/krx_index.parquet 550124 bytes, modified 2026-07-31; krx_etf.parquet 46738957 bytes; prices.parquet (yfinance SPY)
+# yahoo: chart JSON (interval=1d, range=6mo) fetched 2026-11-18 16:5x KST
+KOSPI 2010-01-05..2026-07-21 rows 4072; SPY last 2026-07-17
+KODEX 200 2012-01-02..2026-07-21 rows 3574
+instrument  period                        rule    n  hit_pct  hit_2se_pct  mean_bp     t
+     KOSPI     all              B0 always long 4070     48.6          1.6     -4.5 -3.08
+     KOSPI     all                 B1 gap fade 4066     51.4          1.6     -1.6 -1.07
+     KOSPI     all                B2 follow US 4059     47.1          1.6     -4.3 -2.90
+     KOSPI     all          B2 follow US (gap) 4057     75.5          1.6     37.0 32.62
+     KOSPI     all B2 follow US (close->close) 4060     62.9          1.6     32.7 17.10
+     KOSPI     all  B0 always long (overnight) 4067     59.4          1.6      8.7  6.88
+     KOSPI to-2017              B0 always long 1974     47.3          2.3     -4.9 -3.05
+     KOSPI to-2017                 B1 gap fade 1972     53.5          2.3      3.3  2.08
+     KOSPI to-2017                B2 follow US 1966     47.3          2.3     -5.2 -3.26
+     KOSPI to-2017          B2 follow US (gap) 1965     75.8          2.3     32.6 24.81
+     KOSPI to-2017 B2 follow US (close->close) 1967     63.2          2.3     27.4 13.40
+     KOSPI to-2017  B0 always long (overnight) 1973     59.4          2.3      7.3  4.87
+     KOSPI   2018-              B0 always long 2096     49.9          2.2     -4.2 -1.73
+     KOSPI   2018-                 B1 gap fade 2094     49.4          2.2     -6.2 -2.56
+     KOSPI   2018-                B2 follow US 2093     46.9          2.2     -3.4 -1.39
+     KOSPI   2018-          B2 follow US (gap) 2092     75.2          2.2     41.1 22.63
+     KOSPI   2018- B2 follow US (close->close) 2093     62.6          2.2     37.8 11.89
+     KOSPI   2018-  B0 always long (overnight) 2094     59.4          2.2     10.0  4.99
+     KOSPI   2024-              B0 always long  619     51.9          4.0     -2.5 -0.43
+     KOSPI   2024-                 B1 gap fade  619     48.0          4.0    -18.8 -3.25
+     KOSPI   2024-                B2 follow US  619     44.1          4.0     -1.6 -0.27
+     KOSPI   2024-          B2 follow US (gap)  620     70.6          4.0     53.0 11.14
+     KOSPI   2024- B2 follow US (close->close)  620     62.4          4.0     51.5  6.28
+     KOSPI   2024-  B0 always long (overnight)  619     60.7          4.0     19.5  3.78
+  KODEX200     all              B0 always long 3527     49.9          1.7     -1.2 -0.71
+  KODEX200     all                 B1 gap fade 3523     48.9          1.7     -5.5 -3.43
+  KODEX200     all                B2 follow US 3517     47.7          1.7     -3.5 -2.13
+  KODEX200 to-2017              B0 always long 1453     48.8          2.6     -2.1 -1.25
+  KODEX200 to-2017                 B1 gap fade 1451     48.6          2.6     -4.6 -2.79
+  KODEX200 to-2017                B2 follow US 1446     49.1          2.6     -0.7 -0.42
+  KODEX200   2018-              B0 always long 2074     50.7          2.2     -0.5 -0.20
+  KODEX200   2018-                 B1 gap fade 2072     49.1          2.2     -6.2 -2.48
+  KODEX200   2018-                B2 follow US 2071     46.7          2.2     -5.4 -2.16
+  KODEX200   2024-              B0 always long  617     54.6          4.0      4.9  0.82
+  KODEX200   2024-                 B1 gap fade  617     47.5          4.0    -14.5 -2.46
+  KODEX200   2024-                B2 follow US  617     45.7          4.0     -5.7 -0.96
+KOSPI ^KS11: 44 days 2026-05-18..2026-07-21 open max 72.44bp close max 0.00bp open mismatches ['2026-06-29']
+KODEX200 069500.KS: 48 days 2026-05-18..2026-07-27 open max 0.00bp close max 0.00bp open mismatches []
