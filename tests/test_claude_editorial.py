@@ -35,6 +35,7 @@ from quant_company.providers.claude_runner import (
 )
 from quant_company.providers.codex_runner import output_schema
 from quant_company.providers.routing import CLAUDE_MODEL, CLAUDE_SONNET, CompanyProvider, own_lane
+from quant_company.staff.review_contract import REVIEW_MODEL
 from quant_company.staff_models import (
     BRIEFING,
     EDITORIAL,
@@ -142,6 +143,32 @@ async def test_a_held_episode_slot_never_blocks_company_work_and_slots_stay_sepa
         assert desk.value.code == "busy"
         assert (await runner.run(news_request("quant-feed-3"))).provider == "claude"
     assert [call["args"][call["args"].index("--model") + 1] for call in calls()] == [CLAUDE_SONNET] * 3
+
+
+async def test_a_shorts_turn_takes_its_own_slot_and_never_the_episodes(fake_claude):
+    # Owner, 2026-11-18: a Shorts turn the API lane cannot take runs on its own subscription slot beside the episode
+    # (11-18 AM: the capped lane held the morning cut 50 minutes until its episode was out).
+    config, configure, calls = fake_claude
+    configure(review={"facts": True, "numbers": True, "conditions": True, "coverage": True, "readability": True,
+                      "concerns": []})
+    runner = ClaudeRunner(config, source_environment={"PATH": os.environ["PATH"]})
+    job = str(uuid4())
+
+    def review(identity):
+        return ProviderRequest(request_id=f"video-{job}-{identity}", model=REVIEW_MODEL, reasoning_effort="max",
+                               prompt="Plan: fixture", output_contract="video_review_v1")
+
+    with held(config, None):  # an episode turn holds its slot
+        assert (await runner.run(review("shorts-review-1"))).provider == "claude"
+        with pytest.raises(ProviderFault) as episode:
+            await runner.run(review("review-1"))
+        assert episode.value.code == "busy"
+    with held(config, "shorts"):  # a cut's turn running: the episode never waits for it
+        assert (await runner.run(review("review-2"))).provider == "claude"
+        with pytest.raises(ProviderFault) as cut:
+            await runner.run(review("shorts-review-2"))
+        assert cut.value.code == "busy"
+    assert len(calls()) == 2
 
 
 async def test_brief_turns_keep_their_frozen_deadline_and_a_passed_one_never_runs(fake_claude):

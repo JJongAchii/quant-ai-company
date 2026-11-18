@@ -70,8 +70,12 @@ from .youtube import YouTube
 # A tick waits this long for a turn, then checks back: claude-runtime keeps running it under the same request ID.
 VIDEO_MODEL_WAIT_SECONDS = 120
 # A Shorts turn beside its episode in production (shorts_store._beside) only hands the turn over and checks back on
-# later ticks, so the worker returns to the episode's next step within seconds.
+# later ticks, so the worker returns to the episode's next step within seconds. claude-runtime gives it the API lane
+# first and otherwise the Shorts' own subscription slot, never the episode's (claude_runner.LOCKS, owner 2026-11-18).
 EARLY_WAIT_SECONDS = 5
+# A turn refused there is asked again no sooner than this: a superseded cut's turn may hold the Shorts' slot up to the
+# video process limit, the slot answers busy in seconds, and each ask is a new request.
+SHORTS_BUSY_SECONDS = 60
 # Like an editor in a Claude session: rewrite until the checks pass, then keep the best version and report the rest.
 PLAN_ATTEMPTS = 6
 REVIEW_ROUNDS = 2
@@ -100,7 +104,7 @@ SHORTS_REVIEW_ROUNDS, SHORTS_REVIEW_RUNTIME_RETRIES = 2, 4
 # minutes each, mostly for problems of the template that screen text cannot change).
 SHORTS_INSPECT_ROUNDS = 2
 SHORTS_RETRY = 1800
-# Shorts versions and reviews that wrote nothing: lost turns, and turns the API lane refused beside the episode.
+# Shorts versions and reviews that wrote nothing: lost turns, and turns the runtime refused beside the episode.
 SHORTS_UNWRITTEN = RUNTIME_OUTCOMES | {'lane_refused'}
 SHORTS_CREDIT_RESERVE = 80
 REVIEW_PHASES = frozenset({'review', 'visual'})
@@ -235,6 +239,11 @@ def shorts_effort(policy):
     close preview with the same script, an xhigh review found max's findings in 5 minutes instead of 15 (34k output
     tokens instead of 106k); the owner left the choice to the measurement (2026-10-28: "너가 최적으로 진행해줘")."""
     return policy.get('effort', 'high')
+
+
+def refused_wait(error):
+    """Seconds before a Shorts turn refused beside its episode is asked again (SHORTS_BUSY_SECONDS at the soonest)."""
+    return max(SHORTS_BUSY_SECONDS, error.retry_after_seconds or 0)
 
 
 def cut_basis(row, job):
@@ -504,8 +513,9 @@ class VideoRunner:
         return self._early
 
     def asked_api_only(self, job, key, request):
-        """Whether this turn was first asked of the API lane alone: asked again, it must be the identical request
-        (claude-runtime and the effect receipt are keyed by its input), also once the episode beside it is out."""
+        """Whether this turn was first asked of the API lane alone (beside its episode, before the Shorts had their own
+        slot on 2026-11-18): asked again, it must be the identical request (claude-runtime and the effect receipt are
+        keyed by its input), also once the episode beside it is out."""
         if not key.startswith('shorts-'):
             return False
         asked = self.store.effect_digest(job, key)
@@ -525,8 +535,8 @@ class VideoRunner:
         await asyncio.to_thread(self.store.finish_effect, job, key, result)
         return result
 
-    async def model(self, job, key, prompt, cls, contract=None, attachments=(), effort=None, api_only=False):
-        """api_only: a Shorts turn beside its episode in production, asked of the API lane alone (ClaudeRequest)."""
+    async def model(self, job, key, prompt, cls, contract=None, attachments=(), effort=None, beside=False):
+        """beside: a Shorts turn beside its episode in production, handed over at once (early_provider)."""
         phase = key.split('-')[0]
         policy = job["policy"]
         # Reviews may think longer than writing; jobs frozen before the split use their single effort for both.
@@ -537,8 +547,8 @@ class VideoRunner:
         request = (ClaudeRequest if contract in CLAUDE_ONLY else ProviderRequest)(
             request_id=f"video-{job['id']}-{key}", model=policy["model"], reasoning_effort=effort, prompt=prompt,
             output_contract=contract, attachments=list(attachments))
-        provider = self.early_provider if api_only else self.provider
-        if api_only or await asyncio.to_thread(self.asked_api_only, job, key, request):
+        provider = self.early_provider if beside else self.provider
+        if await asyncio.to_thread(self.asked_api_only, job, key, request):
             request = ClaudeRequest.model_validate(request.model_dump() | {'api_only': True})
         failed = await asyncio.to_thread(self.store.effect_receipt, job, key, 'failed')
         if failed:
@@ -675,7 +685,7 @@ class VideoRunner:
         """One written version per tick, revised from the last one with its findings and the open review concerns; a
         version that passes the checks goes to the review. After the last attempt the version with the fewest findings
         is reviewed and produced anyway, its findings in the thread (owner, 10/20 PM). Beside its episode in production
-        the turn is asked of the API lane alone; one the lane refuses ran nowhere and is asked again as a new request."""
+        the turn is handed over at once; one the runtime refuses ran nowhere and is asked again as a new request."""
         beside, job = job['state'] in SHORTS_SCRIPTED, cut_basis(row, job)
         qa = dict(row['qa'] or {})
         issues = lineup(job['source'], job['plan'])
@@ -730,13 +740,13 @@ class VideoRunner:
         try:
             # Written at the episode script's effort (owner, 2026-10-26: Shorts at the episode's level).
             plan = await self.model(job, f'shorts-{len(attempts) + 1}', prompt, ShortsPlan, contract='video_shorts_v1',
-                                    api_only=beside)
+                                    beside=beside)
         except ProviderFault as error:
             if not (beside and error.code == 'busy'):
                 raise
             attempts.append({'outcome': 'lane_refused'})
             await asyncio.to_thread(self.shorts.save, row, 'writing', qa=qa)
-            await asyncio.to_thread(self.shorts.wait, row, error.retry_after_seconds or 300, 'api_lane')
+            await asyncio.to_thread(self.shorts.wait, row, refused_wait(error), 'lane_busy')
             return
         except ModelRejected as error:
             # A lost turn (uncertain, timeout) wrote nothing; like a rejected one, the next attempt is a new request.
@@ -758,8 +768,8 @@ class VideoRunner:
 
     async def shorts_review(self, row, job):
         """The independent editor (owner, 2026-10-26: "본편수준으로 점검"; shorts_effort): concerns are fixed by another
-        version, up to SHORTS_REVIEW_ROUNDS reviews; what is left travels with the files. Beside its episode, on the API
-        lane alone like the writing."""
+        version, up to SHORTS_REVIEW_ROUNDS reviews; what is left travels with the files. Beside its episode, handed over
+        at once like the writing."""
         plan = await self.shorts_plan(row)
         if plan is None:
             return
@@ -772,14 +782,14 @@ class VideoRunner:
                                              (job.get('qa') or {}).get('review_findings', []), estimated_seconds(plan))
         try:
             review = await self.model(job, key, prompt, VideoReview, contract='video_review_v1',
-                                      effort=shorts_effort(policy), api_only=beside)
+                                      effort=shorts_effort(policy), beside=beside)
             concerns = list(review.concerns) + [f'{name} check failed' for name in REVIEW_CHECKS if not getattr(review, name)]
         except ProviderFault as error:
             if not (beside and error.code == 'busy'):
                 raise
             rounds.append({'key': key, 'passed': False, 'outcome': 'lane_refused', 'concerns': []})
             await asyncio.to_thread(self.shorts.save, row, 'reviewing', qa=qa)
-            await asyncio.to_thread(self.shorts.wait, row, error.retry_after_seconds or 300, 'api_lane')
+            await asyncio.to_thread(self.shorts.wait, row, refused_wait(error), 'lane_busy')
             return
         except ModelRejected as rejected:
             lost = sum(r.get('outcome') in RUNTIME_OUTCOMES for r in rounds)
@@ -886,8 +896,8 @@ class VideoRunner:
         if plan is None:
             return
         qa, artifacts, policy = dict(row['qa'] or {}), row['artifacts'], job['policy']
-        # A morning cut inspected beside its episode in production (shorts_store.FIRST) keeps off the episode's slot,
-        # and its fix is written against the episode it was checked with (cut_basis), so a turn asked again is identical.
+        # A morning cut inspected beside its episode in production (shorts_store.FIRST) is handed over at once, and its
+        # fix is written against the episode it was checked with (cut_basis), so a turn asked again is identical.
         beside, basis = job['state'] in SHORTS_SCRIPTED, cut_basis(row, job)
         rounds = qa.setdefault('inspections', [])
         directory = verify_artifacts(artifacts, self.settings.video_artifact_dir)
@@ -906,16 +916,15 @@ class VideoRunner:
                                                  heard)
             try:
                 visual = await self.model(job, key, prompt, VisualReview, 'video_visual_review_v1', attachments,
-                                          effort=shorts_effort(policy), api_only=beside)
+                                          effort=shorts_effort(policy), beside=beside)
                 issues = [i.model_dump() for i in visual.issues]
             except ProviderFault as error:
                 if not (beside and error.code == 'busy'):
                     raise
-                # Nothing ran: the look is asked again as a new request, so once the episode is out it may take
-                # either lane (a refused turn asked again under its key would stay on the API lane alone).
+                # Nothing ran: the look is asked again as a new request.
                 qa['look_refused'] = refused + 1
                 await asyncio.to_thread(self.shorts.save, row, 'inspecting', qa=qa)
-                await asyncio.to_thread(self.shorts.wait, row, error.retry_after_seconds or 300, 'api_lane')
+                await asyncio.to_thread(self.shorts.wait, row, refused_wait(error), 'lane_busy')
                 return
             except ModelRejected as rejected:
                 issues = [{'scene': 'opener', 'kind': 'other', 'detail': f'Visual review unavailable: {rejected.detail}',
@@ -932,7 +941,7 @@ class VideoRunner:
                 try:
                     patch = await self.model(job, f'shorts-fix-{len(rounds)}', shorts_review.fix_prompt(
                         job['source'], episode, found, plan, screen), ShortsPlan, contract='video_shorts_v1',
-                                             api_only=beside)
+                                             beside=beside)
                     candidate, _ = settle(shorts_review.keep_spoken(plan, patch), job['source'])
                     # A fix that breaks a rule the cut kept is not taken: the screen stays as it was.
                     if fix_adds_findings(shorts_violations(plan, job['source'], episode, found),
@@ -943,7 +952,7 @@ class VideoRunner:
                 except ProviderFault as error:
                     if not (beside and error.code == 'busy'):
                         raise
-                    rounds[-1]['fix_error'] = 'The API lane refused the fix beside the episode; the screen stays as it was.'
+                    rounds[-1]['fix_error'] = 'The runtime refused the fix beside the episode; the screen stays as it was.'
                 except (ModelRejected, ValueError) as error:
                     rounds[-1]['fix_error'] = str(getattr(error, 'detail', error))[:500]
             qa['retake'] = sorted(set(qa.get('retake', [])) | retake)
