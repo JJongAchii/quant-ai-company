@@ -1325,12 +1325,17 @@ async def test_a_morning_cut_goes_out_before_its_episode_once_its_pictures_are_f
     in_production(store, job, 'inspecting', edition='am')
     takes, renderer = len(speech.calls), ShortsFileRenderer()
     on_fargate(monkeypatch, store, renderer)
+    handed = []
+    monkeypatch.setattr(VideoRunner, 'early_provider', property(lambda self: Handed(self._provider, handed)))
     row = await shorts_ticks(store, provider, speech, renderer, job)
     assert row['state'] == 'delivering', row['error']
     assert store.get(job['id'])['state'] == 'inspecting'  # out before its episode
     assert len(speech.calls) - takes == 4 and len(renderer.calls) == 1
-    # Every turn of the cut keeps off the episode's subscription slot while the episode runs.
-    assert api_only(shorts_calls(provider, 'shorts')) == api_only(shorts_calls(provider, 'visual')) == [True]
+    # Every turn of the cut keeps off the episode's subscription slot while the episode runs: the runtime gives it the
+    # Shorts' own (2026-11-18), so it is no longer asked of the API lane alone; each is handed over at once.
+    cut = shorts_calls(provider, 'shorts') + shorts_calls(provider, 'review') + shorts_calls(provider, 'visual')
+    assert api_only(shorts_calls(provider, 'shorts')) == api_only(shorts_calls(provider, 'visual')) == [False]
+    assert sorted(handed) == sorted(c.request_id for c in cut) and len(cut) == 3
     with store.db.transaction() as conn:
         text = conn.execute("SELECT text FROM messages WHERE kind='video_shorts' ORDER BY created_at DESC LIMIT 1").fetchone()
     assert '본편보다 먼저 준비됐습니다' in text['text']
@@ -1359,7 +1364,7 @@ async def test_a_morning_cut_meets_the_episodes_later_edits_before_it_goes_out(b
     assert ShortsStore(store.company).get(job['id'])['qa']['episode']['plan'] == store.get(job['id'])['plan']
 
 
-async def test_a_morning_look_the_api_lane_refuses_is_asked_again_as_a_new_request(brief, video, tmp_path, monkeypatch):  # noqa: F811
+async def test_a_morning_look_the_runtime_refuses_is_asked_again_as_a_new_request(brief, video, tmp_path, monkeypatch):  # noqa: F811
     from quant_company.video.contracts import VisualReview
 
     store, clock = video
@@ -1368,7 +1373,7 @@ async def test_a_morning_look_the_api_lane_refuses_is_asked_again_as_a_new_reque
     in_production(store, job, 'inspecting', edition='am')
     renderer = ShortsFileRenderer()
     on_fargate(monkeypatch, store, renderer)
-    refused = ProviderFault('busy', 'The API lane could not take this turn.', 300)
+    refused = ProviderFault('busy', 'Claude is already executing a review.', 10)  # the Shorts' slot is taken
     provider.shorts_queues['visual'] = [refused, refused, VisualReview(passed=True, issues=[])]
     row = await shorts_until(store, provider, speech, job, ('inspecting',))
     for _ in range(2):
@@ -1376,12 +1381,12 @@ async def test_a_morning_look_the_api_lane_refuses_is_asked_again_as_a_new_reque
         with store.db.transaction() as conn:
             conn.execute('UPDATE video_shorts SET lease_until=NULL WHERE job_id=%s', (job['id'],))
     assert ShortsStore(store.company).get(job['id'])['qa']['look_refused'] == 2
-    deliver(store, job)  # the episode is out: the look may now take either lane
+    deliver(store, job)  # the episode is out: the look waits for its answer as usual
     row = await shorts_ticks(store, provider, speech, renderer, job)
     assert row['state'] == 'delivering', row['error']
     looks = shorts_calls(provider, 'visual')
     assert [c.request_id.rsplit('shorts-', 1)[1] for c in looks] == ['visual-1', 'visual-1-r1', 'visual-1-r2']
-    assert api_only(looks) == [True, True, False]
+    assert api_only(looks) == [False, False, False]
 
 
 async def test_a_morning_cut_never_renders_on_the_worker_while_its_episode_runs(brief, video, tmp_path, monkeypatch):  # noqa: F811
@@ -1396,29 +1401,47 @@ async def test_a_morning_cut_never_renders_on_the_worker_while_its_episode_runs(
     assert row['state'] == 'rendering' and row['error'] == 'episode_first' and not renderer.calls
 
 
-async def test_a_cut_beside_its_episode_asks_the_api_lane_alone_and_is_voiced_after_the_episode(brief, video, tmp_path, monkeypatch):  # noqa: F811
+class Handed:
+    """The worker's short-wait client (VideoRunner.early_provider): records the turns it handed over."""
+
+    def __init__(self, provider, handed):
+        self.provider, self.handed = provider, handed
+
+    async def run(self, request):
+        self.handed.append(request.request_id)
+        return await self.provider.run(request)
+
+
+async def test_a_cut_beside_its_episode_hands_its_turns_over_and_is_voiced_after_the_episode(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
     in_production(store, job)
+    handed = []
+    monkeypatch.setattr(VideoRunner, 'early_provider', property(lambda self: Handed(self._provider, handed)))
     takes, renderer = len(speech.calls), ShortsFileRenderer()
     row = await shorts_ticks(store, provider, speech, renderer, job, limit=4)
     assert row['state'] == 'synthesizing' and len(speech.calls) == takes and not renderer.calls
-    # The episode keeps the subscription's single slot: the cut's turns never take it while the episode runs.
-    assert api_only(shorts_calls(provider, 'shorts')) == api_only(shorts_calls(provider, 'review')) == [True]
+    # Owner, 2026-11-18: the cut's turns no longer wait for the API lane beside the episode. They take it first and
+    # otherwise the Shorts' own subscription slot (claude_runner.LOCKS), never the episode's, and are handed over at
+    # once so the worker goes back to the episode.
+    cut = shorts_calls(provider, 'shorts') + shorts_calls(provider, 'review')
+    assert sorted(handed) == sorted(c.request_id for c in cut) and len(cut) == 2 and api_only(cut) == [False, False]
     deliver(store, job)
     row = await shorts_ticks(store, provider, speech, renderer, job)
     assert row['state'] == 'delivering', row['error']
     assert len(speech.calls) - takes == 4 and len(renderer.calls) == 1
-    assert api_only(shorts_calls(provider, 'visual')) == [False] and len(shorts_calls(provider, 'shorts')) == 1
+    # Once the episode is out a turn waits for its answer as usual.
+    assert len(handed) == 2 and api_only(shorts_calls(provider, 'visual')) == [False]
+    assert len(shorts_calls(provider, 'shorts')) == 1
 
 
-async def test_a_turn_the_api_lane_refuses_beside_the_episode_uses_no_attempt(brief, video, tmp_path, monkeypatch):  # noqa: F811
+async def test_a_turn_the_runtime_refuses_beside_the_episode_uses_no_attempt(brief, video, tmp_path, monkeypatch):  # noqa: F811
     store, clock = video
     job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
     store.settings.video_shorts_enabled = True
     in_production(store, job)
-    refused = ProviderFault('busy', 'The API lane could not take this turn.', 300)
+    refused = ProviderFault('busy', 'Claude is already executing a review.', 10)  # the Shorts' slot is taken
     provider.queues['video_shorts_v1'] = [refused, shorts()]
     provider.shorts_queues['review'] = [refused, good_review()]
     row = await shorts_ticks(store, provider, speech, ShortsFileRenderer(), job, limit=6)
@@ -1426,9 +1449,24 @@ async def test_a_turn_the_api_lane_refuses_beside_the_episode_uses_no_attempt(br
     assert [a['outcome'] for a in row['qa']['attempts']] == ['lane_refused', 'passed']
     assert [r.get('outcome', r['passed']) for r in row['qa']['review_rounds']] == ['lane_refused', True]
     assert row['qa']['review_findings'] == []
-    # Nothing ran: the next ask is a new request, so once the episode is out it may take either lane.
+    # Nothing ran: the next ask is a new request.
     assert [c.request_id.rsplit('-', 1)[-1] for c in shorts_calls(provider, 'shorts')] == ['1', '2']
     assert [c.request_id.rsplit('-', 1)[-1] for c in shorts_calls(provider, 'review')] == ['1', '2']
+
+
+async def test_a_turn_refused_beside_the_episode_is_asked_again_a_minute_later_at_the_soonest(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    # The Shorts' slot answers busy in 10 seconds; a superseded cut's turn may hold it for the process limit, and each
+    # ask is a new request, so the cut asks again no sooner than a minute later.
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    in_production(store, job)
+    provider.queues['video_shorts_v1'] = [ProviderFault('busy', 'Claude is already executing a review.', 10), shorts()]
+    await VideoRunner(store.company, provider, speech).tick()
+    with store.db.transaction() as conn:
+        row = conn.execute('SELECT error,extract(epoch FROM lease_until-now()) AS wait FROM video_shorts WHERE job_id=%s',
+                           (job['id'],)).fetchone()
+    assert row['error'] == 'lane_busy' and 50 < row['wait'] <= 60
 
 
 async def test_a_turn_still_running_when_the_episode_is_out_is_asked_again_as_it_was_sent(brief, video, tmp_path, monkeypatch):  # noqa: F811
@@ -1444,7 +1482,29 @@ async def test_a_turn_still_running_when_the_episode_is_out_is_asked_again_as_it
     assert row['state'] == 'delivering', row['error']
     first, again = shorts_calls(provider, 'shorts')
     # The runtime keys the turn by its ID and input: the same request again, or the answer would be lost.
-    assert first.request_id == again.request_id and api_only([first, again]) == [True, True]
+    assert first == again and api_only([first]) == [False]
+
+
+async def test_a_turn_asked_of_the_api_lane_alone_before_the_shorts_slot_is_asked_again_unchanged(brief, video, tmp_path, monkeypatch):  # noqa: F811
+    # A release on 2026-11-18 may land while a cut's turn, asked of the API lane alone by the release before, still
+    # runs: it is asked again exactly as first sent, or the runtime's receipt would not match and the answer be lost.
+    from quant_company.providers.claude_runner import ClaudeRequest
+    from quant_company.video.contracts import digest
+
+    store, clock = video
+    job, provider, speech = await delivered_episode(store, tmp_path, monkeypatch, brief, clock)
+    store.settings.video_shorts_enabled = True
+    in_production(store, job)
+    provider.queues['video_shorts_v1'] = [ProviderFault('pending', 'The model turn is still running.', 30), shorts()]
+    await VideoRunner(store.company, provider, speech).tick()
+    (sent,) = shorts_calls(provider, 'shorts')
+    before = ClaudeRequest.model_validate(sent.model_dump() | {'api_only': True})
+    with store.db.transaction() as conn:  # how the release before recorded it
+        conn.execute('UPDATE video_effects SET request_digest=%s WHERE id=%s',
+                     (digest(before.model_dump(mode='json')), f"{job['id']}:shorts-1"))
+    await shorts_until(store, provider, speech, job, ('reviewing',), limit=2)
+    first, again = shorts_calls(provider, 'shorts')
+    assert again == before and api_only([first, again]) == [False, True]
 
 
 async def test_a_cut_written_beside_its_episode_is_checked_against_the_delivered_one(brief, video, tmp_path, monkeypatch):  # noqa: F811

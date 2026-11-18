@@ -2,8 +2,8 @@
 
 The episode always goes first: a cut takes a step only when no episode step is due, and is given up once the next
 episode has started (design §7). Its script is written and reviewed beside its own episode once that episode's script
-is final (owner, 2026-11-05), on the API lane alone (runner), against the episode as it was then (qa.episode); the
-episode is checked again before the voice. A closing cut is voiced and rendered once its episode is delivered. A
+is final (owner, 2026-11-05), off the episode's model slot (runner), against the episode as it was then (qa.episode);
+the episode is checked again before the voice. A closing cut is voiced and rendered once its episode is delivered. A
 morning cut (FIRST, owner 2026-11-06) is voiced, rendered, inspected and delivered beside its episode once the
 episode's pictures are final, so it can be up before the market opens; it meets the episode's latest edits again
 before its render and before its delivery. Its paid steps use the episode's effect receipts (video_effects, job_id =
@@ -32,7 +32,7 @@ PICTURED = ('rendering', 'inspecting', 'delivering')
 # A step that ends without saving keeps the cut this long after its claim (video.store.LEASE, runner.holding).
 HOLD = timedelta(minutes=60)
 # The next episode is usually in production then (briefs at about 07:20 and 16:10-17:25, then about 1.5 hours of
-# script, speech and render): only the episode's own cut takes steps beside it (_beside), on the API lane. A window
+# script, speech and render): only the episode's own cut takes steps beside it (_beside), off the episode's slot. A window
 # (its edition kind is the third value) ends early once that day's episode of its kind is delivered (claim).
 QUIET = ((time(6, 30), time(9, 30), 'am'), (time(15, 30), time(19, 0), 'close'))
 

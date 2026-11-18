@@ -111,9 +111,10 @@ SHORTS_SHARED = frozenset({"video_review_v1", "video_visual_review_v1"})
 API_SLOTS = 2
 # One subscription CLI call per slot. The episode and the email share the original slot; the briefing, the news desk,
 # Quant Scout and the rest of the company each have their own (owner, 2026-11-17; the lanes and lock names of
-# codex_runner), so an episode never queues behind company work. release.py counts every slot's CLI process.
+# codex_runner), so an episode never queues behind company work. So do the Shorts (owner, 2026-11-18): a cut's turn the
+# API lane cannot take runs beside its episode instead of waiting for it. release.py counts every slot's CLI process.
 LOCKS = {None: ".runtime.lock", "brief": ".runtime-brief.lock", "news": ".runtime-news.lock",
-         "quant": ".runtime-quant.lock", "company": ".runtime-company.lock"}
+         "quant": ".runtime-quant.lock", "company": ".runtime-company.lock", "shorts": ".runtime-shorts.lock"}
 # An API-only turn the lane refused (off, capped, paused or overloaded) is asked again after this long.
 API_ONLY_WAIT = 300
 UNCERTAIN_PAUSE_SECONDS = 1800
@@ -128,7 +129,8 @@ class ClaudeRequest(ProviderRequest):
     output_contract: Literal[ProviderRequest.model_fields["output_contract"].annotation.__args__ + CLAUDE_ONLY] = (
         "agent_decision")
     # The API credit lane or nothing: the runtime never gives this turn the shared CLI slot and answers busy (nothing
-    # ran) when the API cannot take it. The email asks this way while an episode holds the slot (owner, 2026-11-05).
+    # ran) when the API cannot take it. The email asks this way while an episode holds the slot (owner, 2026-11-05);
+    # a Shorts turn asked so before it had its own slot (2026-11-18) is asked again unchanged (video asked_api_only).
     api_only: bool = False
 
     @model_validator(mode="after")
@@ -157,6 +159,13 @@ def api_first(request):
     """The owner's API-first work (API_FIRST), and a Shorts editor's turn under an episode contract."""
     return not company_request(request) and (request.output_contract in API_FIRST or (
         request.output_contract in SHORTS_SHARED and bool(SHORTS_REQUEST.match(request.request_id))))
+
+
+def slot(request):
+    """The CLI slot (LOCKS) a subscription turn takes: a company lane, the Shorts', or the episode's own."""
+    if company_request(request):
+        return own_lane(request)
+    return "shorts" if SHORTS_REQUEST.match(request.request_id) else None
 
 
 def allowed_models(request):
@@ -740,8 +749,7 @@ class ClaudeRunner:
 
     async def _run_cli(self, request, path, digest):
         directory = path.parent
-        fd = os.open(directory / LOCKS[own_lane(request) if company_request(request) else None],
-                     os.O_CREAT | os.O_RDWR, 0o600)
+        fd = os.open(directory / LOCKS[slot(request)], os.O_CREAT | os.O_RDWR, 0o600)
         try:
             try:
                 fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
