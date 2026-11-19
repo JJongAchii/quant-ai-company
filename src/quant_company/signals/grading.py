@@ -10,8 +10,9 @@ SEOUL = ZoneInfo("Asia/Seoul")
 KODEX_PARAMS = "interval=1d&range=1mo&events=div"
 NO_OFFICIAL = "공식 자료 없음"
 SUSPICIOUS = "의심 일봉"
+MISSING_BAR = "일봉 없음"
+FETCH_FAILED = "시세 조회 실패"
 EX_DIVIDEND = "분배락"
-DIVIDEND_UNKNOWN = "분배 미확인"
 
 
 def long_return_bp(entry: Decimal, exit: Decimal) -> Decimal:
@@ -67,35 +68,30 @@ def _kospi(row: dict, lake: dict | None) -> dict:
                 exit=Decimal(exit_row[last_key]))
 
 
-def _kodex(row: dict, bars: dict | None, dividends: set | None, receipt: str | None) -> dict:
-    pending = _row(row["id"], "KODEX200", "pending", receipt, detail=SUSPICIOUS)
-    if bars is None:
-        return pending
-    intraday = row["kind"] == "intraday"
+def _kodex(row: dict, bars: dict, dividends: set | None, receipt) -> dict:
+    """Yahoo omits `events` when the window has no distribution, so None means none (R18)."""
     entry_bar, exit_bar = bars.get(row["session_day"]), bars.get(row["exit_day"])
     if not entry_bar or not exit_bar:
-        return pending
-    for bar in {id(entry_bar): entry_bar, id(exit_bar): exit_bar}.values():
+        return _row(row["id"], "KODEX200", "pending", receipt, detail=MISSING_BAR)
+    for bar in (entry_bar, exit_bar):
         if bar["open"] == bar["close"] and bar["volume"] > 0:
-            return pending
+            return _row(row["id"], "KODEX200", "pending", receipt, detail=SUSPICIOUS)
+    intraday = row["kind"] == "intraday"
     entry = entry_bar["open" if intraday else "close"]
     exit = exit_bar["close" if intraday else "open"]
-    if intraday:
-        return _row(row["id"], "KODEX200", "final", receipt, entry=entry, exit=exit)
-    if dividends is None:
-        return _row(row["id"], "KODEX200", "final", receipt, entry=entry, exit=exit, detail=DIVIDEND_UNKNOWN)
-    if row["exit_day"] in dividends:
+    if not intraday and row["exit_day"] in (dividends or set()):
         return _row(row["id"], "KODEX200", "excluded", receipt, entry=entry, exit=exit, detail=EX_DIVIDEND)
     return _row(row["id"], "KODEX200", "final", receipt, entry=entry, exit=exit)
 
 
 def grade_slot(row: dict, lake: dict | None, chart: dict | None) -> list[dict]:
     """The KOSPI and KODEX200 returns of one due slot. lake is the reader result, chart the fetch_chart result."""
-    bars = dividends = receipt = None
-    if chart and chart.get("ok"):
-        try:
-            bars, dividends = kodex_bars(chart["payload"])
-            receipt = chart.get("sha256")
-        except (KeyError, IndexError, TypeError, ValueError, ArithmeticError):
-            bars = None
-    return [_kospi(row, lake), _kodex(row, bars, dividends, receipt)]
+    failed = {"error": (chart or {}).get("error", "chart_unavailable")}
+    if not chart or not chart.get("ok"):
+        return [_kospi(row, lake), _row(row["id"], "KODEX200", "pending", failed, detail=FETCH_FAILED)]
+    try:
+        bars, dividends = kodex_bars(chart["payload"])
+    except (KeyError, IndexError, TypeError, ValueError, ArithmeticError):
+        failed["error"] = "chart_parse_or_policy_error"
+        return [_kospi(row, lake), _row(row["id"], "KODEX200", "pending", failed, detail=FETCH_FAILED)]
+    return [_kospi(row, lake), _kodex(row, bars, dividends, chart.get("sha256"))]

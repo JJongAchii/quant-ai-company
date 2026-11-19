@@ -128,13 +128,13 @@ async def test_overnight_dividend_excluded(signals, clock):  # noqa: F811
     kospi, kodex = returns(signals)[(str(friday), "KOSPI")], returns(signals)[(str(friday), "KODEX200")]
     assert (kospi["state"], kospi["entry_price"], kospi["exit_price"]) == ("final", Decimal("3910"), Decimal("3920"))
     assert (kodex["state"], kodex["detail"], kodex["long_bp"]) == ("excluded", "분배락", None)
-    # Without an events key the return is final and says the dividend was not confirmed.
+    # Yahoo omits events when the window has no distribution: the return is final, with no detail (R18).
     with signals.db.transaction() as conn:
         conn.execute("DELETE FROM trading_signal_returns")
     feeds.chart = bar_chart(bars)
     await SignalRunner(signals, fetch=feeds.fetch, reader=feeds.reader).tick()
     kodex = returns(signals)[(str(friday), "KODEX200")]
-    assert (kodex["state"], kodex["detail"], kodex["long_bp"]) == ("final", "분배 미확인", Decimal("-19.08"))
+    assert (kodex["state"], kodex["detail"], kodex["long_bp"]) == ("final", None, Decimal("-19.08"))
 
 
 async def test_overnight_waits_for_the_exit_day(signals, clock):  # noqa: F811
@@ -201,3 +201,24 @@ def test_kodex_bars_use_seoul_dates():
 def test_query_refactor_keeps_behavior():
     assert data.query("", object()) == {"ok": False, "error": "lake_not_connected"}
     assert data.run_lake_module("", "quant_company.signals.lake", {}) == {"ok": False, "error": "lake_not_connected"}
+
+
+async def test_failed_fetch_missing_bar_and_suspicious_bar_are_told_apart(signals, clock):  # noqa: F811
+    am_project(signals, MONDAY)
+    ask(signals, clock, MONDAY, "intraday")
+    sid = str(slot_id(MONDAY, "intraday"))
+    good = official((MONDAY, 3920, 3950))
+    cases = [({"ok": False, "error": "http_status", "http_status": 429}, "시세 조회 실패", {"error": "http_status"}),
+             ({"ok": True, "payload": {"chart": {"result": None}}, "sha256": "x"}, "시세 조회 실패",
+              {"error": "chart_parse_or_policy_error"}),
+             (bar_chart([(FRIDAY, 51000, 51500, 5)], events=[]), "일봉 없음", None),
+             (bar_chart([(MONDAY, 52000, 52000, 10)], events=[]), "의심 일봉", None)]
+    for number, (chart, detail, receipt) in enumerate(cases):
+        with signals.db.transaction() as conn:
+            conn.execute("DELETE FROM trading_signal_returns")
+        clock["at"] = datetime(2026, 11, 16, 9, 30, tzinfo=UTC) + timedelta(days=number)
+        feeds = Feeds(good, chart)
+        await SignalRunner(signals, fetch=feeds.fetch, reader=feeds.reader).tick()
+        kodex = returns(signals)[(sid, "KODEX200")]
+        assert (kodex["state"], kodex["detail"]) == ("pending", detail)
+        assert kodex["receipt"] == (receipt or chart["sha256"])
