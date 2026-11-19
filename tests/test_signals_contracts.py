@@ -127,6 +127,17 @@ def test_late_post_header():
     assert "임시 신호와 같음" in analyst_post(intraday, slot_proposal(intraday), SNAPSHOT, late_at=late, fallback="long")
 
 
+def test_after_entry_post_is_marked_ungraded():
+    """A signal committed after the entry is posted until the exit, but its header says it is not graded."""
+    intraday, _ = day_slots()
+    after = datetime(2026, 11, 20, 0, 5, tzinfo=UTC)  # 09:05 KST, after the 09:00 open
+    lines = analyst_post(intraday, slot_proposal(intraday, "short"), SNAPSHOT, late_at=after, fallback="long",
+                         after_entry=True).split("\n")
+    assert lines[:2] == ["📈 장중 신호 · 늦음 09:05 · 임시 신호와 반대 · 진입 뒤(채점 제외)", window(intraday)]
+    first = analyst_post(intraday, slot_proposal(intraday), SNAPSHOT, late_at=after, after_entry=True).split("\n")[0]
+    assert first == "📈 장중 신호 · 늦음 09:05 · 진입 뒤(채점 제외)"
+
+
 def test_late_post_without_interim_has_no_interim_part():
     intraday, _ = day_slots()
     late = datetime(2026, 11, 19, 23, 41, tzinfo=UTC)

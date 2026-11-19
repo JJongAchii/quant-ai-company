@@ -46,8 +46,8 @@ class Feeds:
     def __init__(self, lake_result, chart):
         self.lake, self.chart, self.calls = lake_result, chart, []
 
-    def reader(self, root, start, end):
-        self.calls.append(("lake", start, end))
+    def reader(self, root, dates):
+        self.calls.append(("lake", dates))
         return self.lake
 
     def fetch(self, symbol, **kwargs):
@@ -175,7 +175,7 @@ def test_lake_budget_refusal():
         def inspect_dataset(self, name):
             return {"source": {"size_bytes": 5 * 1024 * 1024}, "row_count": 1, "columns": [], "date_bounds": {}}
 
-    assert lake.read(Api(), date(2026, 11, 13), date(2026, 11, 16)) == {
+    assert lake.read(Api(), [date(2026, 11, 13), date(2026, 11, 16)]) == {
         "ok": False, "error": "dataset_exceeds_signal_budget"}
 
 
@@ -190,8 +190,28 @@ def test_lake_reads_kospi_rows_only():
             return pd.DataFrame({"date": pd.to_datetime(["2026-11-16", "2026-11-16"]), "index": ["KOSPI", "KOSDAQ"],
                                  "open": [3920.5, 900.0], "close": [3950.25, 910.0]})
 
-    assert lake.read(Api(), date(2026, 11, 16), date(2026, 11, 16)) == {
+    assert lake.read(Api(), [date(2026, 11, 16)]) == {
         "ok": True, "source": SOURCE, "rows": [{"date": "2026-11-16", "open": "3920.5", "close": "3950.25"}]}
+
+
+def test_lake_reads_only_the_requested_dates():
+    """A pending slot weeks old no longer widens the read: only the dates the due slots need count against the
+    400-row cap and come back."""
+    import pandas as pd
+
+    class Api:
+        def inspect_dataset(self, name):
+            return {"source": SOURCE, "row_count": 1, "columns": [], "date_bounds": {}}
+
+        def load_krx_index(self, **kwargs):
+            self.kwargs = kwargs
+            days = pd.bdate_range("2025-01-02", "2026-11-16")  # about 490 KOSPI rows between the two dates
+            return pd.DataFrame({"date": days, "index": "KOSPI", "open": 3900.0, "close": 3950.0})
+
+    api = Api()
+    result = lake.read(api, [date(2025, 1, 2), date(2026, 11, 16)])
+    assert api.kwargs == {"start": "2025-01-02", "end": "2026-11-16"}
+    assert result["ok"] and [row["date"] for row in result["rows"]] == ["2025-01-02", "2026-11-16"]
 
 
 def test_kodex_bars_use_seoul_dates():
@@ -199,6 +219,91 @@ def test_kodex_bars_use_seoul_dates():
     assert bars == {MONDAY: {"open": Decimal("52000"), "close": Decimal("52500"), "volume": Decimal("7")}}
     assert dividends == {MONDAY}
     assert kodex_bars(bar_chart([(MONDAY, 1, 2, 3)])["payload"])[1] is None
+
+
+TUESDAY, WEDNESDAY = date(2026, 11, 17), date(2026, 11, 18)
+
+
+async def test_grading_runs_only_in_the_evening_window(signals, clock):  # noqa: F811
+    """A pending return is retried every 30 minutes from 18:30 to midnight KST only, so no lake read (and no lake
+    lock) happens during the briefing collector's morning and 16:xx windows."""
+    am_project(signals, MONDAY)
+    ask(signals, clock, MONDAY, "intraday")
+    feeds = Feeds(official(), bar_chart([(MONDAY, 52000, 52500, 100)], events=[]))  # no official row yet
+    runner = SignalRunner(signals, fetch=feeds.fetch, reader=feeds.reader)
+    clock["at"] = at(18, 30)
+    assert (await runner.tick())["graded"] == 2
+    clock["at"] = at(23, 59)
+    assert (await runner.tick())["graded"] == 1 and len(feeds.calls) == 4  # retried inside the window
+    for hour, minute in ((0, 0), (6, 30), (7, 10), (16, 10), (18, 29)):
+        clock["at"] = at(hour, minute, TUESDAY)
+        assert (await runner.tick())["graded"] == 0
+        assert SignalStore(signals).grading_due(clock["at"]) == []
+    assert len(feeds.calls) == 4
+    clock["at"] = at(18, 30, TUESDAY)
+    assert (await runner.tick())["graded"] == 1 and len(feeds.calls) == 6
+
+
+async def test_lake_read_covers_only_the_needed_dates(signals, clock):  # noqa: F811
+    """Monday's KOSPI return is still pending on Wednesday: the read asks for Monday and Wednesday, not Tuesday."""
+    am_project(signals, MONDAY)
+    ask(signals, clock, MONDAY, "intraday")
+    am_project(signals, WEDNESDAY, thread_ts="100.003")
+    ask(signals, clock, WEDNESDAY, "intraday")
+    feeds = Feeds(official(), bar_chart([(MONDAY, 52000, 52500, 100), (WEDNESDAY, 52600, 52700, 100)], events=[]))
+    runner = SignalRunner(signals, fetch=feeds.fetch, reader=feeds.reader)
+    clock["at"] = at(18, 30)
+    await runner.tick()
+    clock["at"] = at(18, 30, WEDNESDAY)
+    await runner.tick()
+    assert [call for call in feeds.calls if call[0] == "lake"] == [("lake", [MONDAY]), ("lake", [MONDAY, WEDNESDAY])]
+
+
+async def test_pending_return_is_excluded_after_14_days(signals, clock):  # noqa: F811
+    """A return still pending 14 calendar days after its grading day is excluded as 자료 없음: it leaves the due list
+    for good, a final return of the other instrument stays, and that evening's scorecard shows it once."""
+    am_project(signals, MONDAY)
+    ask(signals, clock, MONDAY, "intraday")
+    feeds = Feeds(official(), bar_chart([(MONDAY, 52000, 52500, 100)], events=[]))
+    runner, store = SignalRunner(signals, fetch=feeds.fetch, reader=feeds.reader), SignalStore(signals)
+    sid = str(slot_id(MONDAY, "intraday"))
+    clock["at"] = at(18, 30)
+    await runner.tick()
+    clock["at"] = at(18, 30, MONDAY + timedelta(days=13))
+    await runner.tick()
+    assert returns(signals)[(sid, "KOSPI")]["state"] == "pending"
+    day = MONDAY + timedelta(days=14)
+    clock["at"] = at(18, 30, day)
+    assert (await runner.tick())["graded"] == 1
+    kospi, kodex = returns(signals)[(sid, "KOSPI")], returns(signals)[(sid, "KODEX200")]
+    assert (kospi["state"], kospi["detail"], kospi["long_bp"]) == ("excluded", "자료 없음", None)
+    assert (kodex["state"], kodex["long_bp"]) == ("final", Decimal("96.15"))
+    assert store.grading_due(at(19, 0, day)) == [] and store.grading_due(at(18, 30, day + timedelta(days=1))) == []
+    # The same tick's report step posted it; the KODEX 200 return went out in the day-13 scorecard already.
+    [post] = rows(signals, "SELECT text FROM messages WHERE id=%s", stable(f"trading-signal-report:{day}"))
+    assert post["text"].split("\n")[1:3] == ["지난 보류분", "장중(11/16) KOSPI 자료 없음 제외"]
+
+
+async def test_a_slot_that_cannot_be_graded_is_excluded_after_14_days(signals, clock, monkeypatch):  # noqa: F811
+    from quant_company.signals import grading
+
+    am_project(signals, MONDAY)
+    ask(signals, clock, MONDAY, "intraday")
+
+    def broken(row, lake, chart):
+        raise ArithmeticError("synthetic grading failure")
+    monkeypatch.setattr(grading, "grade_slot", broken)
+    feeds = Feeds(official(), bar_chart([(MONDAY, 52000, 52500, 100)], events=[]))
+    clock["at"] = at(18, 30, MONDAY + timedelta(days=14))
+    await SignalRunner(signals, fetch=feeds.fetch, reader=feeds.reader).tick()
+    assert {(r["state"], r["detail"]) for r in returns(signals).values()} == {("excluded", "자료 없음")}
+
+
+def test_report_never_reads_the_snapshot(signals, clock):  # noqa: F811
+    monday_slot(signals, clock)
+    [item] = SignalStore(signals).history(at(19))
+    assert "snapshot" not in item and item["analyst"] == "short"
+    assert all("receipt" not in value for value in item["returns"].values())
 
 
 def test_query_refactor_keeps_behavior():

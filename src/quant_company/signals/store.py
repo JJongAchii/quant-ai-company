@@ -57,11 +57,16 @@ OUTAGE = "서비스 중단"
 UNPARSED_REASON = "형식 확인 실패"
 # The scorecard goes out at 18:30 KST at the earliest, and at 21:00 whatever is still pending.
 REPORT_FROM, REPORT_LATEST = time(18, 30), time(21, 0)
+# Grading reads the lake only from 18:30 to midnight KST, clear of the briefing collector's 06-07 and 16:xx reads.
+GRADE_FROM = time(18, 30)
 STANDALONE_INSTRUCTION = "이 스레드의 매매 신호와 후속 질문에 Analyst가 답한다."
 # The re-ask reason for any answer briefing.editor.artifact rejects before reading its JSON.
 ANSWER_SHAPE = "answer_shape: status complete with exactly one artifact, its source_ids empty, and nothing else"
 # The re-ask reason for a tool round that also carries other effects.
 TOOLS_ONLY = "tools_only: a tool round has no messages, delegations, memories, follow_up or artifacts"
+# Why a turn has no tools though no answer failed the format check: the forced final turn of spec §3.
+CUTOFF = "도구를 쓸 수 있는 시각이 지났습니다"
+TOOL_TURNS_USED = "도구를 쓰는 턴 세 번을 모두 썼습니다"
 # The day's AM edition counts once its parent post is delivered: only then is there a thread to reply in.
 AM_EDITION = """SELECT p.id FROM brief_editions b JOIN projects p ON p.id=b.project_id
     WHERE b.day=%s AND b.kind='am' AND b.state='committed' AND b.channel=%s AND b.owner_user=%s
@@ -122,8 +127,12 @@ class SignalStore:
 
     def grading_due(self, at: datetime) -> list[dict]:
         """Slots whose trade has closed and that still lack a final or excluded return for either instrument, from
-        18:30 KST of the grading day (session_day intraday, exit_day overnight). A slot with a pending return from the
-        last 30 minutes waits for the next attempt. A slot that never got a snapshot is not graded."""
+        18:30 KST of the grading day (session_day intraday, exit_day overnight), and only between 18:30 and midnight
+        KST on any day. A slot with a pending return from the last 30 minutes waits for the next attempt; 14 days
+        after the grading day the runner excludes what is still pending (grading.expire). A slot that never got a
+        snapshot is not graded."""
+        if at.astimezone(KST).time() < GRADE_FROM:
+            return []
         with self.db.transaction() as conn:
             return conn.execute("""SELECT s.* FROM trading_signals s WHERE s.exit_at<%s AND s.baselines IS NOT NULL
                 AND (((CASE WHEN s.kind='intraday' THEN s.session_day ELSE s.exit_day END)+time '18:30')
@@ -159,12 +168,13 @@ class SignalStore:
         """Every slot since the first that was asked (it has baselines) and has exited, oldest first, as summarize()
         reads it, plus its stored returns. A returned instrument that was never graded counts as pending. R17: an
         interim post is counted by its message id; 'received' is the direction of the last delivered post before
-        entry_at, by Slack sent_ts or, without one, the dispatch start."""
-        slots = conn.execute("""SELECT * FROM trading_signals WHERE baselines IS NOT NULL AND exit_at<=%s
-            ORDER BY session_day,kind""", (at,)).fetchall()
+        entry_at, by Slack sent_ts or, without one, the dispatch start. The columns are named: never the snapshot."""
+        slots = conn.execute("""SELECT id,session_day,kind,exit_day,entry_at,project_id,baselines,proposal,timing,
+            unparsed,analyst_message_id,fallback_message_id,fallback_reason FROM trading_signals
+            WHERE baselines IS NOT NULL AND exit_at<=%s ORDER BY session_day,kind""", (at,)).fetchall()
         stored: dict = {}
-        for r in conn.execute("SELECT * FROM trading_signal_returns WHERE signal_id=ANY(%s::uuid[])",
-                              ([str(s["id"]) for s in slots],)):
+        for r in conn.execute("""SELECT signal_id,instrument,state,long_bp,detail,reported_on
+                FROM trading_signal_returns WHERE signal_id=ANY(%s::uuid[])""", ([str(s["id"]) for s in slots],)):
             stored.setdefault(str(r["signal_id"]), {})[r["instrument"]] = r
         messages = [str(m) for s in slots for m in (s["analyst_message_id"], s["fallback_message_id"]) if m]
         delivered = {str(r["id"]): r for r in conn.execute(
@@ -542,12 +552,16 @@ def _defer(conn, row: dict, reason: str) -> bool:
     return False
 
 
+def _tool_turns(conn, task: dict) -> int:
+    return conn.execute("""SELECT count(*) AS n FROM turns WHERE task_id=%s AND status='completed'
+        AND jsonb_array_length(response->'decision'->'tools')>0""", (task["id"],)).fetchone()["n"]
+
+
 def _tool_budget(conn, task: dict) -> tuple[bool, int, int]:
     """Whether the signal task may still use tools now, and its web searches and reads so far."""
     slot = conn.execute("SELECT tools_until,format_failures FROM trading_signals WHERE task_id=%s",
                         (task["id"],)).fetchone()
-    tool_turns = conn.execute("""SELECT count(*) AS n FROM turns WHERE task_id=%s AND status='completed'
-        AND jsonb_array_length(response->'decision'->'tools')>0""", (task["id"],)).fetchone()["n"]
+    tool_turns = _tool_turns(conn, task)
     # project_id lets the message_context index narrow the scan to the signal's thread.
     rows = conn.execute("""SELECT author,count(*) AS n FROM messages WHERE project_id=%s AND task_id=%s
         AND author IN ('tool:web_search','tool:web_read') GROUP BY author""", (task["project_id"], task["id"]))
@@ -563,6 +577,29 @@ def allowed_tools(conn, task: dict, tools: list[str]) -> list[str]:
     usable, searches, reads = _tool_budget(conn, task)
     spent = {"web_search": searches >= MAX_SEARCHES, "web_read": reads >= MAX_READS}
     return [name for name in tools if usable and not spent.get(name)]
+
+
+def turn_tools(company, conn, project, task: dict, tools: list[str]) -> list[str]:
+    """prepare_turn's tools for a signal turn: allowed_tools. When the tool cutoff or the third tool turn, not a format
+    failure, took them all, the turn also gets the service's note to answer now (spec §3): once per task, and not
+    counted as a format failure. A format failure's re-ask already carries its own note."""
+    allowed = allowed_tools(conn, task, tools)
+    reason = None if allowed else _forced_final_reason(conn, task)
+    message_id = stable(f"signal-final-note:{task['id']}")
+    if reason and not conn.execute("SELECT 1 FROM messages WHERE id=%s", (message_id,)).fetchone():
+        company._message(conn, project, task["id"], "service:signals", "signal_note", final_note(reason),
+                         recipient=BRIEFER, publish=False, message_id=message_id)
+    return allowed
+
+
+def _forced_final_reason(conn, task: dict) -> str | None:
+    slot = conn.execute("SELECT tools_until,format_failures FROM trading_signals WHERE task_id=%s",
+                        (task["id"],)).fetchone()
+    if not slot or slot["format_failures"]:
+        return None
+    if schedule.utcnow() >= slot["tools_until"]:
+        return CUTOFF
+    return TOOL_TURNS_USED if _tool_turns(conn, task) >= MAX_TOOL_TURNS else None
 
 
 def _round_problem(conn, task: dict, decision, tools: list[str]) -> str | None:
@@ -674,7 +711,7 @@ def commit_turn(company, conn, project, task, turn, response, decision) -> dict 
     if at < slot["exit_at"]:
         interim = slot["state"] == "fallback_sent" and slot["fallback_message_id"] is not None
         text = analyst_post(slot_of(slot), proposal, slot["snapshot"], late_at=None if timing == "on_time" else at,
-                            fallback=FALLBACK_DIRECTION if interim else None)
+                            fallback=FALLBACK_DIRECTION if interim else None, after_entry=timing == "after_entry")
         message_id = stable(f"trading-signal-post:{slot['id']}:analyst")
         company._message(conn, project, task["id"], BRIEFER, SIGNAL_KIND, text, message_id=message_id)
     conn.execute("""UPDATE trading_signals SET state=%s,timing=%s,proposal=%s,committed_at=%s,analyst_message_id=%s,

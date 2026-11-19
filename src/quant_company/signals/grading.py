@@ -1,7 +1,7 @@
 """Grade a signal slot: per-instrument long returns in bp on the official KOSPI open/close and on KODEX 200 daily bars.
 Only the exact sessions of the slot count; a missing or suspicious price leaves the return pending, never a nearby day."""
 
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from math import comb
 from typing import Literal
@@ -14,6 +14,9 @@ SUSPICIOUS = "의심 일봉"
 MISSING_BAR = "일봉 없음"
 FETCH_FAILED = "시세 조회 실패"
 EX_DIVIDEND = "분배락"
+# A return still pending this many calendar days after its grading day is excluded for good.
+EXPIRE_DAYS = 14
+NO_DATA = "자료 없음"
 INSTRUMENTS = ("KOSPI", "KODEX200")
 KINDS = ("intraday", "overnight")
 BASELINES = ("always_long", "follow_us")
@@ -100,6 +103,23 @@ def grade_slot(row: dict, lake: dict | None, chart: dict | None) -> list[dict]:
         failed["error"] = "chart_parse_or_policy_error"
         return [_kospi(row, lake), _row(row["id"], "KODEX200", "pending", failed, detail=FETCH_FAILED)]
     return [_kospi(row, lake), _kodex(row, bars, dividends, chart.get("sha256"))]
+
+
+def grading_day(row: dict) -> date:
+    """The day the slot's trade closes: the session day for intraday, the exit day for overnight."""
+    return row["session_day"] if row["kind"] == "intraday" else row["exit_day"]
+
+
+def expire(row: dict, returns: list[dict], today: date) -> list[dict]:
+    """From EXPIRE_DAYS calendar days after the grading day (KST today), an instrument still pending, or not graded at
+    all, becomes excluded with detail 자료 없음. That takes the slot off the due list for good, so it no longer widens
+    the lake read. A final or excluded return stays as it is."""
+    if today < grading_day(row) + timedelta(days=EXPIRE_DAYS):
+        return returns
+    graded = {r["instrument"]: r for r in returns if r["state"] != "pending"}
+    receipts = {r["instrument"]: r["receipt"] for r in returns}
+    return [graded.get(instrument) or _row(row["id"], instrument, "excluded", receipts.get(instrument), detail=NO_DATA)
+            for instrument in INSTRUMENTS]
 
 
 def sign_test_p(wins: int, losses: int) -> float:

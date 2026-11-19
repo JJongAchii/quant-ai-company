@@ -18,6 +18,8 @@ from quant_company.signals.instructions import final_note
 from quant_company.signals.schedule import slots_for
 from quant_company.signals.store import (
     ANSWER_SHAPE,
+    CUTOFF,
+    TOOL_TURNS_USED,
     TOOLS_ONLY,
     SignalStore,
     allowed_tools,
@@ -146,8 +148,10 @@ async def test_tools_after_cutoff_are_refused(signals, clock):  # noqa: F811
     assert (await TurnExecutor(signals, provider).execute(turn))["state"] == "completed"
     assert "Allowed tools: []\n" in provider.prompts[0]
     assert provider.searches == [] and rows(signals, "SELECT id FROM web_requests") == []
-    [note] = rows(signals, "SELECT author,recipient,text FROM messages WHERE kind='signal_note'")
-    assert note == {"author": "service:signals", "recipient": BRIEFER, "text": final_note("tools_not_allowed")}
+    assert final_note(CUTOFF) in provider.prompts[0]
+    notes = rows(signals, "SELECT author,recipient,text FROM messages WHERE kind='signal_note' ORDER BY created_at")
+    assert notes == [{"author": "service:signals", "recipient": BRIEFER, "text": final_note(CUTOFF)},
+                     {"author": "service:signals", "recipient": BRIEFER, "text": final_note("tools_not_allowed")}]
     assert rows(signals, "SELECT id FROM outbox") == []
     row = signal(signals)
     assert (row["format_failures"], row["last_error"], row["state"]) == (1, "tools_not_allowed", "asked")
@@ -197,7 +201,9 @@ def test_three_tool_turns_then_final_answer(signals, clock):  # noqa: F811
         assert "Allowed tools: []" not in signals.prepare_turn(turn)["request"]["prompt"]
         signals.commit_turn(turn, tools(turn, CALCULATE))
         turn = queued(signals, TASK)
-    assert "Allowed tools: []\n" in signals.prepare_turn(turn)["request"]["prompt"]
+    prompt = signals.prepare_turn(turn)["request"]["prompt"]
+    assert "Allowed tools: []\n" in prompt and final_note(TOOL_TURNS_USED) in prompt
+    assert signal(signals)["format_failures"] == 0  # the note is not a format failure
     signals.commit_turn(turn, tools(turn, CALCULATE))  # a fourth tool round is a format error
     assert one(signals, "SELECT count(*) n FROM messages WHERE author='tool:calculate'")["n"] == 3
     assert signal(signals)["last_error"] == "tools_not_allowed"
@@ -350,7 +356,8 @@ def test_commit_after_entry_and_after_exit(signals, clock):  # noqa: F811
     signals.prepare_turn(intraday)
     signals.commit_turn(intraday, answer(intraday))
     [post] = posts(signals)
-    assert post["text"].split("\n")[:3] == ["📈 장중 신호 · 늦음 09:05", "시가 09:00 진입 → 종가 15:30 청산", "롱 · 확신도 60%"]
+    assert post["text"].split("\n")[:3] == [
+        "📈 장중 신호 · 늦음 09:05 · 진입 뒤(채점 제외)", "시가 09:00 진입 → 종가 15:30 청산", "롱 · 확신도 60%"]
     assert (signal(signals)["state"], signal(signals)["timing"]) == ("committed_late", "after_entry")
     # A turn that started before the exit (the next session's open) and commits after it is recorded, not posted.
     clock["at"] = datetime(2026, 11, 17, 8, 59, tzinfo=KST)
@@ -530,6 +537,56 @@ def test_malformed_or_refused_finance_read_fetches_nothing(signals, clock, no_fe
     assert no_fetch == [] and rows(signals, "SELECT turn_id FROM finance_fetches") == []
 
 
+def test_forced_final_note_from_the_tool_cutoff(signals, clock):  # noqa: F811
+    """Spec §3: from tools_until the next turn has no tools and the service's note to answer now. The note is not a
+    format failure, is added once per task, and the final answer then commits as usual."""
+    am_project(signals, MONDAY)
+    turn = ask(signals, clock)
+    clock["at"] = slot().tools_until  # 08:15 KST
+    prompt = signals.prepare_turn(turn)["request"]["prompt"]
+    assert "Allowed tools: []\n" in prompt and final_note(CUTOFF) in prompt
+    assert final_note(CUTOFF).startswith("서비스 안내: 도구 없이 지금 최종 답을 내세요. 사유: ")
+    note = {"author": "service:signals", "recipient": BRIEFER, "text": final_note(CUTOFF)}
+    assert rows(signals, "SELECT author,recipient,text FROM messages WHERE kind='signal_note'") == [note]
+    assert signal(signals)["format_failures"] == 0
+    signals.block_turn(turn, "busy")  # a fault, then a retry: the next turn sees the same note, not a second one
+    clock["at"] += timedelta(minutes=5)
+    assert SignalStore(signals).retry(clock["at"]) == 1
+    turn = queued(signals, TASK)
+    assert final_note(CUTOFF) in signals.prepare_turn(turn)["request"]["prompt"]
+    assert rows(signals, "SELECT author,recipient,text FROM messages WHERE kind='signal_note'") == [note]
+    signals.commit_turn(turn, answer(turn))
+    row = signal(signals)
+    assert (row["state"], row["timing"], row["format_failures"]) == ("committed", "on_time", 0)
+    assert rows(signals, "SELECT id FROM outbox WHERE status='pending'") != []
+
+
+def test_other_analyst_tasks_do_not_see_signal_only_messages(signals, clock):  # noqa: F811
+    """An owner question in the thread sees the posted signal and the tool receipts, but not the service's notes to the
+    Analyst nor the signal turns' unpublished says. The signal task itself still sees them."""
+    project = am_project(signals, MONDAY)
+    turn = ask(signals, clock)
+    signals.prepare_turn(turn)
+    signals.commit_turn(turn, tools(turn, CALCULATE, say="선물 등락률 확인 중"))  # an unpublished say
+    turn = queued(signals, TASK)
+    signals.prepare_turn(turn)
+    signals.commit_turn(turn, ProviderResponse(request_id=turn, decision=AgentDecision(status="complete", say="롱")))
+    turn = queued(signals, TASK)
+    own = json.loads(signals.prepare_turn(turn)["request"]["prompt"].split("TASK DATA JSON:\n", 1)[1])["messages"]
+    assert {"signal_note", "answer", "tool"} <= {m["kind"] for m in own}
+    signals.commit_turn(turn, answer(turn))  # the posted signal
+    work = signals.ingest(event_key="slack:why-long", text="왜 롱으로 봤어?", owner="UHUMAN", agent=BRIEFER,
+                          project_id=str(project["id"]))
+    prompt = signals.prepare_turn(queued(signals, work["task_id"]))["request"]["prompt"]
+    messages = json.loads(prompt.split("TASK DATA JSON:\n", 1)[1])["messages"]
+    assert "signal_note" not in {m["kind"] for m in messages}
+    assert "선물 등락률 확인 중" not in {m["text"] for m in messages if m["kind"] == "answer"}
+    [post] = [m for m in messages if m["kind"] == "trading_signal"]
+    assert post["text"].startswith("📈 장중 신호 · 11월 16일(월)")
+    assert [m["author"] for m in messages if m["kind"] == "tool"] == ["tool:calculate"]
+    assert messages[-1]["text"] == "왜 롱으로 봤어?"
+
+
 def test_reask_prompt_carries_the_reason(signals, clock):  # noqa: F811
     am_project(signals, MONDAY)
     turn = ask(signals, clock)
@@ -537,6 +594,7 @@ def test_reask_prompt_carries_the_reason(signals, clock):  # noqa: F811
     signals.commit_turn(turn, tools(turn, NEWS_STATUS))
     prompt = signals.prepare_turn(queued(signals, TASK))["request"]["prompt"]
     assert final_note("tools_not_allowed: news_status") in prompt and "Allowed tools: []\n" in prompt
+    assert final_note(CUTOFF) not in prompt and final_note(TOOL_TURNS_USED) not in prompt
 
 
 def test_parse_proposal_reasons():

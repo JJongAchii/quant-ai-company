@@ -419,7 +419,7 @@ async def test_no_fallback_post_after_entry(signals, clock):  # noqa: F811
 
 @pytest.mark.parametrize("day, prepared, at, timing, header", [
     (MONDAY, (8, 41), (8, 41), "late", "📈 장중 신호 · 늦음 08:41 · 임시 신호와 반대"),
-    (TUESDAY, (9, 5), (9, 5), "after_entry", "📈 장중 신호 · 늦음 09:05 · 임시 신호와 반대"),
+    (TUESDAY, (9, 5), (9, 5), "after_entry", "📈 장중 신호 · 늦음 09:05 · 임시 신호와 반대 · 진입 뒤(채점 제외)"),
     (WEDNESDAY, (15, 29), (15, 31), "after_entry", None),
 ], ids=["late", "after-entry", "after-exit"])
 def test_late_signal_after_fallback(signals, clock, day, prepared, at, timing, header):  # noqa: F811

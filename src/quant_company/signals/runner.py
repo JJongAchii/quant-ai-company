@@ -11,6 +11,7 @@ from ..briefing import schedule
 from ..briefing.data_reader import fetch_chart
 from . import grading
 from .lake import read_kospi
+from .schedule import kst_day
 from .snapshot import read_snapshot
 from .store import SignalStore
 
@@ -43,19 +44,22 @@ class SignalRunner:
             return 0
 
     def grade(self, at) -> int:
-        """Grade every due slot from one lake read and one KODEX 200 chart, then store the returns."""
+        """Grade every due slot from one lake read of the days they need and one KODEX 200 chart, then store the
+        returns. What is still pending 14 days after its grading day is excluded (grading.expire)."""
         due = self.store.grading_due(at)
         if not due:
             return 0
-        start, end = min(r["session_day"] for r in due), max(r["exit_day"] for r in due)
-        lake = self.reader(self.store.company.settings.company_lake_uri, start, end)
+        dates = sorted({day for row in due for day in (row["session_day"], row["exit_day"])})
+        lake = self.reader(self.store.company.settings.company_lake_uri, dates)
         chart = self.fetch("069500.KS", params=grading.KODEX_PARAMS)
-        graded = []
+        graded, today = [], kst_day(at)
         for row in due:
             try:
-                graded += grading.grade_slot(row, lake, chart)
+                returns = grading.grade_slot(row, lake, chart)
             except Exception as exc:  # noqa: BLE001 - this slot waits for the next attempt; the others are graded
                 LOG.error("Signal grading failed for %s: %s", row["id"], type(exc).__name__)
+                returns = []
+            graded += grading.expire(row, returns, today)
         return self.store.save_returns(graded)
 
     async def ask_due(self, at):

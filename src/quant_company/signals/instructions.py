@@ -6,10 +6,12 @@ from .contracts import Slot
 from .render import KIND_WORDS, clock, day_text, window
 
 INTRADAY_ONLY = "밤사이 정보는 대부분 시초가에 반영된다. 시가 이후의 움직임을 판단하라."
+FINAL_NOW = "도구 없이 지금 최종 답을 내세요"
 
 
 def final_note(reason: str) -> str:
-    return f"서비스 안내: 도구 없이 지금 최종 답을 내라. 사유: {reason}"
+    """The service's note before a turn without tools: after a format failure, the tool cutoff or the tool-turn cap."""
+    return f"서비스 안내: {FINAL_NOW}. 사유: {reason}"
 
 
 def instruction(slot: Slot, source_id: str, text: str) -> str:

@@ -18,6 +18,8 @@ QUOTE_ORDER = {
     "overnight": ("kospi", "es", "usdkrw", "n225"),
 }
 SCORECARD_FOOTER = "수수료·세금·호가 차이 제외. 숏은 KODEX 200 반대 방향으로 계산"
+# A signal committed after the entry may have seen the open: posted until the exit, never graded.
+AFTER_ENTRY = "진입 뒤(채점 제외)"
 UNPARSED_FALLBACK = "Analyst 답 형식을 확인하지 못했습니다(원문은 위 글). 규칙 신호로 대신합니다."
 
 
@@ -65,8 +67,10 @@ def quote_line(slot: Slot, snapshot: dict) -> str:
     return " · ".join([head, *parts])
 
 
-def analyst_post(slot: Slot, proposal: SignalProposal, snapshot: dict, *,
-                 late_at: datetime | None = None, fallback: Direction | None = None) -> str:
+def analyst_post(slot: Slot, proposal: SignalProposal, snapshot: dict, *, late_at: datetime | None = None,
+                 fallback: Direction | None = None, after_entry: bool = False) -> str:
+    """The Analyst's signal. A late one (late_at) names its time, how it compares with the interim post (fallback) and,
+    when committed after the entry, that it is not graded."""
     emoji, label = LABELS[slot.kind]
     if late_at is None:
         first = [header(slot)]
@@ -74,6 +78,8 @@ def analyst_post(slot: Slot, proposal: SignalProposal, snapshot: dict, *,
         head = f"{emoji} {label} · 늦음 {clock(late_at)}"
         if fallback is not None:
             head += f" · 임시 신호와 {'같음' if proposal.direction == fallback else '반대'}"
+        if after_entry:
+            head += f" · {AFTER_ENTRY}"
         first = [head, window(slot)]
     lines = [*first, f"{DIRECTION_WORDS[proposal.direction]} · 확신도 {proposal.confidence}%", "근거"]
     lines += [f"{n}. {reason.text}" for n, reason in enumerate(proposal.reasons, 1)]

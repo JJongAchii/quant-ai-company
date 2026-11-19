@@ -9,14 +9,15 @@ MAX_BYTES = 4 * 1024 * 1024
 MAX_ROWS = 400
 
 
-def read(api, start: date, end: date) -> dict:
-    """KOSPI rows {date, open, close} from start to end, with the dataset source as the receipt."""
+def read(api, dates: list[date]) -> dict:
+    """KOSPI rows {date, open, close} on the given dates only (the days the due slots need), with the dataset source
+    as the receipt. The row cap counts those rows, so a long span between two needed days never blocks a read."""
     meta = api.inspect_dataset("krx_index")
     source = meta["source"]
     if source["size_bytes"] > MAX_BYTES:
         return {"ok": False, "error": "dataset_exceeds_signal_budget"}
-    frame = api.load_krx_index(start=str(start), end=str(end))
-    frame = frame[frame["index"] == "KOSPI"]
+    frame = api.load_krx_index(start=str(min(dates)), end=str(max(dates)))
+    frame = frame[(frame["index"] == "KOSPI") & frame["date"].dt.date.isin(set(dates))]
     if len(frame) > MAX_ROWS:
         return {"ok": False, "error": "dataset_exceeds_signal_budget"}
     rows = []
@@ -35,7 +36,7 @@ def main():
         from qdata import api
 
         request = json.loads(sys.stdin.read(16384))
-        result = read(api, date.fromisoformat(request["start"]), date.fromisoformat(request["end"]))
+        result = read(api, [date.fromisoformat(day) for day in request["dates"]])
     except Exception:  # noqa: BLE001 - provider text never leaves the subprocess
         result = {"ok": False, "error": "lake_access_or_format_unavailable"}
     encoded = json.dumps(result, ensure_ascii=False, allow_nan=False, default=str)
@@ -44,10 +45,10 @@ def main():
     print(encoded)
 
 
-def read_kospi(root: str, start: date, end: date) -> dict:
+def read_kospi(root: str, dates: list[date]) -> dict:
     from ..briefing.data import run_lake_module  # not imported in the reader subprocess
 
-    return run_lake_module(root, "quant_company.signals.lake", {"start": str(start), "end": str(end)})
+    return run_lake_module(root, "quant_company.signals.lake", {"dates": [str(day) for day in dates]})
 
 
 if __name__ == "__main__":
