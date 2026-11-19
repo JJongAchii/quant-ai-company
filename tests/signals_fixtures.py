@@ -77,9 +77,14 @@ def am_project(company, day, thread_ts="100.001"):
     return project
 
 
-def _chart(key, kind):
+def observed(kind, day=DAY):
+    """The snapshot time of day's slot on a normal session: OBSERVED moved to day."""
+    return OBSERVED[kind] + timedelta(days=(day - DAY).days)
+
+
+def _chart(key, kind, day=DAY):
     zone, previous, price = QUOTES[key]
-    at = OBSERVED[kind] - timedelta(minutes=AGE_MINUTES[kind][key])
+    at = observed(kind, day) - timedelta(minutes=AGE_MINUTES[kind][key])
     bars = [at - timedelta(days=1), at]
     return {"chart": {"result": [{
         "meta": {"symbol": CATALOGUE[key].symbol, "exchangeTimezoneName": zone, "regularMarketPrice": price,
@@ -88,19 +93,20 @@ def _chart(key, kind):
         "indicators": {"quote": [{"open": [previous, price], "close": [previous, price]}]}}]}}
 
 
-def recorded(kind):
-    """A chart fetch that replays the recorded Yahoo responses of DAY's snapshot for this slot kind."""
+def recorded(kind, day=DAY):
+    """A chart fetch that replays the recorded Yahoo responses of day's snapshot for this slot kind."""
     symbols = {instrument.symbol: key for key, instrument in CATALOGUE.items()}
 
     def fetch(symbol):
-        raw = json.dumps(_chart(symbols[symbol], kind)).encode()
+        raw = json.dumps(_chart(symbols[symbol], kind, day)).encode()
         return {"ok": True, "payload": json.loads(raw), "sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw)}
     return fetch
 
 
-def snapshot(kind):
-    """The snapshot read_snapshot froze from the recorded responses at the slot's snapshot time."""
-    return read_snapshot(kind, recorded(kind), clock=lambda: OBSERVED[kind])
+def snapshot(kind, day=DAY):
+    """The snapshot read_snapshot froze from the recorded responses at the slot's snapshot time. A past day keeps the
+    snapshot source visible to the DB now() filters of Company._context and _check_sources."""
+    return read_snapshot(kind, recorded(kind, day), clock=lambda: observed(kind, day))
 
 
 def proposal(**over):

@@ -8,6 +8,7 @@ from uuid import NAMESPACE_URL, uuid5
 from psycopg.types.json import Jsonb
 
 from .contracts import AgentDecision, ProviderFault, ProviderRequest, ProviderResponse
+from .signals.contracts import SIGNAL_KIND
 from .web_fetch import fetch, public_url
 
 WEB_TOOLS = {"web_search", "web_read"}
@@ -75,6 +76,11 @@ def prepare(company, turn_id, decision):
         turn = conn.execute("SELECT * FROM turns WHERE id=%s FOR UPDATE", (turn_id,)).fetchone()
         if (turn["status"] != "running" or task["revision"] != project["revision"] or held(conn, project, task)):
             return []
+        if task["kind"] == SIGNAL_KIND:
+            from .signals.store import tools_allowed
+
+            if not tools_allowed(conn, task, decision):
+                return []  # nothing runs; the commit asks for the final answer without tools
         role = company.role(task["agent"])
         if task["kind"] == "routing" or any(a.name not in role.tools for a in decision.tools):
             raise PolicyError("Unauthorized web tool")
@@ -89,7 +95,7 @@ def prepare(company, turn_id, decision):
                     conn.execute("INSERT INTO daily_usage(day,reserved) VALUES (CURRENT_DATE,0) ON CONFLICT DO NOTHING")
                     used = conn.execute("SELECT reserved FROM daily_usage WHERE day=CURRENT_DATE FOR UPDATE").fetchone()["reserved"]
                     cap = effective_limits(conn, company)["company"]
-                    if cap is not None and used >= cap:
+                    if cap is not None and used >= cap and task["kind"] != SIGNAL_KIND:
                         raise ProviderFault("busy", "Company model budget is waiting for renewal.", 3600)
                     provider_request = ProviderRequest(request_id=identity, model=role.model,
                                                        reasoning_effort=role.reasoning_effort,

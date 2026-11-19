@@ -8,6 +8,7 @@ from psycopg.types.json import Jsonb
 from pydantic import Field
 
 from .contracts import StrictModel
+from .signals.contracts import SIGNAL_KIND
 
 
 class Control(StrictModel):
@@ -37,6 +38,8 @@ def waiting_router(conn, project_id):
 
 
 def held(conn, project, task):
+    if task['kind'] == SIGNAL_KIND:
+        return False  # thread commands never hold the day's signal
     router = waiting_router(conn, project['id'])
     if task['kind'] == 'routing':
         return bool(router and router['id'] != task['id'])
