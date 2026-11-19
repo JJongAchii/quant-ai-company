@@ -17,6 +17,7 @@ QUOTE_ORDER = {
     "overnight": ("kospi", "es", "usdkrw", "n225"),
 }
 SCORECARD_FOOTER = "수수료·세금·호가 차이 제외. 숏은 KODEX 200 반대 방향으로 계산"
+UNPARSED_FALLBACK = "Analyst 답 형식을 확인하지 못했습니다(원문은 위 글). 규칙 신호로 대신합니다."
 
 
 def day_text(day: date) -> str:
@@ -79,11 +80,13 @@ def analyst_post(slot: Slot, proposal: SignalProposal, snapshot: dict, *,
     return "\n".join(lines)
 
 
-def fallback_post(slot: Slot, reason: str) -> str:
+def fallback_post(slot: Slot, reason: str, *, unparsed: bool = False) -> str:
+    """The model-free interim signal. After an unparsed answer no Analyst signal follows, so it promises none."""
+    waiting = f"Analyst 신호가 늦어지고 있습니다(사유: {reason}). 나오는 대로 이어서 올립니다."
     return "\n".join([
         f"⏱️ 임시 신호 · {day_text(slot.day)} {KIND_WORDS[slot.kind]}  {window(slot)}",
         f"{DIRECTION_WORDS['long']} · Analyst 판단 아님 · 규칙 신호(항상 롱, 과거 적중 {FALLBACK_HIT[slot.kind]})",
-        f"Analyst 신호가 늦어지고 있습니다(사유: {reason}). 나오는 대로 이어서 올립니다.",
+        UNPARSED_FALLBACK if unparsed else waiting,
     ])
 
 

@@ -1,9 +1,12 @@
-"""Signal slots in PostgreSQL: one row per KRX session and kind, the frozen snapshot source and the Analyst task.
+"""Signal slots in PostgreSQL: one row per KRX session and kind, the frozen snapshot source, the Analyst task, the
+interim post and the outbox gate.
 
 Every time decision takes the caller's `at` from briefing.schedule.utcnow() (the one signals clock) and stores it. The
-turn hooks below run inside Company's transactions and read that clock themselves."""
+turn hooks and the outbox gate below run inside Company's and SlackOutbox's transactions and read that clock themselves.
+Lock order is always the thread's project, then the slot row (R8)."""
 
 import json
+import logging
 from datetime import UTC, date, datetime, timedelta
 
 from psycopg.types.json import Jsonb
@@ -18,6 +21,7 @@ from ..company import PolicyError, as_json, stable
 from .contracts import (
     FALLBACK_DIRECTION,
     FAULT_RETRY_MINUTES,
+    MAX_FAULT_RETRIES,
     MAX_FORMAT_RETRIES,
     MAX_READS,
     MAX_SEARCHES,
@@ -27,12 +31,17 @@ from .contracts import (
     Slot,
 )
 from .instructions import final_note, instruction
-from .render import KIND_WORDS, analyst_post, day_text, unparsed_post
+from .render import KIND_WORDS, analyst_post, day_text, fallback_post, unparsed_post
 from .schedule import kst_day, slots_for
 from .snapshot import follow_us, snapshot_text
 
+LOG = logging.getLogger(__name__)
 TIMES = ("snapshot_at", "snapshot_latest", "tools_until", "fallback_at", "send_at", "entry_at", "exit_at")
 PRIORITY = -100
+# The trade started before the interim post could go out (the loop was down): recorded, never posted (R3).
+OUTAGE = "서비스 중단"
+# The interim post's reason after an unparsed answer, which no Analyst signal follows (R13).
+UNPARSED_REASON = "형식 확인 실패"
 STANDALONE_INSTRUCTION = "이 스레드의 매매 신호와 후속 질문에 Analyst가 답한다."
 # The re-ask reason for any answer briefing.editor.artifact rejects before reading its JSON.
 ANSWER_SHAPE = "answer_shape: status complete with exactly one artifact, its source_ids empty, and nothing else"
@@ -87,10 +96,12 @@ class SignalStore:
 
     def due_asks(self, at: datetime) -> list[dict]:
         """Slots to snapshot and ask now. The intraday snapshot waits for the AM edition until snapshot_latest; a
-        slot whose trade has started (after an outage) is not asked."""
+        slot whose trade has started (after an outage) is not asked. A slot whose interim post went out before it
+        could be asked is still asked, so the late signal that post promises can follow."""
         with self.db.transaction() as conn:
-            rows = conn.execute("""SELECT * FROM trading_signals WHERE state='scheduled' AND snapshot_at<=%s
-                AND entry_at>%s ORDER BY snapshot_at,kind""", (at, at)).fetchall()
+            rows = conn.execute("""SELECT * FROM trading_signals WHERE (state='scheduled' OR state='fallback_sent'
+                AND task_id IS NULL AND fallback_message_id IS NOT NULL) AND snapshot_at<=%s AND entry_at>%s
+                ORDER BY snapshot_at,kind""", (at, at)).fetchall()
             return [row for row in rows if row["kind"] != "intraday" or at >= row["snapshot_latest"]
                     or self._am_edition(conn, row["session_day"])]
 
@@ -118,13 +129,19 @@ class SignalStore:
         return self.company._project(conn, identity)
 
     def ask(self, row: dict, snapshot: dict, at: datetime) -> bool:
-        """Freeze the snapshot as an approved source and open the Analyst's task in one transaction. A slot that is
-        no longer scheduled (asked before a restart, or by another worker) is left as it is."""
+        """Freeze the snapshot as an approved source and open the Analyst's task in one transaction. A slot asked
+        meanwhile (before a restart, or by another worker) is left as it is. An interim post sent before the ask keeps
+        the slot's fallback_sent state, so the answer counts as late."""
         with self.db.transaction() as conn:
-            current = conn.execute("SELECT * FROM trading_signals WHERE id=%s FOR UPDATE", (row["id"],)).fetchone()
-            if not current or current["state"] != "scheduled":
+            current = conn.execute("SELECT * FROM trading_signals WHERE id=%s", (row["id"],)).fetchone()
+            if not _askable(current):
                 return False
-            slot, project = slot_of(current), self._thread_project(conn, current)
+            # R15: find or make the thread and lock it, then lock the slot and look again.
+            project = self._thread_project(conn, current)
+            current = conn.execute("SELECT * FROM trading_signals WHERE id=%s FOR UPDATE", (row["id"],)).fetchone()
+            if not _askable(current) or current["project_id"] not in (None, project["id"]):
+                return False
+            slot = slot_of(current)
             identity, text = snapshot_source_id(slot.day, slot.kind), snapshot_text(snapshot)
             conn.execute("""INSERT INTO sources(id,title,uri,content,available_at,approved,project_id,synthetic,metadata)
                 VALUES (%s,%s,%s,%s,%s,true,%s,%s,%s) ON CONFLICT DO NOTHING""",
@@ -136,13 +153,187 @@ class SignalStore:
             task = self.company._new_task(conn, project, BRIEFER, instruction(slot, identity, text),
                                           task_id=slot_task_id(slot.day, slot.kind, project["revision"]),
                                           priority=PRIORITY, kind=SIGNAL_KIND)
-            conn.execute("""UPDATE trading_signals SET state='asked',project_id=%s,task_id=%s,snapshot=%s,
-                snapshot_source_id=%s,baselines=%s,updated_at=%s WHERE id=%s""",
+            conn.execute("""UPDATE trading_signals SET state=CASE WHEN state='scheduled' THEN 'asked' ELSE state END,
+                project_id=%s,task_id=%s,snapshot=%s,snapshot_source_id=%s,baselines=%s,updated_at=%s WHERE id=%s""",
                          (project["id"], task["id"], Jsonb(as_json(snapshot)), identity,
                           Jsonb({"always_long": "long", "follow_us": follow_us(snapshot)}), at, current["id"]))
             self.company._event(conn, "trading_signal_asked", {"slot_id": current["id"], "task_id": task["id"],
                                                                "source_id": identity}, project["id"])
         return True
+
+    def send_fallbacks(self, at: datetime) -> int:
+        """The interim 'always long' post of every slot the Analyst has not settled by its fallback_at, two minutes
+        before the send time. Each slot has its own transaction, so one failing slot never holds back another (R10).
+        Returns the posts made."""
+        with self.db.transaction() as conn:
+            due = conn.execute("""SELECT id FROM trading_signals WHERE state IN ('scheduled','asked')
+                AND fallback_at<=%s ORDER BY fallback_at,kind""", (at,)).fetchall()
+        sent = 0
+        for row in due:
+            try:
+                sent += self._send_fallback(row["id"], at)
+            except Exception as exc:  # noqa: BLE001 - the next slot's interim post must still go out
+                LOG.error("Signal interim post failed for %s: %s", row["id"], type(exc).__name__)
+        return sent
+
+    def _send_fallback(self, identity, at: datetime) -> int:
+        with self.db.transaction() as conn:
+            row = conn.execute("SELECT * FROM trading_signals WHERE id=%s", (identity,)).fetchone()
+            if not _fallback_due(row, at):
+                return 0
+            if at >= row["entry_at"]:
+                return self._outage(conn, row, at)
+            # R15: find or make the thread and lock it, then lock the slot and look again.
+            project = self._thread_project(conn, row)
+            row = conn.execute("SELECT * FROM trading_signals WHERE id=%s FOR UPDATE", (identity,)).fetchone()
+            if not _fallback_due(row, at) or row["project_id"] not in (None, project["id"]):
+                return 0  # settled meanwhile, or asked into another thread: the next tick looks again
+            reason = UNPARSED_REASON if row["unparsed"] else _late_reason(conn, row)
+            message_id = stable(f"trading-signal-post:{row['id']}:fallback")
+            self.company._message(conn, project, row["task_id"], BRIEFER, SIGNAL_KIND,
+                                  fallback_post(slot_of(row), reason, unparsed=row["unparsed"]), message_id=message_id)
+            conn.execute("""UPDATE trading_signals SET state='fallback_sent',fallback_reason=%s,fallback_sent_at=%s,
+                fallback_message_id=%s,project_id=%s,updated_at=%s WHERE id=%s""",
+                         (reason, at, message_id, project["id"], at, row["id"]))
+            self.company._event(conn, "trading_signal_fallback", {"slot_id": row["id"], "reason": reason,
+                                                                  "message_id": message_id}, project["id"])
+        return 1
+
+    def _outage(self, conn, row: dict, at: datetime) -> int:
+        """The trade has started and no interim post went out (the loop was down): an "enter at the open" post is
+        useless now, so the slot records the reason and nothing is posted (R3)."""
+        if row["project_id"]:
+            self.company._project(conn, row["project_id"])  # R8: the project before the slot
+        row = conn.execute("SELECT * FROM trading_signals WHERE id=%s FOR UPDATE", (row["id"],)).fetchone()
+        if not _fallback_due(row, at):
+            return 0
+        conn.execute("UPDATE trading_signals SET state='fallback_sent',fallback_reason=%s,updated_at=%s WHERE id=%s",
+                     (OUTAGE, at, row["id"]))
+        self.company._event(conn, "trading_signal_fallback", {"slot_id": row["id"], "reason": OUTAGE,
+                                                              "message_id": None}, row["project_id"])
+        return 0
+
+    def retry(self, at: datetime) -> int:
+        """Ask the Analyst again where a fault or a thread revision stopped an unsettled signal:
+        - a blocked task gets a new turn from its retry_at (5 minutes after the fault) until the exit, at most twice;
+        - a task a "수정:" revision made stale is recreated at the new revision, until the entry.
+        Each slot has its own transaction (R10). Returns the tasks resumed."""
+        with self.db.transaction() as conn:
+            due = conn.execute("""SELECT s.id FROM trading_signals s JOIN tasks k ON k.id=s.task_id
+                JOIN projects p ON p.id=s.project_id WHERE s.state IN ('asked','fallback_sent') AND NOT s.unparsed
+                AND (k.revision<>p.revision AND s.entry_at>%s OR k.status='blocked' AND k.revision=p.revision
+                     AND s.retry_at<=%s AND s.exit_at>%s AND s.fault_retries<%s)
+                ORDER BY s.fallback_at,s.kind""", (at, at, at, MAX_FAULT_RETRIES)).fetchall()
+        resumed = 0
+        for row in due:
+            try:
+                resumed += self._retry(row["id"], at)
+            except Exception as exc:  # noqa: BLE001 - one slot's failure never holds back another
+                LOG.error("Signal retry failed for %s: %s", row["id"], type(exc).__name__)
+        return resumed
+
+    def _retry(self, identity, at: datetime) -> int:
+        with self.db.transaction() as conn:
+            known = conn.execute("SELECT project_id FROM trading_signals WHERE id=%s", (identity,)).fetchone()
+            project = self.company._project(conn, known["project_id"])  # R8: the project before the slot
+            row = conn.execute("SELECT * FROM trading_signals WHERE id=%s FOR UPDATE", (identity,)).fetchone()
+            if row["state"] not in {"asked", "fallback_sent"} or row["unparsed"] or row["project_id"] != project["id"]:
+                return 0
+            task = conn.execute("SELECT * FROM tasks WHERE id=%s", (row["task_id"],)).fetchone()
+            if task["revision"] != project["revision"]:
+                return self._recreate(conn, project, row, task, at)
+            due = row["retry_at"] is not None and row["retry_at"] <= at < row["exit_at"]
+            if task["status"] != "blocked" or not due or row["fault_retries"] >= MAX_FAULT_RETRIES:
+                return 0
+            if task["turn_count"] >= self.company.settings.company_max_task_turns:
+                # Another turn would pass the task's turn limit: stop retrying; the interim post stands.
+                conn.execute("UPDATE trading_signals SET retry_at=NULL,updated_at=%s WHERE id=%s", (at, identity))
+                return 0
+            turn_id = self.company._new_turn(conn, task)
+            conn.execute("""UPDATE trading_signals SET fault_retries=fault_retries+1,retry_at=%s,updated_at=%s
+                WHERE id=%s""", (at + timedelta(minutes=FAULT_RETRY_MINUTES), at, identity))
+            self.company._event(conn, "trading_signal_retried", {
+                "slot_id": identity, "task_id": task["id"], "turn_id": turn_id, "error": task["error"],
+                "fault_retries": row["fault_retries"] + 1}, project["id"])
+        return 1
+
+    def _recreate(self, conn, project: dict, row: dict, task: dict, at: datetime) -> int:
+        """A "수정:" revision superseded the slot's task: the same instruction becomes a task of the new revision, even
+        after the send time, as long as the trade has not started (spec §3)."""
+        if at >= row["entry_at"]:
+            return 0
+        fresh = self.company._new_task(conn, project, task["agent"], task["instruction"],
+                                       task_id=slot_task_id(row["session_day"], row["kind"], project["revision"]),
+                                       priority=PRIORITY, kind=SIGNAL_KIND)
+        conn.execute("UPDATE trading_signals SET task_id=%s,updated_at=%s WHERE id=%s", (fresh["id"], at, row["id"]))
+        self.company._event(conn, "trading_signal_reasked", {"slot_id": row["id"], "task_id": fresh["id"],
+                                                             "revision": project["revision"]}, project["id"])
+        return 1
+
+    def gate(self, conn, row: dict) -> bool:
+        """SlackOutbox._claim_one's check for a pending trading_signal post (spec §8). Unlike other posts, a signal
+        post ignores routing holds, paused projects and thread revisions; instead:
+        - a slot's post goes out only before the slot's exit, else it becomes stale;
+        - the Analyst's post waits while the slot's interim post is pending or sending, so the interim goes first;
+        - a post with no thread takes the project's thread_ts once there is one. While another top-level post of the
+          project is in flight it waits, since that post may start the thread; otherwise it starts the thread itself.
+        A post of no slot (the evening scorecard) always passes."""
+        slot = conn.execute("""SELECT exit_at,analyst_message_id,fallback_message_id FROM trading_signals
+            WHERE %s IN (analyst_message_id,fallback_message_id,unparsed_message_id)""", (row["id"],)).fetchone()
+        if not slot:
+            return True
+        if schedule.utcnow() >= slot["exit_at"]:
+            conn.execute("UPDATE outbox SET status='stale',error='signal_after_exit' WHERE id=%s", (row["id"],))
+            return False
+        if (str(slot["analyst_message_id"]) == str(row["id"]) and slot["fallback_message_id"]
+                and conn.execute("SELECT 1 FROM outbox WHERE id=%s AND status IN ('pending','sending')",
+                                 (slot["fallback_message_id"],)).fetchone()):
+            return _defer(conn, row, "awaiting_interim_post")
+        if row["thread_ts"] is None:
+            # The project lock makes concurrent senders agree on one root post.
+            thread = conn.execute("SELECT thread_ts FROM projects WHERE id=%s FOR UPDATE",
+                                  (row["project_id"],)).fetchone()["thread_ts"]
+            if thread:
+                conn.execute("UPDATE outbox SET thread_ts=%s WHERE id=%s", (thread, row["id"]))
+                row["thread_ts"] = thread
+            elif conn.execute("""SELECT 1 FROM outbox WHERE project_id=%s AND id<>%s AND status='sending'
+                    AND thread_ts IS NULL""", (row["project_id"], row["id"])).fetchone():
+                return _defer(conn, row, "awaiting_thread_root")
+        return True
+
+
+def _askable(row: dict | None) -> bool:
+    """Not asked yet: scheduled, or its interim post went out before the service could ask (after an outage)."""
+    return bool(row) and (row["state"] == "scheduled" or (row["state"] == "fallback_sent" and row["task_id"] is None
+                                                          and row["fallback_message_id"] is not None))
+
+
+def _fallback_due(row: dict | None, at: datetime) -> bool:
+    return bool(row) and row["state"] in {"scheduled", "asked"} and row["fallback_at"] <= at
+
+
+def _late_reason(conn, row: dict) -> str:
+    """Why the Analyst's signal is not in yet, from its task and that task's latest turn (spec §3)."""
+    task = row["task_id"] and conn.execute("SELECT status,error FROM tasks WHERE id=%s", (row["task_id"],)).fetchone()
+    if not task:
+        return "준비 중 오류"
+    turn = conn.execute("SELECT status,error FROM turns WHERE task_id=%s ORDER BY sequence DESC LIMIT 1",
+                        (row["task_id"],)).fetchone() or {}
+    if task["status"] == "blocked":
+        return "모델 로그인 만료" if "auth" in {task["error"], turn.get("error")} else "모델 응답 오류"
+    if turn.get("status") == "waiting":  # a provider fault deferred the turn; its error is the fault code
+        return "모델 사용 한도" if turn["error"] == "quota" else "모델 혼잡"
+    if turn.get("status") == "queued" and conn.execute(
+            "SELECT 1 FROM turns WHERE status='running' AND task_id<>%s LIMIT 1", (row["task_id"],)).fetchone():
+        return "앞선 업무가 끝나기를 기다리는 중"
+    return "분석이 아직 끝나지 않음"
+
+
+def _defer(conn, row: dict, reason: str) -> bool:
+    """Leave the post pending and look again in 5 seconds, on the outbox's own clock (DB now())."""
+    conn.execute("UPDATE outbox SET status='pending',next_at=now()+interval '5 seconds',error=%s WHERE id=%s",
+                 (reason, row["id"]))
+    return False
 
 
 def _tool_budget(conn, task: dict) -> tuple[bool, int, int]:

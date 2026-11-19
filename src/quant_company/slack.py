@@ -413,14 +413,16 @@ class SlackOutbox:
 
     def _claim_one(self):
         with self.company.db.transaction() as conn:
+            # A trading signal goes first: it must reach Slack before its send time (signals/store.py gate).
             row = conn.execute("""SELECT o.*,m.kind AS message_kind FROM outbox o JOIN messages m ON m.id=o.id
                 LEFT JOIN tasks k ON k.id=m.task_id JOIN projects p ON p.id=o.project_id
                 WHERE o.status='pending' AND o.next_at<=now() AND
-                (m.kind IN ('control','maintenance','status') OR
+                (m.kind IN ('control','maintenance','status','trading_signal') OR
                  ((p.status='active' OR k.kind='answer') AND NOT EXISTS
                   (SELECT 1 FROM tasks r WHERE r.project_id=o.project_id AND r.kind='routing'
                    AND r.status NOT IN ('completed','superseded'))))
-                ORDER BY (EXISTS(SELECT 1 FROM quant_feed_publications q WHERE q.id=o.id AND q.correction)) DESC,
+                ORDER BY m.kind='trading_signal' DESC,
+                (EXISTS(SELECT 1 FROM quant_feed_publications q WHERE q.id=o.id AND q.correction)) DESC,
                 (EXISTS(SELECT 1 FROM trend_feed_digests d WHERE d.id=o.id AND d.kind='on_demand')) DESC,
                 o.created_at FOR UPDATE OF o SKIP LOCKED LIMIT 1""").fetchone()
             if not row:
@@ -483,6 +485,11 @@ class SlackOutbox:
 
                 if not QuantFeedStore(self.company).gate(conn, row):
                     return False
+            if row["message_kind"] == "trading_signal":
+                from .signals.store import SignalStore
+
+                if not SignalStore(self.company).gate(conn, row):
+                    return False
             if row["message_kind"] in {"news", "news_digest"}:
                 from .news.digest import NewsDigestStore
                 from .news.store import NewsStore
@@ -498,7 +505,8 @@ class SlackOutbox:
                     row["news_broadcast"] = conn.execute("SELECT broadcast FROM news_publications WHERE id=%s",
                                                         (row["id"],)).fetchone()["broadcast"]
             project = conn.execute("SELECT revision FROM projects WHERE id=%s", (row["project_id"],)).fetchone()
-            if row["revision"] != project["revision"]:
+            # A thread revision ("수정:") never withdraws a trading signal post; its gate decides above.
+            if row["revision"] != project["revision"] and row["message_kind"] != "trading_signal":
                 conn.execute("UPDATE outbox SET status='stale' WHERE id=%s", (row["id"],))
                 if row["message_kind"] == "news_digest":
                     NewsDigestStore.settle_members(conn, row, "stale", error="project_revision_changed")
@@ -523,7 +531,7 @@ class SlackOutbox:
                 from .news.digest import NewsDigestStore
 
                 NewsDigestStore.settle_members(conn, row, status, sent_ts, error)
-            if status == "delivered" and sent_ts and row.get("message_kind") in {"news", "news_digest", "briefing"} and not row["thread_ts"]:
+            if status == "delivered" and sent_ts and row.get("message_kind") in {"news", "news_digest", "briefing", "trading_signal"} and not row["thread_ts"]:
                 conn.execute("UPDATE projects SET thread_ts=%s WHERE id=%s AND thread_ts IS NULL",
                              (sent_ts, row["project_id"]))
             if status == "delivered" and sent_ts and row["agent"] == "maintainer" and not row["thread_ts"]:

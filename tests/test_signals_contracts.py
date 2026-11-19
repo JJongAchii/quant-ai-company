@@ -154,6 +154,14 @@ def test_fallback_post_copy():
     assert "약 59%" in fallback_post(overnight, "x").split("\n")[1]
 
 
+def test_fallback_post_after_unparsed_answer():
+    intraday, _ = day_slots()
+    # R13: no Analyst signal follows, so the third line promises none.
+    assert fallback_post(intraday, "형식 확인 실패", unparsed=True).split("\n")[1:] == [
+        "롱 · Analyst 판단 아님 · 규칙 신호(항상 롱, 과거 적중 약 50%)",
+        "Analyst 답 형식을 확인하지 못했습니다(원문은 위 글). 규칙 신호로 대신합니다."]
+
+
 def test_unparsed_post_header_and_scorecard_footer():
     _, overnight = day_slots()
     assert unparsed_post(overnight, "say").split("\n")[0] == "🌙 오버나잇 신호 · 형식 확인 실패 · 채점 제외"
