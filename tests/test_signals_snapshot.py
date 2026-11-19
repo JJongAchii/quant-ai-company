@@ -94,3 +94,77 @@ def test_fetch_chart_default_path_unchanged():
     fetch_chart("^GSPC", connection_factory=Conn, params="interval=1d&range=1mo&events=div")
     assert Conn.paths == ["/v8/finance/chart/%5EGSPC?interval=1d&range=5d",
                           "/v8/finance/chart/%5EGSPC?interval=1d&range=1mo&events=div"]
+
+
+def test_previous_close_falls_back_to_meta_then_none():
+    at = datetime(2026, 11, 19, 15, 30, tzinfo=KST)
+    only_today = [(datetime(2026, 11, 19, 9, tzinfo=KST), 2520, 2530)]
+    quote = parse_quote(chart("^KS11", "Asia/Seoul", 2535, at, only_today, prev=2500), "^KS11")
+    assert quote["previous_close"] == "2500.00" and quote["change_pct"] == "1.40"
+    quote = parse_quote(chart("^KS11", "Asia/Seoul", 2535, at, only_today), "^KS11")
+    assert quote["previous_close"] is None and quote["change_pct"] is None
+    snap = {"kind": "intraday", "observed_at": OBSERVED.isoformat(), "errors": {}, "quotes": {"kospi": quote}}
+    assert "전일 대비 없음" in snapshot_text(snap)
+    assert follow_us({"quotes": {"spy": {"value": "750.00", "previous_close": None}}}) is None
+
+
+def test_session_open_missing_when_no_bar_for_session_day():
+    at = datetime(2026, 11, 19, 15, 30, tzinfo=KST)
+    bars = [(datetime(2026, 11, 18, 9, tzinfo=KST), 2500, 2510)]
+    quote = parse_quote(chart("^KS11", "Asia/Seoul", 2535, at, bars), "^KS11")
+    assert quote["session_open"] is None and quote["previous_close"] == "2510.00"
+
+
+def test_malformed_payloads_map_to_fixed_codes():
+    import pytest
+    at = datetime(2026, 11, 19, 15, 30, tzinfo=KST)
+    good = chart("^KS11", "Asia/Seoul", 2535, at, [(at, 1, 2)])
+    for payload in ({}, {"chart": {"result": []}}, {"chart": {"result": None}}):
+        with pytest.raises(ValueError, match="chart_schema_rejected"):
+            parse_quote(payload, "^KS11")
+    with pytest.raises(ValueError, match="chart_symbol_mismatch"):
+        parse_quote(good, "^KQ11")
+    bad = chart("^KS11", "Asia/Seoul", 2535, at, [(at, 1, 2)])
+    bad["chart"]["result"][0]["indicators"]["quote"][0]["close"] = []
+    with pytest.raises(ValueError, match="chart_schema_rejected"):
+        parse_quote(bad, "^KS11")
+    bad = chart("^KS11", "Asia/Seoul", 2535, at, [(at, 1, 2)])
+    bad["chart"]["result"][0]["meta"]["exchangeTimezoneName"] = "Nowhere/Land"
+    with pytest.raises(ValueError, match="chart_schema_rejected"):
+        parse_quote(bad, "^KS11")
+    bad = chart("^KS11", "Asia/Seoul", 0, at, [(at, 1, 2)])
+    with pytest.raises(ValueError, match="chart_value_invalid"):
+        parse_quote(bad, "^KS11")
+
+
+def test_rejected_payload_keeps_receipt_and_raw_without_leaking_into_text():
+    good = fake({})
+    secret = {"chart": {"result": [], "note": "RAW-ONLY-CONTENT"}}
+
+    def fetch(symbol):
+        return ok(secret) if symbol == "^HSI" else good(symbol)
+    snap = read_snapshot("overnight", fetch, clock=lambda: OBSERVED)
+    assert snap["errors"]["hsi"] == "chart_schema_rejected" and "hsi" not in snap["quotes"]
+    assert snap["receipts"]["hsi"] == "ab"*32 and snap["raw"]["hsi"] == secret
+    assert set(snap["receipts"]) == set(snap["raw"]) == set(CATALOGUE)
+    assert "RAW-ONLY-CONTENT" not in snapshot_text(snap)
+    assert follow_us({**snap, "raw": {}}) == follow_us(snap) == "long"
+
+
+def test_failed_fetch_has_no_receipt_and_deadline_is_listed(monkeypatch):
+    import threading
+
+    from quant_company.signals import snapshot as module
+    snap = read_snapshot("intraday", fake({}, fail="SPY"), clock=lambda: OBSERVED)
+    assert "spy" not in snap["receipts"] and "spy" not in snap["raw"]
+    release = threading.Event()
+    good = fake({})
+
+    def slow(symbol):
+        if symbol == "EWY":
+            release.wait(5)
+        return good(symbol)
+    monkeypatch.setattr(module, "CHART_POLL_SECONDS", 0.3)
+    snap = read_snapshot("intraday", slow, clock=lambda: OBSERVED)
+    release.set()
+    assert snap["errors"] == {"ewy": "poll_deadline"}

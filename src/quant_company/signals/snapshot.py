@@ -90,7 +90,7 @@ def read_snapshot(kind: SignalKind, fetch=fetch_chart, *, clock=utcnow) -> dict:
     wait(futures.values(), timeout=CHART_POLL_SECONDS)
     pool.shutdown(wait=False, cancel_futures=True)
     observed = clock()
-    quotes, errors, receipts = {}, {}, {}
+    quotes, errors, receipts, raw = {}, {}, {}, {}
     for key, instrument in items.items():
         future = futures[key]
         try:
@@ -100,6 +100,10 @@ def read_snapshot(kind: SignalKind, fetch=fetch_chart, *, clock=utcnow) -> dict:
         if not receipt.get("ok"):
             errors[key] = receipt.get("error", "chart_fetch_failed")
             continue
+        # Original response and its receipt are kept even when the payload is rejected.
+        raw[key] = receipt.get("payload")
+        if receipt.get("sha256"):
+            receipts[key] = receipt["sha256"]
         try:
             quote = parse_quote(receipt["payload"], instrument.symbol)
         except ValueError as exc:
@@ -109,10 +113,8 @@ def read_snapshot(kind: SignalKind, fetch=fetch_chart, *, clock=utcnow) -> dict:
         quote["session_day"] = str(quote["session_day"])
         quote["delayed"] = is_live(key, kind) and age > DELAY_LIMIT
         quotes[key] = quote
-        if receipt.get("sha256"):
-            receipts[key] = receipt["sha256"]
     return {"kind": kind, "observed_at": observed.isoformat(), "quotes": quotes, "errors": errors,
-            "receipts": receipts}
+            "receipts": receipts, "raw": raw}
 
 
 def snapshot_text(snapshot: dict) -> str:
