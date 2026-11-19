@@ -143,11 +143,20 @@ def result_line(kind: str, day: date, direction: str | None, interim: bool, retu
     return f"{label} {' · '.join(segments)}"
 
 
-def record_text(name: str, record: dict) -> str:
-    text = f"{name} {record['n']}전 {record['hits']}승"
+def record_stats(record: dict) -> str:
+    """n, hits, hit rate, ties, mean bp and simple cumulative bp of one record, the same for every record."""
+    text = f"{record['n']}전 {record['hits']}승"
     if record["n"]:
         text += f"({(Decimal(record['hits'] * 100) / record['n']).quantize(Decimal('1'), ROUND_HALF_UP)}%)"
-    return text + (f" 무 {record['ties']}" if record["ties"] else "")
+    if record["ties"]:
+        text += f" 무 {record['ties']}"
+    if record["mean_bp"] is not None:
+        text += f" 평균 {record['mean_bp']:+.2f}bp 누적 {record['sum_bp']:+.2f}bp"
+    return text
+
+
+def record_text(name: str, record: dict) -> str:
+    return f"{name} {record_stats(record)}"
 
 
 def verdict(name: str, versus: dict) -> str:
@@ -169,9 +178,8 @@ def summary_lines(summary: dict) -> list[str]:
                      "always_long": BASELINE_WORDS["always_long"], "follow_us": BASELINE_WORDS["follow_us"]}
             text = " · ".join(record_text(names[key], entry[key]) for key in ("analyst", "always_long", "follow_us")
                               if key in entry)
-            analyst = entry["analyst"]
-            if analyst["mean_bp"] is not None:
-                text += f" · 평균 {analyst['mean_bp']:+.2f}bp · 단순 누적 {analyst['sum_bp']:+.2f}bp"
+            if entry["pending"]:
+                text += f" · 채점 보류 {entry['pending']}"
             lines.append(text)
     for baseline in BASELINES:
         name = BASELINE_WORDS[baseline]
@@ -186,14 +194,14 @@ def summary_lines(summary: dict) -> list[str]:
                 lines.append(f"{with_particle(name, '과', '와')} 다르게 건 날({INSTRUMENT_WORDS[instrument]}): "
                              + " · ".join(parts))
     for instrument in INSTRUMENTS:
-        text = " · ".join(f"{KIND_WORDS[kind]} {record_text('', summary[kind]['instruments'][instrument]['received']).strip()}"
+        text = " · ".join(f"{KIND_WORDS[kind]} {record_stats(summary[kind]['instruments'][instrument]['received'])}"
                           for kind in kinds)
         lines.append(f"받으신 신호 기준 {INSTRUMENT_WORDS[instrument]} {text}")
     kinds_text = []
     for kind in kinds:
         counts = summary[kind]["counts"]
         text = f"{KIND_WORDS[kind]} 정시 {counts['on_time']} · 늦음 {counts['late']} · 임시 {counts['fallback']}"
-        for key, word in (("after_entry", "진입 뒤"), ("unparsed", "형식 실패"), ("pending", "채점 보류")):
+        for key, word in (("after_entry", "진입 뒤"), ("unparsed", "형식 실패")):
             text += f" · {word} {counts[key]}" if counts[key] else ""
         kinds_text.append(text)
     lines.append("신호 구분 " + " / ".join(kinds_text))

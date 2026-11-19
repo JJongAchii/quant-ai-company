@@ -170,6 +170,8 @@ def summarize(slots: list[dict]) -> dict:
             entry = {"analyst": record(lambda s: s["analyst"] if analyst_counts(s) else None),
                      "received": record(lambda s: s["received"]),
                      "always_long": record(lambda s: (s["baselines"] or {}).get("always_long")),
+                     "pending": sum(slot["returns"][instrument]["state"] == "pending" for slot in mine
+                                    if instrument in (slot.get("returns") or {})),
                      "versus": {"always_long": _versus(mine, instrument, "always_long")}}
             if kind == "intraday":
                 entry["follow_us"] = record(lambda s: (s["baselines"] or {}).get("follow_us"))

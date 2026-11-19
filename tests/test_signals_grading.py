@@ -403,8 +403,11 @@ def test_report_posts_as_soon_as_everything_is_final(signals, clock):  # noqa: F
     assert store.report(at(18, 45)) is True
     [post] = report_posts(signals)
     assert ("장중(숏) KOSPI 시가→종가 -0.31% → 신호 +0.31% ✅ · KODEX 200 신호 +0.28% ✅") in post["text"].split("\n")
-    assert "Analyst 누적 장중 KOSPI 1전 1승(100%) · 항상 롱 1전 0승(0%) · 미국 따라가기 1전 0승(0%)" in post["text"]
-    assert "받으신 신호 기준 KOSPI 장중 1전 1승" in post["text"]
+    assert ("Analyst 누적 장중 KOSPI 1전 1승(100%) 평균 +31.00bp 누적 +31.00bp"
+            " · 항상 롱 1전 0승(0%) 평균 -31.00bp 누적 -31.00bp"
+            " · 미국 따라가기 1전 0승(0%) 평균 -31.00bp 누적 -31.00bp") in post["text"]
+    assert "받으신 신호 기준 KOSPI 장중 1전 1승(100%) 평균 +31.00bp 누적 +31.00bp" in post["text"].split("\n")
+    assert "채점 보류" not in post["text"]
     assert "정시 1 · 늦음 0 · 임시 0" in post["text"]
 
 
@@ -490,3 +493,16 @@ def test_received_is_the_last_delivered_post_before_entry(signals, clock):  # no
         conn.execute("UPDATE outbox SET status='uncertain' WHERE id=%s", (post_id("analyst"),))
         conn.execute("UPDATE outbox SET status='uncertain' WHERE id=%s", (post_id("fallback"),))
     assert received()[0] is None and one(signals, "SELECT 1 x FROM trading_signals WHERE id=%s", sid)
+
+
+def test_scorecard_shows_pending_per_kind_and_instrument():
+    pending = slot_item("long", "5", state="pending")
+    pending["returns"]["KODEX200"] = {"state": "final", "long_bp": Decimal("7")}
+    text = card([pending, slot_item("long", "5")])
+    lines = {line.split(" · ")[0]: line for line in text.split("\n") if line.startswith("Analyst 누적")}
+    assert lines["Analyst 누적 장중 KOSPI 1전 1승(100%) 평균 +5.00bp 누적 +5.00bp"].endswith(" · 채점 보류 1")
+    kodex = next(line for line in text.split("\n") if line.startswith("Analyst 누적 장중 KODEX 200"))
+    assert "채점 보류" not in kodex
+    assert "채점 보류" not in card([slot_item("long", "5")])
+    assert summarize([pending])["intraday"]["instruments"]["KOSPI"]["pending"] == 1
+    assert summarize([slot_item("long", "5")])["intraday"]["instruments"]["KOSPI"]["pending"] == 0
