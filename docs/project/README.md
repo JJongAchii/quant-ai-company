@@ -6,6 +6,7 @@
 
 - [현재 사용 범위와 로드맵](NEXT-STEPS.md)
 - [Analyst 매매 신호 결정 기록 · ADR 0052 (2026-11-19)](../adr/0052-analyst-daily-trading-signals.md)
+- [Analyst 매매 신호 기준선 — 로컬·운영 레이크 숫자 (2026-11-19)](ANALYST-SIGNALS-BASELINES-20261119.md)
 - [improvements 케이스 문구 · 같은 실패 묶기 · Claude 검토 거절 도구 처리 (2026-10-22)](IMPROVEMENTS-READABILITY-20261022.md)
 - [영상 렌더링 ECS Fargate 전환·실제 Spot 회수 복구 검증 (2026-10-12)](VIDEO-FARGATE-RENDER-20261012.md)
 - [영상 그림·썸네일 회차별 맞춤 설계안과 가능성 시험 (2026-10-12)](VIDEO-VISUALS-DESIGN-20261012.md)
