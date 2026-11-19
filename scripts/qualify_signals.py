@@ -36,6 +36,7 @@ from quant_company.briefing.contracts import BRIEFER
 from quant_company.briefing.store import BriefStore
 from quant_company.company import Company, as_json, stable
 from quant_company.config import Settings
+from quant_company.contracts import ProviderFault
 from quant_company.execution import TurnExecutor
 from quant_company.signals.contracts import MAX_FORMAT_RETRIES, MAX_TOOL_TURNS
 from quant_company.signals.schedule import kst_day, slots_for
@@ -102,6 +103,24 @@ def edition_project(company: Company, day: date, text: str) -> dict:
         # The posted edition is a briefing message of the thread; here it is never published.
         company._message(conn, project, None, BRIEFER, "briefing", text, publish=False)
     return project
+
+
+class FaultLog:
+    """The provider as TurnExecutor sees it, keeping the code and message of every fault it raises (the runner's own
+    fixed text, never model output or credentials), since the executor records only the code."""
+
+    def __init__(self, provider, faults: list):
+        self.provider, self.faults = provider, faults
+
+    async def run(self, request):
+        try:
+            return await self.provider.run(request)
+        except ProviderFault as exc:
+            self.faults.append({"request_id": request.request_id, "code": exc.code, "message": exc.message[:300]})
+            raise
+
+    async def cancel(self, request_id):
+        return await self.provider.cancel(request_id)
 
 
 class SignalsClock:
@@ -193,14 +212,15 @@ async def qualify(*, admin: str | None, kind: str, edition: str, output: Path, l
     database = "company_signal_qualification_" + uuid4().hex
     connection = conninfo_to_dict(admin)
     connection["dbname"] = database
-    status = git("status", "--porcelain", "--", "src", "scripts/qualify_signals.py")
+    status, faults = git("status", "--porcelain", "--", "src", "scripts/qualify_signals.py"), []
     receipt = {"started_at": datetime.now(UTC).isoformat(), "state": "error", "kind": kind,
                "real_model": provider is None, "slack_sender_constructed": False,
-               "database": "disposable local PostgreSQL database, created and dropped by this script",
+               "database": {"kind": "disposable database on a local PostgreSQL cluster", "name": database,
+                            "dropped": False},
                "code_commit": git("rev-parse", "HEAD"), "uncommitted_code": None if status is None else bool(status),
                "edition": {"sha256": hashlib.sha256(edition.encode()).hexdigest(), "characters": len(edition),
                            "synthetic": synthetic_edition},
-               "turns": [], "proposal": None, "posts": []}
+               "turns": [], "completed_model_turns": 0, "provider_faults": faults, "proposal": None, "posts": []}
     with psycopg.connect(admin, autocommit=True) as conn:
         conn.execute(sql.SQL("CREATE DATABASE {} TEMPLATE template0").format(sql.Identifier(database)))
     try:
@@ -236,7 +256,8 @@ async def qualify(*, admin: str | None, kind: str, edition: str, output: Path, l
                 codex_home=Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))),
                 jobs_dir=jobs_dir or Path(tempfile.mkdtemp(prefix="signal-qualification-codex-")),
                 codex_bin=codex_bin, timeout_seconds=timeout_seconds))
-        receipt["turns"] = await run_signal(company, TurnExecutor(company, provider), task_id)
+        receipt["turns"] = await run_signal(company, TurnExecutor(company, FaultLog(provider, faults)), task_id)
+        receipt["completed_model_turns"] = sum(turn["state"] == "completed" for turn in receipt["turns"])
         found = evidence(company, identity)
         slot_row = found["slot"]
         receipt.update(state=outcome(slot_row, receipt["turns"]), proposal=slot_row["proposal"],
@@ -251,28 +272,31 @@ async def qualify(*, admin: str | None, kind: str, edition: str, output: Path, l
     finally:
         schedule.utcnow = real_now
         try:
+            with psycopg.connect(admin, autocommit=True) as conn:
+                conn.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(database)))
+            receipt["database"]["dropped"] = True
+        finally:
             receipt["completed_at"] = datetime.now(UTC).isoformat()
             receipt["notes"] = notes(receipt)
             output.parent.mkdir(parents=True, exist_ok=True)
             temporary = output.with_name(output.name + ".tmp")
             temporary.write_text(json.dumps(as_json(receipt), ensure_ascii=False, indent=2) + "\n")
             temporary.replace(output)
-        finally:
-            with psycopg.connect(admin, autocommit=True) as conn:
-                conn.execute(sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(database)))
     return as_json(receipt)
 
 
 def notes(receipt: dict) -> list[str]:
-    real = receipt["real_model"]
+    completed, faults = receipt["completed_model_turns"], receipt["provider_faults"]
+    stop = f": the provider raised {faults[0]['code']} ({faults[0]['message']})" if faults else ""
     return [
-        ("Real Codex subscription turns: CodexRunner with the local ChatGPT login (CODEX_HOME); no API credentials. "
-         "Its job receipts were kept outside the repository.") if real else
-        "Injected provider: no real model was called.",
-        "A disposable local PostgreSQL database was created for this run and dropped afterwards; production, its "
-        "database and its host were not touched.",
+        ("Provider: CodexRunner on the local ChatGPT login (CODEX_HOME), no API credentials; its job receipts were "
+         "kept outside the repository.") if receipt["real_model"] else "Injected provider: no real model was called.",
+        f"{completed} model turn(s) completed." if completed else f"No model turn completed{stop}.",
+        "A disposable database on a local PostgreSQL cluster was created for this run and "
+        + ("dropped afterwards" if receipt["database"]["dropped"] else "NOT dropped (see error)")
+        + "; production, its database and its host were not touched.",
         "The Slack sender (SlackOutbox) was never constructed: the posts listed exist only as undispatched outbox rows "
-        "of the dropped database.",
+        "of the disposable database.",
         "The signals clock started at the slot's snapshot time and advanced in real time, so the tool cutoff and the "
         "on-time/late timing reflect the real latency. Grading, the interim post and the scorecard were not run.",
         "The snapshot was read live from Yahoo at the time shown." if receipt.get("snapshot", {}).get("origin", "")

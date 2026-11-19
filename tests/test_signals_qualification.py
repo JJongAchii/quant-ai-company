@@ -39,6 +39,14 @@ def admin():
 
 
 @pytest.fixture
+def no_database(script, monkeypatch):
+    """A refusal happens before any database connection."""
+    def refuse(*args, **kwargs):
+        raise AssertionError("a refused qualification must not connect to PostgreSQL")
+    monkeypatch.setattr(script.psycopg, "connect", refuse)
+
+
+@pytest.fixture
 def no_slack(monkeypatch):
     from quant_company import slack
 
@@ -59,16 +67,18 @@ def run(script, tmp_path, *, admin, live=True, provider=None, **kwargs):
         provider=provider, jobs_dir=tmp_path / "jobs", **kwargs))
 
 
-def leftovers(admin):
+def dropped(admin, receipt):
+    """The run's disposable database is gone, and the receipt says so."""
+    name = receipt["database"]["name"]
+    assert name.startswith("company_signal_qualification_") and receipt["database"]["dropped"] is True
     with psycopg.connect(admin, autocommit=True) as conn:
-        return conn.execute("SELECT datname FROM pg_database WHERE datname LIKE 'company_signal_qualification_%'"
-                            ).fetchall()
+        return conn.execute("SELECT 1 FROM pg_database WHERE datname=%s", (name,)).fetchone() is None
 
 
-def test_refuses_without_live(script, tmp_path, admin):
+def test_refuses_without_live(script, tmp_path, admin, no_database):
     with pytest.raises(ValueError, match="qualification_requires_live"):
         run(script, tmp_path, admin=admin, live=False, provider=Boom())
-    assert not (tmp_path / "receipt.json").exists() and leftovers(admin) == []
+    assert not (tmp_path / "receipt.json").exists()
 
 
 def test_cli_refuses_without_live(script, tmp_path, capsys):
@@ -84,7 +94,7 @@ def test_cli_refuses_without_live(script, tmp_path, capsys):
 
 @pytest.mark.parametrize("url", ["postgresql://postgres@db.example.com:5432/postgres",
                                  "postgresql://postgres@10.0.0.5/postgres", "postgresql:///postgres"])
-def test_refuses_a_database_that_is_not_local(script, tmp_path, url):
+def test_refuses_a_database_that_is_not_local(script, tmp_path, url, no_database):
     with pytest.raises(ValueError, match="qualification_requires_local_database"):
         run(script, tmp_path, admin=url, provider=Boom())
     assert not (tmp_path / "receipt.json").exists()
@@ -127,9 +137,10 @@ def test_runs_the_signal_path_in_a_disposable_database(script, tmp_path, admin, 
     [post] = receipt["posts"]
     assert post["outbox_status"] == "pending" and post["text"].startswith("🌙 오버나잇 신호 · 11월 16일(월)")
     assert (receipt["real_model"], receipt["slack_sender_constructed"]) == (False, False)
+    assert (receipt["completed_model_turns"], receipt["provider_faults"]) == (1, [])
     assert receipt["edition"]["synthetic"] is True and receipt["snapshot"]["origin"] == "file"
     assert any("Injected provider" in note for note in receipt["notes"])
-    assert leftovers(admin) == []
+    assert dropped(admin, receipt)
 
 
 def test_records_a_model_fault(script, tmp_path, admin, no_slack):
@@ -146,4 +157,9 @@ def test_records_a_model_fault(script, tmp_path, admin, no_slack):
     assert receipt["state"] == "deferred"
     assert [(turn["state"], turn["reason"]) for turn in receipt["turns"]] == [("defer", "unavailable")]
     assert receipt["proposal"] is None and receipt["posts"] == []
-    assert leftovers(admin) == []
+    # The runner's own fault text is kept, and the notes never claim a model turn that did not happen.
+    assert [(fault["code"], fault["message"]) for fault in receipt["provider_faults"]] == [
+        ("unavailable", "The runtime requires the validated Codex CLI.")]
+    assert receipt["completed_model_turns"] == 0
+    assert any(note.startswith("No model turn completed: the provider raised unavailable") for note in receipt["notes"])
+    assert dropped(admin, receipt)
