@@ -95,7 +95,7 @@ def test_instruction_has_every_required_element():
     text = snapshot_text(SNAPSHOT)
     out = instruction(intraday, "signal:2026-11-20:intraday:snapshot", text)
     for part in ("09:00", "15:30", "08:30", "08:15", "signal:2026-11-20:intraday:snapshot", text, "48.6", "49.9",
-                 "47.1", "47.7", "75.5", "62.9", "밤사이 정보는 대부분 시초가에 반영",
+                 "47.1", "47.7", "75.5", "62.9", "59.4", "밤사이 정보는 대부분 시초가에 반영",
                  "롱 또는 숏", "주문이 아니", "SignalProposal", "artifacts"):
         assert part in out, part
     assert len(out) < 4000
@@ -124,6 +124,25 @@ def test_late_post_header():
     assert lines[0] == "📈 장중 신호 · 늦음 08:41 · 임시 신호와 반대"
     assert lines[1] == window(intraday)
     assert "임시 신호와 같음" in analyst_post(intraday, slot_proposal(intraday), SNAPSHOT, late_at=late, fallback="long")
+
+
+def test_late_post_without_interim_has_no_interim_part():
+    intraday, _ = day_slots()
+    late = datetime(2026, 11, 19, 23, 41, tzinfo=UTC)
+    first = analyst_post(intraday, slot_proposal(intraday), SNAPSHOT, late_at=late).split("\n")[0]
+    assert first == "📈 장중 신호 · 늦음 08:41"
+
+
+def test_instruction_example_is_a_valid_proposal():
+    import json
+    for slot in day_slots():
+        sid = f"signal:{slot.day}:{slot.kind}:snapshot"
+        out = instruction(slot, sid, snapshot_text(SNAPSHOT))
+        assert len(out) < 4000
+        line = next(x for x in out.split("\n") if x.startswith("{") and '"kind"' in x)
+        parsed = SignalProposal.model_validate(json.loads(line))
+        assert (parsed.kind, parsed.session_day) == (slot.kind, slot.day)
+        assert parsed.reasons[0].source_ids == [sid]
 
 
 def test_fallback_post_copy():
