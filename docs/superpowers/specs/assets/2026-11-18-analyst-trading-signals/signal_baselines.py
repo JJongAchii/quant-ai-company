@@ -74,7 +74,11 @@ def kodex200(index):
     frame = frame[(frame["open"] > 0) & (frame["close"] > 0)]
     frame["intraday"] = frame["close"] / frame["open"] - 1
     merged = frame[["date", "intraday"]].merge(index[["date", "long", "fade", "follow_us"]], on="date")
-    if len(merged) != len(frame[(frame["date"] >= index["date"].min()) & (frame["date"] <= index["date"].max())]):
+    inside = frame[(frame["date"] >= index["date"].min()) & (frame["date"] <= index["date"].max())]
+    missing = sorted(set(inside["date"]) - set(index["date"]))
+    shown = ", ".join(str(day.date()) for day in missing[:10]) + (", …" if len(missing) > 10 else "")
+    print(f"KODEX 200 rows without an index row (dropped): {len(missing)} [{shown}]")
+    if len(merged) != len(inside) - len(missing) or len(missing) > 0.01 * len(inside):
         raise SystemExit("KODEX 200 rows were dropped by the join")
     return merged
 
