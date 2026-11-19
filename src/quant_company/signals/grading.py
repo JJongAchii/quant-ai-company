@@ -74,7 +74,8 @@ def _kodex(row: dict, bars: dict, dividends: set | None, receipt) -> dict:
     if not entry_bar or not exit_bar:
         return _row(row["id"], "KODEX200", "pending", receipt, detail=MISSING_BAR)
     for bar in (entry_bar, exit_bar):
-        if bar["open"] == bar["close"] and bar["volume"] > 0:
+        if any(not bar[key].is_finite() or bar[key] <= 0 for key in ("open", "close")) or (
+                bar["open"] == bar["close"] and bar["volume"] > 0):
             return _row(row["id"], "KODEX200", "pending", receipt, detail=SUSPICIOUS)
     intraday = row["kind"] == "intraday"
     entry = entry_bar["open" if intraday else "close"]

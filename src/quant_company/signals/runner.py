@@ -46,7 +46,13 @@ class SignalRunner:
         start, end = min(r["session_day"] for r in due), max(r["exit_day"] for r in due)
         lake = self.reader(self.store.company.settings.company_lake_uri, start, end)
         chart = self.fetch("069500.KS", params=grading.KODEX_PARAMS)
-        return self.store.save_returns([ret for row in due for ret in grading.grade_slot(row, lake, chart)])
+        graded = []
+        for row in due:
+            try:
+                graded += grading.grade_slot(row, lake, chart)
+            except Exception as exc:  # noqa: BLE001 - this slot waits for the next attempt; the others are graded
+                LOG.error("Signal grading failed for %s: %s", row["id"], type(exc).__name__)
+        return self.store.save_returns(graded)
 
     async def ask_due(self, at):
         try:

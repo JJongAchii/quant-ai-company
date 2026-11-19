@@ -222,3 +222,50 @@ async def test_failed_fetch_missing_bar_and_suspicious_bar_are_told_apart(signal
         kodex = returns(signals)[(sid, "KODEX200")]
         assert (kodex["state"], kodex["detail"]) == ("pending", detail)
         assert kodex["receipt"] == (receipt or chart["sha256"])
+
+
+def test_grading_gate_is_1830_kst_whatever_the_session_timezone(signals, clock):  # noqa: F811
+    am_project(signals, MONDAY)
+    ask(signals, clock, MONDAY, "intraday")
+    store = SignalStore(signals)
+    for zone in ("UTC", "Asia/Seoul", "America/New_York"):
+        with signals.db.transaction() as conn:
+            conn.execute(f"SET LOCAL timezone='{zone}'")
+            for at, due in ((datetime(2026, 11, 16, 9, 29, tzinfo=UTC), 0), (datetime(2026, 11, 16, 9, 30, tzinfo=UTC), 1)):
+                found = conn.execute("""SELECT count(*) n FROM trading_signals s WHERE s.exit_at<%s AND s.baselines IS NOT NULL
+                    AND (((CASE WHEN s.kind='intraday' THEN s.session_day ELSE s.exit_day END)+time '18:30')
+                         AT TIME ZONE 'Asia/Seoul')<=%s""", (at, at)).fetchone()["n"]
+                assert found == due, zone
+    assert store.grading_due(datetime(2026, 11, 16, 9, 29, tzinfo=UTC)) == []
+    assert [str(r["id"]) for r in store.grading_due(datetime(2026, 11, 16, 9, 30, tzinfo=UTC))] == [
+        str(slot_id(MONDAY, "intraday"))]
+
+
+async def test_non_positive_bar_is_suspicious(signals, clock):  # noqa: F811
+    am_project(signals, MONDAY)
+    ask(signals, clock, MONDAY, "intraday")
+    feeds = Feeds(official((MONDAY, 3920, 3950)), bar_chart([(MONDAY, 0, 52000, 0)], events=[]))
+    clock["at"] = datetime(2026, 11, 16, 9, 30, tzinfo=UTC)
+    assert (await SignalRunner(signals, fetch=feeds.fetch, reader=feeds.reader).tick())["graded"] == 2
+    kodex = returns(signals)[(str(slot_id(MONDAY, "intraday")), "KODEX200")]
+    assert (kodex["state"], kodex["detail"]) == ("pending", "의심 일봉")
+
+
+async def test_one_failing_slot_does_not_stop_another(signals, clock, monkeypatch):  # noqa: F811
+    from quant_company.signals import grading
+
+    am_project(signals, MONDAY)
+    ask(signals, clock, MONDAY, "intraday")
+    ask(signals, clock, MONDAY, "overnight")
+    real = grading.grade_slot
+
+    def flaky(row, lake, chart):
+        if row["kind"] == "intraday":
+            raise ArithmeticError("boom")
+        return real(row, lake, chart)
+
+    monkeypatch.setattr(grading, "grade_slot", flaky)
+    feeds = Feeds(official((MONDAY, 3920, 3950)), bar_chart([(MONDAY, 52000, 52500, 100)], events=[]))
+    clock["at"] = datetime(2026, 11, 17, 9, 30, tzinfo=UTC)
+    await SignalRunner(signals, fetch=feeds.fetch, reader=feeds.reader).tick()
+    assert {sid for sid, _ in returns(signals)} == {str(slot_id(MONDAY, "overnight"))}

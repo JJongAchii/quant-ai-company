@@ -111,8 +111,8 @@ class SignalStore:
         last 30 minutes waits for the next attempt. A slot that never got a snapshot is not graded."""
         with self.db.transaction() as conn:
             return conn.execute("""SELECT s.* FROM trading_signals s WHERE s.exit_at<%s AND s.baselines IS NOT NULL
-                AND ((CASE WHEN s.kind='intraday' THEN s.session_day ELSE s.exit_day END)+time '18:30')
-                    AT TIME ZONE 'Asia/Seoul'<=%s
+                AND (((CASE WHEN s.kind='intraday' THEN s.session_day ELSE s.exit_day END)+time '18:30')
+                     AT TIME ZONE 'Asia/Seoul')<=%s
                 AND (SELECT count(*) FROM trading_signal_returns r WHERE r.signal_id=s.id
                      AND r.state IN ('final','excluded'))<2
                 AND NOT EXISTS (SELECT 1 FROM trading_signal_returns r WHERE r.signal_id=s.id AND r.state='pending'
