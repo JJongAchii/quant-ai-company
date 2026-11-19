@@ -86,13 +86,16 @@ ADR 0051이 보류한 `staff_models.BRIEFING`(market_brief → Opus 5.5 xhigh)�
 
 - 이 변경은 렌더 이미지, 새 서비스, 호스트 유닛이 필요 없다. 변경은 main에 병합되어 `deploy/release.py`가 CI 통과 main을
   릴리스한 뒤, 릴리스 운영자에게 **main SHA와 `ANALYST_SIGNALS_ENABLED=true`** 를 넘겨 runtime.env에 반영하게 한다. 호스트를 직접 바꾸지 않는다.
-- 아직 없는 증거(이 ADR 작성 시점에는 어느 것도 수집되지 않았다):
+- 아직 없는 증거(2026-11-19 기준):
   - 실제 Codex의 계약·지연 확인(`scripts/qualify_signals.py`). 운영 이미지에는 `scripts/`가 없으므로 호스트가 아니라 저장소
     checkout에서 로컬 ChatGPT 로그인과 일회용 로컬 PostgreSQL로 돌린다. 스크립트가 그 클러스터에 DB를 만들고 끝나면 지우며, 로컬이
     아닌 DB는 거부한다. 실제 신호 경로(아침판 같은 프로젝트, `SignalStore` 예약·질문, `TurnExecutor`와 `CodexRunner`)를 타고, Slack
     전송기는 만들지 않는다. `--live` 없이는 모델을 부르지 않는다(`qualification_requires_live`). 명령:
     `uv run --frozen python scripts/qualify_signals.py --live --kind overnight --fetch-snapshot --edition <file>
-    --output docs/project/evidence/<name>.json` (절차는 [브리핑 운영 문서](../briefing.md#analyst-매매-신호)).
+    --output docs/project/evidence/<name>.json` (절차는 [브리핑 운영 문서](../briefing.md#analyst-매매-신호)). 2026-11-19에 한 번
+    돌린 [영수증](../project/evidence/analyst-signals-qualification-20261119.json)은 실제 신호 경로·일회용 DB·실시간 시세 읽기까지
+    지났지만, 작업 컴퓨터의 Codex CLI(0.169.0)가 검증된 0.160.1이 아니어서 runner가 모델 호출 전에 거부했다. 모델 응답은 아직
+    확인하지 못했다([요약](../project/ANALYST-SIGNALS-BASELINES-20261119.md)).
   - 실제 Slack 전달. 구현 시험의 Slack은 모의이며 배포됐다고 적지 않는다.
   - 첫 5거래일 관찰, 그리고 장중 한 번 Yahoo KRX 시세가 실제보다 몇 분 늦는지 재는 일은 `docs/project/evidence`에 따로 남긴다.
 - 운영 S3 레이크 기준선 재실행(2026-11-19)은 점검을 겹치는 기간으로 좁히고 지수에 없는 날을 출력하게 한 뒤(R21, 규칙·로컬 숫자 불변) 끝까지

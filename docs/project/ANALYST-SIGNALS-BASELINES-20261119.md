@@ -55,3 +55,16 @@ Yahoo 일봉으로 채점한다.
 - 진짜 적중률 55%를 우연과 구분하려면 약 600거래일, 60%라면 약 150거래일이 걸린다(단측 5%, 검정력 80%). 성적표가 p<0.05 전에는
   "아직 우연과 구분할 수 없음"이라고 쓰는 이유다.
 - 운영 `krx_index`의 2026-09-04 같은 빈 날에는 KOSPI 채점이 "공식 자료 없음"으로 보류되고, 채점일 14일 뒤 "자료 없음 제외"가 된다.
+
+## 실제 Codex 시험 시도 (2026-11-19, 실패 영수증)
+
+[`analyst-signals-qualification-20261119.json`](evidence/analyst-signals-qualification-20261119.json)은 저장소 checkout에서
+`scripts/qualify_signals.py --live --kind overnight --fetch-snapshot --synthetic-edition`을 한 번 돌린 영수증이다(코드
+`3f111552`, 2026-11-19 23:27 KST, 11월 20일 오버나잇 칸). 일회용 로컬 PostgreSQL DB를 만들어 실제 신호 경로(아침판 같은 프로젝트,
+`SignalStore` 예약·시세 고정·질문, `TurnExecutor`)를 탔고, 끝난 뒤 그 DB를 지웠다. Slack 전송기는 만들지 않았고 게시글도 없었다.
+편집 본문은 시험용 합성 글이다. 시세는 Yahoo에서 실시간으로 읽었고, 11개 중 `KRW=X`는 응답의 심볼이 맞지 않아
+(`chart_symbol_mismatch`) "빠짐"으로 처리됐다. 직후 같은 코드로 다시 읽었을 때는 11개 모두 정상이었다. **모델은 부르지 못했다.**
+이 컴퓨터의 Codex CLI는 0.169.0이고 `CodexRunner`는 검증된 0.160.1(`src/quant_company/providers/codex_release.json`)만 실행하므로,
+모델 호출 전에 `unavailable`로 거부했다(완료된 모델 턴 0, 제안 없음). 이 컴퓨터의 Codex 앱이 함께 쓰는 `~/.codex`에 다른 버전의
+CLI를 돌리지 않으려고 다시 시도하지 않았다. 그래서 실제 모델 응답의 형식·지연 확인은 아직 없다. 운영자가 검증된 CLI로 같은 명령에
+`--codex-bin <0.160.1 codex 경로>`를 붙여 한 번 돌리고 그 영수증을 `docs/project/evidence`에 남긴다.

@@ -1,0 +1,109 @@
+{
+  "started_at": "2026-11-19T14:27:50.193562+00:00",
+  "state": "deferred",
+  "kind": "overnight",
+  "real_model": true,
+  "slack_sender_constructed": false,
+  "database": {
+    "kind": "disposable database on a local PostgreSQL cluster",
+    "name": "company_signal_qualification_365f26470cf94e49b66656f26ed0636e",
+    "dropped": true
+  },
+  "code_commit": "3f1115526918c6b1b015091fa09d6ef83a9e9786",
+  "uncommitted_code": false,
+  "edition": {
+    "sha256": "24968e106a0e96f757ad88371f2cccf1526ab77b3fed31198756a77992122475",
+    "characters": 188,
+    "synthetic": true
+  },
+  "turns": [
+    {
+      "sequence": 1,
+      "state": "defer",
+      "task_status": null,
+      "reason": "unavailable",
+      "turn_status": "waiting",
+      "turn_error": "unavailable",
+      "tools": [],
+      "latency_seconds": 0.1
+    }
+  ],
+  "completed_model_turns": 0,
+  "provider_faults": [
+    {
+      "request_id": "be661c48-bc8d-5dfa-9086-0b05bc973bca",
+      "code": "unavailable",
+      "message": "The runtime requires the validated Codex CLI 0.160.1."
+    }
+  ],
+  "proposal": null,
+  "posts": [],
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "session_day": "2026-11-20",
+  "clock": {
+    "simulated_start": "2026-11-20T05:30:00+00:00",
+    "real_start": "2026-11-19T14:27:52.515262+00:00",
+    "tools_until": "2026-11-20T05:55:00+00:00",
+    "send_at": "2026-11-20T06:10:00+00:00",
+    "entry_at": "2026-11-20T06:30:00+00:00",
+    "exit_at": "2026-11-23T00:00:00+00:00"
+  },
+  "snapshot": {
+    "origin": "live read (--fetch-snapshot)",
+    "observed_at": "2026-11-19T14:27:53.174266+00:00",
+    "quotes": [
+      "es",
+      "ewy",
+      "hsi",
+      "kodex200",
+      "kosdaq",
+      "kospi",
+      "n225",
+      "nq",
+      "shanghai",
+      "spy"
+    ],
+    "errors": {
+      "usdkrw": "chart_symbol_mismatch"
+    },
+    "receipts": {
+      "es": "bcabd5b4279fbd8948682bd7e21c8624cb488e7e3a0783f7d4cbbb364eb319e6",
+      "nq": "e4fd17fbcccaa8ccc7bb369a38f6d88bae8bb65ffb8e9c9b056e657ae11db957",
+      "spy": "88002f089e9529f2cb0582b1829fcefbc11ea32d66c1d60a3de179958ef3351e",
+      "ewy": "651e51ce97cbdb78fd5a5712e4c88a7dc87a668d94525b05d04cc9d8ce9c8cfe",
+      "usdkrw": "0c484c16aa29ae51f4ad48a57aaf1590323b82a375f2669e8fdd3b412ebb34b0",
+      "kospi": "7664ffe234a82ec0031a99bf968e6d76b91a410dc793036eb9b68fd61d0aedc0",
+      "kodex200": "df03974cfe9dd4fd71e5cd17e22f005c1a7739f8157f8f7c4d43ad63c658073f",
+      "kosdaq": "8f5745f6abb97d855f7b824fe22171d8ecb47e44d2b2f5c768692a78b1cd4585",
+      "n225": "0a75563af706d1039c96f463115e4505dda4b0279d2242083234272b69a9895f",
+      "hsi": "050926d38927e86ebccc6c9cc5df46f7add1f43ae45b10abfe4f4fc934299738",
+      "shanghai": "d830f90995d7e26a8f735f523017ab46d6d1a31e50f709015aea356522c44b20"
+    },
+    "text": "S&P 500 선물 | 7421.75 | 원천 23:17 KST | 전일 대비 +1.11%\n나스닥 100 선물 | 27719.50 | 원천 23:17 KST | 전일 대비 +1.96%\nSPY | 730.20 | 원천 06:00 KST | 전일 대비 -0.31%\nEWY | 136.73 | 원천 06:00 KST | 전일 대비 +1.04%\n코스피 | 5137.89 | 원천 20:05 KST | 전일 대비 +1.39% | 지연\nKODEX 200 | 80630.00 | 원천 16:30 KST | 전일 대비 +1.55% | 지연\n코스닥 | 684.81 | 원천 20:05 KST | 전일 대비 +3.32% | 지연\n닛케이 225 | 59444.21 | 원천 15:45 KST | 전일 대비 +0.71% | 지연\n항셍 | 22841.62 | 원천 17:08 KST | 전일 대비 -1.95% | 지연\n상하이종합 | 3577.62 | 원천 16:00 KST | 전일 대비 -0.28% | 지연\n빠짐: usdkrw(chart_symbol_mismatch)"
+  },
+  "timing": null,
+  "committed_at": null,
+  "format_failures": 0,
+  "unparsed": false,
+  "last_error": null,
+  "task": {
+    "status": "running",
+    "error": null,
+    "turn_count": 1
+  },
+  "signal_notes": [],
+  "web_requests": [],
+  "answers": [],
+  "completed_at": "2026-11-19T14:27:53.500007+00:00",
+  "notes": [
+    "Provider: CodexRunner on the local ChatGPT login (CODEX_HOME), no API credentials; its job receipts were kept outside the repository.",
+    "No model turn completed: the provider raised unavailable (The runtime requires the validated Codex CLI 0.160.1.).",
+    "A disposable database on a local PostgreSQL cluster was created for this run and dropped afterwards; production, its database and its host were not touched.",
+    "The Slack sender (SlackOutbox) was never constructed: the posts listed exist only as undispatched outbox rows of the disposable database.",
+    "The signals clock started at the slot's snapshot time and advanced in real time, so the tool cutoff and the on-time/late timing reflect the real latency. Grading, the interim post and the scorecard were not run.",
+    "The snapshot was read live from Yahoo at the time shown.",
+    "The edition text is synthetic test text, not a published edition.",
+    "The proposal is a model output for a contract and latency check, not a trading recommendation."
+  ]
+}
