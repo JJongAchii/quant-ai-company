@@ -273,14 +273,14 @@ def chart_catalogue(stocks):
     return items
 
 
-def fetch_chart(symbol, *, connection_factory=None):
+def fetch_chart(symbol, *, connection_factory=None, params="interval=1d&range=5d"):
     """One bounded public read; failures become fixed codes, never provider text."""
     from ..web_fetch import PublicConnection
 
     connection = (connection_factory or PublicConnection)(CHART_HOST, timeout=CHART_REQUEST_SECONDS,
                                                           context=ssl.create_default_context())
     try:
-        connection.request("GET", f"/v8/finance/chart/{quote(symbol, safe='')}?interval=1d&range=5d", headers={
+        connection.request("GET", f"/v8/finance/chart/{quote(symbol, safe='')}?{params}", headers={
             "User-Agent": "QuantCompanyBriefing/1.0", "Accept": "application/json", "Accept-Encoding": "identity"})
         response = connection.getresponse()
         if response.status != 200:
