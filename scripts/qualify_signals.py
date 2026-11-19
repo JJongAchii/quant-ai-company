@@ -11,7 +11,10 @@ The script creates a database on that cluster, migrates it, adds an AM-edition-l
 text, freezes the snapshot and asks the Analyst through SignalStore exactly as the signals loop does, then runs the
 signal task with TurnExecutor and a direct CodexRunner until it commits, is re-asked to exhaustion or stops on a fault.
 The signals clock starts at the slot's snapshot time and runs in real time, so the tool cutoff and the on-time/late
-timing follow the real latency. The receipt is written to --output and the database is dropped."""
+timing follow the real latency. The receipt is written to --output and the database is dropped.
+
+CodexRunner runs only the validated Codex CLI (src/quant_company/providers/codex_release.json) and refuses any other
+version before calling the model; when the codex on PATH is another version, pass the validated one with --codex-bin."""
 
 import argparse
 import asyncio
