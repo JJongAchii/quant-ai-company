@@ -14,7 +14,9 @@ from .data_reader import fetch_chart, read_us_close, summarize
 from .store import BriefStore
 
 
-def query(root, edition, *, krx_close=False):
+def run_lake_module(root, module, payload, *, timeout=45):
+    """Run one lake reader module in a credential-isolated subprocess: restricted environment, the shared query lock,
+    a JSON stdin payload, a 128 KiB stdout cap, and fixed error codes."""
     if not root:
         return {"ok": False, "error": "lake_not_connected"}
     env = {key: os.environ[key] for key in ("PATH", "LANG", "LC_ALL", "SSL_CERT_FILE",
@@ -25,11 +27,8 @@ def query(root, edition, *, krx_close=False):
     if not _query_lock.acquire(timeout=1):
         return {"ok": False, "error": "lake_reader_busy"}
     try:
-        result = subprocess.run([sys.executable, "-m", "quant_company.briefing.data_reader"],
-            # The KRX close request key exists only while BRIEFING_KR_CLOSE_ENABLED asks for it (PM editions).
-            input=json.dumps({"definition": edition.model_dump(mode="json"), **({"krx_close": True} if krx_close else {})}),
-            text=True,
-            capture_output=True, timeout=45, env=env)
+        result = subprocess.run([sys.executable, "-m", module], input=json.dumps(payload), text=True,
+                                capture_output=True, timeout=timeout, env=env)
         if result.returncode or len(result.stdout.encode()) > 131072:
             return {"ok": False, "error": "lake_reader_failed"}
         return json.loads(result.stdout)
@@ -37,6 +36,14 @@ def query(root, edition, *, krx_close=False):
         return {"ok": False, "error": "lake_reader_timeout_or_invalid_result"}
     finally:
         _query_lock.release()
+
+
+def query(root, edition, *, krx_close=False):
+    if not root:
+        return {"ok": False, "error": "lake_not_connected"}
+    # The KRX close request key exists only while BRIEFING_KR_CLOSE_ENABLED asks for it (PM editions).
+    return run_lake_module(root, "quant_company.briefing.data_reader",
+                           {"definition": edition.model_dump(mode="json"), **({"krx_close": True} if krx_close else {})})
 
 
 class BriefDataCollector:

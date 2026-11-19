@@ -105,6 +105,37 @@ class SignalStore:
             return [row for row in rows if row["kind"] != "intraday" or at >= row["snapshot_latest"]
                     or self._am_edition(conn, row["session_day"])]
 
+    def grading_due(self, at: datetime) -> list[dict]:
+        """Slots whose trade has closed and that still lack a final or excluded return for either instrument, from
+        18:30 KST of the grading day (session_day intraday, exit_day overnight). A slot with a pending return from the
+        last 30 minutes waits for the next attempt. A slot that never got a snapshot is not graded."""
+        with self.db.transaction() as conn:
+            return conn.execute("""SELECT s.* FROM trading_signals s WHERE s.exit_at<%s AND s.baselines IS NOT NULL
+                AND ((CASE WHEN s.kind='intraday' THEN s.session_day ELSE s.exit_day END)+time '18:30')
+                    AT TIME ZONE 'Asia/Seoul'<=%s
+                AND (SELECT count(*) FROM trading_signal_returns r WHERE r.signal_id=s.id
+                     AND r.state IN ('final','excluded'))<2
+                AND NOT EXISTS (SELECT 1 FROM trading_signal_returns r WHERE r.signal_id=s.id AND r.state='pending'
+                                AND r.updated_at>%s)
+                ORDER BY s.session_day,s.kind""", (at, at, at - timedelta(minutes=30))).fetchall()
+
+    def save_returns(self, returns: list[dict]) -> int:
+        """Upsert one row per (signal, instrument). A final or excluded row is never overwritten; a pending row may
+        be replaced by a later pending or final one. Returns the rows written."""
+        at, written = schedule.utcnow(), 0
+        with self.db.transaction() as conn:
+            for r in returns:
+                written += conn.execute("""INSERT INTO trading_signal_returns(signal_id,instrument,state,entry_price,
+                    exit_price,long_bp,detail,receipt,updated_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    ON CONFLICT(signal_id,instrument) DO UPDATE SET state=EXCLUDED.state,
+                    entry_price=EXCLUDED.entry_price,exit_price=EXCLUDED.exit_price,long_bp=EXCLUDED.long_bp,
+                    detail=EXCLUDED.detail,receipt=EXCLUDED.receipt,updated_at=EXCLUDED.updated_at
+                    WHERE trading_signal_returns.state='pending'""",
+                                         (r["signal_id"], r["instrument"], r["state"], r.get("entry_price"),
+                                          r.get("exit_price"), r.get("long_bp"), r.get("detail"),
+                                          Jsonb(r["receipt"]) if r.get("receipt") is not None else None, at)).rowcount
+        return written
+
     def _am_edition(self, conn, day: date) -> dict | None:
         s = self.company.settings
         return conn.execute(AM_EDITION, (day, s.briefing_channel_id, s.briefing_owner_user)).fetchone()
