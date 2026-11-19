@@ -466,8 +466,27 @@ KRX 정규장 날마다 Analyst가 소유자에게 두 신호를 보낸다([ADR 
 
 설정: `ANALYST_SIGNALS_ENABLED`(기본 false)는 공개 브리핑이 켜져 있을 때만 켤 수 있다. 켜기는 릴리스 운영자의 일이다.
 CI 통과 main이 릴리스된 뒤 운영자에게 main SHA와 `ANALYST_SIGNALS_ENABLED=true`를 넘긴다. 렌더 이미지, 새 서비스, 호스트 유닛은 필요 없다.
-호스트를 직접 고치지 않는다. 켜기 전 운영자가 호스트에서 `scripts/qualify_signals.py`로 실제 Codex 응답의 형식과 지연을 확인한다
-(`ANALYST_SIGNALS_ENABLED=false`일 때만 실행되고 DB·Slack에 쓰지 않는다).
+호스트를 직접 고치지 않는다.
+
+켜기 전에 `scripts/qualify_signals.py`로 실제 Codex 응답의 형식과 지연을 확인한다. 운영 이미지에는 `scripts/`가 없으므로 호스트가
+아니라 저장소 checkout에서, 로컬 ChatGPT 로그인(Codex, `CODEX_HOME` 기본 `~/.codex`)과 일회용 로컬 PostgreSQL 클러스터로 돌린다.
+
+```bash
+TEST_DATABASE_URL=postgresql://postgres@127.0.0.1:<port>/postgres \
+  uv run --frozen python scripts/qualify_signals.py --live --kind overnight --fetch-snapshot \
+  --edition <file> --output docs/project/evidence/<name>.json
+```
+
+- 그 클러스터에 일회용 DB를 만들어 쓰고 끝나면 지운다. 로컬(127.0.0.1·localhost·::1)이 아닌 DB는 거부한다.
+- 실제 신호 경로를 탄다: 아침판과 같은 프로젝트(`--edition` 본문), `SignalStore`의 예약·시세 고정·질문, `TurnExecutor`와
+  `CodexRunner`. 신호가 커밋되거나, 형식 재질문을 다 쓰거나, 장애로 멈출 때까지 턴을 돌린다. Slack 전송기는 만들지 않으므로 글은
+  그 DB의 outbox에만 남고 나가지 않는다.
+- `--live`가 없으면 모델을 부르지 않고 `qualification_requires_live`로 거부한다. `--fetch-snapshot`은 지금 Yahoo에서 시세를 읽고,
+  `--snapshot FILE`은 `read_snapshot`이 만든 JSON을 쓴다. 신호 시계는 그 신호의 시세 고정 시각에서 시작해 실제 시간으로 흐르므로
+  도구 마감과 정시·늦음이 실제 지연을 따른다. 날짜는 `--day`로 고르고, 없으면 그 종류의 다음 신호다.
+- Codex CLI는 `src/quant_company/providers/codex_release.json`의 검증된 버전이어야 한다(다르면 runner가 모델을 부르기 전에
+  거부한다). 다른 경로의 CLI는 `--codex-bin`으로 준다. 편집 본문이 시험용이면 `--synthetic-edition`으로 영수증에 표시한다.
+- 영수증(JSON)에는 턴별 상태·지연·도구, 제안, 정시·늦음, 형식 실패 수, 게시될 글과 그 outbox 상태가 남는다.
 
 처음 며칠 확인할 것:
 - 보내는 시각 전에 신호(Analyst 또는 임시)가 올라왔는가. 임시 신호가 반복되면 사유 문구(대기 중, 응답 지연, 로그인 만료 등)를 본다.
