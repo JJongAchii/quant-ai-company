@@ -74,7 +74,7 @@ def kodex200(index):
     frame = frame[(frame["open"] > 0) & (frame["close"] > 0)]
     frame["intraday"] = frame["close"] / frame["open"] - 1
     merged = frame[["date", "intraday"]].merge(index[["date", "long", "fade", "follow_us"]], on="date")
-    if len(merged) != len(frame[frame["date"] <= index["date"].max()]):
+    if len(merged) != len(frame[(frame["date"] >= index["date"].min()) & (frame["date"] <= index["date"].max())]):
         raise SystemExit("KODEX 200 rows were dropped by the join")
     return merged
 
