@@ -8,6 +8,7 @@ from uuid import NAMESPACE_URL, uuid5
 from psycopg.types.json import Jsonb
 
 from .contracts import AgentDecision, ProviderFault, ProviderRequest, ProviderResponse
+from .signals.contracts import SIGNAL_KIND
 from .web_fetch import fetch, public_url
 
 WEB_TOOLS = {"web_search", "web_read"}
@@ -65,6 +66,10 @@ def prepare(company, turn_id, decision):
         return []
     if not company.settings.company_web_enabled:
         raise PolicyError("Web research is disabled by service configuration")
+    from .signals.store import skip_prefetch
+
+    if skip_prefetch(company, turn_id, decision):
+        return []  # a refused or malformed signal round runs and raises nothing; its commit asks again
     normalized = [(action, arguments_for(action)) for action in actions]
     with company.db.transaction() as conn:
         row = conn.execute("SELECT task_id FROM turns WHERE id=%s", (turn_id,)).fetchone()
@@ -89,7 +94,7 @@ def prepare(company, turn_id, decision):
                     conn.execute("INSERT INTO daily_usage(day,reserved) VALUES (CURRENT_DATE,0) ON CONFLICT DO NOTHING")
                     used = conn.execute("SELECT reserved FROM daily_usage WHERE day=CURRENT_DATE FOR UPDATE").fetchone()["reserved"]
                     cap = effective_limits(conn, company)["company"]
-                    if cap is not None and used >= cap:
+                    if cap is not None and used >= cap and task["kind"] != SIGNAL_KIND:
                         raise ProviderFault("busy", "Company model budget is waiting for renewal.", 3600)
                     provider_request = ProviderRequest(request_id=identity, model=role.model,
                                                        reasoning_effort=role.reasoning_effort,

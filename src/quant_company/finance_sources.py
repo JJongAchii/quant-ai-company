@@ -232,8 +232,11 @@ def prefetch(company, turn_id, decision):
     if not reads:
         return
     from .company import PolicyError, fingerprint
+    from .signals.store import skip_prefetch
     from .task_control import held
 
+    if skip_prefetch(company, turn_id, decision):
+        return  # a refused or malformed signal round fetches and raises nothing; its commit asks again
     if len(reads) != 1:
         raise PolicyError('At most one official document fetch per turn')
     request = reads[0]

@@ -8,6 +8,7 @@ from psycopg.types.json import Jsonb
 from pydantic import Field
 
 from .contracts import StrictModel
+from .signals.contracts import SIGNAL_KIND
 
 
 class Control(StrictModel):
@@ -37,6 +38,8 @@ def waiting_router(conn, project_id):
 
 
 def held(conn, project, task):
+    if task['kind'] == SIGNAL_KIND:
+        return False  # thread commands never hold the day's signal
     router = waiting_router(conn, project['id'])
     if task['kind'] == 'routing':
         return bool(router and router['id'] != task['id'])
@@ -100,8 +103,10 @@ def advance(conn, company, project, *, instruction=None, status='active', keep_r
         conn.execute("""UPDATE turns SET revision=%s WHERE request IS NULL AND task_id IN
             (SELECT id FROM tasks WHERE project_id=%s AND kind='routing' AND revision=%s)""",
                      (project['revision'], project['id'], project['revision']))
-    conn.execute("UPDATE outbox SET status='stale' WHERE project_id=%s AND status='pending' AND revision<%s",
-                 (project['id'], project['revision']))
+    # A revision never withdraws an undelivered trading signal post (R14); its own outbox gate decides.
+    conn.execute("""UPDATE outbox o SET status='stale' WHERE o.project_id=%s AND o.status='pending' AND o.revision<%s
+        AND NOT EXISTS (SELECT 1 FROM messages m WHERE m.id=o.id AND m.kind=%s)""",
+                 (project['id'], project['revision'], SIGNAL_KIND))
     return project
 
 
