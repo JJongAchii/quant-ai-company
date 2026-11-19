@@ -18,7 +18,6 @@ def _next_open(day: date, changes):
         override = (changes or {}).get(("KR", following))
         if not (override and override.closed):
             return following, calendar.session_open(str(following)).to_pydatetime()
-        # a closed override skips the session; next_session needs a calendar-valid label, which it is
 
 
 def slots_for(day: date, changes: dict | None = None) -> list[Slot]:
