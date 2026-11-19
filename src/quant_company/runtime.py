@@ -73,14 +73,21 @@ def data_watch_loops(company, runner=None):
     return [Loop("data-watch", runner.tick, timeout=120, attempts=3, delay=60)]
 
 
-def brief_data_loops(company, collector=None):
+def brief_data_loops(company, collector=None, signals=None):
     if not company.settings.briefing_enabled:
         return []
     from .briefing.data import BriefDataCollector
 
     collector = collector or BriefDataCollector(company)
     # A failed read keeps explicit coverage gaps for the edition.
-    return [Loop("brief-data", collector.tick, timeout=90, attempts=2, retry_seconds=5, delay=30)]
+    loops = [Loop("brief-data", collector.tick, timeout=90, attempts=2, retry_seconds=5, delay=30)]
+    if company.settings.analyst_signals_enabled:
+        from .signals.runner import SignalRunner
+
+        signals = signals or SignalRunner(company)
+        # Its own loop (no shared lane), so a slow edition read never delays a slot; every 15 s meets slot times.
+        loops.append(Loop("signals", signals.tick, timeout=120, attempts=2, retry_seconds=5, delay=15))
+    return loops
 
 
 def housing_feed_loops(company, collector=None):

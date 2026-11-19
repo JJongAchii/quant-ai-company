@@ -149,7 +149,8 @@ class SlackIngress:
             with self.company.db.transaction() as conn:
                 project = conn.execute("""SELECT p.id,(EXISTS(SELECT 1 FROM news_events n WHERE n.project_id=p.id)
                     OR EXISTS(SELECT 1 FROM news_digests d WHERE d.project_id=p.id)) AS news,
-                    EXISTS(SELECT 1 FROM brief_editions b WHERE b.project_id=p.id) AS briefing
+                    (EXISTS(SELECT 1 FROM brief_editions b WHERE b.project_id=p.id)
+                    OR EXISTS(SELECT 1 FROM trading_signals s WHERE s.project_id=p.id)) AS briefing
                     FROM projects p WHERE channel=%s AND thread_ts=%s""",
                                        (channel, thread_ts)).fetchone()
             if not project:
