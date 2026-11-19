@@ -174,6 +174,7 @@ class Settings(BaseSettings):
     briefing_kr_close_due_minutes: int = Field(default=115, ge=2, le=360)
     # Only the 15:30 regular-session close is supported; the after-market (16:00~20:00) basis is not.
     briefing_kr_close_basis: str = "regular"
+    analyst_signals_enabled: bool = False
     tech_feed_enabled: bool = False
     tech_feed_publish_enabled: bool = False
     tech_feed_dedicated_worker: bool = False
@@ -269,6 +270,8 @@ class Settings(BaseSettings):
     def explicit_simulation(self) -> "Settings":
         if self.model_assignments_enabled and not self.model_accounts_enabled:
             raise ValueError("Model assignments require owner-selected account control")
+        if self.analyst_signals_enabled and not (self.briefing_enabled and self.briefing_publish_enabled):
+            raise ValueError("Analyst signals require an enabled publishing briefing")
         if self.video_enabled and not (self.briefing_enabled and self.briefing_publish_enabled):
             raise ValueError("Video requires an enabled publishing briefing source")
         if self.video_render_backend == "remote" and not (
