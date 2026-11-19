@@ -47,6 +47,10 @@ from .snapshot import follow_us, snapshot_text
 LOG = logging.getLogger(__name__)
 TIMES = ("snapshot_at", "snapshot_latest", "tools_until", "fallback_at", "send_at", "entry_at", "exit_at")
 PRIORITY = -100
+# From its slot's entry on, a signal task waits behind every slot still before its send time, still ahead of other work.
+LATE_PRIORITY = -50
+# The error of a signal task and turn retired after the slot's exit: no model call and no post.
+EXITED = "signal_exited"
 # The trade started before the interim post could go out (the loop was down): recorded, never posted (R3).
 OUTAGE = "서비스 중단"
 # The interim post's reason after an unparsed answer, which no Analyst signal follows (R13).
@@ -411,6 +415,49 @@ class SignalStore:
                                                              "revision": project["revision"]}, project["id"])
         return 1
 
+    def demote(self, at: datetime) -> int:
+        """From the slot's entry on, its unfinished task drops from priority -100 to -50, so a slot still before its
+        send time always runs first (due_turns orders by priority). Returns the tasks demoted."""
+        with self.db.transaction() as conn:
+            return conn.execute("""UPDATE tasks k SET priority=%s FROM trading_signals s WHERE k.id=s.task_id
+                AND s.entry_at<=%s AND k.priority=%s AND k.status NOT IN ('completed','superseded')""",
+                                (LATE_PRIORITY, at, PRIORITY)).rowcount
+
+    def retire(self, at: datetime) -> int:
+        """Close the task of every exited slot whose turn still waits to run (a long quota wait, a worker outage): the
+        queued or waiting turns become stale and the task superseded, with no model call and no post. A running turn
+        is left to finish; what it commits after the exit is recorded, never posted. Each slot has its own transaction
+        (R10). Returns the tasks closed."""
+        with self.db.transaction() as conn:
+            due = conn.execute("""SELECT s.id FROM trading_signals s JOIN tasks k ON k.id=s.task_id
+                WHERE s.exit_at<=%s AND k.status NOT IN ('completed','superseded')
+                AND EXISTS (SELECT 1 FROM turns t WHERE t.task_id=k.id AND t.status IN ('queued','waiting'))
+                ORDER BY s.exit_at,s.kind""", (at,)).fetchall()
+        retired = 0
+        for row in due:
+            try:
+                retired += self._retire(row["id"], at)
+            except Exception as exc:  # noqa: BLE001 - one slot's failure never holds back another
+                LOG.error("Signal retirement failed for %s: %s", row["id"], type(exc).__name__)
+        return retired
+
+    def _retire(self, identity, at: datetime) -> int:
+        with self.db.transaction() as conn:
+            known = conn.execute("SELECT project_id FROM trading_signals WHERE id=%s", (identity,)).fetchone()
+            # R8: the project first. prepare_turn holds it while a turn starts, so no turn starts meanwhile.
+            project = self.company._project(conn, known["project_id"])
+            row = conn.execute("SELECT * FROM trading_signals WHERE id=%s FOR UPDATE", (identity,)).fetchone()
+            task = conn.execute("SELECT * FROM tasks WHERE id=%s", (row["task_id"],)).fetchone()
+            if not task or at < row["exit_at"] or task["status"] in {"completed", "superseded"}:
+                return 0
+            turns = [str(turn["id"]) for turn in conn.execute("""UPDATE turns SET status='stale',error=%s,
+                updated_at=now() WHERE task_id=%s AND status IN ('queued','waiting') RETURNING id""",
+                                                              (EXITED, task["id"]))]
+            if not turns:
+                return 0
+            _close_exited(self.company, conn, project, task, row, turns)
+        return 1
+
     def gate(self, conn, row: dict) -> bool:
         """SlackOutbox._claim_one's check for a pending trading_signal post (spec §8). Unlike other posts, a signal
         post ignores routing holds, paused projects and thread revisions; instead:
@@ -441,6 +488,24 @@ class SignalStore:
                     AND thread_ts IS NULL""", (row["project_id"], row["id"])).fetchone():
                 return _defer(conn, row, "awaiting_thread_root")
         return True
+
+
+def _close_exited(company, conn, project, task, slot, turns: list[str]) -> None:
+    conn.execute("UPDATE tasks SET status='superseded',error=%s WHERE id=%s", (EXITED, task["id"]))
+    company._event(conn, "trading_signal_retired", {"slot_id": slot["id"], "task_id": task["id"], "turns": turns},
+                   project["id"])
+
+
+def exited_turn(company, conn, project, task, turn) -> bool:
+    """prepare_turn's check for a signal turn, under its project and turn locks: once the slot has exited, the turn is
+    stale and the task superseded, and no request is built. A turn prepared before the exit commits as usual (the
+    answer is recorded, not posted); prepare_turn sees it again only after a worker restart, and then retires it."""
+    slot = conn.execute("SELECT id,exit_at FROM trading_signals WHERE task_id=%s", (task["id"],)).fetchone()
+    if not slot or schedule.utcnow() < slot["exit_at"]:
+        return False
+    conn.execute("UPDATE turns SET status='stale',error=%s,updated_at=now() WHERE id=%s", (EXITED, turn["id"]))
+    _close_exited(company, conn, project, task, slot, [str(turn["id"])])
+    return True
 
 
 def _askable(row: dict | None) -> bool:

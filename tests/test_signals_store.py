@@ -77,7 +77,7 @@ async def test_tick_at_kst_midnight_schedules_kst_day(signals, clock):  # noqa: 
     # 00:30 KST on Friday DAY is still Thursday in UTC, and Thursday is a trading day too.
     clock["at"] = datetime(2026, 11, 19, 15, 30, tzinfo=UTC)
     runner = SignalRunner(signals, fetch=calls.append)
-    assert await runner.tick() == {"state": "ran", "fallbacks": 0, "scheduled": 2, "asked": 0, "retried": 0, "graded": 0, "reported": 0}
+    assert await runner.tick() == {"state": "ran", "fallbacks": 0, "scheduled": 2, "asked": 0, "retried": 0, "demoted": 0, "retired": 0, "graded": 0, "reported": 0}
     assert [(row["session_day"], row["kind"]) for row in slot_rows(signals)] == [(DAY, "intraday"), (DAY, "overnight")]
     assert calls == []
 
@@ -211,8 +211,8 @@ def test_thread_reply_in_standalone_project_reaches_analyst(signals, credentials
 async def test_tick_freezes_the_snapshot_and_asks_once(signals, clock):  # noqa: F811
     am_project(signals, DAY)
     runner = SignalRunner(signals, fetch=recorded("intraday"))
-    assert await runner.tick() == {"state": "ran", "fallbacks": 0, "scheduled": 2, "asked": 1, "retried": 0, "graded": 0, "reported": 0}
-    assert await runner.tick() == {"state": "idle", "fallbacks": 0, "scheduled": 0, "asked": 0, "retried": 0, "graded": 0, "reported": 0}
+    assert await runner.tick() == {"state": "ran", "fallbacks": 0, "scheduled": 2, "asked": 1, "retried": 0, "demoted": 0, "retired": 0, "graded": 0, "reported": 0}
+    assert await runner.tick() == {"state": "idle", "fallbacks": 0, "scheduled": 0, "asked": 0, "retried": 0, "demoted": 0, "retired": 0, "graded": 0, "reported": 0}
     assert one(signals, "SELECT snapshot FROM trading_signals WHERE kind='intraday'")["snapshot"] == snapshot("intraday")
 
 
@@ -265,10 +265,11 @@ def ask_at(company, clock, at, kind="intraday", day=MONDAY):  # noqa: F811
     return queued(company, slot_id(day, kind))
 
 
-def answer_at(company, clock, turn, at, value=None):  # noqa: F811
-    """The Analyst's turn runs and commits its final answer at `at`."""
-    clock["at"] = at
+def answer_at(company, clock, turn, at, value=None, *, prepared=None):  # noqa: F811
+    """The Analyst's turn starts at `prepared` (by default `at`) and commits its final answer at `at`."""
+    clock["at"] = prepared or at
     assert company.prepare_turn(turn)["state"] == "ready"
+    clock["at"] = at
     return company.commit_turn(turn, answer(turn, value))
 
 
@@ -396,7 +397,7 @@ async def test_fallback_when_model_never_answers(signals, clock):  # noqa: F811
     clock["at"] = kst(7, 30, MONDAY)
     assert (await runner.tick())["asked"] == 1
     clock["at"] = kst(8, 28, MONDAY)  # no worker ever ran the Analyst's turn
-    assert await runner.tick() == {"state": "ran", "fallbacks": 1, "scheduled": 0, "asked": 0, "retried": 0, "graded": 0, "reported": 0}
+    assert await runner.tick() == {"state": "ran", "fallbacks": 1, "scheduled": 0, "asked": 0, "retried": 0, "demoted": 0, "retired": 0, "graded": 0, "reported": 0}
     [post] = posts(signals)
     assert post["text"].split("\n")[:2] == ["⏱️ 임시 신호 · 11월 16일(월) 장중  시가 09:00 진입 → 종가 15:30 청산", INTERIM]
     assert one(signals, "SELECT status FROM turns WHERE task_id=%s", TASK)["status"] == "queued"
@@ -408,23 +409,25 @@ async def test_no_fallback_post_after_entry(signals, clock):  # noqa: F811
     clock["at"] = kst(7, 30, MONDAY)
     await runner.tick()
     clock["at"] = kst(9, 5, MONDAY)  # the worker was down from 07:31: a "buy at the open" post is useless now (R3)
-    assert await runner.tick() == {"state": "idle", "fallbacks": 0, "scheduled": 0, "asked": 0, "retried": 0, "graded": 0, "reported": 0}
+    # The trade has started, so the unanswered task now waits behind any slot still before its send time.
+    assert await runner.tick() == {"state": "ran", "fallbacks": 0, "scheduled": 0, "asked": 0, "retried": 0, "demoted": 1, "retired": 0, "graded": 0, "reported": 0}
     row = signal(signals)
     assert (row["state"], row["fallback_reason"], row["fallback_sent_at"], row["fallback_message_id"]) == (
         "fallback_sent", "서비스 중단", None, None)
     assert posts(signals) == [] and rows(signals, "SELECT id FROM outbox") == []
 
 
-@pytest.mark.parametrize("day, at, timing, header", [
-    (MONDAY, (8, 41), "late", "📈 장중 신호 · 늦음 08:41 · 임시 신호와 반대"),
-    (TUESDAY, (9, 5), "after_entry", "📈 장중 신호 · 늦음 09:05 · 임시 신호와 반대"),
-    (WEDNESDAY, (15, 31), "after_entry", None),
+@pytest.mark.parametrize("day, prepared, at, timing, header", [
+    (MONDAY, (8, 41), (8, 41), "late", "📈 장중 신호 · 늦음 08:41 · 임시 신호와 반대"),
+    (TUESDAY, (9, 5), (9, 5), "after_entry", "📈 장중 신호 · 늦음 09:05 · 임시 신호와 반대"),
+    (WEDNESDAY, (15, 29), (15, 31), "after_entry", None),
 ], ids=["late", "after-entry", "after-exit"])
-def test_late_signal_after_fallback(signals, clock, day, at, timing, header):  # noqa: F811
+def test_late_signal_after_fallback(signals, clock, day, prepared, at, timing, header):  # noqa: F811
     am_project(signals, day)
     turn = ask(signals, clock, day)
     assert fallback_at(signals, clock, day) == 1
-    answer_at(signals, clock, turn, kst(*at, day=day), proposal(session_day=str(day), direction="short"))
+    answer_at(signals, clock, turn, kst(*at, day=day), proposal(session_day=str(day), direction="short"),
+              prepared=kst(*prepared, day=day))
     row = signal(signals, day)
     assert (row["state"], row["timing"], row["committed_at"]) == ("committed_late", timing, clock["at"])
     texts = [post["text"].split("\n") for post in posts(signals)]
@@ -570,6 +573,51 @@ def test_revision_change_recreates_task(signals, clock):  # noqa: F811
     assert str(signal(signals)["task_id"]) == fresh
 
 
+async def test_exited_signal_is_retired_without_a_model_call(signals, clock):  # noqa: F811
+    """Friday's turn waited out a long quota hold (defer_turn allows up to a week). From Friday's exit the loop closes
+    its task: the turn is stale, nothing runs or is posted, and on Monday morning Monday's signal is the only due
+    turn."""
+    am_project(signals, FRIDAY, thread_ts="100.013")
+    friday = ask(signals, clock, FRIDAY)
+    signals.prepare_turn(friday)
+    signals.defer_turn(friday, 3 * 86400, "quota")
+    with signals.db.transaction() as conn:  # the quota wait is over by Monday morning
+        conn.execute("UPDATE turns SET due_at=now() WHERE id=%s", (friday,))
+    store = SignalStore(signals)
+    assert store.retire(kst(15, 29, FRIDAY)) == 0  # before the exit nothing changes
+    assert one(signals, "SELECT status FROM turns WHERE id=%s", friday)["status"] == "waiting"
+    clock["at"] = kst(15, 30, FRIDAY)
+    assert (await SignalRunner(signals, fetch=recorded("intraday", MONDAY)).tick())["retired"] == 1
+    assert one(signals, "SELECT status,error FROM turns WHERE id=%s", friday) == {
+        "status": "stale", "error": "signal_exited"}
+    assert one(signals, "SELECT status,error FROM tasks WHERE id=%s", slot_id(FRIDAY, "intraday")) == {
+        "status": "superseded", "error": "signal_exited"}
+    assert store.retire(clock["at"]) == 0  # once
+    assert rows(signals, "SELECT id FROM outbox") == []
+    am_project(signals, MONDAY)
+    monday = ask(signals, clock)  # Monday 07:30
+    assert signals.due_turns() == [monday]
+
+
+async def test_past_entry_signal_waits_behind_a_slot_before_its_send_time(signals, clock):  # noqa: F811
+    """Monday's intraday task never got its answer in. From the open it is demoted (-100 to -50), so at 14:30 the
+    overnight signal runs first, while both still run ahead of every other task."""
+    project = am_project(signals, MONDAY)
+    intraday = ask(signals, clock)
+    overnight = ask(signals, clock, kind="overnight")  # 14:30
+    work = signals.ingest(event_key="slack:afternoon-question", text="오늘 장 어땠어?", owner="UHUMAN",
+                          agent=BRIEFER, project_id=str(project["id"]))
+    owner = queued(signals, work["task_id"])
+    assert signals.due_turns() == [intraday, overnight, owner]  # both at -100: the older one first
+    store = SignalStore(signals)
+    assert store.demote(kst(8, 59, MONDAY)) == 0  # before the open nothing changes
+    assert (await SignalRunner(signals, fetch=recorded("overnight", MONDAY)).tick())["demoted"] == 1
+    assert signals.due_turns() == [overnight, intraday, owner]
+    priorities = {str(row["id"]): row["priority"] for row in rows(signals, "SELECT id,priority FROM tasks")}
+    assert (priorities[TASK], priorities[slot_id(MONDAY, "overnight")]) == (-50, -100)
+    assert store.demote(clock["at"]) == 0  # once
+
+
 async def test_revision_keeps_undelivered_signal_post(signals, clock, credentials):  # noqa: F811
     """R14, simulated Slack: a "수정:" revision stales the thread's other undelivered posts, never a signal post."""
     project = am_project(signals, MONDAY)
@@ -683,7 +731,7 @@ async def test_tick_isolates_failing_steps_and_slots(signals, clock, monkeypatch
     clock["at"] = kst(8, 28, MONDAY)
     with caplog.at_level(logging.ERROR):
         result = await SignalRunner(signals, fetch=recorded("intraday", MONDAY)).tick()
-    assert result == {"state": "ran", "fallbacks": 1, "scheduled": 0, "asked": 1, "retried": 0, "graded": 0, "reported": 0}
+    assert result == {"state": "ran", "fallbacks": 1, "scheduled": 0, "asked": 1, "retried": 0, "demoted": 0, "retired": 0, "graded": 0, "reported": 0}
     assert f"{broken}: RuntimeError" in caplog.text and "ZeroDivisionError" in caplog.text
     states = {(row["session_day"], row["kind"]): (row["state"], row["fallback_reason"]) for row in slot_rows(signals)}
     assert states[(FRIDAY, "intraday")] == ("scheduled", None)

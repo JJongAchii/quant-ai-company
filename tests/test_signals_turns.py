@@ -352,14 +352,35 @@ def test_commit_after_entry_and_after_exit(signals, clock):  # noqa: F811
     [post] = posts(signals)
     assert post["text"].split("\n")[:3] == ["📈 장중 신호 · 늦음 09:05", "시가 09:00 진입 → 종가 15:30 청산", "롱 · 확신도 60%"]
     assert (signal(signals)["state"], signal(signals)["timing"]) == ("committed_late", "after_entry")
-    # After the exit (the next session's open) the signal is recorded, not posted.
+    # A turn that started before the exit (the next session's open) and commits after it is recorded, not posted.
+    clock["at"] = datetime(2026, 11, 17, 8, 59, tzinfo=KST)
+    assert signals.prepare_turn(overnight)["state"] == "ready"
     clock["at"] = datetime(2026, 11, 17, 9, 1, tzinfo=KST)
-    signals.prepare_turn(overnight)
     signals.commit_turn(overnight, answer(overnight, proposal(kind="overnight", session_day=str(MONDAY))))
     night = signal(signals, kind="overnight")
     assert (night["state"], night["timing"], night["analyst_message_id"], night["proposal"]["kind"]) == (
         "committed", "after_entry", None, "overnight")
     assert len(posts(signals)) == 1
+
+
+def test_prepare_turn_does_not_run_an_exited_signal(signals, clock):  # noqa: F811
+    """Friday's turn never ran (the worker was down until Monday). Once Friday's slot has exited, preparing the turn
+    builds no request: the turn is stale and the task superseded, nothing is posted, and Monday's signal runs."""
+    am_project(signals, FRIDAY, thread_ts="100.013")
+    friday = ask(signals, clock, FRIDAY)
+    am_project(signals, MONDAY)
+    monday = ask(signals, clock)  # Monday 07:30
+    assert signals.prepare_turn(friday) == {"state": "done", "status": "stale"}
+    turn = one(signals, "SELECT status,error,request,attempts FROM turns WHERE id=%s", friday)
+    assert (turn["status"], turn["error"], turn["request"], turn["attempts"]) == ("stale", "signal_exited", None, 0)
+    assert one(signals, "SELECT status,error FROM tasks WHERE id=%s", slot_id(FRIDAY, "intraday")) == {
+        "status": "superseded", "error": "signal_exited"}
+    [event] = rows(signals, "SELECT detail FROM events WHERE kind='trading_signal_retired'")
+    assert event["detail"] == {"slot_id": slot_id(FRIDAY, "intraday"), "task_id": slot_id(FRIDAY, "intraday"),
+                               "turns": [friday]}
+    assert rows(signals, "SELECT id FROM outbox") == []
+    assert signals.due_turns() == [monday]
+    assert signals.prepare_turn(monday)["state"] == "ready"
 
 
 def test_settled_slot_keeps_its_first_outcome(signals, clock):  # noqa: F811

@@ -730,6 +730,12 @@ class Company:
             if task["revision"] != project["revision"] or task["status"] == "superseded":
                 conn.execute("UPDATE turns SET status='stale' WHERE id=%s", (turn_id,))
                 return {"state": "done", "status": "stale"}
+            if task["kind"] == SIGNAL_KIND:
+                from .signals.store import exited_turn
+
+                # After the slot's exit a signal turn is retired without a model call.
+                if exited_turn(self, conn, project, task, turn):
+                    return {"state": "done", "status": "stale"}
             from .task_control import held, hold_delay
 
             if held(conn, project, task):
