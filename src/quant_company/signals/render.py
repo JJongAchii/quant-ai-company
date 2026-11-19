@@ -1,10 +1,11 @@
 """Slack post copy for trading signals. Pure text; the Analyst's prose only fills the reason and condition lines."""
 
 from datetime import date, datetime
-from decimal import Decimal, InvalidOperation
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
 from ..briefing.schedule import KST
 from .contracts import Direction, SignalProposal, Slot
+from .grading import BASELINES, INSTRUMENTS, KINDS, outcome
 from .snapshot import CATALOGUE
 
 WEEKDAYS = "월화수목금토일"
@@ -95,5 +96,114 @@ def unparsed_post(slot: Slot, say: str) -> str:
     return "\n".join([f"{emoji} {label} · 형식 확인 실패 · 채점 제외", window(slot), say])
 
 
+INSTRUMENT_WORDS = {"KOSPI": "KOSPI", "KODEX200": "KODEX 200"}
+BASELINE_WORDS = {"always_long": "항상 롱", "follow_us": "미국 따라가기"}
+MOVE_WORDS = {"intraday": "시가→종가", "overnight": "종가→시가"}
+MARKS = {"hit": "✅", "miss": "❌", "tie": "➖"}
+SIGNIFICANT = 0.05
+
+
+def percent(bp) -> str:
+    value = (Decimal(str(bp)) / 100).quantize(Decimal("0.01"), ROUND_HALF_UP)
+    return f"{value if value else Decimal('0.00'):+.2f}%"
+
+
+def with_particle(word: str, with_final: str, without_final: str) -> str:
+    """word plus the Korean particle that fits its last syllable (과 after a final consonant, else 와)."""
+    code = ord(word[-1]) - 0xAC00
+    return word + (with_final if 0 <= code < 11172 and code % 28 else without_final)
+
+
+def result_line(kind: str, day: date, direction: str | None, interim: bool, returns: dict, *, show_date: bool,
+                instruments: tuple[str, ...] = INSTRUMENTS) -> str:
+    """One slot of the scorecard: the label, then the market move and the signal result per instrument. direction is
+    the signal that was graded (None when there was none, then only the market move is shown); interim marks a rule
+    signal the Analyst did not give."""
+    parts = []
+    if show_date or kind == "overnight":
+        parts.append(f"{day.month}/{day.day}")
+    if direction:
+        parts += (["임시"] if interim else []) + [DIRECTION_WORDS[direction]]
+    label = KIND_WORDS[kind] + (f"({' '.join(parts)})" if parts else "")
+    segments = []
+    for instrument in instruments:
+        result, name = returns.get(instrument), INSTRUMENT_WORDS[instrument]
+        if result is None or result["state"] == "pending":
+            segments.append(f"{name} 채점 보류")
+        elif result["state"] == "excluded":
+            segments.append(f"{name} {result.get('detail') or '제외'} 제외")
+        else:
+            bp = Decimal(str(result["long_bp"]))
+            move = f"{MOVE_WORDS[kind]} {percent(bp)}"
+            if not direction:
+                segments.append(f"{name} {move}")
+                continue
+            signal = f"신호 {percent(bp if direction == 'long' else -bp)} {MARKS[outcome(direction, bp)]}"
+            segments.append(f"{name} {move} → {signal}" if instrument == "KOSPI" else f"{name} {signal}")
+    return f"{label} {' · '.join(segments)}"
+
+
+def record_text(name: str, record: dict) -> str:
+    text = f"{name} {record['n']}전 {record['hits']}승"
+    if record["n"]:
+        text += f"({(Decimal(record['hits'] * 100) / record['n']).quantize(Decimal('1'), ROUND_HALF_UP)}%)"
+    return text + (f" 무 {record['ties']}" if record["ties"] else "")
+
+
+def verdict(name: str, versus: dict) -> str:
+    """Only a sign test below 0.05 may call the Analyst better or worse than the baseline."""
+    if versus["p"] < SIGNIFICANT:
+        return f"{name}보다 {'낫다' if versus['wins'] > versus['losses'] else '못하다'}"
+    return "아직 우연과 구분할 수 없음"
+
+
+def summary_lines(summary: dict) -> list[str]:
+    kinds = [kind for kind in KINDS if summary[kind]["slots"]]
+    if not kinds:
+        return []
+    lines = []
+    for kind in kinds:
+        for instrument in INSTRUMENTS:
+            entry = summary[kind]["instruments"][instrument]
+            names = {"analyst": "Analyst 누적 " + KIND_WORDS[kind] + " " + INSTRUMENT_WORDS[instrument],
+                     "always_long": BASELINE_WORDS["always_long"], "follow_us": BASELINE_WORDS["follow_us"]}
+            text = " · ".join(record_text(names[key], entry[key]) for key in ("analyst", "always_long", "follow_us")
+                              if key in entry)
+            analyst = entry["analyst"]
+            if analyst["mean_bp"] is not None:
+                text += f" · 평균 {analyst['mean_bp']:+.2f}bp · 단순 누적 {analyst['sum_bp']:+.2f}bp"
+            lines.append(text)
+    for baseline in BASELINES:
+        name = BASELINE_WORDS[baseline]
+        for instrument in INSTRUMENTS:
+            parts = []
+            for kind in kinds:
+                versus = summary[kind]["instruments"][instrument]["versus"].get(baseline)
+                if versus and versus["wins"] + versus["losses"]:
+                    days = versus["wins"] + versus["losses"]
+                    parts.append(f"{KIND_WORDS[kind]} {days}일 중 {versus['wins']}일 맞음 → {verdict(name, versus)}")
+            if parts:
+                lines.append(f"{with_particle(name, '과', '와')} 다르게 건 날({INSTRUMENT_WORDS[instrument]}): "
+                             + " · ".join(parts))
+    for instrument in INSTRUMENTS:
+        text = " · ".join(f"{KIND_WORDS[kind]} {record_text('', summary[kind]['instruments'][instrument]['received']).strip()}"
+                          for kind in kinds)
+        lines.append(f"받으신 신호 기준 {INSTRUMENT_WORDS[instrument]} {text}")
+    kinds_text = []
+    for kind in kinds:
+        counts = summary[kind]["counts"]
+        text = f"{KIND_WORDS[kind]} 정시 {counts['on_time']} · 늦음 {counts['late']} · 임시 {counts['fallback']}"
+        for key, word in (("after_entry", "진입 뒤"), ("unparsed", "형식 실패"), ("pending", "채점 보류")):
+            text += f" · {word} {counts[key]}" if counts[key] else ""
+        kinds_text.append(text)
+    lines.append("신호 구분 " + " / ".join(kinds_text))
+    reasons = [f"{KIND_WORDS[kind]} {reason} {count}건" for kind in kinds
+               for reason, count in summary[kind]["fallback_reasons"].items()]
+    if reasons:
+        lines.append("임시 신호 사유: " + ", ".join(reasons))
+    return lines
+
+
 def scorecard_post(day: date, lines: list[str], summary: dict) -> str:
-    return "\n".join([*lines, SCORECARD_FOOTER])
+    """The evening scorecard: today's results (lines), then the record of every slot since the first one."""
+    return "\n".join([f"📊 신호 채점 · {day.month}월 {day.day}일", *lines, *summary_lines(summary), SCORECARD_FOOTER])

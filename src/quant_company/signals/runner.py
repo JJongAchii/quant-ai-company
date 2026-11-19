@@ -1,7 +1,7 @@
 """The signals loop of the brief-data worker. Each tick resumes from PostgreSQL: first the interim post of every slot
 past its fallback time, then schedule the slots, freeze the snapshot and ask the Analyst for every slot that is due,
-and resume the Analyst tasks a fault or a thread revision stopped. A failing step or slot is logged and skipped, so
-nothing holds back an interim post (R10)."""
+resume the Analyst tasks a fault or a thread revision stopped, grade the closed slots and post the evening
+scorecard. A failing step or slot is logged and skipped, so nothing holds back an interim post (R10)."""
 
 import asyncio
 import logging
@@ -28,7 +28,8 @@ class SignalRunner:
                   "scheduled": await self.step("schedule", self.store.schedule, at),
                   "asked": await self.ask_due(at),
                   "retried": await self.step("retries", self.store.retry, at),
-                  "graded": await self.step("grading", self.grade, at)}
+                  "graded": await self.step("grading", self.grade, at),
+                  "reported": await self.step("report", self.store.report, at)}
         return {"state": "ran" if any(counts.values()) else "idle", **counts}
 
     async def step(self, name, call, at) -> int:

@@ -77,7 +77,7 @@ async def test_tick_at_kst_midnight_schedules_kst_day(signals, clock):  # noqa: 
     # 00:30 KST on Friday DAY is still Thursday in UTC, and Thursday is a trading day too.
     clock["at"] = datetime(2026, 11, 19, 15, 30, tzinfo=UTC)
     runner = SignalRunner(signals, fetch=calls.append)
-    assert await runner.tick() == {"state": "ran", "fallbacks": 0, "scheduled": 2, "asked": 0, "retried": 0, "graded": 0}
+    assert await runner.tick() == {"state": "ran", "fallbacks": 0, "scheduled": 2, "asked": 0, "retried": 0, "graded": 0, "reported": 0}
     assert [(row["session_day"], row["kind"]) for row in slot_rows(signals)] == [(DAY, "intraday"), (DAY, "overnight")]
     assert calls == []
 
@@ -211,8 +211,8 @@ def test_thread_reply_in_standalone_project_reaches_analyst(signals, credentials
 async def test_tick_freezes_the_snapshot_and_asks_once(signals, clock):  # noqa: F811
     am_project(signals, DAY)
     runner = SignalRunner(signals, fetch=recorded("intraday"))
-    assert await runner.tick() == {"state": "ran", "fallbacks": 0, "scheduled": 2, "asked": 1, "retried": 0, "graded": 0}
-    assert await runner.tick() == {"state": "idle", "fallbacks": 0, "scheduled": 0, "asked": 0, "retried": 0, "graded": 0}
+    assert await runner.tick() == {"state": "ran", "fallbacks": 0, "scheduled": 2, "asked": 1, "retried": 0, "graded": 0, "reported": 0}
+    assert await runner.tick() == {"state": "idle", "fallbacks": 0, "scheduled": 0, "asked": 0, "retried": 0, "graded": 0, "reported": 0}
     assert one(signals, "SELECT snapshot FROM trading_signals WHERE kind='intraday'")["snapshot"] == snapshot("intraday")
 
 
@@ -396,7 +396,7 @@ async def test_fallback_when_model_never_answers(signals, clock):  # noqa: F811
     clock["at"] = kst(7, 30, MONDAY)
     assert (await runner.tick())["asked"] == 1
     clock["at"] = kst(8, 28, MONDAY)  # no worker ever ran the Analyst's turn
-    assert await runner.tick() == {"state": "ran", "fallbacks": 1, "scheduled": 0, "asked": 0, "retried": 0, "graded": 0}
+    assert await runner.tick() == {"state": "ran", "fallbacks": 1, "scheduled": 0, "asked": 0, "retried": 0, "graded": 0, "reported": 0}
     [post] = posts(signals)
     assert post["text"].split("\n")[:2] == ["⏱️ 임시 신호 · 11월 16일(월) 장중  시가 09:00 진입 → 종가 15:30 청산", INTERIM]
     assert one(signals, "SELECT status FROM turns WHERE task_id=%s", TASK)["status"] == "queued"
@@ -408,7 +408,7 @@ async def test_no_fallback_post_after_entry(signals, clock):  # noqa: F811
     clock["at"] = kst(7, 30, MONDAY)
     await runner.tick()
     clock["at"] = kst(9, 5, MONDAY)  # the worker was down from 07:31: a "buy at the open" post is useless now (R3)
-    assert await runner.tick() == {"state": "idle", "fallbacks": 0, "scheduled": 0, "asked": 0, "retried": 0, "graded": 0}
+    assert await runner.tick() == {"state": "idle", "fallbacks": 0, "scheduled": 0, "asked": 0, "retried": 0, "graded": 0, "reported": 0}
     row = signal(signals)
     assert (row["state"], row["fallback_reason"], row["fallback_sent_at"], row["fallback_message_id"]) == (
         "fallback_sent", "서비스 중단", None, None)
@@ -683,7 +683,7 @@ async def test_tick_isolates_failing_steps_and_slots(signals, clock, monkeypatch
     clock["at"] = kst(8, 28, MONDAY)
     with caplog.at_level(logging.ERROR):
         result = await SignalRunner(signals, fetch=recorded("intraday", MONDAY)).tick()
-    assert result == {"state": "ran", "fallbacks": 1, "scheduled": 0, "asked": 1, "retried": 0, "graded": 0}
+    assert result == {"state": "ran", "fallbacks": 1, "scheduled": 0, "asked": 1, "retried": 0, "graded": 0, "reported": 0}
     assert f"{broken}: RuntimeError" in caplog.text and "ZeroDivisionError" in caplog.text
     states = {(row["session_day"], row["kind"]): (row["state"], row["fallback_reason"]) for row in slot_rows(signals)}
     assert states[(FRIDAY, "intraday")] == ("scheduled", None)

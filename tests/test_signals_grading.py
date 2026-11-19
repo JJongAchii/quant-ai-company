@@ -7,13 +7,16 @@ from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 
 from quant_company.briefing import data
+from quant_company.company import stable
 from quant_company.signals import lake
-from quant_company.signals.grading import kodex_bars, long_return_bp, outcome
+from quant_company.signals.grading import kodex_bars, long_return_bp, outcome, sign_test_p, summarize
+from quant_company.signals.render import SCORECARD_FOOTER, scorecard_post
 from quant_company.signals.runner import SignalRunner
 from quant_company.signals.store import SignalStore, slot_id
 
-from .signals_fixtures import KST, am_project, clock, recorded, signals  # noqa: F401
-from .test_signals_turns import FRIDAY, MONDAY, ask, rows
+from .signals_fixtures import KST, am_project, clock, proposal, recorded, signals  # noqa: F401
+from .test_signals_store import answer_at, ask_at, fallback_at, post_id
+from .test_signals_turns import FRIDAY, MONDAY, ask, one, rows
 
 
 def bar_chart(bars, events=None):
@@ -269,3 +272,221 @@ async def test_one_failing_slot_does_not_stop_another(signals, clock, monkeypatc
     clock["at"] = datetime(2026, 11, 17, 9, 30, tzinfo=UTC)
     await SignalRunner(signals, fetch=feeds.fetch, reader=feeds.reader).tick()
     assert {sid for sid, _ in returns(signals)} == {str(slot_id(MONDAY, "overnight"))}
+
+
+def slot_item(direction, bp, *, received=None, timing="on_time", fallback=False, kind="intraday", follow_us="long",
+              state="final", unparsed=False, reason=None):
+    """One summarize() input: the Analyst's direction (None without a proposal) and the KOSPI long return in bp."""
+    return {"kind": kind, "analyst": direction, "timing": timing if direction else None, "unparsed": unparsed,
+            "received": received or direction, "fallback": fallback, "fallback_reason": reason,
+            "baselines": {"always_long": "long", "follow_us": follow_us if kind == "intraday" else None},
+            "returns": {"KOSPI": {"state": state, "long_bp": Decimal(bp) if state == "final" else None}}}
+
+
+def versus_slots(wins, losses, **kwargs):
+    """Analyst short against always long: a short hit when the long return is negative."""
+    return ([slot_item("short", "-10", **kwargs) for _ in range(wins)]
+            + [slot_item("short", "10", **kwargs) for _ in range(losses)])
+
+
+def test_sign_test_values():
+    assert sign_test_p(5, 4) == 1.0
+    assert round(sign_test_p(9, 1), 4) == 0.0215
+    assert sign_test_p(0, 0) == 1.0
+    assert sign_test_p(10, 0) == min(1, 2 / 1024)
+
+
+def test_summary_counts_and_received():
+    summary = summarize([slot_item("short", "-30"), slot_item(None, "-10", received="long", fallback=True,
+                                                               reason="앞선 질문에 답하는 중")])
+    kospi = summary["intraday"]["instruments"]["KOSPI"]
+    assert {k: kospi["analyst"][k] for k in ("n", "hits", "misses", "ties")} == {"n": 1, "hits": 1, "misses": 0, "ties": 0}
+    assert (kospi["analyst"]["mean_bp"], kospi["analyst"]["sum_bp"]) == (Decimal("30.00"), Decimal("30"))
+    assert (kospi["received"]["n"], kospi["received"]["hits"], kospi["received"]["misses"]) == (2, 1, 1)
+    assert (kospi["always_long"]["hits"], kospi["always_long"]["misses"]) == (0, 2)
+    assert summary["intraday"]["counts"] == {"on_time": 1, "late": 0, "fallback": 1, "after_entry": 0, "unparsed": 0,
+                                             "pending": 0}
+    assert summary["intraday"]["fallback_reasons"] == {"앞선 질문에 답하는 중": 1}
+    assert summary["overnight"]["counts"]["on_time"] == 0 and "follow_us" not in summary["overnight"]["instruments"]["KOSPI"]
+
+
+def test_summary_leaves_out_ties_pending_after_entry_and_unparsed():
+    summary = summarize([slot_item("long", "0"), slot_item("long", "5", timing="after_entry"),
+                         slot_item("long", "5", state="pending"), slot_item(None, "5", unparsed=True),
+                         slot_item("long", "5", timing="late"), slot_item("short", "5", follow_us=None)])
+    kospi = summary["intraday"]["instruments"]["KOSPI"]
+    assert (kospi["analyst"]["n"], kospi["analyst"]["hits"], kospi["analyst"]["misses"], kospi["analyst"]["ties"]) == (
+        2, 1, 1, 1)
+    assert kospi["follow_us"]["n"] == 3 and kospi["always_long"]["n"] == 4  # pending left out; null follow_us left out
+    assert summary["intraday"]["counts"] == {"on_time": 3, "late": 1, "fallback": 0, "after_entry": 1, "unparsed": 1,
+                                             "pending": 1}
+    # long vs follow_us long: never different; the short slot has no follow_us and is left out of that comparison
+    assert kospi["versus"]["follow_us"] == {"wins": 0, "losses": 0, "p": 1.0}
+    assert kospi["versus"]["always_long"] == {"wins": 0, "losses": 1, "p": 1.0}
+
+
+def card(slots, lines=()):
+    return scorecard_post(date(2026, 11, 16), list(lines), summarize(slots))
+
+
+def test_scorecard_wording():
+    better = card(versus_slots(9, 1))
+    assert "항상 롱과 다르게 건 날" in better and "장중 10일 중 9일 맞음 → 항상 롱보다 낫다" in better
+    assert "미국 따라가기와 다르게 건 날" in better and "→ 미국 따라가기보다 낫다" in better
+    assert "아직 우연과 구분할 수 없음" in card(versus_slots(5, 4))
+    assert "항상 롱보다 못하다" in card(versus_slots(1, 9))
+    assert card(versus_slots(5, 4)).endswith(SCORECARD_FOOTER)
+    assert card(versus_slots(9, 1)).startswith("📊 신호 채점 · 11월 16일\n")
+
+
+def deliver(company, message, stamp):
+    """Mark an outbox post delivered. stamp: the Slack ts as a datetime, or a 1-tuple for no ts and a dispatch start."""
+    with company.db.transaction() as conn:
+        if isinstance(stamp, datetime):
+            conn.execute("UPDATE outbox SET status='delivered',sent_ts=%s WHERE id=%s",
+                         (f"{stamp.timestamp():.6f}", message))
+        else:
+            conn.execute("UPDATE outbox SET status='delivered',sent_ts=NULL,started_at=%s WHERE id=%s",
+                         (stamp[0], message))
+
+
+def put_returns(company, day, kind, kospi, kodex, detail=None):
+    """kospi/kodex: (state, long_bp or None)."""
+    sid = slot_id(day, kind)
+    SignalStore(company).save_returns([
+        {"signal_id": sid, "instrument": name, "state": state, "long_bp": None if bp is None else Decimal(bp),
+         "detail": detail if name == "KODEX200" else None, "receipt": {"x": 1}}
+        for name, (state, bp) in (("KOSPI", kospi), ("KODEX200", kodex))])
+
+
+def monday_slot(signals, clock, direction="short"):  # noqa: F811
+    """Monday's intraday slot with an on-time Analyst signal, delivered before the open."""
+    am_project(signals, MONDAY)
+    turn = ask_at(signals, clock, datetime(2026, 11, 16, 8, 0, tzinfo=KST))
+    answer_at(signals, clock, turn, datetime(2026, 11, 16, 8, 10, tzinfo=KST),
+              proposal(session_day=str(MONDAY), direction=direction))
+    deliver(signals, post_id("analyst"), datetime(2026, 11, 16, 8, 11, tzinfo=KST))
+
+
+def at(hour, minute=0, day=MONDAY):
+    return datetime(day.year, day.month, day.day, hour, minute, tzinfo=KST)
+
+
+def report_posts(company):
+    return rows(company, """SELECT m.id,m.text,o.status,o.project_id FROM messages m JOIN outbox o ON o.id=m.id
+        WHERE m.id=%s""", stable(f"trading-signal-report:{MONDAY}"))
+
+
+def test_report_once_and_cutoff(signals, clock):  # noqa: F811
+    monday_slot(signals, clock)
+    put_returns(signals, MONDAY, "intraday", ("pending", None), ("final", "-28.00"))
+    store = SignalStore(signals)
+    assert store.report(at(18, 29)) is False and store.report(at(19)) is False and report_posts(signals) == []
+    assert rows(signals, "SELECT * FROM trading_signal_reports") == []
+    assert store.report(at(21)) is True
+    [post] = report_posts(signals)
+    assert "채점 보류" in post["text"] and post["text"].endswith(SCORECARD_FOOTER)
+    assert post["text"].startswith("📊 신호 채점 · 11월 16일\n")
+    assert str(post["project_id"]) == str(one(signals, "SELECT project_id FROM trading_signals WHERE id=%s",
+                                                  slot_id(MONDAY, "intraday"))["project_id"])
+    [report] = rows(signals, "SELECT * FROM trading_signal_reports")
+    assert (report["day"], str(report["message_id"])) == (MONDAY, str(post["id"]))
+    assert report["summary"]["intraday"]["counts"]["pending"] == 1
+    assert store.report(at(21, 5)) is False and len(report_posts(signals)) == 1
+
+
+def test_report_posts_as_soon_as_everything_is_final(signals, clock):  # noqa: F811
+    monday_slot(signals, clock)
+    store = SignalStore(signals)
+    assert store.report(at(18, 40)) is False  # nothing graded yet counts as pending
+    put_returns(signals, MONDAY, "intraday", ("final", "-31.00"), ("final", "-28.00"))
+    assert store.report(at(18, 45)) is True
+    [post] = report_posts(signals)
+    assert ("장중(숏) KOSPI 시가→종가 -0.31% → 신호 +0.31% ✅ · KODEX 200 신호 +0.28% ✅") in post["text"].split("\n")
+    assert "Analyst 누적 장중 KOSPI 1전 1승(100%) · 항상 롱 1전 0승(0%) · 미국 따라가기 1전 0승(0%)" in post["text"]
+    assert "받으신 신호 기준 KOSPI 장중 1전 1승" in post["text"]
+    assert "정시 1 · 늦음 0 · 임시 0" in post["text"]
+
+
+def test_miss_tie_and_excluded_are_marked(signals, clock):  # noqa: F811
+    monday_slot(signals, clock, "long")
+    put_returns(signals, MONDAY, "intraday", ("final", "-31.00"), ("excluded", None), detail="분배락")
+    assert SignalStore(signals).report(at(19)) is True
+    text = report_posts(signals)[0]["text"]
+    assert "장중(롱) KOSPI 시가→종가 -0.31% → 신호 -0.31% ❌ · KODEX 200 분배락 제외" in text.split("\n")
+
+
+def test_tie_line(signals, clock):  # noqa: F811
+    monday_slot(signals, clock, "long")
+    sid = slot_id(MONDAY, "intraday")
+    with signals.db.transaction() as conn:
+        for instrument in ("KOSPI", "KODEX200"):
+            conn.execute("INSERT INTO trading_signal_returns(signal_id,instrument,state,long_bp) VALUES (%s,%s,'final',0)",
+                         (sid, instrument))
+    assert SignalStore(signals).report(at(19)) is True
+    assert "장중(롱) KOSPI 시가→종가 +0.00% → 신호 +0.00% ➖ · KODEX 200 신호 +0.00% ➖" in report_posts(signals)[0]["text"]
+
+
+def test_interim_only_line_is_marked_and_no_signal_shows_the_move(signals, clock):  # noqa: F811
+    am_project(signals, MONDAY)
+    ask_at(signals, clock, at(8, 0))
+    fallback_at(signals, clock)  # the interim post, no Analyst answer
+    deliver(signals, post_id("fallback"), at(8, 29))
+    put_returns(signals, MONDAY, "intraday", ("final", "42.00"), ("final", "45.00"))
+    assert SignalStore(signals).report(at(19)) is True
+    text = report_posts(signals)[0]["text"]
+    assert "장중(임시 롱) KOSPI 시가→종가 +0.42% → 신호 +0.42% ✅ · KODEX 200 신호 +0.45% ✅" in text.split("\n")
+    assert "정시 0 · 늦음 0 · 임시 1" in text
+    # No Analyst proposal and no interim post at all: only the market move.
+    with signals.db.transaction() as conn:
+        conn.execute("DELETE FROM trading_signal_reports")
+        conn.execute("DELETE FROM outbox WHERE id=%s", (stable(f"trading-signal-report:{MONDAY}"),))
+        conn.execute("DELETE FROM messages WHERE id=%s", (stable(f"trading-signal-report:{MONDAY}"),))
+        conn.execute("UPDATE trading_signals SET fallback_message_id=NULL WHERE id=%s", (slot_id(MONDAY, "intraday"),))
+    assert SignalStore(signals).report(at(19)) is True
+    assert "장중 KOSPI 시가→종가 +0.42% · KODEX 200 시가→종가 +0.45%" in report_posts(signals)[0]["text"].split("\n")
+
+
+def test_late_final_is_reported_as_previous_pending(signals, clock):  # noqa: F811
+    monday_slot(signals, clock)
+    put_returns(signals, MONDAY, "intraday", ("pending", None), ("final", "-28.00"))
+    store = SignalStore(signals)
+    assert store.report(at(21)) is True
+    put_returns(signals, MONDAY, "intraday", ("final", "-31.00"), ("final", "-28.00"))
+    tuesday = date(2026, 11, 17)
+    assert store.report(at(18, 40, tuesday)) is True
+    [post] = rows(signals, "SELECT text FROM messages WHERE id=%s", stable(f"trading-signal-report:{tuesday}"))
+    lines = post["text"].split("\n")
+    assert lines[1] == "지난 보류분" and lines[2] == "장중(11/16 숏) KOSPI 시가→종가 -0.31% → 신호 +0.31% ✅"
+    assert post["text"].count("지난 보류분") == 1
+    # the KODEX 200 row was final at the first report, so it is not listed again
+    assert "KODEX 200" not in lines[2]
+    wednesday = date(2026, 11, 18)
+    assert store.report(at(19, 0, wednesday)) is False  # nothing new: no slot and no return
+
+
+def test_received_is_the_last_delivered_post_before_entry(signals, clock):  # noqa: F811
+    am_project(signals, MONDAY)
+    turn = ask_at(signals, clock, at(8, 0))
+    fallback_at(signals, clock)  # 08:28 interim post (long)
+    answer_at(signals, clock, turn, at(8, 40), proposal(session_day=str(MONDAY), direction="short"))
+    sid = slot_id(MONDAY, "intraday")
+
+    def received():
+        [item] = SignalStore(signals).history(at(19))
+        return item["received"], item["analyst"], item["timing"], item["fallback"]
+
+    deliver(signals, post_id("fallback"), at(8, 28))
+    assert received() == ("long", "short", "late", True)  # the Analyst's post is not delivered yet
+    deliver(signals, post_id("analyst"), at(9, 5))
+    assert received() == ("long", "short", "late", True)  # delivered after the entry
+    deliver(signals, post_id("analyst"), at(8, 41))
+    assert received()[0] == "short"
+    deliver(signals, post_id("analyst"), (at(8, 41),))  # no Slack ts: the dispatch start time counts
+    assert received()[0] == "short"
+    deliver(signals, post_id("analyst"), (at(9, 1),))
+    assert received()[0] == "long"
+    with signals.db.transaction() as conn:
+        conn.execute("UPDATE outbox SET status='uncertain' WHERE id=%s", (post_id("analyst"),))
+        conn.execute("UPDATE outbox SET status='uncertain' WHERE id=%s", (post_id("fallback"),))
+    assert received()[0] is None and one(signals, "SELECT 1 x FROM trading_signals WHERE id=%s", sid)

@@ -3,6 +3,7 @@ Only the exact sessions of the slot count; a missing or suspicious price leaves 
 
 from datetime import UTC, date, datetime
 from decimal import ROUND_HALF_UP, Decimal
+from math import comb
 from typing import Literal
 from zoneinfo import ZoneInfo
 
@@ -13,6 +14,9 @@ SUSPICIOUS = "의심 일봉"
 MISSING_BAR = "일봉 없음"
 FETCH_FAILED = "시세 조회 실패"
 EX_DIVIDEND = "분배락"
+INSTRUMENTS = ("KOSPI", "KODEX200")
+KINDS = ("intraday", "overnight")
+BASELINES = ("always_long", "follow_us")
 
 
 def long_return_bp(entry: Decimal, exit: Decimal) -> Decimal:
@@ -96,3 +100,80 @@ def grade_slot(row: dict, lake: dict | None, chart: dict | None) -> list[dict]:
         failed["error"] = "chart_parse_or_policy_error"
         return [_kospi(row, lake), _row(row["id"], "KODEX200", "pending", failed, detail=FETCH_FAILED)]
     return [_kospi(row, lake), _kodex(row, bars, dividends, chart.get("sha256"))]
+
+
+def sign_test_p(wins: int, losses: int) -> float:
+    """Two-sided exact binomial sign test against 50/50 on the days that count."""
+    n = wins + losses
+    if n == 0:
+        return 1.0
+    return min(1.0, 2 * sum(comb(n, k) for k in range(min(wins, losses) + 1)) / 2 ** n)
+
+
+def _record(items: list[tuple[str, Decimal]]) -> dict:
+    """items: (direction, long_bp). n counts hits and misses; ties are counted apart and add 0 to the sums."""
+    tally = {"hit": 0, "miss": 0, "tie": 0}
+    total = Decimal(0)
+    for direction, bp in items:
+        tally[outcome(direction, bp)] += 1
+        total += bp if direction == "long" else -bp
+    graded = len(items)
+    return {"n": tally["hit"] + tally["miss"], "hits": tally["hit"], "misses": tally["miss"], "ties": tally["tie"],
+            "mean_bp": (total / graded).quantize(Decimal("0.01"), ROUND_HALF_UP) if graded else None, "sum_bp": total}
+
+
+def _final_bp(slot: dict, instrument: str) -> Decimal | None:
+    result = (slot.get("returns") or {}).get(instrument)
+    if not result or result["state"] != "final" or result["long_bp"] is None:
+        return None
+    return Decimal(str(result["long_bp"]))
+
+
+def analyst_counts(slot: dict) -> bool:
+    return bool(slot["analyst"]) and slot["timing"] in ("on_time", "late") and not slot["unparsed"]
+
+
+def _versus(slots: list[dict], instrument: str, baseline: str) -> dict:
+    wins = losses = 0
+    for slot in slots:
+        bp, direction = _final_bp(slot, instrument), (slot["baselines"] or {}).get(baseline)
+        if bp is None or bp == 0 or direction is None or not analyst_counts(slot) or direction == slot["analyst"]:
+            continue
+        if outcome(slot["analyst"], bp) == "hit":
+            wins += 1
+        else:
+            losses += 1
+    return {"wins": wins, "losses": losses, "p": sign_test_p(wins, losses)}
+
+
+def summarize(slots: list[dict]) -> dict:
+    """The record of every slot since the first, per kind and instrument. Only final returns count; ties, pending and
+    excluded returns are left out of the hit counts. The Analyst's record has timing on_time or late only."""
+    summary = {}
+    for kind in KINDS:
+        mine = [slot for slot in slots if slot["kind"] == kind]
+        counts = {"on_time": 0, "late": 0, "fallback": 0, "after_entry": 0, "unparsed": 0, "pending": 0}
+        reasons: dict[str, int] = {}
+        for slot in mine:
+            if slot["analyst"] and slot["timing"] in ("on_time", "late", "after_entry"):
+                counts[slot["timing"]] += 1
+            counts["unparsed"] += bool(slot["unparsed"])
+            if slot["fallback"]:
+                counts["fallback"] += 1
+                reasons[slot["fallback_reason"]] = reasons.get(slot["fallback_reason"], 0) + 1
+            counts["pending"] += sum(r["state"] == "pending" for r in (slot.get("returns") or {}).values())
+        instruments = {}
+        for instrument in INSTRUMENTS:
+            def record(pick, instrument=instrument, mine=mine):
+                items = [(pick(slot), _final_bp(slot, instrument)) for slot in mine]
+                return _record([(direction, bp) for direction, bp in items if direction and bp is not None])
+            entry = {"analyst": record(lambda s: s["analyst"] if analyst_counts(s) else None),
+                     "received": record(lambda s: s["received"]),
+                     "always_long": record(lambda s: (s["baselines"] or {}).get("always_long")),
+                     "versus": {"always_long": _versus(mine, instrument, "always_long")}}
+            if kind == "intraday":
+                entry["follow_us"] = record(lambda s: (s["baselines"] or {}).get("follow_us"))
+                entry["versus"]["follow_us"] = _versus(mine, instrument, "follow_us")
+            instruments[instrument] = entry
+        summary[kind] = {"slots": len(mine), "counts": counts, "fallback_reasons": reasons, "instruments": instruments}
+    return summary

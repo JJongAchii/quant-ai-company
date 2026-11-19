@@ -7,6 +7,7 @@ from pydantic import ValidationError
 
 from quant_company.config import Settings
 from quant_company.signals.contracts import SignalProposal
+from quant_company.signals.grading import summarize
 from quant_company.signals.instructions import final_note, instruction
 from quant_company.signals.render import analyst_post, fallback_post, scorecard_post, unparsed_post, window
 from quant_company.signals.schedule import slots_for
@@ -165,5 +166,5 @@ def test_fallback_post_after_unparsed_answer():
 def test_unparsed_post_header_and_scorecard_footer():
     _, overnight = day_slots()
     assert unparsed_post(overnight, "say").split("\n")[0] == "🌙 오버나잇 신호 · 형식 확인 실패 · 채점 제외"
-    assert scorecard_post(date(2026, 11, 20), ["a"], {}).split("\n") == [
-        "a", "수수료·세금·호가 차이 제외. 숏은 KODEX 200 반대 방향으로 계산"]
+    assert scorecard_post(date(2026, 11, 20), ["a"], summarize([])).split("\n") == [
+        "📊 신호 채점 · 11월 20일", "a", "수수료·세금·호가 차이 제외. 숏은 KODEX 200 반대 방향으로 계산"]

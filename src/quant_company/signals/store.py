@@ -7,7 +7,7 @@ Lock order is always the thread's project, then the slot row (R8)."""
 
 import json
 import logging
-from datetime import UTC, date, datetime, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 
 from psycopg.types.json import Jsonb
 from pydantic import ValidationError
@@ -15,7 +15,7 @@ from pydantic import ValidationError
 from ..briefing import schedule
 from ..briefing.contracts import BRIEFER
 from ..briefing.editor import artifact
-from ..briefing.schedule import overrides
+from ..briefing.schedule import KST, overrides
 from ..briefing.store import BriefStore
 from ..company import PolicyError, as_json, stable
 from .contracts import (
@@ -30,8 +30,17 @@ from .contracts import (
     SignalProposal,
     Slot,
 )
+from .grading import INSTRUMENTS, analyst_counts, summarize
 from .instructions import final_note, instruction
-from .render import KIND_WORDS, analyst_post, day_text, fallback_post, unparsed_post
+from .render import (
+    KIND_WORDS,
+    analyst_post,
+    day_text,
+    fallback_post,
+    result_line,
+    scorecard_post,
+    unparsed_post,
+)
 from .schedule import kst_day, slots_for
 from .snapshot import follow_us, snapshot_text
 
@@ -42,6 +51,8 @@ PRIORITY = -100
 OUTAGE = "서비스 중단"
 # The interim post's reason after an unparsed answer, which no Analyst signal follows (R13).
 UNPARSED_REASON = "형식 확인 실패"
+# The scorecard goes out at 18:30 KST at the earliest, and at 21:00 whatever is still pending.
+REPORT_FROM, REPORT_LATEST = time(18, 30), time(21, 0)
 STANDALONE_INSTRUCTION = "이 스레드의 매매 신호와 후속 질문에 Analyst가 답한다."
 # The re-ask reason for any answer briefing.editor.artifact rejects before reading its JSON.
 ANSWER_SHAPE = "answer_shape: status complete with exactly one artifact, its source_ids empty, and nothing else"
@@ -135,6 +146,105 @@ class SignalStore:
                                           r.get("exit_price"), r.get("long_bp"), r.get("detail"),
                                           Jsonb(r["receipt"]) if r.get("receipt") is not None else None, at)).rowcount
         return written
+
+    def history(self, at: datetime) -> list[dict]:
+        with self.db.transaction() as conn:
+            return self._history(conn, at)
+
+    def _history(self, conn, at: datetime) -> list[dict]:
+        """Every slot since the first that was asked (it has baselines) and has exited, oldest first, as summarize()
+        reads it, plus its stored returns. A returned instrument that was never graded counts as pending. R17: an
+        interim post is counted by its message id; 'received' is the direction of the last delivered post before
+        entry_at, by Slack sent_ts or, without one, the dispatch start."""
+        slots = conn.execute("""SELECT * FROM trading_signals WHERE baselines IS NOT NULL AND exit_at<=%s
+            ORDER BY session_day,kind""", (at,)).fetchall()
+        stored: dict = {}
+        for r in conn.execute("SELECT * FROM trading_signal_returns WHERE signal_id=ANY(%s::uuid[])",
+                              ([str(s["id"]) for s in slots],)):
+            stored.setdefault(str(r["signal_id"]), {})[r["instrument"]] = r
+        messages = [str(m) for s in slots for m in (s["analyst_message_id"], s["fallback_message_id"]) if m]
+        delivered = {str(r["id"]): r for r in conn.execute(
+            "SELECT id,sent_ts,started_at FROM outbox WHERE status='delivered' AND id=ANY(%s::uuid[])", (messages,))}
+        for slot in slots:
+            posts = []
+            for part, message in (("fallback", slot["fallback_message_id"]), ("analyst", slot["analyst_message_id"])):
+                row = delivered.get(str(message))
+                if row and (moment := _delivery_time(row)) is not None and moment < slot["entry_at"]:
+                    posts.append((moment, part == "analyst", part))
+            last = max(posts)[2] if posts else None
+            slot["analyst"] = (slot["proposal"] or {}).get("direction")
+            slot["received"] = (slot["analyst"] if last == "analyst" else FALLBACK_DIRECTION if last else None)
+            slot["fallback"] = slot["fallback_message_id"] is not None
+            slot["returns"] = {i: stored.get(str(slot["id"]), {}).get(i, {"state": "pending", "long_bp": None,
+                                                                          "detail": None, "reported_on": None})
+                               for i in INSTRUMENTS}
+        return slots
+
+    def report(self, at: datetime) -> bool:
+        """The evening scorecard, once per KST day from 18:30: when every return due today is final or excluded, else
+        at 21:00 with what is pending marked. It goes into the day's thread (today's intraday slot's project, else
+        the overnight slot's) and the report row is written in the same transaction, so the day's primary key makes
+        it once. Returns whether a post was made."""
+        day = kst_day(at)
+        if at < datetime.combine(day, REPORT_FROM, KST):
+            return False
+        with self.db.transaction() as conn:
+            if conn.execute("SELECT 1 FROM trading_signal_reports WHERE day=%s", (day,)).fetchone():
+                return False
+            plan = self._report_plan(conn, day, at)
+            if plan is None:
+                return False
+            project = self.company._project(conn, plan["project_id"])  # R8: the project before anything else
+            if conn.execute("SELECT 1 FROM trading_signal_reports WHERE day=%s", (day,)).fetchone():
+                return False
+            plan = self._report_plan(conn, day, at)  # again under the lock
+            if plan is None or plan["project_id"] != project["id"]:
+                return False
+            message_id = stable(f"trading-signal-report:{day}")
+            self.company._message(conn, project, None, BRIEFER, SIGNAL_KIND,
+                                  scorecard_post(day, plan["lines"], plan["summary"]), message_id=message_id)
+            conn.execute("INSERT INTO trading_signal_reports(day,project_id,message_id,summary) VALUES (%s,%s,%s,%s)",
+                         (day, project["id"], message_id, Jsonb(as_json(plan["summary"]))))
+            for signal_id, instrument in plan["shown"]:
+                conn.execute("UPDATE trading_signal_returns SET reported_on=%s WHERE signal_id=%s AND instrument=%s",
+                             (day, signal_id, instrument))
+            self.company._event(conn, "trading_signal_report", {"day": str(day), "message_id": message_id},
+                                project["id"])
+        return True
+
+    def _report_plan(self, conn, day: date, at: datetime) -> dict | None:
+        """What the scorecard of day says, or None when there is nothing to post yet (or at all)."""
+        history = self._history(conn, at)
+        today = [s for s in history if (s["kind"] == "intraday" and s["session_day"] == day)
+                 or (s["kind"] == "overnight" and s["exit_day"] == day)]
+        past = []
+        for slot in history:
+            fresh = tuple(i for i in INSTRUMENTS if slot["returns"][i]["state"] in ("final", "excluded")
+                          and slot["returns"][i]["reported_on"] is None)
+            if slot not in today and fresh:
+                past.append((slot, fresh))
+        if not today and not past:
+            return None
+        if at < datetime.combine(day, REPORT_LATEST, KST) and any(
+                r["state"] == "pending" for s in today for r in s["returns"].values()):
+            return None
+        lines, shown = [], []
+        for slot in today:
+            lines.append(_slot_line(slot, INSTRUMENTS, show_date=False))
+            shown += [(slot["id"], i) for i in INSTRUMENTS if slot["returns"][i]["state"] != "pending"]
+        if past:
+            lines.append("지난 보류분")
+        for slot, fresh in past:
+            lines.append(_slot_line(slot, fresh, show_date=True))
+            shown += [(slot["id"], i) for i in fresh]
+        known = conn.execute("""SELECT project_id FROM trading_signals WHERE project_id IS NOT NULL AND
+            (session_day=%s OR kind='overnight' AND exit_day=%s) ORDER BY (session_day=%s) DESC,kind LIMIT 1""",
+                             (day, day, day)).fetchone()
+        project_id = (known or {}).get("project_id") or next(
+            (s["project_id"] for s in [*today, *(p[0] for p in reversed(past))] if s["project_id"]), None)
+        if project_id is None:
+            return None
+        return {"project_id": project_id, "lines": lines, "shown": shown, "summary": summarize(history)}
 
     def _am_edition(self, conn, day: date) -> dict | None:
         s = self.company.settings
@@ -562,3 +672,22 @@ def turn_blocked(conn, task: dict, reason: str) -> None:
     at = schedule.utcnow()
     conn.execute("UPDATE trading_signals SET last_error=%s,retry_at=%s,updated_at=%s WHERE task_id=%s",
                  (reason, at + timedelta(minutes=FAULT_RETRY_MINUTES), at, task["id"]))
+
+
+def _delivery_time(row: dict) -> datetime | None:
+    """When Slack took the post: its sent_ts (epoch seconds), else the dispatch start."""
+    try:
+        return datetime.fromtimestamp(float(row["sent_ts"]), UTC)
+    except (TypeError, ValueError, OverflowError, OSError):
+        return row["started_at"]
+
+
+def _slot_line(slot: dict, instruments: tuple[str, ...], *, show_date: bool) -> str:
+    """The graded signal is the Analyst's on-time or late one; else the signal that was received (the interim rule
+    signal, marked); else none."""
+    if analyst_counts(slot):
+        direction, interim = slot["analyst"], False
+    else:
+        direction, interim = slot["received"], True
+    return result_line(slot["kind"], slot["session_day"], direction, interim, slot["returns"], show_date=show_date,
+                       instruments=instruments)
