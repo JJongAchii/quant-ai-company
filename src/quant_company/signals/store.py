@@ -36,6 +36,8 @@ PRIORITY = -100
 STANDALONE_INSTRUCTION = "이 스레드의 매매 신호와 후속 질문에 Analyst가 답한다."
 # The re-ask reason for any answer briefing.editor.artifact rejects before reading its JSON.
 ANSWER_SHAPE = "answer_shape: status complete with exactly one artifact, its source_ids empty, and nothing else"
+# The re-ask reason for a tool round that also carries other effects.
+TOOLS_ONLY = "tools_only: a tool round has no messages, delegations, memories, follow_up or artifacts"
 # The day's AM edition counts once its parent post is delivered: only then is there a thread to reply in.
 AM_EDITION = """SELECT p.id FROM brief_editions b JOIN projects p ON p.id=b.project_id
     WHERE b.day=%s AND b.kind='am' AND b.state='committed' AND b.channel=%s AND b.owner_user=%s
@@ -166,12 +168,57 @@ def allowed_tools(conn, task: dict, tools: list[str]) -> list[str]:
     return [name for name in tools if usable and not spent.get(name)]
 
 
-def tools_allowed(conn, task: dict, decision) -> bool:
-    """Every requested tool is still allowed, and the searches and reads stay within their limits after this turn."""
+def _round_problem(conn, task: dict, decision, tools: list[str]) -> str | None:
+    """Why this signal round may not run its tools (the re-ask reason), or None."""
+    if (decision.status != "continue" or not decision.tools or decision.artifacts or decision.messages
+            or decision.delegations or decision.memories or decision.follow_up):
+        return TOOLS_ONLY
     usable, searches, reads = _tool_budget(conn, task)
+    if not usable:
+        return "tools_not_allowed"
     names = [action.name for action in decision.tools]
-    return (usable and searches + names.count("web_search") <= MAX_SEARCHES
-            and reads + names.count("web_read") <= MAX_READS)
+    over = {"web_search": searches + names.count("web_search") > MAX_SEARCHES,
+            "web_read": reads + names.count("web_read") > MAX_READS}
+    refused = [name for name in dict.fromkeys(names) if name not in tools or over.get(name)]
+    return f"tools_not_allowed: {', '.join(refused)}" if refused else None
+
+
+def tools_allowed(conn, task: dict, decision, tools: list[str]) -> bool:
+    """A round the signal task may run: tools only, each in allowed_tools(conn, task, tools) for the role's tools, with
+    the web searches and reads within their limits after this turn."""
+    return _round_problem(conn, task, decision, tools) is None
+
+
+def _fetch_argument_error(decision) -> str | None:
+    """What web_tools.prepare or finance_sources.prefetch would reject before fetching, if anything."""
+    from ..finance_sources import requested_url
+    from ..web_tools import WEB_TOOLS, arguments_for
+
+    if sum(action.name == "finance_read" for action in decision.tools) > 1:
+        return "At most one official document fetch per turn"
+    try:
+        for action in decision.tools:
+            if action.name in WEB_TOOLS:
+                arguments_for(action)
+            elif action.name == "finance_read":
+                requested_url(action.arguments)
+    except ValueError as exc:
+        return str(exc)
+    return None
+
+
+def skip_prefetch(company, turn_id, decision) -> bool:
+    """For the steps that fetch before the commit (web_tools.prepare, finance_sources.prefetch): True for a signal turn
+    whose tool round is refused or whose fetch arguments are malformed. Those steps then fetch and raise nothing, and
+    the commit asks for the final answer without tools. False for every other task."""
+    with company.db.transaction() as conn:
+        task = conn.execute("SELECT k.* FROM tasks k JOIN turns t ON t.task_id=k.id WHERE t.id=%s",
+                            (turn_id,)).fetchone()
+        if not task or task["kind"] != SIGNAL_KIND:
+            return False
+        if _round_problem(conn, task, decision, company.role(task["agent"]).tools):
+            return True
+    return _fetch_argument_error(decision) is not None
 
 
 def parse_proposal(response, slot: dict, approved_ids: set[str], snapshot_id: str) -> SignalProposal:
@@ -201,19 +248,22 @@ def parse_proposal(response, slot: dict, approved_ids: set[str], snapshot_id: st
 
 
 def commit_turn(company, conn, project, task, turn, response, decision) -> dict | None:
-    """The signal step of Company.commit_turn, under its project lock. None hands a tool round that is still allowed back
-    to the general path. Anything else is the Analyst's answer: a valid proposal is stored and posted once; a format
-    error re-asks without tools at most twice, then the say is posted as unparsed. A format problem never raises."""
-    if (decision.status == "continue" and decision.tools and not decision.artifacts
-            and tools_allowed(conn, task, decision)):
-        return None
-    at = schedule.utcnow()
-    slot = conn.execute("SELECT * FROM trading_signals WHERE task_id=%s FOR UPDATE", (task["id"],)).fetchone()
-    if not slot:
-        raise PolicyError("Signal task has no slot")
+    """The signal step of Company.commit_turn, under its project lock. None hands an allowed tool round back to the
+    general path, which applies its tools in a savepoint (see tool_error). Anything else is the Analyst's answer: a
+    valid proposal is stored and posted once; a refused tool round or a format error re-asks without tools at most
+    twice, then the say is posted as unparsed. A model mistake never raises."""
+    slot = _locked_slot(conn, task)
     if slot["state"] in {"committed", "committed_late"} or slot["unparsed"]:
         # Another task of this slot settled it already; the slot keeps that one outcome and post.
         return _finish(company, conn, project, task, turn, response, done=True)
+    problem = None
+    if decision.tools:
+        problem = _round_problem(conn, task, decision, company.role(task["agent"]).tools)
+        if problem is None:
+            return None
+    at = schedule.utcnow()
+    if problem:
+        return _format_error(company, conn, project, task, turn, response, slot, problem, at)
     approved = {row["id"] for row in conn.execute("""SELECT id FROM sources WHERE approved AND available_at<=now()
         AND (project_id IS NULL OR project_id=%s)""", (project["id"],))}
     try:
@@ -234,6 +284,22 @@ def commit_turn(company, conn, project, task, turn, response, decision) -> dict 
         updated_at=%s WHERE id=%s""", ("committed_late" if slot["state"] == "fallback_sent" else "committed", timing,
                                        Jsonb(proposal.model_dump(mode="json")), at, message_id, at, slot["id"]))
     return _finish(company, conn, project, task, turn, response, done=True)
+
+
+def tool_error(company, conn, project, task, turn, response, error: ValueError) -> dict:
+    """A tool of an allowed signal round rejected its arguments, and Company.commit_turn rolled back the round's
+    savepoint: a format error like any other, so the Analyst is asked again without tools."""
+    reason = f"tool_error: {_fetch_argument_error(response.decision) or error}"[:300]
+    return _format_error(company, conn, project, task, turn, response, _locked_slot(conn, task), reason,
+                         schedule.utcnow())
+
+
+def _locked_slot(conn, task: dict) -> dict:
+    """The task's slot row, locked after the project (R8)."""
+    slot = conn.execute("SELECT * FROM trading_signals WHERE task_id=%s FOR UPDATE", (task["id"],)).fetchone()
+    if not slot:
+        raise PolicyError("Signal task has no slot")
+    return slot
 
 
 def _format_error(company, conn, project, task, turn, response, slot, reason, at) -> dict:

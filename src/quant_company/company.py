@@ -1,3 +1,4 @@
+import contextlib
 import hashlib
 import json
 import re
@@ -1217,11 +1218,20 @@ class Company:
             for action in decision.memories:
                 conn.execute("INSERT INTO memories(id,project_id,agent,text,source_ids) VALUES (%s,%s,%s,%s,%s)",
                              (str(uuid4()), project["id"], task["agent"], action.text, Jsonb(action.source_ids)))
-            for action in decision.tools:
-                result = self._tool(conn, project["id"], action, task=task, turn_id=turn_id)
-                self._message(conn, project, task["id"], "tool:" + action.name, "tool",
-                              json.dumps({"request": action.model_dump(), "receipt": result}, ensure_ascii=False),
-                              task["agent"])
+            try:
+                # A signal's tool round runs in a savepoint: a rejected tool argument becomes a re-ask, not a block.
+                with conn.transaction() if task["kind"] == SIGNAL_KIND else contextlib.nullcontext():
+                    for action in decision.tools:
+                        result = self._tool(conn, project["id"], action, task=task, turn_id=turn_id)
+                        self._message(conn, project, task["id"], "tool:" + action.name, "tool",
+                                      json.dumps({"request": action.model_dump(), "receipt": result},
+                                                 ensure_ascii=False), task["agent"])
+            except ValueError as exc:  # PolicyError included; tools raise both for bad arguments
+                if task["kind"] != SIGNAL_KIND:
+                    raise
+                from .signals.store import tool_error
+
+                return tool_error(self, conn, project, task, turn, response, exc)
             if decision.follow_up:
                 self._new_task(conn, project, task["agent"], decision.follow_up.instruction,
                                task_id=stable("follow-up:" + turn_id), due_at=decision.follow_up.at, priority=100)

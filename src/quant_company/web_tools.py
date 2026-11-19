@@ -66,6 +66,10 @@ def prepare(company, turn_id, decision):
         return []
     if not company.settings.company_web_enabled:
         raise PolicyError("Web research is disabled by service configuration")
+    from .signals.store import skip_prefetch
+
+    if skip_prefetch(company, turn_id, decision):
+        return []  # a refused or malformed signal round runs and raises nothing; its commit asks again
     normalized = [(action, arguments_for(action)) for action in actions]
     with company.db.transaction() as conn:
         row = conn.execute("SELECT task_id FROM turns WHERE id=%s", (turn_id,)).fetchone()
@@ -76,11 +80,6 @@ def prepare(company, turn_id, decision):
         turn = conn.execute("SELECT * FROM turns WHERE id=%s FOR UPDATE", (turn_id,)).fetchone()
         if (turn["status"] != "running" or task["revision"] != project["revision"] or held(conn, project, task)):
             return []
-        if task["kind"] == SIGNAL_KIND:
-            from .signals.store import tools_allowed
-
-            if not tools_allowed(conn, task, decision):
-                return []  # nothing runs; the commit asks for the final answer without tools
         role = company.role(task["agent"])
         if task["kind"] == "routing" or any(a.name not in role.tools for a in decision.tools):
             raise PolicyError("Unauthorized web tool")

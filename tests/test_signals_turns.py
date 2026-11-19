@@ -7,6 +7,8 @@ DB now() filters of the context and the source check."""
 import json
 from datetime import date, datetime, timedelta
 
+import pytest
+
 from quant_company.briefing.contracts import BRIEFER
 from quant_company.company import stable
 from quant_company.contracts import AgentDecision, ProviderResponse
@@ -16,6 +18,7 @@ from quant_company.signals.instructions import final_note
 from quant_company.signals.schedule import slots_for
 from quant_company.signals.store import (
     ANSWER_SHAPE,
+    TOOLS_ONLY,
     SignalStore,
     allowed_tools,
     parse_proposal,
@@ -169,7 +172,7 @@ def test_search_caps(signals, clock):  # noqa: F811
         with signals.db.transaction() as conn:
             task = conn.execute("SELECT * FROM tasks WHERE id=%s", (TASK,)).fetchone()
             decision = AgentDecision(status="continue", say="", tools=list(requests))
-            return allowed_tools(conn, task, role_tools), tools_allowed(conn, task, decision)
+            return allowed_tools(conn, task, role_tools), tools_allowed(conn, task, decision, role_tools)
 
     receipts("web_search", 1)
     allowed, both = check(SEARCH, {"name": "web_search", "arguments": {"query": "반도체 수출"}})
@@ -378,6 +381,108 @@ def test_settled_slot_keeps_its_first_outcome(signals, clock):  # noqa: F811
     assert (row["proposal"], row["timing"], row["committed_at"]) == (
         first["proposal"], first["timing"], first["committed_at"])
     assert len(posts(signals)) == 1
+
+
+NEWS_STATUS = {"name": "news_status", "arguments": {}}  # a ToolRequest name the Analyst's role does not have
+FINANCE_READ = {"name": "finance_read", "arguments": {"document_id": "krx-etf-trading"}}
+
+
+def reasked(company, reason, failures=1):
+    """The round became a re-ask: a counted format error, the reason sent back, the next turn queued, nothing blocked
+    and nothing posted."""
+    row = signal(company)
+    assert (row["format_failures"], row["last_error"], row["state"]) == (failures, reason, "asked")
+    notes = rows(company, "SELECT text FROM messages WHERE kind='signal_note' ORDER BY created_at")
+    assert notes[-1]["text"] == final_note(reason)
+    assert one(company, "SELECT status FROM tasks WHERE id=%s", TASK)["status"] == "pending"
+    assert queued(company, TASK) == stable(f"turn:{TASK}:{failures + 1}")
+    assert rows(company, "SELECT id FROM outbox") == []
+
+
+@pytest.fixture
+def no_fetch(monkeypatch):
+    """Official document fetches made (none expected): a refused or malformed signal round fetches nothing."""
+    fetched = []
+
+    def fetch(arguments):
+        fetched.append(arguments)
+        raise AssertionError("no official document fetch for this round")
+    monkeypatch.setattr("quant_company.finance_sources.fetch", fetch)
+    return fetched
+
+
+def test_unauthorized_tool_is_a_reask(signals, clock, no_fetch):  # noqa: F811
+    am_project(signals, MONDAY)
+    turn = ask(signals, clock)
+    signals.prepare_turn(turn)
+    assert "news_status" not in signals.roles[BRIEFER].tools
+    result = signals.commit_turn(turn, tools(turn, FINANCE_READ, NEWS_STATUS))
+    assert result == {"state": "completed", "task_status": "pending", "duplicate": False}
+    reasked(signals, "tools_not_allowed: news_status")
+    assert no_fetch == [] and rows(signals, "SELECT turn_id FROM finance_fetches") == []
+
+
+def test_tool_round_with_a_peer_message_is_a_reask(signals, clock):  # noqa: F811
+    am_project(signals, MONDAY)
+    turn = ask(signals, clock)
+    signals.prepare_turn(turn)
+    decision = AgentDecision(status="continue", say="", tools=[CALCULATE],
+                             messages=[{"agent": "director", "text": "선물 시세를 같이 봐 주세요"}])
+    signals.commit_turn(turn, ProviderResponse(request_id=turn, decision=decision))
+    reasked(signals, TOOLS_ONLY)
+    assert rows(signals, "SELECT id FROM messages WHERE kind IN ('peer','tool')") == []
+
+
+def test_rejected_tool_argument_is_a_reask(signals, clock):  # noqa: F811
+    am_project(signals, MONDAY)
+    turn = ask(signals, clock)
+    signals.prepare_turn(turn)
+    shortened = {"name": "read_source", "arguments": {"source_id": "signal:2026-11-16:intraday"}}
+    signals.commit_turn(turn, tools(turn, CALCULATE, shortened, say="확인 중"))
+    reasked(signals, "tool_error: Unavailable or unapproved source: signal:2026-11-16:intraday")
+    # The savepoint takes back the whole round, including the calculation that ran before the bad read.
+    assert rows(signals, "SELECT id FROM messages WHERE kind='tool'") == []
+
+
+@pytest.mark.parametrize("cutoff, reason", [
+    (True, "tools_not_allowed"), (False, "tool_error: web_read requires a public HTTPS URL")])
+def test_malformed_web_read_runs_nothing(signals, clock, cutoff, reason):  # noqa: F811
+    am_project(signals, MONDAY)
+    turn = ask(signals, clock)
+    if cutoff:
+        clock["at"] = slot().tools_until
+    signals.prepare_turn(turn)
+    response = tools(turn, {"name": "web_read", "arguments": {"url": "http://www.example.com/krx-notice"}})
+    assert prepare(signals, turn, response.decision) == []
+    signals.commit_turn(turn, response)
+    assert rows(signals, "SELECT id FROM web_requests") == []
+    reasked(signals, reason)
+
+
+@pytest.mark.parametrize("requests, reason", [
+    ([FINANCE_READ, FINANCE_READ], "tool_error: At most one official document fetch per turn"),
+    ([{"name": "finance_read", "arguments": {"document_id": "unknown-document"}}], "tool_error: unknown_document_id")])
+def test_malformed_or_refused_finance_read_fetches_nothing(signals, clock, no_fetch, requests, reason):  # noqa: F811
+    am_project(signals, MONDAY)
+    turn = ask(signals, clock)
+    signals.prepare_turn(turn)
+    signals.commit_turn(turn, tools(turn, *requests))
+    reasked(signals, reason)
+    # After a format error a well-formed read is refused as well, and still nothing is fetched.
+    turn = queued(signals, TASK)
+    signals.prepare_turn(turn)
+    signals.commit_turn(turn, tools(turn, FINANCE_READ))
+    reasked(signals, "tools_not_allowed", failures=2)
+    assert no_fetch == [] and rows(signals, "SELECT turn_id FROM finance_fetches") == []
+
+
+def test_reask_prompt_carries_the_reason(signals, clock):  # noqa: F811
+    am_project(signals, MONDAY)
+    turn = ask(signals, clock)
+    signals.prepare_turn(turn)
+    signals.commit_turn(turn, tools(turn, NEWS_STATUS))
+    prompt = signals.prepare_turn(queued(signals, TASK))["request"]["prompt"]
+    assert final_note("tools_not_allowed: news_status") in prompt and "Allowed tools: []\n" in prompt
 
 
 def test_parse_proposal_reasons():
