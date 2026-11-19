@@ -1,0 +1,4 @@
+# signal_baselines.py run 2026-11-19 21:26 KST
+# lake: s3://insight-invest-datalake/qdata (production mirror)
+KOSPI 2016-01-05..2026-11-18 rows 2665; SPY last 2026-11-17
+KODEX 200 rows were dropped by the join
