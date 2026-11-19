@@ -683,9 +683,10 @@ def commit_turn(company, conn, project, task, turn, response, decision) -> dict 
     return _finish(company, conn, project, task, turn, response, done=True)
 
 
-def tool_error(company, conn, project, task, turn, response, error: ValueError) -> dict:
-    """A tool of an allowed signal round rejected its arguments, and Company.commit_turn rolled back the round's
-    savepoint: a format error like any other, so the Analyst is asked again without tools."""
+def tool_error(company, conn, project, task, turn, response, error: ValueError | SyntaxError) -> dict:
+    """A tool of an allowed signal round rejected its arguments (a ValueError, or calculate's SyntaxError), and
+    Company.commit_turn rolled back the round's savepoint: a format error like any other, so the Analyst is asked
+    again without tools."""
     reason = f"tool_error: {_fetch_argument_error(response.decision) or error}"[:300]
     return _format_error(company, conn, project, task, turn, response, _locked_slot(conn, task), reason,
                          schedule.utcnow())

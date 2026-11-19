@@ -465,6 +465,39 @@ def test_rejected_tool_argument_is_a_reask(signals, clock):  # noqa: F811
     assert rows(signals, "SELECT id FROM messages WHERE kind='tool'") == []
 
 
+PERCENT = {"name": "calculate", "arguments": {"expression": "0.5%"}}  # ast.parse raises SyntaxError, not ValueError
+
+
+async def test_calculate_syntax_error_is_a_reask(signals, clock):  # noqa: F811
+    am_project(signals, MONDAY)
+    turn = ask(signals, clock)
+
+    class Provider:
+        async def run(self, request):
+            return tools(request.request_id, CALCULATE, PERCENT)
+
+        async def cancel(self, request_id):
+            return "cancelled"
+
+    # The executor commits the round as a re-ask instead of failing until tools_until.
+    assert await TurnExecutor(signals, Provider()).execute(turn) == {
+        "state": "completed", "task_status": "pending", "duplicate": False}
+    reasked(signals, "tool_error: invalid syntax (<unknown>, line 1)")
+    assert rows(signals, "SELECT id FROM messages WHERE kind='tool'") == []
+
+
+def test_calculate_syntax_error_still_raises_for_other_tasks(signals, clock):  # noqa: F811
+    """Only signal turns turn the error into a re-ask; every other task behaves as before."""
+    project = am_project(signals, MONDAY)
+    work = signals.ingest(event_key="slack:percent", text="0.5% 계산해줘", owner="UHUMAN", agent=BRIEFER,
+                          project_id=str(project["id"]))
+    turn = queued(signals, work["task_id"])
+    signals.prepare_turn(turn)
+    with pytest.raises(SyntaxError):
+        signals.commit_turn(turn, tools(turn, PERCENT))
+    assert one(signals, "SELECT status FROM turns WHERE id=%s", turn)["status"] == "running"
+
+
 @pytest.mark.parametrize("cutoff, reason", [
     (True, "tools_not_allowed"), (False, "tool_error: web_read requires a public HTTPS URL")])
 def test_malformed_web_read_runs_nothing(signals, clock, cutoff, reason):  # noqa: F811

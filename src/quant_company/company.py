@@ -1232,7 +1232,7 @@ class Company:
                         self._message(conn, project, task["id"], "tool:" + action.name, "tool",
                                       json.dumps({"request": action.model_dump(), "receipt": result},
                                                  ensure_ascii=False), task["agent"])
-            except ValueError as exc:  # PolicyError included; tools raise both for bad arguments
+            except (ValueError, SyntaxError) as exc:  # PolicyError is a ValueError; calculate("0.5%") a SyntaxError
                 if task["kind"] != SIGNAL_KIND:
                     raise
                 from .signals.store import tool_error
