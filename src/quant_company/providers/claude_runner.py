@@ -54,7 +54,7 @@ class ClaudeConfig:
     usage_credits_disabled_confirmed: bool = False
     # A full max-effort episode plan from the delivered brief exceeds the short explanation-review budget.
     video_timeout_seconds: float = 7200
-    # The evening brief email shares this one slot with the PM video: a short email never holds it for long.
+    # An email turn (its own slot since 2026-11-20): a short email never needs long.
     newsletter_timeout_seconds: float = 900
     # The owner's API credit lane: off unless enabled with a cap above 0 (USD over a rolling 31 days).
     api_enabled: bool = False
@@ -109,12 +109,14 @@ API_FIRST = frozenset({"video_shorts_v1", "newsletter_v1", "video_performance_v1
 SHORTS_REQUEST = re.compile(r"^video-[0-9a-f-]{36}-shorts-")
 SHORTS_SHARED = frozenset({"video_review_v1", "video_visual_review_v1"})
 API_SLOTS = 2
-# One subscription CLI call per slot. The episode and the email share the original slot; the briefing, the news desk,
+# One subscription CLI call per slot. The video has the original slot; the briefing, the news desk,
 # Quant Scout and the rest of the company each have their own (owner, 2026-11-17; the lanes and lock names of
-# codex_runner), so an episode never queues behind company work. So do the Shorts (owner, 2026-11-18): a cut's turn the
-# API lane cannot take runs beside its episode instead of waiting for it. release.py counts every slot's CLI process.
+# codex_runner), so an episode never queues behind company work. So do the Shorts (owner, 2026-11-18) and the email
+# (owner, 2026-11-20: "API 한도 다쓸경우 구독으로"): their turn the API lane cannot take runs beside the episode on its
+# own subscription slot instead of waiting for the episode. release.py counts every slot's CLI process.
 LOCKS = {None: ".runtime.lock", "brief": ".runtime-brief.lock", "news": ".runtime-news.lock",
-         "quant": ".runtime-quant.lock", "company": ".runtime-company.lock", "shorts": ".runtime-shorts.lock"}
+         "quant": ".runtime-quant.lock", "company": ".runtime-company.lock", "shorts": ".runtime-shorts.lock",
+         "email": ".runtime-email.lock"}
 # An API-only turn the lane refused (off, capped, paused or overloaded) is asked again after this long.
 API_ONLY_WAIT = 300
 UNCERTAIN_PAUSE_SECONDS = 1800
@@ -129,8 +131,8 @@ class ClaudeRequest(ProviderRequest):
     output_contract: Literal[ProviderRequest.model_fields["output_contract"].annotation.__args__ + CLAUDE_ONLY] = (
         "agent_decision")
     # The API credit lane or nothing: the runtime never gives this turn the shared CLI slot and answers busy (nothing
-    # ran) when the API cannot take it. The email asks this way while an episode holds the slot (owner, 2026-11-05);
-    # a Shorts turn asked so before it had its own slot (2026-11-18) is asked again unchanged (video asked_api_only).
+    # ran) when the API cannot take it. An email asked while an episode held the slot (owner, 2026-11-05, until it had its
+    # own slot on 2026-11-20) and a Shorts turn asked so before 2026-11-18 are asked again unchanged by their ID.
     api_only: bool = False
 
     @model_validator(mode="after")
@@ -162,9 +164,11 @@ def api_first(request):
 
 
 def slot(request):
-    """The CLI slot (LOCKS) a subscription turn takes: a company lane, the Shorts', or the episode's own."""
+    """The CLI slot (LOCKS) a subscription turn takes: a company lane, the Shorts', the email's, or the episode's own."""
     if company_request(request):
         return own_lane(request)
+    if request.output_contract == "newsletter_v1":  # scoped to newsletter- request IDs (ClaudeRequest)
+        return "email"
     return "shorts" if SHORTS_REQUEST.match(request.request_id) else None
 
 

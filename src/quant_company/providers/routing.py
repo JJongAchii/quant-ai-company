@@ -18,9 +18,9 @@ def is_claude(model):
 
 
 # Every company turn on Claude runs on its own CLI slot (claude_runner.LOCKS), as on Codex (codex_runner lanes): the
-# briefing, the news desk, Quant Scout and the rest of the company (staff, research). The episode and the email keep
-# the original slot to themselves, so an episode never waits for company work and company work never waits for an
-# episode (owner, 2026-11-17: the video must never be late). Matched by request ID, in the order Codex matches them.
+# briefing, the news desk, Quant Scout and the rest of the company (staff, research). The Shorts and the email have
+# their own too (2026-11-18, 2026-11-20); the original slot stays with the video, so an episode never waits for company
+# work and company work never waits for an episode (owner, 2026-11-17: the video must never be late). Matched by request ID, in the order Codex matches them.
 OWN_LANES = (("brief", re.compile(r"^news-brief-")), ("quant", re.compile(r"^quant-feed-")),
              ("news", re.compile(r"^news-")))
 

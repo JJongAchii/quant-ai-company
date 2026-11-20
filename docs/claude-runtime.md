@@ -97,13 +97,15 @@ Max 20x 구독자에게 주는 월 $200 API 크레딧(Console 조직에 들어�
   메일, Shorts, 성과 분석은 기다리지 않는다.
 - 2026-11-17부터 Claude 회사 업무는 모두 자기 CLI 칸을 쓴다: 브리핑(`news-brief-`, `.runtime-brief.lock`), 뉴스 데스크
   (`news-`, `.runtime-news.lock`), Quant Scout(`quant-feed-`, `.runtime-quant.lock`), 그 밖의 직원·연구(`.runtime-company.lock`).
-  `.runtime.lock`은 영상과 메일만 쓴다. 영상은 회사 업무를 기다리지 않는다([ADR 0051](adr/0051-editorial-desk-on-claude-slots.md)).
-  CLI가 최대 다섯 동시에 돌므로 `CLAUDE_MEMORY_LIMIT=2048m`이다.
+  Shorts(`.runtime-shorts.lock`, 2026-11-18)와 메일(`.runtime-email.lock`, 2026-11-20)도 자기 칸을 쓴다. `.runtime.lock`은
+  영상(본편, 그리고 API가 받지 못한 영상 분석)과 직원 독립 검토(`review-`, 지금 꺼짐)가 쓴다. 영상은 회사 업무·Shorts·메일의
+  CLI 칸을 기다리지 않는다([ADR 0051](adr/0051-editorial-desk-on-claude-slots.md),
+  [ADR 0053](adr/0053-email-own-claude-slot.md)). CLI가 최대 일곱 동시에 돌므로(브리핑이 Codex인 동안은 여섯)
+  `CLAUDE_MEMORY_LIMIT=2048m`이다.
 - CLI가 알려 주는 구독 사용률(`rate_limit_event`)은 마지막 값만 `jobs/.subscription.json`에 남는다. 숫자와 짧은 코드뿐이다.
   호스트 수집기가 읽어 `상태`의 'Claude 구독' 줄과 80%·95%·한도 거절 경보가 된다.
-- 메일의 "영상에 칸 양보"(`NewsletterWriter.yield_to_video`)는 API로 도는 메일을 취소하지 않는다. 런타임이 `kept`(API로 도는 중)나
-  `completed`(이미 끝나 결과가 같은 ID로 저장됨)를 돌려주면 양보하지 않고, 영상이 모델을 다 쓴 뒤 같은 ID로 물어 그 결과를 받는다.
-  대체 글로 바뀐 메일(`cancel_replaced`)과 오래된 turn의 취소는 API 요청도 끊는다. 이미 시작한 API 호출을 끊으면 영수증은
+- 메일은 2026-11-20부터 영상에 칸을 양보하지 않는다(자기 칸이 있으므로 `yield_to_video`를 없앴다). 대체 글로 바뀐
+  메일(`cancel_replaced`)과 오래된 turn의 취소는 API 요청도 끊는다. 이미 시작한 API 호출을 끊으면 영수증은
   `uncertain`이 되고(예약액을 쓴 것으로 친다) 취소 응답도 `uncertain`이다. 이 취소로는 레인을 쉬게 하지 않는다.
 
 ### 상한과 스위치

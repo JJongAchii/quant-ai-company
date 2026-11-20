@@ -1,8 +1,10 @@
 import asyncio
+import fcntl
 import json
 import logging
 import os
 import time
+from contextlib import contextmanager
 from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
@@ -24,10 +26,12 @@ from quant_company.providers.claude_api import (
 )
 from quant_company.providers.claude_runner import (
     API_FIRST,
+    LOCKS,
     ClaudeConfig,
     ClaudeRequest,
     ClaudeRunner,
     runner_from_environment,
+    slot,
 )
 from quant_company.providers.client import wire_payload
 from quant_company.providers.codex_runner import ProcessRunner, request_digest
@@ -782,6 +786,47 @@ async def test_an_api_only_turn_runs_on_the_api_while_the_cli_slot_is_busy(lane)
     assert tried(config, api_only_email()) == [("api", "complete")]
     await runner.cancel(video().request_id)
     assert held.cancelled()
+
+
+@contextmanager
+def slot_held(config, name):
+    """Hold one Claude CLI slot the way a running turn does (claude_runner.LOCKS; None is the episode's)."""
+    config.jobs_dir.mkdir(parents=True, exist_ok=True)
+    fd = os.open(config.jobs_dir / LOCKS[name], os.O_CREAT | os.O_RDWR, 0o600)
+    fcntl.flock(fd, fcntl.LOCK_EX)
+    try:
+        yield
+    finally:
+        os.close(fd)
+
+
+@pytest.mark.parametrize("change", ["cap", "disabled", "overloaded"])
+async def test_an_email_the_lane_cannot_take_runs_on_its_own_slot_beside_the_episode(lane, change):
+    # Owner, 2026-11-20 ("API 한도 다쓸경우 구독으로"): the email asks the API lane first and otherwise its own subscription
+    # slot, never the episode's (11-18..11-20 the capped lane held it until the episode was out, then the fallback).
+    config, configure, calls = lane
+    cli_email(configure)
+    config = replace(config, api_enabled=False) if change == "disabled" else (
+        replace(config, api_cap_usd=1.0) if change == "cap" else config)
+    api = Api(refusal(529))
+    with slot_held(config, None):  # an episode turn holds its slot
+        result = await make_runner(config, api).run(email())
+        assert result.usage["billing_mode"] == "subscription" and len(calls()) == 1
+        assert tried(config, email())[-1] == ("subscription", "complete")
+    assert len(api.seen) == (1 if change == "overloaded" else 0)
+    with slot_held(config, "email"):  # an email turn running: the episode's turn never waits for it
+        cli_video(configure)
+        assert (await make_runner(config, api).run(video())).provider == "claude"
+        with pytest.raises(ProviderFault) as busy:
+            await make_runner(config, api).run(email(2))
+        assert busy.value.code == "busy"  # nothing ran: the writer asks the same request again
+    assert len(calls()) == 2
+
+
+def test_only_the_email_takes_the_email_slot():
+    assert slot(email()) == "email" and LOCKS["email"] == ".runtime-email.lock"
+    assert slot(video()) is None and slot(shorts_review()) == "shorts"
+    assert len(set(LOCKS.values())) == len(LOCKS)
 
 
 @pytest.mark.parametrize("change", ["disabled", "cap", "overloaded", "server_error"])
