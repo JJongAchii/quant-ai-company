@@ -94,8 +94,10 @@ ADR 0051이 보류한 `staff_models.BRIEFING`(market_brief → Opus 5.5 xhigh)�
     `uv run --frozen python scripts/qualify_signals.py --live --kind overnight --fetch-snapshot --edition <file>
     --output docs/project/evidence/<name>.json` (절차는 [브리핑 운영 문서](../briefing.md#analyst-매매-신호)). 2026-11-19에 한 번
     돌린 [영수증](../project/evidence/analyst-signals-qualification-20261119.json)은 실제 신호 경로·일회용 DB·실시간 시세 읽기까지
-    지났지만, 작업 컴퓨터의 Codex CLI(0.169.0)가 검증된 0.160.1이 아니어서 runner가 모델 호출 전에 거부했다. 모델 응답은 아직
-    확인하지 못했다([요약](../project/ANALYST-SIGNALS-BASELINES-20261119.md)).
+    지났지만, 작업 컴퓨터의 Codex CLI(0.169.0)가 검증된 0.160.1이 아니어서 runner가 모델 호출 전에 거부했다.
+    2026-11-20에 검증된 0.160.1로 다시 돌려 통과했다([영수증](../project/evidence/analyst-signals-qualification-20261120.json)).
+    모델은 턴 세 번, 합계 약 56초에 답했고, 근거 길이 형식 오류로 한 번 다시 물은 뒤 정시에 커밋했다
+    ([요약](../project/ANALYST-SIGNALS-BASELINES-20261119.md)).
   - 실제 Slack 전달. 구현 시험의 Slack은 모의이며 배포됐다고 적지 않는다.
   - 첫 5거래일 관찰, 그리고 장중 한 번 Yahoo KRX 시세가 실제보다 몇 분 늦는지 재는 일은 `docs/project/evidence`에 따로 남긴다.
 - 운영 S3 레이크 기준선 재실행(2026-11-19)은 점검을 겹치는 기간으로 좁히고 지수에 없는 날을 출력하게 한 뒤(R21, 규칙·로컬 숫자 불변) 끝까지

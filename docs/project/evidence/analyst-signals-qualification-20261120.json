@@ -1,0 +1,162 @@
+{
+  "started_at": "2026-11-20T01:31:13.315690+00:00",
+  "state": "committed",
+  "kind": "overnight",
+  "real_model": true,
+  "slack_sender_constructed": false,
+  "database": {
+    "kind": "disposable database on a local PostgreSQL cluster",
+    "name": "company_signal_qualification_e166eff7dd364f388dd03f4297f5714e",
+    "dropped": true
+  },
+  "code_commit": "9fac49bf39f678905355cc001012e03cb011602e",
+  "uncommitted_code": false,
+  "edition": {
+    "sha256": "c07beefa265d1bcd34065ebd6840e2b7a08d949e005cf61d88ac6ee1de2a299a",
+    "characters": 236,
+    "synthetic": true
+  },
+  "turns": [
+    {
+      "sequence": 1,
+      "state": "completed",
+      "task_status": "pending",
+      "reason": null,
+      "turn_status": "completed",
+      "turn_error": null,
+      "tools": [
+        "read_source"
+      ],
+      "latency_seconds": 10.3
+    },
+    {
+      "sequence": 2,
+      "state": "completed",
+      "task_status": "pending",
+      "reason": null,
+      "turn_status": "completed",
+      "turn_error": null,
+      "tools": [],
+      "latency_seconds": 25.2
+    },
+    {
+      "sequence": 3,
+      "state": "completed",
+      "task_status": "completed",
+      "reason": null,
+      "turn_status": "completed",
+      "turn_error": null,
+      "tools": [],
+      "latency_seconds": 20.9
+    }
+  ],
+  "completed_model_turns": 3,
+  "provider_faults": [],
+  "proposal": {
+    "kind": "overnight",
+    "reasons": [
+      {
+        "text": "10:21 KST 미국 S&P 500·나스닥100 선물이 각각 -2.10%·-2.51%. 약세가 한국 종가 이후에도 이어지면 한국 주식의 요구수익률 상승과 월요일 시가 하락으로 연결될 수 있다는 가설이다.",
+        "source_ids": [
+          "signal:2026-11-20:overnight:snapshot"
+        ]
+      },
+      {
+        "text": "10:31 KST 원/달러는 +0.43%. 원화 약세 지속은 수입원가·외화부채 부담 경로로 일부 기업에 불리하다. 다만 수출기업의 환산이익은 상쇄 요인이며 외국인 매도 증거는 없다.",
+        "source_ids": [
+          "signal:2026-11-20:overnight:snapshot"
+        ]
+      },
+      {
+        "text": "10:11 KST 지연 코스피는 이미 -2.43%. 악재가 종가에 반영되거나 반등하면 숏 논리가 약해진다. 오전 동반 하락만으로 주말 갭을 입증할 수 없어 확신을 낮춘다. 날짜가 불명확한 중국 시세는 제외했다.",
+        "source_ids": [
+          "signal:2026-11-20:overnight:snapshot"
+        ]
+      }
+    ],
+    "direction": "short",
+    "confidence": 52,
+    "source_ids": [
+      "signal:2026-11-20:overnight:snapshot"
+    ],
+    "session_day": "2026-11-20",
+    "invalidation": "진입 전 미국 선물 낙폭 축소와 원화 강세 전환이 함께 확인되면 약세 지속 가설이 약해진다. 최종적으로 11월 23일 코스피 시가가 11월 20일 종가 이상이면 하락 방향 판단은 실패로 본다."
+  },
+  "posts": [
+    {
+      "text": "🌙 오버나잇 신호 · 11월 20일(금) 종가 15:30 진입 → 11월 23일(월) 시가 09:00 청산\n숏 · 확신도 52%\n근거\n1. 10:21 KST 미국 S&P 500·나스닥100 선물이 각각 -2.10%·-2.51%. 약세가 한국 종가 이후에도 이어지면 한국 주식의 요구수익률 상승과 월요일 시가 하락으로 연결될 수 있다는 가설이다.\n2. 10:31 KST 원/달러는 +0.43%. 원화 약세 지속은 수입원가·외화부채 부담 경로로 일부 기업에 불리하다. 다만 수출기업의 환산이익은 상쇄 요인이며 외국인 매도 증거는 없다.\n3. 10:11 KST 지연 코스피는 이미 -2.43%. 악재가 종가에 반영되거나 반등하면 숏 논리가 약해진다. 오전 동반 하락만으로 주말 갭을 입증할 수 없어 확신을 낮춘다. 날짜가 불명확한 중국 시세는 제외했다.\n틀렸다고 볼 조건: 진입 전 미국 선물 낙폭 축소와 원화 강세 전환이 함께 확인되면 약세 지속 가설이 약해진다. 최종적으로 11월 23일 코스피 시가가 11월 20일 종가 이상이면 하락 방향 판단은 실패로 본다.\n기준 시세 10:31 · 코스피 -2.4% · S&P 500 선물 7,186.00(10:21) · 원/달러 1,336.18(10:31) · 닛케이 225 -3.3%",
+      "outbox_status": "pending"
+    }
+  ],
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "session_day": "2026-11-20",
+  "clock": {
+    "simulated_start": "2026-11-20T05:30:00+00:00",
+    "real_start": "2026-11-20T01:31:16.099054+00:00",
+    "tools_until": "2026-11-20T05:55:00+00:00",
+    "send_at": "2026-11-20T06:10:00+00:00",
+    "entry_at": "2026-11-20T06:30:00+00:00",
+    "exit_at": "2026-11-23T00:00:00+00:00"
+  },
+  "snapshot": {
+    "origin": "live read (--fetch-snapshot)",
+    "observed_at": "2026-11-20T01:31:18.077723+00:00",
+    "quotes": [
+      "es",
+      "ewy",
+      "hsi",
+      "kodex200",
+      "kosdaq",
+      "kospi",
+      "n225",
+      "nq",
+      "shanghai",
+      "spy",
+      "usdkrw"
+    ],
+    "errors": {},
+    "receipts": {
+      "es": "e85556edf66964e846f00cd24e391a7428dfb5359e35efeafc30d0a24ef06598",
+      "nq": "13bdbad3c1503d103f70271060230810adf26b2c85666509569eb875025aa600",
+      "spy": "cb50ef400204420c402741ad6087841076f94d2bbcf117219816be2097c62f9d",
+      "ewy": "32c97ea0ce2f70d91f5570405b859ed43d5a8a3ed59d113824e619376f9a953a",
+      "usdkrw": "6ad70c62b78f03d90380e681037c77cfdb3d23a871b72830ea985008c40a732f",
+      "kospi": "32cbcb13481de00382da1f129ee6100cef4d15311340762080f797eb33644005",
+      "kodex200": "e9fd93c13ac18058cafb8b242de8f6097a4a8c5913bd7f677a0a0e046d7bac2c",
+      "kosdaq": "31cfbcaebf9b21671a42a1766d1f33d932954f8623b1e23605b6799cc4154466",
+      "n225": "526bf5c33af1db99a1b909ddd159000f553daf3bd76065e5bfba202977da48df",
+      "hsi": "1e7e934db52e8aa02d41bc0b9e3682b199bb85d32d31f66ecc71e96dc3a0ad66",
+      "shanghai": "0cdc8b8b7edd2bf84e824b162547b6c9624779c890e51c8c9440c0d36915e9db"
+    },
+    "text": "S&P 500 선물 | 7186.00 | 원천 10:21 KST | 전일 대비 -2.10%\n나스닥 100 선물 | 26505.25 | 원천 10:21 KST | 전일 대비 -2.51%\nSPY | 715.87 | 원천 06:00 KST | 전일 대비 -1.96%\nEWY | 134.59 | 원천 06:00 KST | 전일 대비 -1.57%\n원/달러 | 1336.18 | 원천 10:31 KST | 전일 대비 +0.43%\n코스피 | 4944.25 | 원천 10:11 KST | 전일 대비 -2.43% | 지연\nKODEX 200 | 77460.00 | 원천 10:11 KST | 전일 대비 -3.93% | 지연\n코스닥 | 657.42 | 원천 10:11 KST | 전일 대비 -0.81% | 지연\n닛케이 225 | 57096.40 | 원천 10:16 KST | 전일 대비 -3.27%\n항셍 | 22841.62 | 원천 17:08 KST | 전일 대비 -1.95% | 지연\n상하이종합 | 3577.62 | 원천 16:00 KST | 전일 대비 -0.28% | 지연"
+  },
+  "timing": "on_time",
+  "committed_at": "2026-11-20 05:30:58.540274+00:00",
+  "format_failures": 1,
+  "unparsed": false,
+  "last_error": "invalid_proposal: reasons.0.text: String should have at most 200 characters",
+  "task": {
+    "status": "completed",
+    "error": null,
+    "turn_count": 3
+  },
+  "signal_notes": [
+    "서비스 안내: 도구 없이 지금 최종 답을 내세요. 사유: invalid_proposal: reasons.0.text: String should have at most 200 characters"
+  ],
+  "web_requests": [],
+  "answers": [
+    "승인된 시세 원문에서 관측 날짜와 시각을 확인하겠습니다. 현재의 장중 하락과 금요일 종가→월요일 시가의 추가 하락 가능성을 구분하고, 합성 브리핑은 판단 근거에서 제외하겠습니다."
+  ],
+  "completed_at": "2026-11-20T01:32:14.784729+00:00",
+  "notes": [
+    "Provider: CodexRunner on the local ChatGPT login (CODEX_HOME), no API credentials; its job receipts were kept outside the repository.",
+    "3 model turn(s) completed.",
+    "A disposable database on a local PostgreSQL cluster was created for this run and dropped afterwards; production, its database and its host were not touched.",
+    "The Slack sender (SlackOutbox) was never constructed: the posts listed exist only as undispatched outbox rows of the disposable database.",
+    "The signals clock started at the slot's snapshot time and advanced in real time, so the tool cutoff and the on-time/late timing reflect the real latency. Grading, the interim post and the scorecard were not run.",
+    "The snapshot was read live from Yahoo at the time shown.",
+    "The edition text is synthetic test text, not a published edition.",
+    "The proposal is a model output for a contract and latency check, not a trading recommendation."
+  ]
+}
