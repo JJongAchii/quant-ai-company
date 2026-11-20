@@ -18,7 +18,7 @@ def test_normal_friday():
     assert intraday.exit_day == date(2026, 11, 20)
     assert [hm(getattr(overnight, f)) for f in (
         "snapshot_at", "snapshot_latest", "tools_until", "fallback_at", "send_at", "entry_at")] == [
-        "14:30", "14:30", "14:55", "15:08", "15:10", "15:30"]
+        "15:00", "15:00", "15:07", "15:13", "15:15", "15:30"]
     assert overnight.exit_day == date(2026, 11, 23)
     assert overnight.exit_at.astimezone(KST) == datetime(2026, 11, 23, 9, 0, tzinfo=KST)
     assert overnight.exit_at.tzinfo is not None and overnight.exit_at.utcoffset().total_seconds() == 0
@@ -30,7 +30,7 @@ def test_csat_override_moves_overnight():
                               source_url="https://global.krx.co.kr/")
     intraday, overnight = slots_for(day, {("KR", day): change})
     assert hm(intraday.send_at) == "08:30"
-    assert (hm(overnight.snapshot_at), hm(overnight.send_at), hm(overnight.entry_at)) == ("15:30", "16:10", "16:30")
+    assert (hm(overnight.snapshot_at), hm(overnight.send_at), hm(overnight.entry_at)) == ("16:00", "16:15", "16:30")
 
 
 def test_first_session_of_year():

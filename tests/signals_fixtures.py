@@ -17,9 +17,9 @@ from quant_company.signals.snapshot import CATALOGUE, read_snapshot
 
 KST = schedule.KST
 DAY = date(2026, 11, 20)
-# DAY's snapshot times: 07:30 KST (intraday) and 14:30 KST (overnight).
+# DAY's snapshot times: 07:30 KST (intraday) and 15:00 KST (overnight).
 OBSERVED = {"intraday": datetime(2026, 11, 19, 22, 30, tzinfo=UTC),
-            "overnight": datetime(2026, 11, 20, 5, 30, tzinfo=UTC)}
+            "overnight": datetime(2026, 11, 20, 6, 0, tzinfo=UTC)}
 # key: (exchange timezone, previous close, last price)
 QUOTES = {
     "es": ("America/Chicago", 6812.25, 6848.5), "nq": ("America/Chicago", 25010.75, 25190.25),
@@ -30,7 +30,7 @@ QUOTES = {
     "shanghai": ("Asia/Shanghai", 3940.2, 3951.7),
 }
 # Minutes between a quote's source time and the snapshot: at 07:30 KST the CME futures are in their daily break
-# (07:00 value), SPY/EWY show the 06:00 KST US close and KRX the previous 15:30 close; at 14:30 the cash markets trade.
+# (07:00 value), SPY/EWY show the 06:00 KST US close and KRX the previous 15:30 close; at 15:00 the cash markets trade.
 AGE_MINUTES = {
     "intraday": {"es": 30, "nq": 30, "usdkrw": 2, "spy": 90, "ewy": 90, "kospi": 960, "kodex200": 960, "kosdaq": 960},
     "overnight": {"es": 1, "nq": 1, "usdkrw": 1, "spy": 510, "ewy": 510, "kospi": 1, "kodex200": 1, "kosdaq": 1,

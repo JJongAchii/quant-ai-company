@@ -138,10 +138,10 @@ def test_ask_twice_creates_one_task_and_source(signals):  # noqa: F811
     assert not store.ask(row, {**first, "observed_at": kst(8, 1).isoformat()}, kst(8, 1))
     assert one(signals, "SELECT snapshot FROM trading_signals WHERE id=%s", row["id"])["snapshot"] == first
     # Two workers asking the same slot at once: one task, one source.
-    [night] = store.due_asks(kst(14, 30))
+    [night] = store.due_asks(kst(15, 0))
     frozen = snapshot("overnight")
     with ThreadPoolExecutor(2) as pool:
-        won = list(pool.map(lambda _: store.ask(night, frozen, kst(14, 30)), range(2)))
+        won = list(pool.map(lambda _: store.ask(night, frozen, kst(15, 0)), range(2)))
     assert sorted(won) == [False, True]
     with signals.db.transaction() as conn:
         assert conn.execute("SELECT count(*) n FROM tasks WHERE kind='trading_signal'").fetchone()["n"] == 2
@@ -180,7 +180,7 @@ def test_overnight_reuses_intraday_project(signals):  # noqa: F811
     store.schedule(kst(7))
     ask_slot(store, kst(8), "intraday")
     edition = am_project(signals, DAY)  # the AM edition arrives after the standalone thread was made
-    night = ask_slot(store, kst(14, 30), "overnight")
+    night = ask_slot(store, kst(15, 0), "overnight")
     assert {str(row["project_id"]) for row in slot_rows(signals)} == {STANDALONE}
     assert str(one(signals, "SELECT project_id FROM tasks WHERE id=%s", night["id"])["project_id"]) == STANDALONE
     assert one(signals, "SELECT count(*) n FROM tasks WHERE project_id=%s", edition["id"])["n"] == 0
@@ -274,7 +274,7 @@ def answer_at(company, clock, turn, at, value=None, *, prepared=None):  # noqa: 
 
 
 def fallback_at(company, clock, day=MONDAY, kind="intraday"):  # noqa: F811
-    """send_fallbacks at the slot's fallback_at (08:28 or 15:08 on a normal session)."""
+    """send_fallbacks at the slot's fallback_at (08:28 or 15:13 on a normal session)."""
     clock["at"] = next(item for item in slots_for(day) if item.kind == kind).fallback_at
     return SignalStore(company).send_fallbacks(clock["at"])
 
@@ -317,7 +317,7 @@ def test_fallback_sent_once_at_fallback_at(signals, clock):  # noqa: F811
         "fallback_sent", "분석이 아직 끝나지 않음", clock["at"], str(post["id"]))
     # Two workers at the overnight fallback time still make one interim post, with the overnight hit rate.
     ask(signals, clock, kind="overnight")
-    clock["at"] = kst(15, 8, MONDAY)
+    clock["at"] = kst(15, 13, MONDAY)
     with ThreadPoolExecutor(2) as pool:
         made = list(pool.map(lambda _: store.send_fallbacks(clock["at"]), range(2)))
     assert sorted(made) == [0, 1]
@@ -507,7 +507,7 @@ async def test_standalone_thread_ts_from_first_delivery(signals, clock, credenti
     assert one(signals, "SELECT thread_ts FROM projects WHERE id=%s", MONDAY_THREAD)["thread_ts"] == "300.001"
     assert one(signals, "SELECT thread_ts FROM outbox WHERE id=%s", post_id("analyst"))["thread_ts"] == "300.001"
     # The overnight slot shares the thread; its interim post replies in it from the start.
-    ask_at(signals, clock, kst(14, 30, MONDAY), "overnight")
+    ask_at(signals, clock, kst(15, 0, MONDAY), "overnight")
     fallback_at(signals, clock, kind="overnight")
     assert await sender.send_one()
     assert sent[2]["thread_ts"] == "300.001" and sent[2]["text"].startswith("⏱️ 임시 신호 · 11월 16일(월) 오버나잇")
@@ -519,7 +519,7 @@ def test_post_waits_while_the_thread_root_is_in_flight(signals, clock, credentia
     answer_at(signals, clock, turn, kst(8, 20, MONDAY))  # on time: the thread's first post
     sender, _ = simulated_slack(signals, credentials)
     root = sender.claim()  # one sender has it in flight
-    ask_at(signals, clock, kst(14, 30, MONDAY), "overnight")
+    ask_at(signals, clock, kst(15, 0, MONDAY), "overnight")
     fallback_at(signals, clock, kind="overnight")
     night, store = post_id("fallback", kind="overnight"), SignalStore(signals)
     with signals.db.transaction() as conn:
@@ -600,11 +600,11 @@ async def test_exited_signal_is_retired_without_a_model_call(signals, clock):  #
 
 
 async def test_past_entry_signal_waits_behind_a_slot_before_its_send_time(signals, clock):  # noqa: F811
-    """Monday's intraday task never got its answer in. From the open it is demoted (-100 to -50), so at 14:30 the
+    """Monday's intraday task never got its answer in. From the open it is demoted (-100 to -50), so at 15:00 the
     overnight signal runs first, while both still run ahead of every other task."""
     project = am_project(signals, MONDAY)
     intraday = ask(signals, clock)
-    overnight = ask(signals, clock, kind="overnight")  # 14:30
+    overnight = ask(signals, clock, kind="overnight")  # 15:00
     work = signals.ingest(event_key="slack:afternoon-question", text="오늘 장 어땠어?", owner="UHUMAN",
                           agent=BRIEFER, project_id=str(project["id"]))
     owner = queued(signals, work["task_id"])
@@ -684,9 +684,9 @@ async def test_signals_never_enqueue_public_outputs(signals, clock, credentials,
     clock["at"] = kst(7, 30, MONDAY)
     assert (await runner.tick())["asked"] == 1
     answer_at(signals, clock, queued(signals, TASK), kst(8, 20, MONDAY))
-    runner.fetch, clock["at"] = recorded("overnight", MONDAY), kst(14, 30, MONDAY)
+    runner.fetch, clock["at"] = recorded("overnight", MONDAY), kst(15, 0, MONDAY)
     assert (await runner.tick())["asked"] == 1
-    clock["at"] = kst(15, 8, MONDAY)
+    clock["at"] = kst(15, 13, MONDAY)
     assert (await runner.tick())["fallbacks"] == 1
     sender, sent = simulated_slack(signals, credentials)
     assert await sender.send_one() and await sender.send_one()

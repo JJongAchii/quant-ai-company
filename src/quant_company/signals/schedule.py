@@ -33,7 +33,9 @@ def slots_for(day: date, changes: dict | None = None) -> list[Slot]:
         Slot(day=day, kind="intraday", snapshot_at=minutes(start, -90), snapshot_latest=minutes(start, -60),
              tools_until=minutes(start, -45), fallback_at=minutes(start, -32), send_at=minutes(start, -30),
              entry_at=start, exit_at=end, exit_day=day),
-        Slot(day=day, kind="overnight", snapshot_at=minutes(end, -60), snapshot_latest=minutes(end, -60),
-             tools_until=minutes(end, -35), fallback_at=minutes(end, -22), send_at=minutes(end, -20),
+        # Owner 2026-11-20: judge the overnight call as late as possible (KRX quotes from Yahoo trail by 20 minutes),
+        # yet in time to order in the 15:20-15:30 closing auction: freeze C-30, tools until C-23, send by C-15.
+        Slot(day=day, kind="overnight", snapshot_at=minutes(end, -30), snapshot_latest=minutes(end, -30),
+             tools_until=minutes(end, -23), fallback_at=minutes(end, -17), send_at=minutes(end, -15),
              entry_at=end, exit_at=exit_at, exit_day=exit_day),
     ]
