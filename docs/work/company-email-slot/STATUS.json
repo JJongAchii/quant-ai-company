@@ -1,0 +1,74 @@
+{
+  "approval": {
+    "approvedAt": "2026-11-19T23:58:25.380515+00:00",
+    "id": "owner-chat-20261120-api-cap-subscription"
+  },
+  "currentIntent": "INTENT-v1.json",
+  "deliverables": {
+    "REVIEW": {
+      "evidence": [
+        {
+          "path": "docs/adr/0053-email-own-claude-slot.md",
+          "sha256": "3f2e9f3a0c4e"
+        },
+        {
+          "path": "docs/newsletter.md",
+          "sha256": "5432594912f9"
+        }
+      ],
+      "note": "ADR 0053 records the owner instruction of 2026-11-20 and the remaining pre-existing API-wait path; PR body lists operator steps (none beyond the release)",
+      "status": "verified",
+      "updatedAt": "2026-11-20T00:22:00.490301+00:00"
+    },
+    "RUNTIME": {
+      "evidence": [
+        {
+          "path": "src/quant_company/providers/claude_runner.py",
+          "sha256": "bff75cc96fa2"
+        },
+        {
+          "path": "tests/test_claude_api_lane.py",
+          "sha256": "66b9b2509525"
+        }
+      ],
+      "note": "email turns take .runtime-email.lock; lane-capped/off/overloaded emails complete on the subscription while the episode slot is held; an episode turn runs while the email slot is held",
+      "status": "verified",
+      "updatedAt": "2026-11-20T00:21:59.481942+00:00"
+    },
+    "VALIDATION": {
+      "evidence": [
+        {
+          "path": "docs/work/company-email-slot/evidence/validation.json",
+          "sha256": "20f8dbcd1bab"
+        }
+      ],
+      "note": "full non-live suite 3598 passed / 0 failed; 11 of 12 new tests fail on the previous code",
+      "status": "verified",
+      "updatedAt": "2026-11-20T00:22:00.159934+00:00"
+    },
+    "WRITER": {
+      "evidence": [
+        {
+          "path": "src/quant_company/newsletter/writer.py",
+          "sha256": "b626977b8ce2"
+        },
+        {
+          "path": "src/quant_company/newsletter/store.py",
+          "sha256": "9e55da625455"
+        },
+        {
+          "path": "tests/test_newsletter.py",
+          "sha256": "c0d68d1f7fb2"
+        }
+      ],
+      "note": "never API-only beside the video, never cancelled for it; frozen API-only turns asked again unchanged; fallback, checks and sending unchanged",
+      "status": "verified",
+      "updatedAt": "2026-11-20T00:21:59.856220+00:00"
+    }
+  },
+  "intentDigest": "1ccbccec72b9",
+  "schemaVersion": 1,
+  "slug": "company-email-slot",
+  "state": "approved",
+  "updatedAt": "2026-11-20T00:22:00.490301+00:00"
+}
