@@ -832,118 +832,74 @@ def video_job(store, edition, state):
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize("state", ["queued", "reviewing", "synthesizing", "inspecting"])
-async def test_an_email_turn_beside_a_video_needing_the_model_is_api_only(mail, brief, state):  # noqa: F811
-    # Owner, 2026-11-05: the email is written while the episode works, on the API lane only (it never takes the
-    # subscription slot the episode holds), so the morning email goes out about 07:35 instead of after 08:15.
+@pytest.mark.parametrize("state", ["queued", "reviewing", "synthesizing", "inspecting", "rendering"])
+async def test_an_email_turn_beside_the_video_is_never_api_only(mail, brief, state):  # noqa: F811
+    # Owner, 2026-11-05: the email is written beside the episode. Owner, 2026-11-20 ("API 한도 다쓸경우 구독으로"): its
+    # turn takes the API lane first and otherwise the email's own subscription slot (that runtime routing is checked in
+    # test_claude_api_lane), so the writer never asks API-only.
     store, _ = mail
     edition = commit_pm(brief)
     writer, provider = await write(store, v5_draft())
     video_job(store, edition, state)
     assert (await writer.tick())["state"] == "ready" and len(provider.calls) == 1
-    assert provider.calls[0].api_only is True
+    assert provider.calls[0].api_only is False and provider.cancelled == []
 
 
 @pytest.mark.integration
-async def test_an_email_turn_with_no_video_needing_the_model_may_use_either_lane(mail, brief):  # noqa: F811
-    store, _ = mail
-    edition = commit_pm(brief)
-    writer, provider = await write(store, v5_draft())
-    video_job(store, edition, "rendering")
-    assert (await writer.tick())["state"] == "ready" and provider.calls[0].api_only is False
-
-
-@pytest.mark.integration
-async def test_an_api_only_email_turn_the_lane_refuses_waits_without_using_an_attempt(mail, brief):  # noqa: F811
+async def test_a_frozen_api_only_email_turn_the_lane_refuses_is_asked_again_on_the_emails_slot(mail, brief):  # noqa: F811
+    # A turn frozen API-only before 2026-11-20 is asked again unchanged by its ID (the runtime's receipt is keyed by its
+    # input); refused, it is let go without using an attempt and the next request may take the email's own slot even
+    # while the episode still needs the model.
     store, clock = mail
     edition = commit_pm(brief)
     refused = ProviderFault("busy", "simulated: the API lane cannot take this turn now", 300)
     writer, provider = await write(store, refused, v5_draft())
     video_job(store, edition, "reviewing")
-    assert await writer.tick() == {"issue": str(issue_of(store, edition)["id"]), "state": "waiting", "code": "api_lane"}
+    issue = issue_of(store, edition)
+    frozen = writer.request(issue)
+    store.freeze_request(issue, frozen.model_dump(mode="json") | {"api_only": True})
+    assert await writer.tick() == {"issue": str(issue["id"]), "state": "waiting", "code": "api_lane"}
     first = provider.calls[0]
     issue = issue_of(store, edition)
-    assert first.api_only and [a["outcome"] for a in issue["attempts"]] == ["yielded"] and issue["request"] is None
+    assert first.request_id == frozen.request_id and first.api_only
+    assert [a["outcome"] for a in issue["attempts"]] == ["yielded"] and issue["request"] is None
     clock["at"] += timedelta(minutes=4)
     assert await writer.tick() == {"state": "idle"} and len(provider.calls) == 1  # waits five minutes
-    video_job(store, edition, "rendering")
     clock["at"] += timedelta(minutes=2)
-    # A new request once the episode leaves the model: it may now use the subscription like before.
     assert (await writer.tick())["state"] == "ready"
     assert provider.calls[1].request_id == first.request_id[:-1] + "2" and provider.calls[1].api_only is False
     assert [a["outcome"] for a in issue_of(store, edition)["attempts"]] == ["yielded", "passed"]
 
 
 @pytest.mark.integration
-async def test_an_api_only_email_turn_is_never_cancelled_for_the_video(mail, brief):  # noqa: F811
+async def test_a_running_email_turn_is_never_cancelled_for_the_video(mail, brief):  # noqa: F811
+    # It holds the email's slot, never the episode's: the episode reaching a model stage leaves it running, and it is
+    # asked again by its own ID for its result.
     store, clock = mail
     edition = commit_pm(brief)
     pending = ProviderFault("pending", "simulated: still running", 20)
     writer, provider = await write(store, pending, v5_draft())
-    video_job(store, edition, "inspecting")
     await writer.tick()
     first = provider.calls[0].request_id
+    video_job(store, edition, "inspecting")
     clock["at"] += timedelta(seconds=30)
     assert (await writer.tick())["state"] == "ready"
     assert provider.cancelled == [] and [c.request_id for c in provider.calls] == [first, first]
+    assert [(a["request_id"], a["outcome"]) for a in issue_of(store, edition)["attempts"]] == [(first, "passed")]
 
 
 @pytest.mark.integration
-async def test_a_running_email_turn_yields_to_the_video_without_using_an_attempt(mail, brief):  # noqa: F811
+async def test_a_busy_email_slot_asks_the_same_request_again(mail, brief):  # noqa: F811
     store, clock = mail
     edition = commit_pm(brief)
-    pending = ProviderFault("pending", "simulated: still running", 20)
-    writer, provider = await write(store, pending, v5_draft())
-    await writer.tick()
-    first = provider.calls[0].request_id
-    video_job(store, edition, "inspecting")  # the episode's screen review needs the one runtime slot
-    clock["at"] += timedelta(seconds=30)
-    assert await writer.tick() == {"state": "idle"}
-    assert provider.cancelled == [first] and len(provider.calls) == 1
-    issue = issue_of(store, edition)
-    assert [a["outcome"] for a in issue["attempts"]] == ["yielded"] and issue["request"] is None
-    video_job(store, edition, "rendering")
-    clock["at"] += timedelta(minutes=2)
-    assert (await writer.tick())["state"] == "ready"
-    assert provider.calls[1].request_id == first[:-1] + "2" and "PREVIOUS VERSION" not in provider.calls[1].prompt
-
-
-@pytest.mark.integration
-async def test_newsletter_does_not_yield_a_turn_the_runtime_kept(mail, brief):  # noqa: F811
-    store, clock = mail
-    edition = commit_pm(brief)
-    pending = ProviderFault("pending", "simulated: still running", 20)
-    writer, provider = await write(store, pending, v5_draft())
-    provider.cancel_answer = "kept"
-    await writer.tick()
-    first = provider.calls[0].request_id
-    before = issue_of(store, edition)
-    video_job(store, edition, "inspecting")
+    busy = ProviderFault("busy", "simulated: the email's slot is in use", 10)
+    writer, provider = await write(store, busy, v5_draft())
+    video_job(store, edition, "synthesizing")
+    assert (await writer.tick())["state"] == "waiting"
     clock["at"] += timedelta(seconds=30)
     assert (await writer.tick())["state"] == "ready"
-    # The turn runs on the API lane and holds no shared slot: it is asked about, never given up, and asked again by
-    # its own ID for its result.
-    assert provider.cancelled == [first] and provider.cancel_scopes == [True]
-    assert [c.request_id for c in provider.calls] == [first, first]
-    issue = issue_of(store, edition)
-    assert len(before["attempts"]) == 0 and [(a["request_id"], a["outcome"]) for a in issue["attempts"]] == [
-        (first, "passed")]
-
-
-@pytest.mark.integration
-async def test_newsletter_still_yields_a_cancelled_turn(mail, brief):  # noqa: F811
-    store, clock = mail
-    edition = commit_pm(brief)
-    pending = ProviderFault("pending", "simulated: still running", 20)
-    writer, provider = await write(store, pending, v5_draft())
-    await writer.tick()
-    first = provider.calls[0].request_id
-    video_job(store, edition, "inspecting")
-    clock["at"] += timedelta(seconds=30)
-    assert await writer.tick() == {"state": "idle"}
-    assert provider.cancelled == [first] and provider.cancel_scopes == [True]
-    issue = issue_of(store, edition)
-    assert [a["outcome"] for a in issue["attempts"]] == ["yielded"] and issue["request"] is None
+    assert len({c.request_id for c in provider.calls}) == 1 and not any(c.api_only for c in provider.calls)
+    assert [a["outcome"] for a in issue_of(store, edition)["attempts"]] == ["passed"]
 
 
 class StoppedWaiting:
@@ -966,7 +922,7 @@ class StoppedWaiting:
 
 
 @pytest.mark.integration
-async def test_an_api_email_turn_kept_for_the_video_is_used_by_its_id_after_it_completes(mail, brief, lane):  # noqa: F811
+async def test_an_api_email_turn_running_beside_the_video_is_used_by_its_id_after_it_completes(mail, brief, lane):  # noqa: F811
     # Real ClaudeRunner behind the runtime's HTTP app (in process); the Messages API is simulated (MockTransport).
     store, clock = mail
     config, _, calls = lane
@@ -983,14 +939,14 @@ async def test_an_api_email_turn_kept_for_the_video_is_used_by_its_id_after_it_c
     first = issue_of(store, edition)["request"]["request_id"]
     video_job(store, edition, "inspecting")
     clock["at"] += timedelta(seconds=30)
-    # Kept: the API turn holds no shared slot; asked again by its ID, it is still running.
+    # The episode in a model stage changes nothing: asked again by its ID, the API turn is still running.
     assert (await writer.tick())["code"] == "pending" and len(api.seen) == 1
     issue = issue_of(store, edition)
     assert issue["attempts"] == [] and issue["request"]["request_id"] == first
     api.gate.set()
     assert all(r.usage["billing_mode"] == "api_credit" for r in await asyncio.gather(*provider.open))
     clock["at"] += timedelta(seconds=30)
-    # The shared-only cancel now answers completed and the finished result is read under its ID; nothing is yielded.
+    # The finished result is read under its ID; nothing is cancelled or yielded.
     assert (await writer.tick())["state"] == "ready"
     issue = issue_of(store, edition)
     assert [(a["request_id"], a["outcome"]) for a in issue["attempts"]] == [(first, "passed")]

@@ -26,9 +26,9 @@ AM_FALLBACK_BY = time(8, 40)
 # Regular sends of an edition start within this window; a flag switched on later never mails an old edition.
 SEND_WINDOW = timedelta(hours=12)
 AUTO_ATTEMPTS, TEST_ATTEMPTS = 3, 1
-# The episode holds claude-runtime's one subscription slot while an episode of the last day is in a stage that calls
-# the model (video/store.py LOGIN_STAGES). An email turn asked then is API-only (owner, 2026-11-05): it runs beside the
-# episode on the API lane, or waits when the lane cannot take it; it never takes the episode's slot.
+# The episode holds claude-runtime's original subscription slot while an episode of the last day is in a stage that
+# calls the model (video/store.py LOGIN_STAGES). Other Claude work that would share that slot yields to it
+# (providers/routing.py); the email does not: it has its own slot (owner, 2026-11-20; providers/claude_runner.LOCKS).
 VIDEO_MODEL_STATES = ("queued", "reviewing", "synthesizing", "inspecting")
 VIDEO_NEEDS_MODEL = """EXISTS (SELECT 1 FROM video_jobs v WHERE v.state=ANY(%(video_states)s)
     AND v.created_at>%(video_since)s)"""
@@ -136,8 +136,8 @@ class NewsletterStore:
 
     def claim_writing(self, at=None):
         """The next issue the writer may ask claude-runtime about: before its fallback time, attempts left, and either an
-        automatic issue with the flag on or a waiting test send. An episode needing the model only makes the turn
-        API-only (video_needs_model)."""
+        automatic issue with the flag on or a waiting test send. An episode in production never holds it back: the
+        turn takes the API lane or the email's own subscription slot."""
         at = at or utcnow()
         with self.db.transaction() as conn:
             row = conn.execute(f"""SELECT * FROM newsletter_issues i WHERE state='writing' AND next_at<=%(at)s
@@ -176,22 +176,13 @@ class NewsletterStore:
             return bool(row)
 
     def video_needs_model(self, at=None):
-        """Whether an episode of the last day holds the subscription slot now: a new email turn is then API-only."""
+        """Whether an episode of the last day holds the original subscription slot now (routing.CompanyProvider)."""
         at = at or utcnow()
         with self.db.transaction() as conn:
             return conn.execute(f"SELECT {VIDEO_NEEDS_MODEL} AS busy", video_window(at)).fetchone()["busy"]
 
-    def in_flight_while_video(self, at=None):
-        """Emails whose frozen turn may hold the runtime slot while an episode needs the model (an API-only turn never
-        does)."""
-        at = at or utcnow()
-        with self.db.transaction() as conn:
-            return conn.execute(f"""SELECT * FROM newsletter_issues WHERE state='writing' AND request IS NOT NULL
-                AND NOT coalesce((request->>'api_only')::boolean, false) AND {VIDEO_NEEDS_MODEL}""",
-                                video_window(at)).fetchall()
-
     def yielded(self, issue, request_id, at=None, wait=timedelta(minutes=1)):
-        """The turn was given up for the video: a new request later, without using an attempt."""
+        """A frozen API-only turn the lane refused: a new request later, without using an attempt."""
         at = at or utcnow()
         record = {"n": len(issue["attempts"]) + 1, "request_id": request_id, "outcome": "yielded", "at": at.isoformat()}
         with self.db.transaction() as conn:

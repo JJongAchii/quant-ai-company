@@ -1,0 +1,29 @@
+{
+  "base_commit": "2a132c55b28502c3867c2c65ccdf1450c7d460d3",
+  "command": "pytest -m \"not live\" tests deploy/test_deployment_contract.py evals/test_financial_fixtures.py",
+  "database": "disposable PostgreSQL 14 (local, TCP only)",
+  "result": {
+    "tests": 3745,
+    "passed": 3598,
+    "skipped": 147,
+    "failed": 0,
+    "errors": 0,
+    "deselected": 1,
+    "seconds": 925
+  },
+  "after_review_edits": {
+    "files": [
+      "tests/test_newsletter.py",
+      "tests/test_claude_api_lane.py",
+      "tests/test_claude_editorial.py"
+    ],
+    "passed": 201,
+    "failed": 0
+  },
+  "new_tests_on_previous_code": {
+    "total": 12,
+    "failed": 11
+  },
+  "lint": "ruff check src tests deploy: pass; git diff --check: pass",
+  "note": "Synthetic CLI and simulated Messages API only; no Slack message, no email and no real model call."
+}
