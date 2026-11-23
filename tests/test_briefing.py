@@ -419,6 +419,45 @@ def test_a_retry_is_told_which_server_check_rejected_the_draft(brief):
     assert calls and all(c["state"] == "retry" for c in calls.values())
 
 
+def test_a_hollow_write_draft_is_asked_again_with_the_full_phase_prompt(brief):
+    """2026-10-26 PM: a write draft with an empty body was repaired in place twice and the edition shipped thin."""
+    from quant_company.briefing.repair import EMPTY_DRAFT
+    from quant_company.briefing.store import retry_note
+
+    store, clock = brief
+    seed(brief)
+    first = store.prepare()["request"]
+    assert first["request_id"].endswith("-write")
+    hollow = proposal().model_dump(mode="json") | {"summary": [], "overview": [], "observations": [], "issues": []}
+    store.fault(first["request_id"], "invalid_brief_response", 0, "inventory_placement_accounting",
+                json.dumps(hollow, ensure_ascii=False))
+    retry = store.prepare()["request"]
+    assert retry["request_id"] == first["request_id"] + "-r1"
+    # The full write prompt again (the frozen bundle's key order may differ after the database round trip).
+    assert retry["prompt"].endswith(retry_note(EMPTY_DRAFT)) and retry["prompt"][:5000] == first["prompt"][:5000]
+    assert "PREVIOUS_DRAFT" not in retry["prompt"]
+
+
+def test_a_write_draft_without_summary_or_issues_is_rejected_and_written_again_in_full(brief):
+    """2026-11-23 PM: the in-place repair of a calendar-only draft passed with three overview paragraphs and no
+    summary or issue, and the edition shipped without its 30-second summary or any issue analysis."""
+    from quant_company.briefing.repair import EMPTY_DRAFT, failure
+    from quant_company.briefing.store import retry_note
+
+    store, clock = brief
+    seed(brief)
+    first = store.prepare()["request"]
+    assert first["request_id"].endswith("-write")
+    thin = response(first, proposal().model_copy(update={"summary": [], "issues": []}))
+    with pytest.raises(ValueError, match=EMPTY_DRAFT) as rejected:
+        store.commit(thin)
+    store.fault(first["request_id"], "invalid_brief_response", 0, *failure(rejected.value, thin))
+    retry = store.prepare()["request"]
+    assert retry["request_id"] == first["request_id"] + "-r1"
+    assert retry["prompt"].endswith(retry_note(EMPTY_DRAFT)) and "PREVIOUS_DRAFT" not in retry["prompt"]
+    assert store.commit(response(retry, proposal()))["state"] == "completed"
+
+
 def test_the_tenth_invalid_response_is_final_and_the_draft_ships_at_due(brief):
     from quant_company.briefing.store import MAX_PHASE_ATTEMPTS
 

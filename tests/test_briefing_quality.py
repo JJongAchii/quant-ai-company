@@ -67,6 +67,9 @@ def test_index_levels_and_comparisons_are_computed_from_same_frozen_data():
     assert kospi.value == 3000 and kospi.previous_value == 2999
     assert any("20거래일" in v["text"] for v in data["market_context"])
     assert assurance(p, data) == {"kosdaq": "collected", "kospi": "collected"}
+    # The venue is a label: the 10/15, 10/21 and 10/26 close editions lost both index rows to 'KRX 유가증권시장' vs 'KRX'.
+    kospi.venue = "KRX 유가증권시장"
+    assert validate(p, data) == {} and kospi.venue == "KRX"
     kospi.value = Decimal("9999")
     assert validate(p, data)[kospi.id] == "collected_observation_modified"
 

@@ -1,0 +1,44 @@
+{
+  "recorded_at": "2026-11-23T18:55:00+09:00",
+  "owner_request": "뭐야 오늘 오후 브리핑 왜저래 → 다시해야하는거 아니니? 그리고 원인파악 해서 재발하지 않도록 해야해 → 재발행 진행 (추천) → 18 이후 말고 지금 당장 진행못하나?? → 영상 이미 잘못된걸로 하고 있는거면 중단해도 되고",
+  "original_edition": {
+    "id": "240989c4-4dbe-5a6b-847c-5e3d78c0166a",
+    "committed_kst": "16:41:38",
+    "quality": {"issue_count": 0, "substantive": false, "source_count": 9, "reduced": true, "review_withheld": true,
+                "editorial_verdict": "reduce", "repair_skipped": "brief_context_limit", "missing_core": ["kosdaq", "kospi"]},
+    "calls_kst": [
+      {"phase": "plan", "attempt": 0, "requested": "16:10:21", "completed": "16:14:25", "provider": "codex_cli subscription"},
+      {"phase": "inventory", "attempt": 0, "requested": "16:14:27", "completed": "16:22:59", "sources": 20},
+      {"phase": "write", "attempt": 0, "requested": "16:23:01", "completed": "16:30:13", "state": "retry",
+       "rejected": "inventory_placement_accounting", "output_tokens": 14386, "reasoning_output_tokens": 13292,
+       "draft_chars": 2332, "draft_sizes": {"calendar": 6, "summary": 0, "overview": 0, "observations": 0, "issues": 0,
+                                            "fact_placements": 0}},
+      {"phase": "write", "attempt": 1, "requested": "16:30:43", "completed": "16:33:01", "mode": "in-place repair",
+       "output_tokens": 6571, "reasoning_output_tokens": 1816,
+       "proposal_sizes": {"calendar": 6, "summary": 0, "overview": 3, "observations": 2, "issues": 0}},
+      {"phase": "review", "attempt": 0, "requested": "16:33:03", "completed": "16:41:38", "verdict": "reduce"}
+    ],
+    "email": {"id": "fa7f4250-10b7-526f-82b1-dad22bbe9c5e", "state": "skipped", "reason": "no_issues"},
+    "video_v1": {"id": "6e1910c2-3d21-593c-9b37-97beb3db60a4", "superseded_kst": "17:21", "error": "superseded_by_reissue"}
+  },
+  "same_failure_before": {"edition": "e346a707-99f3-5db3-b058-748c13e7831d", "day": "2026-10-26",
+                          "fix_pr": 211, "fix_pr_state_on_2026_11_23": "OPEN (never merged)"},
+  "reissue_copy": {
+    "id": "45641bbb-930f-5471-bcd4-e70d48675c2d", "channel_marker": "C0C2E59B1AA:reissue-1", "inserted_kst": "17:20:36",
+    "calls_kst": [
+      {"phase": "write", "attempt": 0, "requested": "17:20:57", "completed": "17:31:18", "output_tokens": 28256,
+       "reasoning_output_tokens": 9690},
+      {"phase": "review", "attempt": 0, "requested": "17:31:20", "completed": "17:42:29", "verdict": "reduce"}
+    ],
+    "quality": {"issue_count": 6, "source_count": 24, "substantive": true, "repair_skipped": "brief_context_limit"},
+    "published_by": "detached host job /home/ubuntu/reissue-20261123/run.sh (reissue1123_publish.py in news-worker)",
+    "project": "95e8a368-27cb-5d85-9ae2-eedeec5092ce",
+    "messages": [{"part": 0, "status": "delivered", "sent_ts": "1795423374.008099"},
+                 {"part": 1, "status": "delivered", "sent_ts": "1795423375.838099"},
+                 {"part": 2, "status": "delivered", "sent_ts": "1795423377.683349"}],
+    "chars": [12778, 3494, 379],
+    "video_v2": "4c528ba3-410e-5ae8-8508-57a945355b5b",
+    "email": {"id": "bc3eec07-432e-5a5a-9328-85fddda150b2", "written_kst": "17:43:00-17:44:49 (subscription)",
+              "state": "sent", "sends": 5}
+  }
+}
