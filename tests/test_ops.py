@@ -478,12 +478,12 @@ async def test_the_claude_login_is_announced_a_week_and_two_days_ahead_and_when_
 
 
 def api_status(**fields):
-    return {"state": "on", "enabled": True, "cap_usd": 190.0, "spent_31d_usd": 12.5, "calls_31d": {"api_first": 3},
+    return {"state": "on", "enabled": True, "spent_31d_usd": 12.5, "calls_31d": {"api_first": 3},
             "last_fallback_at": None, "paused": None, "key_present": True, "last_refusal": None,
             "updated_at": now().timestamp(), **fields}
 
 
-def test_watch_alerts_on_key_spend_limit_cap80_fallback_and_ledger(ops):
+def test_watch_alerts_on_key_spend_limit_fallback_and_ledger(ops):
     watch = OpsWatch(ops)
 
     def keys(**fields):
@@ -498,7 +498,9 @@ def test_watch_alerts_on_key_spend_limit_cap80_fallback_and_ledger(ops):
     assert keys(paused=paused("spend_limit")) == ["claude_api:paused:spend_limit"]
     assert keys(paused=paused("uncertain")) == ["claude_api:paused:uncertain"]
     assert keys(paused=paused("rate_limit")) == [] and keys(paused=paused("overloaded")) == []
-    assert keys(spent_31d_usd=151.9) == [] and keys(spent_31d_usd=152.0) == ["claude_api:cap80"]
+    # Used-up credits are routine (the lane asks again hourly and the work runs on the subscription meanwhile), and the
+    # service has no cap of its own since 2026-11-23: neither alerts.
+    assert keys(paused=paused("credit")) == [] and keys(spent_31d_usd=500.0) == []
     assert keys(last_fallback_at=(now() - timedelta(minutes=10)).timestamp()) == ["claude_api:fallback"]
     assert keys(last_fallback_at=(now() - timedelta(minutes=40)).timestamp()) == []
     assert keys(state="ledger_unreadable") == ["claude_api:ledger"]
@@ -518,7 +520,6 @@ def test_the_api_findings_say_what_to_do_in_korean(ops):
                    last_fallback_at=at.timestamp()), at)}
     assert found["claude_api:paused:spend_limit"]["severity"] == "critical"
     assert found["claude_api:paused:spend_limit"]["title"] == "Claude API 멈춤(Console 지출 한도)"
-    assert found["claude_api:cap80"]["severity"] == "warning" and found["claude_api:cap80"]["title"] == "Claude API 31일 사용 $160.00 / $190"
     assert found["claude_api:fallback"]["title"] == "구독 대신 API로 대본을 쓰는 중"
     assert CLAUDE_LOGIN in found["claude_api:fallback"]["lines"]
     assert claude_api_findings(api_status(paused={"reason": "key", "until": None}), at)[0]["severity"] == "critical"
@@ -532,17 +533,23 @@ def test_status_text_shows_the_api_line(ops):
         with ops.db.transaction() as conn:
             return status_text(live_status(conn, now=now()))
 
-    assert "🤖 Claude API: 31일 $12.50 / $190 · 켜짐" in text(api_status())
-    assert "🤖 Claude API: 31일 $12.50 / $190 · 꺼짐" in text(api_status(state="off", enabled=False))
+    assert "🤖 Claude API: 31일 사용 $12.50 · 켜짐" in text(api_status())
+    assert "🤖 Claude API: 31일 사용 $12.50 · 꺼짐" in text(api_status(state="off", enabled=False))
     paused = text(api_status(state="paused", paused={"reason": "spend_limit", "until": None}))
-    assert "🤖 Claude API: 31일 $12.50 / $190 · 쉼(Console 지출 한도)" in paused
+    assert "🤖 Claude API: 31일 사용 $12.50 · 쉼(Console 지출 한도)" in paused
+    # The refusal that started a pause is not repeated after it.
+    credit = text(api_status(state="paused", paused={"reason": "credit", "until": now().timestamp() + 3600},
+                             last_refusal={"reason": "credit", "at": now().timestamp()}))
+    assert "🤖 Claude API: 31일 사용 $12.50 · 쉼(크레딧 없음 · 1시간마다 다시 확인)\n" in credit
     assert "🤖" not in text(None)
     # An 'on' lane that does nothing says why: no key in its file, or a refusal within the last hour.
-    assert "🤖 Claude API: 31일 $12.50 / $190 · 켜짐 · 키 없음\n" in text(api_status(key_present=False))
+    assert "🤖 Claude API: 31일 사용 $12.50 · 켜짐 · 키 없음\n" in text(api_status(key_present=False))
     assert "키 없음" not in text(api_status(key_present=True)) + text(api_status(key_present=None))
     assert "키 없음" not in text(api_status(state="off", enabled=False, key_present=False))
     recent = {"reason": "rejected", "at": (now() - timedelta(minutes=50)).timestamp()}
-    assert "🤖 Claude API: 31일 $12.50 / $190 · 켜짐 · 최근 거절: 요청 거절\n" in text(api_status(last_refusal=recent))
+    assert "🤖 Claude API: 31일 사용 $12.50 · 켜짐 · 최근 거절: 요청 거절\n" in text(api_status(last_refusal=recent))
+    credit_refused = {"reason": "credit", "at": (now() - timedelta(minutes=5)).timestamp()}
+    assert "· 켜짐 · 최근 거절: 크레딧 부족\n" in text(api_status(last_refusal=credit_refused))
     assert "최근 거절" not in text(api_status(last_refusal={"reason": "rejected",
                                                            "at": (now() - timedelta(minutes=70)).timestamp()}))
     assert "최근 거절" not in text(api_status(last_refusal=None))
@@ -551,7 +558,7 @@ def test_status_text_shows_the_api_line(ops):
     snapshot(ops, claude_api=api_status(calls_31d={"api_first": 3}))
     with ops.db.transaction() as conn:
         assert set(live_status(conn, now=now())["host"]["claude_api"]) == {
-            "state", "spent_31d_usd", "cap_usd", "paused", "key_present", "last_refusal"}
+            "state", "spent_31d_usd", "paused", "key_present", "last_refusal"}
 
 
 def test_openai_api_allowance_and_subscription_route_are_visible_without_secrets(ops):

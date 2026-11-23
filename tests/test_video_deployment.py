@@ -88,7 +88,7 @@ def test_compose_gives_the_api_key_only_to_claude_runtime():
                or any(isinstance(x, dict) and x.get('source') == 'claude_api_key' for x in s.get('secrets', []))]
     assert holders == ['claude-runtime']
     env = config['services']['claude-runtime']['environment']
-    assert env['CLAUDE_API_ENABLED'] == 'false' and env['CLAUDE_API_CAP_USD'] == '0'
+    assert env['CLAUDE_API_ENABLED'] == 'false' and 'CLAUDE_API_CAP_USD' not in env  # no service cap since 11-23
     assert env['CLAUDE_API_KEY_FILE'] == '/run/secrets/claude_api_key'
     assert config['secrets']['claude_api_key']['file'].endswith('/secrets/claude_api_key')
     for name, service in config['services'].items():

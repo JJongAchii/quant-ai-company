@@ -196,7 +196,8 @@ def claude_login_findings(login, now):
 
 def claude_api_findings(api, now):
     """deploy/ops_probe.claude_api. A disabled lane (state off) can carry a stale stored pause and raises nothing;
-    rate limits and overload clear themselves within a minute and are not alerts."""
+    rate limits and overload clear themselves within a minute, and used-up credits are routine (the work runs on the
+    subscription and the API is asked again hourly): none of them is an alert."""
     if not api:
         return []
     if api.get("state") == "ledger_unreadable":
@@ -207,15 +208,11 @@ def claude_api_findings(api, now):
     found = []
     pause = api.get("paused") or {}
     reason = pause.get("reason")
-    if reason and reason not in ("rate_limit", "overloaded"):
+    if reason and reason not in ("rate_limit", "overloaded", "credit"):
         found.append(finding("claude_api:paused:" + reason, "condition",
                              "critical" if reason in ("key", "spend_limit") else "warning",
                              f"Claude API 멈춤({API_PAUSES.get(reason, reason)})",
                              "그동안 대본은 구독으로 씁니다."))
-    spent, cap = api.get("spent_31d_usd") or 0, api.get("cap_usd") or 0
-    if cap and spent >= 0.8 * cap:
-        found.append(finding("claude_api:cap80", "condition", "warning", f"Claude API 31일 사용 ${spent:.2f} / ${cap:.0f}",
-                             "상한에 가까워지면 API 레인이 멈추고 구독으로만 갑니다."))
     fallback = api.get("last_fallback_at")
     if fallback and now.timestamp() - fallback <= 1800:
         found.append(finding("claude_api:fallback", "condition", "warning", "구독 대신 API로 대본을 쓰는 중",

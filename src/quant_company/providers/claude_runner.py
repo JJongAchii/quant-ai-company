@@ -2,8 +2,8 @@
 
 The account owner must disable usage credits. CLI isolation prevents API-key and
 model/configuration fallback; it cannot change the account's billing preference.
-The API credit lane (claude_api, spec 2026-10-23) stays off unless enabled with a cap above 0. Its key is read from
-its own file only for the API request header; the CLI environment never carries it.
+The API credit lane (claude_api, spec 2026-10-23) stays off unless enabled; its credit balance is its limit. Its key is
+read from its own file only for the API request header; the CLI environment never carries it.
 """
 
 import asyncio
@@ -56,9 +56,8 @@ class ClaudeConfig:
     video_timeout_seconds: float = 7200
     # An email turn (its own slot since 2026-11-20): a short email never needs long.
     newsletter_timeout_seconds: float = 900
-    # The owner's API credit lane: off unless enabled with a cap above 0 (USD over a rolling 31 days).
+    # The owner's API credit lane: off unless enabled; the credit balance is its limit (no service cap since 2026-11-23).
     api_enabled: bool = False
-    api_cap_usd: float = 0.0
     api_key_file: Path | None = None
 
     def __post_init__(self):
@@ -68,8 +67,6 @@ class ClaudeConfig:
             raise ValueError("Invalid Claude video timeout")
         if not math.isfinite(self.newsletter_timeout_seconds) or not 0 < self.newsletter_timeout_seconds <= 1800:
             raise ValueError("Invalid Claude newsletter timeout")
-        if not math.isfinite(self.api_cap_usd) or not 0 <= self.api_cap_usd <= 1000:
-            raise ValueError("Invalid Claude API cap")
 
     def process_limit(self, request):
         if company_request(request):
@@ -117,7 +114,7 @@ API_SLOTS = 2
 LOCKS = {None: ".runtime.lock", "brief": ".runtime-brief.lock", "news": ".runtime-news.lock",
          "quant": ".runtime-quant.lock", "company": ".runtime-company.lock", "shorts": ".runtime-shorts.lock",
          "email": ".runtime-email.lock"}
-# An API-only turn the lane refused (off, capped, paused or overloaded) is asked again after this long.
+# An API-only turn the lane refused (off, out of credit, paused or overloaded) is asked again after this long.
 API_ONLY_WAIT = 300
 UNCERTAIN_PAUSE_SECONDS = 1800
 # API outcomes that may have executed: the same request ID never goes to the API again (spec 9-3).
@@ -491,11 +488,11 @@ class ClaudeRunner:
     # The API credit lane.
 
     def _lane_on(self):
-        return self.config.api_enabled and self.config.api_cap_usd > 0
+        return self.config.api_enabled
 
     def _budget(self):
         if self.budget is None:
-            self.budget = Budget(self.config.jobs_dir.resolve() / ".api", self.config.api_cap_usd, self.clock)
+            self.budget = Budget(self.config.jobs_dir.resolve() / ".api", self.clock)
         return self.budget
 
     def _status(self):
@@ -879,7 +876,6 @@ def runner_from_environment():
         config = ClaudeConfig(Path(auth), Path(jobs),
             usage_credits_disabled_confirmed=os.environ.get("CLAUDE_USAGE_CREDITS_DISABLED_CONFIRMED") == "true",
             api_enabled=os.environ.get("CLAUDE_API_ENABLED") == "true",
-            api_cap_usd=float(os.environ.get("CLAUDE_API_CAP_USD") or 0),
             api_key_file=Path(key_file) if key_file else None)
     except ValueError:
         raise ProviderFault("unavailable", "The Claude runtime configuration is invalid.") from None

@@ -377,15 +377,16 @@ Claude 인증과 job 영수증은 Codex와 별도 디렉터리에 둔다. 백업
    이 secret을 추가하는 릴리스보다 먼저 있어야 한다. 새 호스트에서는 `deploy/prepare-state.py`가 빈 0444 자리 표시 파일을
    (없을 때만, 덮어쓰지 않고) 만든다. 빈 파일은 키 없음이라 레인이 꺼진 채로 있다. 운영 호스트에서는 소유자가 **PR 병합 전에**
    claude-runtime.md의 "키 파일" 명령으로 실제 키를 쓴다. 키를 채팅·Git·`runtime.env`에 두지 않는다.
-2. **릴리스는 레인을 켜지 않는다.** `CLAUDE_API_ENABLED`(기본 `false`), `CLAUDE_API_CAP_USD`(기본 `0`)는 compose 기본값이다.
+2. **릴리스는 레인을 켜지 않는다.** `CLAUDE_API_ENABLED`(기본 `false`)는 compose 기본값이다. 서비스 상한은 없다(ADR 0054).
    `contracts.py`·`pyproject.toml`이 바뀌지 않으므로 렌더 이미지를 다시 만들지 않는다.
 3. **켜기.** 릴리스 운영자(deploy/release.py 운영자)가 `runtime.env`에 다음을 넣고 claude-runtime을 다시 만든다. main SHA와 함께 전달한다.
    환경은 컨테이너를 만들 때 정해지므로 값만 바꾸고 다시 만들지 않으면 반영되지 않는다.
 
    ```dotenv
    CLAUDE_API_ENABLED=true
-   CLAUDE_API_CAP_USD=190
    ```
+
+   2026-11-23(ADR 0054)부터 `CLAUDE_API_CAP_USD`는 읽지 않는다. `runtime.env`에 남아 있어도 아무 일도 하지 않는다.
 
 4. **끄기.** `CLAUDE_API_ENABLED=false`로 바꾸고 claude-runtime을 다시 만든다. 모든 요청이 구독 경로로 돌아간다.
    진행 중이던 API 호출의 영수증은 그대로 남는다. 키 문제로 쉬는 중이면 키 파일을 고친 뒤 다시 만든다.

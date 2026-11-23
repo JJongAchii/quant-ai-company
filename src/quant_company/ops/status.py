@@ -30,10 +30,12 @@ VIDEO_LIVE = {"queued", "reviewing", "synthesizing", "rendering", "inspecting", 
 # both means the account works again (2026-10-15: primary still carried a 09-28 check while it answered calls).
 LOGIN_NEEDED = """authentication='needs_login'
     AND (last_fault='auth' OR last_success_at IS NULL OR checked_at>=last_success_at)"""
-API_PAUSES = {"key": "키 문제", "spend_limit": "Console 지출 한도", "uncertain": "결과 불확실(30분 쉼)",
+API_PAUSES = {"key": "키 문제", "spend_limit": "Console 지출 한도", "credit": "크레딧 없음 · 1시간마다 다시 확인",
+              "uncertain": "결과 불확실(30분 쉼)",
               "ledger_unreadable": "장부 읽기 실패", "rate_limit": "요청 한도", "overloaded": "서버 과부하"}
 # ApiNotExecuted reasons (providers/claude_api.not_executed) in the status line.
-API_REFUSALS = {"key": "키 문제", "spend_limit": "Console 지출 한도", "rate_limit": "요청 한도", "overloaded": "서버 과부하",
+API_REFUSALS = {"key": "키 문제", "spend_limit": "Console 지출 한도", "credit": "크레딧 부족", "rate_limit": "요청 한도",
+                "overloaded": "서버 과부하",
                 "unreachable": "연결 실패", "server": "서버 오류", "rejected": "요청 거절"}
 RECENT_REFUSAL = timedelta(hours=1)
 RESEARCH_ACTIVE = ("queued", "claimed", "running", "cancel_requested", "received", "awaiting_audit")
@@ -124,8 +126,8 @@ def host(conn, now=None):
         value["release"] = {key: release.get(key) for key in ("checked_at", "mode", "action", "current", "target",
                                                                "active", "behind_by", "detail")}
     if api := payload.get("claude_api"):
-        value["claude_api"] = {key: api.get(key) for key in ("state", "spent_31d_usd", "cap_usd", "paused",
-                                                             "key_present", "last_refusal")}
+        value["claude_api"] = {key: api.get(key) for key in ("state", "spent_31d_usd", "paused", "key_present",
+                                                             "last_refusal")}
     if subscription := payload.get("claude_subscription"):
         value["claude_subscription"] = current_windows(subscription, now)
     if api := payload.get("openai_api"):
@@ -286,10 +288,10 @@ def status_text(value):
             label += " · 키 없음"
         refusal = api.get("last_refusal") if isinstance(api.get("last_refusal"), dict) else {}
         checked, at = stamp(value["checked_at"]), refusal.get("at")
-        if (checked and isinstance(at, (int, float))
+        if (checked and isinstance(at, (int, float)) and refusal.get("reason") != reason  # not the pause's own cause
                 and checked.timestamp() - at <= RECENT_REFUSAL.total_seconds()):
             label += f" · 최근 거절: {API_REFUSALS.get(refusal.get('reason'), refusal.get('reason'))}"
-        lines.append(f"🤖 Claude API: 31일 ${api.get('spent_31d_usd') or 0:.2f} / ${api.get('cap_usd') or 0:.0f} · {label}")
+        lines.append(f"🤖 Claude API: 31일 사용 ${api.get('spent_31d_usd') or 0:.2f} · {label}")
     if subscription := facts.get("claude_subscription"):
         parts = [f"{SUBSCRIPTION_WINDOWS.get(name, name)} {window['utilization']:.0%}"
                  + (f"(재설정 {kst(window['resets_at'], True)})" if isinstance(window.get("resets_at"), (int, float)) else "")
