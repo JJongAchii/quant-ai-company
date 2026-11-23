@@ -551,6 +551,8 @@ class BriefStore:
                     proposed = (compose(artifact(response, BriefComposition, row["bundle"]), row["bundle"])
                                 if row["bundle"].get("fact_inventory_required") else
                                 artifact(response, BriefProposal, row["bundle"]))
+                    if not proposed.summary and not proposed.issues:
+                        raise ValueError(EMPTY_DRAFT)
                 rejected = validate(proposed, row["bundle"])
                 if call['phase'] == 'revise' and feedback.get('repair_mode') == 'source_notes_patch':
                     rejected = {**(row['quality'] or {}).get('rejected', {}), **rejected}

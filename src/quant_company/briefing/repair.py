@@ -17,12 +17,13 @@ PROMPT_LIMIT = 90000  # ProviderRequest.prompt
 DRAFT_LIMIT = 80000
 SCHEMA = "brief_output_schema"
 EMPTY_DRAFT = "brief_draft_empty"
-# A write or revise draft without these has no body to keep (2026-10-26 PM: only the calendar was filled; two in-place
-# repairs carried the empty body into the edition), so the retry is the full phase again.
-BODY = ("summary", "overview", "observations", "issues")
+# A write or revise draft without a summary and an issue has no core to keep (2026-10-26 PM: only the calendar was
+# filled; 2026-11-23 PM: the in-place repair added three overview paragraphs and nothing else), so the store rejects it
+# and the retry is the full phase again.
+CORE = ("summary", "issues")
 RULES = {
-    EMPTY_DRAFT: "the previous draft left summary, overview, observations and issues empty. Write the complete "
-                 "briefing from the inputs above.",
+    EMPTY_DRAFT: "the previous draft left the summary and the issues empty. Write the complete briefing from the "
+                 "inputs above.",
     "inventory_placement_accounting": "fact_placements must hold exactly one entry for every committed fact ID "
                                       "(none missing, none repeated, none invented).",
     "inventory_supplement_accounting": "supplemental_source_notes must hold exactly one note for every new source "
@@ -53,7 +54,7 @@ def hollow(phase, draft):
         value = json.loads(draft, strict=False)
     except ValueError:
         return False
-    return isinstance(value, dict) and not any(value.get(key) for key in BODY)
+    return isinstance(value, dict) and not any(value.get(key) for key in CORE)
 
 
 def failure(exc, response):

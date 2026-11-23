@@ -41,9 +41,21 @@ def test_a_hollow_draft_is_written_again_instead_of_repaired_in_place():
     draft = json.dumps(hollow, ensure_ascii=False)
     assert repair_prompt(bundle, "write", draft, "inventory_placement_accounting") is None
     assert repair_prompt(bundle, "revise", draft, "inventory_placement_accounting") is None
-    assert "summary, overview, observations and issues" in retry_note(EMPTY_DRAFT)
+    assert "summary and the issues" in retry_note(EMPTY_DRAFT)
     kept = composition().model_dump(mode="json") | {"fact_placements": []}
     assert repair_prompt(bundle, "write", json.dumps(kept, ensure_ascii=False), "inventory_placement_accounting")
+
+
+def test_a_draft_with_an_overview_but_no_summary_or_issue_is_written_again_too():
+    """2026-11-23 PM: the in-place repair kept a body of three overview paragraphs with no summary and no issue."""
+    bundle = frozen()
+    thin = composition().model_dump(mode="json") | {"summary": [], "issues": [], "fact_placements": []}
+    assert thin["overview"] and thin["observations"]
+    draft = json.dumps(thin, ensure_ascii=False)
+    assert repair_prompt(bundle, "write", draft, "inventory_placement_accounting") is None
+    assert repair_prompt(bundle, "revise", draft, "inventory_placement_accounting") is None
+    no_summary = composition().model_dump(mode="json") | {"summary": [], "fact_placements": []}
+    assert repair_prompt(bundle, "write", json.dumps(no_summary, ensure_ascii=False), "inventory_placement_accounting")
 
 
 def test_only_draft_local_failures_that_fit_get_a_repair_prompt():
