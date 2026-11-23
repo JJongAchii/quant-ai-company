@@ -27,7 +27,6 @@ from quant_company.providers.claude_api import (
 from quant_company.providers.claude_runner import (
     API_FIRST,
     LOCKS,
-    ClaudeConfig,
     ClaudeRequest,
     ClaudeRunner,
     runner_from_environment,
@@ -59,36 +58,33 @@ def test_reservation_is_input_estimate_plus_full_max_tokens():
     assert reservation_usd(request) == pytest.approx((3000 // 2) * 4 / 1e6 + 128000 * 20 / 1e6)
 
 
-def test_reservations_never_cross_the_cap_in_31_days(tmp_path):
+def test_reservations_are_never_capped_and_spend_counts_31_days(tmp_path):
+    # Owner, 2026-11-23: the credit balance is the only limit; the ledger counts what the lane spent.
     now = [1_000_000.0]
-    budget = Budget(tmp_path, 10.0, clock=lambda: now[0])
-    assert budget.reserve("a", "claude-opus-5-5", 6.0, "api_first")
-    assert not budget.reserve("b", "claude-opus-5-5", 5.0, "api_first")  # 6 + 5 > 10
+    budget = Budget(tmp_path, clock=lambda: now[0])
+    assert budget.reserve("a", "claude-opus-5-5", 150.0, "api_first")
+    assert budget.reserve("b", "claude-opus-5-5", 150.0, "fallback")
     budget.settle("a", 1.0)
-    assert budget.reserve("b", "claude-opus-5-5", 5.0, "fallback") and budget.spent() == pytest.approx(6.0)
+    assert budget.spent() == pytest.approx(151.0)
     now[0] += WINDOW + 1
-    assert budget.spent() == 0 and budget.reserve("c", "claude-opus-5-5", 9.5, "api_first")
+    assert budget.spent() == 0
 
 
 def test_release_returns_the_reservation(tmp_path):
-    budget = Budget(tmp_path, 10.0)
+    budget = Budget(tmp_path)
     assert budget.reserve("a", "claude-opus-5-5", 6.0, "api_first")
     budget.release("a")
     assert budget.spent() == 0
 
 
-def test_zero_cap_reserves_nothing(tmp_path):
-    assert not Budget(tmp_path, 0).reserve("a", "claude-opus-5-5", 0.01, "api_first")
-
-
 def test_directory_is_private(tmp_path):
-    Budget(tmp_path / "lane", 10.0).reserve("a", "claude-opus-5-5", 1.0, "api_first")
+    Budget(tmp_path / "lane").reserve("a", "claude-opus-5-5", 1.0, "api_first")
     assert (tmp_path / "lane").stat().st_mode & 0o777 == 0o700
 
 
 def test_corrupt_ledger_fails_closed(tmp_path):
     (tmp_path / "ledger.json").write_text("{not json")
-    budget = Budget(tmp_path, 190.0)
+    budget = Budget(tmp_path)
     assert not budget.reserve("a", "claude-opus-5-5", 0.01, "api_first")
     budget.write_status(enabled=True)
     assert json.loads((tmp_path / "status.json").read_text())["state"] == "ledger_unreadable"
@@ -120,7 +116,7 @@ def entry(**changes):
 def test_a_ledger_of_the_wrong_shape_fails_closed(tmp_path, broken):
     raw = json.dumps(broken)
     (tmp_path / "ledger.json").write_text(raw)
-    budget = Budget(tmp_path, 190.0, clock=lambda: 2000.0)
+    budget = Budget(tmp_path, clock=lambda: 2000.0)
     assert budget.load() is None and budget.paused() is None and budget.spent() == 0
     assert not budget.reserve("a#0", "claude-opus-5-5", 0.01, "api_first")
     budget.settle("x#0", 0.5)
@@ -136,32 +132,43 @@ def test_a_well_formed_ledger_loads(tmp_path):
     kept = {"entries": [entry(), entry(request_id="y#0", route="fallback", at=1500, reserved=2, actual=0.5, extra=1)],
             "pauses": {"uncertain": 3000, "key": None}}
     (tmp_path / "ledger.json").write_text(json.dumps(kept))
-    budget = Budget(tmp_path, 190.0, clock=lambda: 2000.0)
+    budget = Budget(tmp_path, clock=lambda: 2000.0)
     assert budget.load() == kept and budget.spent() == pytest.approx(1.5)
     assert budget.paused() == {"reason": "key", "until": None}
 
 
 def test_pauses_persist_except_key_pauses(tmp_path):
     now = [1000.0]
-    budget = Budget(tmp_path, 190.0, clock=lambda: now[0])
+    budget = Budget(tmp_path, clock=lambda: now[0])
     budget.pause("uncertain", 1000.0 + 1800)
     budget.pause("key", None, persist=False)
     assert budget.paused()["reason"] == "key"   # first matching active pause reported
-    again = Budget(tmp_path, 190.0, clock=lambda: now[0])  # a restart forgets the key pause only
+    again = Budget(tmp_path, clock=lambda: now[0])  # a restart forgets the key pause only
     assert again.paused() == {"reason": "uncertain", "until": 2800.0}
     now[0] = 2801.0
     assert again.paused() is None
 
 
-def test_status_file_shows_spend_cap_pause_and_routes(tmp_path):
-    budget = Budget(tmp_path, 190.0, clock=lambda: 5000.0)
+def test_an_uncertain_pause_shows_over_a_credit_pause(tmp_path):
+    # Two calls at once: one finds the credits used up, the other ends uncertain. The uncertain one is the alert.
+    budget = Budget(tmp_path, clock=lambda: 1000.0)
+    budget.pause("credit", 1000.0 + 3600)
+    budget.pause("uncertain", 1000.0 + 1800)
+    assert budget.paused() == {"reason": "uncertain", "until": 2800.0}
+    budget.pause("rate_limit", 1000.0 + 60)
+    budget.pause("uncertain", 999.0)  # over
+    assert budget.paused() == {"reason": "credit", "until": 4600.0}
+
+
+def test_status_file_shows_spend_pause_and_routes(tmp_path):
+    budget = Budget(tmp_path, clock=lambda: 5000.0)
     budget.reserve("a", "claude-opus-5-5", 1.0, "api_first")
     budget.settle("a", 0.5)
     budget.reserve("b", "claude-opus-5-5", 1.0, "fallback")
     budget.settle("b", 0.25)
     budget.write_status(enabled=True)
     status = json.loads((tmp_path / "status.json").read_text())
-    assert status["state"] == "on" and status["cap_usd"] == 190.0
+    assert status["state"] == "on" and "cap_usd" not in status
     assert status["spent_31d_usd"] == pytest.approx(0.75)
     assert status["calls_31d"] == {"api_first": 1, "fallback": 1}
     assert status["last_fallback_at"] == 5000.0 and status["paused"] is None
@@ -172,18 +179,19 @@ def test_status_file_shows_spend_cap_pause_and_routes(tmp_path):
 
 
 def test_status_states_off_and_paused(tmp_path):
-    budget = Budget(tmp_path, 190.0, clock=lambda: 10.0)
+    budget = Budget(tmp_path, clock=lambda: 10.0)
     budget.write_status(enabled=False)
     assert json.loads((tmp_path / "status.json").read_text())["state"] == "off"
     budget.pause("rate_limit", 100.0)
     budget.write_status(enabled=True)
     status = json.loads((tmp_path / "status.json").read_text())
     assert status["state"] == "paused" and status["paused"] == {"reason": "rate_limit", "until": 100.0}
-    Budget(tmp_path / "z", 0).write_status(enabled=True)
-    assert json.loads((tmp_path / "z" / "status.json").read_text())["state"] == "off"
 
 
 SCHEMA = {"type": "object", "properties": {"say": {"type": "string"}, "n": {"type": "integer"}}}
+CREDIT_LOW = {"error": {"type": "invalid_request_error",
+                        "message": "Your credit balance is too low to access the Anthropic API. "
+                                   "Please go to Plans & Billing to upgrade or purchase credits."}}
 KEY = "sk-ant-test-secret-123"
 
 
@@ -306,6 +314,8 @@ async def test_model_mismatch_is_uncertain():
     (504, {}, {"error": {"type": "api_error"}}, "server", True),
     (599, {}, {"error": {"type": "api_error"}}, "server", True),
     (400, {}, {"error": {"type": "invalid_request_error"}}, "rejected", False),
+    (400, {}, CREDIT_LOW, "credit", False),
+    (402, {}, {"error": {"type": "billing_error", "message": "There is an issue with your billing."}}, "credit", False),
     (413, {}, {"error": {"type": "request_too_large"}}, "rejected", False)])
 async def test_refusals_before_the_stream_are_not_executed(status, headers, payload, reason, consumed):
     now = datetime(2026, 10, 23, 12, tzinfo=UTC).timestamp()
@@ -322,6 +332,8 @@ async def test_refusals_before_the_stream_are_not_executed(status, headers, payl
         assert error.pause == ("overloaded", now + 60, True)
     elif reason == "key":
         assert error.pause == ("key", None, False)
+    elif reason == "credit":
+        assert error.pause == ("credit", now + 3600, True)
     else:
         assert error.pause is None
 
@@ -386,6 +398,18 @@ async def test_read_timeout_is_uncertain():
     with pytest.raises(ProviderFault) as caught:
         await call(make_request(), SCHEMA, "T", KEY, transport=httpx.MockTransport(handler))
     assert caught.value.code == "uncertain"
+
+
+@pytest.mark.parametrize("status,raw,reason", [
+    (400, b"not json", "rejected"), (400, b"", "rejected"), (400, b"[" * 200000, "rejected"),
+    (400, b'{"error": {"message": ["credit balance"]}}', "rejected"), (400, b"null", "rejected"),
+    (402, b"", "credit"), (402, b"[" * 200000, "credit"), (429, b"[" * 200000, "rate_limit")],
+    ids=["400-text", "400-empty", "400-deep", "400-list-message", "400-null", "402-empty", "402-deep", "429-deep"])
+async def test_an_odd_error_body_maps_by_status_and_never_raises(status, raw, reason):
+    transport = httpx.MockTransport(lambda request: httpx.Response(status, content=raw))
+    with pytest.raises(ApiNotExecuted) as caught:
+        await call(make_request(), SCHEMA, "T", KEY, clock=lambda: 1000.0, transport=transport)
+    assert caught.value.reason == reason
 
 
 async def test_unreadable_error_body_still_maps_by_status():
@@ -456,7 +480,7 @@ def lane(fake_claude, tmp_path):  # noqa: F811 - pytest injects the imported fix
     config, configure, calls = fake_claude
     key = tmp_path / "claude_api_key"
     key.write_text(KEY + "\n")
-    return replace(config, api_enabled=True, api_cap_usd=190, api_key_file=key), configure, calls
+    return replace(config, api_enabled=True, api_key_file=key), configure, calls
 
 
 def make_runner(config, api, clock=time.time):
@@ -501,26 +525,20 @@ def test_routing_table_is_the_approved_list():
                                    "video_answer_v1", "agent_decision", "video_screen_fix_v1"})
 
 
-def test_lane_configuration_is_validated_and_read_from_the_environment(tmp_path, monkeypatch):
-    for cap in (-1, 1001, float("nan"), float("inf")):
-        with pytest.raises(ValueError):
-            ClaudeConfig(tmp_path / "a", tmp_path / "j", api_cap_usd=cap)
+def test_lane_configuration_is_read_from_the_environment(tmp_path, monkeypatch):
     monkeypatch.setenv("CLAUDE_CONFIG_DIR", str(tmp_path / "auth"))
     monkeypatch.setenv("CLAUDE_JOBS_DIR", str(tmp_path / "jobs"))
     for name in ("CLAUDE_API_ENABLED", "CLAUDE_API_CAP_USD", "CLAUDE_API_KEY_FILE"):
         monkeypatch.delenv(name, raising=False)
     config = runner_from_environment().config
-    assert (config.api_enabled, config.api_cap_usd, config.api_key_file) == (False, 0.0, None)
+    assert (config.api_enabled, config.api_key_file) == (False, None)
     monkeypatch.setenv("CLAUDE_API_ENABLED", "true")
-    monkeypatch.setenv("CLAUDE_API_CAP_USD", "190")
     monkeypatch.setenv("CLAUDE_API_KEY_FILE", "/run/secrets/claude_api_key")
-    config = runner_from_environment().config
-    assert (config.api_enabled, config.api_cap_usd) == (True, 190.0)
-    assert config.api_key_file == Path("/run/secrets/claude_api_key")
+    # The old service cap (CLAUDE_API_CAP_USD, until 2026-11-23) is no longer read, whatever runtime.env still says.
     monkeypatch.setenv("CLAUDE_API_CAP_USD", "lots")
-    with pytest.raises(ProviderFault) as fault:
-        runner_from_environment()
-    assert fault.value.code == "unavailable"
+    config = runner_from_environment().config
+    assert config.api_enabled and not hasattr(config, "api_cap_usd")
+    assert config.api_key_file == Path("/run/secrets/claude_api_key")
 
 
 async def test_api_first_contract_runs_on_the_api_and_receipt_says_so(lane):
@@ -620,6 +638,20 @@ async def test_cli_quota_or_auth_falls_back_to_the_api(lane, change, outcome, cl
     assert status(config)["calls_31d"] == {"fallback": 1} and status(config)["last_fallback_at"]
 
 
+async def test_an_episode_turn_the_cli_refused_keeps_that_refusal_when_the_credits_are_used_up(lane):
+    config, configure, calls = lane
+    cli_video(configure, error="rate_limit")
+    api = Api(refusal(400, CREDIT_LOW), ok(VIDEO_REVIEW))
+    with pytest.raises(ProviderFault) as fault:
+        await make_runner(config, api).run(video())
+    assert fault.value.code == "quota" and len(api.seen) == 1  # the CLI's limit stands; nothing was spent
+    assert tried(config, video()) == [("subscription", "quota"), ("api", "not_executed")]
+    assert status(config)["paused"]["reason"] == "credit" and ledger(config)["entries"] == []
+    with pytest.raises(ProviderFault) as again:  # within the hour the API is not asked again
+        await make_runner(config, api).run(video(2))
+    assert again.value.code == "quota" and len(api.seen) == 1
+
+
 @pytest.mark.parametrize("change", [{"crash": True}, {"incomplete": "error_max_turns"}, {"result_is_error": True}])
 async def test_cli_uncertain_or_invalid_never_reaches_the_api(lane, change):
     config, configure, calls = lane
@@ -682,10 +714,10 @@ async def test_api_uncertain_is_never_replayed_and_pauses_the_lane(lane):
     assert len(api.seen) == 2
 
 
-@pytest.mark.parametrize("change", ["disabled", "zero_cap", "no_key_file", "missing_key", "empty_key"])
-async def test_disabled_lane_or_zero_cap_or_missing_key_changes_nothing(lane, change, tmp_path):
+@pytest.mark.parametrize("change", ["disabled", "no_key_file", "missing_key", "empty_key"])
+async def test_disabled_lane_or_missing_key_changes_nothing(lane, change, tmp_path):
     config, configure, calls = lane
-    config = {"disabled": replace(config, api_enabled=False), "zero_cap": replace(config, api_cap_usd=0),
+    config = {"disabled": replace(config, api_enabled=False),
               "no_key_file": replace(config, api_key_file=None),
               "missing_key": replace(config, api_key_file=tmp_path / "absent"),
               "empty_key": config}[change]
@@ -696,20 +728,45 @@ async def test_disabled_lane_or_zero_cap_or_missing_key_changes_nothing(lane, ch
     result = await make_runner(config, api).run(email())
     assert result.usage["billing_mode"] == "subscription" and not api.seen and len(calls()) == 1
     assert tried(config, email()) == [("subscription", "complete")]
-    if change in {"disabled", "zero_cap"}:
+    if change == "disabled":
         assert not (config.jobs_dir / ".api").exists()
 
 
-async def test_cap_reached_sends_api_first_work_to_the_subscription(lane):
+async def test_spend_past_the_old_cap_still_runs_on_the_api(lane):
+    # 2026-11-18 the service's 31-day cap stopped the lane at $188.77 of $190 though the credits were refilled.
     config, configure, calls = lane
-    config = replace(config, api_cap_usd=1.0)
-    assert reservation_usd(email()) > 1.0
-    cli_email(configure)
+    Budget(config.jobs_dir / ".api").reserve("earlier", "claude-opus-5-5", 188.77, "api_first")
     api = Api(ok(v5_draft().model_dump(mode="json")))
     result = await make_runner(config, api).run(email())
-    assert result.usage["billing_mode"] == "subscription" and not api.seen and len(calls()) == 1
-    assert not (config.jobs_dir / ".api" / "ledger.json").exists() or ledger(config)["entries"] == []
-    assert status(config)["spent_31d_usd"] == 0
+    assert result.usage["billing_mode"] == "api_credit" and len(api.seen) == 1 and calls() == []
+    assert status(config)["spent_31d_usd"] == pytest.approx(188.77 + STREAM_COST)
+
+
+async def test_an_empty_credit_balance_sends_api_first_work_to_the_subscription_and_is_asked_again_hourly(lane):
+    # Owner, 2026-11-23: API-first work runs on the credits while they last and on them again once they are refilled.
+    config, configure, calls = lane
+    now = [1_000_000.0]
+    cli_email(configure)
+    api = Api(refusal(400, CREDIT_LOW), refusal(402, {"error": {"type": "billing_error"}}),
+              ok(v5_draft().model_dump(mode="json")))
+    runner = make_runner(config, api, clock=lambda: now[0])
+    result = await runner.run(email())
+    assert result.usage["billing_mode"] == "subscription" and len(api.seen) == 1 and len(calls()) == 1
+    assert tried(config, email()) == [("api", "not_executed"), ("subscription", "complete")]
+    assert receipt(config, email())["attempts"][0]["reason"] == "credit"
+    assert ledger(config)["entries"] == []  # refused before it ran: nothing was spent
+    assert status(config)["paused"] == {"reason": "credit", "until": now[0] + 3600}
+    now[0] += 3599  # within the hour the next email goes straight to the subscription, after a restart as well
+    runner = make_runner(config, api, clock=lambda: now[0])
+    assert (await runner.run(email(2))).usage["billing_mode"] == "subscription"
+    assert len(api.seen) == 1 and len(calls()) == 2
+    now[0] += 2  # an hour on the API is asked again; still empty (a 402 this time), so another hour
+    assert (await runner.run(email(3))).usage["billing_mode"] == "subscription"
+    assert len(api.seen) == 2 and len(calls()) == 3
+    assert status(config)["paused"] == {"reason": "credit", "until": now[0] + 3600}
+    now[0] += 3601  # refilled: the API takes the work
+    assert (await runner.run(email(4))).usage["billing_mode"] == "api_credit"
+    assert len(api.seen) == 3 and len(calls()) == 3
 
 
 async def test_second_ask_during_api_call_is_pending_not_a_second_call(lane):
@@ -742,12 +799,12 @@ async def test_restart_during_api_call_is_uncertain_and_keeps_reservation(lane):
     with pytest.raises(ProviderFault) as fault:
         await make_runner(config, restarted).run(email())
     assert fault.value.code == "uncertain" and not restarted.seen and calls() == []
-    assert Budget(config.jobs_dir / ".api", 190).spent() == pytest.approx(reservation_usd(email()))
+    assert Budget(config.jobs_dir / ".api").spent() == pytest.approx(reservation_usd(email()))
     # The interrupted call itself: cancelled mid-stream it counts in full; a deliberate cancel pauses nothing.
     task.cancel()
     await asyncio.gather(task, return_exceptions=True)
     assert receipt(config, email())["fault"] == "uncertain"
-    assert Budget(config.jobs_dir / ".api", 190).spent() == pytest.approx(reservation_usd(email()))
+    assert Budget(config.jobs_dir / ".api").spent() == pytest.approx(reservation_usd(email()))
     assert status(config)["paused"] is None
     assert len(api.seen) == 1
 
@@ -800,14 +857,15 @@ def slot_held(config, name):
         os.close(fd)
 
 
-@pytest.mark.parametrize("change", ["cap", "disabled", "overloaded"])
+@pytest.mark.parametrize("change", ["credit", "disabled", "overloaded"])
 async def test_an_email_the_lane_cannot_take_runs_on_its_own_slot_beside_the_episode(lane, change):
     # Owner, 2026-11-20 ("API 한도 다쓸경우 구독으로"): the email asks the API lane first and otherwise its own subscription
     # slot, never the episode's (11-18..11-20 the capped lane held it until the episode was out, then the fallback).
     config, configure, calls = lane
     cli_email(configure)
-    config = replace(config, api_enabled=False) if change == "disabled" else (
-        replace(config, api_cap_usd=1.0) if change == "cap" else config)
+    config = replace(config, api_enabled=False) if change == "disabled" else config
+    if change == "credit":  # an earlier turn found the credits used up
+        Budget(config.jobs_dir / ".api").pause("credit", time.time() + 3600)
     api = Api(refusal(529))
     with slot_held(config, None):  # an episode turn holds its slot
         result = await make_runner(config, api).run(email())
@@ -829,12 +887,13 @@ def test_only_the_email_takes_the_email_slot():
     assert len(set(LOCKS.values())) == len(LOCKS)
 
 
-@pytest.mark.parametrize("change", ["disabled", "cap", "overloaded", "server_error"])
+@pytest.mark.parametrize("change", ["disabled", "credit", "overloaded", "server_error"])
 async def test_an_api_only_turn_the_lane_cannot_take_never_reaches_the_subscription(lane, change):
     config, configure, calls = lane
     cli_email(configure)
-    config = replace(config, api_enabled=False) if change == "disabled" else (
-        replace(config, api_cap_usd=1.0) if change == "cap" else config)
+    config = replace(config, api_enabled=False) if change == "disabled" else config
+    if change == "credit":
+        Budget(config.jobs_dir / ".api").pause("credit", time.time() + 3600)
     api = Api(refusal({"overloaded": 529, "server_error": 500}.get(change, 529)))
     with pytest.raises(ProviderFault) as refused:
         await make_runner(config, api).run(api_only_email())
@@ -911,7 +970,7 @@ async def test_invalid_api_output_is_definitive_and_costs_what_it_used(lane, ans
 async def test_deferred_receipt_goes_to_the_api_when_the_lane_is_open(lane):
     config, configure, calls = lane
     now = [time.time()]
-    Budget(config.jobs_dir / ".api", 190, clock=lambda: now[0]).pause("rate_limit", now[0] + 60)
+    Budget(config.jobs_dir / ".api", clock=lambda: now[0]).pause("rate_limit", now[0] + 60)
     cli_video(configure, error="rate_limit")
     api = Api(ok(VIDEO_REVIEW))
     runner = make_runner(config, api, clock=lambda: now[0])

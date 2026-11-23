@@ -474,7 +474,7 @@ async def test_shared_scope_cancel_reports_kept_over_http(fake_claude, tmp_path)
     config, _, _ = fake_claude
     key = tmp_path / "claude_api_key"
     key.write_text(KEY + "\n")
-    config = replace(config, api_enabled=True, api_cap_usd=190, api_key_file=key)
+    config = replace(config, api_enabled=True, api_key_file=key)
     api = Api(ok(v5_draft().model_dump(mode="json")))
     api.gate = asyncio.Event()
     app = create_app(runner=ClaudeRunner(config, source_environment={"PATH": os.environ["PATH"]},

@@ -67,7 +67,7 @@ async def test_company_quota_never_spends_existing_claude_api_budget(fake_claude
         requests.append(request)
         raise AssertionError("Employee work must not use the paid lane")
 
-    runner = ClaudeRunner(replace(config, api_enabled=True, api_cap_usd=190, api_key_file=key),
+    runner = ClaudeRunner(replace(config, api_enabled=True, api_key_file=key),
                           source_environment={"PATH": "/usr/bin:/bin"}, api_transport=httpx.MockTransport(api))
     with pytest.raises(ProviderFault) as fault:
         await runner.run(ProviderRequest(request_id=str(uuid4()), model=CLAUDE_MODEL,

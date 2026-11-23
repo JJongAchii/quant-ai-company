@@ -1,4 +1,7 @@
-"""Claude API credit lane: price table, rolling 31-day budget ledger, pauses and status file."""
+"""Claude API credit lane: price table, rolling 31-day spend ledger, pauses and status file.
+
+The credit balance itself is the lane's limit (owner, 2026-11-23): API-first work runs on the credits while the API takes
+it, and an empty balance sends it to the subscription until the API is asked again (CREDIT_RECHECK)."""
 
 import fcntl
 import json
@@ -21,9 +24,11 @@ TOOL = "StructuredOutput"
 SYSTEM = ("Return your final answer by calling the StructuredOutput tool exactly once, with input that matches "
           "its schema. Do not answer in plain text.")
 SPEND_LIMIT_CODE = "enforced_spend_limit_reached"
+# The API is asked again this long after it refused for an empty credit balance; the monthly refill is then used at once.
+CREDIT_RECHECK = 3600.0
 SHORT_CONTRACTS = ("newsletter_v1", "video_performance_v1", "video_answer_v1", "agent_decision")
-# A pause that is active hides the ones after it.
-PAUSE_ORDER = ("key", "spend_limit", "uncertain", "rate_limit", "overloaded")
+# A pause that is active hides the ones after it; used-up credits never hide an uncertain outcome (an alert).
+PAUSE_ORDER = ("key", "spend_limit", "uncertain", "credit", "rate_limit", "overloaded")
 ROUTES = ("api_first", "fallback")
 RATE_LIMIT_WAIT = 60.0
 RATE_LIMIT_WAIT_MAX = 3600.0
@@ -79,9 +84,8 @@ def well_formed(entry):
 
 
 class Budget:
-    def __init__(self, directory, cap_usd, clock=time.time):
+    def __init__(self, directory, clock=time.time):
         self.directory = Path(directory)
-        self.cap_usd = cap_usd
         self.clock = clock
         self.memory_pauses = {}
         self.directory.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -121,9 +125,11 @@ class Budget:
         return sum(entry["reserved"] if entry["actual"] is None else entry["actual"] for entry in self.live(ledger))
 
     def reserve(self, request_id, model, amount, route):
+        """Records the worst case before a call. There is no service cap (until 2026-11-23 a 31-day $190 one): the
+        credit balance decides (CREDIT_RECHECK)."""
         with self.locked():
             ledger = self.load()
-            if ledger is None or self.total(ledger) + amount > self.cap_usd:
+            if ledger is None:
                 return False
             ledger["entries"].append({"request_id": request_id, "model": model, "route": route,
                                       "at": self.clock(), "reserved": amount, "actual": None})
@@ -189,9 +195,9 @@ class Budget:
                 for entry in live:
                     calls[entry["route"]] = calls.get(entry["route"], 0) + 1
                 fallback = max((entry["at"] for entry in live if entry["route"] == "fallback"), default=None)
-                state = "off" if not enabled or self.cap_usd <= 0 else "paused" if pause else "on"
+                state = "off" if not enabled else "paused" if pause else "on"
             atomic_json(self.directory / "status.json", {
-                "state": state, "enabled": enabled, "cap_usd": self.cap_usd, "spent_31d_usd": spent,
+                "state": state, "enabled": enabled, "spent_31d_usd": spent,
                 "calls_31d": calls, "last_fallback_at": fallback, "paused": pause, "key_present": key_present,
                 "last_refusal": last_refusal, "updated_at": self.clock()})
 
@@ -236,14 +242,27 @@ def next_month_start(now):
 
 
 def error_fields(raw):
-    """Only error.type and error.details.error_code; nothing else of an error body is kept."""
+    """Only error.details.error_code; nothing else of an error body is kept."""
     try:
         error = json.loads(raw).get("error")
         details = error.get("details") if isinstance(error, dict) else None
         code = details.get("error_code") if isinstance(details, dict) else None
         return code if isinstance(code, str) else None
-    except (ValueError, AttributeError):
+    except (ValueError, AttributeError, RecursionError):
         return None
+
+
+def credit_empty(status, raw):
+    """A 402 (billing), or a 400 whose message names the credit balance ("Your credit balance is too low to access the
+    Anthropic API", the API's only sign of it). Only this yes or no is kept of the body."""
+    if status == 402:
+        return True
+    try:
+        error = json.loads(raw).get("error")
+        message = error.get("message") if isinstance(error, dict) else None
+        return isinstance(message, str) and "credit balance" in message.lower()
+    except (ValueError, AttributeError, RecursionError):
+        return False
 
 
 def retry_after(headers):
@@ -263,6 +282,8 @@ def not_executed(status, headers, raw, now):
         return ApiNotExecuted("rate_limit", False, ("rate_limit", now + retry_after(headers), True), status)
     if status == 529:
         return ApiNotExecuted("overloaded", False, ("overloaded", now + 60, True), status)
+    if status in (400, 402) and credit_empty(status, raw):
+        return ApiNotExecuted("credit", False, ("credit", now + CREDIT_RECHECK, True), status)
     if status in (401, 403):
         return ApiNotExecuted("key", False, ("key", None, False), status)
     if 500 <= status <= 599:
@@ -306,7 +327,7 @@ async def call(request, schema, title, key, *, transport=None, clock=time.time):
                                      content=json.dumps(body(request, schema, title))) as response:
                 if response.status_code != 200:
                     raw = b""
-                    if response.status_code == 429:
+                    if response.status_code in (400, 402, 429):
                         try:
                             raw = await response.aread()
                         except Exception:  # noqa: BLE001 - the status alone decides; the body is best effort
