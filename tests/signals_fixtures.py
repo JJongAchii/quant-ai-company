@@ -110,10 +110,11 @@ def snapshot(kind, day=DAY):
 
 
 def proposal(**over):
-    """A valid SignalProposal dict for DAY's intraday slot, citing its snapshot source."""
+    """A valid SignalProposal dict for DAY's intraday slot, citing its snapshot source. Its one reason gives +10 points,
+    so the computed confidence is 60 intraday either way, 69 overnight long and 51 overnight short."""
     kind, day = over.get("kind", "intraday"), over.get("session_day", str(DAY))
     source = f"signal:{day}:{kind}:snapshot"
-    value = {"kind": kind, "session_day": day, "direction": "long", "confidence": 60,
-             "reasons": [{"text": "미국 지수 선물이 전일 종가보다 0.5% 높다", "source_ids": [source]}],
+    value = {"kind": kind, "session_day": day, "direction": "long",
+             "reasons": [{"text": "미국 지수 선물이 전일 종가보다 0.5% 높다", "points": 10, "source_ids": [source]}],
              "invalidation": "시가가 전일 종가 아래에서 출발하면", "source_ids": [source]}
     return {**value, **over}

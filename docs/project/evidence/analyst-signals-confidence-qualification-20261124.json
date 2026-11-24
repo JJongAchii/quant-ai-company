@@ -1,0 +1,140 @@
+{
+  "started_at": "2026-11-24T06:27:43.835651+00:00",
+  "state": "committed",
+  "kind": "overnight",
+  "real_model": true,
+  "slack_sender_constructed": false,
+  "database": {
+    "kind": "disposable database on a local PostgreSQL cluster",
+    "name": "company_signal_qualification_471127341d064c1f91f0a923a5e76043",
+    "dropped": true
+  },
+  "code_commit": "2aacc0c3fa0115c9493ec2907ca4b5c1900809d5",
+  "uncommitted_code": true,
+  "edition": {
+    "sha256": "00e391500cdcf186134f3a610314fb67ce0c1208b63bb1623f0b13a073849745",
+    "characters": 236,
+    "synthetic": true
+  },
+  "turns": [
+    {
+      "sequence": 1,
+      "state": "completed",
+      "task_status": "completed",
+      "reason": null,
+      "turn_status": "completed",
+      "turn_error": null,
+      "tools": [],
+      "latency_seconds": 37.2
+    }
+  ],
+  "completed_model_turns": 1,
+  "provider_faults": [],
+  "proposal": {
+    "kind": "overnight",
+    "reasons": [
+      {
+        "text": "14:50 KST 미국 S&P 500·나스닥 100 선물은 각각 전일 대비 +0.27%, +0.22%로 상승 중이다. 미국 주식의 가치평가를 지지하는 흐름이 밤사이 지속되면 한국의 다음 날 개장 가격에도 우호적일 수 있다. 다만 현재 상승률은 국내 종가 이후의 변화를 측정하지 않으며, 다음 개장까지의 지속성도 확인되지 않아 가점은 부여하지 않는다.",
+        "points": 0,
+        "source_ids": [
+          "signal:2026-11-24:overnight:snapshot"
+        ]
+      },
+      {
+        "text": "14:40 KST 지연 시세에서 코스피는 +7.39%, KODEX 200은 +7.84%다. 강한 장중 상승은 관측됐지만 다음 날 시가까지의 추가 상승 근거와는 구분해야 한다. 상승 지속과 차익실현은 모두 가능한 가설이며, 급등만으로 추세 지속이나 반락을 단정할 근거가 없어 점수는 조정하지 않는다.",
+        "points": 0,
+        "source_ids": [
+          "signal:2026-11-24:overnight:snapshot"
+        ]
+      },
+      {
+        "text": "14:59 KST 원/달러는 1,342.46원으로 전일 대비 -0.14%다. 원화 강세가 지속되면 외화 조달·수입 비용에는 우호적일 수 있지만 수출기업의 원화 환산 매출에는 부담일 수 있다. 외국인 순매수나 밤사이 환율 방향은 확인되지 않아 코스피 상승 확률에 가점을 주지 않는다.",
+        "points": 0,
+        "source_ids": [
+          "signal:2026-11-24:overnight:snapshot"
+        ]
+      }
+    ],
+    "base_rate": 59,
+    "direction": "long",
+    "confidence": 59,
+    "source_ids": [
+      "signal:2026-11-24:overnight:snapshot"
+    ],
+    "session_day": "2026-11-24",
+    "invalidation": "11월 25일 09:00 KST 코스피 시가가 11월 24일 15:30 KST 종가보다 낮으면 롱 방향 판단은 틀린 것으로 본다. 종가 이후 미국 지수 선물이 하락하고 원/달러가 상승하는 흐름이 함께 나타나면 우호적 대외환경이라는 해석은 약해진다. 보합은 상승 적중으로 간주하지 않으며, 거래비용을 포함한 손익은 별도다."
+  },
+  "posts": [
+    {
+      "text": "🌙 오버나잇 신호 · 11월 24일(화) 종가 15:30 진입 → 11월 25일(수) 시가 09:00 청산\n롱 · 확신도 59% (과거 기준 59% · 근거 +0%p)\n근거\n1. 14:50 KST 미국 S&P 500·나스닥 100 선물은 각각 전일 대비 +0.27%, +0.22%로 상승 중이다. 미국 주식의 가치평가를 지지하는 흐름이 밤사이 지속되면 한국의 다음 날 개장 가격에도 우호적일 수 있다. 다만 현재 상승률은 국내 종가 이후의 변화를 측정하지 않으며, 다음 개장까지의 지속성도 확인되지 않아 가점은 부여하지 않는다. (+0%p)\n2. 14:40 KST 지연 시세에서 코스피는 +7.39%, KODEX 200은 +7.84%다. 강한 장중 상승은 관측됐지만 다음 날 시가까지의 추가 상승 근거와는 구분해야 한다. 상승 지속과 차익실현은 모두 가능한 가설이며, 급등만으로 추세 지속이나 반락을 단정할 근거가 없어 점수는 조정하지 않는다. (+0%p)\n3. 14:59 KST 원/달러는 1,342.46원으로 전일 대비 -0.14%다. 원화 강세가 지속되면 외화 조달·수입 비용에는 우호적일 수 있지만 수출기업의 원화 환산 매출에는 부담일 수 있다. 외국인 순매수나 밤사이 환율 방향은 확인되지 않아 코스피 상승 확률에 가점을 주지 않는다. (+0%p)\n틀렸다고 볼 조건: 11월 25일 09:00 KST 코스피 시가가 11월 24일 15:30 KST 종가보다 낮으면 롱 방향 판단은 틀린 것으로 본다. 종가 이후 미국 지수 선물이 하락하고 원/달러가 상승하는 흐름이 함께 나타나면 우호적 대외환경이라는 해석은 약해진다. 보합은 상승 적중으로 간주하지 않으며, 거래비용을 포함한 손익은 별도다.\n기준 시세 15:00 · 코스피 +7.4% · S&P 500 선물 7,273.75(14:50) · 원/달러 1,342.46(14:59) · 닛케이 225 +4.2%",
+      "outbox_status": "pending"
+    }
+  ],
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "session_day": "2026-11-24",
+  "clock": {
+    "simulated_start": "2026-11-24T06:00:00+00:00",
+    "real_start": "2026-11-24T06:27:47.959492+00:00",
+    "tools_until": "2026-11-24T06:07:00+00:00",
+    "send_at": "2026-11-24T06:15:00+00:00",
+    "entry_at": "2026-11-24T06:30:00+00:00",
+    "exit_at": "2026-11-25T00:00:00+00:00"
+  },
+  "snapshot": {
+    "origin": "file",
+    "observed_at": "2026-11-24T06:00:11.959997+00:00",
+    "quotes": [
+      "es",
+      "ewy",
+      "hsi",
+      "kodex200",
+      "kosdaq",
+      "kospi",
+      "n225",
+      "nq",
+      "shanghai",
+      "spy",
+      "usdkrw"
+    ],
+    "errors": {},
+    "receipts": {
+      "es": "0434b73e5705c29a470fac32e714b09b48f5ca198c98ec4d112a0f6e9f9fe70b",
+      "nq": "66be7a790b6e351a74244e663d2756554c5430d9bde2c5fcbe3b33a0d0d13203",
+      "ewy": "4a45f4d5d591cd840ecf8750c46fa8f7c5afdadd7c2d5d138de5d4b686796dc9",
+      "hsi": "72c4ab9ddfc4b7ad1f31827f11f49120e5ae5c0f8493c35c65041bbeeef12a02",
+      "spy": "347a509e7ac46268d01f10b79e16f699061e682c4e41cdd157a4ade5cde15aee",
+      "n225": "4aa8da4ab88114b602c415e365003f54ad55556717527b24b8e28de2e0830f5e",
+      "kospi": "7de73282ec7a954bebf9c6312175b3479ff6a2b742d56b3427fefe5b4f6b6a18",
+      "kosdaq": "308d3a6ac44f3a8af0b99b776eae5d121a0634e6b41b53e373636c0afd59277b",
+      "usdkrw": "dafc178e2fead2e46b92c0d454bb8750a70911b9ec199ff1bf14c7fa41172343",
+      "kodex200": "1c1adc3bdf924461cfc6373b3dd2e71a4fbecab46e563dc32e1ae1419ab5bf19",
+      "shanghai": "deb4289aa08e8ba18500213274f7a1254b6572ae92fd3ffc7efd65395124425d"
+    },
+    "text": "S&P 500 선물 | 7273.75 | 원천 14:50 KST | 전일 대비 +0.27%\n나스닥 100 선물 | 26867.50 | 원천 14:50 KST | 전일 대비 +0.22%\nEWY | 135.72 | 원천 06:00 KST | 전일 대비 +10.11%\n항셍 | 22297.78 | 원천 14:45 KST | 전일 대비 -0.38%\nSPY | 722.29 | 원천 06:00 KST | 전일 대비 +4.71%\n닛케이 225 | 58815.48 | 원천 14:45 KST | 전일 대비 +4.22%\n코스피 | 5056.27 | 원천 14:40 KST | 전일 대비 +7.39% | 지연\n코스닥 | 669.97 | 원천 14:40 KST | 전일 대비 +5.43% | 지연\n원/달러 | 1342.46 | 원천 14:59 KST | 전일 대비 -0.14%\nKODEX 200 | 79555.00 | 원천 14:40 KST | 전일 대비 +7.84% | 지연\n상하이종합 | 3555.81 | 원천 14:45 KST | 전일 대비 +0.48%"
+  },
+  "timing": "on_time",
+  "committed_at": "2026-11-24 06:00:37.537733+00:00",
+  "format_failures": 0,
+  "unparsed": false,
+  "last_error": null,
+  "task": {
+    "status": "completed",
+    "error": null,
+    "turn_count": 1
+  },
+  "signal_notes": [],
+  "web_requests": [],
+  "answers": [],
+  "completed_at": "2026-11-24T06:28:25.596516+00:00",
+  "notes": [
+    "Provider: CodexRunner on the local ChatGPT login (CODEX_HOME), no API credentials; its job receipts were kept outside the repository.",
+    "1 model turn(s) completed.",
+    "A disposable database on a local PostgreSQL cluster was created for this run and dropped afterwards; production, its database and its host were not touched.",
+    "The Slack sender (SlackOutbox) was never constructed: the posts listed exist only as undispatched outbox rows of the disposable database.",
+    "The signals clock started at the slot's snapshot time and advanced in real time, so the tool cutoff and the on-time/late timing reflect the real latency. Grading, the interim post and the scorecard were not run.",
+    "The snapshot was loaded from a file.",
+    "The edition text is synthetic test text, not a published edition.",
+    "The proposal is a model output for a contract and latency check, not a trading recommendation."
+  ]
+}

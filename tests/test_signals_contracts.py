@@ -35,20 +35,42 @@ def test_compose_passes_flag():
 
 
 def proposal(**updates):
-    value = {"kind": "intraday", "session_day": "2026-11-20", "direction": "long", "confidence": 60,
-             "reasons": [{"text": "미국 장 강세", "source_ids": ["a"]}],
+    value = {"kind": "intraday", "session_day": "2026-11-20", "direction": "long",
+             "reasons": [{"text": "미국 장 강세", "points": 10, "source_ids": ["a"]}],
              "invalidation": "갭 하락", "source_ids": ["a"]}
     return {**value, **updates}
 
 
 def test_proposal_bounds():
-    assert SignalProposal.model_validate(proposal()).confidence == 60
-    reason = {"text": "x", "source_ids": ["a"]}
-    for bad in ({"confidence": 49}, {"confidence": 91}, {"confidence": "60"},
-                {"reasons": [reason] * 4}, {"reasons": [{"text": "x" * 201, "source_ids": ["a"]}]},
+    parsed = SignalProposal.model_validate(proposal())
+    assert (parsed.base_rate, parsed.evidence_points, parsed.confidence) == (50, 10, 60)
+    reason = {"text": "x", "points": 0, "source_ids": ["a"]}
+    # The Analyst sends no confidence: the service computes it.
+    for bad in ({"confidence": 60}, {"reasons": [{**reason, "points": 11}]}, {"reasons": [{**reason, "points": -11}]},
+                {"reasons": [{**reason, "points": "3"}]}, {"reasons": [{"text": "x", "source_ids": ["a"]}]},
+                {"reasons": [reason] * 4}, {"reasons": [{**reason, "text": "x" * 201}]},
                 {"direction": "롱"}, {"extra": 1}):
         with pytest.raises(ValidationError):
             SignalProposal.model_validate(proposal(**bad))
+
+
+def test_confidence_is_the_base_rate_plus_the_reason_points():
+    """Owner 2026-11-24: the confidence is computed from the past hit rate of the chosen direction (intraday even,
+    overnight long 59 / short 41) and the points of each reason, never picked as one number."""
+    def computed(kind, direction, *points):
+        reasons = [{"text": "x", "points": value, "source_ids": ["a"]} for value in points]
+        return SignalProposal.model_validate(proposal(kind=kind, direction=direction, reasons=reasons)).confidence
+
+    assert computed("intraday", "long", 0) == computed("intraday", "short", 0) == 50
+    assert computed("overnight", "long", 0) == 59 and computed("overnight", "long", 10, 10, 10) == 89
+    assert computed("overnight", "short", 10, 4, -3) == 52 and computed("intraday", "short", 6, -2) == 54
+    # Below 50 the other direction is likelier, so the chosen one is a format error the Analyst is asked to fix.
+    for kind, direction, points in (("overnight", "short", (0,)), ("intraday", "long", (-1,)),
+                                    ("overnight", "long", (-10,))):
+        with pytest.raises(ValidationError, match="other direction is likelier"):
+            computed(kind, direction, *points)
+    stored = SignalProposal.model_validate(proposal(kind="overnight")).stored()
+    assert (stored["base_rate"], stored["confidence"], stored["reasons"][0]["points"]) == (59, 69, 10)
 
 
 def test_migration_creates_signal_tables(company):
@@ -82,8 +104,9 @@ SNAPSHOT = {
 
 
 def slot_proposal(slot, direction="long"):
-    return SignalProposal(kind=slot.kind, session_day=slot.day, direction=direction, confidence=58,
-                          reasons=[{"text": "선물 강세", "source_ids": ["s"]}, {"text": "환율 안정", "source_ids": ["s"]}],
+    return SignalProposal(kind=slot.kind, session_day=slot.day, direction=direction,
+                          reasons=[{"text": "선물 강세", "points": 5, "source_ids": ["s"]},
+                                   {"text": "환율 안정", "points": 3, "source_ids": ["s"]}],
                           invalidation="시가 갭이 크게 줄면", source_ids=["s"])
 
 
@@ -97,12 +120,14 @@ def test_instruction_has_every_required_element():
     out = instruction(intraday, "signal:2026-11-20:intraday:snapshot", text)
     for part in ("09:00", "15:30", "08:30", "08:15", "signal:2026-11-20:intraday:snapshot", text, "48.6", "49.9",
                  "47.1", "47.7", "75.5", "62.9", "59.4", "밤사이 정보는 대부분 시초가에 반영",
-                 "롱 또는 숏", "주문이 아니", "SignalProposal", "artifacts"):
+                 "롱 또는 숏", "주문이 아니", "SignalProposal", "artifacts", "확신도는 고른 방향이 맞을 확률",
+                 "과거 기준 확률: 롱 50, 숏 50", "-10~+10", "불리한 근거는 음수", "confidence 필드는 쓰지 않는다"):
         assert part in out, part
-    assert len(out) < 4000
+    assert len(out) < 4000 and '"confidence"' not in out
     night = instruction(overnight, "signal:2026-11-20:overnight:snapshot", text)
     assert "밤사이 정보는 대부분 시초가에 반영" not in night
     assert "11월 23일" in night and "59.4" in night and len(night) < 4000
+    assert "과거 기준 확률: 롱 59, 숏 41" in night
     assert "도구 없이 지금 최종 답" in final_note("시간")
 
 
@@ -110,12 +135,21 @@ def test_analyst_post_matches_spec_sketch():
     intraday, overnight = day_slots()
     lines = analyst_post(intraday, slot_proposal(intraday), SNAPSHOT).split("\n")
     assert lines[0] == "📈 장중 신호 · 11월 20일(금)  시가 09:00 진입 → 종가 15:30 청산"
-    assert lines[1] == "롱 · 확신도 58%"
+    assert lines[1] == "롱 · 확신도 58% (과거 기준 50% · 근거 +8%p)"
+    assert lines[2:5] == ["근거", "1. 선물 강세 (+5%p)", "2. 환율 안정 (+3%p)"]
     post = "\n".join(lines)
-    assert "근거" in post and "1. 선물 강세" in post and "틀렸다고 볼 조건: " in post
+    assert "틀렸다고 볼 조건: " in post
     assert "기준 시세 07:30 · S&P 500 선물 7,374.5(07:00)" in lines[-1]
     assert "누적" not in post
     assert window(overnight) == "종가 15:30 진입 → 11월 23일(월) 시가 09:00 청산"
+    night = SignalProposal(kind="overnight", session_day=overnight.day, direction="short",
+                           reasons=[{"text": "아시아 약세", "points": 10, "source_ids": ["s"]},
+                                    {"text": "선물 약세", "points": 4, "source_ids": ["s"]},
+                                    {"text": "원화 강세", "points": -3, "source_ids": ["s"]}],
+                           invalidation="동시호가 반등", source_ids=["s"])
+    lines = analyst_post(overnight, night, SNAPSHOT).split("\n")
+    assert lines[1:6] == ["숏 · 확신도 52% (과거 기준 41% · 근거 +11%p)", "근거", "1. 아시아 약세 (+10%p)",
+                          "2. 선물 약세 (+4%p)", "3. 원화 강세 (-3%p)"]
 
 
 def test_late_post_header():

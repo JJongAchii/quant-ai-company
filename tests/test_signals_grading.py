@@ -508,7 +508,7 @@ def test_report_posts_as_soon_as_everything_is_final(signals, clock):  # noqa: F
     assert store.report(at(18, 45)) is True
     [post] = report_posts(signals)
     assert ("장중(숏) KOSPI 시가→종가 -0.31% → 신호 +0.31% ✅ · KODEX 200 신호 +0.28% ✅") in post["text"].split("\n")
-    assert ("Analyst 누적 장중 KOSPI 1전 1승(100%) 평균 +31.00bp 누적 +31.00bp"
+    assert ("Analyst 누적 장중 KOSPI 1전 1승(100%, 확신도 평균 60%) 평균 +31.00bp 누적 +31.00bp"
             " · 항상 롱 1전 0승(0%) 평균 -31.00bp 누적 -31.00bp"
             " · 미국 따라가기 1전 0승(0%) 평균 -31.00bp 누적 -31.00bp") in post["text"]
     assert "받으신 신호 기준 KOSPI 장중 1전 1승(100%) 평균 +31.00bp 누적 +31.00bp" in post["text"].split("\n")
@@ -598,6 +598,22 @@ def test_received_is_the_last_delivered_post_before_entry(signals, clock):  # no
         conn.execute("UPDATE outbox SET status='uncertain' WHERE id=%s", (post_id("analyst"),))
         conn.execute("UPDATE outbox SET status='uncertain' WHERE id=%s", (post_id("fallback"),))
     assert received()[0] is None and one(signals, "SELECT 1 x FROM trading_signals WHERE id=%s", sid)
+
+
+def test_mean_confidence_is_over_the_days_the_record_counts():
+    """Owner 2026-11-24: the Analyst's record shows its mean computed confidence next to its hit rate, over the same
+    hits and misses: not ties, signals after the entry, unparsed answers or slots without a confidence."""
+    slots = [{**slot_item("short", "-10"), "confidence": 60}, {**slot_item("long", "-10"), "confidence": 70},
+             {**slot_item("long", "0"), "confidence": 90},
+             {**slot_item("long", "10", timing="after_entry"), "confidence": 90},
+             {**slot_item("long", "10", unparsed=True), "confidence": 90}, slot_item(None, "10")]
+    entry = summarize(slots)["intraday"]["instruments"]["KOSPI"]["analyst"]
+    assert (entry["n"], entry["hits"], entry["ties"], entry["mean_confidence"]) == (2, 1, 1, 65)
+    assert "Analyst 누적 장중 KOSPI 2전 1승(50%, 확신도 평균 65%) 무 1" in card(slots)
+    kodex = summarize(slots)["intraday"]["instruments"]["KODEX200"]["analyst"]
+    assert (kodex["n"], kodex["mean_confidence"]) == (0, None)
+    assert summarize([slot_item("short", "-10")])["intraday"]["instruments"]["KOSPI"]["analyst"][
+        "mean_confidence"] is None
 
 
 def test_scorecard_shows_pending_per_kind_and_instrument():

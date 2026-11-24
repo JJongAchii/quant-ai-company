@@ -2,10 +2,12 @@
 
 import json
 
-from .contracts import Slot
+from .contracts import BASE_RATES, MAX_REASON_POINTS, Slot
 from .render import KIND_WORDS, clock, day_text, window
 
 INTRADAY_ONLY = "밤사이 정보는 대부분 시초가에 반영된다. 시가 이후의 움직임을 판단하라."
+BASE_NOTES = {"intraday": "장중은 과거 롱 적중이 코스피 48.6%, KODEX 200 49.9%로 반반이라",
+              "overnight": "오버나잇은 과거 롱 적중이 코스피 59.4%라"}
 FINAL_NOW = "도구 없이 지금 최종 답을 내세요"
 
 
@@ -29,9 +31,10 @@ def instruction(slot: Slot, source_id: str, text: str) -> str:
                  f"시가(KST {clock(slot.exit_at)})에 청산하는 코스피 거래")
         extra = ""
     example = json.dumps({
-        "kind": slot.kind, "session_day": str(slot.day), "direction": "long", "confidence": 55,
-        "reasons": [{"text": "근거 한 줄", "source_ids": [source_id]}],
+        "kind": slot.kind, "session_day": str(slot.day), "direction": "long",
+        "reasons": [{"text": "근거 한 줄", "points": 0, "source_ids": [source_id]}],
         "invalidation": "틀렸다고 볼 조건 한 줄", "source_ids": [source_id]}, ensure_ascii=False)
+    base = BASE_RATES[slot.kind]
     return f"""{kind} 신호 업무다. 아래 거래가 오를지 내릴지 롱 또는 숏 중 하나를 반드시 고른다.
 거래: {trade} ({window(slot)}).
 신호는 KST {clock(slot.send_at)}에 사장님께 전달된다. 도구는 KST {clock(slot.tools_until)}까지만 쓴다. 그 뒤에는 도구 없이 최종 답을 낸다.
@@ -43,10 +46,16 @@ def instruction(slot: Slot, source_id: str, text: str) -> str:
 기준 시세 스냅샷 (source_id: {source_id}):
 {text}
 
+확신도는 고른 방향이 맞을 확률(%)이고 서비스가 계산한다: 과거 기준 확률 + 근거별 points의 합.
+과거 기준 확률: 롱 {base["long"]}, 숏 {base["short"]}. {BASE_NOTES[slot.kind]} 이 값에서 시작한다.
+points는 그 근거가 고른 방향이 맞을 확률을 몇 %p 바꾸는지다. -{MAX_REASON_POINTS}~+{MAX_REASON_POINTS} 정수이고,
+고른 방향에 불리한 근거는 음수로 적는다. 근거가 약하거나 이미 가격에 반영됐으면 0에 가깝게 둔다.
+기준 확률에 points를 더한 값이 50 미만이면 반대 방향이 더 가능성이 높다는 뜻이라 그 방향은 고를 수 없다.
+
 출력: status는 complete, artifacts는 정확히 하나. 그 content는 SignalProposal JSON이다.
-필드: kind("{slot.kind}"), session_day("{slot.day}"), direction("long" 또는 "short"), confidence(50~90 정수),
-reasons(1~3개, 각 {{"text", "source_ids"}}), invalidation(틀렸다고 볼 조건), source_ids(인용한 모든 ID).
-artifact의 source_ids는 비워 둔다. ID는 JSON 안에만 쓴다.
-형식 예시(모양만 보이는 것이며 방향 제안이 아니다):
+필드: kind("{slot.kind}"), session_day("{slot.day}"), direction("long" 또는 "short"),
+reasons(1~3개, 각 {{"text", "points", "source_ids"}}), invalidation(틀렸다고 볼 조건), source_ids(인용한 모든 ID).
+confidence 필드는 쓰지 않는다. artifact의 source_ids는 비워 둔다. ID는 JSON 안에만 쓴다.
+형식 예시(모양만 보이는 것이며 방향이나 점수 제안이 아니다):
 {example}
 모든 근거는 승인된 source ID를 하나 이상 인용하고, 스냅샷 ID {source_id}는 항상 인용한다."""

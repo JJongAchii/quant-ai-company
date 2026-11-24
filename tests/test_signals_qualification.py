@@ -101,8 +101,8 @@ def test_refuses_a_database_that_is_not_local(script, tmp_path, url, no_database
 
 
 def proposal_answer(request):
-    content = json.dumps({"kind": "overnight", "session_day": str(MONDAY), "direction": "short", "confidence": 55,
-                          "reasons": [{"text": "아시아 지수가 약하다", "source_ids": [SOURCE]}],
+    content = json.dumps({"kind": "overnight", "session_day": str(MONDAY), "direction": "short",
+                          "reasons": [{"text": "아시아 지수가 약하다", "points": 10, "source_ids": [SOURCE]}],
                           "invalidation": "마감 동시호가에서 반등하면", "source_ids": [SOURCE]}, ensure_ascii=False)
     return ProviderResponse(request_id=request.request_id, decision=AgentDecision(
         status="complete", say="숏으로 봅니다.", artifacts=[ArtifactDraft(title="매매 신호", content=content)]))
