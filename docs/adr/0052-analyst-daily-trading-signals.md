@@ -46,6 +46,17 @@
 - **판단은 스레드에 답하는 Analyst(`market_brief`)가 한다.** 서비스는 신호 직전 시세를 시각과 함께 고정(스냅샷)해
   그 프로젝트의 승인된 자료로 넘긴다. 목록은 고정이고(미국 선물·SPY·EWY, 환율, 코스피·KODEX 200·코스닥, 오버나잇은 아시아 지수),
   모델이 늘릴 수 없다. 빠진 값은 빠졌다고 표시하며 추정하지 않는다. 장중 값이 20분 넘게 오래되면 "지연"으로 표시한다.
+  - **신호 턴의 모델은 Claude Fable 5.2(`claude-fable-5-2`, 노력 high)다.** 2026-11-24 소유자: "모델은 CODEX말고 claude 5.2 Fable
+    이면 좋겠다". 그 전에는 Analyst 배정(rev 6, Codex `gpt-6-astra` xhigh)을 그대로 썼다.
+  - 신호 업무를 만들 때 업무 자체의 모델 선택(`tasks.model_selection`)에 설정 `ANALYST_SIGNALS_MODEL`·`ANALYST_SIGNALS_EFFORT`를
+    넣는다. 모델 배정이 켜져 있으면(운영) 그 선택이 신호 턴의 모델이 된다. 신호 턴이 부르는 웹 검색도 같은 모델을 쓴다.
+  - Analyst의 스레드 답과 브리핑은 Analyst 배정(Codex)을 그대로 쓴다. 브리핑이 늦어지면 영상이 늦어지기 때문이다.
+  - 운영 CLI 2.1.280은 Fable을 `unrecognized_model`로 거절한다. 그래서 claude-runtime 이미지에 2.1.328을 `claude-next`로 하나 더
+    넣고, Fable 요청만 그 바이너리로 실행한다(정확한 버전과 구독 로그인을 사전 점검). 영상·Shorts·메일·직원은 2.1.280 그대로다.
+  - 구독(CLI)으로만 돈다. 회사 업무는 API 크레딧 레인을 쓰지 않는다. Fable이 막히면 Codex로 바꿔 부르지 않는다. 임시 신호가 먼저
+    나가고, Analyst 신호는 늦게 온다.
+  - Codex로 되돌리려면 운영자가 `runtime.env`에 `ANALYST_SIGNALS_MODEL=`(빈 값)을 넣는다. compose 기본값이 콜론 없는
+    `${ANALYST_SIGNALS_MODEL-claude-fable-5-2}`라서 빈 값이 유지된다.
 - **업무와 시간 제한.** 업무는 `kind='trading_signal'`, 우선순위 맨 앞(−100)이고 task_id가 신호마다 고정이라 두 번 생기지 않는다.
   - 진입 시각이 지난 신호 업무는 −50으로 낮춘다. 보내는 시각 전의 다른 신호가 먼저 돌고, 둘 다 다른 업무보다는 앞이다.
   - 도구를 쓰는 턴은 세 번까지이고 네 번째는 최종 답이다. `web_search` 두 번, `web_read` 네 번까지다.

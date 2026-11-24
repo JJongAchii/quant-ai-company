@@ -309,6 +309,12 @@ class SignalStore:
             task = self.company._new_task(conn, project, BRIEFER, instruction(slot, identity, text),
                                           task_id=slot_task_id(slot.day, slot.kind, project["revision"]),
                                           priority=PRIORITY, kind=SIGNAL_KIND)
+            settings = self.company.settings
+            if settings.analyst_signals_model:
+                # The signal turns alone run on this model; the Analyst's thread answers and briefing keep theirs.
+                conn.execute("UPDATE tasks SET model_selection=%s WHERE id=%s", (Jsonb(
+                    {"model": settings.analyst_signals_model, "reasoning_effort": settings.analyst_signals_effort,
+                     "source": "analyst_signals"}), task["id"]))
             conn.execute("""UPDATE trading_signals SET state=CASE WHEN state='scheduled' THEN 'asked' ELSE state END,
                 project_id=%s,task_id=%s,snapshot=%s,snapshot_source_id=%s,baselines=%s,updated_at=%s WHERE id=%s""",
                          (project["id"], task["id"], Jsonb(as_json(snapshot)), identity,

@@ -1,0 +1,140 @@
+{
+  "started_at": "2026-11-24T07:49:49.040674+00:00",
+  "state": "committed",
+  "kind": "overnight",
+  "real_model": true,
+  "slack_sender_constructed": false,
+  "database": {
+    "kind": "disposable database on a local PostgreSQL cluster",
+    "name": "company_signal_qualification_863a2bb573ca41df9a583f6657654664",
+    "dropped": true
+  },
+  "code_commit": "8f0b023e3d1da06acd6950b2eef3255890ad1705",
+  "uncommitted_code": true,
+  "edition": {
+    "sha256": "00e391500cdcf186134f3a610314fb67ce0c1208b63bb1623f0b13a073849745",
+    "characters": 236,
+    "synthetic": true
+  },
+  "turns": [
+    {
+      "sequence": 1,
+      "state": "completed",
+      "task_status": "completed",
+      "reason": null,
+      "turn_status": "completed",
+      "turn_error": null,
+      "tools": [],
+      "latency_seconds": 32.3
+    }
+  ],
+  "completed_model_turns": 1,
+  "provider_faults": [],
+  "proposal": {
+    "kind": "overnight",
+    "reasons": [
+      {
+        "text": "S&P 500 선물 +0.27%, 나스닥 100 선물 +0.22%(14:50 KST)로 미국 야간 방향이 소폭 우호적이다. 다만 폭이 작아 내일 시가를 직접 결정할 근거로는 약하다.",
+        "points": 4,
+        "source_ids": [
+          "signal:2026-11-24:overnight:snapshot"
+        ]
+      },
+      {
+        "text": "EWY +10.11%(06:00 KST 미국 종가)에 비해 KODEX 200 +7.84%, 코스피 +7.39%(14:40 지연)로 국내 현물이 그 폭을 다 따라가지 않았고 원/달러도 -0.14%로 안정적이다. 차이의 원인은 미확인이라 가설이다.",
+        "points": 3,
+        "source_ids": [
+          "signal:2026-11-24:overnight:snapshot"
+        ]
+      },
+      {
+        "text": "하루 +7.39% 급등 직후이고 SPY도 전일 +4.71% 오른 뒤라 야간 되돌림·차익실현 시 갭 하락 위험이 크다. 항셍 -0.38%로 아시아 전체가 한 방향도 아니며 급등 원인을 뉴스로 확인하지 못했다.",
+        "points": -3,
+        "source_ids": [
+          "signal:2026-11-24:overnight:snapshot"
+        ]
+      }
+    ],
+    "direction": "long",
+    "confidence": 54,
+    "source_ids": [
+      "signal:2026-11-24:overnight:snapshot"
+    ],
+    "session_day": "2026-11-24",
+    "invalidation": "미국 정규장에서 S&P 500·나스닥 100 선물이 14:50 KST 수준(7273.75, 26867.50) 아래로 밀려 하락 마감하거나 EWY가 하락 마감하면 롱 근거가 무효다. 11월 25일 코스피 시가가 24일 종가보다 낮으면 틀린 것이다."
+  },
+  "posts": [
+    {
+      "text": "🌙 오버나잇 신호 · 11월 24일(화) 종가 15:30 진입 → 11월 25일(수) 시가 09:00 청산\n롱 · 확신도 54% (반반 50%에 오늘 근거 +4%p)\n근거\n1. S&P 500 선물 +0.27%, 나스닥 100 선물 +0.22%(14:50 KST)로 미국 야간 방향이 소폭 우호적이다. 다만 폭이 작아 내일 시가를 직접 결정할 근거로는 약하다. (+4%p)\n2. EWY +10.11%(06:00 KST 미국 종가)에 비해 KODEX 200 +7.84%, 코스피 +7.39%(14:40 지연)로 국내 현물이 그 폭을 다 따라가지 않았고 원/달러도 -0.14%로 안정적이다. 차이의 원인은 미확인이라 가설이다. (+3%p)\n3. 하루 +7.39% 급등 직후이고 SPY도 전일 +4.71% 오른 뒤라 야간 되돌림·차익실현 시 갭 하락 위험이 크다. 항셍 -0.38%로 아시아 전체가 한 방향도 아니며 급등 원인을 뉴스로 확인하지 못했다. (-3%p)\n틀렸다고 볼 조건: 미국 정규장에서 S&P 500·나스닥 100 선물이 14:50 KST 수준(7273.75, 26867.50) 아래로 밀려 하락 마감하거나 EWY가 하락 마감하면 롱 근거가 무효다. 11월 25일 코스피 시가가 24일 종가보다 낮으면 틀린 것이다.\n기준 시세 15:00 · 코스피 +7.4% · S&P 500 선물 7,273.75(14:50) · 원/달러 1,342.46(14:59) · 닛케이 225 +4.2%",
+      "outbox_status": "pending"
+    }
+  ],
+  "model": "claude-fable-5-2",
+  "reasoning_effort": "high",
+  "provider": "claude",
+  "session_day": "2026-11-24",
+  "clock": {
+    "simulated_start": "2026-11-24T06:00:00+00:00",
+    "real_start": "2026-11-24T07:49:51.233197+00:00",
+    "tools_until": "2026-11-24T06:07:00+00:00",
+    "send_at": "2026-11-24T06:15:00+00:00",
+    "entry_at": "2026-11-24T06:30:00+00:00",
+    "exit_at": "2026-11-25T00:00:00+00:00"
+  },
+  "snapshot": {
+    "origin": "file",
+    "observed_at": "2026-11-24T06:00:11.959997+00:00",
+    "quotes": [
+      "es",
+      "ewy",
+      "hsi",
+      "kodex200",
+      "kosdaq",
+      "kospi",
+      "n225",
+      "nq",
+      "shanghai",
+      "spy",
+      "usdkrw"
+    ],
+    "errors": {},
+    "receipts": {
+      "es": "0434b73e5705c29a470fac32e714b09b48f5ca198c98ec4d112a0f6e9f9fe70b",
+      "nq": "66be7a790b6e351a74244e663d2756554c5430d9bde2c5fcbe3b33a0d0d13203",
+      "ewy": "4a45f4d5d591cd840ecf8750c46fa8f7c5afdadd7c2d5d138de5d4b686796dc9",
+      "hsi": "72c4ab9ddfc4b7ad1f31827f11f49120e5ae5c0f8493c35c65041bbeeef12a02",
+      "spy": "347a509e7ac46268d01f10b79e16f699061e682c4e41cdd157a4ade5cde15aee",
+      "n225": "4aa8da4ab88114b602c415e365003f54ad55556717527b24b8e28de2e0830f5e",
+      "kospi": "7de73282ec7a954bebf9c6312175b3479ff6a2b742d56b3427fefe5b4f6b6a18",
+      "kosdaq": "308d3a6ac44f3a8af0b99b776eae5d121a0634e6b41b53e373636c0afd59277b",
+      "usdkrw": "dafc178e2fead2e46b92c0d454bb8750a70911b9ec199ff1bf14c7fa41172343",
+      "kodex200": "1c1adc3bdf924461cfc6373b3dd2e71a4fbecab46e563dc32e1ae1419ab5bf19",
+      "shanghai": "deb4289aa08e8ba18500213274f7a1254b6572ae92fd3ffc7efd65395124425d"
+    },
+    "text": "S&P 500 선물 | 7273.75 | 원천 14:50 KST | 전일 대비 +0.27%\n나스닥 100 선물 | 26867.50 | 원천 14:50 KST | 전일 대비 +0.22%\nEWY | 135.72 | 원천 06:00 KST | 전일 대비 +10.11%\n항셍 | 22297.78 | 원천 14:45 KST | 전일 대비 -0.38%\nSPY | 722.29 | 원천 06:00 KST | 전일 대비 +4.71%\n닛케이 225 | 58815.48 | 원천 14:45 KST | 전일 대비 +4.22%\n코스피 | 5056.27 | 원천 14:40 KST | 전일 대비 +7.39% | 지연\n코스닥 | 669.97 | 원천 14:40 KST | 전일 대비 +5.43% | 지연\n원/달러 | 1342.46 | 원천 14:59 KST | 전일 대비 -0.14%\nKODEX 200 | 79555.00 | 원천 14:40 KST | 전일 대비 +7.84% | 지연\n상하이종합 | 3555.81 | 원천 14:45 KST | 전일 대비 +0.48%"
+  },
+  "timing": "on_time",
+  "committed_at": "2026-11-24 06:00:32.469062+00:00",
+  "format_failures": 0,
+  "unparsed": false,
+  "last_error": null,
+  "task": {
+    "status": "completed",
+    "error": null,
+    "turn_count": 1
+  },
+  "signal_notes": [],
+  "web_requests": [],
+  "answers": [],
+  "completed_at": "2026-11-24T07:50:23.769277+00:00",
+  "notes": [
+    "Provider: ClaudeRunner with the signal model's CLI on the local Claude subscription login (the CLI's default login, not the runtime's isolated CLAUDE_CONFIG_DIR), no API credentials; its job receipts were kept outside the repository.",
+    "1 model turn(s) completed.",
+    "A disposable database on a local PostgreSQL cluster was created for this run and dropped afterwards; production, its database and its host were not touched.",
+    "The Slack sender (SlackOutbox) was never constructed: the posts listed exist only as undispatched outbox rows of the disposable database.",
+    "The signals clock started at the slot's snapshot time and advanced in real time, so the tool cutoff and the on-time/late timing reflect the real latency. Grading, the interim post and the scorecard were not run.",
+    "The snapshot was loaded from a file.",
+    "The edition text is synthetic test text, not a published edition.",
+    "The proposal is a model output for a contract and latency check, not a trading recommendation."
+  ]
+}
