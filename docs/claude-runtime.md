@@ -102,6 +102,12 @@ Max 20x 구독자에게 주는 월 $200 API 크레딧(Console 조직에 들어�
   CLI 칸을 기다리지 않는다([ADR 0051](adr/0051-editorial-desk-on-claude-slots.md),
   [ADR 0053](adr/0053-email-own-claude-slot.md)). CLI가 최대 일곱 동시에 돌므로(브리핑이 Codex인 동안은 여섯)
   `CLAUDE_MEMORY_LIMIT=2048m`이다.
+- Analyst 매매 신호는 2026-11-24부터 Claude Fable 5.2(`claude-fable-5-2`)로 돈다([ADR 0052](adr/0052-analyst-daily-trading-signals.md)).
+  - 고정한 CLI 2.1.280은 이 모델을 `unrecognized_model`로 거절한다. 그래서 이미지에 2.1.328을 `/usr/local/bin/claude-next`로 하나
+    더 넣는다. 리눅스 x86_64 바이너리 SHA-256까지 고정한다.
+  - Fable 요청만 그 바이너리로 실행한다(`claude_runner.cli`). 사전 점검도 그 바이너리의 정확한 버전(2.1.328)과 구독 로그인을 본다.
+  - 영상·Shorts·메일·직원은 지금처럼 2.1.280을 쓴다. 로그인 디렉터리(`CLAUDE_CONFIG_DIR`)와 회사 업무 칸(`.runtime-company.lock`)은
+    같다.
 - CLI가 알려 주는 구독 사용률(`rate_limit_event`)은 마지막 값만 `jobs/.subscription.json`에 남는다. 숫자와 짧은 코드뿐이다.
   호스트 수집기가 읽어 `상태`의 'Claude 구독' 줄과 80%·95%·한도 거절 경보가 된다.
 - 메일은 2026-11-20부터 영상에 칸을 양보하지 않는다(자기 칸이 있으므로 `yield_to_video`를 없앴다). 대체 글로 바뀐

@@ -13,6 +13,15 @@ RUN npm install --global --omit=dev @anthropic-ai/claude-code@2.1.280 \
     && echo '1e08503dbdf3c2cb0d706d32f3408277388d1c76ef108673e8fe42c1b322925b  /claude' | sha256sum -c - \
     && /claude --version | grep -Fx '2.1.280 (Claude Code)'
 
+# Fable 5.2 (the Analyst's trading signals, 2026-11-24) is unknown to 2.1.280 (unrecognized_model). Only Fable turns run
+# on this binary (claude_runner.cli); every other Claude turn keeps the 2.1.280 it was qualified on. The digest is the
+# linux-x64 binary of @anthropic-ai/claude-code-linux-x64@2.1.328, which the postinstall copies to bin/claude.exe.
+FROM node:22-bookworm-slim@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5 AS claude-next-dist
+RUN npm install --global --omit=dev @anthropic-ai/claude-code@2.1.328 \
+    && install -m 0755 "$(readlink -f /usr/local/bin/claude)" /claude-next \
+    && echo 'a982d38030b97e750848add2cbb2df6d9a70d5544a22ca9b216a349ba25865e8  /claude-next' | sha256sum -c - \
+    && /claude-next --version | grep -Fx '2.1.328 (Claude Code)'
+
 FROM ghcr.io/astral-sh/uv:0.11.28@sha256:0f36cb9361a3346885ca3677e3767016687b5a170c1a6b88465ec14aefec90aa AS uv-dist
 
 # Python, the locked dependencies and the quant-data package; no company source yet.
@@ -100,6 +109,7 @@ CMD ["uvicorn", "quant_company.providers.codex_runtime:app", "--host", "0.0.0.0"
 
 FROM base AS claude-tools
 COPY --from=claude-dist /claude /usr/local/bin/claude
+COPY --from=claude-next-dist /claude-next /usr/local/bin/claude-next
 
 FROM claude-tools AS claude
 COPY src ./src

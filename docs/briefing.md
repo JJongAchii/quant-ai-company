@@ -476,6 +476,10 @@ KRX 정규장 날마다 Analyst가 소유자에게 두 신호를 보낸다([ADR 
 CI 통과 main이 릴리스된 뒤 운영자에게 main SHA와 `ANALYST_SIGNALS_ENABLED=true`를 넘긴다. 렌더 이미지, 새 서비스, 호스트 유닛은 필요 없다.
 호스트를 직접 고치지 않는다.
 
+신호 턴의 모델은 `ANALYST_SIGNALS_MODEL`(기본 `claude-fable-5-2`)과 `ANALYST_SIGNALS_EFFORT`(기본 `high`)다. 빈 값
+`ANALYST_SIGNALS_MODEL=`이면 Analyst 배정(Codex)으로 돈다. Analyst의 스레드 답과 브리핑은 이 설정과 상관없이 Analyst 배정을 쓴다.
+Fable은 claude-runtime 이미지의 두 번째 CLI(`claude-next`, 2.1.328)로만 돈다([Claude runtime](claude-runtime.md)).
+
 **주의:** `ANALYST_SIGNALS_ENABLED=true`인 채로 `BRIEFING_PUBLISH_ENABLED`나 `BRIEFING_ENABLED`를 끄면 Settings 검증
 ("Analyst signals require an enabled publishing briefing")이 실패해 `x-db-env`를 쓰는 모든 서비스가 시작하지 못한다. 브리핑 게시를
 끄려면 먼저(또는 같은 운영자 요청에서) `ANALYST_SIGNALS_ENABLED=false`로 신호를 끈다.

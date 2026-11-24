@@ -27,11 +27,14 @@ from ..staff.review_contract import REVIEW_MODEL, IndependentReview
 from .claude_api import API_VERSION, PRICES, ApiNotExecuted, Budget, call, cost_usd, read_key, reservation_usd
 from .claude_company import company_request
 from .codex_runner import ProcessRunner, atomic_json, request_digest, strict_json
-from .routing import own_lane
+from .routing import CLAUDE_FABLE, own_lane
 
 LOG = logging.getLogger(__name__)
 
 CLI_VERSION = "2.1.280"
+# CLI 2.1.280 refuses claude-fable-5-2 (unrecognized_model). Only Fable turns run on this newer binary, so the episode,
+# the Shorts, the email and staff keep the CLI they were qualified on (2026-11-24, deploy/Dockerfile claude-next-dist).
+FABLE_CLI_VERSION = "2.1.328"
 MAX_OUTPUT = 1024 * 1024
 # A max-effort episode streams its whole reasoning (about 1 MB already for a passing plan); only the result is kept.
 VIDEO_MAX_OUTPUT = 32 * 1024 * 1024
@@ -50,6 +53,7 @@ class ClaudeConfig:
     auth_dir: Path
     jobs_dir: Path
     binary: str = "claude"
+    fable_binary: str = "claude-next"
     timeout_seconds: float = 300
     usage_credits_disabled_confirmed: bool = False
     # A full max-effort episode plan from the delivered brief exceeds the short explanation-review budget.
@@ -237,10 +241,20 @@ def cli_schema(request):
     return output_schema(request)[0].model_json_schema()
 
 
+def cli_version(model) -> str:
+    """The exact CLI version a request of model runs on."""
+    return FABLE_CLI_VERSION if model == CLAUDE_FABLE else CLI_VERSION
+
+
+def cli(config, model) -> tuple[str, str]:
+    """The binary and the exact CLI version a request of model runs on."""
+    return (config.fable_binary if model == CLAUDE_FABLE else config.binary), cli_version(model)
+
+
 def command(config, request):
     # Requests frozen before explicit effort support used high; never reinterpret their identity.
     effort = request.reasoning_effort or "high"
-    return [config.binary, "-p", "--safe-mode", "--model", request.model, "--effort", effort,
+    return [cli(config, request.model)[0], "-p", "--safe-mode", "--model", request.model, "--effort", effort,
             "--tools", "WebSearch" if request.web_search and company_request(request) else "",
             "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
             "--disable-slash-commands", "--setting-sources", "", "--permission-mode", "dontAsk",
@@ -359,7 +373,8 @@ def parse_result(request, output):
                 raise ValueError("Invalid token count")
             counts[name] = value
         # total_cost_usd is a client-side API-equivalent estimate, not a subscription bill.
-        counts.update(actual_model=request.model, cli_version=CLI_VERSION, effort=request.reasoning_effort or "high",
+        counts.update(actual_model=request.model, cli_version=cli_version(request.model),
+                      effort=request.reasoning_effort or "high",
                       effort_evidence="requested_cli_argument_not_provider_attested",
                       billing_mode="subscription", account_usage_credits_disabled_owner_confirmed=True)
         if attempts:
@@ -468,12 +483,13 @@ class ClaudeRunner:
             raise ProviderFault("uncertain", "The durable Claude receipt could not be verified.")
         return receipt
 
-    async def _preflight(self, cwd, env):
+    async def _preflight(self, cwd, env, model):
         options = dict(cwd=cwd, env=env, timeout_seconds=20, max_stdout_bytes=65536, max_stderr_bytes=65536)
-        version = await self.process.run([self.config.binary, "--version"], **options)
-        if version.returncode != 0 or version.stdout.strip() != f"{CLI_VERSION} (Claude Code)".encode():
+        binary, expected = cli(self.config, model)
+        version = await self.process.run([binary, "--version"], **options)
+        if version.returncode != 0 or version.stdout.strip() != f"{expected} (Claude Code)".encode():
             raise ProviderFault("unavailable", "The validated Claude CLI version is required.")
-        auth = await self.process.run([self.config.binary, "auth", "status"], **options)
+        auth = await self.process.run([binary, "auth", "status"], **options)
         try:
             status = strict_json(auth.stdout)
             if (auth.returncode != 0 or status.get("loggedIn") is not True
@@ -767,7 +783,7 @@ class ClaudeRunner:
             env = environment(self.config, self.source)
             with tempfile.TemporaryDirectory(prefix=".review-", dir=directory) as temporary:
                 cwd = Path(temporary)
-                await self._preflight(cwd, env)
+                await self._preflight(cwd, env, request.model)
                 # Cancellation, or an API turn of this ID from elsewhere, can arrive during the preflight.
                 cached = self._cached(path, digest, request.request_id, locked=True)
                 if cached:
@@ -775,7 +791,8 @@ class ClaudeRunner:
                 # Read the history now, so the running receipt never drops an attempt recorded meanwhile.
                 attempts = attempts_of(self._receipt(path))
                 receipt = {"provider": "claude", "request_id": request.request_id, "input_digest": digest,
-                           "state": "running", "started_at": time.time(), "cli_version": CLI_VERSION,
+                           "state": "running", "started_at": time.time(),
+                           "cli_version": cli_version(request.model),
                            "requested_execution": {"model": request.model,
                                                    "reasoning_effort": request.reasoning_effort or "high"},
                            "backend": "subscription", "attempts": attempts}

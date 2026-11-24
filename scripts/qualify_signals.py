@@ -25,6 +25,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from contextlib import contextmanager, nullcontext
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
@@ -200,10 +201,12 @@ def git(*args) -> str | None:
 
 async def qualify(*, admin: str | None, kind: str, edition: str, output: Path, live: bool, snapshot: dict | None = None,
                   fetch_snapshot: bool = False, day: date | None = None, provider=None, jobs_dir: Path | None = None,
-                  codex_bin: str = "codex", timeout_seconds: int = 960, synthetic_edition: bool = False) -> dict:
+                  codex_bin: str = "codex", timeout_seconds: int = 960, synthetic_edition: bool = False,
+                  claude_bin: str | None = None) -> dict:
     """Run one signal on the real path and write the receipt to output. Refused (before anything is created) without
     live, without a local cluster or without exactly one snapshot of the kind. provider replaces the CodexRunner in
-    tests; the receipt then says no real model was called."""
+    tests; the receipt then says no real model was called. claude_bin runs the signal model of the settings
+    (ANALYST_SIGNALS_MODEL, Fable) on ClaudeRunner with that CLI, as production does for signal turns."""
     if not live:
         raise Refused("qualification_requires_live")
     admin = local_admin(admin)
@@ -230,7 +233,14 @@ async def qualify(*, admin: str | None, kind: str, edition: str, output: Path, l
         company = Company(settings_for(make_conninfo(**connection)))
         company.db.migrate()
         role = company.role(BRIEFER)
-        receipt.update(model=role.model, reasoning_effort=role.reasoning_effort)
+        if claude_bin:
+            # Model assignments are off in this company, so the signal task's own selection is not read: the Analyst
+            # role carries the signal model instead, which is what production's selection gives a signal turn.
+            role = role.model_copy(update={"model": company.settings.analyst_signals_model,
+                                           "reasoning_effort": company.settings.analyst_signals_effort})
+            company.roles[BRIEFER] = role
+        receipt.update(model=role.model, reasoning_effort=role.reasoning_effort,
+                       provider="claude" if claude_bin else "codex")
         slot = pick_slot(kind, day, real_now(), schedule.overrides(company.settings))
         clock = SignalsClock(slot.snapshot_at)
         if fetch_snapshot:
@@ -252,6 +262,9 @@ async def qualify(*, admin: str | None, kind: str, edition: str, output: Path, l
         with company.db.transaction() as conn:
             task_id = str(conn.execute("SELECT task_id FROM trading_signals WHERE id=%s", (identity,)
                                        ).fetchone()["task_id"])
+        if provider is None and claude_bin:
+            provider = local_claude_runner(claude_bin, jobs_dir, timeout_seconds)
+            receipt["real_model"] = True
         if provider is None:
             from quant_company.providers.codex_runner import CodexRunner, RunnerConfig
 
@@ -259,7 +272,8 @@ async def qualify(*, admin: str | None, kind: str, edition: str, output: Path, l
                 codex_home=Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))),
                 jobs_dir=jobs_dir or Path(tempfile.mkdtemp(prefix="signal-qualification-codex-")),
                 codex_bin=codex_bin, timeout_seconds=timeout_seconds))
-        receipt["turns"] = await run_signal(company, TurnExecutor(company, FaultLog(provider, faults)), task_id)
+        with local_claude_login() if claude_bin else nullcontext():
+            receipt["turns"] = await run_signal(company, TurnExecutor(company, FaultLog(provider, faults)), task_id)
         receipt["completed_model_turns"] = sum(turn["state"] == "completed" for turn in receipt["turns"])
         found = evidence(company, identity)
         slot_row = found["slot"]
@@ -288,12 +302,53 @@ async def qualify(*, admin: str | None, kind: str, edition: str, output: Path, l
     return as_json(receipt)
 
 
+def local_claude_runner(claude_bin: str, jobs_dir: Path | None, timeout_seconds: int):
+    """ClaudeRunner as the Claude runtime builds it, with claude_bin as the Fable CLI. Run it inside
+    local_claude_login()."""
+    from quant_company.providers.claude_runner import ClaudeConfig, ClaudeRunner
+
+    return ClaudeRunner(ClaudeConfig(
+        auth_dir=Path.home() / ".claude", jobs_dir=jobs_dir or Path(tempfile.mkdtemp(prefix="signal-qualification-claude-")),
+        fable_binary=claude_bin, timeout_seconds=min(timeout_seconds, 600), usage_credits_disabled_confirmed=True))
+
+
+@contextmanager
+def local_claude_login():
+    """While it is open, the CLI keeps its default login: the runtime points it at its isolated login
+    (CLAUDE_CONFIG_DIR), and on macOS the default login is found in the keychain by USER. The rest of the environment,
+    the exact-version and subscription preflight and the command are production's."""
+    from quant_company.providers import claude_runner
+
+    original = claude_runner.environment
+
+    def environment(config, source):
+        result = original(config, source)
+        result.pop("CLAUDE_CONFIG_DIR", None)
+        if source.get("USER"):
+            result["USER"] = source["USER"]
+        return result
+
+    claude_runner.environment = environment
+    try:
+        yield
+    finally:
+        claude_runner.environment = original
+
+
 def notes(receipt: dict) -> list[str]:
     completed, faults = receipt["completed_model_turns"], receipt["provider_faults"]
     stop = f": the provider raised {faults[0]['code']} ({faults[0]['message']})" if faults else ""
+    if not receipt["real_model"]:
+        provider = "Injected provider: no real model was called."
+    elif receipt.get("provider") == "claude":
+        provider = ("Provider: ClaudeRunner with the signal model's CLI on the local Claude subscription login (the CLI's "
+                    "default login, not the runtime's isolated CLAUDE_CONFIG_DIR), no API credentials; its job receipts "
+                    "were kept outside the repository.")
+    else:
+        provider = ("Provider: CodexRunner on the local ChatGPT login (CODEX_HOME), no API credentials; its job receipts "
+                    "were kept outside the repository.")
     return [
-        ("Provider: CodexRunner on the local ChatGPT login (CODEX_HOME), no API credentials; its job receipts were "
-         "kept outside the repository.") if receipt["real_model"] else "Injected provider: no real model was called.",
+        provider,
         f"{completed} model turn(s) completed." if completed else f"No model turn completed{stop}.",
         "A disposable database on a local PostgreSQL cluster was created for this run and "
         + ("dropped afterwards" if receipt["database"]["dropped"] else "NOT dropped (see error)")
@@ -324,6 +379,8 @@ def main(argv=None):
     parser.add_argument("--database-url", help="Admin URL of a local cluster (default: TEST_DATABASE_URL)")
     parser.add_argument("--jobs-dir", type=Path, help="Codex job receipts (default: a new temporary directory)")
     parser.add_argument("--codex-bin", default="codex", help="The validated Codex CLI (providers/codex_release.json)")
+    parser.add_argument("--claude-bin", help="Run the signal model (ANALYST_SIGNALS_MODEL) on this Claude CLI "
+                        "(claude_runner.FABLE_CLI_VERSION for Fable) instead of Codex")
     parser.add_argument("--timeout-seconds", type=int, default=960)
     args = parser.parse_args(argv)
     if not args.live:
@@ -334,7 +391,8 @@ def main(argv=None):
         receipt = asyncio.run(qualify(
             admin=args.database_url, kind=args.kind, edition=args.edition.read_text(), output=args.output.resolve(),
             live=True, snapshot=snapshot, fetch_snapshot=args.fetch_snapshot, day=args.day, jobs_dir=args.jobs_dir,
-            codex_bin=args.codex_bin, timeout_seconds=args.timeout_seconds, synthetic_edition=args.synthetic_edition))
+            codex_bin=args.codex_bin, timeout_seconds=args.timeout_seconds, synthetic_edition=args.synthetic_edition,
+            claude_bin=args.claude_bin))
     except Refused as exc:
         print(json.dumps({"state": "refused", "error": str(exc)}))
         raise SystemExit(2) from None

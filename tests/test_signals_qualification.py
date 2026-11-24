@@ -163,3 +163,19 @@ def test_records_a_model_fault(script, tmp_path, admin, no_slack):
     assert receipt["completed_model_turns"] == 0
     assert any(note.startswith("No model turn completed: the provider raised unavailable") for note in receipt["notes"])
     assert dropped(admin, receipt)
+
+
+def test_local_claude_login_only_while_the_run_is_open(script, tmp_path):
+    """The Fable qualification keeps the CLI's default login (no CLAUDE_CONFIG_DIR; USER finds the macOS keychain) and
+    leaves the runner's production environment untouched afterwards."""
+    from quant_company.providers import claude_runner
+
+    config = claude_runner.ClaudeConfig(tmp_path / "auth", tmp_path / "jobs", usage_credits_disabled_confirmed=True)
+    source = {"PATH": "/usr/bin", "HOME": "/home/x", "USER": "x", "SECRET": "kept out"}
+    with script.local_claude_login():
+        local = claude_runner.environment(config, source)
+    assert "CLAUDE_CONFIG_DIR" not in local and local["USER"] == "x" and "SECRET" not in local
+    after = claude_runner.environment(config, source)
+    assert after["CLAUDE_CONFIG_DIR"] == str((tmp_path / "auth").resolve()) and "USER" not in after
+    runner = script.local_claude_runner("/opt/claude-next", tmp_path / "jobs", 960)
+    assert (runner.config.fable_binary, runner.config.timeout_seconds) == ("/opt/claude-next", 600)

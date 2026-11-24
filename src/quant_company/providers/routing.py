@@ -8,9 +8,12 @@ from ..contracts import ProviderFault
 CLAUDE_MODEL = "claude-opus-5-5"
 # News screening and Quant Scout run on Sonnet; the briefing, the news desk, the video and staff on Opus (2026-11-17).
 CLAUDE_SONNET = "claude-sonnet-5-5"
-CLAUDE_MODEL_IDS = frozenset({CLAUDE_MODEL, CLAUDE_SONNET})
+# The Analyst's trading signals run on Fable (owner, 2026-11-24). It needs a newer CLI than the one every other Claude
+# turn runs on, so the runner gives Fable its own binary (claude_runner.cli).
+CLAUDE_FABLE = "claude-fable-5-2"
+CLAUDE_MODEL_IDS = frozenset({CLAUDE_MODEL, CLAUDE_SONNET, CLAUDE_FABLE})
 CLAUDE_MODELS = [{"model": model, "reasoning_efforts": ["low", "medium", "high", "xhigh", "max"]}
-                 for model in (CLAUDE_MODEL, CLAUDE_SONNET)]
+                 for model in (CLAUDE_MODEL, CLAUDE_SONNET, CLAUDE_FABLE)]
 
 
 def is_claude(model):

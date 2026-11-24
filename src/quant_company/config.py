@@ -175,6 +175,10 @@ class Settings(BaseSettings):
     # Only the 15:30 regular-session close is supported; the after-market (16:00~20:00) basis is not.
     briefing_kr_close_basis: str = "regular"
     analyst_signals_enabled: bool = False
+    # The model of the signal turns alone (owner, 2026-11-24: Fable, not Codex); "" keeps the Analyst's own binding.
+    # It applies while model assignments are on (model_policy.selection reads a task's own selection then).
+    analyst_signals_model: str = "claude-fable-5-2"
+    analyst_signals_effort: str = "high"
     tech_feed_enabled: bool = False
     tech_feed_publish_enabled: bool = False
     tech_feed_dedicated_worker: bool = False
@@ -272,6 +276,12 @@ class Settings(BaseSettings):
             raise ValueError("Model assignments require owner-selected account control")
         if self.analyst_signals_enabled and not (self.briefing_enabled and self.briefing_publish_enabled):
             raise ValueError("Analyst signals require an enabled publishing briefing")
+        from .providers.routing import CLAUDE_MODEL_IDS
+
+        if self.analyst_signals_model not in {"", *CLAUDE_MODEL_IDS}:
+            raise ValueError("Analyst signals model must be a Claude model or empty")
+        if self.analyst_signals_effort not in {"low", "medium", "high", "xhigh", "max"}:
+            raise ValueError("Analyst signals effort is invalid")
         if self.video_enabled and not (self.briefing_enabled and self.briefing_publish_enabled):
             raise ValueError("Video requires an enabled publishing briefing source")
         if self.video_render_backend == "remote" and not (
