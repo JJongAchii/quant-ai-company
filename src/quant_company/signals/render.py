@@ -82,7 +82,7 @@ def analyst_post(slot: Slot, proposal: SignalProposal, snapshot: dict, *, late_a
             head += f" · {AFTER_ENTRY}"
         first = [head, window(slot)]
     lines = [*first, f"{DIRECTION_WORDS[proposal.direction]} · 확신도 {proposal.confidence}% "
-                     f"(과거 기준 {proposal.base_rate}% · 근거 {proposal.evidence_points:+d}%p)", "근거"]
+                     f"(반반 50%에 오늘 근거 {proposal.evidence_points:+d}%p)", "근거"]
     lines += [f"{n}. {reason.text} ({reason.points:+d}%p)" for n, reason in enumerate(proposal.reasons, 1)]
     lines += [f"틀렸다고 볼 조건: {proposal.invalidation}", quote_line(slot, snapshot)]
     return "\n".join(lines)

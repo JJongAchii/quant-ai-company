@@ -98,14 +98,14 @@ def test_on_time_commit_posts_once(signals, clock):  # noqa: F811
     assert signals.commit_turn(turn, response) == {"state": "completed", "task_status": "completed", "duplicate": False}
     assert signals.commit_turn(turn, response) == {"state": "completed", "duplicate": True}
     [post] = posts(signals)
-    assert post["text"].startswith("📈 장중 신호 · 11월 16일(월)  시가 09:00 진입 → 종가 15:30 청산\n롱 · 확신도 60% (과거 기준 50% · 근거 +10%p)\n")
+    assert post["text"].startswith("📈 장중 신호 · 11월 16일(월)  시가 09:00 진입 → 종가 15:30 청산\n롱 · 확신도 60% (반반 50%에 오늘 근거 +10%p)\n")
     assert (str(post["id"]), post["author"], post["agent"], post["status"]) == (
         stable(f"trading-signal-post:{TASK}:analyst"), BRIEFER, BRIEFER, "pending")
     row = signal(signals)
     assert (row["state"], row["timing"], row["committed_at"], str(row["analyst_message_id"])) == (
         "committed", "on_time", clock["at"], str(post["id"]))
     stored = SignalProposal.model_validate(proposal(session_day=str(MONDAY))).model_dump(mode="json")
-    assert row["proposal"] == {**stored, "base_rate": 50, "confidence": 60}  # the computed values are kept with it
+    assert row["proposal"] == {**stored, "confidence": 60}  # the computed confidence is kept with it
     task = one(signals, "SELECT status,result FROM tasks WHERE id=%s", TASK)
     assert (task["status"], task["result"]) == ("completed", response.decision.say)
     assert one(signals, "SELECT status,response FROM turns WHERE id=%s", turn) == {
@@ -342,7 +342,7 @@ def test_late_commit_after_interim_post(signals, clock):  # noqa: F811
     signals.commit_turn(turn, answer(turn, proposal(session_day=str(MONDAY), direction="short")))
     [post] = posts(signals)
     assert post["text"].split("\n")[:3] == [
-        "📈 장중 신호 · 늦음 08:41 · 임시 신호와 반대", "시가 09:00 진입 → 종가 15:30 청산", "숏 · 확신도 60% (과거 기준 50% · 근거 +10%p)"]
+        "📈 장중 신호 · 늦음 08:41 · 임시 신호와 반대", "시가 09:00 진입 → 종가 15:30 청산", "숏 · 확신도 60% (반반 50%에 오늘 근거 +10%p)"]
     row = signal(signals)
     assert (row["state"], row["timing"], row["committed_at"]) == ("committed_late", "late", clock["at"])
 
@@ -358,7 +358,7 @@ def test_commit_after_entry_and_after_exit(signals, clock):  # noqa: F811
     signals.commit_turn(intraday, answer(intraday))
     [post] = posts(signals)
     assert post["text"].split("\n")[:3] == [
-        "📈 장중 신호 · 늦음 09:05 · 진입 뒤(채점 제외)", "시가 09:00 진입 → 종가 15:30 청산", "롱 · 확신도 60% (과거 기준 50% · 근거 +10%p)"]
+        "📈 장중 신호 · 늦음 09:05 · 진입 뒤(채점 제외)", "시가 09:00 진입 → 종가 15:30 청산", "롱 · 확신도 60% (반반 50%에 오늘 근거 +10%p)"]
     assert (signal(signals)["state"], signal(signals)["timing"]) == ("committed_late", "after_entry")
     # A turn that started before the exit (the next session's open) and commits after it is recorded, not posted.
     clock["at"] = datetime(2026, 11, 17, 8, 59, tzinfo=KST)
@@ -619,8 +619,8 @@ def test_parse_proposal_reasons():
         (ANSWER_SHAPE, cited_artifact),
         ("invalid_json: Expecting value", not_json),
         ("invalid_proposal: confidence: Extra inputs are not permitted", answer("t", {**valid, "confidence": 60})),
-        ("invalid_proposal: proposal: Value error, confidence 49 = base 50 -1 points: below 50 means the other "
-         "direction is likelier; change the direction or the points",
+        ("invalid_proposal: proposal: Value error, points sum -1: the reasons favour the other direction; change "
+         "the direction or the points",
          answer("t", {**valid, "reasons": [{**valid["reasons"][0], "points": -1}]})),
         ("wrong_slot: expected intraday 2026-11-16", answer("t", proposal(session_day="2026-11-13"))),
         ("unapproved_sources: lake:unknown", answer("t", {**valid, "source_ids": [SOURCE, "lake:unknown"]})),

@@ -18,11 +18,12 @@ MAX_FORMAT_RETRIES = 2
 MAX_FAULT_RETRIES = 2
 FAULT_RETRY_MINUTES = 5
 FALLBACK_DIRECTION = "long"
-# Owner 2026-11-24: the confidence is computed, not picked. It is the past hit rate of the chosen direction (fixed with
-# the baselines before any result) plus the points the Analyst gives each reason. Intraday long hit 48.6% (KOSPI) and
-# 49.9% (KODEX 200), so even; overnight long hit 59.4% (KOSPI).
-BASE_RATES = {"intraday": {"long": 50, "short": 50}, "overnight": {"long": 59, "short": 41}}
-MAX_REASON_POINTS = 10
+# Owner 2026-11-24: the call and its confidence come from the day's situation and evidence, never from past hit rates.
+# The confidence is the chance that today's call is right: even (50) plus the points the Analyst gives each of today's
+# reasons, computed by the service so it is never a picked number.
+EVEN_CONFIDENCE = 50
+MAX_REASON_POINTS = 15
+MAX_CONFIDENCE = 90
 
 
 @dataclass(frozen=True)
@@ -41,14 +42,14 @@ class Slot:
 
 class SignalReason(StrictModel):
     text: str = Field(min_length=1, max_length=200)
-    # How many percentage points this reason moves the chance that the chosen direction is right; against it < 0.
+    # How many percentage points this reason of today moves the chance that the call is right; against the call < 0.
     points: StrictInt = Field(ge=-MAX_REASON_POINTS, le=MAX_REASON_POINTS)
     source_ids: list[str] = Field(min_length=1, max_length=5)
 
 
 class SignalProposal(StrictModel):
-    """The Analyst's answer. It has no confidence field: the service computes it (base_rate + evidence_points), and
-    a direction whose computed confidence is below 50 is a format error, since the other side is then likelier."""
+    """The Analyst's answer. It has no confidence field: the service computes it (50 + evidence_points). Points that
+    sum below 0 favour the other direction, and above +40 the confidence would pass 90: both are format errors."""
     kind: SignalKind
     session_day: date
     direction: Direction
@@ -57,24 +58,23 @@ class SignalProposal(StrictModel):
     source_ids: list[str] = Field(min_length=1, max_length=20)
 
     @property
-    def base_rate(self) -> int:
-        return BASE_RATES[self.kind][self.direction]
-
-    @property
     def evidence_points(self) -> int:
         return sum(reason.points for reason in self.reasons)
 
     @property
     def confidence(self) -> int:
-        return self.base_rate + self.evidence_points
+        return EVEN_CONFIDENCE + self.evidence_points
 
     @model_validator(mode="after")
-    def _likelier_side(self):
-        if not 50 <= self.confidence <= 90:
-            raise ValueError(f"confidence {self.confidence} = base {self.base_rate} {self.evidence_points:+d} points: "
-                             "below 50 means the other direction is likelier; change the direction or the points")
+    def _evidence_supports_the_call(self):
+        if self.evidence_points < 0:
+            raise ValueError(f"points sum {self.evidence_points:+d}: the reasons favour the other direction; change the "
+                             "direction or the points")
+        if self.confidence > MAX_CONFIDENCE:
+            raise ValueError(f"points sum {self.evidence_points:+d}: at most +{MAX_CONFIDENCE - EVEN_CONFIDENCE} "
+                             f"(confidence {MAX_CONFIDENCE})")
         return self
 
     def stored(self) -> dict:
-        """The proposal as trading_signals.proposal keeps it, with the computed base rate and confidence."""
-        return {**self.model_dump(mode="json"), "base_rate": self.base_rate, "confidence": self.confidence}
+        """The proposal as trading_signals.proposal keeps it, with the computed confidence."""
+        return {**self.model_dump(mode="json"), "confidence": self.confidence}

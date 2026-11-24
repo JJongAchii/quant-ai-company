@@ -111,7 +111,7 @@ def snapshot(kind, day=DAY):
 
 def proposal(**over):
     """A valid SignalProposal dict for DAY's intraday slot, citing its snapshot source. Its one reason gives +10 points,
-    so the computed confidence is 60 intraday either way, 69 overnight long and 51 overnight short."""
+    so the computed confidence is 60 for either kind and direction."""
     kind, day = over.get("kind", "intraday"), over.get("session_day", str(DAY))
     source = f"signal:{day}:{kind}:snapshot"
     value = {"kind": kind, "session_day": day, "direction": "long",
