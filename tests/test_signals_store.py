@@ -433,7 +433,7 @@ def test_late_signal_after_fallback(signals, clock, day, prepared, at, timing, h
     texts = [post["text"].split("\n") for post in posts(signals)]
     assert texts[0][0].startswith("⏱️ 임시 신호")
     if header:  # posted until the exit: the first line gives the time and how it compares with the interim post
-        assert texts[1][:3] == [header, "시가 09:00 진입 → 종가 15:30 청산", "숏 · 확신도 60%"]
+        assert texts[1][:3] == [header, "시가 09:00 진입 → 종가 15:30 청산", "숏 · 확신도 60% (반반 50%에 오늘 근거 +10%p)"]
     else:  # after the exit (15:30) the signal is recorded, not posted
         assert len(texts) == 1 and row["analyst_message_id"] is None
 

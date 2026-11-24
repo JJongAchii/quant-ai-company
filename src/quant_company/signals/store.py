@@ -187,6 +187,7 @@ class SignalStore:
                     posts.append((moment, part == "analyst", part))
             last = max(posts)[2] if posts else None
             slot["analyst"] = (slot["proposal"] or {}).get("direction")
+            slot["confidence"] = (slot["proposal"] or {}).get("confidence")
             slot["received"] = (slot["analyst"] if last == "analyst" else FALLBACK_DIRECTION if last else None)
             slot["fallback"] = slot["fallback_message_id"] is not None
             slot["returns"] = {i: stored.get(str(slot["id"]), {}).get(i, {"state": "pending", "long_bp": None,
@@ -716,7 +717,7 @@ def commit_turn(company, conn, project, task, turn, response, decision) -> dict 
         company._message(conn, project, task["id"], BRIEFER, SIGNAL_KIND, text, message_id=message_id)
     conn.execute("""UPDATE trading_signals SET state=%s,timing=%s,proposal=%s,committed_at=%s,analyst_message_id=%s,
         updated_at=%s WHERE id=%s""", ("committed_late" if slot["state"] == "fallback_sent" else "committed", timing,
-                                       Jsonb(proposal.model_dump(mode="json")), at, message_id, at, slot["id"]))
+                                       Jsonb(proposal.stored()), at, message_id, at, slot["id"]))
     return _finish(company, conn, project, task, turn, response, done=True)
 
 

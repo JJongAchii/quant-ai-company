@@ -81,8 +81,9 @@ def analyst_post(slot: Slot, proposal: SignalProposal, snapshot: dict, *, late_a
         if after_entry:
             head += f" · {AFTER_ENTRY}"
         first = [head, window(slot)]
-    lines = [*first, f"{DIRECTION_WORDS[proposal.direction]} · 확신도 {proposal.confidence}%", "근거"]
-    lines += [f"{n}. {reason.text}" for n, reason in enumerate(proposal.reasons, 1)]
+    lines = [*first, f"{DIRECTION_WORDS[proposal.direction]} · 확신도 {proposal.confidence}% "
+                     f"(반반 50%에 오늘 근거 {proposal.evidence_points:+d}%p)", "근거"]
+    lines += [f"{n}. {reason.text} ({reason.points:+d}%p)" for n, reason in enumerate(proposal.reasons, 1)]
     lines += [f"틀렸다고 볼 조건: {proposal.invalidation}", quote_line(slot, snapshot)]
     return "\n".join(lines)
 
@@ -150,10 +151,13 @@ def result_line(kind: str, day: date, direction: str | None, interim: bool, retu
 
 
 def record_stats(record: dict) -> str:
-    """n, hits, hit rate, ties, mean bp and simple cumulative bp of one record, the same for every record."""
+    """n, hits, hit rate, ties, mean bp and simple cumulative bp of one record, the same for every record. The
+    Analyst's record also shows its mean confidence on the same days, next to the hit rate it should match."""
     text = f"{record['n']}전 {record['hits']}승"
     if record["n"]:
-        text += f"({(Decimal(record['hits'] * 100) / record['n']).quantize(Decimal('1'), ROUND_HALF_UP)}%)"
+        rate = (Decimal(record["hits"] * 100) / record["n"]).quantize(Decimal("1"), ROUND_HALF_UP)
+        stated = record.get("mean_confidence")
+        text += f"({rate}%, 확신도 평균 {stated}%)" if stated is not None else f"({rate}%)"
     if record["ties"]:
         text += f" 무 {record['ties']}"
     if record["mean_bp"] is not None:

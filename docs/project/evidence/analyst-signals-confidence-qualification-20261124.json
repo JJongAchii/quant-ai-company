@@ -1,0 +1,139 @@
+{
+  "started_at": "2026-11-24T07:36:45.666178+00:00",
+  "state": "committed",
+  "kind": "overnight",
+  "real_model": true,
+  "slack_sender_constructed": false,
+  "database": {
+    "kind": "disposable database on a local PostgreSQL cluster",
+    "name": "company_signal_qualification_1ad98d7606614d3b957c2fb45c0008fa",
+    "dropped": true
+  },
+  "code_commit": "d5d07625445f10c11c092dd1c1abd4540da7290b",
+  "uncommitted_code": true,
+  "edition": {
+    "sha256": "00e391500cdcf186134f3a610314fb67ce0c1208b63bb1623f0b13a073849745",
+    "characters": 236,
+    "synthetic": true
+  },
+  "turns": [
+    {
+      "sequence": 1,
+      "state": "completed",
+      "task_status": "completed",
+      "reason": null,
+      "turn_status": "completed",
+      "turn_error": null,
+      "tools": [],
+      "latency_seconds": 37.5
+    }
+  ],
+  "completed_model_turns": 1,
+  "provider_faults": [],
+  "proposal": {
+    "kind": "overnight",
+    "reasons": [
+      {
+        "text": "14:50 KST 미국 S&P 500·나스닥100 선물이 각각 +0.27%, +0.22%. 미국 주식 가치평가에 우호적인 가격 신호로 한국 시가에도 지지 가능성이 있으나, 밤사이 지속 여부는 미확인이다.",
+        "points": 3,
+        "source_ids": [
+          "signal:2026-11-24:overnight:snapshot"
+        ]
+      },
+      {
+        "text": "14:59 KST 원/달러 -0.14%. 원화 강세는 외국인 보유 주식의 달러 환산가치에 우호적이다. 다만 외국인 매수 증거는 아니며 수출기업 환산매출에는 반대 효과여서 약한 지지로만 본다.",
+        "points": 1,
+        "source_ids": [
+          "signal:2026-11-24:overnight:snapshot"
+        ]
+      },
+      {
+        "text": "14:40 KST 지연 코스피는 이미 +7.39%. 06:00 EWY·SPY 상승은 진입 전 정보이며 추가 야간 호재로 중복 계산할 수 없다. 종가 이후 상승을 뒷받침할 새 재료가 없어 롱 판단을 낮춘다.",
+        "points": -2,
+        "source_ids": [
+          "signal:2026-11-24:overnight:snapshot"
+        ]
+      }
+    ],
+    "direction": "long",
+    "confidence": 52,
+    "source_ids": [
+      "signal:2026-11-24:overnight:snapshot"
+    ],
+    "session_day": "2026-11-24",
+    "invalidation": "진입 후 미국 선물이 하락 전환하고 원/달러가 상승 전환한 상태가 지속되면 지지 해석이 약해진다. 11월 25일 코스피 시가가 11월 24일 종가 이하이면 상승 방향 판단은 실패다."
+  },
+  "posts": [
+    {
+      "text": "🌙 오버나잇 신호 · 11월 24일(화) 종가 15:30 진입 → 11월 25일(수) 시가 09:00 청산\n롱 · 확신도 52% (반반 50%에 오늘 근거 +2%p)\n근거\n1. 14:50 KST 미국 S&P 500·나스닥100 선물이 각각 +0.27%, +0.22%. 미국 주식 가치평가에 우호적인 가격 신호로 한국 시가에도 지지 가능성이 있으나, 밤사이 지속 여부는 미확인이다. (+3%p)\n2. 14:59 KST 원/달러 -0.14%. 원화 강세는 외국인 보유 주식의 달러 환산가치에 우호적이다. 다만 외국인 매수 증거는 아니며 수출기업 환산매출에는 반대 효과여서 약한 지지로만 본다. (+1%p)\n3. 14:40 KST 지연 코스피는 이미 +7.39%. 06:00 EWY·SPY 상승은 진입 전 정보이며 추가 야간 호재로 중복 계산할 수 없다. 종가 이후 상승을 뒷받침할 새 재료가 없어 롱 판단을 낮춘다. (-2%p)\n틀렸다고 볼 조건: 진입 후 미국 선물이 하락 전환하고 원/달러가 상승 전환한 상태가 지속되면 지지 해석이 약해진다. 11월 25일 코스피 시가가 11월 24일 종가 이하이면 상승 방향 판단은 실패다.\n기준 시세 15:00 · 코스피 +7.4% · S&P 500 선물 7,273.75(14:50) · 원/달러 1,342.46(14:59) · 닛케이 225 +4.2%",
+      "outbox_status": "pending"
+    }
+  ],
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "session_day": "2026-11-24",
+  "clock": {
+    "simulated_start": "2026-11-24T06:00:00+00:00",
+    "real_start": "2026-11-24T07:36:47.913145+00:00",
+    "tools_until": "2026-11-24T06:07:00+00:00",
+    "send_at": "2026-11-24T06:15:00+00:00",
+    "entry_at": "2026-11-24T06:30:00+00:00",
+    "exit_at": "2026-11-25T00:00:00+00:00"
+  },
+  "snapshot": {
+    "origin": "file",
+    "observed_at": "2026-11-24T06:00:11.959997+00:00",
+    "quotes": [
+      "es",
+      "ewy",
+      "hsi",
+      "kodex200",
+      "kosdaq",
+      "kospi",
+      "n225",
+      "nq",
+      "shanghai",
+      "spy",
+      "usdkrw"
+    ],
+    "errors": {},
+    "receipts": {
+      "es": "0434b73e5705c29a470fac32e714b09b48f5ca198c98ec4d112a0f6e9f9fe70b",
+      "nq": "66be7a790b6e351a74244e663d2756554c5430d9bde2c5fcbe3b33a0d0d13203",
+      "ewy": "4a45f4d5d591cd840ecf8750c46fa8f7c5afdadd7c2d5d138de5d4b686796dc9",
+      "hsi": "72c4ab9ddfc4b7ad1f31827f11f49120e5ae5c0f8493c35c65041bbeeef12a02",
+      "spy": "347a509e7ac46268d01f10b79e16f699061e682c4e41cdd157a4ade5cde15aee",
+      "n225": "4aa8da4ab88114b602c415e365003f54ad55556717527b24b8e28de2e0830f5e",
+      "kospi": "7de73282ec7a954bebf9c6312175b3479ff6a2b742d56b3427fefe5b4f6b6a18",
+      "kosdaq": "308d3a6ac44f3a8af0b99b776eae5d121a0634e6b41b53e373636c0afd59277b",
+      "usdkrw": "dafc178e2fead2e46b92c0d454bb8750a70911b9ec199ff1bf14c7fa41172343",
+      "kodex200": "1c1adc3bdf924461cfc6373b3dd2e71a4fbecab46e563dc32e1ae1419ab5bf19",
+      "shanghai": "deb4289aa08e8ba18500213274f7a1254b6572ae92fd3ffc7efd65395124425d"
+    },
+    "text": "S&P 500 선물 | 7273.75 | 원천 14:50 KST | 전일 대비 +0.27%\n나스닥 100 선물 | 26867.50 | 원천 14:50 KST | 전일 대비 +0.22%\nEWY | 135.72 | 원천 06:00 KST | 전일 대비 +10.11%\n항셍 | 22297.78 | 원천 14:45 KST | 전일 대비 -0.38%\nSPY | 722.29 | 원천 06:00 KST | 전일 대비 +4.71%\n닛케이 225 | 58815.48 | 원천 14:45 KST | 전일 대비 +4.22%\n코스피 | 5056.27 | 원천 14:40 KST | 전일 대비 +7.39% | 지연\n코스닥 | 669.97 | 원천 14:40 KST | 전일 대비 +5.43% | 지연\n원/달러 | 1342.46 | 원천 14:59 KST | 전일 대비 -0.14%\nKODEX 200 | 79555.00 | 원천 14:40 KST | 전일 대비 +7.84% | 지연\n상하이종합 | 3555.81 | 원천 14:45 KST | 전일 대비 +0.48%"
+  },
+  "timing": "on_time",
+  "committed_at": "2026-11-24 06:00:37.665892+00:00",
+  "format_failures": 0,
+  "unparsed": false,
+  "last_error": null,
+  "task": {
+    "status": "completed",
+    "error": null,
+    "turn_count": 1
+  },
+  "signal_notes": [],
+  "web_requests": [],
+  "answers": [],
+  "completed_at": "2026-11-24T07:37:25.657391+00:00",
+  "notes": [
+    "Provider: CodexRunner on the local ChatGPT login (CODEX_HOME), no API credentials; its job receipts were kept outside the repository.",
+    "1 model turn(s) completed.",
+    "A disposable database on a local PostgreSQL cluster was created for this run and dropped afterwards; production, its database and its host were not touched.",
+    "The Slack sender (SlackOutbox) was never constructed: the posts listed exist only as undispatched outbox rows of the disposable database.",
+    "The signals clock started at the slot's snapshot time and advanced in real time, so the tool cutoff and the on-time/late timing reflect the real latency. Grading, the interim post and the scorecard were not run.",
+    "The snapshot was loaded from a file.",
+    "The edition text is synthetic test text, not a published edition.",
+    "The proposal is a model output for a contract and latency check, not a trading recommendation."
+  ]
+}

@@ -153,6 +153,15 @@ def analyst_counts(slot: dict) -> bool:
     return bool(slot["analyst"]) and slot["timing"] in ("on_time", "late") and not slot["unparsed"]
 
 
+def mean_confidence(slots: list[dict], instrument: str) -> int | None:
+    """The Analyst's mean computed confidence over the slots its record counts as a hit or a miss on instrument."""
+    values = [slot["confidence"] for slot in slots if analyst_counts(slot) and slot.get("confidence") is not None
+              and (bp := _final_bp(slot, instrument)) is not None and bp != 0]
+    if not values:
+        return None
+    return int((Decimal(sum(values)) / len(values)).quantize(Decimal("1"), ROUND_HALF_UP))
+
+
 def _versus(slots: list[dict], instrument: str, baseline: str) -> dict:
     wins = losses = 0
     for slot in slots:
@@ -187,7 +196,8 @@ def summarize(slots: list[dict]) -> dict:
             def record(pick, instrument=instrument, mine=mine):
                 items = [(pick(slot), _final_bp(slot, instrument)) for slot in mine]
                 return _record([(direction, bp) for direction, bp in items if direction and bp is not None])
-            entry = {"analyst": record(lambda s: s["analyst"] if analyst_counts(s) else None),
+            entry = {"analyst": {**record(lambda s: s["analyst"] if analyst_counts(s) else None),
+                                 "mean_confidence": mean_confidence(mine, instrument)},
                      "received": record(lambda s: s["received"]),
                      "always_long": record(lambda s: (s["baselines"] or {}).get("always_long")),
                      "pending": sum(slot["returns"][instrument]["state"] == "pending" for slot in mine

@@ -6,7 +6,7 @@ import pytest
 from pydantic import ValidationError
 
 from quant_company.config import Settings
-from quant_company.signals.contracts import SignalProposal
+from quant_company.signals.contracts import SignalProposal, SignalReason
 from quant_company.signals.grading import summarize
 from quant_company.signals.instructions import final_note, instruction
 from quant_company.signals.render import analyst_post, fallback_post, scorecard_post, unparsed_post, window
@@ -35,20 +35,43 @@ def test_compose_passes_flag():
 
 
 def proposal(**updates):
-    value = {"kind": "intraday", "session_day": "2026-11-20", "direction": "long", "confidence": 60,
-             "reasons": [{"text": "미국 장 강세", "source_ids": ["a"]}],
+    value = {"kind": "intraday", "session_day": "2026-11-20", "direction": "long",
+             "reasons": [{"text": "미국 장 강세", "points": 10, "source_ids": ["a"]}],
              "invalidation": "갭 하락", "source_ids": ["a"]}
     return {**value, **updates}
 
 
 def test_proposal_bounds():
-    assert SignalProposal.model_validate(proposal()).confidence == 60
-    reason = {"text": "x", "source_ids": ["a"]}
-    for bad in ({"confidence": 49}, {"confidence": 91}, {"confidence": "60"},
-                {"reasons": [reason] * 4}, {"reasons": [{"text": "x" * 201, "source_ids": ["a"]}]},
+    parsed = SignalProposal.model_validate(proposal())
+    assert (parsed.evidence_points, parsed.confidence) == (10, 60)
+    reason = {"text": "x", "points": 0, "source_ids": ["a"]}
+    # The Analyst sends no confidence: the service computes it.
+    for bad in ({"confidence": 60}, {"reasons": [{**reason, "points": 16}]}, {"reasons": [{**reason, "points": -16}]},
+                {"reasons": [{**reason, "points": "3"}]}, {"reasons": [{"text": "x", "source_ids": ["a"]}]},
+                {"reasons": [reason] * 4}, {"reasons": [{**reason, "text": "x" * 201}]},
                 {"direction": "롱"}, {"extra": 1}):
         with pytest.raises(ValidationError):
             SignalProposal.model_validate(proposal(**bad))
+
+
+def test_confidence_is_even_plus_todays_points():
+    """Owner 2026-11-24: the call and its confidence come from the day's evidence: even (50) plus the points of
+    today's reasons, the same for both kinds and directions; past hit rates are no starting point."""
+    def computed(kind, direction, *points):
+        reasons = [{"text": "x", "points": value, "source_ids": ["a"]} for value in points]
+        return SignalProposal.model_validate(proposal(kind=kind, direction=direction, reasons=reasons)).confidence
+
+    for kind in ("intraday", "overnight"):
+        assert computed(kind, "long", 0) == computed(kind, "short", 0) == 50
+    assert computed("overnight", "short", 10, 4, -3) == 61 and computed("intraday", "long", 15, 15, 10) == 90
+    assert computed("overnight", "long", 6, -2) == 54
+    # Points that favour the other side, or a confidence above 90, are format errors the Analyst is asked to fix.
+    for points, message in (((-1,), "favour the other direction"), ((5, -9), "favour the other direction"),
+                            ((15, 15, 11), "at most \\+40")):
+        with pytest.raises(ValidationError, match=message):
+            computed("overnight", "short", *points)
+    stored = SignalProposal.model_validate(proposal(kind="overnight")).stored()
+    assert (stored["confidence"], stored["reasons"][0]["points"]) == (60, 10) and "base_rate" not in stored
 
 
 def test_migration_creates_signal_tables(company):
@@ -82,8 +105,9 @@ SNAPSHOT = {
 
 
 def slot_proposal(slot, direction="long"):
-    return SignalProposal(kind=slot.kind, session_day=slot.day, direction=direction, confidence=58,
-                          reasons=[{"text": "선물 강세", "source_ids": ["s"]}, {"text": "환율 안정", "source_ids": ["s"]}],
+    return SignalProposal(kind=slot.kind, session_day=slot.day, direction=direction,
+                          reasons=[{"text": "선물 강세", "points": 5, "source_ids": ["s"]},
+                                   {"text": "환율 안정", "points": 3, "source_ids": ["s"]}],
                           invalidation="시가 갭이 크게 줄면", source_ids=["s"])
 
 
@@ -95,14 +119,17 @@ def test_instruction_has_every_required_element():
     intraday, overnight = day_slots()
     text = snapshot_text(SNAPSHOT)
     out = instruction(intraday, "signal:2026-11-20:intraday:snapshot", text)
-    for part in ("09:00", "15:30", "08:30", "08:15", "signal:2026-11-20:intraday:snapshot", text, "48.6", "49.9",
-                 "47.1", "47.7", "75.5", "62.9", "59.4", "밤사이 정보는 대부분 시초가에 반영",
-                 "롱 또는 숏", "주문이 아니", "SignalProposal", "artifacts"):
+    for part in ("09:00", "15:30", "08:30", "08:15", "signal:2026-11-20:intraday:snapshot", text,
+                 "밤사이 정보는 대부분 시초가에 반영",
+                 "롱 또는 숏", "주문이 아니", "SignalProposal", "artifacts", "오늘의 상황과 근거로 정한다",
+                 "시작점도 근거도 아니다", "반반(50)", "-15~+15", "불리한 근거는 음수", "확신도 최대 90",
+                 "200자 이하", "confidence 필드는 쓰지 않는다"):
         assert part in out, part
-    assert len(out) < 4000
+    # Owner 2026-11-24: no past hit rate steers the call; the old baselines are not shown.
+    assert len(out) < 4000 and '"confidence"' not in out and not any(rate in out for rate in ("48.6", "59.4", "47.1"))
     night = instruction(overnight, "signal:2026-11-20:overnight:snapshot", text)
     assert "밤사이 정보는 대부분 시초가에 반영" not in night
-    assert "11월 23일" in night and "59.4" in night and len(night) < 4000
+    assert "11월 23일" in night and "59.4" not in night and len(night) < 4000
     assert "도구 없이 지금 최종 답" in final_note("시간")
 
 
@@ -110,12 +137,21 @@ def test_analyst_post_matches_spec_sketch():
     intraday, overnight = day_slots()
     lines = analyst_post(intraday, slot_proposal(intraday), SNAPSHOT).split("\n")
     assert lines[0] == "📈 장중 신호 · 11월 20일(금)  시가 09:00 진입 → 종가 15:30 청산"
-    assert lines[1] == "롱 · 확신도 58%"
+    assert lines[1] == "롱 · 확신도 58% (반반 50%에 오늘 근거 +8%p)"
+    assert lines[2:5] == ["근거", "1. 선물 강세 (+5%p)", "2. 환율 안정 (+3%p)"]
     post = "\n".join(lines)
-    assert "근거" in post and "1. 선물 강세" in post and "틀렸다고 볼 조건: " in post
+    assert "틀렸다고 볼 조건: " in post
     assert "기준 시세 07:30 · S&P 500 선물 7,374.5(07:00)" in lines[-1]
     assert "누적" not in post
     assert window(overnight) == "종가 15:30 진입 → 11월 23일(월) 시가 09:00 청산"
+    night = SignalProposal(kind="overnight", session_day=overnight.day, direction="short",
+                           reasons=[{"text": "아시아 약세", "points": 10, "source_ids": ["s"]},
+                                    {"text": "선물 약세", "points": 4, "source_ids": ["s"]},
+                                    {"text": "원화 강세", "points": -3, "source_ids": ["s"]}],
+                           invalidation="동시호가 반등", source_ids=["s"])
+    lines = analyst_post(overnight, night, SNAPSHOT).split("\n")
+    assert lines[1:6] == ["숏 · 확신도 61% (반반 50%에 오늘 근거 +11%p)", "근거", "1. 아시아 약세 (+10%p)",
+                          "2. 선물 약세 (+4%p)", "3. 원화 강세 (-3%p)"]
 
 
 def test_late_post_header():
@@ -145,16 +181,21 @@ def test_late_post_without_interim_has_no_interim_part():
     assert first == "📈 장중 신호 · 늦음 08:41"
 
 
-def test_instruction_example_is_a_valid_proposal():
+def test_instruction_template_has_every_field_and_no_value_to_copy():
+    """The format template names every proposal field, but holds no direction or points the Analyst could copy:
+    the old example's confidence 55 came back in every signal. Copied as is, it fails validation."""
     import json
     for slot in day_slots():
         sid = f"signal:{slot.day}:{slot.kind}:snapshot"
         out = instruction(slot, sid, snapshot_text(SNAPSHOT))
-        assert len(out) < 4000
         line = next(x for x in out.split("\n") if x.startswith("{") and '"kind"' in x)
-        parsed = SignalProposal.model_validate(json.loads(line))
-        assert (parsed.kind, parsed.session_day) == (slot.kind, slot.day)
-        assert parsed.reasons[0].source_ids == [sid]
+        template = json.loads(line)
+        assert set(template) == set(SignalProposal.model_fields)
+        assert set(template["reasons"][0]) == set(SignalReason.model_fields)
+        assert (template["kind"], template["session_day"], template["source_ids"]) == (slot.kind, str(slot.day), [sid])
+        assert template["direction"] not in ("long", "short") and isinstance(template["reasons"][0]["points"], str)
+        with pytest.raises(ValidationError):
+            SignalProposal.model_validate(template)
 
 
 def test_fallback_post_copy():
