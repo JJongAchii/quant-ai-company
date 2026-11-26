@@ -14,6 +14,7 @@ CORE_SCHEMA = (
     ("quant_company.staff", "schema.sql"),
     ("quant_company.news", "schema.sql"),
     ("quant_company.briefing", "schema.sql"),
+    ("quant_company.market_desk", "schema.sql"),
     ("quant_company.signals", "schema.sql"),
     ("quant_company.video", "schema.sql"),
     ("quant_company.newsletter", "schema.sql"),

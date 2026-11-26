@@ -229,7 +229,8 @@ class OpenAICreditLane:
             return None
 
     async def run(self, request, path, digest, profile, revision, timeout):
-        if (profile != "primary" or request.model not in PRICES or request.reasoning_effort is None
+        if (request.request_id.startswith("news-market-desk-") or profile != "primary"
+                or request.model not in PRICES or request.reasoning_effort is None
                 or request.web_search
                 or request.session is not None or request.attachments):
             return None

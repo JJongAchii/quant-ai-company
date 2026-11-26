@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-26",
+  "scope": "local producer and Insight Invest home, before production release",
+  "company_pr": "https://github.com/JJongAchii/quant-ai-company/pull/255",
+  "consumer_pr": "https://github.com/JJongAchii/Insight-Invest/pull/65",
+  "source_checks": {
+    "delivered_slack": "Read the configured owner's latest morning and closing editions and 12 delivered Reporter items in a read-only production query.",
+    "market": "Read 27 same-day KRX observations and a 2,772-stock snapshot; a 10:55 move met the threshold.",
+    "filing": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261126900227",
+    "filing_published_kst": "2026-11-26T11:51:00+09:00"
+  },
+  "qualified_paths": [
+    "Isolated PostgreSQL and the existing authenticated Codex subscription produced and validated a single-company filing analysis from the DART original. The local consumer served it together with real delivered editions.",
+    "The analysis states the 12.2% sales ratio and the requirement for payment after supply. The source link and next check render in the desktop and mobile home.",
+    "Reloads only issued GET requests for the market desk and left the publication and local model receipts unchanged.",
+    "59 PostgreSQL, editorial, news-loop and paid-API-lane regression tests passed. The corrupted KRX input case allows the publisher to continue."
+  ],
+  "closing_edition": {
+    "market_report_at": "2026-11-26T16:12:19+09:00",
+    "source_urls": [
+      "https://www.yna.co.kr/view/AKR20261125133251008",
+      "https://www.yna.co.kr/view/AKR20261126082600008",
+      "https://www.yna.co.kr/view/AKR20261126145451008"
+    ],
+    "kospi_previous_day_change_points": -308.52,
+    "kospi_current_day_change_points": 13.70,
+    "share_of_previous_loss_recovered_pct": 4.4,
+    "verification": "A read-only query supplied approved originals to an isolated PostgreSQL publisher. The subscription writer produced a dated closing interpretation with paragraph citations. The consumer displayed it ahead of the delayed KRX observations on desktop and mobile."
+  },
+  "production": "Requires reviewed main release and publisher-scoped S3 credentials. Local publication does not establish production delivery."
+}
