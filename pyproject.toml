@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-lake = ["qdata[s3]", "botocore>=1.36,<2"]
+lake = ["qdata[s3]"]
 video = [
     "av>=12,<19",
     "boto3>=1.35,<2",

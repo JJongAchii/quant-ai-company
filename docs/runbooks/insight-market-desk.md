@@ -7,14 +7,15 @@
 
 1. Insight-Invest의 API·장중 폴러·클라이언트 변경을 배포한다. 기존 폴러가 거래일
    09:05~15:35 KST에 `s3://insight-invest-datalake/app/market_desk/input.json`을 쓴다.
-2. 발행 전용 AWS 주체에 아래 두 객체 권한을 부여한다. 기존 레이크 읽기 자격은 별도로 유지한다.
+2. Insight-Invest의 CloudFormation 스택 `insight-invest-api`가 발행 전용 IAM 사용자를 만든다.
+   스택 출력 `MarketDeskPublisherUser`에서 사용자 이름을 확인한다. 권한은 아래 두 객체로 제한된다.
 
    | 작업 | 리소스 |
    | --- | --- |
    | `s3:GetObject` | `arn:aws:s3:::insight-invest-datalake/app/market_desk/input.json` |
    | `s3:PutObject` | `arn:aws:s3:::insight-invest-datalake/app/market_desk/board.json` |
 
-3. 릴리스 운영자의 비밀 관리 경로에서 `/var/lib/quant-company/secrets/market-desk/credentials`를
+3. 릴리스 운영자의 비밀 관리 경로에서 이 IAM 사용자의 키를 `/var/lib/quant-company/secrets/market-desk/credentials`에
    AWS 공유 자격 형식으로 공급한다. 프로필은 `[market-desk]`, 컨테이너 UID 10001이 읽을 수 있는
    0400 파일이다. 이 디렉터리는 news-worker에만 `/run/market-desk:ro`로 마운트한다.
    실제 키는 PR과 로그에 기록하지 않는다.

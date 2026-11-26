@@ -45,6 +45,7 @@ class SessionObservation(BaseModel):
 
 class BoardStorage:
     def __init__(self, bucket):
+        # The production lake image already ships botocore for the S3 report publisher.
         from botocore.config import Config
         from botocore.session import Session
 
