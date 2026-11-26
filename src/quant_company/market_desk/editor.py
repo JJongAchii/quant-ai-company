@@ -14,6 +14,28 @@ MATERIAL_NEWS = ("금리 인상", "금리 인하", "수출 규제", "수출통�
 ALIASES = {"KOSPI": ("코스피", "KOSPI"), "KOSDAQ": ("코스닥", "KOSDAQ"),
            "전기·전자": ("반도체", "전기전자"), "운송장비·부품": ("자동차", "조선")}
 
+# Require an actual index as the subject, an observed move, and an identifiable market driver.
+# A corporate listing, index ETF or price-only wire does not explain a session.
+INDEX_SUBJECT = re.compile(r"(?:코스피|코스닥)(?:\s*지수)?(?:\s*[,，…]|[는가도]\s|\s+(?=상승|하락|반등|급락|낙폭|상승폭))")
+INDEX_ACTION = re.compile(r"상승|하락|강세|약세|반등|급등|급락|낙폭|둔화|밀려|후퇴|회복|돌파|반납")
+MARKET_DRIVER = re.compile(r"순매[수도]|매[수도]세|차익\s*실현|기준금리\s*(?:인상|인하|동결)|"
+                           r"(?:실적|수출)\s*(?:호조|부진)|(?:우려|기대감|충격|강세|약세|급등|급락)에|여파|힘입어")
+
+
+def market_reports(rows):
+    """Carry the publisher's own attributed headline and link. Never turn it into a causal desk article."""
+    by_title = {}
+    for row in sorted(rows, key=lambda item: item["published_at"]):
+        title = row["title"]
+        if not (INDEX_SUBJECT.search(title) and INDEX_ACTION.search(title) and MARKET_DRIVER.search(title)):
+            continue
+        if re.search(r"[?？]|예상|투자전략|전망[.…]?$", title):
+            continue
+        key = "".join(title.split())
+        if key not in by_title:
+            by_title[key] = public_source({**row, "published_at": row["published_at"].isoformat()})
+    return sorted(by_title.values(), key=lambda source: datetime.fromisoformat(source["published_at"]), reverse=True)[:3]
+
 
 def digest(obj):
     return hashlib.sha256(json.dumps(obj, ensure_ascii=False, sort_keys=True).encode()).hexdigest()[:32]

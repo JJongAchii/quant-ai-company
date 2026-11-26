@@ -8,11 +8,42 @@ import pytest
 from quant_company.contracts import AgentDecision, ArtifactDraft, ProviderResponse
 from quant_company.market_desk import editor
 from quant_company.market_desk.runner import MarketDesk
+from quant_company.market_desk.store import DeskStore
 from quant_company.providers.openai_credits import OpenAICreditLane
 from quant_company.runtime import news_loops
 
 AT = datetime(2026, 11, 26, 2, 5, tzinfo=UTC)
 QUOTE = "반도체 장비의 공급 일정을 조정하는 계약을 체결했습니다."
+
+
+def test_session_reports_require_a_realized_index_move_and_a_driver_in_the_source_headline():
+    def source(title, publisher="통신사", minutes=0):
+        return dict(title=title, publisher=publisher, url="https://example.org/market", published_at=AT + timedelta(minutes=minutes))
+
+    original = source("코스피, 1% 안팎 상승세…한은 기준금리 인상 속 탄력 둔화")
+    rows = [source("코스피, 1% 안팎 상승세…한은 기준금리 인상 속 탄력 둔화", "재전송", 30),
+            source("A사, 코스피 상장 추진…실적 호조에 급등"), source("코스피, 장 초반 2%대 상승"),
+            source("코스피, 외국인 순매수에 반등할까?"), original]
+    result = editor.market_reports(rows)
+    assert [(r["title"], r["publisher"]) for r in result] == [(original["title"], "통신사")]
+
+
+def test_published_index_coverage_respects_source_policy_and_quote_cutoff(company):
+    with company.db.transaction() as conn:
+        conn.execute("""INSERT INTO news_sources(id,config,config_digest,enabled) VALUES
+            ('wire','{"publisher":"통신사","use_for_summary":true}','approved',true),
+            ('blocked','{"publisher":"다른 통신사","use_for_summary":false}','unused',true)""")
+        for key, source, digest, pub_minutes, collect_minutes in [
+            ("eligible", "wire", "approved", 45, 25), ("delayed-quotes", "wire", "approved", 10, 9),
+            ("collected-later", "wire", "approved", 40, -5), ("old-policy", "wire", "retired", 40, 30),
+            ("unapproved", "blocked", "unused", 40, 30), ("prior-day", "wire", "approved", 1440, 1430),
+        ]:
+            conn.execute("""INSERT INTO news_articles(id,source_id,url,title,summary,feed_digest,published_at,
+                collected_at,source_digest,state) VALUES (%s,%s,%s,%s,'',%s,%s,%s,%s,'ready')""",
+                         (key, source, "https://example.org/" + key, "코스피, 외국인 순매수에 상승 " + key,
+                          key, AT - timedelta(minutes=pub_minutes), AT - timedelta(minutes=collect_minutes), digest))
+        reports = DeskStore(company).session_reports(conn, AT)
+        assert [r["url"] for r in reports] == ["https://example.org/eligible"]
 
 
 def filing(name="시험전자", minutes=60):

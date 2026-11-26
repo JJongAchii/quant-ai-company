@@ -86,6 +86,25 @@ class DeskStore:
                      (revision, key, aliases, day, at, Jsonb(packet), Jsonb(article),
                       Jsonb(req.model_dump(mode="json")) if req else None, "queued" if req else "observed", at))
 
+    def session_reports(self, conn, observed_at):
+        if not observed_at:
+            return []
+        local = observed_at.astimezone(KST)
+        start = local.replace(hour=9, minute=0, second=0, microsecond=0)
+        cutoff = local - timedelta(minutes=20)
+        if cutoff < start:
+            return []
+        rows = conn.execute("""WITH recent AS MATERIALIZED (
+                SELECT source_id,source_digest,title,url,published_at FROM news_articles
+                WHERE published_at BETWEEN %s AND %s AND collected_at<=%s ORDER BY published_at DESC LIMIT 4000)
+            SELECT a.title,a.url,a.published_at,s.config->>'publisher' AS publisher,
+                s.config->>'license_url' AS license_url,s.config->>'license_name' AS license_name
+            FROM recent a JOIN news_sources s ON s.id=a.source_id
+            WHERE s.enabled AND s.config->>'use_for_summary'='true' AND a.source_digest=s.config_digest
+                AND (a.title LIKE '%%코스피%%' OR a.title LIKE '%%코스닥%%')
+            ORDER BY a.published_at DESC LIMIT 100""", (start, cutoff, observed_at)).fetchall()
+        return editor.market_reports(rows)
+
     def publish(self, at, market, filings, filings_at, is_session, write):
         with self.db.transaction() as conn:
             # Serialize the daily allowance, revisions and the single S3 board even during a rolling restart.
@@ -123,7 +142,8 @@ class DeskStore:
             news = [i for i in issues if i.get("origin") == "reporter"][:15-len(desk)]
             board = {"version": 1, "checked_at": at.isoformat(), "monitoring": is_session,
                      **{k: v.isoformat() if v else None for k, v in times.items()},
-                     "issues": desk + news, "briefings": self.briefs(conn, at)}
+                     "issues": desk + news, "briefings": self.briefs(conn, at),
+                     "market_reports": self.session_reports(conn, times["market_at"])}
             write(board)
 
     def claim(self, at):
