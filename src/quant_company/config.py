@@ -68,6 +68,7 @@ class Settings(BaseSettings):
     news_initial_lookback_minutes: int = Field(default=120, ge=0, le=1440)
     briefing_enabled: bool = False
     insight_market_bucket: str = ""
+    insight_market_credential_endpoint: str = ""
     briefing_publish_enabled: bool = False
     briefing_source_notes_enabled: bool = False
     briefing_max_revisions: int = Field(default=1, ge=0, le=1)

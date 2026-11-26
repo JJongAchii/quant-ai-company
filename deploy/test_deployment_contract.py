@@ -224,6 +224,20 @@ def test_news_worker_is_independent_and_has_only_news_runtime_credentials():
     assert "news-worker" in backup.APP_SERVICES
 
 
+def test_production_market_certificate_volume_belongs_only_to_news_worker():
+    overlay = "market-desk.compose.yaml"
+    assert overlay in json.loads((DEPLOY / "release.json").read_text())["compose_files"]
+    services = compose_config(overlays=(overlay,))["services"]
+    mounts = [(name, mount) for name, service in services.items() for mount in service.get("volumes", [])
+              if mount.get("source") == "market-desk-identity"]
+    assert len(mounts) == 1
+    name, mount = mounts[0]
+    assert name == "news-worker" and mount["type"] == "volume" and mount["target"] == "/var/lib/market-desk"
+    assert not mount.get("read_only", False)
+    assert services[name]["read_only"] and services[name]["user"] == "10001:10001"
+    assert services[name]["environment"]["INSIGHT_MARKET_BUCKET"] == "insight-invest-datalake"
+
+
 def test_quant_worker_is_opt_in_and_has_no_slack_or_lake_secrets():
     assert "quant-feed-worker" not in compose_config()["services"]
     assert "quant-codex-runtime" not in compose_config()["services"]

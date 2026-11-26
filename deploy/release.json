@@ -7,6 +7,7 @@
     "model-accounts.compose.yaml",
     "data-watch.compose.yaml",
     "trend-feed.compose.yaml",
+    "market-desk.compose.yaml",
     "video.compose.yaml",
     "video-render.compose.yaml",
     "video-image.compose.yaml",

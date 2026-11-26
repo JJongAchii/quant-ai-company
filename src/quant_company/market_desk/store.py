@@ -135,7 +135,8 @@ class DeskStore:
         if used["this_edition"] or used["total"] >= (DAILY_CALLS if phase == "close" else DAILY_CALLS - 1):
             return
         previous_close = schedule.close("KR", schedule.previous("KR", day, changes), changes)
-        packet = lead.packet_for(self.lead_sources(conn, at, previous_close), at, close, previous_close, observation)
+        sources = self.lead_sources(conn, lead.source_cutoff(at, close), previous_close)
+        packet = lead.packet_for(sources, at, close, previous_close, observation)
         if not packet:
             return
         revision = editor.digest(packet)

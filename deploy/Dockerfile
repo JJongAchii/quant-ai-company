@@ -44,7 +44,8 @@ ENTRYPOINT ["python", "/app/entrypoint.py"]
 # point, then the commit labels (ARG values reach only these last instructions, so they never invalidate the cache).
 FROM base AS app
 COPY src ./src
-RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen --no-dev --no-editable --extra lake
+RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen --no-dev --no-editable --extra lake \
+    && install -d -m 0700 -o 10001 -g 10001 /var/lib/market-desk/identity
 COPY deploy/entrypoint.py /opt/company/entrypoint.py
 ARG RELEASE_COMMIT=unqualified
 ARG QDATA_COMMIT=unqualified

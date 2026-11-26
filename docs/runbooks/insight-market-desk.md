@@ -5,31 +5,32 @@
 
 ## 릴리스 운영자
 
-1. Insight-Invest의 API·장중 폴러·클라이언트 변경을 배포한다. 기존 폴러가 거래일
-   09:05~15:35 KST에 `s3://insight-invest-datalake/app/market_desk/input.json`을 쓴다.
-2. Insight-Invest의 CloudFormation 스택 `insight-invest-api`가 발행 전용 IAM 사용자를 만든다.
-   스택 출력 `MarketDeskPublisherUser`에서 사용자 이름을 확인한다. 권한은 아래 두 객체로 제한된다.
+1. Insight-Invest의 `insight-invest-api` 스택과 회사의 리뷰된 main을 배포한다. 정식 회사 릴리스의
+   `market-desk.compose.yaml`이 게시 버킷과 서울 리전 AWS IoT 자격 증명 엔드포인트를 지정한다.
+   기존 KRX 폴러는 거래일 09:05~15:35 KST에 시세 파일을 쓴다.
+2. `release-status.json`과 실행 중인 `news-worker`의 이미지에서 승인한 main SHA를 확인한다.
+   편집기는 첫 실행 때 전용 Docker 볼륨에 2년짜리 TLS 인증서와 개인 키를 만든다. 컨테이너를 교체해도
+   같은 인증서를 사용한다. 이 볼륨은 해당 편집기만 마운트한다.
+3. 확인한 컨테이너에서 **공개 인증서** `/var/lib/market-desk/identity/client/certificate.pem`을 읽는다.
+   SHA-256 지문을 확인한 뒤 서울 리전에서 `aws iot register-certificate-without-ca`로 비활성 등록한다.
+   `insight-invest-api`의 `MarketDeskCertificatePolicy` 출력에 있는 정책을 인증서에 연결하고 활성화한다.
+   개인 키는 편집기 볼륨에 둔다. 만료나 볼륨 교체 때에도 새 공개 인증서를 확인한 뒤 등록하고 이전 인증서를 비활성화한다.
+4. AWS는 등록한 인증서로 `insight-invest-market-desk` 역할 별칭에 인증한 편집기에 한 시간짜리
+   자격을 발급한다. SDK가 임시 자격을 갱신한다. [AWS 인증서 기반 자격 발급](https://docs.aws.amazon.com/iot/latest/developerguide/authorizing-direct-aws.html)
 
    | 작업 | 리소스 |
    | --- | --- |
    | `s3:GetObject` | `arn:aws:s3:::insight-invest-datalake/app/market_desk/input.json` |
    | `s3:PutObject` | `arn:aws:s3:::insight-invest-datalake/app/market_desk/board.json` |
 
-3. 릴리스 운영자의 비밀 관리 경로에서 이 IAM 사용자의 키를 `/var/lib/quant-company/secrets/market-desk/credentials`에
-   AWS 공유 자격 형식으로 공급한다. 프로필은 `[market-desk]`, 컨테이너 UID 10001이 읽을 수 있는
-   0400 파일이다. 이 디렉터리는 news-worker에만 `/run/market-desk:ro`로 마운트한다.
-   실제 키는 PR과 로그에 기록하지 않는다.
-4. 릴리스 운영자에게 리뷰·병합된 회사 main SHA와 `INSIGHT_MARKET_BUCKET=insight-invest-datalake`를 전달한다.
-   회사 표준 release 절차로 CI-green main의 앱과 codex-runtime을 함께 반영한다. 렌더 이미지, ECS 태스크
-   정의, 호스트 유닛, 추가 서비스는 필요 없다. 모델 실행기에 이번 요청의 구독 전용 분기가 포함돼야 한다.
-5. `release-status.json`에서 실행 SHA를 확인하고, 홈의 발행 시각과 Slack 원문의 발행 시각을 대조한다.
-   거래시간에는 DART와 KRX 확인 시각, 다음 실제 이벤트의 원문 링크와 관측 구간을 확인한다.
+5. 첫 `board.json`에서 브리핑의 발송 시각과 홈의 로그인된 조회 결과를 대조한다. 대표 해설은
+   거래일, 원문 기준 시각, 실제 발행 시각과 인용 링크를 확인한다.
 
 ## 발행과 장애 처리
 
 홈 대표 해설은 한국 거래일당 장중판과 마감판 각 한 편까지 기존 구독 예산에서 작성한다. 장중판은 10시부터
 마감 20분 전까지 최근 KRX 관측과 75분 이내 시황 원문이 있을 때 준비한다. 마감판은 거래소 달력의
-마감 시각 이후 3시간 동안 당일 마감을 확인한 원문이 들어오면 준비한다. 외국인·기관 수급, 전일
+마감 시각 이후 3시간 안에 수집한 당일 마감 원문으로 준비한다. 그날 저녁에 편집기가 복구되면 같은 자료 시한과 호출 한도로 빠진 마감판을 작성하고 실제 발행 시각을 기록한다. 외국인·기관 수급, 전일
 충격, 환율·정책 등에서 시장 해석을 바꾸는 비교를 고른다. 현재 시황 및 같은 날 앞선 시황 또는
 직전 거래일 마감 원문의 인용을 검증한다. 장중판은 기준 보도 90분 후 또는 장 마감에 홈 대표 자리에서 만료된다.
 

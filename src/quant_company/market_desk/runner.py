@@ -44,13 +44,21 @@ class SessionObservation(BaseModel):
 
 
 class BoardStorage:
-    def __init__(self, bucket):
+    def __init__(self, bucket, credential_endpoint=""):
         # The production lake image already ships botocore for the S3 report publisher.
         from botocore.config import Config
+        from botocore.credentials import CredentialResolver
         from botocore.session import Session
 
-        session = Session(profile="market-desk")
-        session.set_config_variable("credentials_file", "/run/market-desk/credentials")
+        if credential_endpoint:
+            from .identity import CertificateProvider
+
+            session = Session()
+            provider = CertificateProvider(credential_endpoint)
+            session.register_component("credential_provider", CredentialResolver([provider]))
+        else:
+            session = Session(profile="market-desk")
+            session.set_config_variable("credentials_file", "/run/market-desk/credentials")
         self.s3 = session.create_client("s3", region_name="ap-northeast-2",
                                         config=Config(connect_timeout=4, read_timeout=8, retries={"max_attempts": 1}))
         self.bucket = bucket
@@ -101,7 +109,8 @@ class MarketDesk:
         at = self.clock()
         active = self.session(at)
         if self.storage is None:
-            self.storage = BoardStorage(self.company.settings.insight_market_bucket)
+            settings = self.company.settings
+            self.storage = BoardStorage(settings.insight_market_bucket, settings.insight_market_credential_endpoint)
         market = None
         try:
             market = self.read_market(at)
@@ -145,3 +154,5 @@ class MarketDesk:
             await asyncio.to_thread(self.store.finish, row, "failed", self.clock())
             return
         await asyncio.to_thread(self.store.finish, row, "written", self.clock(), article)
+        if closing and article:
+            await self.tick()
