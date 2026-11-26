@@ -3160,6 +3160,7 @@ dependencies = [
 
 [package.optional-dependencies]
 lake = [
+    { name = "botocore" },
     { name = "qdata", extra = ["s3"] },
 ]
 video = [
@@ -3188,6 +3189,7 @@ requires-dist = [
     { name = "aiohttp", specifier = ">=3.12,<4" },
     { name = "av", marker = "extra == 'video'", specifier = ">=12,<19" },
     { name = "boto3", marker = "extra == 'video'", specifier = ">=1.35,<2" },
+    { name = "botocore", marker = "extra == 'lake'", specifier = ">=1.36,<2" },
     { name = "cryptography", marker = "platform_machine == 'x86_64' and sys_platform == 'darwin' and extra == 'video'", specifier = ">=44,<47" },
     { name = "exchange-calendars", specifier = ">=4.11,<5" },
     { name = "fastapi", specifier = ">=0.115,<1" },

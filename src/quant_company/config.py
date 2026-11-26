@@ -67,6 +67,7 @@ class Settings(BaseSettings):
     news_max_age_hours: int = Field(default=24, ge=1, le=72)
     news_initial_lookback_minutes: int = Field(default=120, ge=0, le=1440)
     briefing_enabled: bool = False
+    insight_market_bucket: str = ""
     briefing_publish_enabled: bool = False
     briefing_source_notes_enabled: bool = False
     briefing_max_revisions: int = Field(default=1, ge=0, le=1)

@@ -1,0 +1,42 @@
+# Insight Invest 홈 발행
+
+기존 `news-worker`가 소유자의 지정 채널에 실제 전달된 아침·마감 브리핑 본문과 Reporter 속보를
+개인 Insight Invest 홈에 함께 게시한다. 새 채널·서비스·예약 Lambda는 필요 없다.
+
+## 릴리스 운영자
+
+1. Insight-Invest의 API·장중 폴러·클라이언트 변경을 배포한다. 기존 폴러가 거래일
+   09:05~15:35 KST에 `s3://insight-invest-datalake/app/market_desk/input.json`을 쓴다.
+2. 발행 전용 AWS 주체에 아래 두 객체 권한을 부여한다. 기존 레이크 읽기 자격은 별도로 유지한다.
+
+   | 작업 | 리소스 |
+   | --- | --- |
+   | `s3:GetObject` | `arn:aws:s3:::insight-invest-datalake/app/market_desk/input.json` |
+   | `s3:PutObject` | `arn:aws:s3:::insight-invest-datalake/app/market_desk/board.json` |
+
+3. 릴리스 운영자의 비밀 관리 경로에서 `/var/lib/quant-company/secrets/market-desk/credentials`를
+   AWS 공유 자격 형식으로 공급한다. 프로필은 `[market-desk]`, 컨테이너 UID 10001이 읽을 수 있는
+   0400 파일이다. 이 디렉터리는 news-worker에만 `/run/market-desk:ro`로 마운트한다.
+   실제 키는 PR과 로그에 기록하지 않는다.
+4. 릴리스 운영자에게 리뷰·병합된 회사 main SHA와 `INSIGHT_MARKET_BUCKET=insight-invest-datalake`를 전달한다.
+   회사 표준 release 절차로 CI-green main의 앱과 codex-runtime을 함께 반영한다. 렌더 이미지, ECS 태스크
+   정의, 호스트 유닛, 추가 서비스는 필요 없다. 모델 실행기에 이번 요청의 구독 전용 분기가 포함돼야 한다.
+5. `release-status.json`에서 실행 SHA를 확인하고, 홈의 발행 시각과 Slack 원문의 발행 시각을 대조한다.
+   거래시간에는 DART와 KRX 확인 시각, 다음 실제 이벤트의 원문 링크와 관측 구간을 확인한다.
+
+## 발행과 장애 처리
+
+기존 편집 기사와 오전·마감판에는 추가 모델 호출이 없다. 한국 거래시간에는 5분마다 새 자료를 확인한다.
+같은 거래일의 인접한 KRX 수집분(5~15분 간격)에서 지수가 0.6% 이상 움직이거나 구성 종목 5개 이상인
+업종의 시가총액 가중 등락률이 1.0%p 이상 바뀌면 관련 원문을 대조한다. 약 20분의 원천 지연을 고려해
+후속 보도는 별도로 표시한다. 시세의 수집 시각을 거래소 체결 시각으로 간주하지 않는다.
+
+공시 원문은 금감원 최근 50건 RSS와 공식 뷰어에서 읽는다. 거래량이 몰리면 중간 공시가 빠질 수 있다.
+시총 상위 40개 기업의 주요 공시, 영업·생산 중단·합병 등과 매출의 10% 이상인 공급계약을 먼저 본다.
+등록된 뉴스 매체의 수집·검증된 기사 본문 및 정책 발표를 사용하고, 모델이 제출한 인용문을 원문과 대조한다.
+구독 전용 장중 작성 예산은 KST 하루 2건이며 공시·뉴스 단독 발행은 최대 1건이다. 원인이 불분명하면
+관측 사실과 미확인 상태를 유지한다. 중복 감지와 한도는 PostgreSQL에 저장하며, 불확실한 모델 호출을
+새 ID로 실행하지 않는다. 홈의 새로고침은 저장된 발행본만 조회한다.
+
+발행 중지 시 운영 릴리스 설정에서 `INSIGHT_MARKET_BUCKET`을 비운다. 마지막 게시물과 확인 시각은
+Insight Invest에 남고, 갱신이 늦으면 홈이 지연 상태를 표시한다.

@@ -341,9 +341,13 @@ services:
       <<: *db-env
       MODEL_RUNTIME_URL: http://codex-runtime:8080
       MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
+      INSIGHT_MARKET_BUCKET: ${INSIGHT_MARKET_BUCKET:-}
       SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
       SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
     secrets: [database_password, model_runtime_token]
+    volumes:
+      - ${STATE_DIR:-/var/lib/quant-company}/config/roles.json:/etc/quant-company/roles.json:ro
+      - ${STATE_DIR:-/var/lib/quant-company}/secrets/market-desk:/run/market-desk:ro
     networks: [core, model, service_egress]
     # Small-host default; the 8 GiB production host runs 320m since the briefing/trend collectors joined this process.
     mem_limit: ${NEWS_MEMORY_LIMIT:-192m}

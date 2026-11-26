@@ -109,6 +109,15 @@ def news_loops(company, provider=None):
     model = asyncio.Semaphore(1)
     editor = NewsEditor(company, provider)
     loops = []
+    if settings.insight_market_bucket:
+        from .market_desk.runner import MarketDesk
+
+        desk = MarketDesk(company, editor.provider)
+        loops += [
+            Loop("insight-market-publication", desk.tick, timeout=120,
+                 delay=lambda result: (result or {}).get("next_delay", 300)),
+            Loop("insight-market-editor", desk.write_article, timeout=420, delay=45, lane=model),
+        ]
     if settings.company_news_enabled:
         collector = NewsCollector(company)
         loops += [
