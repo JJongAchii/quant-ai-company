@@ -16,7 +16,7 @@ ALIASES = {"KOSPI": ("코스피", "KOSPI"), "KOSDAQ": ("코스닥", "KOSDAQ"),
 
 # Require an actual index as the subject, an observed move, and an identifiable market driver.
 # A corporate listing, index ETF or price-only wire does not explain a session.
-INDEX_SUBJECT = re.compile(r"(?:코스피|코스닥)(?:\s*지수)?(?:\s*[,，…]|[는가도]\s|\s+(?=상승|하락|반등|급락|낙폭|상승폭))")
+INDEX_SUBJECT = re.compile(r"(코스피|코스닥)(?:\s*지수)?(?:\s*[,，…]|[는가도]\s|\s+(?=상승|하락|반등|급락|낙폭|상승폭))")
 INDEX_ACTION = re.compile(r"상승|하락|강세|약세|반등|급등|급락|낙폭|둔화|밀려|후퇴|회복|돌파|반납")
 MARKET_DRIVER = re.compile(r"순매[수도]|매[수도]세|차익\s*실현|기준금리\s*(?:인상|인하|동결)|"
                            r"(?:실적|수출)\s*(?:호조|부진)|(?:우려|기대감|충격|강세|약세|급등|급락)에|여파|힘입어")

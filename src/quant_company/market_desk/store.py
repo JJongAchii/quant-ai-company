@@ -2,8 +2,9 @@ from datetime import datetime, timedelta
 
 from psycopg.types.json import Jsonb
 
+from ..briefing import schedule
 from ..briefing.schedule import KST
-from . import editor
+from . import editor, lead
 
 DAILY_CALLS = 2
 
@@ -59,7 +60,7 @@ class DeskStore:
                                 "sources": [editor.public_source(d) for d in docs if d["id"] in r["article_ids"]][:8]}
         return docs, reports
 
-    def register(self, conn, packet, at):
+    def register(self, conn, packet, at, limit=DAILY_CALLS):
         day = at.astimezone(KST).date()
         move, docs = packet["move"], packet["docs"]
         aliases = [packet["key"], *(editor.source_key(d) for d in docs)]
@@ -77,7 +78,7 @@ class DeskStore:
         used = conn.execute("""SELECT count(*) AS total,count(*) FILTER (WHERE packet->>'kind'<>'move') AS source_only
             FROM market_desk_revisions WHERE day=%s AND request IS NOT NULL""", (day,)).fetchone()
         # Leave one of the two daily places for a price-led story.
-        within_budget = used["total"] < DAILY_CALLS and (move is not None or used["source_only"] == 0)
+        within_budget = used["total"] < limit and (move is not None or used["source_only"] == 0)
         req = editor.request_for(revision, packet) if available and within_budget else None
         article = editor.initial(packet, key, at)
         conn.execute("""INSERT INTO market_desk_revisions
@@ -105,6 +106,45 @@ class DeskStore:
             ORDER BY a.published_at DESC LIMIT 100""", (start, cutoff, observed_at)).fetchall()
         return editor.market_reports(rows)
 
+    def lead_sources(self, conn, at, previous_close):
+        # Include both observation windows, even after weekends, without traversing every general-news title.
+        return conn.execute("""WITH candidates AS MATERIALIZED (
+                SELECT id,source_id,source_digest,title,url,published_at,collected_at FROM news_articles
+                WHERE content IS NOT NULL AND published_at BETWEEN %s AND %s AND collected_at<=%s
+                AND (title LIKE '%%코스피%%' OR title LIKE '%%코스닥%%' OR title LIKE '%%기준금리%%'
+                     OR title LIKE '%%통화정책방향%%' OR title LIKE '%%원/달러%%' OR title LIKE '%%원·달러%%'
+                     OR title LIKE '%%국고채 금리%%' OR title LIKE '%%뉴욕증시%%')
+                ORDER BY published_at DESC LIMIT 220)
+            SELECT c.id,c.title,c.url,c.published_at,c.collected_at,left(a.content,4600) AS content,
+                s.config->>'publisher' AS publisher,s.config->>'license_url' AS license_url,
+                s.config->>'license_name' AS license_name
+            FROM candidates c JOIN news_articles a ON a.id=c.id JOIN news_sources s ON s.id=c.source_id
+            WHERE s.enabled AND s.config->>'use_for_summary'='true' AND s.config_digest=c.source_digest
+            ORDER BY c.published_at DESC""", (previous_close, at, at)).fetchall()
+
+    def register_lead(self, conn, at, observation):
+        day = at.astimezone(KST).date()
+        changes = schedule.overrides(self.settings)
+        close = schedule.close("KR", day, changes)
+        phase = lead.phase_at(at, close)
+        if not phase or (phase == "intraday" and not observation):
+            return
+        key = f"session/{day}/{phase}"
+        used = conn.execute("""SELECT count(*) AS total, count(*) FILTER (WHERE issue_id=%s) AS this_edition
+            FROM market_desk_revisions WHERE day=%s AND request IS NOT NULL""", (key, day)).fetchone()
+        if used["this_edition"] or used["total"] >= (DAILY_CALLS if phase == "close" else DAILY_CALLS - 1):
+            return
+        previous_close = schedule.close("KR", schedule.previous("KR", day, changes), changes)
+        packet = lead.packet_for(self.lead_sources(conn, at, previous_close), at, close, previous_close, observation)
+        if not packet:
+            return
+        revision = editor.digest(packet)
+        req = lead.request_for(revision, packet)
+        conn.execute("""INSERT INTO market_desk_revisions
+            (revision,issue_id,aliases,day,created_at,packet,article,request,state,next_at)
+            VALUES(%s,%s,%s,%s,%s,%s,'{}',%s,'queued',%s)""",
+                     (revision, key, [key], day, at, Jsonb(packet), Jsonb(req.model_dump(mode="json")), at))
+
     def publish(self, at, market, filings, filings_at, is_session, write):
         with self.db.transaction() as conn:
             # Serialize the daily allowance, revisions and the single S3 board even during a rolling restart.
@@ -117,16 +157,21 @@ class DeskStore:
             if times is None:
                 return
             docs, reports = self.news(conn, at)
+            local = at.astimezone(KST)
+            observation = (market or {}).get("session") if (market or {}).get("trade_date") == local.date().isoformat() else None
+            self.register_lead(conn, at, observation)
             if is_session:
+                # With aligned quotes, prefer the day's interpretation and reserve one of the same two calls for the close.
+                limit = DAILY_CALLS if not observation else (1 if local.hour >= 13 else 0)
                 for packet in editor.candidates(market, filings + docs, at):
                     followups = packet.pop("followups", [])
-                    self.register(conn, packet, at)
+                    self.register(conn, packet, at, limit)
                     if followups:
                         conn.execute("""UPDATE market_desk_revisions SET followups=%s
                             WHERE day=%s AND %s=ANY(aliases) AND followups IS DISTINCT FROM %s""",
                                      (Jsonb(followups), at.astimezone(KST).date(), packet["key"], Jsonb(followups)))
             rows = conn.execute("""SELECT DISTINCT ON (issue_id) article,aliases,followups FROM market_desk_revisions
-                WHERE created_at>=%s ORDER BY issue_id,(article->>'status'='analysis') DESC,created_at DESC,
+                WHERE created_at>=%s AND packet->>'kind'<>'session' ORDER BY issue_id,(article->>'status'='analysis') DESC,created_at DESC,
                 (packet->>'kind'='move') DESC, revision DESC""",
                                 (at - timedelta(days=2),)).fetchall()
             for r in rows:
@@ -140,20 +185,25 @@ class DeskStore:
             # Keep room for the day desk even on a busy Reporter morning.
             desk = [i for i in issues if i.get("origin") != "reporter"][:7]
             news = [i for i in issues if i.get("origin") == "reporter"][:15-len(desk)]
+            reading = conn.execute("""SELECT article FROM market_desk_revisions WHERE day=%s AND state='written'
+                AND packet->>'kind'='session' AND article ? 'headline' ORDER BY created_at DESC LIMIT 1""",
+                                   (local.date(),)).fetchone()
             board = {"version": 1, "checked_at": at.isoformat(), "monitoring": is_session,
                      **{k: v.isoformat() if v else None for k, v in times.items()},
                      "issues": desk + news, "briefings": self.briefs(conn, at),
-                     "market_reports": self.session_reports(conn, times["market_at"])}
+                     "market_reports": self.session_reports(conn, times["market_at"]),
+                     "lead": reading["article"] if reading else None}
             write(board)
 
-    def claim(self, at):
+    def claim(self, at, only_close=False):
         with self.db.transaction() as conn:
             return conn.execute("""UPDATE market_desk_revisions SET state='running',next_at=%s
                 WHERE revision=(SELECT revision FROM market_desk_revisions
                 WHERE state IN ('queued','running') AND next_at<=%s AND created_at>=%s AND day=%s
-                ORDER BY created_at LIMIT 1 FOR UPDATE SKIP LOCKED) RETURNING *""",
+                AND (NOT %s OR packet->>'phase'='close')
+                ORDER BY (packet->>'kind'='session') DESC,created_at LIMIT 1 FOR UPDATE SKIP LOCKED) RETURNING *""",
                                 (at + timedelta(minutes=8), at, at - timedelta(minutes=50),
-                                 at.astimezone(KST).date())).fetchone()
+                                 at.astimezone(KST).date(), only_close)).fetchone()
 
     def finish(self, row, state, at, article=None):
         with self.db.transaction() as conn:

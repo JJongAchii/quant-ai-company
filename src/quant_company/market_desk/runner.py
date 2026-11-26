@@ -4,11 +4,11 @@ import logging
 from datetime import date, time, timedelta
 from typing import Literal
 
-from pydantic import AwareDatetime, BaseModel, FiniteFloat
+from pydantic import AwareDatetime, BaseModel, FiniteFloat, ValidationError
 
 from ..briefing import schedule
 from ..contracts import ProviderFault, ProviderRequest
-from . import disclosures, editor
+from . import disclosures, editor, lead
 from .store import DeskStore
 
 LOG = logging.getLogger(__name__)
@@ -33,6 +33,14 @@ class MarketInput(BaseModel):
     trade_date: date
     large_companies: list[str]
     moves: list[MarketMove]
+
+
+class SessionObservation(BaseModel):
+    observed_at: AwareDatetime
+    headline: str
+    market: str
+    sectors: str
+    watch: str
 
 
 class BoardStorage:
@@ -77,6 +85,13 @@ class MarketDesk:
         value = MarketInput.model_validate(raw)
         if value.observed_at > at:
             return None
+        if raw.get("session"):
+            try:
+                session = SessionObservation.model_validate(raw["session"])
+                raw["session"] = (session.model_dump(mode="json") if session.observed_at <= value.observed_at
+                                  and session.observed_at.astimezone(schedule.KST).date() == value.trade_date else None)
+            except ValidationError:
+                raw["session"] = None
         if at - value.observed_at > timedelta(minutes=25) or value.trade_date != at.astimezone(schedule.KST).date():
             return {**raw, "moves": [], "large_companies": []}
         return raw
@@ -108,14 +123,17 @@ class MarketDesk:
 
     async def write_article(self):
         at = self.clock()
-        if not self.session(at):
+        close = schedule.close("KR", at.astimezone(schedule.KST).date(), schedule.overrides(self.company.settings))
+        closing = lead.phase_at(at, close) == "close"
+        if not closing and not self.session(at):
             return
-        row = await asyncio.to_thread(self.store.claim, at)
+        row = await asyncio.to_thread(self.store.claim, at, closing)
         if row is None:
             return
         try:
             result = await self.provider.run(ProviderRequest.model_validate(row["request"]))
-            article = editor.edited(result, row, self.clock())
+            writer = lead if row["packet"]["kind"] == "session" else editor
+            article = writer.edited(result, row, self.clock())
         except ProviderFault as fault:
             retry = fault.code in {"busy", "pending", "quota", "unavailable"}
             after = self.clock() + timedelta(seconds=max(120, fault.retry_after_seconds))
