@@ -49,13 +49,18 @@ def close_comparison(docs, headline, reading):
 
 
 def phase_at(at, close):
-    if close is None:
+    if close is None or at.astimezone(KST).date() != close.astimezone(KST).date():
         return None
-    if close <= at <= close + timedelta(hours=3):
+    if at >= close:
         return "close"
     if at.astimezone(KST).hour >= 10 and at < close - timedelta(minutes=20):
         return "intraday"
     return None
+
+
+def source_cutoff(at, close):
+    # A same-evening catch-up uses only reporting collected inside the normal three-hour window.
+    return min(at, close + timedelta(hours=3))
 
 
 def _market_story(doc):
@@ -68,6 +73,7 @@ def packet_for(rows, at, close, previous_close, observation):
     phase = phase_at(at, close)
     if not phase:
         return None
+    at = source_cutoff(at, close)
     today = at.astimezone(KST).date()
     docs = sorted((row for row in rows if row["published_at"] <= at and row["collected_at"] <= at),
                   key=lambda row: row["published_at"], reverse=True)

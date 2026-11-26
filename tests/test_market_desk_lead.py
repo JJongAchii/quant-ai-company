@@ -68,11 +68,14 @@ def test_session_packet_rejects_flash_future_and_incompatible_quotes():
 
 
 @pytest.mark.integration
-async def test_intraday_and_close_share_two_requests_and_survive_restarts(company):
+@pytest.mark.parametrize("closing_run", [NOW, CLOSE + timedelta(hours=6)])
+async def test_intraday_and_close_share_two_requests_and_survive_restarts(company, closing_run):
     with company.db.transaction() as conn:
         conn.execute("INSERT INTO news_sources(id,config,config_digest,enabled) VALUES('wire',%s,'ok',true)",
                      (Jsonb({"publisher": "시장통신사", "use_for_summary": True}),))
-        for row in originals():
+        after_cutoff = CLOSE + timedelta(hours=3, minutes=1)
+        delayed = {**doc("delayed", NOW, "코스피, 뒤늦게 수집한 마감", CLOSE_LINE), "collected_at": after_cutoff}
+        for row in [*originals(), delayed, doc("night", after_cutoff, "코스피, 저녁 반등 마감", CLOSE_LINE)]:
             conn.execute("""INSERT INTO news_articles(id,source_id,url,title,summary,feed_digest,published_at,
                 collected_at,source_digest,state,content) VALUES(%s,'wire',%s,%s,'',%s,%s,%s,'ok','ready',%s)""",
                          (row["id"], row["url"], row["title"], row["id"], row["published_at"], row["collected_at"], row["content"]))
@@ -88,13 +91,19 @@ async def test_intraday_and_close_share_two_requests_and_survive_restarts(compan
             self.board = board
 
     storage, provider = Storage(), AsyncMock()
-    for phase, now in (("intraday", at), ("close", NOW)):
+    for phase, now in (("intraday", at), ("close", closing_run)):
         at = now
         provider.run.side_effect = lambda request, phase=phase: draft(request, phase)
         desk = MarketDesk(company, provider, storage, filings=lambda _: [], clock=lambda at=at: at)
         await desk.tick()
         await desk.write_article()
+        if phase == "close":
+            article = storage.board["lead"]
+            assert datetime.fromisoformat(article["cutoff"]) == min(closing_run, CLOSE + timedelta(hours=3))
+            assert datetime.fromisoformat(article["as_of"]) == CLOSE + timedelta(minutes=30)
+            assert datetime.fromisoformat(article["published_at"]) == closing_run
         await desk.tick()
         await desk.write_article()
         assert storage.board["lead"]["phase"] == phase and not storage.board["issues"]
     assert provider.run.await_count == 2
+    assert lead.phase_at(CLOSE + timedelta(days=1), CLOSE) is None
