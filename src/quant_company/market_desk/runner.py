@@ -1,7 +1,10 @@
 import asyncio
 import json
 import logging
-from datetime import datetime, time, timedelta
+from datetime import date, time, timedelta
+from typing import Literal
+
+from pydantic import AwareDatetime, BaseModel, FiniteFloat
 
 from ..briefing import schedule
 from ..contracts import ProviderFault, ProviderRequest
@@ -10,6 +13,26 @@ from .store import DeskStore
 
 LOG = logging.getLogger(__name__)
 PREFIX = "app/market_desk/"
+
+
+class MarketMove(BaseModel):
+    id: str
+    kind: Literal["index", "sector"]
+    subject: str
+    from_at: AwareDatetime
+    observed_at: AwareDatetime
+    change: FiniteFloat
+    unit: Literal["%", "%p"]
+    companies: list[str]
+
+
+class MarketInput(BaseModel):
+    version: Literal[1]
+    quote_delay_minutes: Literal[20]
+    observed_at: AwareDatetime
+    trade_date: date
+    large_companies: list[str]
+    moves: list[MarketMove]
 
 
 class BoardStorage:
@@ -29,10 +52,7 @@ class BoardStorage:
             raw = stream.read(512_001)
         if len(raw) > 512_000:
             raise ValueError("oversize market observations")
-        value = json.loads(raw)
-        if value["version"] != 1 or value["quote_delay_minutes"] != 20:
-            raise ValueError("unknown market observation contract")
-        return value
+        return json.loads(raw)
 
     def write(self, board):
         self.s3.put_object(Bucket=self.bucket, Key=PREFIX + "board.json", ContentType="application/json",
@@ -52,6 +72,15 @@ class MarketDesk:
         close = schedule.close("KR", local.date(), schedule.overrides(self.company.settings))
         return close is not None and at <= close + timedelta(minutes=5)
 
+    def read_market(self, at):
+        raw = self.storage.market()
+        value = MarketInput.model_validate(raw)
+        if value.observed_at > at:
+            return None
+        if at - value.observed_at > timedelta(minutes=25) or value.trade_date != at.astimezone(schedule.KST).date():
+            return {**raw, "moves": [], "large_companies": []}
+        return raw
+
     def collect(self):
         at = self.clock()
         active = self.session(at)
@@ -59,7 +88,7 @@ class MarketDesk:
             self.storage = BoardStorage(self.company.settings.insight_market_bucket)
         market = None
         try:
-            market = self.storage.market()
+            market = self.read_market(at)
         except Exception as exc:
             LOG.warning("Market desk KRX input unavailable: %s", type(exc).__name__)
         filings, filings_at = [], None
@@ -69,13 +98,6 @@ class MarketDesk:
                 filings_at = at.isoformat()
             except Exception as exc:
                 LOG.warning("Market desk disclosures unavailable: %s", type(exc).__name__)
-        if market:
-            stamp = datetime.fromisoformat(market["observed_at"])
-            if stamp.tzinfo is None or stamp > at:
-                market = None
-            elif not (at - timedelta(minutes=25) <= stamp and
-                    market["trade_date"] == at.astimezone(schedule.KST).date().isoformat()):
-                market = {**market, "moves": [], "large_companies": []}
         self.store.publish(at, market, filings, filings_at, active, self.storage.write)
         local = at.astimezone(schedule.KST)
         frequent = local.weekday() < 5 and time(6, 30) <= local.time() < time(20, 30)

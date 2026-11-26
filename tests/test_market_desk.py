@@ -73,6 +73,18 @@ class Storage:
 
 
 @pytest.mark.integration
+async def test_invalid_krx_observation_does_not_block_company_publications(company):
+    storage = Storage()
+    storage.input = market()
+    storage.input["moves"][0]["from_at"] = "missing time"
+    desk = MarketDesk(company, AsyncMock(), storage, filings=lambda at: [], clock=lambda: AT)
+    await desk.tick()
+    assert storage.board["market_at"] is None
+    assert storage.board["filings_at"] is not None
+    assert storage.board["issues"] == []
+
+
+@pytest.mark.integration
 async def test_publisher_restarts_preserve_issue_and_model_allowance(company):
     storage = Storage()
     provider = AsyncMock()
