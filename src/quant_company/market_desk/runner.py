@@ -8,7 +8,7 @@ from pydantic import AwareDatetime, BaseModel, FiniteFloat, ValidationError
 
 from ..briefing import schedule
 from ..contracts import ProviderFault, ProviderRequest
-from . import disclosures, editor, lead
+from . import disclosures, editor, lead, note
 from .store import DeskStore
 
 LOG = logging.getLogger(__name__)
@@ -140,12 +140,19 @@ class MarketDesk:
         row = await asyncio.to_thread(self.store.claim, at, closing)
         if row is None:
             return
+        is_note = row["packet"]["kind"] == "note"
+        if is_note and at - row["created_at"] > note.LATE:
+            # Its map is too old to describe the market now; the next note will.
+            await asyncio.to_thread(self.store.finish, row, "failed", self.clock())
+            return
         try:
             result = await self.provider.run(ProviderRequest.model_validate(row["request"]))
-            writer = lead if row["packet"]["kind"] == "session" else editor
+            writer = {"session": lead, "note": note}.get(row["packet"]["kind"], editor)
             article = writer.edited(result, row, self.clock())
         except ProviderFault as fault:
-            retry = fault.code in {"busy", "pending", "quota", "unavailable"}
+            # A queue clears in minutes. A note refused for quota or an outage skips its round (design §6.6): the
+            # video lane shares the subscription and must never be starved by notes.
+            retry = fault.code in {"busy", "pending"} or (fault.code in {"quota", "unavailable"} and not is_note)
             after = self.clock() + timedelta(seconds=max(120, fault.retry_after_seconds))
             await asyncio.to_thread(self.store.finish, row, "queued" if retry else "failed", after)
             return
@@ -154,5 +161,6 @@ class MarketDesk:
             await asyncio.to_thread(self.store.finish, row, "failed", self.clock())
             return
         await asyncio.to_thread(self.store.finish, row, "written", self.clock(), article)
-        if closing and article:
+        if article and (closing or row["packet"]["kind"] == "note"):
+            # A written note reaches the board now, not at the next publication round.
             await self.tick()
