@@ -238,6 +238,18 @@ def test_production_market_certificate_volume_belongs_only_to_news_worker():
     assert services[name]["environment"]["INSIGHT_MARKET_BUCKET"] == "insight-invest-datalake"
 
 
+def test_production_reads_reporter_news_on_insight_invest_and_slack_can_be_restored(tmp_path):
+    def delivery(**config):
+        return compose_config(**config)["services"]["news-worker"]["environment"]["NEWS_SLACK_DELIVERY_ENABLED"]
+
+    overlay = ("market-desk.compose.yaml",)
+    assert delivery() == "true"
+    assert delivery(overlays=overlay) == "false"
+    restored = tmp_path / "runtime.env"
+    restored.write_text("NEWS_SLACK_DELIVERY_ENABLED=true\n")
+    assert delivery(overlays=overlay, extra_env=restored) == "true"
+
+
 def test_quant_worker_is_opt_in_and_has_no_slack_or_lake_secrets():
     assert "quant-feed-worker" not in compose_config()["services"]
     assert "quant-codex-runtime" not in compose_config()["services"]

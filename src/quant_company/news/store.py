@@ -20,6 +20,24 @@ from .originals import MAX_ARTICLE_TEXT
 LEGACY_POLICY_UNTIL = datetime(2026, 10, 20, tzinfo=UTC)
 
 
+def published_fields(item, articles):
+    """The article as published, kept with its publication so a later reader does not parse the chat text."""
+    cited = sorted({evidence.article_id for evidence in item.evidence})
+    sources = []
+    for identity in cited:
+        article = articles[identity]
+        source = {"title": article["title"], "url": article["url"], "publisher": article["publisher"],
+                  "published_at": article["published_at"].isoformat()}
+        if article.get("license_url"):
+            source.update(license_url=article["license_url"], license_name=article["license_name"] or "출처 이용 조건")
+        sources.append(source)
+    return {"category": item.category, "priority": item.priority, "update": bool(item.event_id),
+            "attribution": articles[item.evidence[0].article_id]["publisher"]
+            if item.verification == "attributed_report" else None,
+            "facts": item.facts, "significance": item.significance,
+            "change": item.change if item.event_id else "", "sources": sources}
+
+
 class NewsStore:
     def __init__(self, company):
         self.company = company
@@ -54,6 +72,11 @@ class NewsStore:
                 and settings.news_channel_id in settings.slack_allowed_channels
                 and settings.news_channel_id.startswith(("C", "G"))
                 and "reporter" in self.company.roles and self.company.roles["reporter"].active)
+
+    def venue(self):
+        """Where a new publication goes. Without an Insight board in this process, stopping Slack would lose the news."""
+        settings = self.company.settings
+        return "slack" if settings.news_slack_delivery_enabled or not settings.insight_market_bucket else "insight"
 
     def sync_sources(self):
         sources = self.sources()
@@ -243,8 +266,11 @@ class NewsStore:
                                          self.company.settings.news_owner_user)).fetchone()
                 article["existing_event_id"] = existing["id"] if existing else None
             required_events = [a["existing_event_id"] for a in articles if a["existing_event_id"]]
-            events = conn.execute("""SELECT n.id::text,n.headline,n.last_facts,o.status AS root_delivery FROM news_events n
-                JOIN outbox o ON o.id=n.root_message_id
+            # An event first published to the Insight board has no Slack post to report on.
+            events = conn.execute("""SELECT n.id::text,n.headline,n.last_facts,
+                    COALESCE(o.status,'published') AS root_delivery FROM news_events n
+                JOIN news_publications root ON root.id=n.root_message_id
+                LEFT JOIN outbox o ON o.id=n.root_message_id
                 JOIN projects p ON p.id=n.project_id WHERE p.channel=%s AND p.owner_user=%s
                 AND n.updated_at>now()-interval '3 days'
                 ORDER BY (n.id::text=ANY(%s)) DESC,n.updated_at DESC LIMIT 30""",
@@ -352,13 +378,16 @@ class NewsStore:
         if item.event_id:
             event = conn.execute("SELECT * FROM news_events WHERE id=%s FOR UPDATE", (event_id,)).fetchone()
             project = self.company._project(conn, str(event["project_id"]))
-            root = conn.execute("""SELECT o.status,COALESCE(root.sent_ts,o.sent_ts) AS sent_ts,
-                d.project_id AS digest_project_id,d.root_id AS digest_root_id FROM outbox o
-                LEFT JOIN news_publications p ON p.id=o.id LEFT JOIN news_digests d ON d.id=p.digest_id
-                LEFT JOIN outbox root ON root.id=d.root_id WHERE o.id=%s""", (event["root_message_id"],)).fetchone()
-            if not root or root["status"] != "delivered" or not root["sent_ts"] or project["status"] != "active":
+            root = conn.execute("""SELECT p.venue,o.status,COALESCE(root.sent_ts,o.sent_ts) AS sent_ts,
+                d.project_id AS digest_project_id,d.root_id AS digest_root_id FROM news_publications p
+                LEFT JOIN outbox o ON o.id=p.id LEFT JOIN news_digests d ON d.id=p.digest_id
+                LEFT JOIN outbox root ON root.id=d.root_id WHERE p.id=%s""", (event["root_message_id"],)).fetchone()
+            delivered = bool(root and root["status"] == "delivered" and root["sent_ts"])
+            # A Slack root must have been delivered for its thread. A board root has no thread to wait for.
+            if not root or project["status"] != "active" or not (delivered or root["venue"] == "insight"):
                 return "held"
-            project["thread_ts"] = root["sent_ts"]
+            # A story begun on the board keeps the thread a later Slack follow-up may have opened for it.
+            project["thread_ts"] = root["sent_ts"] if delivered else project["thread_ts"]
             if root["digest_project_id"]:
                 digest_context = (f"news-digest:{root['digest_root_id']}", root["digest_project_id"])
         else:
@@ -370,10 +399,13 @@ class NewsStore:
             conn.execute("INSERT INTO news_events(id,project_id,headline,last_facts) VALUES(%s,%s,%s,%s)",
                          (event_id, project["id"], item.headline, item.facts))
         message_id = stable(f"news-message:{review['id']}:{index}")
-        self.company._message(conn, project, None, "reporter", "news", render(item, articles, at), message_id=message_id)
+        venue = self.venue()
+        self.company._message(conn, project, None, "reporter", "news", render(item, articles, at), message_id=message_id,
+                              publish=venue == "slack")
         expires = min(articles[identity]["published_at"] for identity in item.article_ids) + timedelta(hours=self.company.settings.news_max_age_hours)
-        conn.execute("""INSERT INTO news_publications(id,event_id,review_id,article_ids,policy_digest,expires_at)
-            VALUES(%s,%s,%s,%s,%s,%s)""", (message_id, event_id, review["id"], Jsonb(item.article_ids), policy, expires))
+        conn.execute("""INSERT INTO news_publications(id,event_id,review_id,article_ids,policy_digest,expires_at,venue,item)
+            VALUES(%s,%s,%s,%s,%s,%s,%s,%s)""", (message_id, event_id, review["id"], Jsonb(item.article_ids), policy,
+                                                 expires, venue, Jsonb(published_fields(item, articles))))
         morning_day = review["bundle"].get("morning_day")
         if schedule.quiet(self.company.settings):
             morning_day = str(schedule.opening().date())
@@ -426,7 +458,10 @@ class NewsStore:
                             "searches": conn.execute("""SELECT id,topic,state,error,created_at,completed_at,
                                 receipt->'added' AS added,receipt->'excluded_unregistered' AS excluded_unregistered
                                 FROM news_searches ORDER BY created_at DESC LIMIT 6""").fetchall(),
-                            "coverage_note": "Source topic registration and fresh article counts, not proof that every topic/event was covered. Delivery status comes from the outbox, not article queued state.",
+                            "coverage_note": "Source topic registration and fresh article counts, not proof that every topic/event was covered. Delivery status comes from the outbox, not article queued state. A publication whose venue is insight is on the Insight Invest board and has no Slack delivery.",
+                            "publications": conn.execute("""SELECT p.id::text,p.venue,e.headline,m.created_at
+                                FROM news_publications p JOIN news_events e ON e.id=p.event_id
+                                JOIN messages m ON m.id=p.id ORDER BY m.created_at DESC LIMIT 10""").fetchall(),
                             "articles": conn.execute("SELECT state,count(*) AS count FROM news_articles GROUP BY state ORDER BY state").fetchall(),
                             "deliveries": conn.execute("""SELECT o.id::text,o.status,o.error,o.sent_ts,o.created_at,p.digest_id
                                 FROM outbox o JOIN news_publications p ON p.id=o.id ORDER BY o.created_at DESC LIMIT 20""").fetchall(),

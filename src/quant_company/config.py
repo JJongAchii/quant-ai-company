@@ -61,6 +61,8 @@ class Settings(BaseSettings):
     news_search_enabled: bool = False
     news_optimization_enabled: bool = False
     news_delivery_window_enabled: bool = False
+    # False publishes Reporter news to the Insight Invest board only. It applies where that board is configured.
+    news_slack_delivery_enabled: bool = True
     news_channel_id: str = ""
     news_owner_user: str = ""
     news_sources_file: Path | None = None

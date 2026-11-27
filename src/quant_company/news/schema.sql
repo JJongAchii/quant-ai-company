@@ -38,6 +38,9 @@ CREATE TABLE IF NOT EXISTS news_publications (
 ALTER TABLE news_publications ADD COLUMN IF NOT EXISTS broadcast boolean NOT NULL DEFAULT false;
 ALTER TABLE news_publications ADD COLUMN IF NOT EXISTS morning_day date;
 ALTER TABLE news_publications ADD COLUMN IF NOT EXISTS digest_id uuid;
+-- Where the publication was sent when it was committed, and its article fields as published.
+ALTER TABLE news_publications ADD COLUMN IF NOT EXISTS venue text NOT NULL DEFAULT 'slack';
+ALTER TABLE news_publications ADD COLUMN IF NOT EXISTS item jsonb;
 CREATE TABLE IF NOT EXISTS news_digests (
  id uuid PRIMARY KEY REFERENCES messages(id), project_id uuid NOT NULL REFERENCES projects(id),
  day date NOT NULL, part integer NOT NULL DEFAULT 0, root_id uuid,
