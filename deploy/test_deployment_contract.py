@@ -250,6 +250,17 @@ def test_production_reads_reporter_news_on_insight_invest_and_slack_can_be_resto
     assert delivery(overlays=overlay, extra_env=restored) == "true"
 
 
+def test_production_writes_intraday_notes_and_they_can_be_stopped(tmp_path):
+    def notes(**config):
+        return compose_config(**config)["services"]["news-worker"]["environment"]["INSIGHT_NOTES_ENABLED"]
+
+    assert notes() == "false"
+    assert notes(overlays=("market-desk.compose.yaml",)) == "true"
+    stopped = tmp_path / "runtime.env"
+    stopped.write_text("INSIGHT_NOTES_ENABLED=false\n")
+    assert notes(overlays=("market-desk.compose.yaml",), extra_env=stopped) == "false"
+
+
 def test_quant_worker_is_opt_in_and_has_no_slack_or_lake_secrets():
     assert "quant-feed-worker" not in compose_config()["services"]
     assert "quant-codex-runtime" not in compose_config()["services"]

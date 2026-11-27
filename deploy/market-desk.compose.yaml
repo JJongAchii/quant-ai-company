@@ -4,6 +4,8 @@ services:
       INSIGHT_MARKET_BUCKET: ${INSIGHT_MARKET_BUCKET-insight-invest-datalake}
       # Reporter news is read on Insight Invest. Set true in runtime.env to post it to the Slack news channel again.
       NEWS_SLACK_DELIVERY_ENABLED: ${NEWS_SLACK_DELIVERY_ENABLED-false}
+      # Intraday market notes and market-action alerts on the Insight board. Set false in runtime.env to stop them.
+      INSIGHT_NOTES_ENABLED: ${INSIGHT_NOTES_ENABLED-true}
       INSIGHT_MARKET_CREDENTIAL_ENDPOINT: ${INSIGHT_MARKET_CREDENTIAL_ENDPOINT-c32xlcmhh64i5o.credentials.iot.ap-northeast-2.amazonaws.com}
     volumes:
       - market-desk-identity:/var/lib/market-desk
