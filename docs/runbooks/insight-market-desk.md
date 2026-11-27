@@ -1,7 +1,8 @@
 # Insight Invest 홈 발행
 
-기존 `news-worker`가 소유자의 지정 채널에 실제 전달된 아침·마감 브리핑 본문과 Reporter 속보를
-개인 Insight Invest 홈에 함께 게시한다. 새 채널·서비스·예약 Lambda는 필요 없다.
+기존 `news-worker`가 소유자의 지정 채널에 실제 전달된 아침·마감 브리핑 본문과 Reporter 뉴스를
+개인 Insight Invest에 게시한다. 운영 릴리스에서 Reporter 뉴스는 Slack에 올리지 않고 이 보드에만
+게시한다. 새 채널·서비스·예약 Lambda는 필요 없다.
 
 ## 릴리스 운영자
 
@@ -57,5 +58,21 @@ AI 해설과 별도다. 원문 제목 선별에는 모델 호출이 없다.
 관측 사실과 미확인 상태를 유지한다. 중복 감지와 한도는 PostgreSQL에 저장하며, 불확실한 모델 호출을
 새 ID로 실행하지 않는다. 홈의 새로고침은 저장된 발행본만 조회한다.
 
-발행 중지 시 운영 릴리스 설정에서 `INSIGHT_MARKET_BUCKET`을 비운다. 마지막 게시물과 확인 시각은
+## Reporter 뉴스
+
+보드의 `news`는 최근 7일(최대 80건)의 Reporter 사건과 데스크의 공시·정책 글이다. 사건마다 최신 글
+하나를 분야, 긴급 여부, 후속 여부, 핵심 사실, 왜 중요한지, 달라진 점, 인용 원문으로 싣는다. 이 필드는
+게시 시점에 `news_publications.item`에 기록한 값이며, 그 전에 게시된 글은 본문 그대로 싣는다.
+기존 `issues`(2일·15건, 본문 형식)는 그대로 게시하므로 Insight Invest의 배포 순서와 무관하다.
+Insight Invest는 `news`가 있으면 그것으로 뉴스 화면을 만들고, 긴급 뉴스만 기기 알림으로 보낸다.
+
+`market-desk.compose.yaml`이 `NEWS_SLACK_DELIVERY_ENABLED`를 false로 두어 Reporter 뉴스를 보드에만
+게시한다([뉴스 문서](../news.md#insight-invest에만-게시)). 이렇게 게시한 글은 검토를 커밋한 직후 보드를
+다시 써서 싣는다. 보드의 정기 갱신(평일 주간 5분, 그 밖 30분)을 기다리지 않는다. 릴리스 뒤 `quant-company news status`의
+`publications`에서 새 글의 `venue`가 `insight`인지, 같은 글이 보드의 `news`에 있는지 확인한다. Slack
+뉴스 채널에 다시 올리려면 운영 릴리스 설정에 `NEWS_SLACK_DELIVERY_ENABLED=true`를 두고 릴리스한다.
+아침·마감 브리핑의 Slack 발송과 그 스레드에 이어지는 영상·뉴스레터 작업은 바뀌지 않는다.
+
+발행 중지 시 운영 릴리스 설정에서 `INSIGHT_MARKET_BUCKET`을 비운다. 이때 Reporter 뉴스는 Slack 뉴스
+채널로 돌아간다. 마지막 게시물과 확인 시각은
 Insight Invest에 남고, 갱신이 늦으면 홈이 지연 상태를 표시한다.

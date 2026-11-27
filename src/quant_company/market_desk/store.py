@@ -7,6 +7,9 @@ from ..briefing.schedule import KST
 from . import editor, lead
 
 DAILY_CALLS = 2
+# The news page of Insight Invest reads a week. The home list below it keeps its two days and fifteen places.
+NEWS_DAYS = 7
+NEWS_LIMIT = 80
 
 
 class DeskStore:
@@ -26,18 +29,32 @@ class DeskStore:
                         "as_of": r["cutoff"].isoformat(), "published_at": slack_time(r["sent_ts"])}
                        for r in rows), key=lambda x: x["published_at"], reverse=True)
 
-    def news(self, conn, at):
-        # Only messages actually delivered to the owner's configured news channel, including a morning digest.
-        hot = conn.execute("""SELECT n.event_id, n.article_ids, e.headline, m.text,
-                COALESCE(o.sent_ts, delivery.sent_ts) AS sent_ts FROM news_publications n
+    def publications(self, conn, at, days, limit):
+        """Reporter publications that reached the owner: delivered to the news channel (alone or in a morning
+        digest), or published to this board without a Slack post."""
+        return conn.execute("""SELECT n.event_id,n.article_ids,n.item,e.headline,m.text,m.created_at,
+                COALESCE(o.sent_ts,delivery.sent_ts) AS sent_ts FROM news_publications n
             JOIN news_events e ON e.id=n.event_id JOIN messages m ON n.id=m.id
             JOIN projects p ON p.id=e.project_id LEFT JOIN outbox o ON o.id=m.id
             LEFT JOIN outbox delivery ON delivery.id=n.digest_id
-            WHERE p.channel=%s AND p.owner_user=%s AND (o.status='delivered' OR delivery.status='delivered')
-              AND COALESCE(o.sent_ts,delivery.sent_ts) IS NOT NULL
-              AND m.created_at BETWEEN %s AND %s ORDER BY m.created_at DESC LIMIT 12""",
-                           (self.settings.news_channel_id, self.settings.news_owner_user,
-                            at - timedelta(days=2), at)).fetchall()
+            WHERE p.channel=%s AND p.owner_user=%s AND (n.venue='insight'
+                OR ((o.status='delivered' OR delivery.status='delivered')
+                    AND COALESCE(o.sent_ts,delivery.sent_ts) IS NOT NULL))
+              AND m.created_at BETWEEN %s AND %s ORDER BY m.created_at DESC LIMIT %s""",
+                            (self.settings.news_channel_id, self.settings.news_owner_user,
+                             at - timedelta(days=days), at, limit)).fetchall()
+
+    @staticmethod
+    def report(row, docs):
+        """One Reporter event as its latest publication, in the form the home has always read."""
+        published = slack_time(row["sent_ts"]) if row["sent_ts"] else row["created_at"].astimezone(KST).isoformat()
+        return {"id": "source-" + str(row["event_id"]), "kind": "news", "origin": "reporter", "status": "reported",
+                "headline": row["headline"], "fact": row["text"], "interpretation": "", "watch": "", "observation": "",
+                "published_at": published, "observed_at": None,
+                "sources": [editor.public_source(d) for d in docs if d["id"] in row["article_ids"]][:8]}
+
+    def news(self, conn, at):
+        hot = self.publications(conn, at, 2, 12)
         hot_ids = {a: str(r["event_id"]) for r in hot for a in r["article_ids"]}
         rows = conn.execute("""WITH recent AS MATERIALIZED (SELECT id FROM news_articles
                 WHERE content IS NOT NULL AND published_at BETWEEN %s AND %s AND collected_at<=%s
@@ -52,13 +69,41 @@ class DeskStore:
                 for r in rows]
         reports = {}
         for r in hot:
-            key = "source-" + str(r["event_id"])
-            if key not in reports:
-                reports[key] = {"id": key, "kind": "news", "origin": "reporter", "status": "reported", "headline": r["headline"],
-                                "fact": r["text"], "interpretation": "", "watch": "", "observation": "",
-                                "published_at": slack_time(r["sent_ts"]), "observed_at": None,
-                                "sources": [editor.public_source(d) for d in docs if d["id"] in r["article_ids"]][:8]}
+            reports.setdefault("source-" + str(r["event_id"]), self.report(r, docs))
         return docs, reports
+
+    def week(self, conn, at, docs):
+        """A week of Reporter events as articles: the fields recorded at publication instead of the chat text.
+        An edition published before fields were recorded keeps its text."""
+        reports = {}
+        for r in self.publications(conn, at, NEWS_DAYS, 4 * NEWS_LIMIT):
+            report = self.report(r, docs)
+            if report["id"] in reports:
+                continue
+            if r["item"]:
+                item = r["item"]
+                report.update(fact=item["facts"], sources=item["sources"], category=item["category"],
+                              priority=item["priority"], update=item["update"], attribution=item["attribution"],
+                              significance=item["significance"], change=item["change"])
+            reports[report["id"]] = report
+        return reports
+
+    def merged(self, conn, at, reports, days, moves=True):
+        """Reporter events with the desk's own articles, newest first. A desk analysis replaces the report it
+        explains. An index or sector move that cites a report takes its place only where moves are shown."""
+        rows = conn.execute("""SELECT DISTINCT ON (issue_id) article,aliases,followups FROM market_desk_revisions
+            WHERE created_at>=%s AND packet->>'kind'<>'session' AND (%s OR packet->>'kind'<>'move')
+            ORDER BY issue_id,(article->>'status'='analysis') DESC,created_at DESC,
+            (packet->>'kind'='move') DESC, revision DESC""",
+                            (at - timedelta(days=days), moves)).fetchall()
+        for r in rows:
+            article = {**r["article"], "followups": r["followups"]}
+            for alias in r["aliases"]:
+                if alias != article["id"] and article["status"] == "analysis":
+                    reports.pop(alias, None)
+            if article["id"] not in reports or article["status"] == "analysis":
+                reports[article["id"]] = article
+        return sorted(reports.values(), key=lambda x: datetime.fromisoformat(x["published_at"]), reverse=True)
 
     def register(self, conn, packet, at, limit=DAILY_CALLS):
         day = at.astimezone(KST).date()
@@ -171,27 +216,18 @@ class DeskStore:
                         conn.execute("""UPDATE market_desk_revisions SET followups=%s
                             WHERE day=%s AND %s=ANY(aliases) AND followups IS DISTINCT FROM %s""",
                                      (Jsonb(followups), at.astimezone(KST).date(), packet["key"], Jsonb(followups)))
-            rows = conn.execute("""SELECT DISTINCT ON (issue_id) article,aliases,followups FROM market_desk_revisions
-                WHERE created_at>=%s AND packet->>'kind'<>'session' ORDER BY issue_id,(article->>'status'='analysis') DESC,created_at DESC,
-                (packet->>'kind'='move') DESC, revision DESC""",
-                                (at - timedelta(days=2),)).fetchall()
-            for r in rows:
-                article = {**r["article"], "followups": r["followups"]}
-                for alias in r["aliases"]:
-                    if alias != article["id"] and article["status"] == "analysis":
-                        reports.pop(alias, None)
-                if article["id"] not in reports or article["status"] == "analysis":
-                    reports[article["id"]] = article
-            issues = sorted(reports.values(), key=lambda x: datetime.fromisoformat(x["published_at"]), reverse=True)
+            issues = self.merged(conn, at, reports, 2)
             # Keep room for the day desk even on a busy Reporter morning.
             desk = [i for i in issues if i.get("origin") != "reporter"][:7]
             news = [i for i in issues if i.get("origin") == "reporter"][:15-len(desk)]
+            # Index and sector moves belong to the market explanation, not to the news page.
+            week = self.merged(conn, at, self.week(conn, at, docs), NEWS_DAYS, moves=False)
             reading = conn.execute("""SELECT article FROM market_desk_revisions WHERE day=%s AND state='written'
                 AND packet->>'kind'='session' AND article ? 'headline' ORDER BY created_at DESC LIMIT 1""",
                                    (local.date(),)).fetchone()
             board = {"version": 1, "checked_at": at.isoformat(), "monitoring": is_session,
                      **{k: v.isoformat() if v else None for k, v in times.items()},
-                     "issues": desk + news, "briefings": self.briefs(conn, at),
+                     "issues": desk + news, "news": week[:NEWS_LIMIT], "briefings": self.briefs(conn, at),
                      "market_reports": self.session_reports(conn, times["market_at"]),
                      "lead": reading["article"] if reading else None}
             write(board)

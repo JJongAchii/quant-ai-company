@@ -342,6 +342,7 @@ services:
       MODEL_RUNTIME_URL: http://codex-runtime:8080
       MODEL_RUNTIME_TOKEN_FILE: /run/secrets/model_runtime_token
       INSIGHT_MARKET_BUCKET: ${INSIGHT_MARKET_BUCKET:-}
+      NEWS_SLACK_DELIVERY_ENABLED: ${NEWS_SLACK_DELIVERY_ENABLED:-true}
       SLACK_ALLOWED_USERS: ${SLACK_ALLOWED_USERS:-[]}
       SLACK_ALLOWED_CHANNELS: ${SLACK_ALLOWED_CHANNELS:-[]}
     secrets: [database_password, model_runtime_token]

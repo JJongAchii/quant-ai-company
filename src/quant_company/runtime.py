@@ -109,6 +109,7 @@ def news_loops(company, provider=None):
     model = asyncio.Semaphore(1)
     editor = NewsEditor(company, provider)
     loops = []
+    desk = None
     if settings.insight_market_bucket:
         from .market_desk.runner import MarketDesk
 
@@ -120,10 +121,24 @@ def news_loops(company, provider=None):
         ]
     if settings.company_news_enabled:
         collector = NewsCollector(company)
+
+        async def editorial():
+            result = await editor.tick()
+            # News with no Slack post is read on the board alone: publish it now, not at the board's next round
+            # (up to half an hour away at night and on weekends). A failed write is left to that round.
+            if desk and editor.store.venue() == "insight" and any(
+                    item.get("state") == "queued" for item in (result or {}).get("items", [])):
+                try:
+                    await desk.tick()
+                except Exception as exc:  # noqa: BLE001 - the review is committed; the board publishes it on its next round
+                    logging.getLogger(__name__).warning("Insight board write after a news review failed: %s",
+                                                        type(exc).__name__)
+            return result
+
         loops += [
             Loop("news-collection", collector.tick, timeout=120, attempts=3, retry_seconds=5, delay=lambda result: (
                 60 if result is None else 2 if result.get("article_fetched") or result["state"] == "collected" else 30)),
-            Loop("news-editorial", editor.tick, timeout=480, attempts=3, retry_seconds=5, lane=model,
+            Loop("news-editorial", editorial, timeout=480, attempts=3, retry_seconds=5, lane=model,
                  delay=lambda result: max(1, min(300, (result or {}).get("next_delay", 300)))),
         ]
         if settings.news_search_enabled:

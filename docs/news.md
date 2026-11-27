@@ -163,6 +163,21 @@ outbox에 넣지 않는다. 실제 채널·앱 권한·운영 소스와 결과�
 `NEWS_PUBLISH_ENABLED=true`로 운영 발송을 켠다. 미리보기의 과거 기사를 뒤늦게 게시하지 않는다.
 설치·마이그레이션·프로세스 재시작은 [기존 배포 절차](deployment.md)를 따른다.
 
+### Insight Invest에만 게시
+
+`news-worker`에 `NEWS_SLACK_DELIVERY_ENABLED=false`와 Insight Invest 게시 버킷(`INSIGHT_MARKET_BUCKET`)이
+함께 있으면 Reporter는 수집·선별·검토를 그대로 하고, 게시하기로 한 글을 outbox에 넣지 않은 채
+[Insight Invest 보드](runbooks/insight-market-desk.md)에만 게시한다. 운영 릴리스의
+`market-desk.compose.yaml`이 이 값을 false로 둔다. Slack 뉴스 채널에 다시 올리려면 운영 설정에
+`NEWS_SLACK_DELIVERY_ENABLED=true`를 둔다.
+
+- 게시 버킷이 없는 프로세스에서는 false여도 Slack으로 보낸다. 읽을 곳이 없는 뉴스를 만들지 않는다.
+- 게시 위치는 검토를 커밋하는 순간 정해져 `news_publications.venue`에 남는다. 전환 전에 이미 발송
+  대기 중이던 글과 묶음은 Slack으로 전달된다. 보드에만 게시한 글은 커밋 직후 보드에 쓴다.
+- Slack 게시가 없으므로 스레드 후속 질문, 긴급 후속의 채널 알림, 06:00 밤사이 묶음이 생기지 않는다.
+  후속 보도는 같은 사건의 최신 글로 보드에서 교체된다. 야간 발송 제한은 검토 시각에 그대로 적용된다.
+- `NEWS_CHANNEL_ID`·`NEWS_OWNER_USER`와 허용 목록은 사건을 묶는 기준이므로 그대로 둔다.
+
 ## 점검 명령과 데모
 
 ```bash
@@ -188,6 +203,7 @@ uv run --frozen quant-company news status
 구분한다. Reporter에게 수집 상태를 물어도 같은 읽기 도구를 사용한다.
 outbox의 `pending`은 발송 대기, `delivered`는 Slack 성공 영수증 확보, `uncertain`은 결과 불명이다.
 기사의 `queued`는 게시 큐로 넘겼다는 뜻이며 현재 Slack 전송 여부는 outbox를 확인한다.
+Insight Invest에만 게시한 글은 outbox에 없고 `publications`에서 `venue`가 `insight`로 보인다.
 결과 불명인 모델 호출·Slack 발신은 자동으로 새 ID를 만들어 반복하지 않는다.
 운영자가 원격 영수증과 Slack 기록을 대조해야 하며 이 버전에는 뉴스 전용 재발행 명령이 없다.
 중지하려면 `COMPANY_NEWS_ENABLED=false`와 `NEWS_PUBLISH_ENABLED=false`를 모든 관련 프로세스에

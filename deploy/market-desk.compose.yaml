@@ -2,6 +2,8 @@ services:
   news-worker:
     environment:
       INSIGHT_MARKET_BUCKET: ${INSIGHT_MARKET_BUCKET-insight-invest-datalake}
+      # Reporter news is read on Insight Invest. Set true in runtime.env to post it to the Slack news channel again.
+      NEWS_SLACK_DELIVERY_ENABLED: ${NEWS_SLACK_DELIVERY_ENABLED-false}
       INSIGHT_MARKET_CREDENTIAL_ENDPOINT: ${INSIGHT_MARKET_CREDENTIAL_ENDPOINT-c32xlcmhh64i5o.credentials.iot.ap-northeast-2.amazonaws.com}
     volumes:
       - market-desk-identity:/var/lib/market-desk
